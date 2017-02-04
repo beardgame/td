@@ -6,7 +6,9 @@ namespace Bearded.TD
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("The game. You lost it.");
+            var game = new TheGame();
+
+            game.Run(60);
         }
     }
 }
