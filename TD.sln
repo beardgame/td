@@ -1,7 +1,11 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD", "src\Bearded.TD\Bearded.TD.csproj", "{03F88604-6AB7-4E76-B2C5-46CADD8ADE75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "amulware.Graphics", "libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Utilities", "libs\utilities\src\Bearded.Utilities.csproj", "{2F580B9D-6255-4427-8395-5EF236C9401C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +17,13 @@ Global
 		{03F88604-6AB7-4E76-B2C5-46CADD8ADE75}.Debug|x86.Build.0 = Debug|x86
 		{03F88604-6AB7-4E76-B2C5-46CADD8ADE75}.Release|x86.ActiveCfg = Release|x86
 		{03F88604-6AB7-4E76-B2C5-46CADD8ADE75}.Release|x86.Build.0 = Release|x86
+		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Debug|x86.ActiveCfg = Debug|x86
+		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Debug|x86.Build.0 = Debug|x86
+		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Release|x86.ActiveCfg = Release|x86
+		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Release|x86.Build.0 = Release|x86
+		{2F580B9D-6255-4427-8395-5EF236C9401C}.Debug|x86.ActiveCfg = Debug|x86
+		{2F580B9D-6255-4427-8395-5EF236C9401C}.Debug|x86.Build.0 = Debug|x86
+		{2F580B9D-6255-4427-8395-5EF236C9401C}.Release|x86.ActiveCfg = Release|x86
+		{2F580B9D-6255-4427-8395-5EF236C9401C}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,6 @@
+[submodule "libs/utilities"]
+	path = libs/utilities
+	url = https://github.com/beardgame/utilities.git
+[submodule "libs/awgraphics"]
+	path = libs/awgraphics
+	url = https://github.com/amulware/awgraphics.git
