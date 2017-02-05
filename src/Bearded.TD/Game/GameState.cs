@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD
 {
@@ -63,6 +64,18 @@ namespace Bearded.TD
             var l = new DeletableObjectList<T>();
             lists.Add(typeof(T), l);
             return l;
+        }
+
+
+
+        public void Advance(TimeSpan elapsedTime)
+        {
+            Time += elapsedTime;
+
+            foreach (var obj in gameObjects)
+            {
+                obj.Update(elapsedTime);
+            }
         }
     }
 }
