@@ -30,7 +30,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\GameObject.cs" />
+    <Compile Include="Game\GameState.cs" />
     <Compile Include="TheGame.cs" />
+    <Compile Include="Utilities\EnumerableProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config">
