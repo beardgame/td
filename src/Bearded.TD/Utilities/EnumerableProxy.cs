@@ -19,14 +19,15 @@ namespace Bearded.TD
             this.list = list;
         }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return list.GetEnumerator();
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
         }
+
     }
 }
