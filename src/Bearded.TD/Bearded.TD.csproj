@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\GameObject.cs" />
+    <Compile Include="Game\GameRenderer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="TheGame.cs" />
