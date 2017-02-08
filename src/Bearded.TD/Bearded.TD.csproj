@@ -35,6 +35,9 @@
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="TheGame.cs" />
+    <Compile Include="Utilities\Console\CommandAttribute.cs" />
+    <Compile Include="Utilities\Console\CommandParameters.cs" />
+    <Compile Include="Utilities\Console\Commands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
   </ItemGroup>
   <ItemGroup>
