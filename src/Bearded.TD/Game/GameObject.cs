@@ -2,7 +2,7 @@
 using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD
+namespace Bearded.TD.Game
 {
     internal abstract class GameObject : IDeletable
     {

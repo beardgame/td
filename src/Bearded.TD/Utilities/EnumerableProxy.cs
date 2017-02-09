@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Bearded.TD
+namespace Bearded.TD.Utilities
 {
     internal static class EnumerableProxy
     {

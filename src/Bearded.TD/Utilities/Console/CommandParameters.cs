@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Console
+﻿namespace Bearded.TD.Utilities.Console
 {
     internal sealed class CommandParameters
     {

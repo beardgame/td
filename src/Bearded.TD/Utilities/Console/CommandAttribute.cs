@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bearded.TD.Console
+namespace Bearded.TD.Utilities.Console
 {
     [AttributeUsage(AttributeTargets.Method)]
     internal class CommandAttribute : Attribute

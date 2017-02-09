@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD
+﻿namespace Bearded.TD.Game
 {
     internal class GameRenderer
     {

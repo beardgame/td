@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD
+namespace Bearded.TD.Game
 {
     internal class GameRunner
     {

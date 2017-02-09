@@ -6,7 +6,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Linq;
 
-namespace Bearded.TD.Console
+namespace Bearded.TD.Utilities.Console
 {
     internal class Commands
     {

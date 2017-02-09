@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD
+namespace Bearded.TD.Game
 {
     internal class GameState
     {
