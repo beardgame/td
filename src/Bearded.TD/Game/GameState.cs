@@ -34,6 +34,9 @@ namespace Bearded.TD.Game
         public void RegisterSingleton<T>(T obj)
             where T : class
         {
+            if (obj != ObjectBeingAdded)
+                throw new Exception("Sad!");
+
             singletons.Add(typeof(T), obj);
         }
 
@@ -48,6 +51,9 @@ namespace Bearded.TD.Game
         public void ListAs<T>(T obj)
             where T : class, IDeletable
         {
+            if (obj != ObjectBeingAdded)
+                throw new Exception("Sad!");
+
             getList<T>().Add(obj);
         }
 
