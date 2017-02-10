@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Bearded.Utilities;
 
 namespace Bearded.TD
 {
@@ -6,9 +6,15 @@ namespace Bearded.TD
     {
         public static void Main(string[] args)
         {
+            var logger = new Logger();
+
+            logger.Info.Log("Creating game");
             var game = new TheGame();
 
+            logger.Info.Log("Running game");
             game.Run(60);
+
+            logger.Info.Log("Safely exited game");
         }
     }
 }
