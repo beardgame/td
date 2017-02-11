@@ -7,7 +7,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game
 {
-    internal class GameState
+    class GameState
     {
         public GameObject ObjectBeingAdded { get; private set; }
 

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace Bearded.TD.Utilities
 {
-    internal static class EnumerableProxy
+    static class EnumerableProxy
     {
         public static EnumerableProxy<T> AsReadOnlyEnumerable<T>(this IEnumerable<T> enumerable)
             => new EnumerableProxy<T>(enumerable);
     }
 
-    internal struct EnumerableProxy<T> : IEnumerable<T>
+    struct EnumerableProxy<T> : IEnumerable<T>
     {
         private readonly IEnumerable<T> list;
 

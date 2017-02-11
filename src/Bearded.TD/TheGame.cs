@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD
 {
-    public class TheGame : Program
+    class TheGame : Program
     {
         public TheGame()
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",

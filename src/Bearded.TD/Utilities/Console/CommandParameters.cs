@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.Utilities.Console
 {
-    internal sealed class CommandParameters
+    sealed class CommandParameters
     {
         public string[] Args { get; private set; }
 
