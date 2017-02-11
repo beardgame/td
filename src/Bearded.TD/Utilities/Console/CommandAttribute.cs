@@ -3,7 +3,7 @@
 namespace Bearded.TD.Utilities.Console
 {
     [AttributeUsage(AttributeTargets.Method)]
-    internal class CommandAttribute : Attribute
+    class CommandAttribute : Attribute
     {
         public CommandAttribute(string name, string parameterCompletion = null)
         {
@@ -16,7 +16,7 @@ namespace Bearded.TD.Utilities.Console
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    internal class DebugCommandAttribute : CommandAttribute
+    class DebugCommandAttribute : CommandAttribute
     {
         public DebugCommandAttribute(string name, string parameterCompletion = null)
             : base(name, parameterCompletion)

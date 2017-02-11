@@ -1,12 +1,13 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Utilities.Console;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD
 {
-    public class TheGame : Program
+    class TheGame : Program
     {
         public TheGame()
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
@@ -18,7 +19,7 @@ namespace Bearded.TD
 
         protected override void OnLoad(EventArgs e)
         {
-
+            Commands.Initialise();
         }
 
         protected override void OnResize(EventArgs e)

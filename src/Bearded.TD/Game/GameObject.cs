@@ -4,7 +4,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game
 {
-    internal abstract class GameObject : IDeletable
+    abstract class GameObject : IDeletable
     {
         public GameState Game { get; private set; }
 

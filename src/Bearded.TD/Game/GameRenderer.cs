@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.Game
 {
-    internal class GameRenderer
+    class GameRenderer
     {
         private readonly GameState state;
 

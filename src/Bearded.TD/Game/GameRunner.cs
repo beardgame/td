@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
-    internal class GameRunner
+    class GameRunner
     {
         private readonly GameState state;
 
