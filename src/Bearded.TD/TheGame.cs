@@ -1,7 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
-using Bearded.TD.Rendering;
 using Bearded.TD.Game;
+using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
