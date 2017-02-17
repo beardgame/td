@@ -10,7 +10,7 @@ namespace Bearded.TD
 
             logger.Info.Log("");
             logger.Info.Log("Creating game");
-            var game = new TheGame();
+            var game = new TheGame(logger);
 
             logger.Info.Log("Running game");
             game.Run(60);

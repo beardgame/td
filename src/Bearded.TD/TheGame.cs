@@ -1,6 +1,8 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Utilities.Console;
+using Bearded.Utilities;
 using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Graphics;
@@ -11,12 +13,23 @@ namespace Bearded.TD
 {
     class TheGame : Program
     {
-        public TheGame()
+        private readonly Logger logger;
+
+        private readonly GameState gameState;
+        private readonly GameRunner gameRunner;
+        private readonly GameRenderer gameRenderer;
+
+        public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
              GameWindowFlags.Default, DisplayDevice.Default,
-             3, 2, GraphicsContextFlags.Default)
-        {
+             3, 2, GraphicsContextFlags.Default) {
+            this.logger = logger;
 
+            var meta = new GameMeta(logger);
+
+            gameState = new GameState(meta);
+            gameRunner = new GameRunner(gameState);
+            gameRenderer = new GameRenderer(gameState);
         }
 
         protected override void OnLoad(EventArgs e)
