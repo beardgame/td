@@ -48,7 +48,7 @@ namespace Bearded.TD.Game
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw(SpriteManager sprites);
+        public abstract void Draw(GeometryManager geometries);
 
         public void Delete()
         {

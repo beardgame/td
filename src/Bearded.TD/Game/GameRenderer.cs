@@ -5,19 +5,19 @@ namespace Bearded.TD.Game
     class GameRenderer
     {
         private readonly GameState state;
-        private readonly SpriteManager sprites;
+        private readonly GeometryManager geometries;
 
-        public GameRenderer(GameState state, SpriteManager sprites)
+        public GameRenderer(GameState state, GeometryManager geometries)
         {
             this.state = state;
-            this.sprites = sprites;
+            this.geometries = geometries;
         }
 
         public void Draw()
         {
             foreach (var obj in state.GameObjects)
             {
-                obj.Draw(sprites);
+                obj.Draw(geometries);
             }
         }
     }

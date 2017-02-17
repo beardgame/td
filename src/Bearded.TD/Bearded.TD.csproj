@@ -13,6 +13,8 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -37,13 +39,14 @@
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
-    <Compile Include="Rendering\SpriteManager.cs" />
+    <Compile Include="Rendering\GeometryManager.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\Commands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
+    <Compile Include="Utilities\LinqExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config">
@@ -62,13 +65,39 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\font\Inconsolata.json" />
-    <Content Include="assets\font\Inconsolata.png" />
-    <Content Include="assets\gfx\sprites\noise.png" />
-    <Content Include="assets\gfx\sprites\particles.json" />
-    <Content Include="assets\gfx\sprites\particles.png" />
-    <Content Include="assets\gfx\sprites\smallobjects.json" />
-    <Content Include="assets\gfx\sprites\smallobjects.png" />
+    <Content Include="assets\font\Inconsolata.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\font\Inconsolata.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gfx\sprites\noise.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gfx\sprites\particles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gfx\sprites\particles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gfx\sprites\smallobjects.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gfx\sprites\smallobjects.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\geometry.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\geometry.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\uvcolor.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\uvcolor.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

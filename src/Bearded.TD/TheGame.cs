@@ -41,7 +41,7 @@ namespace Bearded.TD
 
             gameState = new GameState(meta);
             gameRunner = new GameRunner(gameState);
-            gameRenderer = new GameRenderer(gameState, renderContext.Sprites);
+            gameRenderer = new GameRenderer(gameState, renderContext.Geometries);
         }
 
         protected override void OnResize(EventArgs e)

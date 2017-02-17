@@ -4,13 +4,13 @@ namespace Bearded.TD.Rendering
     class RenderContext
     {
         public SurfaceManager Surfaces { get; }
-        public SpriteManager Sprites { get; }
+        public GeometryManager Geometries { get; }
         public FrameCompositor Compositor { get; }
 
         public RenderContext()
         {
             Surfaces = new SurfaceManager();
-            Sprites = new SpriteManager(Surfaces);
+            Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(Surfaces);
         }
     }
