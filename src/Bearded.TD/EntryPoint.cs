@@ -8,6 +8,7 @@ namespace Bearded.TD
         {
             var logger = new Logger();
 
+            logger.Info.Log("");
             logger.Info.Log("Creating game");
             var game = new TheGame();
 

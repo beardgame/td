@@ -1,9 +1,11 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Utilities.Console;
+using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace Bearded.TD
 {
@@ -20,6 +22,7 @@ namespace Bearded.TD
         protected override void OnLoad(EventArgs e)
         {
             Commands.Initialise();
+            InputManager.Initialize(Mouse);
         }
 
         protected override void OnResize(EventArgs e)
@@ -29,7 +32,12 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
+            InputManager.Update();
 
+            if (InputManager.IsKeyPressed(Key.AltLeft) && InputManager.IsKeyHit(Key.F4))
+            {
+                Close();
+            }
         }
 
         protected override void OnRender(UpdateEventArgs e)
@@ -38,9 +46,7 @@ namespace Bearded.TD
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-
-            this.SwapBuffers();
+            SwapBuffers();
         }
-
     }
 }
