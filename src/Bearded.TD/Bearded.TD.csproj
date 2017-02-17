@@ -40,6 +40,8 @@
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />
+    <Compile Include="Rendering\ScreenLayer.cs" />
+    <Compile Include="Rendering\SpriteManager.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
