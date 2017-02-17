@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Utilities;
 
@@ -67,6 +68,9 @@ namespace Bearded.TD.Rendering
         public static SurfaceWrapper<T> WithShader<T>(this T surface, ISurfaceShader shader)
             where T : Surface
         {
+            if (shader == null)
+                throw new Exception("Shader not found");
+
             shader.UseOnSurface(surface);
             return new SurfaceWrapper<T>(surface);
         }
