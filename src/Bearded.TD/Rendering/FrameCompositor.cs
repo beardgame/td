@@ -18,11 +18,25 @@ namespace Bearded.TD.Rendering
             var argb = Color.SkyBlue;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Disable(EnableCap.DepthTest);
+            GL.DepthMask(false);
+            GL.CullFace(CullFaceMode.FrontAndBack);
         }
 
         public void RenderGame(GameRenderer renderer)
         {
             renderer.Draw();
+        }
+
+        public void RenderLayer(ScreenLayer layer)
+        {
+            layer.Draw();
+
+            surfaces.ViewMatrix.Matrix = layer.GetViewMatrix();
+            surfaces.ProjectionMatrix.Matrix = layer.GetProjectionMatrix();
+
+            surfaces.ConsoleBackground.Render();
+            surfaces.ConsoleFontSurface.Render();
         }
 
         public void FinalizeFrame()

@@ -30,6 +30,11 @@ namespace Bearded.TD.Rendering
             this.flipY = flipY;
         }
 
+        public void Draw()
+        {
+
+        }
+
         public Matrix4 GetViewMatrix()
         {
             var originCenter = new Vector3((originX - .5f) * baseWidth, (originY - .5f) * baseHeight, 0);

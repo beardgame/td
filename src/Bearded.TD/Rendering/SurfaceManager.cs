@@ -7,9 +7,10 @@ namespace Bearded.TD.Rendering
 {
     class SurfaceManager
     {
-        public Matrix4Uniform ViewMatrix = new Matrix4Uniform("view");
-        public Matrix4Uniform ProjectionMatrix = new Matrix4Uniform("projection");
         private readonly ShaderManager shaders = new ShaderManager();
+
+        public Matrix4Uniform ViewMatrix { get; } = new Matrix4Uniform("view");
+        public Matrix4Uniform ProjectionMatrix { get; } = new Matrix4Uniform("projection");
 
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
         public IndexedSurface<UVColorVertexData> ConsoleFontSurface { get; }
