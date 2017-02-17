@@ -1,5 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Console;
 using OpenTK;
 using OpenTK.Graphics;
@@ -9,6 +10,8 @@ namespace Bearded.TD
 {
     class TheGame : Program
     {
+        private RenderContext renderContext;
+
         public TheGame()
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
              GameWindowFlags.Default, DisplayDevice.Default,
@@ -20,6 +23,8 @@ namespace Bearded.TD
         protected override void OnLoad(EventArgs e)
         {
             Commands.Initialise();
+
+            renderContext = new RenderContext();
         }
 
         protected override void OnResize(EventArgs e)
@@ -34,10 +39,9 @@ namespace Bearded.TD
 
         protected override void OnRender(UpdateEventArgs e)
         {
-            var argb = Color.SkyBlue;
-            GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            renderContext.Compositor.PrepareForFrame();
 
+            renderContext.Compositor.FinalizeFrame();
 
             this.SwapBuffers();
         }

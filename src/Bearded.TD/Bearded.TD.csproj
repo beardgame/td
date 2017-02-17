@@ -34,6 +34,10 @@
     <Compile Include="Game\GameRenderer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Rendering\FrameCompositor.cs" />
+    <Compile Include="Rendering\RenderContext.cs" />
+    <Compile Include="Rendering\SpriteManager.cs" />
+    <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
@@ -55,6 +59,15 @@
       <Project>{2F580B9D-6255-4427-8395-5EF236C9401C}</Project>
       <Name>Bearded.Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\font\Inconsolata.json" />
+    <Content Include="assets\font\Inconsolata.png" />
+    <Content Include="assets\gfx\sprites\noise.png" />
+    <Content Include="assets\gfx\sprites\particles.json" />
+    <Content Include="assets\gfx\sprites\particles.png" />
+    <Content Include="assets\gfx\sprites\smallobjects.json" />
+    <Content Include="assets\gfx\sprites\smallobjects.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

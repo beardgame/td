@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Rendering;
 using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw();
+        public abstract void Draw(SpriteManager sprites);
 
         public void Delete()
         {

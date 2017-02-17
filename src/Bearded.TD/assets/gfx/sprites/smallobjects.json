@@ -1,0 +1,11 @@
+{
+	"textures" : [
+		{ "name" : "diffuseTexture", "filename" : "data/sprites/smallobjects.png" }
+	],
+	"uvSize" : [2, 2],
+	"sprites" : [
+		{ "name" : "missile", "uv" : [ {"lt" : [0, 0], "size" : [1, 1]} ] },
+		{ "name" : "circle",  "uv" : [ {"lt" : [1, 0], "size" : [1, 1]} ] },
+		{ "name" : "pill",    "uv" : [ {"lt" : [0, 1], "size" : [2, 1]} ], "size" : [2, 1] }
+	]
+}
