@@ -18,7 +18,7 @@ namespace Bearded.TD
 
         private GameState gameState;
         private GameRunner gameRunner;
-        private GameRenderer gameRenderer;
+        private GameScreenLayer gameScreenLayer;
 
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
@@ -41,7 +41,7 @@ namespace Bearded.TD
 
             gameState = new GameState(meta);
             gameRunner = new GameRunner(gameState);
-            gameRenderer = new GameRenderer(gameState, renderContext.Geometries);
+            gameScreenLayer = new GameScreenLayer(gameState, renderContext.Geometries);
         }
 
         protected override void OnResize(EventArgs e)

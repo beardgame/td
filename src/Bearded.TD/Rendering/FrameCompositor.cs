@@ -23,7 +23,7 @@ namespace Bearded.TD.Rendering
             GL.CullFace(CullFaceMode.FrontAndBack);
         }
 
-        public void RenderGame(GameRenderer renderer)
+        public void RenderGame(GameScreenLayer renderer)
         {
             renderer.Draw();
         }

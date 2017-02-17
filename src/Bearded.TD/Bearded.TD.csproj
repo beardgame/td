@@ -34,7 +34,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
-    <Compile Include="Game\GameRenderer.cs" />
+    <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
@@ -42,6 +42,7 @@
     <Compile Include="Rendering\GeometryManager.cs" />
     <Compile Include="Rendering\ScreenLayer.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
+    <Compile Include="Rendering\UIScreenLayer.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
