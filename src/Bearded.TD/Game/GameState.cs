@@ -18,6 +18,11 @@ namespace Bearded.TD.Game
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
 
         public Instant Time { get; private set; } = Instant.Zero;
+        public GameMeta Meta { get; }
+
+        public GameState(GameMeta meta) {
+            Meta = meta;
+        }
 
         public void Add(GameObject obj)
         {
