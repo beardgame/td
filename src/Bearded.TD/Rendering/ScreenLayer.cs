@@ -17,14 +17,17 @@ namespace Bearded.TD.Rendering
         private readonly float originY;
         private readonly bool flipY;
 
-        public ScreenLayer() : this(.5f, 1, true)
+        protected GeometryManager Geometries { get; }
+
+        public ScreenLayer(GeometryManager geometries) : this(geometries, .5f, 1, true)
         { }
 
         // Origin = bottom left.
         // Default y direction = up.
         // Flipping y is done after moving origin.
-        public ScreenLayer(float originX, float originY, bool flipY)
+        public ScreenLayer(GeometryManager geometries, float originX, float originY, bool flipY)
         {
+            Geometries = geometries;
             this.originX = originX;
             this.originY = originY;
             this.flipY = flipY;
