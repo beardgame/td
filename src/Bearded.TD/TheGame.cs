@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering;
@@ -55,7 +56,10 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
-            InputManager.Update();
+            lock (UIEventProcessLock)
+            {
+                InputManager.Update();
+            }
 
             if (InputManager.IsKeyPressed(Key.AltLeft) && InputManager.IsKeyHit(Key.F4))
             {
