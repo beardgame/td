@@ -8,19 +8,30 @@ namespace Bearded.TD.Rendering
         private const float fovy = Mathf.PiOver2;
         private const float zNear = .1f;
         private const float zFar = 1024f;
-        private const float aspectRatio = 16f / 9f;
+
+        protected ViewportSize ViewportSize { get; private set; }
+
+        public abstract Matrix4 ViewMatrix { get; }
+
+        public virtual Matrix4 ProjectionMatrix
+        {
+            get
+            {
+                var yMax = zNear * Mathf.Tan(.5f * fovy);
+                var yMin = -yMax;
+                var xMax = yMax * ViewportSize.AspectRatio;
+                var xMin = yMin * ViewportSize.AspectRatio;
+                return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
+            }
+        }
+
+        public void OnResize(ViewportSize newSize)
+        {
+            ViewportSize = newSize;
+            OnViewportSizeChanged();
+        }
 
         public abstract void Draw();
-
-        public abstract Matrix4 GetViewMatrix();
-
-        public virtual Matrix4 GetProjectionMatrix()
-        {
-            var yMax = zNear * Mathf.Tan(.5f * fovy);
-            var yMin = -yMax;
-            var xMax = yMax * aspectRatio;
-            var xMin = yMin * aspectRatio;
-            return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
-        }
+        protected virtual void OnViewportSizeChanged() { }
     }
 }

@@ -35,8 +35,8 @@ namespace Bearded.TD.Rendering
         {
             layer.Draw();
 
-            surfaces.ViewMatrix.Matrix = layer.GetViewMatrix();
-            surfaces.ProjectionMatrix.Matrix = layer.GetProjectionMatrix();
+            surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
+            surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
 
             surfaces.ConsoleBackground.Render();
             surfaces.ConsoleFontSurface.Render();

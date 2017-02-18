@@ -50,6 +50,7 @@
     <Compile Include="Rendering\ScreenLayer.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\UIScreenLayer.cs" />
+    <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />

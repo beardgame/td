@@ -47,7 +47,7 @@ namespace Bearded.TD.Rendering
         public override void Draw()
         {
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            Geometries.ConsoleBackground.DrawRectangle(0, 0, 1280, consoleHeight);
+            Geometries.ConsoleBackground.DrawRectangle(0, 0, ViewportSize.Width, consoleHeight);
 
             var logEntries = logger.GetSafeRecentEntries();
 
