@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Buildings
 {
     class Base : Building
     {
-        public Base(Tile<TileInfo> rootTile) : base(rootTile, Blueprint)
+        public Base(Tile<TileInfo> rootTile) : base(Blueprint, rootTile)
         { }
 
         protected override void OnAdded()
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Buildings
             fontGeo.DrawString(Position.NumericValue, Health.ToString(), .5f, .5f);
         }
 
-        private static readonly Blueprint Blueprint
-            = new Blueprint(Footprint.CircleSeven, 1000);
+        private static readonly BuildingBlueprint Blueprint
+            = new BuildingBlueprint(Footprint.CircleSeven, 1000);
     }
 }

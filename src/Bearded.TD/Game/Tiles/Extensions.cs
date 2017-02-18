@@ -49,6 +49,13 @@ namespace Bearded.TD.Game.Tiles
                 )
                 .ToArray();
 
+        private static readonly Direction2[] direction2s =
+            Enumerable.Range(0, 7)
+                .Select(i =>
+                    Direction2.FromDegrees(i * 60f - 60f)
+                )
+                .ToArray();
+
         private static readonly Vector2[] vectors =
             Enumerable.Range(0, 7)
                 .Select(i =>
@@ -77,6 +84,7 @@ namespace Bearded.TD.Game.Tiles
 
         public static Vector2 CornerBefore(this Direction direction) => corners[(int) direction - 1];
         public static Vector2 CornerAfter(this Direction direction) => corners[(int) direction];
+        public static Direction2 SpaceTimeDirection(this Direction direction) => direction2s[(int) direction];
         public static Vector2 Vector(this Direction direction) => vectors[(int) direction];
         public static Step Step(this Direction direction) => directionDelta[(int) direction];
         public static bool Any(this Directions direction) => direction != Directions.None;

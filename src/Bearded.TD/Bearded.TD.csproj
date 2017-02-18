@@ -36,7 +36,7 @@
     <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
-    <Compile Include="Game\Buildings\Blueprint.cs" />
+    <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\Footprint.cs" />
     <Compile Include="Game\GameCamera.cs" />
@@ -49,6 +49,9 @@
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\PlayerInput.cs" />
+    <Compile Include="Game\Units\EnemyUnit.cs" />
+    <Compile Include="Game\Units\UnitBlueprint.cs" />
+    <Compile Include="Game\Units\GameUnit.cs" />
     <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />

@@ -1,5 +1,7 @@
-﻿using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.Units;
+using Bearded.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
+using OpenTK.Input;
 
 namespace Bearded.TD.Game
 {
@@ -17,10 +19,11 @@ namespace Bearded.TD.Game
             if (input.ClickAction.Hit)
             {
                 var clickedTile = state.Level.GetTile(input.MousePos);
-                if (clickedTile.IsValid)
-                {
+                if (!clickedTile.IsValid) return;
+                if (InputManager.IsKeyPressed(Key.AltLeft))
+                    state.Add(new EnemyUnit(new UnitBlueprint(100, new Speed(2)), clickedTile));
+                else
                     state.Geometry.ToggleTileType(clickedTile);
-                }
             }
         }
     }

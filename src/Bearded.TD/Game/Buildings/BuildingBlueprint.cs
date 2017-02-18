@@ -1,11 +1,11 @@
 ﻿namespace Bearded.TD.Game.Buildings
 {
-    struct Blueprint
+    struct BuildingBlueprint
     {
         public Footprint Footprint { get; }
         public int MaxHealth { get; }
 
-        public Blueprint(Footprint footprint, int maxHealth)
+        public BuildingBlueprint(Footprint footprint, int maxHealth)
         {
             Footprint = footprint;
             MaxHealth = maxHealth;
