@@ -14,8 +14,8 @@ namespace Bearded.TD.Game.Tilemap
         public Tile(Tilemap<TTileInfo> tilemap, int x, int y)
         {
             this.tilemap = tilemap;
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public int Radius => X * Y >= 0
