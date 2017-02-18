@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Buildings
 
             geo.DrawCircle(Position.NumericValue, 1.2f * HexagonWidth, true, 6);
 
-            FontGeometry fontGeo = geometries.ConsoleFont;
+            var fontGeo = geometries.ConsoleFont;
             fontGeo.Color = Color.White;
             fontGeo.Height = 1;
 
