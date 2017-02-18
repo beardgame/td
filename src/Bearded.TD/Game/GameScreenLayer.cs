@@ -1,6 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Rendering;
-using Bearded.Utilities.Math;
+﻿using Bearded.TD.Rendering;
 using OpenTK;
 
 namespace Bearded.TD.Game
@@ -10,6 +8,8 @@ namespace Bearded.TD.Game
         private readonly GameState state;
         private readonly GameCamera camera;
         private readonly GeometryManager geometries;
+
+        public override Matrix4 ViewMatrix => camera.ViewMatrix;
 
         public GameScreenLayer(GameState state, GameCamera camera, GeometryManager geometries)
         {
@@ -28,14 +28,10 @@ namespace Bearded.TD.Game
             }
         }
 
-        public override Matrix4 ViewMatrix
+        protected override void OnViewportSizeChanged()
         {
-            get
-            {
-                var eye = camera.CameraPosition.WithZ(camera.CameraDistance);
-                var target = camera.CameraPosition.WithZ(0);
-                return Matrix4.LookAt(eye, target, Vector3.UnitY);
-            }
+            base.OnViewportSizeChanged();
+            camera.OnViewportSizeChanged(ViewportSize);
         }
     }
 }

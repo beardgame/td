@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
@@ -26,40 +27,113 @@ namespace Bearded.TD.Game
         private readonly GameMeta meta;
         private readonly float levelRadius;
 
-        public Vector2 CameraPosition { get; private set; }
-        public float CameraDistance { get; private set; }
+        private Vector2? mousePosInWorldSpace;
+
+        private Vector2 cameraPosition;
+        private float cameraDistance;
+        private ViewportSize viewportSize;
+
+        public Matrix4 ViewMatrix { get; private set; }
+        public Matrix4 ScreenToWorld { get; private set; }
 
         public GameCamera(GameMeta meta, float levelRadius)
         {
             this.meta = meta;
             this.levelRadius = levelRadius;
 
-            CameraPosition = Vector2.Zero;
-            CameraDistance = ZDefault;
+            cameraPosition = Vector2.Zero;
+            cameraDistance = ZDefault;
+            recalculateViewMatrix();
+        }
+
+        public void OnViewportSizeChanged(ViewportSize viewportSize)
+        {
+            this.viewportSize = viewportSize;
         }
 
         public void Update(float elapsedTime)
         {
+            if (InputManager.RightMousePressed || mousePosInWorldSpace != null)
+                updateDragging();
+            if (!InputManager.RightMousePressed)
+                updateScrolling(elapsedTime);
+
+            recalculateViewMatrix();
+        }
+
+        private void updateDragging()
+        {
+            if (InputManager.RightMousePressed && !mousePosInWorldSpace.HasValue)
+            {
+                mousePosInWorldSpace = getMouseWorldPosition();
+                meta.Logger.Trace.Log("Start drag at {0}", mousePosInWorldSpace);
+            } else if (mousePosInWorldSpace.HasValue)
+            {
+                var currMousePos = getMouseWorldPosition();
+                var error = currMousePos - mousePosInWorldSpace.Value;
+                cameraPosition -= error;
+            }
+
+            if (InputManager.RightMouseReleased && mousePosInWorldSpace != null)
+            {
+                mousePosInWorldSpace = null;
+                meta.Logger.Trace.Log("End drag");
+            }
+        }
+
+        private void updateScrolling(float elapsedTime)
+        {
             foreach (var zoomAction in zoomActions)
             {
-                CameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
+                cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
                                   * ZoomSpeed * zoomAction.Value;
             }
-            CameraDistance = CameraDistance.Clamped(ZMin, levelRadius);
+            cameraDistance = cameraDistance.Clamped(ZMin, levelRadius);
 
-            var scrollSpeed = BaseScrollSpeed * CameraDistance;
+            var scrollSpeed = BaseScrollSpeed * cameraDistance;
 
             foreach (var scrollAction in scrollActions)
             {
-                CameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
+                cameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
                                   * scrollSpeed * scrollAction.Value;
             }
 
-            var maxDistanceFromOrigin = levelRadius - CameraDistance;
-            if (CameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
+            var maxDistanceFromOrigin = levelRadius - cameraDistance;
+            if (cameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
             {
-                CameraPosition = CameraPosition.Normalized() * maxDistanceFromOrigin;
+                cameraPosition = cameraPosition.Normalized() * maxDistanceFromOrigin;
             }
+        }
+
+        private void recalculateViewMatrix()
+        {
+            var eye = cameraPosition.WithZ(cameraDistance);
+            var target = cameraPosition.WithZ();
+            ViewMatrix = Matrix4.LookAt(eye, target, Vector3.UnitY);
+        }
+
+        private Vector2 getMouseWorldPosition()
+        {
+            return TransformScreenToWorldPos(InputManager.MousePosition);
+        }
+
+        public Vector2 TransformScreenToWorldPos(Vector2 screenPos)
+        {
+            // This is simple right now under the assumptions:
+            // * The camera always looks straight down. That is, the camera eye and target both lie
+            //   along the infinite extension of cameraPosition in the Z axis.
+            // * The FoV is Pi/2
+            return cameraPosition + cameraDistance * getNormalisedScreenPosition(screenPos);
+        }
+
+        private Vector2 getNormalisedScreenPosition(Vector2 screenPos)
+        {
+            var ret = new Vector2(
+                2 * screenPos.X / viewportSize.Width - 1,
+                1 - 2 * screenPos.Y / viewportSize.Height
+            );
+            ret.X *= viewportSize.AspectRatio;
+            return ret;
         }
     }
 }
