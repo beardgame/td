@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Buildings
 {
     class Base : Building
     {
-        public Base(Tile<TileInfo> rootTile) : base(rootTile, Footprint.CircleSeven)
+        public Base(Tile<TileInfo> rootTile) : base(rootTile, Blueprint)
         { }
 
         protected override void OnAdded()
@@ -25,9 +25,18 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.Yellow;
+            geo.Color = Color.Blue;
 
             geo.DrawCircle(Position.NumericValue, 1.2f * HexagonWidth, true, 6);
+
+            FontGeometry fontGeo = geometries.ConsoleFont;
+            fontGeo.Color = Color.White;
+            fontGeo.Height = 1;
+
+            fontGeo.DrawString(Position.NumericValue, Health.ToString(), .5f, .5f);
         }
+
+        private static readonly Blueprint Blueprint
+            = new Blueprint(Footprint.CircleSeven, 1000);
     }
 }

@@ -7,20 +7,22 @@ namespace Bearded.TD.Game.Buildings
     abstract class Building : GameObject
     {
         private readonly Tile<TileInfo> rootTile;
-        private readonly Footprint footprint;
+        private readonly Blueprint blueprint;
 
         protected Position2 Position { get; private set; }
+        protected int Health { get; private set; }
 
-        protected Building(Tile<TileInfo> rootTile, Footprint footprint)
+        protected Building(Tile<TileInfo> rootTile, Blueprint blueprint)
         {
             this.rootTile = rootTile;
-            this.footprint = footprint;
+            this.blueprint = blueprint;
+            Health = blueprint.MaxHealth;
         }
 
         protected override void OnAdded()
         {
-            Position = footprint.Center(Game.Level, rootTile);
-            foreach (var tile in footprint.OccupiedTiles(rootTile))
+            Position = blueprint.Footprint.Center(Game.Level, rootTile);
+            foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
             {
                 var info = tile.Info;
                 info.SetBuilding(this);
@@ -31,7 +33,7 @@ namespace Bearded.TD.Game.Buildings
 
         protected override void OnDelete()
         {
-            foreach (var tile in footprint.OccupiedTiles(rootTile))
+            foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
             {
                 var info = tile.Info;
                 info.SetBuilding(null);

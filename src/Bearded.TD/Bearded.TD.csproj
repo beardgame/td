@@ -36,6 +36,7 @@
     <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
+    <Compile Include="Game\Buildings\Blueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\Footprint.cs" />
     <Compile Include="Game\GameCamera.cs" />
