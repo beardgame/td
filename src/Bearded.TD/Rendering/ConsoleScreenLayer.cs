@@ -10,10 +10,10 @@ namespace Bearded.TD.Rendering
 
         public override void Draw()
         {
-            Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.5f);
+            Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
             Geometries.ConsoleBackground.DrawRectangle(-640, 0, 1280, 320);
 
-            Geometries.ConsoleFont.Color = Color.White;
+            Geometries.ConsoleFont.Color = Color.White.Premultiplied;
             Geometries.ConsoleFont.Height = 14;
             Geometries.ConsoleFont.DrawString(new Vector2(-640, 0), "Hello, world!");
         }

@@ -21,6 +21,9 @@ namespace Bearded.TD.Rendering
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
             GL.CullFace(CullFaceMode.FrontAndBack);
+
+            GL.Enable(EnableCap.Blend);
+            SurfaceBlendSetting.PremultipliedAlpha.Set(null);
         }
 
         public void RenderGame(GameScreenLayer renderer)
