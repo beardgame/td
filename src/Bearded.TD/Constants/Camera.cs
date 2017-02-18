@@ -4,7 +4,12 @@
     {
         public static class Camera
         {
-            public const float ScrollSpeed = 8;
+            public const float BaseScrollSpeed = 1.2f;
+            public const float ZoomSpeed = 8;
+
+            public const float ZDefault = 10;
+            public const float ZMin = 1;
+            public const float ZMax = 32;
         }
     }
 }
