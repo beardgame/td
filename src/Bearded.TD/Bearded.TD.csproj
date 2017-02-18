@@ -37,6 +37,11 @@
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\Tilemap\Direction.cs" />
+    <Compile Include="Game\Tilemap\Extensions.cs" />
+    <Compile Include="Game\Tilemap\Step.cs" />
+    <Compile Include="Game\Tilemap\Tile.cs" />
+    <Compile Include="Game\Tilemap\Tilemap.cs" />
     <Compile Include="Rendering\ConsoleScreenLayer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
