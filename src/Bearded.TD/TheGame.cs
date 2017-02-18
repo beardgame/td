@@ -43,7 +43,7 @@ namespace Bearded.TD
             var meta = new GameMeta(logger);
 
             gameState = new GameState(meta);
-            var camera = new GameCamera(42);
+            var camera = new GameCamera(meta, 42);
             gameRunner = new GameRunner(gameState, camera);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, camera, renderContext.Geometries);
