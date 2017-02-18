@@ -39,7 +39,7 @@ namespace Bearded.TD.Rendering
 
         private readonly Logger logger;
 
-        public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries)
+        public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
             this.logger = logger;
         }
@@ -47,7 +47,7 @@ namespace Bearded.TD.Rendering
         public override void Draw()
         {
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            Geometries.ConsoleBackground.DrawRectangle(-640, 0, 1280, consoleHeight);
+            Geometries.ConsoleBackground.DrawRectangle(0, 0, 1280, consoleHeight);
 
             var logEntries = logger.GetSafeRecentEntries();
 
@@ -64,7 +64,7 @@ namespace Bearded.TD.Rendering
                 var entry = logEntries[--i];
                 if (!visibleSeverities.Contains(entry.Severity)) continue;
                 Geometries.ConsoleFont.Color = colors[logEntries[i].Severity];
-                Geometries.ConsoleFont.DrawString(new Vector2(padding - 640, y), logEntries[i].Text);
+                Geometries.ConsoleFont.DrawString(new Vector2(padding, y), logEntries[i].Text);
                 y -= lineHeight;
             }
         }

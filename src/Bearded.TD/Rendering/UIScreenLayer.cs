@@ -26,7 +26,7 @@ namespace Bearded.TD.Rendering
 
         public override Matrix4 GetViewMatrix()
         {
-            var originCenter = new Vector3((originX - .5f) * baseWidth, (originY - .5f) * baseHeight, 0);
+            var originCenter = new Vector3((originX + .5f) * baseWidth, (originY - .5f) * baseHeight, 0);
             return Matrix4.LookAt(
                 new Vector3(0, 0, -.5f * baseHeight) + originCenter,
                 Vector3.Zero + originCenter,
