@@ -24,15 +24,15 @@ namespace Bearded.TD.Game
         };
 
         private readonly GameMeta meta;
-        private readonly float tilemapRadius;
+        private readonly float levelRadius;
 
         public Vector2 CameraPosition { get; private set; }
         public float CameraDistance { get; private set; }
 
-        public GameCamera(GameMeta meta, float tilemapRadius)
+        public GameCamera(GameMeta meta, float levelRadius)
         {
             this.meta = meta;
-            this.tilemapRadius = tilemapRadius;
+            this.levelRadius = levelRadius;
 
             CameraPosition = Vector2.Zero;
             CameraDistance = ZDefault;
@@ -45,7 +45,7 @@ namespace Bearded.TD.Game
                 CameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
                                   * ZoomSpeed * zoomAction.Value;
             }
-            CameraDistance = CameraDistance.Clamped(ZMin, ZMax);
+            CameraDistance = CameraDistance.Clamped(ZMin, levelRadius);
 
             var scrollSpeed = BaseScrollSpeed * CameraDistance;
 
@@ -53,6 +53,12 @@ namespace Bearded.TD.Game
             {
                 CameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
                                   * scrollSpeed * scrollAction.Value;
+            }
+
+            var maxDistanceFromOrigin = levelRadius - CameraDistance;
+            if (CameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
+            {
+                CameraPosition = CameraPosition.Normalized() * maxDistanceFromOrigin;
             }
         }
     }

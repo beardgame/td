@@ -9,7 +9,6 @@
 
             public const float ZDefault = 10;
             public const float ZMin = 1;
-            public const float ZMax = 32;
         }
     }
 }
