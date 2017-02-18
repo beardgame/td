@@ -39,6 +39,8 @@
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\Level\Level.cs" />
+    <Compile Include="Game\Level\TileInfo.cs" />
     <Compile Include="Game\Tilemap\Direction.cs" />
     <Compile Include="Game\Tilemap\Extensions.cs" />
     <Compile Include="Game\Tilemap\Step.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="Rendering\ScreenLayer.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\UIScreenLayer.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
