@@ -28,10 +28,11 @@ namespace Bearded.TD.Game
         private readonly float levelRadius;
 
         private Vector2? mousePosInWorldSpace;
+        private ViewportSize viewportSize;
 
         private Vector2 cameraPosition;
         private float cameraDistance;
-        private ViewportSize viewportSize;
+        private float zoomSpeed => BaseZoomSpeed * (1 + cameraDistance * ZoomSpeedFactor);
 
         public Matrix4 ViewMatrix { get; private set; }
         public Matrix4 ScreenToWorld { get; private set; }
@@ -86,7 +87,7 @@ namespace Bearded.TD.Game
             foreach (var zoomAction in zoomActions)
             {
                 cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
-                                  * ZoomSpeed * zoomAction.Value;
+                                  * zoomSpeed * zoomAction.Value;
             }
             cameraDistance = cameraDistance.Clamped(ZMin, levelRadius);
 

@@ -44,7 +44,7 @@ namespace Bearded.TD
 
             var meta = new GameMeta(logger);
 
-            const int levelRadius = 10;
+            const int levelRadius = 20;
             gameState = new GameState(meta, new Level(new Tilemap<TileInfo>(levelRadius)));
             var camera = new GameCamera(meta, levelRadius);
             gameRunner = new GameRunner(gameState, camera);
