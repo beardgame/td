@@ -45,7 +45,7 @@ namespace Bearded.TD
             var meta = new GameMeta(logger);
 
             gameState = new GameState(meta, new Level(new Tilemap<TileInfo>(10)));
-            var camera = new GameCamera(42);
+            var camera = new GameCamera(meta, 42);
             gameRunner = new GameRunner(gameState, camera);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, camera, renderContext.Geometries);
@@ -61,10 +61,11 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
-            lock (UIEventProcessLock)
-            {
-                InputManager.Update();
-            }
+            if (Focused)
+                lock (UIEventProcessLock)
+                {
+                    InputManager.Update();
+                }
 
             if (InputManager.IsKeyPressed(Key.AltLeft) && InputManager.IsKeyHit(Key.F4))
             {
