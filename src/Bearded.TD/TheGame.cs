@@ -59,10 +59,11 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
-            lock (UIEventProcessLock)
-            {
-                InputManager.Update();
-            }
+            if (Focused)
+                lock (UIEventProcessLock)
+                {
+                    InputManager.Update();
+                }
 
             if (InputManager.IsKeyPressed(Key.AltLeft) && InputManager.IsKeyHit(Key.F4))
             {
