@@ -42,7 +42,7 @@ namespace Bearded.TD
 
             gameState = new GameState(meta);
             gameRunner = new GameRunner(gameState);
-            consoleLayer = new ConsoleScreenLayer(renderContext.Geometries);
+            consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, renderContext.Geometries);
         }
 
