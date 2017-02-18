@@ -43,9 +43,10 @@ namespace Bearded.TD
             var meta = new GameMeta(logger);
 
             gameState = new GameState(meta);
-            gameRunner = new GameRunner(gameState);
+            var camera = new GameCamera(42);
+            gameRunner = new GameRunner(gameState, camera);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
-            gameScreenLayer = new GameScreenLayer(gameState, renderContext.Geometries);
+            gameScreenLayer = new GameScreenLayer(gameState, camera, renderContext.Geometries);
             OnResize(EventArgs.Empty);
         }
 
@@ -71,11 +72,14 @@ namespace Bearded.TD
             {
                 isConsoleEnabled = !isConsoleEnabled;
             }
+
+            gameRunner.Update(e);
         }
 
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
+            renderContext.Compositor.RenderLayer(gameScreenLayer);
             if (isConsoleEnabled)
                 renderContext.Compositor.RenderLayer(consoleLayer);
             renderContext.Compositor.FinalizeFrame();

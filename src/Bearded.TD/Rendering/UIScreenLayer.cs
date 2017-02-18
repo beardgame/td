@@ -17,7 +17,7 @@ namespace Bearded.TD.Rendering
         protected GeometryManager Geometries { get; }
 
         protected UIScreenLayer(GeometryManager geometries) : this(geometries, .5f, 1, true)
-        { }`
+        { }
 
         protected UIScreenLayer(GeometryManager geometries, float originX, float originY, bool flipY)
         {

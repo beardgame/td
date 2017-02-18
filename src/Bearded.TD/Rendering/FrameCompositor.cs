@@ -26,11 +26,6 @@ namespace Bearded.TD.Rendering
             SurfaceBlendSetting.PremultipliedAlpha.Set(null);
         }
 
-        public void RenderGame(GameScreenLayer renderer)
-        {
-            renderer.Draw();
-        }
-
         public void RenderLayer(ScreenLayer layer)
         {
             layer.Draw();
