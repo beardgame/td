@@ -17,6 +17,7 @@ namespace Bearded.TD.Game
         public void Update(UpdateEventArgs args)
         {
             camera.Update(args.ElapsedTimeInSf);
+            state.Navigator.Update();
             state.Advance(new TimeSpan(args.ElapsedTimeInS));
         }
     }

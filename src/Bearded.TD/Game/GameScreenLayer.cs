@@ -20,7 +20,10 @@ namespace Bearded.TD.Game
 
         public override void Draw()
         {
+            geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
+
             state.Level.Draw(geometries);
+            state.Navigator.DrawDebug(geometries, state.Level);
 
             foreach (var obj in state.GameObjects)
             {

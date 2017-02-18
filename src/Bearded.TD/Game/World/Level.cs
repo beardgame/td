@@ -1,10 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Tilemap;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Input;
-using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
