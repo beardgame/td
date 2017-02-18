@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.World
             Wall = 2,
         }
 
-        private readonly Directions validDirections;
+        public Directions ValidDirections { get; }
 
         public Directions OpenDirections { get; private set; }
         public bool IsPassable => building == null && TileType == Type.Floor;
@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.World
 
         public TileInfo(Directions validDirections, Type tileType)
         {
-            this.validDirections = validDirections;
+            ValidDirections = validDirections;
             OpenDirections = validDirections;
             TileType = tileType;
         }
@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.World
 
         public void OpenTo(Direction direction)
         {
-            OpenDirections = OpenDirections.And(direction).Intersect(validDirections);
+            OpenDirections = OpenDirections.And(direction).Intersect(ValidDirections);
         }
 
         public void SetTileType(Type tileType)
