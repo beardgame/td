@@ -42,6 +42,7 @@
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\PlayerInput.cs" />
     <Compile Include="Game\World\Level.cs" />

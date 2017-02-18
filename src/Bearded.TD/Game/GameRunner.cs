@@ -21,6 +21,7 @@ namespace Bearded.TD.Game
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS);
 
             camera.Update(args.ElapsedTimeInSf);
+            state.Navigator.Update();
             controller.Update(elapsedTime, PlayerInput.Construct(camera));
             state.Advance(elapsedTime);
         }

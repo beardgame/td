@@ -49,6 +49,13 @@ namespace Bearded.TD.Game.Tilemap
                 )
                 .ToArray();
 
+        private static readonly Vector2[] vectors =
+            Enumerable.Range(0, 7)
+                .Select(i =>
+                    Direction2.FromDegrees(i * 60f - 60f).Vector
+                )
+                .ToArray();
+
         #endregion
 
         #region Tile<TTileInfo>
@@ -57,7 +64,7 @@ namespace Bearded.TD.Game.Tilemap
         {
             for (var i = 1; i <= 6; i++)
             {
-                yield return tile.Neighbour(Extensions.directionDelta[i]);
+                yield return tile.Neighbour(directionDelta[i]);
             }
         }
 
@@ -68,14 +75,15 @@ namespace Bearded.TD.Game.Tilemap
         public static IEnumerable<Direction> Enumerate(this Directions directions)
             => Extensions.directions.Where(direction => directions.Includes(direction));
 
-        public static Vector2 CornerBefore(this Direction direction) => Extensions.corners[(int) direction - 1];
-        public static Vector2 CornerAfter(this Direction direction) => Extensions.corners[(int) direction];
-        public static Step Step(this Direction direction) => Extensions.directionDelta[(int) direction];
+        public static Vector2 CornerBefore(this Direction direction) => corners[(int) direction - 1];
+        public static Vector2 CornerAfter(this Direction direction) => corners[(int) direction];
+        public static Vector2 Vector(this Direction direction) => vectors[(int) direction];
+        public static Step Step(this Direction direction) => directionDelta[(int) direction];
         public static bool Any(this Directions direction) => direction != Directions.None;
         public static bool Any(this Directions direction, Directions match) => direction.Intersect(match) != Directions.All;
         public static bool All(this Directions direction, Directions match) => direction.Intersect(match) == match;
         public static Direction Hexagonal(this Direction2 direction) => (Direction) ((int) Math.Floor(direction.Degrees * 1 / 60f + 0.5f) % 6 + 1);
-        public static Direction Opposite(this Direction direction) => Extensions.directionOpposite[(int) direction];
+        public static Direction Opposite(this Direction direction) => directionOpposite[(int) direction];
 
         private static Directions toDirections(this Direction direction) => (Directions) (1 << ((int) direction - 1));
         public static bool Includes(this Directions directions, Direction direction) => directions.HasFlag(direction.toDirections());

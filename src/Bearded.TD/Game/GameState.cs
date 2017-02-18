@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
@@ -21,11 +22,13 @@ namespace Bearded.TD.Game
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
         public Level Level { get; }
+        public MultipleSinkNavigationSystem Navigator { get; }
 
         public GameState(GameMeta meta, Level level)
         {
             Meta = meta;
             Level = level;
+            Navigator = new MultipleSinkNavigationSystem(level.Tilemap);
         }
 
         public void Add(GameObject obj)
