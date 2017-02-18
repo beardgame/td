@@ -22,12 +22,14 @@ namespace Bearded.TD.Game
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
         public Level Level { get; }
+        public Geometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
 
         public GameState(GameMeta meta, Level level)
         {
             Meta = meta;
             Level = level;
+            Geometry = new Geometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(level.Tilemap);
         }
 

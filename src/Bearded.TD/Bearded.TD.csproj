@@ -45,6 +45,7 @@
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\PlayerInput.cs" />
+    <Compile Include="Game\World\Geometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tilemap\Direction.cs" />

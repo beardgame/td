@@ -18,7 +18,7 @@ namespace Bearded.TD.Game
                 var clickedTile = state.Level.GetTile(input.MousePos);
                 if (clickedTile.IsValid)
                 {
-                    clickedTile.Info.TogglePassability();
+                    state.Geometry.SetPassability(clickedTile, !clickedTile.Info.IsPassable);
                 }
             }
         }
