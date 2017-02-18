@@ -16,6 +16,11 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnAdded();
 
+            foreach (var tile in OccupiedTiles)
+            {
+                Game.Navigator.AddSink(tile);
+            }
+
             Game.ListAs(this);
         }
 

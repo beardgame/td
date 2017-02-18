@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Tiles;
+﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.World
 {
@@ -22,10 +23,17 @@ namespace Bearded.TD.Game.World
                 ? TileInfo.Type.Floor
                 : TileInfo.Type.Wall);
 
-            UpdatePassability(tile);
+            updatePassability(tile);
         }
 
-        public void UpdatePassability(Tile<TileInfo> tile)
+        public void SetBuilding(Tile<TileInfo> tile, Building building)
+        {
+            if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
+            tile.Info.SetBuilding(building);
+            updatePassability(tile);
+        }
+
+        private void updatePassability(Tile<TileInfo> tile)
         {
             var info = tile.Info;
 

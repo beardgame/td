@@ -87,8 +87,6 @@ namespace Bearded.TD.Game
             return l;
         }
 
-
-
         public void Advance(TimeSpan elapsedTime)
         {
             Time += elapsedTime;

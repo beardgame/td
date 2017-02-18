@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
@@ -12,6 +14,7 @@ namespace Bearded.TD.Game.Buildings
 
         protected Position2 Position { get; private set; }
         protected int Health { get; private set; }
+        protected IEnumerable<Tile<TileInfo>> OccupiedTiles => blueprint.Footprint.OccupiedTiles(rootTile);
 
         protected Building(BuildingBlueprint blueprint, Tile<TileInfo> rootTile)
         {
@@ -27,22 +30,12 @@ namespace Bearded.TD.Game.Buildings
             base.OnAdded();
 
             Position = blueprint.Footprint.Center(Game.Level, rootTile);
-            foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
-            {
-                tile.Info.SetBuilding(this);
-                Game.Geometry.UpdatePassability(tile);
-                Game.Navigator.AddSink(tile);
-            }
+            OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, this));
         }
 
         protected override void OnDelete()
         {
-            foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
-            {
-                tile.Info.SetBuilding(null);
-                Game.Geometry.UpdatePassability(tile);
-                // TODO: remove sink
-            }
+            OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, null));
         }
     }
 }
