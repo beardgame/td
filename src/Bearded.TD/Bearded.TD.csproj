@@ -36,11 +36,14 @@
     <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\GameCamera.cs" />
+    <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\GameStateBuilder.cs" />
+    <Compile Include="Game\PlayerInput.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tilemap\Direction.cs" />

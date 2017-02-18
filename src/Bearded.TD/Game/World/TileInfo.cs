@@ -7,11 +7,13 @@ namespace Bearded.TD.Game.World
         private readonly Directions validDirections;
 
         public Directions OpenDirections { get; private set; }
+        public bool IsPassable { get; private set; }
 
         public TileInfo(Directions validDirections)
         {
             this.validDirections = validDirections;
             OpenDirections = validDirections;
+            IsPassable = true;
         }
 
         public void CloseTo(Direction direction)
@@ -24,5 +26,9 @@ namespace Bearded.TD.Game.World
             OpenDirections = OpenDirections.And(direction).Intersect(validDirections);
         }
 
+        public void TogglePassability()
+        {
+            IsPassable = !IsPassable;
+        }
     }
 }

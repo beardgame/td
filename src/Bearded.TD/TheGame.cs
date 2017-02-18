@@ -1,8 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Tilemap;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
@@ -41,12 +39,10 @@ namespace Bearded.TD
 
             InputManager.Initialize(Mouse);
 
-
             var meta = new GameMeta(logger);
 
-            const int levelRadius = 20;
-            gameState = new GameState(meta, new Level(new Tilemap<TileInfo>(levelRadius)));
-            var camera = new GameCamera(meta, levelRadius);
+            gameState = GameStateBuilder.Empty(meta);
+            var camera = new GameCamera(meta, gameState.Level.Tilemap.Radius);
             gameRunner = new GameRunner(gameState, camera);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, camera, renderContext.Geometries);

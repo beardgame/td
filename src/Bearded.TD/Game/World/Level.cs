@@ -1,10 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Tilemap;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Input;
-using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
@@ -53,14 +50,14 @@ namespace Bearded.TD.Game.World
         {
             var geo = geos.ConsoleBackground;
 
-            geo.Color = Color.Gray;
-
             const float w = HexagonDistanceX * 0.5f - 0.1f;
             const float h = HexagonDistanceY * 0.5f - 0.1f;
 
             foreach (var tile in Tilemap)
             {
-                var p = this.GetPosition(tile).NumericValue;
+                var p = GetPosition(tile).NumericValue;
+
+                geo.Color = Tilemap[tile].IsPassable ? Color.Gray : Color.DarkSlateGray;
 
                 geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
 
