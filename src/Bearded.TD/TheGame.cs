@@ -21,6 +21,8 @@ namespace Bearded.TD
         private ScreenLayer consoleLayer;
         private GameScreenLayer gameScreenLayer;
 
+        private bool isConsoleEnabled;
+
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
              GameWindowFlags.Default, DisplayDevice.Default,
@@ -59,12 +61,17 @@ namespace Bearded.TD
             {
                 Close();
             }
+            if (InputManager.IsKeyHit(Key.Tilde))
+            {
+                isConsoleEnabled = !isConsoleEnabled;
+            }
         }
 
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
-            renderContext.Compositor.RenderLayer(consoleLayer);
+            if (isConsoleEnabled)
+                renderContext.Compositor.RenderLayer(consoleLayer);
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
