@@ -29,9 +29,8 @@ namespace Bearded.TD.Game.Buildings
             Position = blueprint.Footprint.Center(Game.Level, rootTile);
             foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
             {
-                var info = tile.Info;
-                info.SetBuilding(this);
-                Game.Geometry.UpdatePassability(tile, info);
+                tile.Info.SetBuilding(this);
+                Game.Geometry.UpdatePassability(tile);
                 Game.Navigator.AddSink(tile);
             }
         }
@@ -40,9 +39,8 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
             {
-                var info = tile.Info;
-                info.SetBuilding(null);
-                Game.Geometry.UpdatePassability(tile, info);
+                tile.Info.SetBuilding(null);
+                Game.Geometry.UpdatePassability(tile);
                 // TODO: remove sink
             }
         }

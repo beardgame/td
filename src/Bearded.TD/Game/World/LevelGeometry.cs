@@ -21,12 +21,13 @@ namespace Bearded.TD.Game.World
             info.SetTileType(info.TileType == TileInfo.Type.Wall
                 ? TileInfo.Type.Floor
                 : TileInfo.Type.Wall);
+
+            UpdatePassability(tile);
         }
 
-        public void UpdatePassability(Tile<TileInfo> tile, TileInfo info = null)
+        public void UpdatePassability(Tile<TileInfo> tile)
         {
-            if (info == null)
-                info = tile.Info;
+            var info = tile.Info;
 
             foreach (var dir in Tiles.Tilemap.Directions)
             {
