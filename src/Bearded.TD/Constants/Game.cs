@@ -2,7 +2,7 @@
 
 namespace Bearded.TD
 {
-    static class Constants
+    static partial class Constants
     {
         public static class Game
         {

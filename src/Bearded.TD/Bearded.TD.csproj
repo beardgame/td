@@ -32,6 +32,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\Camera.cs" />
+    <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameMeta.cs" />
@@ -53,7 +55,6 @@
     <Compile Include="Rendering\ScreenLayer.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\UIScreenLayer.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />

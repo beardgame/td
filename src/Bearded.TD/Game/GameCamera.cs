@@ -7,8 +7,6 @@ namespace Bearded.TD.Game
 {
     class GameCamera
     {
-        private const float scrollSpeed = 8;
-
         private static readonly Dictionary<IAction, Vector2> scrollActions = new Dictionary<IAction, Vector2>
         {
             {KeyboardAction.FromKey(Key.Left).Or(GamePadAction.FromString("gamepad0:-x")), -Vector2.UnitX},
@@ -37,7 +35,7 @@ namespace Bearded.TD.Game
             foreach (KeyValuePair<IAction, Vector2> scrollAction in scrollActions)
             {
                 CameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
-                                  * scrollSpeed * scrollAction.Value;
+                                  * Constants.Camera.ScrollSpeed * scrollAction.Value;
             }
         }
     }
