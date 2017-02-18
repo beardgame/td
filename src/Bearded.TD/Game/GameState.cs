@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -19,9 +20,12 @@ namespace Bearded.TD.Game
 
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
+        public Level Level { get; }
 
-        public GameState(GameMeta meta) {
+        public GameState(GameMeta meta, Level level)
+        {
             Meta = meta;
+            Level = level;
         }
 
         public void Add(GameObject obj)

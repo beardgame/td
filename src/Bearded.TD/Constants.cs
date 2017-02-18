@@ -1,5 +1,4 @@
 ﻿using Bearded.Utilities.SpaceTime;
-using OpenTK;
 
 namespace Bearded.TD
 {
@@ -7,7 +6,7 @@ namespace Bearded.TD
     {
         public static class Game
         {
-            public static class Level
+            public static class World
             {
                 public const int Radius = 20;
 

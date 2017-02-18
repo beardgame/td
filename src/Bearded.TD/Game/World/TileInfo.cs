@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Game.Level
+﻿namespace Bearded.TD.Game.World
 {
     class TileInfo
     {

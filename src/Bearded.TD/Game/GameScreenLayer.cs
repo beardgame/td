@@ -20,8 +20,7 @@ namespace Bearded.TD.Game
 
         public override void Draw()
         {
-            geometries.ConsoleBackground.Color = Color.Red;
-            geometries.ConsoleBackground.DrawCircle(Vector2.Zero, .5f, true, 6);
+            state.Level.Draw(geometries);
 
             foreach (var obj in state.GameObjects)
             {
