@@ -84,6 +84,7 @@ namespace Bearded.TD.Game
 
         private void updateScrolling(float elapsedTime)
         {
+            cameraDistance -= InputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
             foreach (var zoomAction in zoomActions)
             {
                 cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
