@@ -22,9 +22,9 @@ namespace Bearded.TD.Game
             }
         }
 
-        public override Matrix4 GetViewMatrix()
+        public override Matrix4 ViewMatrix
         {
-            throw new System.NotImplementedException();
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering;
@@ -47,11 +46,14 @@ namespace Bearded.TD
             gameRunner = new GameRunner(gameState);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, renderContext.Geometries);
+            OnResize(EventArgs.Empty);
         }
 
         protected override void OnResize(EventArgs e)
         {
-
+            ViewportSize viewportSize = new ViewportSize(Width, Height);
+            consoleLayer.OnResize(viewportSize);
+            gameScreenLayer.OnResize(viewportSize);
         }
 
         protected override void OnUpdate(UpdateEventArgs e)

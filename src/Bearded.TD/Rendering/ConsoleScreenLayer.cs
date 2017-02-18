@@ -24,9 +24,22 @@ namespace Bearded.TD.Rendering
             { Logger.Severity.Trace, Color.SkyBlue },
         };
 
+        #if DEBUG
+        private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
+        {
+            Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning,
+            Logger.Severity.Info, Logger.Severity.Debug, Logger.Severity.Trace
+        };
+        #else
+        private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
+        {
+            Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning, Logger.Severity.Info
+        };
+        #endif
+
         private readonly Logger logger;
 
-        public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries)
+        public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
             this.logger = logger;
         }
@@ -34,7 +47,7 @@ namespace Bearded.TD.Rendering
         public override void Draw()
         {
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            Geometries.ConsoleBackground.DrawRectangle(-640, 0, 1280, consoleHeight);
+            Geometries.ConsoleBackground.DrawRectangle(0, 0, ViewportSize.Width, consoleHeight);
 
             var logEntries = logger.GetSafeRecentEntries();
 
@@ -43,11 +56,16 @@ namespace Bearded.TD.Rendering
             var maxVisible = Mathf.CeilToInt(consoleHeight / lineHeight);
             var start = Math.Max(0, logEntries.Count - maxVisible - 1);
 
-            for (int i = start; i < logEntries.Count; i++)
+            var y = consoleHeight - padding - lineHeight;
+            var i = logEntries.Count;
+
+            while (y >= -lineHeight && i > 0)
             {
-                var y = consoleHeight - padding - (logEntries.Count - i) * lineHeight;
+                var entry = logEntries[--i];
+                if (!visibleSeverities.Contains(entry.Severity)) continue;
                 Geometries.ConsoleFont.Color = colors[logEntries[i].Severity];
-                Geometries.ConsoleFont.DrawString(new Vector2(padding - 640, y), logEntries[i].Text);
+                Geometries.ConsoleFont.DrawString(new Vector2(padding, y), logEntries[i].Text);
+                y -= lineHeight;
             }
         }
     }
