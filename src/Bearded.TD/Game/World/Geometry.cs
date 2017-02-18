@@ -4,21 +4,25 @@ namespace Bearded.TD.Game.World
 {
     class Geometry
     {
-        private readonly Tilemap<TileInfo> tilemap;
+        public delegate void TilePassibilityChangeEventHandler(Tile<TileInfo> tile);
+        public event TilePassibilityChangeEventHandler TilePassabalityChanged;
+
+        public Tilemap<TileInfo> Tilemap { get; }
 
         public Geometry(Tilemap<TileInfo> tilemap)
         {
-            this.tilemap = tilemap;
+            Tilemap = tilemap;
         }
 
         public void SetPassability(Tile<TileInfo> tile, bool passable)
         {
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
-            var info = tilemap[tile];
+            var info = Tilemap[tile];
             if (info.IsPassable == passable) return;
 
             info.TogglePassability();
-            foreach (var dir in Tilemap.Tilemap.Directions)
+
+            foreach (var dir in Game.Tilemap.Tilemap.Directions)
             {
                 var neighbour = tile.Neighbour(dir);
                 if (!neighbour.IsValid) continue;
@@ -27,6 +31,8 @@ namespace Bearded.TD.Game.World
                 else
                     neighbour.Info.CloseTo(dir.Opposite());
             }
+
+            TilePassabalityChanged?.Invoke(tile);
         }
     }
 }

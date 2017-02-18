@@ -30,7 +30,7 @@ namespace Bearded.TD.Game
             Meta = meta;
             Level = level;
             Geometry = new Geometry(level.Tilemap);
-            Navigator = new MultipleSinkNavigationSystem(level.Tilemap);
+            Navigator = new MultipleSinkNavigationSystem(Geometry);
         }
 
         public void Add(GameObject obj)

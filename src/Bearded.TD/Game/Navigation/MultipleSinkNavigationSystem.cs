@@ -42,12 +42,14 @@ namespace Bearded.TD.Game.Navigation
     {
         private readonly Queue<FrontUpdate> updateFront = new Queue<FrontUpdate>();
 
+        private readonly Geometry geometry;
         private readonly Tilemap<TileInfo> tilemap;
         private readonly Tilemap<Directions> directions;
 
-        public MultipleSinkNavigationSystem(Tilemap<TileInfo> tilemap)
+        public MultipleSinkNavigationSystem(Geometry geometry)
         {
-            this.tilemap = tilemap;
+            this.geometry = geometry;
+            tilemap = geometry.Tilemap;
             directions = new Tilemap<Directions>(tilemap.Radius);
             foreach (var tile in directions)
                 directions[tile] = None;
