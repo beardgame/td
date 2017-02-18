@@ -54,7 +54,7 @@ namespace Bearded.TD
 
         protected override void OnResize(EventArgs e)
         {
-            ViewportSize viewportSize = new ViewportSize(Width, Height);
+            var viewportSize = new ViewportSize(Width, Height);
             consoleLayer.OnResize(viewportSize);
             gameScreenLayer.OnResize(viewportSize);
         }
