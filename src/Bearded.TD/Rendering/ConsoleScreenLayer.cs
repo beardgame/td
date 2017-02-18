@@ -51,6 +51,7 @@ namespace Bearded.TD.Rendering
 
             var logEntries = logger.GetSafeRecentEntries();
 
+            Geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
             Geometries.ConsoleFont.Height = fontSize;
 
             var maxVisible = Mathf.CeilToInt(consoleHeight / lineHeight);
