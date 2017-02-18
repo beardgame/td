@@ -42,19 +42,17 @@ namespace Bearded.TD.Game.Navigation
     {
         private readonly Queue<FrontUpdate> updateFront = new Queue<FrontUpdate>();
 
-        private readonly Geometry geometry;
+        private readonly LevelGeometry geometry;
         private readonly Tilemap<TileInfo> tilemap;
         private readonly Tilemap<Directions> directions;
 
-        public MultipleSinkNavigationSystem(Geometry geometry)
+        public MultipleSinkNavigationSystem(LevelGeometry geometry)
         {
             this.geometry = geometry;
             tilemap = geometry.Tilemap;
             directions = new Tilemap<Directions>(tilemap.Radius);
             foreach (var tile in directions)
                 directions[tile] = None;
-
-            AddSink(new Tile<TileInfo>(tilemap, 0, 0));
         }
 
         public void Update()

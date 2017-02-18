@@ -1,19 +1,30 @@
-﻿using Bearded.TD.Game.Tiles;
+﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.World
 {
     class TileInfo
     {
+        public enum Type : byte
+        {
+            Unknown = 0,
+            Floor = 1,
+            Wall = 2,
+        }
+
         private readonly Directions validDirections;
 
         public Directions OpenDirections { get; private set; }
-        public bool IsPassable { get; private set; }
+        public bool IsPassable => building == null && TileType == Type.Floor;
 
-        public TileInfo(Directions validDirections)
+        private Building building;
+        public Type TileType { get; private set; }
+
+        public TileInfo(Directions validDirections, Type tileType)
         {
             this.validDirections = validDirections;
             OpenDirections = validDirections;
-            IsPassable = true;
+            TileType = tileType;
         }
 
         public void CloseTo(Direction direction)
@@ -26,9 +37,14 @@ namespace Bearded.TD.Game.World
             OpenDirections = OpenDirections.And(direction).Intersect(validDirections);
         }
 
-        public void TogglePassability()
+        public void SetTileType(Type tileType)
         {
-            IsPassable = !IsPassable;
+            TileType = tileType;
+        }
+
+        public void SetBuilding(Building building)
+        {
+            this.building = building;
         }
     }
 }

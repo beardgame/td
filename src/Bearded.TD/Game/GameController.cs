@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities.SpaceTime;
+﻿using Bearded.TD.Game.World;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
@@ -18,7 +19,7 @@ namespace Bearded.TD.Game
                 var clickedTile = state.Level.GetTile(input.MousePos);
                 if (clickedTile.IsValid)
                 {
-                    state.Geometry.SetPassability(clickedTile, !clickedTile.Info.IsPassable);
+                    state.Geometry.ToggleTileType(clickedTile);
                 }
             }
         }

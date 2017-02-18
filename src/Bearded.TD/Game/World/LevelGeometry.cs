@@ -2,25 +2,31 @@
 
 namespace Bearded.TD.Game.World
 {
-    class Geometry
+    class LevelGeometry
     {
         public delegate void TilePassibilityChangeEventHandler(Tile<TileInfo> tile);
         public event TilePassibilityChangeEventHandler TilePassabalityChanged;
 
         public Tilemap<TileInfo> Tilemap { get; }
 
-        public Geometry(Tilemap<TileInfo> tilemap)
+        public LevelGeometry(Tilemap<TileInfo> tilemap)
         {
             Tilemap = tilemap;
         }
 
-        public void SetPassability(Tile<TileInfo> tile, bool passable)
+        public void ToggleTileType(Tile<TileInfo> tile)
         {
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
             var info = Tilemap[tile];
-            if (info.IsPassable == passable) return;
+            info.SetTileType(info.TileType == TileInfo.Type.Wall
+                ? TileInfo.Type.Floor
+                : TileInfo.Type.Wall);
+        }
 
-            info.TogglePassability();
+        public void UpdatePassability(Tile<TileInfo> tile, TileInfo info = null)
+        {
+            if (info == null)
+                info = tile.Info;
 
             foreach (var dir in Tiles.Tilemap.Directions)
             {

@@ -35,6 +35,9 @@
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Buildings\Base.cs" />
+    <Compile Include="Game\Buildings\Building.cs" />
+    <Compile Include="Game\Buildings\Footprint.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
@@ -45,7 +48,7 @@
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\PlayerInput.cs" />
-    <Compile Include="Game\World\Geometry.cs" />
+    <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tiles\Direction.cs" />
