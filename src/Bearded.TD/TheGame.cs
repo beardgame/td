@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering;
