@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bearded.TD.Game.Tilemap
+namespace Bearded.TD.Game.Tiles
 {
     enum Direction : byte
     {

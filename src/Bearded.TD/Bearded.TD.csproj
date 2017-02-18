@@ -48,11 +48,11 @@
     <Compile Include="Game\World\Geometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
-    <Compile Include="Game\Tilemap\Direction.cs" />
-    <Compile Include="Game\Tilemap\Extensions.cs" />
-    <Compile Include="Game\Tilemap\Step.cs" />
-    <Compile Include="Game\Tilemap\Tile.cs" />
-    <Compile Include="Game\Tilemap\Tilemap.cs" />
+    <Compile Include="Game\Tiles\Direction.cs" />
+    <Compile Include="Game\Tiles\Extensions.cs" />
+    <Compile Include="Game\Tiles\Step.cs" />
+    <Compile Include="Game\Tiles\Tile.cs" />
+    <Compile Include="Game\Tiles\Tilemap.cs" />
     <Compile Include="Rendering\ConsoleScreenLayer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />

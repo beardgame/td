@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
 
-namespace Bearded.TD.Game.Tilemap
+namespace Bearded.TD.Game.Tiles
 {
     struct Tile<TTileInfo> : IEquatable<Tile<TTileInfo>>
     {

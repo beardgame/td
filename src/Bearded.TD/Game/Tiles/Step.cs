@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Game.Tilemap
+﻿namespace Bearded.TD.Game.Tiles
 {
     struct Step
     {
@@ -7,8 +7,8 @@
 
         public Step(sbyte x, sbyte y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public Step(Direction direction)

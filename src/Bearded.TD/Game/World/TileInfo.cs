@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Tilemap;
+﻿using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.World
 {

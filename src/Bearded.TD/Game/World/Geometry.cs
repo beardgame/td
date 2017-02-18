@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Tilemap;
+﻿using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.World
 {
@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.World
 
             info.TogglePassability();
 
-            foreach (var dir in Game.Tilemap.Tilemap.Directions)
+            foreach (var dir in Tiles.Tilemap.Directions)
             {
                 var neighbour = tile.Neighbour(dir);
                 if (!neighbour.IsValid) continue;

@@ -4,7 +4,7 @@ using System.Linq;
 using Bearded.Utilities.Math;
 using OpenTK;
 
-namespace Bearded.TD.Game.Tilemap
+namespace Bearded.TD.Game.Tiles
 {
     static class Extensions
     {

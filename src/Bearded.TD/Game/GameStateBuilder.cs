@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Bearded.TD.Game.Tilemap;
+using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game
@@ -24,7 +24,7 @@ namespace Bearded.TD.Game
 
         private static Directions getValidDirections(Tile<TileInfo> tile)
         {
-            return Tilemap.Tilemap.Directions
+            return Tiles.Tilemap.Directions
                 .Where((d) => tile.Neighbour(d).IsValid)
                 .Aggregate(Directions.None, (ds, d) => ds.And(d));
         }

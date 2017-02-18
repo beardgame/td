@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
-using Bearded.TD.Game.Tilemap;
+using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using static Bearded.TD.Constants.Game.World;
@@ -74,7 +74,7 @@ namespace Bearded.TD.Game.Navigation
 
             if (info.IsNone)
             {
-                foreach (var direction in Tilemap.Tilemap.Directions)
+                foreach (var direction in Tilemap.Directions)
                 {
                     var neighbour = tile.Neighbour(direction);
                     if (!neighbour.IsValid)
@@ -89,7 +89,7 @@ namespace Bearded.TD.Game.Navigation
             {
                 var newDistance = info.Distance + 1;
 
-                foreach (var direction in Tilemap.Tilemap.Directions)
+                foreach (var direction in Tilemap.Directions)
                 {
                     var neighbour = tile.Neighbour(direction);
                     if (!neighbour.IsValid)

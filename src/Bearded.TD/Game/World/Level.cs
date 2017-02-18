@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Tilemap;
+using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
