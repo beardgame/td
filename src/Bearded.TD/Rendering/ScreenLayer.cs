@@ -5,9 +5,9 @@ namespace Bearded.TD.Rendering
 {
     abstract class ScreenLayer
     {
-        private const float fovy = Mathf.PiOver4;
+        private const float fovy = Mathf.PiOver2;
         private const float zNear = .1f;
-        private const float zFar = 256f;
+        private const float zFar = 1024f;
         private const float aspectRatio = 16f / 9f;
 
         public abstract void Draw();

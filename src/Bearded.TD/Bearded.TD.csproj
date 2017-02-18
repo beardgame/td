@@ -37,6 +37,7 @@
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Rendering\ConsoleScreenLayer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />

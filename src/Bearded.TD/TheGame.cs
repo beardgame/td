@@ -18,6 +18,7 @@ namespace Bearded.TD
 
         private GameState gameState;
         private GameRunner gameRunner;
+        private ScreenLayer consoleLayer;
         private GameScreenLayer gameScreenLayer;
 
         public TheGame(Logger logger)
@@ -41,6 +42,7 @@ namespace Bearded.TD
 
             gameState = new GameState(meta);
             gameRunner = new GameRunner(gameState);
+            consoleLayer = new ConsoleScreenLayer(renderContext.Geometries);
             gameScreenLayer = new GameScreenLayer(gameState, renderContext.Geometries);
         }
 
@@ -62,7 +64,7 @@ namespace Bearded.TD
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
-
+            renderContext.Compositor.RenderLayer(consoleLayer);
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
