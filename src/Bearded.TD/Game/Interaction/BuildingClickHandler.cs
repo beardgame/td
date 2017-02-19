@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Interaction
         private readonly BuildingBlueprint blueprint;
         private BuildingGhost ghost;
 
-        public TileSelection Selection => TileSelection.FromFootprint(blueprint.Footprint);
+        public TileSelection Selection => blueprint.FootprintSelector;
 
         public BuildingClickHandler(BuildingBlueprint blueprint)
         {

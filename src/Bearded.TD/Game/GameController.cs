@@ -10,9 +10,9 @@ namespace Bearded.TD.Game
     class GameController
     {
         private static readonly IClickHandler[] clickHandlers = {
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.Single, 100)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.TriangleDown, 300)), // 2
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.TriangleUp, 300)), // 3
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300)), // 2
+            null, // 3
             null, // 4
             null, // 5
             null, // 6
