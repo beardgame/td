@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.World;
 using OpenTK;
 
 namespace Bearded.TD.Game.Tiles
@@ -55,6 +56,20 @@ namespace Bearded.TD.Game.Tiles
                     .Where(d => me.Neighbour(d).IsValid)
                     .Aggregate(Directions.None, (ds, d) => ds.And(d));
             }
+        }
+
+        public int DistanceTo(Tile<TileInfo> other)
+        {
+            if (Equals(other)) return 0;
+
+            var diffHorizontal = other.X - X; // -
+            var diffVertical = other.Y - Y; // \
+
+            // Combination of \ and - can be combined into /
+            var reduction = 0;
+            if (Math.Sign(diffHorizontal) != Math.Sign(diffVertical))
+                reduction = Math.Min(Math.Abs(diffHorizontal), Math.Abs(diffVertical));
+            return Math.Abs(diffHorizontal) + Math.Abs(diffVertical) - reduction;
         }
 
         public bool Equals(Tile<TTileInfo> other) =>

@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Buildings
 
         protected Position2 Position { get; private set; }
         protected int Health { get; private set; }
-        protected IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
+        public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
         protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint)
         {
@@ -23,6 +23,12 @@ namespace Bearded.TD.Game.Buildings
             this.blueprint = blueprint;
             this.footprint = footprint;
             Health = blueprint.MaxHealth;
+        }
+
+        public void Damage(int damage)
+        {
+            Health -= damage;
+            OnDamaged();
         }
 
         protected override void OnAdded()
@@ -37,5 +43,8 @@ namespace Bearded.TD.Game.Buildings
         {
             OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, null));
         }
+
+        protected virtual void OnDamaged()
+        { }
     }
 }

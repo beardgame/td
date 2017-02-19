@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.UI
             footprint.OccupiedTiles.ForEach((tile) =>
             {
                 if (tile.IsValid && tile.Info.IsPassable)
-                    game.Add(new EnemyUnit(new UnitBlueprint(100, new Speed(2)), tile));
+                    game.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2)), tile));
             });
         }
 

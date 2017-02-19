@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Units
 {
     abstract class GameUnit : GameObject
     {
-        private UnitBlueprint blueprint;
+        protected UnitBlueprint Blueprint { get; }
         private Direction currentMovementDir;
         private Unit movementProgress;
 
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Units
         {
             if (!currentTile.IsValid) throw new ArgumentOutOfRangeException();
 
-            this.blueprint = blueprint;
+            this.Blueprint = blueprint;
             CurrentTile = currentTile;
             currentMovementDir = Direction.Unknown;
             health = blueprint.Health;
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            var movementLeft = elapsedTime * blueprint.Speed;
+            var movementLeft = elapsedTime * Blueprint.Speed;
             while (movementLeft > Unit.Zero)
             {
                 if (currentMovementDir == Direction.Unknown)
