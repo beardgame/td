@@ -30,7 +30,8 @@ namespace Bearded.TD.Game.Generation
             var timer = Stopwatch.StartNew();
             var gen = new Generator(tilemap, logger);
             logger.Trace.Log("Filling tilemap");
-            gen.FillAll(0.95);
+            gen.FillAll();
+            gen.ClearCenter(tilemap.Radius - 1, 0.1);
             logger.Trace.Log("Clearing tilemap center and corners");
             gen.ClearCenter(2);
             gen.ClearCenter(3, 0.5);
@@ -41,7 +42,10 @@ namespace Bearded.TD.Game.Generation
             logger.Trace.Log("Generating random intersections");
             gen.GenerateRandomIntersections();
             logger.Trace.Log("Connecting random intersections");
-            gen.ConnectRandomIntersections();
+            gen.ConnectAllIntersections();
+            gen.ConnectRandomIntersections(0.2);
+            gen.ConnectCornersToGraph();
+            logger.Trace.Log("Digging tunnels");
             gen.ClearTunnels();
             logger.Debug.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
         }
@@ -70,25 +74,48 @@ namespace Bearded.TD.Game.Generation
             {
                 var goalPosition = level.GetPosition(goal);
                 var tile = start;
+                var currentDirection = (goalPosition - level.GetPosition(tile)).Direction;
                 open(tile);
                 while (tile != goal)
                 {
                     var vectorToGoal = goalPosition - level.GetPosition(tile);
                     var directionToGoal = vectorToGoal.Direction;
 
-                    var directionToStep = directionToGoal.Hexagonal();
-                    tile = tile.Neighbour(directionToStep);
+                    var distance = vectorToGoal.LengthSquared;
+                    var variationFactor = (1 - 1 / (distance.NumericValue * 0.2f + 1));
+                    var variation = variationFactor * 60;
+
+                    currentDirection += StaticRandom.Float(-variation, variation).Degrees();
+                    currentDirection = currentDirection.TurnedTowards(directionToGoal, 0.3f / variationFactor);
+
+                    var directionToStep = currentDirection.Hexagonal();
+
+                    var newTile = tile.Neighbour(directionToStep);
+                    if (!newTile.IsValid)
+                    {
+                        newTile = tile.Neighbour(directionToGoal.Hexagonal());
+                        currentDirection = directionToGoal;
+                    }
+
+                    tile = newTile;
 
                     open(tile);
+                    spray(tile.Neighbours, open, 0.1);
                 }
+            }
+
+            public void ConnectCornersToGraph()
+            {
+                corners.Select(level.GetPosition).ForEach(p => connectVertexToGraph(p, intersections));
             }
 
             public void GenerateRandomIntersections()
             {
                 intersections.Add(level.GetPosition(center));
-                intersections.AddRange(corners.Select(level.GetPosition));
 
-                generateIntersectionsOnCircle(5, tilemap.Radius * 0.5f);
+                generateIntersectionsOnCircle(2, tilemap.Radius * 0.2f);
+                generateIntersectionsOnCircle(3, tilemap.Radius * 0.5f);
+                generateIntersectionsOnCircle(7, tilemap.Radius * 0.8f);
             }
 
             private void generateIntersectionsOnCircle(int count, float radius)
@@ -98,42 +125,72 @@ namespace Bearded.TD.Game.Generation
 
                 var startAngle = Direction2.FromDegrees(StaticRandom.Float(360));
 
-                for (int i = 0; i < count; i++)
+                var angleVariance = angleBetweenIntersections.Radians * 0.3f;
+
+                for (var i = 0; i < count; i++)
                 {
-                    var angle = startAngle + angleBetweenIntersections * i;
-                    var point = new Position2() + angle.Vector * levelRadius;
+                    var angle = startAngle + angleBetweenIntersections * i
+                                + StaticRandom.Float(-angleVariance, angleVariance).Radians();
+                    var point = new Position2() + angle.Vector
+                                * (levelRadius * StaticRandom.Float(0.8f, 1));
                     intersections.Add(point);
                 }
             }
 
-            public void ConnectRandomIntersections()
+            public void ConnectRandomIntersections(double fraction)
+            {
+                foreach (var v1 in intersections)
+                {
+                    foreach (var v2 in intersections)
+                    {
+                        if (!StaticRandom.Bool(fraction))
+                            continue;
+
+                        if (isValidArc(v1, v2))
+                            addTunnel(v1, v2);
+                    }
+                }
+            }
+
+            public void ConnectAllIntersections()
             {
                 var graph = new List<Position2>();
 
-                var verticesToAdd = intersections;
+                var verticesToAdd = intersections.Shuffled();
 
                 graph.Add(verticesToAdd.First());
 
                 foreach (var vertex in verticesToAdd.Skip(1))
                 {
-                    var verticesByDistance = graph.OrderBy(v => (v - vertex).LengthSquared);
-                    var connectTo = verticesByDistance
-                        .Select(v => isValidArc(vertex, v) ? (Position2?) v : null)
-                        .FirstOrDefault(v => v.HasValue);
-                    if (connectTo == null)
-                    {
-                        logger.Debug.Log("Could not find possible non-intersecting arc. Selecting closest.");
-                        connectTo = verticesByDistance.First();
-                    }
-                    tunnels.Add(Tuple.Create(vertex, connectTo.Value));
+                    connectVertexToGraph(vertex, graph);
+                    graph.Add(vertex);
                 }
             }
+
+            private void connectVertexToGraph(Position2 vertex, List<Position2> graph)
+            {
+                var verticesByDistance = graph.OrderBy(v => (v - vertex).LengthSquared);
+                var connectTo = verticesByDistance
+                    .Select(v => isValidArc(vertex, v) ? (Position2?) v : null)
+                    .FirstOrDefault(v => v.HasValue);
+                if (connectTo == null)
+                {
+                    logger.Debug.Log("Could not find possible non-intersecting arc. Selecting closest.");
+                    connectTo = verticesByDistance.First();
+                }
+                addTunnel(vertex, connectTo.Value);
+            }
+
+            private void addTunnel(Position2 v1, Position2 v2) => tunnels.Add(Tuple.Create(v1, v2));
 
             private bool isValidArc(Position2 v1, Position2 v2)
             {
                 var line = Line.Between(v1.NumericValue, v2.NumericValue);
-                return tunnels.All(a => !Line.Between(a.Item1.NumericValue, a.Item2.NumericValue)
-                    .IntersectsAsSegments(line));
+                return tunnels.All(t =>
+                    (t.Item1 != v2 || t.Item2 != v1) &&
+                    !Line.Between(t.Item1.NumericValue, t.Item2.NumericValue)
+                        .IntersectsAsSegments(line)
+                );
             }
 
             public void FillAll(double fraction = 1)

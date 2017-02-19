@@ -25,31 +25,25 @@ namespace Bearded.TD.Utilities
             var c = other.Start;
             var d = other.Direction;
 
-            var denominator = c.Y * a.X + c.X * a.Y;
+            var denominator = b.Y * d.X - b.X * d.Y;
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (denominator == 0)
                 return false;
 
-            var numerator = (d.X - b.Y) * a.Y + (b.Y - d.Y) * a.X;
+            var xDif = a.X - c.X;
+            var yDif = c.Y - a.Y;
 
-            var otherF = numerator / denominator;
+            var thisNominator = d.Y * xDif + d.X * yDif;
+            var thisF = thisNominator / denominator;
 
-            if (otherF <= 0 || otherF >= 1)
+            if (thisF <= 0 || thisF >= 1)
                 return false;
 
-            float thisF;
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (a.X == 0)
-            {
-                thisF = (c.Y * otherF + d.Y - b.Y) / a.Y;
-            }
-            else
-            {
-                thisF = (c.X * otherF + d.X - b.X) / a.X;
-            }
+            var otherNominator = b.Y * xDif + b.X * yDif;
+            var otherF = otherNominator / denominator;
 
-            return thisF > 0 && thisF < 1;
+            return otherF > 0 && otherF < 1;
         }
     }
 }
