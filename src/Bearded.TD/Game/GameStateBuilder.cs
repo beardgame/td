@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.Utilities.SpaceTime;
@@ -13,11 +12,7 @@ namespace Bearded.TD.Game
             var tilemap = new Tilemap<TileInfo>(Constants.Game.World.Radius);
             foreach (var tile in tilemap)
             {
-                tilemap[tile] = new TileInfo(
-                    tile.Radius < tilemap.Radius
-                        ? Directions.All
-                        : getValidDirections(tile),
-                    TileInfo.Type.Floor);
+                tilemap[tile] = new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Floor);
             }
 
             var gameState = new GameState(meta, new Level(tilemap));
@@ -26,11 +21,24 @@ namespace Bearded.TD.Game
             return gameState;
         }
 
-        private static Directions getValidDirections(Tile<TileInfo> tile)
+        public static GameState Generate(GameMeta meta, ITilemapGenerator generator)
         {
-            return Tiles.Tilemap.Directions
-                .Where((d) => tile.Neighbour(d).IsValid)
-                .Aggregate(Directions.None, (ds, d) => ds.And(d));
+            var tilemap = new Tilemap<TileInfo>(Constants.Game.World.Radius);
+            foreach (var tile in tilemap)
+            {
+                tilemap[tile] = new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Floor);
+            }
+            generator.Fill(tilemap);
+
+            var gameState = new GameState(meta, new Level(tilemap));
+            gameState.Add(new Base(new Tile<TileInfo>(tilemap, 0, 0)));
+
+            return gameState;
         }
+    }
+
+    interface ITilemapGenerator
+    {
+        void Fill(Tilemap<TileInfo> tilemap);
     }
 }
