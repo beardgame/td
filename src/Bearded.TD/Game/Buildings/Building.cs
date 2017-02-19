@@ -63,7 +63,7 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             foreach (var component in Components)
-                component.Update(geometries);
+                component.Draw(geometries);
         }
     }
 }
