@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Constants.Game.World;
 
-namespace Bearded.TD.Game.Buildings
+namespace Bearded.TD.Game.Tiles
 {
     sealed class Footprint
     {
@@ -24,7 +22,7 @@ namespace Bearded.TD.Game.Buildings
         public static Footprint TriangleUp = new Footprint(new []
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.UpRight),
-        }, .5f * new Difference2(HexagonWidth, HexagonSide));
+        }, .5f * new Difference2(Constants.Game.World.HexagonWidth, Constants.Game.World.HexagonSide));
 
         /*
            X #
@@ -33,7 +31,7 @@ namespace Bearded.TD.Game.Buildings
         public static Footprint TriangleDown = new Footprint(new []
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.DownRight),
-        }, .5f * new Difference2(HexagonWidth, -HexagonSide));
+        }, .5f * new Difference2(Constants.Game.World.HexagonWidth, -Constants.Game.World.HexagonSide));
 
         /*
            # #

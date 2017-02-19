@@ -1,8 +1,7 @@
 ﻿using Bearded.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game.Interaction
 {
     struct PlayerInput
     {
