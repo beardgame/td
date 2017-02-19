@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Tiles
         }
 
         public IEnumerable<Tile<TileInfo>> OccupiedTiles(Tile<TileInfo> rootTile)
-            => tileOffsets.Select(rootTile.Neighbour);
+            => tileOffsets.Select(rootTile.Offset);
 
         public Position2 Center(Level level, Tile<TileInfo> rootTile)
         {

@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.UI
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
             game.State.Level.Draw(geometries);
-            game.State.Navigator.DrawDebug(geometries, game.State.Level);
+            //game.State.Navigator.DrawDebug(geometries, game.State.Level);
 
             foreach (var obj in game.State.GameObjects)
             {
