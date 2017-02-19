@@ -54,7 +54,7 @@ namespace Bearded.TD
 
         protected override void OnResize(EventArgs e)
         {
-            screenManager.OnResize(new ViewportSize(Width, Height));
+            screenManager.OnResize(new ViewportSize(Size.Width, Size.Height));
         }
 
         protected override void OnUpdate(UpdateEventArgs e)
