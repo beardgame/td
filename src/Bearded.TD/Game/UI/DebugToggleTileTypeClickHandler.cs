@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Tiles;
+﻿using System.Linq;
+using Bearded.TD.Game.Tiles;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.UI
@@ -12,7 +13,9 @@ namespace Bearded.TD.Game.UI
 
         public void HandleClick(GameState game, PositionedFootprint footprint)
         {
-            footprint.OccupiedTiles.ForEach((tile) => game.Geometry.ToggleTileType(tile));
+            footprint.OccupiedTiles
+                .Where(t => t.IsValid)
+                .ForEach(tile => game.Geometry.ToggleTileType(tile));
         }
 
         public void Enable(GameState game)
