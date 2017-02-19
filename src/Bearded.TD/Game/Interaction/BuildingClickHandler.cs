@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game.Interaction
 {
@@ -10,24 +9,23 @@ namespace Bearded.TD.Game.Interaction
         private readonly BuildingBlueprint blueprint;
         private BuildingGhost ghost;
 
-        public Footprint Footprint => blueprint.Footprint;
+        public TileSelection Selection => blueprint.FootprintSelector;
 
         public BuildingClickHandler(BuildingBlueprint blueprint)
         {
             this.blueprint = blueprint;
         }
 
-        public void HandleHover(GameState game, Tile<TileInfo> rootTile)
+        public void HandleHover(GameState game, PositionedFootprint footprint)
         {
-            ghost.SetRootTile(rootTile);
+            ghost.SetFootprint(footprint);
         }
 
-        public void HandleClick(GameState game, Tile<TileInfo> rootTile)
+        public void HandleClick(GameState game, PositionedFootprint footprint)
         {
-            if (this.OccupiedTiles(rootTile).Any(t => !t.IsValid || !t.Info.IsPassable))
-                return;
+            if (footprint.OccupiedTiles.Any((tile) => !tile.IsValid || !tile.Info.IsPassable)) return;
 
-            game.Add(new PlayerBuilding(blueprint, rootTile));
+            game.Add(new PlayerBuilding(blueprint, footprint));
         }
 
         public void Enable(GameState game)

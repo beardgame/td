@@ -30,6 +30,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.2-beta2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\Camera.cs" />
@@ -44,20 +45,23 @@
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
-    <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Game\Generation\DefaultTilemapGenerator.cs" />
     <Compile Include="Game\Generation\ITilemapGenerator.cs" />
     <Compile Include="Game\Interaction\BuildingClickHandler.cs" />
-    <Compile Include="Game\Interaction\ClickHandlerExtensions.cs" />
     <Compile Include="Game\Interaction\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\Interaction\DebugToggleTileTypeClickHandler.cs" />
     <Compile Include="Game\Interaction\IClickHandler.cs" />
     <Compile Include="Game\Interaction\PlayerInput.cs" />
+    <Compile Include="Game\GameInstance.cs" />
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
+    <Compile Include="Game\Tiles\PositionedFootprint.cs" />
+    <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\BuildingScreenLayer.cs" />
+    <Compile Include="Game\UI\GameScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />
@@ -69,14 +73,15 @@
     <Compile Include="Game\Tiles\Step.cs" />
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
-    <Compile Include="Rendering\ConsoleScreenLayer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />
-    <Compile Include="Rendering\ScreenLayer.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
-    <Compile Include="Rendering\UIScreenLayer.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
+    <Compile Include="Screens\ConsoleScreenLayer.cs" />
+    <Compile Include="Screens\ScreenLayer.cs" />
+    <Compile Include="Screens\ScreenManager.cs" />
+    <Compile Include="Screens\UIScreenLayer.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />

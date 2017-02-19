@@ -69,5 +69,10 @@ namespace Bearded.TD.Game.Tiles
         {
             return level.GetTile(position + rootTileOffset);
         }
+
+        public PositionedFootprint Positioned(Level level, Position2 position)
+        {
+            return new PositionedFootprint(level, this, RootTileClosestToWorldPosition(level, position));
+        }
     }
 }

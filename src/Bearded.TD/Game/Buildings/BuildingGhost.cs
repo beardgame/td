@@ -1,6 +1,5 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -9,16 +8,16 @@ namespace Bearded.TD.Game.Buildings
     class BuildingGhost : GameObject
     {
         private readonly BuildingBlueprint blueprint;
-        private Tile<TileInfo> rootTile;
+        private PositionedFootprint footprint;
 
         public BuildingGhost(BuildingBlueprint blueprint)
         {
             this.blueprint = blueprint;
         }
 
-        public void SetRootTile(Tile<TileInfo> tile)
+        public void SetFootprint(PositionedFootprint footprint)
         {
-            rootTile = tile;
+            this.footprint = footprint;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -28,12 +27,12 @@ namespace Bearded.TD.Game.Buildings
         {
             var geo = geometries.ConsoleBackground;
 
-            foreach (var tile in blueprint.Footprint.OccupiedTiles(rootTile))
+            foreach (var tile in footprint.OccupiedTiles)
             {
                 if (!tile.IsValid) continue;
 
                 geo.Color = tile.Info.IsPassable ? Color.Green : Color.Red;
-                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, .1f);
+                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, .2f);
             }
         }
     }

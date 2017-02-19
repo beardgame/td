@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Interaction;
 using Bearded.TD.Game.Tiles;
 using Bearded.Utilities.Input;
-using Bearded.Utilities.SpaceTime;
 using OpenTK.Input;
 
 namespace Bearded.TD.Game
@@ -10,9 +9,9 @@ namespace Bearded.TD.Game
     class GameController
     {
         private static readonly IClickHandler[] clickHandlers = {
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.Single, 100)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.TriangleDown, 300)), // 2
-            new BuildingClickHandler(new BuildingBlueprint(Footprint.TriangleUp, 300)), // 3
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300)), // 2
+            null, // 3
             null, // 4
             null, // 5
             null, // 6
@@ -28,46 +27,44 @@ namespace Bearded.TD.Game
             Key.Number6, Key.Number7, Key.Number8, Key.Number9, Key.Number0
         };
 
-        private readonly GameState game;
+        private readonly GameInstance game;
 
-        private int activeClickHandler = -1;
-
-        public GameController(GameState game)
+        public GameController(GameInstance game)
         {
             this.game = game;
         }
 
-        public void Update(TimeSpan elapsedTime, PlayerInput input)
+        public void Update(PlayerInput input)
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
                 if (clickHandlers[i] == null) continue;
                 if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
-                if (i == activeClickHandler)
+                if (i == game.SelectedClickHandler)
                 {
-                    clickHandlers[i].Disable(game);
-                    activeClickHandler = -1;
-                    game.Meta.Logger.Debug.Log("Disabled click handler.");
+                    clickHandlers[i].Disable(game.State);
+                    game.SelectedClickHandler = -1;
+                    game.State.Meta.Logger.Debug.Log("Disabled click handler.");
                 }
                 else
                 {
-                    if (activeClickHandler >= 0)
-                        clickHandlers[activeClickHandler].Disable(game);
-                    clickHandlers[i].Enable(game);
-                    activeClickHandler = i;
-                    game.Meta.Logger.Debug.Log("Enabled click handler {0}.", i + 1);
+                    if (game.SelectedClickHandler >= 0)
+                        clickHandlers[game.SelectedClickHandler].Disable(game.State);
+                    clickHandlers[i].Enable(game.State);
+                    game.SelectedClickHandler = i;
+                    game.State.Meta.Logger.Debug.Log("Enabled click handler {0}.", i + 1);
                 }
                 break;
             }
 
-            if (activeClickHandler >= 0)
+            if (game.SelectedClickHandler >= 0)
             {
-                var clickHandler = clickHandlers[activeClickHandler];
-                var tile = clickHandler.Footprint.RootTileClosestToWorldPosition(game.Level, input.MousePos);
-                clickHandler.HandleHover(game, tile);
+                var clickHandler = clickHandlers[game.SelectedClickHandler];
+                var footprint = clickHandler.Selection.GetPositionedFootprint(game.State.Level, input.MousePos);
+                clickHandler.HandleHover(game.State, footprint);
                 if (input.ClickAction.Hit)
                 {
-                    clickHandler.HandleClick(game, tile);
+                    clickHandler.HandleClick(game.State, footprint);
                 }
             }
         }

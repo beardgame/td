@@ -5,10 +5,10 @@ namespace Bearded.TD.Game.Interaction
 {
     interface IClickHandler
     {
-        Footprint Footprint { get; }
+        TileSelection Selection { get; }
 
-        void HandleHover(GameState game, Tile<TileInfo> rootTile);
-        void HandleClick(GameState game, Tile<TileInfo> rootTile);
+        void HandleHover(GameState game, PositionedFootprint footprint);
+        void HandleClick(GameState game, PositionedFootprint footprint);
 
         void Enable(GameState game);
         void Disable(GameState game);

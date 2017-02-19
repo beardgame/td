@@ -1,18 +1,19 @@
 ﻿using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Interaction
 {
     class DebugToggleTileTypeClickHandler : IClickHandler
     {
-        public Footprint Footprint => Footprint.Single;
+        public TileSelection Selection => TileSelection.Single;
 
-        public void HandleHover(GameState game, Tile<TileInfo> rootTile)
+        public void HandleHover(GameState game, PositionedFootprint footprint)
         { }
 
-        public void HandleClick(GameState game, Tile<TileInfo> rootTile)
+        public void HandleClick(GameState game, PositionedFootprint footprint)
         {
-            game.Geometry.ToggleTileType(rootTile);
+            footprint.OccupiedTiles.ForEach((tile) => game.Geometry.ToggleTileType(tile));
         }
 
         public void Enable(GameState game)
