@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Tiles
 {
@@ -68,36 +69,41 @@ namespace Bearded.TD.Game.Tiles
 
         public bool IsValidTile(Tile<TTileInfo> tile) => IsValidTile(tile.X, tile.Y);
 
-        public IEnumerable<Tile<TTileInfo>> TilesSpiralOutward
+        public IEnumerable<Tile<TTileInfo>> SpiralCenteredAt(Tile<TTileInfo> center, int radius)
+            => spiralTiles(center.X, center.Y, radius).Where(t => t.IsValid);
+
+        public IEnumerable<Tile<TTileInfo>> TilesSpiralOutward => spiralTiles(0, 0, Radius);
+
+        private IEnumerable<Tile<TTileInfo>> spiralTiles(int centerX, int centerY, int radius)
+            => spiral(centerX, centerY, radius).Select(xy => new Tile<TTileInfo>(this, xy.X, xy.Y));
+
+        private IEnumerable<XY> spiral(int centerX, int centerY, int radius)
         {
-            get
+            var x = 0;
+            var y = 0;
+
+            yield return new XY(centerX, centerY);
+
+            // for each circle
+            for (var r = 0; r < radius; r++)
             {
-                var x = 0;
-                var y = 0;
+                y--;
 
-                yield return new Tile<TTileInfo>(this, 0, 0);
-
-                // for each circle
-                for (var r = 0; r < Radius; r++)
+                // for each edge
+                for (var d = 1; d <= 6; d++)
                 {
-                    y--;
+                    var step = ((Direction)d).Step();
 
-                    // for each edge
-                    for (var d = 1; d <= 6; d++)
+                    // for each tile
+                    for (var t = 0; t <= r; t++)
                     {
-                        var step = ((Direction)d).Step();
+                        yield return new XY(centerX + x, centerY + y);
 
-                        // for each tile
-                        for (var t = 0; t <= r; t++)
-                        {
-                            yield return new Tile<TTileInfo>(this, x, y);
-
-                            x += step.X;
-                            y += step.Y;
-                        }
+                        x += step.X;
+                        y += step.Y;
                     }
-
                 }
+
             }
         }
 

@@ -74,6 +74,7 @@
     <Compile Include="Utilities\Console\Commands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
+    <Compile Include="Utilities\XY.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config">

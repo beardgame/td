@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.World
 {
@@ -13,6 +14,12 @@ namespace Bearded.TD.Game.World
         public LevelGeometry(Tilemap<TileInfo> tilemap)
         {
             Tilemap = tilemap;
+            initialise();
+        }
+
+        private void initialise()
+        {
+            Tilemap.ForEach(updatePassability);
         }
 
         public void ToggleTileType(Tile<TileInfo> tile)

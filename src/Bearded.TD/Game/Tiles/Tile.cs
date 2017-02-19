@@ -30,6 +30,33 @@ namespace Bearded.TD.Game.Tiles
 
         public IEnumerable<Tile<TTileInfo>> Neighbours => this.PossibleNeighbours().Where(t => t.IsValid);
 
+        public IEnumerable<Direction> NeighbourDirections
+        {
+            get
+            {
+                if (tilemap == null)
+                    return Enumerable.Empty<Direction>();
+                if (Radius < tilemap.Radius)
+                    return Tilemap.Directions;
+                var me = this;
+                return Tilemap.Directions.Where(d => me.Neighbour(d).IsValid);
+            }
+        }
+        public Directions NeigbourDirectionsFlags
+        {
+            get
+            {
+                if (tilemap == null)
+                    return Directions.None;
+                if (Radius < tilemap.Radius)
+                    return Directions.All;
+                var me = this;
+                return Tilemap.Directions
+                    .Where(d => me.Neighbour(d).IsValid)
+                    .Aggregate(Directions.None, (ds, d) => ds.And(d));
+            }
+        }
+
         public bool Equals(Tile<TTileInfo> other) =>
             X == other.X &&
             Y == other.Y &&
