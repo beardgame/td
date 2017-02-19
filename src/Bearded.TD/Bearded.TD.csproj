@@ -67,6 +67,7 @@
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />
+    <Compile Include="Game\Units\UnitSource.cs" />
     <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
