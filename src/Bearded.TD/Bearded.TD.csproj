@@ -48,7 +48,6 @@
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Game\Interaction\BuildingClickHandler.cs" />
-    <Compile Include="Game\Interaction\ClickHandlerExtensions.cs" />
     <Compile Include="Game\Interaction\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\Interaction\DebugToggleTileTypeClickHandler.cs" />
     <Compile Include="Game\Interaction\IClickHandler.cs" />
@@ -56,6 +55,8 @@
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
+    <Compile Include="Game\Tiles\PositionedFootprint.cs" />
+    <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />

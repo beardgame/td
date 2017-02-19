@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
@@ -20,7 +21,7 @@ namespace Bearded.TD.Game
             }
 
             var gameState = new GameState(meta, new Level(tilemap));
-            gameState.Add(new Base(new Tile<TileInfo>(tilemap, 0, 0)));
+            gameState.Add(new Base(Footprint.CircleSeven.Positioned(gameState.Level, new Position2())));
 
             return gameState;
         }

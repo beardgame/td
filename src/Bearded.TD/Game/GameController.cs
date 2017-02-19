@@ -62,11 +62,11 @@ namespace Bearded.TD.Game
             if (activeClickHandler >= 0)
             {
                 var clickHandler = clickHandlers[activeClickHandler];
-                var tile = clickHandler.Footprint.RootTileClosestToWorldPosition(game.Level, input.MousePos);
-                clickHandler.HandleHover(game, tile);
+                var footprint = clickHandler.Selection.GetPositionedFootprint(game.Level, input.MousePos);
+                clickHandler.HandleHover(game, footprint);
                 if (input.ClickAction.Hit)
                 {
-                    clickHandler.HandleClick(game, tile);
+                    clickHandler.HandleClick(game, footprint);
                 }
             }
         }
