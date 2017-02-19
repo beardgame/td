@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
             generator.Fill(tilemap);
 
             var gameState = new GameState(meta, new Level(tilemap));
-            gameState.Add(new Base(new Tile<TileInfo>(tilemap, 0, 0)));
+            gameState.Add(new Base(Footprint.CircleSeven.Positioned(gameState.Level, new Position2())));
 
             return gameState;
         }
