@@ -3,7 +3,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using OpenTK;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game.UI
 {
     class GameScreenLayer : ScreenLayer
     {

@@ -29,8 +29,6 @@ namespace Bearded.TD.Game
 
         private readonly GameInstance game;
 
-        private int activeClickHandler = -1;
-
         public GameController(GameInstance game)
         {
             this.game = game;
@@ -41,26 +39,26 @@ namespace Bearded.TD.Game
             for (var i = 0; i < clickHandlers.Length; i++)
             {
                 if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
-                if (i == activeClickHandler)
+                if (i == game.SelectedClickHandler)
                 {
                     clickHandlers[i].Disable(game.State);
-                    activeClickHandler = -1;
+                    game.SelectedClickHandler = -1;
                     game.State.Meta.Logger.Debug.Log("Disabled click handler.");
                 }
                 else
                 {
-                    if (activeClickHandler >= 0)
-                        clickHandlers[activeClickHandler].Disable(game.State);
+                    if (game.SelectedClickHandler >= 0)
+                        clickHandlers[game.SelectedClickHandler].Disable(game.State);
                     clickHandlers[i].Enable(game.State);
-                    activeClickHandler = i;
+                    game.SelectedClickHandler = i;
                     game.State.Meta.Logger.Debug.Log("Enabled click handler {0}.", i + 1);
                 }
                 break;
             }
 
-            if (activeClickHandler >= 0)
+            if (game.SelectedClickHandler >= 0)
             {
-                var clickHandler = clickHandlers[activeClickHandler];
+                var clickHandler = clickHandlers[game.SelectedClickHandler];
                 var footprint = clickHandler.Selection.GetPositionedFootprint(game.State.Level, input.MousePos);
                 clickHandler.HandleHover(game.State, footprint);
                 if (input.ClickAction.Hit)

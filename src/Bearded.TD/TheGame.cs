@@ -1,6 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.UI;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
@@ -45,6 +46,7 @@ namespace Bearded.TD
 
             screenManager = new ScreenManager();
             screenManager.AddScreenLayer(new GameScreenLayer(gameInstance, gameRunner, renderContext.Geometries));
+            screenManager.AddScreenLayer(new BuildingScreenLayer(gameInstance, renderContext.Geometries));
             screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
 
             OnResize(EventArgs.Empty);
