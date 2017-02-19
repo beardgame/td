@@ -1,20 +1,25 @@
 ﻿using Bearded.TD.Game.UI;
 using Bearded.TD.Game.Units;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
     class GameController
     {
+        private static readonly UnitBlueprint debugBlueprint = new UnitBlueprint(100, 25, new Speed(2));
+        private static readonly TimeSpan timeBetweenWaves = new TimeSpan(15);
+
         private readonly GameInstance game;
+        private Instant nextWave;
 
         public GameController(GameInstance game)
         {
             this.game = game;
 
-            var blueprint = new UnitBlueprint(100, 25, new Speed(2));
-            game.State.Enumerate<UnitSource>().ForEach((source) => source.QueueEnemies(blueprint, 5));
+            queueEnemyWave();
+            nextWave = game.State.Time + timeBetweenWaves;
         }
 
         public void Update(PlayerInput input)
@@ -26,6 +31,18 @@ namespace Bearded.TD.Game
                 if (input.ClickAction.Hit)
                     game.Cursor.Click(footprint);
             }
+
+            if (nextWave <= game.State.Time)
+            {
+                queueEnemyWave();
+                nextWave += timeBetweenWaves;
+            }
+        }
+
+        private void queueEnemyWave()
+        {
+            var source = game.State.Enumerate<UnitSource>().RandomElement();
+            source.QueueEnemies(debugBlueprint, StaticRandom.Int(5, 10));
         }
     }
 }
