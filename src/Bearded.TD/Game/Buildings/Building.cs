@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -12,7 +14,7 @@ namespace Bearded.TD.Game.Buildings
         private readonly BuildingBlueprint blueprint;
         private PositionedFootprint footprint;
 
-        protected Position2 Position { get; private set; }
+        public Position2 Position { get; private set; }
         protected int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
@@ -51,5 +53,17 @@ namespace Bearded.TD.Game.Buildings
 
         protected virtual void OnDamaged()
         { }
+
+        public override void Update(TimeSpan elapsedTime)
+        {
+            foreach (var component in Components)
+                component.Update(elapsedTime);
+        }
+
+        public override void Draw(GeometryManager geometries)
+        {
+            foreach (var component in Components)
+                component.Update(geometries);
+        }
     }
 }
