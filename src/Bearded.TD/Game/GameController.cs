@@ -41,6 +41,7 @@ namespace Bearded.TD.Game
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
+                if (clickHandlers[i] == null) continue;
                 if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
                 if (i == activeClickHandler)
                 {

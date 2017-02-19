@@ -1,6 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Generation;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
@@ -41,7 +42,7 @@ namespace Bearded.TD
 
             var meta = new GameMeta(logger);
 
-            gameState = GameStateBuilder.Empty(meta);
+            gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
             var camera = new GameCamera(meta, gameState.Level.Tilemap.Radius);
             gameRunner = new GameRunner(gameState, camera);
             consoleLayer = new ConsoleScreenLayer(logger, renderContext.Geometries);

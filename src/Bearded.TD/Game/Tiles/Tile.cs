@@ -25,8 +25,8 @@ namespace Bearded.TD.Game.Tiles
         public TTileInfo Info => tilemap[this];
         public bool IsValid => tilemap?.IsValidTile(X, Y) == true;
 
-        public Tile<TTileInfo> Neighbour(Direction direction) => this.Neighbour(direction.Step());
-        public Tile<TTileInfo> Neighbour(Step step) => new Tile<TTileInfo>(tilemap, X + step.X, Y + step.Y);
+        public Tile<TTileInfo> Neighbour(Direction direction) => this.Offset(direction.Step());
+        public Tile<TTileInfo> Offset(Step step) => new Tile<TTileInfo>(tilemap, X + step.X, Y + step.Y);
 
         public IEnumerable<Tile<TTileInfo>> Neighbours => this.PossibleNeighbours().Where(t => t.IsValid);
 
@@ -57,10 +57,13 @@ namespace Bearded.TD.Game.Tiles
             }
         }
 
-        public bool Equals(Tile<TTileInfo> other) =>
-            X == other.X &&
-            Y == other.Y &&
-            tilemap == other.tilemap;
+        public override bool Equals(object obj)
+            => !ReferenceEquals(null, obj) && (obj is Tile<TTileInfo> && Equals((Tile<TTileInfo>) obj));
+
+        public bool Equals(Tile<TTileInfo> other)
+            => tilemap == other.tilemap && X == other.X && Y == other.Y;
+
+        public override int GetHashCode() => (X * 397) ^ Y;
 
         public static bool operator ==(Tile<TTileInfo> t1, Tile<TTileInfo> t2) => t1.Equals(t2);
         public static bool operator !=(Tile<TTileInfo> t1, Tile<TTileInfo> t2) => !(t1 == t2);

@@ -47,6 +47,8 @@
     <Compile Include="Game\GameScreenLayer.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\Generation\DefaultTilemapGenerator.cs" />
+    <Compile Include="Game\Generation\ITilemapGenerator.cs" />
     <Compile Include="Game\Interaction\BuildingClickHandler.cs" />
     <Compile Include="Game\Interaction\ClickHandlerExtensions.cs" />
     <Compile Include="Game\Interaction\DebugSpawnEnemyClickHandler.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Utilities\Console\Commands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
+    <Compile Include="Utilities\Math.cs" />
     <Compile Include="Utilities\XY.cs" />
   </ItemGroup>
   <ItemGroup>
