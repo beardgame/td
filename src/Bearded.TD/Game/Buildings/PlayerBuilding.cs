@@ -12,14 +12,13 @@ namespace Bearded.TD.Game.Buildings
             : base(blueprint, footprint)
         { }
 
-        public override void Update(TimeSpan elapsedTime)
-        { }
-
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.GrayScale(60);
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .3f, Vector2.One * .6f);
+
+            base.Draw(geometries);
         }
     }
 }

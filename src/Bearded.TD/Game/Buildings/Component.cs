@@ -1,4 +1,4 @@
-﻿using amulware.Graphics;
+﻿using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
@@ -17,6 +17,6 @@ namespace Bearded.TD.Game.Buildings
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw();
+        public abstract void Draw(GeometryManager geometries);
     }
 }
