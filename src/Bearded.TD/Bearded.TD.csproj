@@ -40,6 +40,7 @@
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
+    <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameController.cs" />

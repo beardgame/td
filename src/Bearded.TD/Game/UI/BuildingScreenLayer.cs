@@ -69,8 +69,8 @@ namespace Bearded.TD.Game.UI
 
         #region Definitions
         private static readonly IClickHandler[] clickHandlers = {
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300)), // 2
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, null)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300, null)), // 2
             null, // 3
             null, // 4
             null, // 5

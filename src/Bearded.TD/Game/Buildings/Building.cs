@@ -16,6 +16,8 @@ namespace Bearded.TD.Game.Buildings
         protected int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
+        protected List<Component> Components { get; } = new List<Component>();
+
         protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint)
         {
             if (!footprint.IsValid) throw new ArgumentOutOfRangeException();
@@ -23,6 +25,8 @@ namespace Bearded.TD.Game.Buildings
             this.blueprint = blueprint;
             this.footprint = footprint;
             Health = blueprint.MaxHealth;
+
+            blueprint.GetComponents().ForEach(Components.Add);
         }
 
         public void Damage(int damage)
@@ -37,6 +41,7 @@ namespace Bearded.TD.Game.Buildings
 
             Position = footprint.CenterPosition;
             OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, this));
+            Components.ForEach(c => c.OnAdded(this));
         }
 
         protected override void OnDelete()
