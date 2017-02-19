@@ -35,13 +35,12 @@ namespace Bearded.TD.Game.World
 
         private void updatePassability(Tile<TileInfo> tile)
         {
-            var info = tile.Info;
+            var isPassable = tile.Info.IsPassable;
 
-            foreach (var dir in Tiles.Tilemap.Directions)
+            foreach (var dir in tile.Info.ValidDirections.Enumerate())
             {
                 var neighbour = tile.Neighbour(dir);
-                if (!neighbour.IsValid) continue;
-                if (info.IsPassable)
+                if (isPassable)
                     neighbour.Info.OpenTo(dir.Opposite());
                 else
                     neighbour.Info.CloseTo(dir.Opposite());
