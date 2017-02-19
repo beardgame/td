@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Screens
 {
     class ConsoleScreenLayer : UIScreenLayer
     {

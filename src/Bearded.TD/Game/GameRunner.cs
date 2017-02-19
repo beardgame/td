@@ -12,7 +12,7 @@ namespace Bearded.TD.Game
         public GameRunner(GameInstance game)
         {
             this.game = game;
-            controller = new GameController(game.State);
+            controller = new GameController(game);
         }
 
         public void HandleInput(UpdateEventArgs args)

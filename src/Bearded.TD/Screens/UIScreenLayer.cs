@@ -1,6 +1,7 @@
-﻿using OpenTK;
+﻿using Bearded.TD.Rendering;
+using OpenTK;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Screens
 {
     abstract class UIScreenLayer : ScreenLayer
     {

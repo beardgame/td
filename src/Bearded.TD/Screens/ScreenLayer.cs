@@ -1,8 +1,9 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Rendering;
 using Bearded.Utilities.Math;
 using OpenTK;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Screens
 {
     abstract class ScreenLayer
     {

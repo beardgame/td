@@ -27,11 +27,11 @@ namespace Bearded.TD.Game
             Key.Number6, Key.Number7, Key.Number8, Key.Number9, Key.Number0
         };
 
-        private readonly GameState game;
+        private readonly GameInstance game;
 
         private int activeClickHandler = -1;
 
-        public GameController(GameState game)
+        public GameController(GameInstance game)
         {
             this.game = game;
         }
@@ -43,17 +43,17 @@ namespace Bearded.TD.Game
                 if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
                 if (i == activeClickHandler)
                 {
-                    clickHandlers[i].Disable(game);
+                    clickHandlers[i].Disable(game.State);
                     activeClickHandler = -1;
-                    game.Meta.Logger.Debug.Log("Disabled click handler.");
+                    game.State.Meta.Logger.Debug.Log("Disabled click handler.");
                 }
                 else
                 {
                     if (activeClickHandler >= 0)
-                        clickHandlers[activeClickHandler].Disable(game);
-                    clickHandlers[i].Enable(game);
+                        clickHandlers[activeClickHandler].Disable(game.State);
+                    clickHandlers[i].Enable(game.State);
                     activeClickHandler = i;
-                    game.Meta.Logger.Debug.Log("Enabled click handler {0}.", i + 1);
+                    game.State.Meta.Logger.Debug.Log("Enabled click handler {0}.", i + 1);
                 }
                 break;
             }
@@ -61,11 +61,11 @@ namespace Bearded.TD.Game
             if (activeClickHandler >= 0)
             {
                 var clickHandler = clickHandlers[activeClickHandler];
-                var footprint = clickHandler.Selection.GetPositionedFootprint(game.Level, input.MousePos);
-                clickHandler.HandleHover(game, footprint);
+                var footprint = clickHandler.Selection.GetPositionedFootprint(game.State.Level, input.MousePos);
+                clickHandler.HandleHover(game.State, footprint);
                 if (input.ClickAction.Hit)
                 {
-                    clickHandler.HandleClick(game, footprint);
+                    clickHandler.HandleClick(game.State, footprint);
                 }
             }
         }
