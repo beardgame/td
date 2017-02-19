@@ -40,6 +40,13 @@ namespace Bearded.TD.Game.Buildings
             fontGeo.DrawString(Position.NumericValue, Health.ToString(), .5f, .5f);
         }
 
+        protected override void OnDamaged()
+        {
+            base.OnDamaged();
+            if (Health <= 0)
+                Game.Meta.DoGameOver();
+        }
+
         private static readonly BuildingBlueprint Blueprint
             = new BuildingBlueprint(TileSelection.FromFootprint(Footprint.CircleSeven), 1000);
     }

@@ -60,6 +60,7 @@
     <Compile Include="Game\UI\CursorState.cs" />
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\DebugToggleTileTypeClickHandler.cs" />
+    <Compile Include="Game\UI\GameOverScreenLayer.cs" />
     <Compile Include="Game\UI\GameScreenLayer.cs" />
     <Compile Include="Game\UI\IClickHandler.cs" />
     <Compile Include="Game\UI\PlayerInput.cs" />

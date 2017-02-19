@@ -23,6 +23,7 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
+            if (game.State.Meta.GameOver) return;
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS);
             game.State.Navigator.Update();
             game.State.Advance(elapsedTime);

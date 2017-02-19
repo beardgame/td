@@ -48,6 +48,7 @@ namespace Bearded.TD
             screenManager = new ScreenManager();
             screenManager.AddScreenLayer(new GameScreenLayer(gameInstance, gameRunner, renderContext.Geometries));
             screenManager.AddScreenLayer(new BuildingScreenLayer(gameInstance, renderContext.Geometries));
+            screenManager.AddScreenLayer(new GameOverScreenLayer(gameInstance, renderContext.Geometries));
             screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
 
             OnResize(EventArgs.Empty);
