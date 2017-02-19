@@ -8,6 +8,8 @@ namespace Bearded.TD.Game.Buildings
 {
     class Base : Building
     {
+        private const float incomePerSecond = 1;
+
         public Base(PositionedFootprint footprint) : base(Blueprint, footprint)
         { }
 
@@ -24,7 +26,9 @@ namespace Bearded.TD.Game.Buildings
         }
 
         public override void Update(TimeSpan elapsedTime)
-        { }
+        {
+            Game.Resources.AddBeardedPoints(elapsedTime.NumericValue * incomePerSecond);
+        }
 
         public override void Draw(GeometryManager geometries)
         {

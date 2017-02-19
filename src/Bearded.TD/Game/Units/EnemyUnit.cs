@@ -57,5 +57,10 @@ namespace Bearded.TD.Game.Units
             if (newTile.IsValid)
                 newTile.Info.AddEnemy(this);
         }
+
+        protected override void OnKill()
+        {
+            Game.Resources.AddBeardedPoints(Blueprint.Value);
+        }
     }
 }

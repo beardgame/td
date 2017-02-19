@@ -24,6 +24,7 @@ namespace Bearded.TD.Game
         public Level Level { get; }
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
+        public Resources Resources { get; }
 
         public GameState(GameMeta meta, Level level)
         {
@@ -31,6 +32,7 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
+            Resources = new Resources();
         }
 
         public void Add(GameObject obj)

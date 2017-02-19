@@ -54,7 +54,9 @@ namespace Bearded.TD.Game.UI
             var txtGeo = Geometries.ConsoleFont;
 
             bgGeo.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            bgGeo.DrawRectangle(Vector2.Zero, new Vector2(160, actionDescriptions.Length * lineHeight + 2 * padding));
+            bgGeo.DrawRectangle(
+                Vector2.Zero,
+                new Vector2(160, (1 + actionDescriptions.Length) * lineHeight + 2 * padding));
 
             txtGeo.Height = fontSize;
             txtGeo.SizeCoefficient = Vector2.One;
@@ -65,6 +67,11 @@ namespace Bearded.TD.Game.UI
                 txtGeo.DrawString(new Vector2(padding, padding + i * lineHeight),
                     $"{(i + 1) % 10}: {actionDescriptions[i]}");
             }
+
+            txtGeo.Color = Color.Beige;
+            txtGeo.DrawString(
+                new Vector2(padding, padding + actionDescriptions.Length * lineHeight),
+                $"Bearded points {game.State.Resources.BeardedPoints}");
         }
 
         #region Definitions

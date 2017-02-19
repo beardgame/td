@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.UI
         {
             footprint.OccupiedTiles
                 .Where(t => t.IsValid && t.Info.IsPassable)
-                .ForEach(tile => game.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2)), tile)));
+                .ForEach(tile => game.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2), 10), tile)));
         }
 
         public void Enable(GameState game)
