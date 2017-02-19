@@ -32,7 +32,7 @@ namespace Bearded.TD.Screens
         {
             var originCenter = new Vector3((originX + .5f) * ViewportSize.Width, (originY - .5f) * ViewportSize.Height, 0);
             viewMatrix = Matrix4.LookAt(
-                new Vector3(0, 0, -.5f * baseHeight) + originCenter,
+                new Vector3(0, 0, -.5f * ViewportSize.Height) + originCenter,
                 Vector3.Zero + originCenter,
                 Vector3.UnitY * (flipY ? -1 : 1));
         }
