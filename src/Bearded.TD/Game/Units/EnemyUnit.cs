@@ -20,7 +20,10 @@ namespace Bearded.TD.Game.Units
 
         protected override Direction GetNextDirection()
         {
-            return Game.Navigator.GetDirections(CurrentTile);
+            var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
+            return !CurrentTile.Neighbour(desiredDirection).Info.IsPassable
+                ? Direction.Unknown
+                : desiredDirection;
         }
     }
 }
