@@ -1,7 +1,6 @@
 ﻿using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
 
-namespace Bearded.TD.Game.Interaction
+namespace Bearded.TD.Game.UI
 {
     interface IClickHandler
     {

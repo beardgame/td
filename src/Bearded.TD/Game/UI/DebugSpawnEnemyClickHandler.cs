@@ -3,7 +3,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Interaction
+namespace Bearded.TD.Game.UI
 {
     class DebugSpawnEnemyClickHandler : IClickHandler
     {

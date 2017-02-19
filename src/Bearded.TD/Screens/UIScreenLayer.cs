@@ -5,9 +5,6 @@ namespace Bearded.TD.Screens
 {
     abstract class UIScreenLayer : ScreenLayer
     {
-        private const float baseWidth = 1280;
-        private const float baseHeight = 720;
-
         private readonly float originX;
         private readonly float originY;
         private readonly bool flipY;

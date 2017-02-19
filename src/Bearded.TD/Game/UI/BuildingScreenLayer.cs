@@ -1,8 +1,11 @@
-﻿using System;
-using amulware.Graphics;
+﻿using amulware.Graphics;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
+using Bearded.Utilities.Input;
 using OpenTK;
+using OpenTK.Input;
 
 namespace Bearded.TD.Game.UI
 {
@@ -12,26 +15,34 @@ namespace Bearded.TD.Game.UI
         private const float lineHeight = 16;
         private const float padding = 6;
 
-        private static readonly string[] actionDescriptions =
-        {
-            "Build wall",
-            "Build triangle",
-            "[null]",
-            "[null]",
-            "[null]",
-            "[null]",
-            "[null]",
-            "Toggle tile type",
-            "Spawn enemy",
-            "[null]"
-        };
-
         private readonly GameInstance game;
+        private int selectedHandler = -1;
 
         public BuildingScreenLayer(GameInstance game, GeometryManager geometries)
             : base(geometries, 0, 1, true)
         {
             this.game = game;
+        }
+
+        public override bool HandleInput(UpdateEventArgs args)
+        {
+            for (var i = 0; i < clickHandlers.Length; i++)
+            {
+                if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
+                if (i == selectedHandler)
+                {
+                    game.Cursor.SetClickHandler(null);
+                    selectedHandler = -1;
+                }
+                else
+                {
+                    game.Cursor.SetClickHandler(clickHandlers[i]);
+                    selectedHandler = i;
+                }
+                break;
+            }
+
+            return true;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -50,10 +61,45 @@ namespace Bearded.TD.Game.UI
 
             for (var i = 0; i < actionDescriptions.Length; i++)
             {
-                txtGeo.Color = game.SelectedClickHandler == i ? Color.Yellow : Color.White;
+                txtGeo.Color = selectedHandler == i ? Color.Yellow : Color.White;
                 txtGeo.DrawString(new Vector2(padding, padding + i * lineHeight),
                     $"{(i + 1) % 10}: {actionDescriptions[i]}");
             }
         }
+
+        #region Definitions
+        private static readonly IClickHandler[] clickHandlers = {
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300)), // 2
+            null, // 3
+            null, // 4
+            null, // 5
+            null, // 6
+            null, // 7
+            new DebugToggleTileTypeClickHandler(), // 8
+            new DebugSpawnEnemyClickHandler(), // 9
+            null // 0
+        };
+
+        private static readonly Key[] clickHandlerKeys =
+        {
+            Key.Number1, Key.Number2, Key.Number3, Key.Number4, Key.Number5,
+            Key.Number6, Key.Number7, Key.Number8, Key.Number9, Key.Number0
+        };
+
+        private static readonly string[] actionDescriptions =
+        {
+            "Build wall",
+            "Build triangle",
+            "[null]",
+            "[null]",
+            "[null]",
+            "[null]",
+            "[null]",
+            "Toggle tile type",
+            "Spawn enemy",
+            "[null]"
+        };
+        #endregion
     }
 }

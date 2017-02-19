@@ -1,7 +1,7 @@
 ﻿using Bearded.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Interaction
+namespace Bearded.TD.Game.UI
 {
     struct PlayerInput
     {

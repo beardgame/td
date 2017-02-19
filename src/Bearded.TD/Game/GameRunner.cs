@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Interaction;
+using Bearded.TD.Game.UI;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game

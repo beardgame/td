@@ -1,8 +1,7 @@
 ﻿using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Game.Interaction
+namespace Bearded.TD.Game.UI
 {
     class DebugToggleTileTypeClickHandler : IClickHandler
     {

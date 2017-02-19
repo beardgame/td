@@ -2,7 +2,7 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
 
-namespace Bearded.TD.Game.Interaction
+namespace Bearded.TD.Game.UI
 {
     class BuildingClickHandler : IClickHandler
     {
