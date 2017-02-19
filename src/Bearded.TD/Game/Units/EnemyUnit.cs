@@ -14,6 +14,12 @@ namespace Bearded.TD.Game.Units
         public EnemyUnit(UnitBlueprint blueprint, Tile<TileInfo> currentTile) : base(blueprint, currentTile)
         { }
 
+        protected override void OnDelete()
+        {
+            base.OnDelete();
+            CurrentTile.Info.RemoveEnemy(this);
+        }
+
         public override void Update(TimeSpan elapsedTime)
         {
             base.Update(elapsedTime);
@@ -41,6 +47,16 @@ namespace Bearded.TD.Game.Units
             return !CurrentTile.Neighbour(desiredDirection).Info.IsPassable
                 ? Direction.Unknown
                 : desiredDirection;
+        }
+
+        protected override void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        {
+            base.OnTileChanged(oldTile, newTile);
+            Game.Meta.Logger.Debug.Log("Enemy moved to new tile.");
+            if (oldTile.IsValid)
+                oldTile.Info.RemoveEnemy(this);
+            if (newTile.IsValid)
+                newTile.Info.AddEnemy(this);
         }
     }
 }

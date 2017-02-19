@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Units
         private Unit movementProgress;
 
         protected Position2 Position { get; private set; }
+        private Tile<TileInfo> anchorTile;
         protected Tile<TileInfo> CurrentTile { get; private set; }
         private int health;
 
@@ -21,8 +22,8 @@ namespace Bearded.TD.Game.Units
         {
             if (!currentTile.IsValid) throw new ArgumentOutOfRangeException();
 
-            this.Blueprint = blueprint;
-            CurrentTile = currentTile;
+            Blueprint = blueprint;
+            anchorTile = currentTile;
             currentMovementDir = Direction.Unknown;
             health = blueprint.Health;
         }
@@ -31,7 +32,8 @@ namespace Bearded.TD.Game.Units
         {
             base.OnAdded();
 
-            Position = Game.Level.GetPosition(CurrentTile);
+            updateCurrentTile(anchorTile);
+            Position = Game.Level.GetPosition(anchorTile);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -47,20 +49,33 @@ namespace Bearded.TD.Game.Units
 
                 movementLeft = updateMovement(movementLeft);
             }
-            Position = Game.Level.GetPosition(CurrentTile)
+            Position = Game.Level.GetPosition(anchorTile)
                        + movementProgress * currentMovementDir.SpaceTimeDirection();
         }
 
         private Unit updateMovement(Unit movementLeft)
         {
+            var halfwayPoint = .5f * HexagonWidth.U();
+            if (movementProgress < halfwayPoint && (movementProgress + movementLeft) >= halfwayPoint)
+                updateCurrentTile(anchorTile.Neighbour(currentMovementDir));
             movementProgress += movementLeft;
             if (movementProgress < HexagonWidth.U()) return Unit.Zero;
-            CurrentTile = CurrentTile.Neighbour(currentMovementDir);
+            anchorTile = CurrentTile;
             currentMovementDir = Direction.Unknown;
             movementProgress = Unit.Zero;
             return movementProgress - HexagonWidth.U();
         }
 
+        private void updateCurrentTile(Tile<TileInfo> newTile)
+        {
+            var oldTile = CurrentTile;
+            CurrentTile = newTile;
+            OnTileChanged(oldTile, newTile);
+        }
+
         protected abstract Direction GetNextDirection();
+
+        protected virtual void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        { }
     }
 }

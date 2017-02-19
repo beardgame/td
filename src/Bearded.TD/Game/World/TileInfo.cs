@@ -1,5 +1,8 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.Units;
 
 namespace Bearded.TD.Game.World
 {
@@ -18,6 +21,8 @@ namespace Bearded.TD.Game.World
         public bool IsPassable => building == null && TileType == Type.Floor;
 
         private Building building;
+        private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
+        public ReadOnlyCollection<EnemyUnit> Enemies { get; }
         public Type TileType { get; private set; }
 
         public TileInfo(Directions validDirections, Type tileType)
@@ -25,6 +30,7 @@ namespace Bearded.TD.Game.World
             ValidDirections = validDirections;
             OpenDirections = validDirections;
             TileType = tileType;
+            Enemies = enemies.AsReadOnly();
         }
 
         public void CloseTo(Direction direction)
@@ -45,6 +51,16 @@ namespace Bearded.TD.Game.World
         public void SetBuilding(Building building)
         {
             this.building = building;
+        }
+
+        public void AddEnemy(EnemyUnit enemy)
+        {
+            enemies.Add(enemy);
+        }
+
+        public void RemoveEnemy(EnemyUnit enemy)
+        {
+            enemies.Remove(enemy);
         }
     }
 }
