@@ -53,6 +53,20 @@ namespace Bearded.TD.Game.Units
                        + movementProgress * currentMovementDir.SpaceTimeDirection();
         }
 
+        public void Damage(int damage)
+        {
+            health -= damage;
+            OnDamage();
+            if (health <= 0) kill();
+        }
+
+        private void kill()
+        {
+            OnKill();
+            // boom! <-- almost as good as particle explosions
+            Delete();
+        }
+
         private Unit updateMovement(Unit movementLeft)
         {
             var halfwayPoint = .5f * HexagonWidth.U();
@@ -70,12 +84,18 @@ namespace Bearded.TD.Game.Units
         {
             var oldTile = CurrentTile;
             CurrentTile = newTile;
-            OnTileChanged(oldTile, newTile);
+            OnTileChange(oldTile, newTile);
         }
 
         protected abstract Direction GetNextDirection();
 
-        protected virtual void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        protected virtual void OnTileChange(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        { }
+
+        protected virtual void OnDamage()
+        { }
+
+        protected virtual void OnKill()
         { }
     }
 }
