@@ -49,10 +49,9 @@ namespace Bearded.TD.Game.Units
                 : desiredDirection;
         }
 
-        protected override void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        protected override void OnTileChange(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
         {
-            base.OnTileChanged(oldTile, newTile);
-            Game.Meta.Logger.Debug.Log("Enemy moved to new tile.");
+            base.OnTileChange(oldTile, newTile);
             if (oldTile.IsValid)
                 oldTile.Info.RemoveEnemy(this);
             if (newTile.IsValid)
