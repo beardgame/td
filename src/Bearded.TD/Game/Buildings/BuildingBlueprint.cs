@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Game.Buildings
+﻿using Bearded.TD.Game.Tiles;
+
+namespace Bearded.TD.Game.Buildings
 {
     struct BuildingBlueprint
     {
