@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities.Math;
+﻿using amulware.Graphics;
+using Bearded.Utilities.Math;
 using OpenTK;
 
 namespace Bearded.TD.Rendering
@@ -31,6 +32,8 @@ namespace Bearded.TD.Rendering
             OnViewportSizeChanged();
         }
 
+        public virtual bool HandleInput(UpdateEventArgs args) => true;
+        public abstract void Update(UpdateEventArgs args);
         public abstract void Draw();
         protected virtual void OnViewportSizeChanged() { }
     }

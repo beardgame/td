@@ -52,6 +52,7 @@
     <Compile Include="Game\Interaction\DebugToggleTileTypeClickHandler.cs" />
     <Compile Include="Game\Interaction\IClickHandler.cs" />
     <Compile Include="Game\Interaction\PlayerInput.cs" />
+    <Compile Include="Game\GameInstance.cs" />
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\UIScreenLayer.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
+    <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />

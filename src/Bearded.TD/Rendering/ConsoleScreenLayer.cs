@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.Utilities;
+using Bearded.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
+using OpenTK.Input;
 
 namespace Bearded.TD.Rendering
 {
@@ -38,14 +40,27 @@ namespace Bearded.TD.Rendering
         #endif
 
         private readonly Logger logger;
+        private bool isConsoleEnabled;
 
         public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
             this.logger = logger;
         }
 
+        public override bool HandleInput(UpdateEventArgs args)
+        {
+            if (InputManager.IsKeyHit(Key.Tilde))
+                isConsoleEnabled = !isConsoleEnabled;
+
+            return true;
+        }
+
+        public override void Update(UpdateEventArgs args) { }
+
         public override void Draw()
         {
+            if (!isConsoleEnabled) return;
+
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
             Geometries.ConsoleBackground.DrawRectangle(0, 0, ViewportSize.Width, consoleHeight);
 

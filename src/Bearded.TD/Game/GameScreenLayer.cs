@@ -1,31 +1,43 @@
-﻿using Bearded.TD.Rendering;
+﻿using amulware.Graphics;
+using Bearded.TD.Rendering;
 using OpenTK;
 
 namespace Bearded.TD.Game
 {
     class GameScreenLayer : ScreenLayer
     {
-        private readonly GameState state;
-        private readonly GameCamera camera;
+        private readonly GameInstance game;
+        private readonly GameRunner runner;
         private readonly GeometryManager geometries;
 
-        public override Matrix4 ViewMatrix => camera.ViewMatrix;
+        public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
 
-        public GameScreenLayer(GameState state, GameCamera camera, GeometryManager geometries)
+        public GameScreenLayer(GameInstance game, GameRunner runner, GeometryManager geometries)
         {
-            this.state = state;
-            this.camera = camera;
+            this.game = game;
+            this.runner = runner;
             this.geometries = geometries;
+        }
+
+        public override bool HandleInput(UpdateEventArgs args)
+        {
+            runner.HandleInput(args);
+            return false;
+        }
+
+        public override void Update(UpdateEventArgs args)
+        {
+            runner.Update(args);
         }
 
         public override void Draw()
         {
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
-            state.Level.Draw(geometries);
-            state.Navigator.DrawDebug(geometries, state.Level);
+            game.State.Level.Draw(geometries);
+            game.State.Navigator.DrawDebug(geometries, game.State.Level);
 
-            foreach (var obj in state.GameObjects)
+            foreach (var obj in game.State.GameObjects)
             {
                 obj.Draw(geometries);
             }
@@ -34,7 +46,7 @@ namespace Bearded.TD.Game
         protected override void OnViewportSizeChanged()
         {
             base.OnViewportSizeChanged();
-            camera.OnViewportSizeChanged(ViewportSize);
+            game.Camera.OnViewportSizeChanged(ViewportSize);
         }
     }
 }

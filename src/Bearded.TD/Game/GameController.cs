@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Interaction;
 using Bearded.TD.Game.Tiles;
 using Bearded.Utilities.Input;
-using Bearded.Utilities.SpaceTime;
 using OpenTK.Input;
 
 namespace Bearded.TD.Game
@@ -37,7 +36,7 @@ namespace Bearded.TD.Game
             this.game = game;
         }
 
-        public void Update(TimeSpan elapsedTime, PlayerInput input)
+        public void Update(PlayerInput input)
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
