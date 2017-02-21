@@ -1,5 +1,7 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
@@ -77,7 +79,9 @@ namespace Bearded.TD.Game.UI
         #region Definitions
         private static readonly IClickHandler[] clickHandlers = {
             new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, null)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Triangle, 300, null)), // 2
+            new BuildingClickHandler(new BuildingBlueprint(
+                TileSelection.Triangle, 300, new Func<Component>[] { () => new Turret() })
+            ), // 2
             null, // 3
             null, // 4
             null, // 5

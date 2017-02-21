@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Units
         private Direction currentMovementDir;
         private Unit movementProgress;
 
-        protected Position2 Position { get; private set; }
+        public Position2 Position { get; private set; }
         private Tile<TileInfo> anchorTile;
         protected Tile<TileInfo> CurrentTile { get; private set; }
         private int health;
