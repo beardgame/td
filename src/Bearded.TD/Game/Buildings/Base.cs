@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Update(TimeSpan elapsedTime)
         {
-            Game.Resources.AddBeardedPoints(elapsedTime.NumericValue * incomePerSecond);
+            Game.Resources.ProvideResourcesOverTime(incomePerSecond);
         }
 
         public override void Draw(GeometryManager geometries)

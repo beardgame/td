@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
@@ -24,7 +25,7 @@ namespace Bearded.TD.Game
         public Level Level { get; }
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
-        public Resources Resources { get; }
+        public ResourceManager Resources { get; }
 
         public GameState(GameMeta meta, Level level)
         {
@@ -32,7 +33,7 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
-            Resources = new Resources();
+            Resources = new ResourceManager();
         }
 
         public void Add(GameObject obj)

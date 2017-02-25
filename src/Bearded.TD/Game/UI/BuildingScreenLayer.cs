@@ -73,7 +73,7 @@ namespace Bearded.TD.Game.UI
             txtGeo.Color = Color.Beige;
             txtGeo.DrawString(
                 new Vector2(padding, padding + actionDescriptions.Length * lineHeight),
-                $"Bearded points {game.State.Resources.BeardedPoints}");
+                $"Bearded points {game.State.Resources.CurrentResources}");
         }
 
         #region Definitions

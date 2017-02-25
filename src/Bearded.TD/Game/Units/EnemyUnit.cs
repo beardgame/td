@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Units
 
         protected override void OnKill()
         {
-            Game.Resources.AddBeardedPoints(Blueprint.Value);
+            Game.Resources.ProvideOneTimeResource(Blueprint.Value);
         }
     }
 }
