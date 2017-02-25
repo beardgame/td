@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -14,6 +15,8 @@ namespace Bearded.TD.Game.Buildings
         private readonly BuildingBlueprint blueprint;
         private PositionedFootprint footprint;
 
+        public BuildProcessManager BuildManager { get; private set; }
+        
         public Position2 Position { get; private set; }
         protected int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
@@ -26,9 +29,8 @@ namespace Bearded.TD.Game.Buildings
 
             this.blueprint = blueprint;
             this.footprint = footprint;
-            Health = blueprint.MaxHealth;
-
-            blueprint.GetComponents().ForEach(Components.Add);
+            Health = 1;
+            BuildManager = new BuildProcessManager(this, blueprint);
         }
 
         public void Damage(int damage)
@@ -43,7 +45,14 @@ namespace Bearded.TD.Game.Buildings
 
             Position = footprint.CenterPosition;
             OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, this));
+            
+        }
+
+        private void onCompleted()
+        {
+            blueprint.GetComponents().ForEach(Components.Add);
             Components.ForEach(c => c.OnAdded(this));
+            BuildManager = null;
         }
 
         protected override void OnDelete()
@@ -64,6 +73,41 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var component in Components)
                 component.Draw(geometries);
+        }
+
+        public class BuildProcessManager
+        {
+            private readonly Building building;
+            private readonly BuildingBlueprint blueprint;
+            private double buildProcess;
+            private int healthGiven = 1;
+
+            public double ResourcesStillNeeded => blueprint.ResourceCost - buildProcess;
+            public double CurrentProgressFraction => buildProcess / blueprint.ResourceCost;
+
+            public BuildProcessManager(Building building, BuildingBlueprint blueprint)
+            {
+                this.building = building;
+                this.blueprint = blueprint;
+            }
+
+            public void Progress(ResourceGrant resources)
+            {
+                if (ResourcesStillNeeded <= 0 || building.Deleted) return;
+
+                if (resources.ReachedCapacity)
+                {
+                    buildProcess = blueprint.ResourceCost;
+                    building.Health += blueprint.MaxHealth - healthGiven;
+                    building.onCompleted();
+                    return;
+                }
+
+                buildProcess += resources.Amount;
+                var expectedHealthGiven = (int)(CurrentProgressFraction * blueprint.MaxHealth);
+                building.Health += expectedHealthGiven - healthGiven;
+                healthGiven = expectedHealthGiven;
+            }
         }
     }
 }

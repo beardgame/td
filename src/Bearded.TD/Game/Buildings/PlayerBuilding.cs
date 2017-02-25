@@ -1,7 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Buildings
@@ -16,6 +15,10 @@ namespace Bearded.TD.Game.Buildings
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.GrayScale(60);
+            if (BuildManager != null)
+            {
+                geo.Color = geo.Color.WithAlpha((float)BuildManager.CurrentProgressFraction * .5f + .5f).Premultiplied;
+            }
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .3f, Vector2.One * .6f);
 
             base.Draw(geometries);

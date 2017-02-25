@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.UI
@@ -25,7 +26,9 @@ namespace Bearded.TD.Game.UI
         {
             if (footprint.OccupiedTiles.Any((tile) => !tile.IsValid || !tile.Info.IsPassable)) return;
 
-            game.Add(new PlayerBuilding(blueprint, footprint));
+            var building = new PlayerBuilding(blueprint, footprint);
+            game.Add(building);
+            game.Add(new DebugWorker(building.BuildManager));
         }
 
         public void Enable(GameState game)

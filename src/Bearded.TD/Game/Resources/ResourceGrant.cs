@@ -10,5 +10,7 @@
             Amount = amount;
             ReachedCapacity = reachedCapacity;
         }
+
+        public static ResourceGrant Infinite = new ResourceGrant(double.PositiveInfinity, true);
     }
 }

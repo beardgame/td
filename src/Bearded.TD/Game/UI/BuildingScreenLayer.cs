@@ -73,14 +73,14 @@ namespace Bearded.TD.Game.UI
             txtGeo.Color = Color.Beige;
             txtGeo.DrawString(
                 new Vector2(padding, padding + actionDescriptions.Length * lineHeight),
-                $"Bearded points {game.State.Resources.CurrentResources}");
+                $"Resources: {game.State.Resources.CurrentResources}");
         }
 
         #region Definitions
         private static readonly IClickHandler[] clickHandlers = {
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, null)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, 5, null)), // 1
             new BuildingClickHandler(new BuildingBlueprint(
-                TileSelection.Triangle, 300, new Func<Component>[] { () => new Turret() })
+                TileSelection.Triangle, 300, 20, new Func<Component>[] { () => new Turret() })
             ), // 2
             null, // 3
             null, // 4

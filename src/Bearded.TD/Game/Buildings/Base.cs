@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
@@ -8,10 +9,12 @@ namespace Bearded.TD.Game.Buildings
 {
     class Base : Building
     {
-        private const float incomePerSecond = 1;
+        private const float incomePerSecond = 5;
 
         public Base(PositionedFootprint footprint) : base(Blueprint, footprint)
-        { }
+        {
+            BuildManager.Progress(ResourceGrant.Infinite);
+        }
 
         protected override void OnAdded()
         {
@@ -52,6 +55,6 @@ namespace Bearded.TD.Game.Buildings
         }
 
         private static readonly BuildingBlueprint Blueprint
-            = new BuildingBlueprint(TileSelection.FromFootprint(Footprint.CircleSeven), 1000, null);
+            = new BuildingBlueprint(TileSelection.FromFootprint(Footprint.CircleSeven), 1000, 1, null);
     }
 }
