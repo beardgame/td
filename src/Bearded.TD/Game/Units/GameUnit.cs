@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Units
         public Position2 Position { get; private set; }
         private Tile<TileInfo> anchorTile;
         protected Tile<TileInfo> CurrentTile { get; private set; }
-        private int health;
+        public int Health { get; private set; }
 
         protected GameUnit(UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Units
             Blueprint = blueprint;
             anchorTile = currentTile;
             currentMovementDir = Direction.Unknown;
-            health = blueprint.Health;
+            Health = blueprint.Health;
         }
 
         protected override void OnAdded()
@@ -57,9 +57,9 @@ namespace Bearded.TD.Game.Units
 
         public void Damage(int damage)
         {
-            health -= damage;
+            Health -= damage;
             OnDamage();
-            if (health <= 0)
+            if (Health <= 0)
                 this.OnServer(UnitDeath.Command);
         }
 

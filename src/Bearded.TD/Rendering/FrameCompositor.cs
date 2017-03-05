@@ -16,7 +16,7 @@ namespace Bearded.TD.Rendering
 
         public void PrepareForFrame()
         {
-            var argb = Color.SkyBlue;
+            var argb = Color.DarkSlateGray * 0.5f;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Disable(EnableCap.DepthTest);

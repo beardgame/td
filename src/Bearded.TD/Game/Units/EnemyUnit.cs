@@ -6,6 +6,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
@@ -47,6 +48,12 @@ namespace Bearded.TD.Game.Units
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.DarkRed;
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
+
+            var p = Health / (float)Blueprint.Health;
+            geo.Color = Color.DarkGray;
+            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1, 0.1f));
+            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), 0.8f, 0.8f);
+            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1 * p, 0.1f));
         }
 
         protected override Direction GetNextDirection()
