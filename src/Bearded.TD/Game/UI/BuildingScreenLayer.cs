@@ -5,6 +5,7 @@ using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
+using Bearded.TD.UI;
 using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
@@ -26,7 +27,7 @@ namespace Bearded.TD.Game.UI
             this.game = game;
         }
 
-        public override bool HandleInput(UpdateEventArgs args)
+        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {

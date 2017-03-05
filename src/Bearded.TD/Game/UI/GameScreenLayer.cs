@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
+using Bearded.TD.UI;
 using OpenTK;
 
 namespace Bearded.TD.Game.UI
@@ -20,7 +21,7 @@ namespace Bearded.TD.Game.UI
             this.geometries = geometries;
         }
 
-        public override bool HandleInput(UpdateEventArgs args)
+        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             runner.HandleInput(args);
             return false;

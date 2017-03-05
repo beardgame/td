@@ -51,6 +51,8 @@ namespace Bearded.TD
             screenManager.AddScreenLayer(new GameOverScreenLayer(gameInstance, renderContext.Geometries));
             screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
 
+            KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
+
             OnResize(EventArgs.Empty);
         }
 

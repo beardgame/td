@@ -30,6 +30,7 @@ namespace Bearded.TD.Screens
 
         private readonly Canvas canvas;
         private readonly ConsoleTextComponent consoleText;
+        private readonly TextInput consoleInput;
 
         public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
@@ -37,14 +38,17 @@ namespace Bearded.TD.Screens
 
             canvas = new Canvas(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
             consoleText = new ConsoleTextComponent(Canvas.Within(canvas, padding, padding, padding + inputBoxHeight, padding));
+            consoleInput = new TextInput(Canvas.Within(canvas, consoleHeight - inputBoxHeight, padding, 0, padding));
         }
 
-        public override bool HandleInput(UpdateEventArgs args)
+        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             if (InputManager.IsKeyHit(Key.Tilde))
                 isConsoleEnabled = !isConsoleEnabled;
 
             if (!isConsoleEnabled) return true;
+
+            consoleInput.HandleInput(inputState);
 
             if (InputManager.IsKeyHit(Key.Enter))
                 execute();
@@ -67,6 +71,7 @@ namespace Bearded.TD.Screens
             Geometries.ConsoleBackground.DrawRectangle(canvas.XStart, canvas.YStart, canvas.Width, canvas.Height);
 
             consoleText.Draw(Geometries, logger.GetSafeRecentEntries());
+            consoleInput.Draw(Geometries);
         }
 
         private class ConsoleTextComponent
