@@ -51,6 +51,7 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\Commands\GameOver.cs" />
     <Compile Include="Game\Commands\UnitDeath.cs" />
     <Compile Include="Game\GameCamera.cs" />

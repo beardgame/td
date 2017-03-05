@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
@@ -53,7 +52,7 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnDamaged();
             if (Health <= 0)
-                this.OnServer(GameOver.Command);
+                this.Sync(GameOver.Command);
         }
 
         private static readonly BuildingBlueprint Blueprint

@@ -1,7 +1,6 @@
 ﻿using System;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
-using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
@@ -60,7 +59,7 @@ namespace Bearded.TD.Game.Units
             Health -= damage;
             OnDamage();
             if (Health <= 0)
-                this.OnServer(UnitDeath.Command);
+                this.Sync(UnitDeath.Command);
         }
 
         public void Kill()
