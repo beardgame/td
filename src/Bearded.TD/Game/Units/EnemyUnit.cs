@@ -1,9 +1,12 @@
 ﻿using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
@@ -11,6 +14,8 @@ namespace Bearded.TD.Game.Units
 {
     class EnemyUnit : GameUnit
     {
+        private bool dealtDamage;
+
         public EnemyUnit(UnitBlueprint blueprint, Tile<TileInfo> currentTile) : base(blueprint, currentTile)
         { }
 
@@ -24,14 +29,18 @@ namespace Bearded.TD.Game.Units
         {
             base.Update(elapsedTime);
 
-            foreach (var b in Game.Enumerate<Base>())
-            {
-                if (!b.OccupiedTiles.Any(tile => tile.DistanceTo(CurrentTile) <= 1))
-                    continue;
-                b.Damage(Blueprint.Damage);
-                Delete();
+            if (!dealtDamage)
+                tryDealDamage();
+        }
+
+        private void tryDealDamage()
+        {
+            var target = CurrentTile.Neighbours.Select(t => t.Info.Building).OfType<Base>().FirstOrDefault();
+            if (target == null)
                 return;
-            }
+            target.Damage(Blueprint.Damage);
+            dealtDamage = true;
+            this.OnServer(UnitDeath.Command);
         }
 
         public override void Draw(GeometryManager geometries)
@@ -39,6 +48,12 @@ namespace Bearded.TD.Game.Units
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.DarkRed;
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
+
+            var p = Health / (float)Blueprint.Health;
+            geo.Color = Color.DarkGray;
+            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1, 0.1f));
+            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), 0.8f, 0.8f);
+            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1 * p, 0.1f));
         }
 
         protected override Direction GetNextDirection()
