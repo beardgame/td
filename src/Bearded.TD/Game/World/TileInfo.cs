@@ -18,9 +18,9 @@ namespace Bearded.TD.Game.World
         public Directions ValidDirections { get; }
 
         public Directions OpenDirections { get; private set; }
-        public bool IsPassable => building == null && TileType == Type.Floor;
+        public bool IsPassable => Building == null && TileType == Type.Floor;
 
-        private Building building;
+        public Building Building { get; private set; }
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }
         public Type TileType { get; private set; }
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.World
 
         public void SetBuilding(Building building)
         {
-            this.building = building;
+            this.Building = building;
         }
 
         public void AddEnemy(EnemyUnit enemy)
