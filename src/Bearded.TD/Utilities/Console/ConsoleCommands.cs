@@ -8,7 +8,7 @@ using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Utilities.Console
 {
-    class Commands
+    class ConsoleCommands
     {
         [Command("help", "allAvailableCommands")]
         private static void help(Logger logger, CommandParameters p)

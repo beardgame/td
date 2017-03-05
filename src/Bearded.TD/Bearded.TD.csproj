@@ -33,6 +33,14 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ClientDispatcher.cs" />
+    <Compile Include="Commands\CommandExecutor.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\CommandDispatcher.cs" />
+    <Compile Include="Commands\Dispatcher.cs" />
+    <Compile Include="Commands\IRequest.cs" />
+    <Compile Include="Commands\RequestDispatcher.cs" />
+    <Compile Include="Commands\ServerDispatcher.cs" />
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
     <Compile Include="EntryPoint.cs" />
@@ -94,7 +102,7 @@
     <Compile Include="TheGame.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
-    <Compile Include="Utilities\Console\Commands.cs" />
+    <Compile Include="Utilities\Console\ConsoleCommands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Math.cs" />
@@ -150,6 +158,9 @@
     <Content Include="assets\shaders\uvcolor.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Networking" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

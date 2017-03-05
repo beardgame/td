@@ -1,5 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.UI;
@@ -31,13 +32,13 @@ namespace Bearded.TD
 
         protected override void OnLoad(EventArgs e)
         {
-            Commands.Initialise();
+            ConsoleCommands.Initialise();
 
             renderContext = new RenderContext();
 
             InputManager.Initialize(Mouse);
 
-            var meta = new GameMeta(logger);
+            var meta = new GameMeta(logger, ServerDispatcher.Default);
 
             var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
             var gameInstance = new GameInstance(
