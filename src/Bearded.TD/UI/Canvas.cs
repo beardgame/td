@@ -22,7 +22,7 @@
 
         public static Canvas Within(Canvas parent, float top, float right, float bottom, float left)
         {
-            return new Canvas(new FixedOffsetComponent(parent.X, left, right), new FixedOffsetComponent(parent.Y, top, bottom));
+            return new Canvas(new FixedOffsetDimension(parent.X, left, right), new FixedOffsetDimension(parent.Y, top, bottom));
         }
     }
 }
