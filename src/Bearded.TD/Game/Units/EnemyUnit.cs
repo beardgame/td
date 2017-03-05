@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
@@ -40,7 +39,7 @@ namespace Bearded.TD.Game.Units
                 return;
             target.Damage(Blueprint.Damage);
             dealtDamage = true;
-            this.OnServer(UnitDeath.Command);
+            this.Sync(UnitDeath.Command);
         }
 
         public override void Draw(GeometryManager geometries)

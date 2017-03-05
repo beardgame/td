@@ -4,7 +4,7 @@ namespace Bearded.TD.Game.Commands
 {
     class GameOver : ICommand
     {
-        public static ICommand Command(GameObject obj) => new GameOver(obj.Game);
+        public static ICommand Command(GameState game) => new GameOver(game);
 
         private readonly GameState game;
 
