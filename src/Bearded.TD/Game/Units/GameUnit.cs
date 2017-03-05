@@ -1,6 +1,8 @@
 ﻿using System;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -57,10 +59,11 @@ namespace Bearded.TD.Game.Units
         {
             health -= damage;
             OnDamage();
-            if (health <= 0) kill();
+            if (health <= 0)
+                this.OnServer(UnitDeath.Command);
         }
 
-        private void kill()
+        public void Kill()
         {
             OnKill();
             // boom! <-- almost as good as particle explosions
