@@ -16,8 +16,18 @@ namespace Bearded.TD.UI
 
         private readonly Canvas canvas;
 
-        public string Text { get; private set; } = "";
-        private int cursorPosition = 0;
+        private int cursorPosition;
+        private string text = "";
+
+        public string Text
+        {
+            get { return text; }
+            set
+            {
+                text = value ?? "";
+                cursorPosition = text.Length;
+            }
+        }
 
         public TextInput(Canvas canvas)
         {
@@ -28,14 +38,14 @@ namespace Bearded.TD.UI
         {
             if (InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
             {
-                Text = Text.Substring(0, cursorPosition - 1) + Text.Substring(cursorPosition);
+                text = text.Substring(0, cursorPosition - 1) + text.Substring(cursorPosition);
                 cursorPosition--;
             }
             if (InputManager.IsKeyPressed(Key.Left) && cursorPosition > 0)
             {
                 cursorPosition--;
             }
-            if (InputManager.IsKeyPressed(Key.Right) && cursorPosition < Text.Length)
+            if (InputManager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
             {
                 cursorPosition++;
             }
@@ -45,7 +55,7 @@ namespace Bearded.TD.UI
             }
             if (InputManager.IsKeyPressed(Key.End))
             {
-                cursorPosition = Text.Length;
+                cursorPosition = text.Length;
             }
 
             foreach (var c in inputState.PressedCharacters)
@@ -55,7 +65,7 @@ namespace Bearded.TD.UI
                     continue;
                 }
 
-                Text = Text.Substring(0, cursorPosition) + c + Text.Substring(cursorPosition);
+                text = text.Substring(0, cursorPosition) + c + text.Substring(cursorPosition);
                 cursorPosition++;
             }
         }
@@ -66,9 +76,9 @@ namespace Bearded.TD.UI
             geometries.ConsoleFont.Color = Color.White;
 
             var height = canvas.YStart + .5f * canvas.Height;
-            geometries.ConsoleFont.DrawString(new Vector2(canvas.XStart, height), Text, 0, .5f);
+            geometries.ConsoleFont.DrawString(new Vector2(canvas.XStart, height), text, 0, .5f);
 
-            var cursorXOffset = canvas.XStart + geometries.ConsoleFont.StringWidth(Text.Substring(0, cursorPosition));
+            var cursorXOffset = canvas.XStart + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
             geometries.ConsoleFont.DrawString(new Vector2(cursorXOffset, height), cursorString, .5f, .5f);
         }
     }

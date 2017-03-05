@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
+using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
 using OpenTK;
@@ -32,6 +35,9 @@ namespace Bearded.TD.Screens
         private readonly ConsoleTextComponent consoleText;
         private readonly TextInput consoleInput;
 
+        private readonly List<string> commandHistory = new List<string>();
+        private int commandHistoryIndex = -1;
+
         public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
             this.logger = logger;
@@ -51,7 +57,10 @@ namespace Bearded.TD.Screens
             consoleInput.HandleInput(inputState);
 
             if (InputManager.IsKeyHit(Key.Enter))
+            {
                 execute();
+            }
+                
 
             return false;
         }
@@ -60,7 +69,34 @@ namespace Bearded.TD.Screens
 
         private void execute()
         {
-            
+            var command = consoleInput.Text.Trim();
+
+            addToHistory(command);
+
+            logger.Info.Log("> {0}", command);
+
+            var split = command.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length == 0)
+                return;
+            var args = split.Skip(1).ToArray();
+
+            if (!Commands.TryRun(split[0], logger, new CommandParameters(args)))
+            {
+                logger.Warning.Log("Command not found.");
+            }
+
+            consoleInput.Text = "";
+        }
+
+        private void addToHistory(string command)
+        {
+            // Don't add double commands.
+            if (commandHistory.Count > 0 && commandHistory[commandHistory.Count - 1] == command) return;
+            commandHistory.Add(command);
+            commandHistoryIndex = -1;
+
+            if (commandHistory.Count >= 200)
+                commandHistory.RemoveRange(0, 100);
         }
 
         public override void Draw()
