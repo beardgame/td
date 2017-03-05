@@ -57,10 +57,18 @@ namespace Bearded.TD.Screens
             consoleInput.HandleInput(inputState);
 
             if (InputManager.IsKeyHit(Key.Enter))
-            {
                 execute();
+            if (InputManager.IsKeyHit(Key.Tab))
+                consoleInput.Text = autoComplete(consoleInput.Text);
+            if (InputManager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
+            {
+                if (commandHistoryIndex == -1)
+                    setCommandHistoryIndex(commandHistory.Count - 1);
+                else
+                    setCommandHistoryIndex(commandHistoryIndex - 1);
             }
-                
+            if (InputManager.IsKeyHit(Key.Down) && commandHistoryIndex != -1)
+                setCommandHistoryIndex(commandHistoryIndex + 1);
 
             return false;
         }
@@ -80,9 +88,9 @@ namespace Bearded.TD.Screens
                 return;
             var args = split.Skip(1).ToArray();
 
-            if (!Commands.TryRun(split[0], logger, new CommandParameters(args)))
+            if (!ConsoleCommands.TryRun(split[0], logger, new CommandParameters(args)))
             {
-                logger.Warning.Log("Command not found.");
+                logger.Error.Log("Command not found.");
             }
 
             consoleInput.Text = "";
@@ -97,6 +105,59 @@ namespace Bearded.TD.Screens
 
             if (commandHistory.Count >= 200)
                 commandHistory.RemoveRange(0, 100);
+        }
+
+        private void setCommandHistoryIndex(int i)
+        {
+            if (commandHistoryIndex == -1)
+                commandHistory.Add(consoleInput.Text);
+                
+            commandHistoryIndex = i;
+            consoleInput.Text = commandHistory[i];
+
+            if (commandHistoryIndex == commandHistory.Count - 1)
+            {
+                commandHistory.RemoveAt(commandHistoryIndex);
+                commandHistoryIndex = -1;
+            }
+        }
+
+        private string autoComplete(string incompleteCommand)
+        {
+            var trimmed = incompleteCommand.Trim();
+            if (trimmed.Contains(" ")) return autoCompleteParameters(incompleteCommand);
+
+            var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
+
+            if (extended == null)
+            {
+                logger.Info.Log("> {0}", trimmed);
+                logger.Warning.Log("No commands found.");
+                return trimmed;
+            }
+
+            if (ConsoleCommands.Prefixes.Contains(extended))
+            {
+                if (trimmed != extended)
+                    return extended + " ";
+                else
+                    return autoCompleteParameters(incompleteCommand);
+            }
+
+            if (extended == trimmed)
+            {
+                var availableCommands = ConsoleCommands.Prefixes.AllKeys(extended);
+                logger.Info.Log("> {0}", trimmed);
+                foreach (var command in availableCommands) logger.Info.Log(command);
+            }
+
+            return extended;
+        }
+
+        private string autoCompleteParameters(string incompleteCommand)
+        {
+            logger.Warning.Log("Autocompletion of parameters has not been implemented yet.");
+            return incompleteCommand;
         }
 
         public override void Draw()
