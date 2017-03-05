@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI;
+using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
-using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
 
@@ -13,8 +15,7 @@ namespace Bearded.TD.Screens
     class ConsoleScreenLayer : UIScreenLayer
     {
         private const float consoleHeight = 320;
-        private const float fontSize = 14;
-        private const float lineHeight = 16;
+        private const float inputBoxHeight = 20;
         private const float padding = 6;
 
         private static readonly Dictionary<Logger.Severity, Color> colors = new Dictionary<Logger.Severity, Color>
@@ -27,62 +28,129 @@ namespace Bearded.TD.Screens
             { Logger.Severity.Trace, Color.SkyBlue },
         };
 
-        #if DEBUG
-        private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
-        {
-            Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning,
-            Logger.Severity.Info, Logger.Severity.Debug, Logger.Severity.Trace
-        };
-        #else
-        private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
-        {
-            Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning, Logger.Severity.Info
-        };
-        #endif
-
         private readonly Logger logger;
         private bool isConsoleEnabled;
+
+        private readonly Canvas canvas;
+        private readonly ConsoleTextComponent consoleText;
+        private readonly TextInput consoleInput;
+
+        private readonly List<string> commandHistory = new List<string>();
+        private int commandHistoryIndex = -1;
 
         public ConsoleScreenLayer(Logger logger, GeometryManager geometries) : base(geometries, 0, 1, true)
         {
             this.logger = logger;
+
+            canvas = new Canvas(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
+            consoleText = new ConsoleTextComponent(Canvas.Within(canvas, padding, padding, padding + inputBoxHeight, padding));
+            consoleInput = new TextInput(Canvas.Within(canvas, consoleHeight - inputBoxHeight, padding, 0, padding));
         }
 
-        public override bool HandleInput(UpdateEventArgs args)
+        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             if (InputManager.IsKeyHit(Key.Tilde))
                 isConsoleEnabled = !isConsoleEnabled;
 
-            return true;
+            if (!isConsoleEnabled) return true;
+
+            consoleInput.HandleInput(inputState);
+
+            if (InputManager.IsKeyHit(Key.Enter))
+            {
+                execute();
+            }
+                
+
+            return false;
         }
 
         public override void Update(UpdateEventArgs args) { }
+
+        private void execute()
+        {
+            var command = consoleInput.Text.Trim();
+
+            addToHistory(command);
+
+            logger.Info.Log("> {0}", command);
+
+            var split = command.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length == 0)
+                return;
+            var args = split.Skip(1).ToArray();
+
+            if (!Commands.TryRun(split[0], logger, new CommandParameters(args)))
+            {
+                logger.Warning.Log("Command not found.");
+            }
+
+            consoleInput.Text = "";
+        }
+
+        private void addToHistory(string command)
+        {
+            // Don't add double commands.
+            if (commandHistory.Count > 0 && commandHistory[commandHistory.Count - 1] == command) return;
+            commandHistory.Add(command);
+            commandHistoryIndex = -1;
+
+            if (commandHistory.Count >= 200)
+                commandHistory.RemoveRange(0, 100);
+        }
 
         public override void Draw()
         {
             if (!isConsoleEnabled) return;
 
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            Geometries.ConsoleBackground.DrawRectangle(0, 0, ViewportSize.Width, consoleHeight);
+            Geometries.ConsoleBackground.DrawRectangle(canvas.XStart, canvas.YStart, canvas.Width, canvas.Height);
 
-            var logEntries = logger.GetSafeRecentEntries();
+            consoleText.Draw(Geometries, logger.GetSafeRecentEntries());
+            consoleInput.Draw(Geometries);
+        }
 
-            Geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
-            Geometries.ConsoleFont.Height = fontSize;
-
-            var maxVisible = Mathf.CeilToInt(consoleHeight / lineHeight);
-            var start = Math.Max(0, logEntries.Count - maxVisible - 1);
-
-            var y = consoleHeight - padding - lineHeight;
-            var i = logEntries.Count;
-
-            while (y >= -lineHeight && i > 0)
+        private class ConsoleTextComponent
+        {
+            private const float fontSize = 14;
+            private const float lineHeight = 16;
+            
+#if DEBUG
+            private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
             {
-                var entry = logEntries[--i];
-                if (!visibleSeverities.Contains(entry.Severity)) continue;
-                Geometries.ConsoleFont.Color = colors[logEntries[i].Severity];
-                Geometries.ConsoleFont.DrawString(new Vector2(padding, y), logEntries[i].Text);
-                y -= lineHeight;
+                Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning,
+                Logger.Severity.Info, Logger.Severity.Debug, Logger.Severity.Trace
+            };
+#else
+            private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
+            {
+                Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning, Logger.Severity.Info
+            };
+#endif
+
+            private readonly Canvas canvas;
+
+            public ConsoleTextComponent(Canvas canvas)
+            {
+                this.canvas = canvas;
+            }
+
+            public void Draw(GeometryManager geometries, IReadOnlyList<Logger.Entry> logEntries)
+            {
+                geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
+                geometries.ConsoleFont.Height = fontSize;
+
+                var y = canvas.YEnd - lineHeight;
+                var i = logEntries.Count;
+
+                while (y >= -lineHeight && i > 0)
+                {
+                    var entry = logEntries[--i];
+                    if (!visibleSeverities.Contains(entry.Severity)) continue;
+                    geometries.ConsoleFont.Color = colors[logEntries[i].Severity];
+                    geometries.ConsoleFont.DrawString(new Vector2(padding, y), logEntries[i].Text);
+                    y -= lineHeight;
+                }
             }
         }
     }

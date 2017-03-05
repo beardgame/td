@@ -102,6 +102,14 @@
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Screens\UIScreenLayer.cs" />
     <Compile Include="TheGame.cs" />
+    <Compile Include="UI\Canvas.cs" />
+    <Compile Include="UI\FixedOffsetDimension.cs" />
+    <Compile Include="UI\FixedSizeDimension.cs" />
+    <Compile Include="UI\IDimension.cs" />
+    <Compile Include="UI\InputState.cs" />
+    <Compile Include="UI\ScalingDimension.cs" />
+    <Compile Include="UI\Screen.cs" />
+    <Compile Include="UI\TextInput.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\ConsoleCommands.cs" />
