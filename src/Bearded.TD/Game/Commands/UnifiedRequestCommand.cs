@@ -8,4 +8,14 @@ namespace Bearded.TD.Game.Commands
         public ICommand ToCommand() => this;
         public abstract void Execute();
     }
+
+    abstract class UnifiedDebugRequestCommand : UnifiedRequestCommand
+    {
+        protected abstract bool CheckPreconditionsDebug();
+#if DEBUG
+        public override bool CheckPreconditions() => CheckPreconditionsDebug();
+#else
+        public override bool CheckPreconditions() => false;
+#endif
+    }
 }

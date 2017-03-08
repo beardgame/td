@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -48,7 +49,7 @@ namespace Bearded.TD.Game.Units
             if (!HasEnemiesQueued || Mathf.FloorToInt(Game.Time.NumericValue * 2) % 2 == 0) return;
 
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.DarkRed.WithAlpha(.5f).Premultiplied;
+            geo.Color = Color.DarkRed * 0.5f;
 
             const float w = HexagonDistanceX * 0.5f - 0.1f;
             const float h = HexagonDistanceY * 0.5f - 0.1f;
@@ -73,7 +74,7 @@ namespace Bearded.TD.Game.Units
 
         private void spawnEnemy(UnitBlueprint blueprint)
         {
-            Game.Add(new EnemyUnit(blueprint, tile));
+            this.Sync(SpawnEnemy.Command, tile, blueprint);
         }
     }
 }

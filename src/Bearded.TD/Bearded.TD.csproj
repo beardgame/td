@@ -55,6 +55,7 @@
     <Compile Include="Game\Commands\SetTileType.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\Commands\GameOver.cs" />
+    <Compile Include="Game\Commands\SpawnEnemy.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
     <Compile Include="Game\Commands\UnitDeath.cs" />
     <Compile Include="Game\GameCamera.cs" />

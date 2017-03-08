@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Commands
         public static IRequest Request(GameState game, Tile<TileInfo> tile, TileInfo.Type type)
             => new Implementation(game, tile, type);
 
-        private class Implementation : UnifiedRequestCommand
+        private class Implementation : UnifiedDebugRequestCommand
         {
             private readonly GameState game;
             private readonly Tile<TileInfo> tile;
@@ -22,11 +22,7 @@ namespace Bearded.TD.Game.Commands
                 this.type = type;
             }
 
-#if DEBUG
-            public override bool CheckPreconditions() => tile.IsValid;
-#else
-            public override bool  CheckPreconditions() => false;
-#endif
+            protected override bool CheckPreconditionsDebug() => tile.IsValid;
 
             public override void Execute() => game.Geometry.SetTileType(tile, type);
         }

@@ -70,5 +70,11 @@ namespace Bearded.TD.Game.Commands
         public static void Sync<T>(this T obj, Func<GameState, ICommand> func)
             where T : GameObject
             => d(obj).RunOnlyOnServer(func, obj.Game);
+        public static void Sync<T, T1>(this T obj, Func<GameState, T1, ICommand> func, T1 p1)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(func, obj.Game, p1);
+        public static void Sync<T, T1, T2>(this T obj, Func<GameState, T1, T2, ICommand> func, T1 p1, T2 p2)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2);
     }
 }
