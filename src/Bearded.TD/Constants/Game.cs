@@ -27,6 +27,5 @@ namespace Bearded.TD
                 public const float HexagonOuterRadiusSquared = HexagonSide * HexagonSide;
             }
         }
-
     }
 }

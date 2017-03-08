@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace Bearded.TD.Screens
 {
-    abstract class ScreenLayer
+    abstract class ScreenLayer : IScreenLayer
     {
         private const float fovy = Mathf.PiOver2;
         private const float zNear = .1f;
@@ -38,5 +38,10 @@ namespace Bearded.TD.Screens
         public abstract void Update(UpdateEventArgs args);
         public abstract void Draw();
         protected virtual void OnViewportSizeChanged() { }
+
+        public void Render(RenderContext context)
+        {
+            context.Compositor.RenderLayer(this);
+        }
     }
 }

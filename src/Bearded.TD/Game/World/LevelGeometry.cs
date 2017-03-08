@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.World
     class LevelGeometry
     {
         public delegate void TilePassibilityChangeEventHandler(Tile<TileInfo> tile);
-        public event TilePassibilityChangeEventHandler TilePassabalityChanged;
+        public event TilePassibilityChangeEventHandler TilePassabilityChanged;
 
         public Tilemap<TileInfo> Tilemap { get; }
 
@@ -51,7 +51,7 @@ namespace Bearded.TD.Game.World
                     neighbour.Info.CloseTo(dir.Opposite());
             }
 
-            TilePassabalityChanged?.Invoke(tile);
+            TilePassabilityChanged?.Invoke(tile);
         }
     }
 }
