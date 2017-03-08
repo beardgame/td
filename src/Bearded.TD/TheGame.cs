@@ -1,8 +1,5 @@
 ﻿using System;
 using amulware.Graphics;
-using Bearded.TD.Commands;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
@@ -38,26 +35,10 @@ namespace Bearded.TD
 
             InputManager.Initialize(Mouse);
 
-            // these are different for clients
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
-            var dispatcher = new ServerDispatcher(commandDispatcher);
-
-            var meta = new GameMeta(logger, dispatcher);
-
-            var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
-            var gameInstance = new GameInstance(
-                gameState,
-                new GameCamera(meta, gameState.Level.Tilemap.Radius),
-                requestDispatcher
-                );
-            var gameRunner = new GameRunner(gameInstance);
-
             screenManager = new ScreenManager();
-            screenManager.AddScreenLayer(new GameScreenLayer(gameInstance, gameRunner, renderContext.Geometries));
-            screenManager.AddScreenLayer(new BuildingScreenLayer(gameInstance, renderContext.Geometries));
-            screenManager.AddScreenLayer(new GameOverScreenLayer(gameInstance, renderContext.Geometries));
+            
             screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
+            screenManager.AddScreenLayer(new GameUI(logger, renderContext.Geometries));
 
             KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
 
@@ -89,7 +70,7 @@ namespace Bearded.TD
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
-            screenManager.Draw(renderContext);
+            screenManager.Render(renderContext);
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();

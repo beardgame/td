@@ -81,7 +81,8 @@
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\DebugToggleTileTypeClickHandler.cs" />
     <Compile Include="Game\UI\GameOverScreenLayer.cs" />
-    <Compile Include="Game\UI\GameScreenLayer.cs" />
+    <Compile Include="Game\UI\GameWorldScreenLayer.cs" />
+    <Compile Include="Game\UI\GameUI.cs" />
     <Compile Include="Game\UI\IClickHandler.cs" />
     <Compile Include="Game\UI\PlayerInput.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
@@ -102,7 +103,10 @@
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="Screens\ConsoleScreenLayer.cs" />
+    <Compile Include="Screens\IScreenLayer.cs" />
     <Compile Include="Screens\ScreenLayer.cs" />
+    <Compile Include="Screens\ScreenLayerCollection.cs" />
+    <Compile Include="Screens\ScreenLayerGroup.cs" />
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Screens\UIScreenLayer.cs" />
     <Compile Include="TheGame.cs" />
@@ -174,7 +178,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Networking" />
+    <Folder Include="Networking\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

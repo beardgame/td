@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game;
 using Bearded.TD.Screens;
 using OpenTK.Graphics.OpenGL;
 

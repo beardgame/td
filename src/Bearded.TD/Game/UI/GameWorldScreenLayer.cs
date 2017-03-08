@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace Bearded.TD.Game.UI
 {
-    class GameScreenLayer : ScreenLayer
+    class GameWorldScreenLayer : ScreenLayer
     {
         private readonly GameInstance game;
         private readonly GameRunner runner;
@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.UI
 
         public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
 
-        public GameScreenLayer(GameInstance game, GameRunner runner, GeometryManager geometries)
+        public GameWorldScreenLayer(GameInstance game, GameRunner runner, GeometryManager geometries)
         {
             this.game = game;
             this.runner = runner;
