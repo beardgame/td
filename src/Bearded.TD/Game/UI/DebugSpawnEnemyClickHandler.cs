@@ -10,20 +10,20 @@ namespace Bearded.TD.Game.UI
     {
         public TileSelection Selection => TileSelection.Single;
 
-        public void HandleHover(GameState game, PositionedFootprint footprint)
+        public void HandleHover(GameInstance game, PositionedFootprint footprint)
         { }
 
-        public void HandleClick(GameState game, PositionedFootprint footprint)
+        public void HandleClick(GameInstance game, PositionedFootprint footprint)
         {
             footprint.OccupiedTiles
                 .Where(t => t.IsValid && t.Info.IsPassable)
-                .ForEach(tile => game.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2), 10), tile)));
+                .ForEach(tile => game.State.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2), 10), tile)));
         }
 
-        public void Enable(GameState game)
+        public void Enable(GameInstance game)
         { }
 
-        public void Disable(GameState game)
+        public void Disable(GameInstance game)
         { }
     }
 }

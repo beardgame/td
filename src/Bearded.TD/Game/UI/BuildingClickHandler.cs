@@ -17,26 +17,26 @@ namespace Bearded.TD.Game.UI
             this.blueprint = blueprint;
         }
 
-        public void HandleHover(GameState game, PositionedFootprint footprint)
+        public void HandleHover(GameInstance game, PositionedFootprint footprint)
         {
             ghost.SetFootprint(footprint);
         }
 
-        public void HandleClick(GameState game, PositionedFootprint footprint)
+        public void HandleClick(GameInstance game, PositionedFootprint footprint)
         {
             if (footprint.OccupiedTiles.Any((tile) => !tile.IsValid || !tile.Info.IsPassable)) return;
 
             var building = new PlayerBuilding(blueprint, footprint);
-            game.Add(building);
-            game.Add(new DebugWorker(building.BuildManager));
+            game.State.Add(building);
+            game.State.Add(new DebugWorker(building.BuildManager));
         }
 
-        public void Enable(GameState game)
+        public void Enable(GameInstance game)
         {
-            game.Add(ghost = new BuildingGhost(blueprint));
+            game.State.Add(ghost = new BuildingGhost(blueprint));
         }
 
-        public void Disable(GameState game)
+        public void Disable(GameInstance game)
         {
             ghost.Delete();
         }

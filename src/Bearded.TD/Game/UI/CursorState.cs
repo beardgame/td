@@ -5,36 +5,36 @@ namespace Bearded.TD.Game.UI
 {
     class CursorState
     {
-        private readonly GameState gameState;
+        private readonly GameInstance game;
         public IClickHandler ClickHandler { get; private set; }
 
-        public CursorState(GameState gameState)
+        public CursorState(GameInstance game)
         {
-            this.gameState = gameState;
+            this.game = game;
         }
 
         public void SetClickHandler(IClickHandler newHandler)
         {
             if (newHandler == ClickHandler) return;
 
-            ClickHandler?.Disable(gameState);
+            ClickHandler?.Disable(game);
             ClickHandler = newHandler;
-            newHandler?.Enable(gameState);
+            newHandler?.Enable(game);
         }
 
         public PositionedFootprint GetFootprintForPosition(Position2 position)
         {
-            return ClickHandler.Selection.GetPositionedFootprint(gameState.Level, position);
+            return ClickHandler.Selection.GetPositionedFootprint(game.State.Level, position);
         }
 
         public void Hover(PositionedFootprint footprint)
         {
-            ClickHandler?.HandleHover(gameState, footprint);
+            ClickHandler?.HandleHover(game, footprint);
         }
 
         public void Click(PositionedFootprint footprint)
         {
-            ClickHandler?.HandleClick(gameState, footprint);
+            ClickHandler?.HandleClick(game, footprint);
         }
     }
 }

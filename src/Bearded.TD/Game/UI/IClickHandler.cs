@@ -6,10 +6,10 @@ namespace Bearded.TD.Game.UI
     {
         TileSelection Selection { get; }
 
-        void HandleHover(GameState game, PositionedFootprint footprint);
-        void HandleClick(GameState game, PositionedFootprint footprint);
+        void HandleHover(GameInstance game, PositionedFootprint footprint);
+        void HandleClick(GameInstance game, PositionedFootprint footprint);
 
-        void Enable(GameState game);
-        void Disable(GameState game);
+        void Enable(GameInstance game);
+        void Disable(GameInstance game);
     }
 }

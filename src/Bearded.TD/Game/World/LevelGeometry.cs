@@ -22,13 +22,11 @@ namespace Bearded.TD.Game.World
             Tilemap.ForEach(updatePassability);
         }
 
-        public void ToggleTileType(Tile<TileInfo> tile)
+        public void SetTileType(Tile<TileInfo> tile, TileInfo.Type type)
         {
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
-            var info = Tilemap[tile];
-            info.SetTileType(info.TileType == TileInfo.Type.Wall
-                ? TileInfo.Type.Floor
-                : TileInfo.Type.Wall);
+
+            Tilemap[tile].SetTileType(type);
 
             updatePassability(tile);
         }

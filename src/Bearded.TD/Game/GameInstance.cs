@@ -15,7 +15,7 @@ namespace Bearded.TD.Game
             State = state;
             Camera = camera;
             RequestDispatcher = requestDispatcher;
-            Cursor = new CursorState(state);
+            Cursor = new CursorState(this); // bad.
         }
     }
 }
