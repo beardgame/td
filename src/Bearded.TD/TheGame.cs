@@ -38,12 +38,19 @@ namespace Bearded.TD
 
             InputManager.Initialize(Mouse);
 
-            var meta = new GameMeta(logger, ServerDispatcher.Default);
+            // these are different for clients
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var dispatcher = new ServerDispatcher(commandDispatcher);
+
+            var meta = new GameMeta(logger, dispatcher);
 
             var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
             var gameInstance = new GameInstance(
                 gameState,
-                new GameCamera(meta, gameState.Level.Tilemap.Radius));
+                new GameCamera(meta, gameState.Level.Tilemap.Radius),
+                requestDispatcher
+                );
             var gameRunner = new GameRunner(gameInstance);
 
             screenManager = new ScreenManager();
