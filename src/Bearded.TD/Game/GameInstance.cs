@@ -9,6 +9,7 @@ namespace Bearded.TD.Game
         public GameCamera Camera { get; }
         public IRequestDispatcher RequestDispatcher { get; }
         public CursorState Cursor { get; }
+        public ChatLog ChatLog { get; } = new ChatLog();
 
         public GameInstance(GameState state, GameCamera camera, IRequestDispatcher requestDispatcher)
         {

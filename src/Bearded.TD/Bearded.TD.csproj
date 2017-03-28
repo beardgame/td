@@ -53,6 +53,7 @@
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\Commands\BuildBuilding.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
+    <Compile Include="Game\Commands\SendChatMessage.cs" />
     <Compile Include="Game\Commands\SetTileType.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\Commands\GameOver.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Game\GameInstance.cs" />
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
+    <Compile Include="Game\Players\Player.cs" />
     <Compile Include="Game\Resources\DebugWorker.cs" />
     <Compile Include="Game\Resources\IResourceConsumer.cs" />
     <Compile Include="Game\Resources\ResourceGrant.cs" />
@@ -79,6 +81,8 @@
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\BuildingClickHandler.cs" />
     <Compile Include="Game\UI\BuildingScreenLayer.cs" />
+    <Compile Include="Game\UI\ChatLog.cs" />
+    <Compile Include="Game\UI\ChatMessage.cs" />
     <Compile Include="Game\UI\CursorState.cs" />
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\DebugToggleTileTypeClickHandler.cs" />
