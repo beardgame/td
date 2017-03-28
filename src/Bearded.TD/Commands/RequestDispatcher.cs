@@ -35,7 +35,7 @@ namespace Bearded.TD.Commands
 
         private ICommand cancel(IRequest request)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         private ICommand execute(IRequest request)

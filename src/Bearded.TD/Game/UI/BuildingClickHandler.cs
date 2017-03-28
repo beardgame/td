@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 
@@ -24,11 +25,7 @@ namespace Bearded.TD.Game.UI
 
         public void HandleClick(GameInstance game, PositionedFootprint footprint)
         {
-            if (footprint.OccupiedTiles.Any((tile) => !tile.IsValid || !tile.Info.IsPassable)) return;
-
-            var building = new PlayerBuilding(blueprint, footprint);
-            game.State.Add(building);
-            game.State.Add(new DebugWorker(building.BuildManager));
+            game.Request(BuildBuilding.Request, blueprint, footprint);
         }
 
         public void Enable(GameInstance game)

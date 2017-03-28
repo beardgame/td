@@ -33,6 +33,9 @@ namespace Bearded.TD.Commands
 
         public void Dispatch(ICommand command)
         {
+            if (command == null)
+                return;
+
             // send to appropriate clients (usually all)
 
             executor.Execute(command);
