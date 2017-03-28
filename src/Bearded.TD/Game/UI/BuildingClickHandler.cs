@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 
 namespace Bearded.TD.Game.UI
