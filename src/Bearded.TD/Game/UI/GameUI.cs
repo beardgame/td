@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.UI
 {
     class GameUI : ScreenLayerGroup
     {
-        public GameUI(Logger logger, GeometryManager geometries)
+        public GameUI(ScreenLayerCollection parent, GeometryManager geometries, Logger logger) : base(parent)
         {
             // these are different for clients
             var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
@@ -25,9 +25,9 @@ namespace Bearded.TD.Game.UI
                 );
             var gameRunner = new GameRunner(gameInstance);
 
-            AddScreenLayer(new GameWorldScreenLayer(gameInstance, gameRunner, geometries));
-            AddScreenLayer(new BuildingScreenLayer(gameInstance, geometries));
-            AddScreenLayer(new GameOverScreenLayer(gameInstance, geometries));
+            AddScreenLayerOnTop(new GameWorldScreenLayer(this, gameInstance, gameRunner, geometries));
+            AddScreenLayerOnTop(new BuildingScreenLayer(this, gameInstance, geometries));
+            AddScreenLayerOnTop(new GameOverScreenLayer(this, geometries, gameInstance));
         }
     }
 }

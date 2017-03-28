@@ -21,8 +21,8 @@ namespace Bearded.TD.Game.UI
         private readonly GameInstance game;
         private int selectedHandler = -1;
 
-        public BuildingScreenLayer(GameInstance game, GeometryManager geometries)
-            : base(geometries, 0, 1, true)
+        public BuildingScreenLayer(ScreenLayerCollection parent, GameInstance game, GeometryManager geometries)
+            : base(parent, geometries, 0, 1, true)
         {
             this.game = game;
         }

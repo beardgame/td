@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.UI
 
         public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
 
-        public GameWorldScreenLayer(GameInstance game, GameRunner runner, GeometryManager geometries)
+        public GameWorldScreenLayer(ScreenLayerCollection parent, GameInstance game, GameRunner runner, GeometryManager geometries) : base(parent)
         {
             this.game = game;
             this.runner = runner;

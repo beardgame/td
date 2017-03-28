@@ -12,6 +12,8 @@ namespace Bearded.TD.Screens
         private const float zNear = .1f;
         private const float zFar = 1024f;
 
+        protected readonly ScreenLayerCollection Parent;
+
         protected ViewportSize ViewportSize { get; private set; }
 
         public abstract Matrix4 ViewMatrix { get; }
@@ -28,6 +30,11 @@ namespace Bearded.TD.Screens
             }
         }
 
+        protected ScreenLayer(ScreenLayerCollection parent)
+        {
+            Parent = parent;
+        }
+
         public void OnResize(ViewportSize newSize)
         {
             ViewportSize = newSize;
@@ -42,6 +49,11 @@ namespace Bearded.TD.Screens
         public void Render(RenderContext context)
         {
             context.Compositor.RenderLayer(this);
+        }
+
+        protected void Destroy()
+        {
+            Parent.RemoveScreenLayer(this);
         }
     }
 }

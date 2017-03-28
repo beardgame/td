@@ -109,6 +109,7 @@
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="Screens\ConsoleScreenLayer.cs" />
+    <Compile Include="Screens\LobbyScreen.cs" />
     <Compile Include="UI\Components\ConsoleTextComponent.cs" />
     <Compile Include="Screens\IScreenLayer.cs" />
     <Compile Include="Screens\ScreenLayer.cs" />

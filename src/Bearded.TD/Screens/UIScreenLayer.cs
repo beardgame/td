@@ -21,10 +21,10 @@ namespace Bearded.TD.Screens
 
         private readonly List<UIComponent> components = new List<UIComponent>();
 
-        protected UIScreenLayer(GeometryManager geometries) : this(geometries, .5f, 1, true)
+        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries) : this(parent, geometries, .5f, 1, true)
         { }
 
-        protected UIScreenLayer(GeometryManager geometries, float originX, float originY, bool flipY)
+        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, float originX, float originY, bool flipY) : base(parent)
         {
             Geometries = geometries;
             Screen = Screen.GetCanvas();
