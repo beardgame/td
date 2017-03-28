@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.UI
 {
-    class Canvas
+    partial class Bounds
     {
         public IDimension X { get; }
         public IDimension Y { get; }
@@ -13,16 +13,10 @@
         public float YEnd => Y.Max;
         public float Height => Y.Max - Y.Min;
 
-        public Canvas(IDimension x, IDimension y)
+        public Bounds(IDimension x, IDimension y)
         {
             X = x;
             Y = y;
-        }
-
-
-        public static Canvas Within(Canvas parent, float top, float right, float bottom, float left)
-        {
-            return new Canvas(new FixedOffsetDimension(parent.X, left, right), new FixedOffsetDimension(parent.Y, top, bottom));
         }
     }
 }

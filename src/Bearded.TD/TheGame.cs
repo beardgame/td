@@ -36,9 +36,9 @@ namespace Bearded.TD
             InputManager.Initialize(Mouse);
 
             screenManager = new ScreenManager();
-            
-            screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
+
             screenManager.AddScreenLayer(new GameUI(logger, renderContext.Geometries));
+            screenManager.AddScreenLayer(new ConsoleScreenLayer(logger, renderContext.Geometries));
 
             KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
 

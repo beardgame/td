@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 
 namespace Bearded.TD.Screens

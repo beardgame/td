@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.UI
 {
-    class Screen : Canvas
+    class Screen : Bounds
     {
         private readonly ScreenDimension screenX;
         private readonly ScreenDimension screenY;

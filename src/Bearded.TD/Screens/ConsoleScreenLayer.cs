@@ -4,10 +4,10 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
-using OpenTK;
 using OpenTK.Input;
 
 namespace Bearded.TD.Screens
@@ -18,21 +18,10 @@ namespace Bearded.TD.Screens
         private const float inputBoxHeight = 20;
         private const float padding = 6;
 
-        private static readonly Dictionary<Logger.Severity, Color> colors = new Dictionary<Logger.Severity, Color>
-        {
-            { Logger.Severity.Fatal, Color.DeepPink },
-            { Logger.Severity.Error, Color.Red },
-            { Logger.Severity.Warning, Color.Yellow },
-            { Logger.Severity.Info, Color.White },
-            { Logger.Severity.Debug, Color.SpringGreen },
-            { Logger.Severity.Trace, Color.SkyBlue },
-        };
-
         private readonly Logger logger;
         private bool isConsoleEnabled;
 
-        private readonly Canvas canvas;
-        private readonly ConsoleTextComponent consoleText;
+        private readonly Bounds bounds;
         private readonly TextInput consoleInput;
 
         private readonly List<string> commandHistory = new List<string>();
@@ -42,9 +31,9 @@ namespace Bearded.TD.Screens
         {
             this.logger = logger;
 
-            canvas = new Canvas(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
-            consoleText = new ConsoleTextComponent(Canvas.Within(canvas, padding, padding, padding + inputBoxHeight, padding));
-            consoleInput = new TextInput(Canvas.Within(canvas, consoleHeight - inputBoxHeight, padding, 0, padding));
+            bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
+            AddComponent(new ConsoleTextComponent(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
+            AddComponent(consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding)));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -54,7 +43,7 @@ namespace Bearded.TD.Screens
 
             if (!isConsoleEnabled) return true;
 
-            consoleInput.HandleInput(inputState);
+            base.HandleInput(args, inputState);
 
             if (InputManager.IsKeyHit(Key.Enter))
                 execute();
@@ -72,8 +61,6 @@ namespace Bearded.TD.Screens
 
             return false;
         }
-
-        public override void Update(UpdateEventArgs args) { }
 
         private void execute()
         {
@@ -165,54 +152,9 @@ namespace Bearded.TD.Screens
             if (!isConsoleEnabled) return;
 
             Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
-            Geometries.ConsoleBackground.DrawRectangle(canvas.XStart, canvas.YStart, canvas.Width, canvas.Height);
+            Geometries.ConsoleBackground.DrawRectangle(bounds.XStart, bounds.YStart, bounds.Width, bounds.Height);
 
-            consoleText.Draw(Geometries, logger.GetSafeRecentEntries());
-            consoleInput.Draw(Geometries);
-        }
-
-        private class ConsoleTextComponent
-        {
-            private const float fontSize = 14;
-            private const float lineHeight = 16;
-            
-#if DEBUG
-            private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
-            {
-                Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning,
-                Logger.Severity.Info, Logger.Severity.Debug, Logger.Severity.Trace
-            };
-#else
-            private static readonly HashSet<Logger.Severity> visibleSeverities = new HashSet<Logger.Severity>
-            {
-                Logger.Severity.Fatal, Logger.Severity.Error, Logger.Severity.Warning, Logger.Severity.Info
-            };
-#endif
-
-            private readonly Canvas canvas;
-
-            public ConsoleTextComponent(Canvas canvas)
-            {
-                this.canvas = canvas;
-            }
-
-            public void Draw(GeometryManager geometries, IReadOnlyList<Logger.Entry> logEntries)
-            {
-                geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
-                geometries.ConsoleFont.Height = fontSize;
-
-                var y = canvas.YEnd - lineHeight;
-                var i = logEntries.Count;
-
-                while (y >= -lineHeight && i > 0)
-                {
-                    var entry = logEntries[--i];
-                    if (!visibleSeverities.Contains(entry.Severity)) continue;
-                    geometries.ConsoleFont.Color = colors[logEntries[i].Severity];
-                    geometries.ConsoleFont.DrawString(new Vector2(padding, y), logEntries[i].Text);
-                    y -= lineHeight;
-                }
-            }
+            base.Draw();
         }
     }
 }
