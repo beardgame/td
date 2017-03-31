@@ -127,7 +127,6 @@
     <Compile Include="UI\InputState.cs" />
     <Compile Include="UI\ScalingDimension.cs" />
     <Compile Include="UI\Screen.cs" />
-    <Compile Include="UI\TextInput.cs" />
     <Compile Include="Utilities\AsyncAtomicUpdating.cs" />
     <Compile Include="UI\Components\TextInput.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
