@@ -1,4 +1,7 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Commands;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -44,7 +47,21 @@ namespace Bearded.TD.Screens
 
         private void startGame()
         {
-            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, logger));
+            // these are different for clients
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var dispatcher = new ServerDispatcher(commandDispatcher);
+
+            var meta = new GameMeta(logger, dispatcher);
+
+            var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
+            var gameInstance = new GameInstance(
+                gameState,
+                new GameCamera(meta, gameState.Level.Tilemap.Radius),
+                requestDispatcher
+                );
+
+            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, gameInstance));
             gameStarted = true;
             Destroy();
         }
