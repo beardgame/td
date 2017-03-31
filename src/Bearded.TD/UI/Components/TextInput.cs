@@ -5,16 +5,14 @@ using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
 
-namespace Bearded.TD.UI
+namespace Bearded.TD.UI.Components
 {
-    class TextInput
+    class TextInput : UIComponent
     {
         private const float fontSize = 14;
 
         private static readonly HashSet<char> allowedChars = new HashSet<char> {' ', '-', '_', '.', '+'};
         private const string cursorString = "|";
-
-        private readonly Canvas canvas;
 
         private int cursorPosition;
         private string text = "";
@@ -29,12 +27,11 @@ namespace Bearded.TD.UI
             }
         }
 
-        public TextInput(Canvas canvas)
+        public TextInput(Bounds bounds) : base(bounds)
         {
-            this.canvas = canvas;
         }
 
-        public void HandleInput(InputState inputState)
+        public override void HandleInput(InputState inputState)
         {
             if (InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
             {
@@ -70,15 +67,15 @@ namespace Bearded.TD.UI
             }
         }
 
-        public void Draw(GeometryManager geometries)
+        public override void Draw(GeometryManager geometries)
         {
             geometries.ConsoleFont.Height = fontSize;
             geometries.ConsoleFont.Color = Color.White;
 
-            var height = canvas.YStart + .5f * canvas.Height;
-            geometries.ConsoleFont.DrawString(new Vector2(canvas.XStart, height), text, 0, .5f);
+            var height = Bounds.YStart + .5f * Bounds.Height;
+            geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, height), text, 0, .5f);
 
-            var cursorXOffset = canvas.XStart + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
+            var cursorXOffset = Bounds.XStart + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
             geometries.ConsoleFont.DrawString(new Vector2(cursorXOffset, height), cursorString, .5f, .5f);
         }
     }

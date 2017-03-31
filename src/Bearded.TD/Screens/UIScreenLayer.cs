@@ -1,5 +1,8 @@
-﻿using Bearded.TD.Rendering;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
+using Bearded.TD.Rendering;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Components;
 using OpenTK;
 
 namespace Bearded.TD.Screens
@@ -16,16 +19,39 @@ namespace Bearded.TD.Screens
         protected GeometryManager Geometries { get; }
         protected Screen Screen { get; }
 
-        protected UIScreenLayer(GeometryManager geometries) : this(geometries, .5f, 1, true)
+        private readonly List<UIComponent> components = new List<UIComponent>();
+
+        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries) : this(parent, geometries, .5f, 1, true)
         { }
 
-        protected UIScreenLayer(GeometryManager geometries, float originX, float originY, bool flipY)
+        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, float originX, float originY, bool flipY) : base(parent)
         {
             Geometries = geometries;
             Screen = Screen.GetCanvas();
             this.originX = originX;
             this.originY = originY;
             this.flipY = flipY;
+        }
+
+        public override void Update(UpdateEventArgs args)
+        {
+            components.ForEach(c => c.Update(args));
+        }
+
+        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        {
+            components.ForEach(c => c.HandleInput(inputState));
+            return true;
+        }
+
+        public override void Draw()
+        {
+            components.ForEach(c => c.Draw(Geometries));
+        }
+
+        protected void AddComponent(UIComponent component)
+        {
+            components.Add(component);
         }
 
         protected override void OnViewportSizeChanged()
