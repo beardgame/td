@@ -124,10 +124,13 @@
     <Compile Include="UI\ScalingDimension.cs" />
     <Compile Include="UI\Screen.cs" />
     <Compile Include="UI\TextInput.cs" />
+    <Compile Include="Utilities\AsyncAtomicUpdating.cs" />
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\ConsoleCommands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
+    <Compile Include="Utilities\Input\GamePadStateManager.cs" />
+    <Compile Include="Utilities\Input\InputManager.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Math.cs" />
     <Compile Include="Utilities\XY.cs" />
