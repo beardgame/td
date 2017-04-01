@@ -23,6 +23,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="OpenTK">
       <HintPath>..\..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
@@ -43,6 +46,7 @@
     <Compile Include="Commands\ServerDispatcher.cs" />
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
+    <Compile Include="Constants\Network.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
@@ -103,6 +107,10 @@
     <Compile Include="Game\Tiles\Step.cs" />
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
+    <Compile Include="Networking\ClientNetworkInterface.cs" />
+    <Compile Include="Networking\NetworkChannel.cs" />
+    <Compile Include="Networking\NetworkInterface.cs" />
+    <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />
@@ -202,8 +210,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Networking\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

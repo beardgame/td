@@ -37,6 +37,14 @@ namespace Bearded.TD.Screens
             return false;
         }
 
+        public override void Update(UpdateEventArgs args)
+        {
+            if (gameStarted)
+                return;
+
+            // Update network stuff here.
+        }
+
         public override void Draw()
         {
             var txtGeo = Geometries.ConsoleFont;
