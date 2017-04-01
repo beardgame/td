@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Input;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
@@ -10,20 +10,11 @@ namespace Bearded.TD.Game
 {
     class GameCamera
     {
-        private static readonly Dictionary<IAction, Vector2> scrollActions = new Dictionary<IAction, Vector2>
-        {
-            {KeyboardAction.FromKey(Key.Left).Or(GamePadAction.FromString("gamepad0:-x")), -Vector2.UnitX},
-            {KeyboardAction.FromKey(Key.Right).Or(GamePadAction.FromString("gamepad0:+x")), Vector2.UnitX},
-            {KeyboardAction.FromKey(Key.Up).Or(GamePadAction.FromString("gamepad0:+y")), Vector2.UnitY},
-            {KeyboardAction.FromKey(Key.Down).Or(GamePadAction.FromString("gamepad0:-y")), -Vector2.UnitY},
-        };
+        private readonly Dictionary<IAction, Vector2> scrollActions;
 
-        private static readonly Dictionary<IAction, float> zoomActions = new Dictionary<IAction, float>
-        {
-            {KeyboardAction.FromKey(Key.PageDown).Or(GamePadAction.FromString("gamepad0:+z")), 1f},
-            {KeyboardAction.FromKey(Key.PageUp).Or(GamePadAction.FromString("gamepad0:-z")), -1f},
-        };
+        private readonly Dictionary<IAction, float> zoomActions;
 
+        private readonly InputManager inputManager;
         private readonly GameMeta meta;
         private readonly float levelRadius;
 
@@ -37,15 +28,33 @@ namespace Bearded.TD.Game
         public Matrix4 ViewMatrix { get; private set; }
         public Matrix4 ScreenToWorld { get; private set; }
 
-        public GameCamera(GameMeta meta, float levelRadius)
+        public GameCamera(InputManager inputManager, GameMeta meta, float levelRadius)
         {
+            this.inputManager = inputManager;
             this.meta = meta;
             this.levelRadius = levelRadius;
 
             cameraPosition = Vector2.Zero;
             cameraDistance = ZDefault;
             recalculateViewMatrix();
+
+            scrollActions =  new Dictionary<IAction, Vector2>
+            {
+                {keyOrAxis(Key.Left,"-x"), -Vector2.UnitX},
+                {keyOrAxis(Key.Right, "+x"), Vector2.UnitX},
+                {keyOrAxis(Key.Up,"+y"), Vector2.UnitY},
+                {keyOrAxis(Key.Down,"-y"), -Vector2.UnitY},
+            };
+
+            zoomActions = new Dictionary<IAction, float>
+            {
+                {keyOrAxis(Key.PageDown,":+z"), 1f},
+                {keyOrAxis(Key.PageUp,"-z"), -1f},
+            };
         }
+
+        private IAction keyOrAxis(Key key, string axis)
+            => inputManager.Actions.Keyboard.FromKey(key).Or(inputManager.Actions.Gamepad.WithId(0).FromButtonName(axis));
 
         public void OnViewportSizeChanged(ViewportSize viewportSize)
         {
@@ -54,9 +63,9 @@ namespace Bearded.TD.Game
 
         public void Update(float elapsedTime)
         {
-            if (InputManager.RightMousePressed || mousePosInWorldSpace != null)
+            if (inputManager.RightMousePressed || mousePosInWorldSpace != null)
                 updateDragging();
-            if (!InputManager.RightMousePressed)
+            if (!inputManager.RightMousePressed)
                 updateScrolling(elapsedTime);
 
             recalculateViewMatrix();
@@ -64,7 +73,7 @@ namespace Bearded.TD.Game
 
         private void updateDragging()
         {
-            if (InputManager.RightMousePressed && !mousePosInWorldSpace.HasValue)
+            if (inputManager.RightMousePressed && !mousePosInWorldSpace.HasValue)
             {
                 mousePosInWorldSpace = getMouseWorldPosition();
                 meta.Logger.Trace.Log("Start drag at {0}", mousePosInWorldSpace);
@@ -75,7 +84,7 @@ namespace Bearded.TD.Game
                 cameraPosition -= error;
             }
 
-            if (InputManager.RightMouseReleased && mousePosInWorldSpace != null)
+            if (inputManager.RightMouseReleased && mousePosInWorldSpace != null)
             {
                 mousePosInWorldSpace = null;
                 meta.Logger.Trace.Log("End drag");
@@ -84,7 +93,7 @@ namespace Bearded.TD.Game
 
         private void updateScrolling(float elapsedTime)
         {
-            cameraDistance -= InputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
+            cameraDistance -= inputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
             foreach (var zoomAction in zoomActions)
             {
                 cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
@@ -116,7 +125,7 @@ namespace Bearded.TD.Game
 
         private Vector2 getMouseWorldPosition()
         {
-            return TransformScreenToWorldPos(InputManager.MousePosition);
+            return TransformScreenToWorldPos(inputManager.MousePosition);
         }
 
         public Vector2 TransformScreenToWorldPos(Vector2 screenPos)

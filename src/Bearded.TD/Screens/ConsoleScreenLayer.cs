@@ -7,7 +7,6 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
-using Bearded.Utilities.Input;
 using OpenTK.Input;
 
 namespace Bearded.TD.Screens
@@ -38,25 +37,25 @@ namespace Bearded.TD.Screens
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            if (InputManager.IsKeyHit(Key.Tilde))
+            if (inputState.InputManager.IsKeyHit(Key.Tilde))
                 isConsoleEnabled = !isConsoleEnabled;
 
             if (!isConsoleEnabled) return true;
 
             base.HandleInput(args, inputState);
 
-            if (InputManager.IsKeyHit(Key.Enter))
+            if (inputState.InputManager.IsKeyHit(Key.Enter))
                 execute();
-            if (InputManager.IsKeyHit(Key.Tab))
+            if (inputState.InputManager.IsKeyHit(Key.Tab))
                 consoleInput.Text = autoComplete(consoleInput.Text);
-            if (InputManager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
+            if (inputState.InputManager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
             {
                 if (commandHistoryIndex == -1)
                     setCommandHistoryIndex(commandHistory.Count - 1);
                 else
                     setCommandHistoryIndex(commandHistoryIndex - 1);
             }
-            if (InputManager.IsKeyHit(Key.Down) && commandHistoryIndex != -1)
+            if (inputState.InputManager.IsKeyHit(Key.Down) && commandHistoryIndex != -1)
                 setCommandHistoryIndex(commandHistoryIndex + 1);
 
             return false;
