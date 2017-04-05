@@ -23,6 +23,12 @@ namespace Bearded.TD.Networking.Lobby
 
         public override void Update(UpdateEventArgs args)
         {
+            // Read lobby messages the server sends us:
+            // * Player added/removed
+            // * Player ready status changed (including ours)
+            // * Game settings changed
+            // * Game started
+            // * Chat messages
             throw new System.NotImplementedException();
         }
 
@@ -36,6 +42,7 @@ namespace Bearded.TD.Networking.Lobby
         
         public override void ToggleReadyState()
         {
+            // Ask server to change our state
             throw new System.NotImplementedException();
         }
     }

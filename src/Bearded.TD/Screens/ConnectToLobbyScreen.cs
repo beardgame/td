@@ -35,6 +35,13 @@ namespace Bearded.TD.Screens
 
             foreach (var msg in networkInterface.GetMessages())
                 logger.Debug.Log(msg.MessageType);
+
+            // What to do here:
+            // * Wait for a response from the lobby
+            // * Lobby should send us some information about "us" as player
+            // * Lobby should also send us a player list
+            // * We change to the lobby screen using a client lobby manager
+            // Note: we can also considering switching as soon as we know we are accepted and wait for the other info to load async
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
