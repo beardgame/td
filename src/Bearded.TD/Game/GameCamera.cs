@@ -48,7 +48,7 @@ namespace Bearded.TD.Game
 
             zoomActions = new Dictionary<IAction, float>
             {
-                {keyOrAxis(Key.PageDown,":+z"), 1f},
+                {keyOrAxis(Key.PageDown,"+z"), 1f},
                 {keyOrAxis(Key.PageUp,"-z"), -1f},
             };
         }
