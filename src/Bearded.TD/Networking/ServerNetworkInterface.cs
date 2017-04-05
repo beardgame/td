@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game.Players;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -9,6 +10,9 @@ namespace Bearded.TD.Networking
         private readonly NetServer server;
         private readonly List<NetConnection> connectedPeers = new List<NetConnection>();
 
+        private readonly Dictionary<NetConnection, Player> connectionToPlayer = new Dictionary<NetConnection, Player>();
+        private readonly Dictionary<Player, NetConnection> playerToConnection = new Dictionary<Player, NetConnection>();
+
         public ServerNetworkInterface(Logger logger) : base(logger)
         {
             var config = new NetPeerConfiguration(Constants.Network.ApplicationName)
@@ -17,8 +21,6 @@ namespace Bearded.TD.Networking
             };
             server = new NetServer(config);
             server.Start();
-
-            RegisterIncomingMessageHandler(NetIncomingMessageType.StatusChanged, handleStatusChange);
         }
 
         protected override NetIncomingMessage GetNextMessage()
@@ -26,27 +28,42 @@ namespace Bearded.TD.Networking
             return server.ReadMessage();
         }
 
-        public override void SendMessage(NetOutgoingMessage message, NetworkChannel channel)
+        public void SendMessageToAll(NetOutgoingMessage message, NetworkChannel channel)
         {
             server.SendToAll(message, null, NetDeliveryMethod.ReliableOrdered, (int) channel);
         }
 
-        private void handleStatusChange(NetIncomingMessage message)
+        public void SendMessageToPlayer(Player player, NetOutgoingMessage message, NetworkChannel channel)
         {
-            switch (message.SenderConnection.Status)
-            {
-                case NetConnectionStatus.Connected:
-                    Logger.Debug.Log("Somebody connected :)");
-                    connectedPeers.Add(message.SenderConnection);
-                    break;
-                case NetConnectionStatus.Disconnected:
-                    Logger.Debug.Log("Somebody disconnected :(");
-                    connectedPeers.Remove(message.SenderConnection);
-                    break;
-                default:
-                    Logger.Trace.Log("Unhandled status change of type {0}", message.SenderConnection.Status);
-                    break;
-            }
+            server.SendMessage(message, playerToConnection[player], NetDeliveryMethod.ReliableOrdered, (int) channel);
+        }
+
+        public void AddPlayerConnection(Player player, NetConnection connection)
+        {
+            connectedPeers.Add(connection);
+            connectionToPlayer.Add(connection, player);
+            playerToConnection.Add(player, connection);
+        }
+
+        public Player GetSender(NetIncomingMessage msg)
+        {
+            return connectionToPlayer[msg.SenderConnection];
+        }
+
+        public void RemovePlayerConnection(Player player)
+        {
+            var conn = playerToConnection[player];
+            connectedPeers.Remove(conn);
+            connectionToPlayer.Remove(conn);
+            playerToConnection.Remove(player);
+        }
+
+        public void RemovePlayerConnection(NetConnection conn)
+        {
+            var player = connectionToPlayer[conn];
+            connectedPeers.Remove(conn);
+            connectionToPlayer.Remove(conn);
+            playerToConnection.Remove(player);
         }
     }
 }

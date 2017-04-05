@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -9,19 +10,27 @@ namespace Bearded.TD.Screens
     {
         private readonly List<IScreenLayer> screenLayers = new List<IScreenLayer>();
         private readonly HashSet<IScreenLayer> screenLayersToRemove = new HashSet<IScreenLayer>();
+        private readonly List<Action> delayedScreenLayerActions = new List<Action>();
         private ViewportSize viewportSize;
+
+        private bool isEnumerating;
 
         protected bool PropagateInput(UpdateEventArgs args, InputState inputState)
         {
+            isEnumerating = true;
             for (var i = screenLayers.Count - 1; i >= 0; i--)
                 if (!screenLayers[i].HandleInput(args, inputState))
                     return false;
+            isEnumerating = false;
             return true;
         }
         
         protected void UpdateAll(UpdateEventArgs args)
         {
-            screenLayers.ForEach((layer) => layer.Update(args));
+            isEnumerating = true;
+            screenLayers.ForEach(layer => layer.Update(args));
+            isEnumerating = false;
+            doDelayedScreenLayerActions();
             removeScreenLayersQueuedForRemoval();
         }
 
@@ -33,23 +42,23 @@ namespace Bearded.TD.Screens
 
         public void Render(RenderContext context)
         {
+            isEnumerating = true;
             screenLayers.ForEach((layer) => layer.Render(context));
+            isEnumerating = false;
         }
 
         public void AddScreenLayerOnTop(IScreenLayer screenLayer)
         {
+            if (isEnumerating && queueIfEnumerating(() => AddScreenLayerOnTop(screenLayer)))
+                return;
             screenLayers.Add(screenLayer);
-            initializeScreenLayer(screenLayer);
-        }
-
-        private void addScreenLayerAtIndex(int index, IScreenLayer screenLayer)
-        {
-            screenLayers.Insert(index, screenLayer);
             initializeScreenLayer(screenLayer);
         }
 
         public void AddScreenLayerOnTopOf(IScreenLayer reference, IScreenLayer toAdd)
         {
+            if (isEnumerating && queueIfEnumerating(() => AddScreenLayerOnTopOf(reference, toAdd)))
+                return;
             // Equivalent to adding screen layer _after_ reference.
             var indexOfRef = screenLayers.IndexOf(reference);
             if (indexOfRef == screenLayers.Count)
@@ -60,8 +69,16 @@ namespace Bearded.TD.Screens
 
         public void AddScreenLayerBehind(IScreenLayer reference, IScreenLayer toAdd)
         {
+            if (isEnumerating && queueIfEnumerating(() => AddScreenLayerBehind(reference, toAdd)))
+                return;
             // Equivalent to adding screen layer _before_ reference.
             addScreenLayerAtIndex(screenLayers.IndexOf(reference), toAdd);
+        }
+
+        private void addScreenLayerAtIndex(int index, IScreenLayer screenLayer)
+        {
+            screenLayers.Insert(index, screenLayer);
+            initializeScreenLayer(screenLayer);
         }
 
         private void initializeScreenLayer(IScreenLayer screenLayer)
@@ -74,6 +91,24 @@ namespace Bearded.TD.Screens
             // If you delete a screen layer during the HandleInput method or outside of the main loop entirely, another
             // update may take place before the screen is actually deleted.
             screenLayersToRemove.Add(screenLayer);
+        }
+
+        private bool queueIfEnumerating(Action action)
+        {
+            if (!isEnumerating)
+                return false;
+
+
+            delayedScreenLayerActions.Add(action);
+            return true;
+        }
+
+        private void doDelayedScreenLayerActions()
+        {
+            if (delayedScreenLayerActions.Count == 0)
+                return;
+            delayedScreenLayerActions.ForEach(action => action());
+            delayedScreenLayerActions.Clear();
         }
 
         private void removeScreenLayersQueuedForRemoval()

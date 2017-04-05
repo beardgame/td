@@ -109,6 +109,10 @@
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
+    <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
+    <Compile Include="Networking\Lobby\LobbyManager.cs" />
+    <Compile Include="Networking\Lobby\LobbyPlayer.cs" />
+    <Compile Include="Networking\Lobby\ServerLobbyManager.cs" />
     <Compile Include="Networking\NetworkChannel.cs" />
     <Compile Include="Networking\NetworkInterface.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
@@ -117,8 +121,10 @@
     <Compile Include="Rendering\GeometryManager.cs" />
     <Compile Include="Rendering\SurfaceManager.cs" />
     <Compile Include="Rendering\ViewportSize.cs" />
+    <Compile Include="Screens\ConnectToLobbyScreen.cs" />
     <Compile Include="Screens\ConsoleScreenLayer.cs" />
     <Compile Include="Screens\LobbyScreen.cs" />
+    <Compile Include="Screens\StartScreen.cs" />
     <Compile Include="UI\Components\ConsoleTextComponent.cs" />
     <Compile Include="Screens\IScreenLayer.cs" />
     <Compile Include="Screens\ScreenLayer.cs" />
