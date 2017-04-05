@@ -25,7 +25,7 @@ namespace Bearded.TD.Utilities.Input
             }
             else
             {
-                State.UpdateTo(default(GamePadState));
+                State.UpdateToDefault();
             }
         }
     }

@@ -34,10 +34,9 @@ namespace Bearded.TD.Utilities.Input
 
                 var key = (Key) Enum.Parse(typeof(Key), keyName, true);
 
-                if (key == Key.Unknown)
-                    throw new ArgumentException("Keyboard key name unknown.", nameof(name));
-
-                return new KeyboardAction(manager, key);
+                return key == Key.Unknown
+                    ? throw new ArgumentException("Keyboard key name unknown.", nameof(name))
+                    : new KeyboardAction(manager, key);
             }
 
             public IEnumerable<IAction> All

@@ -8,6 +8,7 @@
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>false</Optimize>

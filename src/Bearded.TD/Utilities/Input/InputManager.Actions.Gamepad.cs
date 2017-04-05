@@ -35,8 +35,7 @@ namespace Bearded.TD.Utilities.Input
                 var split = lower.Substring(7).Split(':');
                 if (split.Length != 2)
                     throw new ArgumentException("Gamepad button name must have exactly one ':'.", nameof(name));
-                int id;
-                if (!int.TryParse(split[0].Trim(), out id))
+                if (!int.TryParse(split[0].Trim(), out int id))
                     throw new ArgumentException("Gamepad button name must include gamepad id.", nameof(name));
                 if (id < 0)
                     throw new ArgumentException("Gamepad id must not be negative.", nameof(name));
@@ -65,12 +64,9 @@ namespace Bearded.TD.Utilities.Input
                     return new DummyAction(name);
                 }
 
-                var action = Buttons.FromName(name) ?? Axes.FromName(name);
-
-                if (action != null)
-                    return action;
-
-                throw new ArgumentException("Gamepad button name unknown.", nameof(name));
+                return Buttons.FromName(name)
+                    ?? Axes.FromName(name)
+                    ?? throw new ArgumentException("Gamepad button name unknown.", nameof(name));
             }
 
             public bool IsConnected => padId >= 0 && padId < manager.GamePads.Count
@@ -97,12 +93,9 @@ namespace Bearded.TD.Utilities.Input
                 => new GamePadButtonAction(manager, padId, name, selectors[name]);
 
             public IAction FromName(string name)
-            {
-                ButtonSelector selector;
-                return selectors.TryGetValue(name, out selector)
+                => selectors.TryGetValue(name, out var selector)
                     ? new GamePadButtonAction(manager, padId, name, selector)
                     : null;
-            }
 
             public IAction A => button("a");
             public IAction B => button("b");
@@ -174,12 +167,9 @@ namespace Bearded.TD.Utilities.Input
                 => new GamePadAxisAction(manager, padId, name, selectors[name]);
 
             public IAction FromName(string name)
-            {
-                AxisSelector selector;
-                return selectors.TryGetValue(name, out selector)
+                => selectors.TryGetValue(name, out var selector)
                     ? new GamePadAxisAction(manager, padId, name, selector)
                     : null;
-            }
 
             public IAction XPositive => axis("+x");
             public IAction XNegative => axis("-x");
