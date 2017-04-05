@@ -2,6 +2,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -15,6 +16,7 @@ namespace Bearded.TD.Screens
     class LobbyScreen : UIScreenLayer
     {
         private readonly Logger logger;
+        private readonly Player me;
 
         private bool gameStarted;
 
@@ -22,6 +24,7 @@ namespace Bearded.TD.Screens
             : base(parent, geometries, .5f, .5f, true)
         {
             this.logger = logger;
+            me = new Player(Color.Gray);
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -64,6 +67,7 @@ namespace Bearded.TD.Screens
 
             var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
             var gameInstance = new GameInstance(
+                me,
                 gameState,
                 new GameCamera(meta, gameState.Level.Tilemap.Radius),
                 requestDispatcher
