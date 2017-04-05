@@ -27,6 +27,6 @@
 
 		{ "name" : "splash",	"uv" : [ {"lt" : [10, 0], "size" : [6, 6]} ] },
 
-		{ "name" : "shockwave",	"uv" : [ {"lt" : [11, 5], "size" : [4, 6], "rotation" : -1.57 } ], "size" : [1, 1] },
+		{ "name" : "shockwave",	"uv" : [ {"lt" : [11, 5], "size" : [4, 6], "rotation" : -1.57 } ], "size" : [1, 1] }
 	]
 }

@@ -33,24 +33,24 @@ namespace Bearded.TD.UI.Components
 
         public override void HandleInput(InputState inputState)
         {
-            if (InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
+            if (inputState.InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
             {
                 text = text.Substring(0, cursorPosition - 1) + text.Substring(cursorPosition);
                 cursorPosition--;
             }
-            if (InputManager.IsKeyPressed(Key.Left) && cursorPosition > 0)
+            if (inputState.InputManager.IsKeyPressed(Key.Left) && cursorPosition > 0)
             {
                 cursorPosition--;
             }
-            if (InputManager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
+            if (inputState.InputManager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
             {
                 cursorPosition++;
             }
-            if (InputManager.IsKeyPressed(Key.Home))
+            if (inputState.InputManager.IsKeyPressed(Key.Home))
             {
                 cursorPosition = 0;
             }
-            if (InputManager.IsKeyPressed(Key.End))
+            if (inputState.InputManager.IsKeyPressed(Key.End))
             {
                 cursorPosition = text.Length;
             }

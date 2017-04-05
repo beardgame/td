@@ -6,7 +6,6 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.UI;
-using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -31,7 +30,7 @@ namespace Bearded.TD.Game.UI
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
-                if (!InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
+                if (!inputState.InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
                 if (i == selectedHandler)
                 {
                     game.Cursor.SetClickHandler(null);

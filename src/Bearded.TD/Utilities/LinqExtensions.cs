@@ -10,5 +10,12 @@ namespace Bearded.TD.Utilities
             foreach (var item in source)
                 action(item);
         }
+
+        public static TValue ValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key)
+        {
+            TValue value;
+            dict.TryGetValue(key, out value);
+            return value;
+        }
     }
 }

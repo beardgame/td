@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities.Input;
+﻿using Bearded.TD.Utilities.Input;
+using Bearded.TD.Utilities.Input.Actions;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.UI
@@ -14,11 +15,11 @@ namespace Bearded.TD.Game.UI
             ClickAction = clickAction;
         }
 
-        public static PlayerInput Construct(GameCamera camera)
+        public static PlayerInput Construct(InputManager inputManager, GameCamera camera)
         {
             return new PlayerInput(
-                new Position2(camera.TransformScreenToWorldPos(InputManager.MousePosition)),
-                MouseAction.ForLeftButton);
+                new Position2(camera.TransformScreenToWorldPos(inputManager.MousePosition)),
+                inputManager.Actions.Mouse.LeftButton);
         }
     }
 }

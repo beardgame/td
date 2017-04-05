@@ -5,7 +5,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.Utilities.Input
 {
-    class InputManager
+    partial class InputManager
     {
         private readonly MouseDevice mouse;
 

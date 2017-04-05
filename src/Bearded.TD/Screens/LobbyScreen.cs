@@ -6,8 +6,8 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
-using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -16,14 +16,16 @@ namespace Bearded.TD.Screens
     class LobbyScreen : UIScreenLayer
     {
         private readonly Logger logger;
+        private readonly InputManager inputManager;
         private readonly Player me;
 
         private bool gameStarted;
 
-        public LobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger)
+        public LobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
             : base(parent, geometries, .5f, .5f, true)
         {
             this.logger = logger;
+            this.inputManager = inputManager;
             me = new Player(Color.Gray);
         }
 
@@ -32,7 +34,7 @@ namespace Bearded.TD.Screens
             if (gameStarted)
                 return true;
 
-            if (InputManager.IsKeyHit(Key.Enter))
+            if (inputState.InputManager.IsKeyHit(Key.Enter))
                 startGame();
 
             return false;
@@ -69,11 +71,11 @@ namespace Bearded.TD.Screens
             var gameInstance = new GameInstance(
                 me,
                 gameState,
-                new GameCamera(meta, gameState.Level.Tilemap.Radius),
+                new GameCamera(inputManager, meta, gameState.Level.Tilemap.Radius),
                 requestDispatcher
                 );
 
-            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, gameInstance));
+            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, gameInstance, inputManager));
             gameStarted = true;
             Destroy();
         }

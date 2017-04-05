@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.Screens
 {
     class ScreenManager : ScreenLayerCollection
     {
+        private readonly InputManager inputManager;
         private readonly List<char> pressedCharacterList = new List<char>();
         private readonly ConcurrentQueue<char> pressedCharacterQueue = new ConcurrentQueue<char>();
         private readonly IReadOnlyList<char> pressedCharacterInterface;
 
-        public ScreenManager()
+        public ScreenManager(InputManager inputManager)
         {
+            this.inputManager = inputManager;
             pressedCharacterInterface = pressedCharacterList.AsReadOnly();
         }
 
@@ -28,7 +31,7 @@ namespace Bearded.TD.Screens
             while (pressedCharacterQueue.TryDequeue(out c))
                 pressedCharacterList.Add(c);
 
-            var inputState = new InputState(pressedCharacterInterface);
+            var inputState = new InputState(pressedCharacterInterface, inputManager);
 
             PropagateInput(args, inputState);
 
