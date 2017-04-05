@@ -21,23 +21,21 @@ namespace Bearded.TD.Utilities.Input
             var actionList = new List<IAction>();
             foreach (var action in actions)
             {
-                if (action == null)
-                    continue;
-
-                var asOr = action as OrAction;
-                if (asOr != null)
+                switch (action)
                 {
-                    actionList.Add(asOr.Child1);
-                    actionList.Add(asOr.Child2);
-                    continue;
+                    case null:
+                        break;
+                    case OrAction asOr:
+                        actionList.Add(asOr.Child1);
+                        actionList.Add(asOr.Child2);
+                        break;
+                    case AnyAction asAny:
+                        actionList.AddRange(asAny.Actions);
+                        break;
+                    default:
+                        actionList.Add(action);
+                        break;
                 }
-                var asAny = action as AnyAction;
-                if (asAny != null)
-                {
-                    actionList.AddRange(asAny.Actions);
-                    continue;
-                }
-                actionList.Add(action);
             }
 
             switch (actionList.Count)
