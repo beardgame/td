@@ -111,6 +111,13 @@
     <Compile Include="Networking\ClientNetworkInterface.cs" />
     <Compile Include="Networking\NetworkChannel.cs" />
     <Compile Include="Networking\NetworkInterface.cs" />
+    <Compile Include="Networking\Serialization\ICommandSerializer.cs" />
+    <Compile Include="Networking\Serialization\INetBufferStream.cs" />
+    <Compile Include="Networking\Serialization\IRequestSerializer.cs" />
+    <Compile Include="Networking\Serialization\NetBufferReader.cs" />
+    <Compile Include="Networking\Serialization\NetBufferWriter.cs" />
+    <Compile Include="Networking\Serialization\SerializerExtensions.cs" />
+    <Compile Include="Networking\Serialization\SerializerManager.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
@@ -142,6 +149,8 @@
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\ConsoleCommands.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
+    <Compile Include="Utilities\Id.cs" />
+    <Compile Include="Utilities\IdManager.cs" />
     <Compile Include="Utilities\Input\Actions\DigitalAction.cs" />
     <Compile Include="Utilities\Input\Actions\DummyAction.cs" />
     <Compile Include="Utilities\Input\Actions\GamePadAction.cs" />
@@ -158,6 +167,7 @@
     <Compile Include="Utilities\Input\InputManager.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Math.cs" />
+    <Compile Include="Utilities\NetworkHelpers.cs" />
     <Compile Include="Utilities\XY.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +221,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

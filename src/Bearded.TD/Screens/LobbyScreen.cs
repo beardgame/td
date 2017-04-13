@@ -26,7 +26,7 @@ namespace Bearded.TD.Screens
         {
             this.logger = logger;
             this.inputManager = inputManager;
-            me = new Player(Color.Gray);
+            me = new Player(new Utilities.Id<Player>(), Color.Gray);
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)

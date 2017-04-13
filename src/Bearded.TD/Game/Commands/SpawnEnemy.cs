@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
+using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -22,5 +23,6 @@ namespace Bearded.TD.Game.Commands
         }
         
         public void Execute() => game.Add(new EnemyUnit(blueprint, tile));
+        public ICommandSerializer Serializer { get; }
     }
 }

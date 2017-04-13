@@ -33,6 +33,11 @@ namespace Bearded.TD.Game.Commands
                 game.Add(building);
                 game.Add(new DebugWorker(building.BuildManager));
             }
+
+            protected override IUnifiedRequestCommandSerializer GetSerializer()
+            {
+                throw new System.NotImplementedException();
+            }
         }
     }
 }
