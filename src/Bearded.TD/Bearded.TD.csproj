@@ -7,8 +7,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <LangVersion>7</LangVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -35,6 +36,9 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.2-beta2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ClientDispatcher.cs" />
@@ -135,6 +139,7 @@
     <Compile Include="TheGame.cs" />
     <Compile Include="UI\Bounds.cs" />
     <Compile Include="UI\BoundsHelpers.cs" />
+    <Compile Include="UI\Components\TextBox.cs" />
     <Compile Include="UI\Components\UIComponent.cs" />
     <Compile Include="UI\FixedOffsetDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
@@ -167,6 +172,7 @@
     <Compile Include="Utilities\XY.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
