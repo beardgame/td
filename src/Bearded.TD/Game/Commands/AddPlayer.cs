@@ -43,6 +43,10 @@ namespace Bearded.TD.Game.Commands
                 color = player.Color;
             }
 
+            public Serializer()
+            {
+            }
+
             public ICommand GetCommand(GameInstance game)
                 => new Implementation(game, new Player(id, name, color));
 

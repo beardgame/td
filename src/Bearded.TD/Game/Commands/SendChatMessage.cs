@@ -47,6 +47,7 @@ namespace Bearded.TD.Game.Commands
                 this.message = message;
             }
 
+            // ReSharper disable once UnusedMember.Local
             public Serializer()
             {
             }
