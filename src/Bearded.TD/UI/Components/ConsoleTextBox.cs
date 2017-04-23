@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Components
         {
         }
 
-        private static IList<Logger.Entry> getLoggerEntries(Logger logger)
+        private static IReadOnlyList<Logger.Entry> getLoggerEntries(Logger logger)
             => logger.GetSafeRecentEntriesWithSeverity(lowestVisibleSeverity);
 
         private static (string, Color) formatLoggerEntry(Logger.Entry entry)
