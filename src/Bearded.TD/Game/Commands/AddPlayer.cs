@@ -43,6 +43,7 @@ namespace Bearded.TD.Game.Commands
                 color = player.Color;
             }
 
+            // ReSharper disable once UnusedMember.Local
             public Serializer()
             {
             }
