@@ -24,6 +24,11 @@ namespace Bearded.TD.Networking
             server.Start();
         }
 
+        public override void Shutdown()
+        {
+            server.Shutdown("I don't hate you.");
+        }
+
         public override NetOutgoingMessage CreateMessage()
         {
             return server.CreateMessage();

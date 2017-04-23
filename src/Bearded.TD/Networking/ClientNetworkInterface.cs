@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -21,6 +20,11 @@ namespace Bearded.TD.Networking
         public override NetOutgoingMessage CreateMessage()
         {
             return client.CreateMessage();
+        }
+
+        public override void Shutdown()
+        {
+            client.Shutdown("I don't hate you.");
         }
 
         protected override NetIncomingMessage GetNextMessage()

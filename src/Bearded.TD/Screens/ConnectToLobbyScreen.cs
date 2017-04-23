@@ -6,6 +6,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
+using Lidgren.Network;
 using OpenTK;
 using OpenTK.Input;
 
@@ -18,6 +19,7 @@ namespace Bearded.TD.Screens
 
         private readonly TextInput textInput;
         private ClientNetworkInterface networkInterface;
+        private string rejectionReason;
 
         public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
             : base(parent, geometries, .5f, .5f, true)
@@ -35,14 +37,38 @@ namespace Bearded.TD.Screens
                 return;
 
             foreach (var msg in networkInterface.GetMessages())
-                logger.Debug.Log(msg.MessageType);
+            {
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.StatusChanged:
+                        handleStatusChange(msg);
+                        break;
+                }
+            }
+        }
 
-            // What to do here:
-            // * Wait for a response from the lobby
-            // * Lobby should send us some information about "us" as player
-            // * Lobby should also send us a player list
-            // * We change to the lobby screen using a client lobby manager
-            // Note: we can also considering switching as soon as we know we are accepted and wait for the other info to load async
+        private void handleStatusChange(NetIncomingMessage msg)
+        {
+            switch (msg.SenderConnection.Status)
+            {
+                case NetConnectionStatus.Connected:
+                    goToLobby(msg);
+                    break;
+                case NetConnectionStatus.Disconnected:
+                    msg.ReadByte(); // Read status byte.
+                    rejectionReason = msg.ReadString();
+                    logger.Info.Log(string.IsNullOrEmpty(rejectionReason)
+                        ? "Disconnected"
+                        : $"Disconnected with reason: {rejectionReason}");
+                    networkInterface.Shutdown();
+                    networkInterface = null;
+                    break;
+            }
+        }
+
+        private void goToLobby(NetIncomingMessage msg)
+        {
+            // We should be getting enough information from the lobby here to make our own lobby instance.
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -52,7 +78,7 @@ namespace Bearded.TD.Screens
 
             if (inputState.InputManager.IsKeyHit(Key.Enter))
             {
-                var clientInfo = new ClientInfo("A client");
+                var clientInfo = new ClientInfo("a client");
                 networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
                 return true;
             }
@@ -75,6 +101,11 @@ namespace Bearded.TD.Screens
 
             if (networkInterface != null)
                 txtGeo.DrawString(64 * Vector2.UnitY, "Trying to connect...", .5f, .5f);
+            else if (rejectionReason != null)
+            {
+                txtGeo.Color = Color.Red;
+                txtGeo.DrawString(64 * Vector2.UnitY, rejectionReason, .5f, .5f);
+            }
         }
     }
 }
