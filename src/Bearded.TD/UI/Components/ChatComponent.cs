@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.UI;
+using Bearded.TD.Rendering;
 
 namespace Bearded.TD.UI.Components
 {
@@ -15,7 +16,7 @@ namespace Bearded.TD.UI.Components
         {
             AddComponent(new TextBox<ChatMessage>(
                 Bounds.Within(bounds, 0, 0, textInputHeight, 0), () => chatLog.Messages.ToList(), msg => (msg.Text, textColor)));
-            AddComponent(textInput = new TextInput(Bounds.Within(bounds, bounds.Height - textInputHeight, 0, 0, 0)));
+            AddComponent(textInput = new TextInput(new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, textInputHeight, 1, 1))));
 
             textInput.Submitted += sendChatMessage;
         }
@@ -24,6 +25,13 @@ namespace Bearded.TD.UI.Components
         {
             // Send chat message request.
             textInput.Text = "";
+        }
+
+        public override void Draw(GeometryManager geometries)
+        {
+            geometries.ConsoleBackground.Color = Color.Black;
+            geometries.ConsoleBackground.DrawRectangle(Bounds.XStart, Bounds.YStart, Bounds.Width, Bounds.Height);
+            base.Draw(geometries);
         }
     }
 }

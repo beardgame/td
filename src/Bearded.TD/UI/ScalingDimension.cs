@@ -13,7 +13,7 @@
             this.offset = offset;
         }
 
-        public float Min => offset + parent.Min * fraction;
-        public float Max => offset + parent.Max * fraction;
+        public float Min => offset * (parent.Max - parent.Min) + parent.Min * fraction;
+        public float Max => offset * (parent.Max - parent.Min) + parent.Max * fraction;
     }
 }
