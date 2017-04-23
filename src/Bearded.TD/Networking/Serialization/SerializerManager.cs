@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
 {
@@ -69,15 +70,18 @@ namespace Bearded.TD.Networking.Serialization
                 if (type.GetConstructor(Type.EmptyTypes) == null)
                 {
                     #if DEBUG
-                    Console.WriteLine($"Found potential serializer {type.FullName} without default constructor.");
+                    if (type.Implements<ICommandSerializer>() || type.Implements<IRequestSerializer>())
+                    {
+                        Console.WriteLine($"Found potential serializer {type.FullName} without default constructor.");
+                    }
                     #endif
                     continue;
                 }
 
-                if (typeof(IRequestSerializer).IsAssignableFrom(type))
+                if (type.Implements<IRequestSerializer>())
                     requests.Add(type);
 
-                if (typeof(ICommandSerializer).IsAssignableFrom(type))
+                if (type.Implements<ICommandSerializer>())
                     commands.Add(type);
             }
 

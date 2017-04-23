@@ -194,6 +194,7 @@
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Math.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
+    <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
   </ItemGroup>
   <ItemGroup>
