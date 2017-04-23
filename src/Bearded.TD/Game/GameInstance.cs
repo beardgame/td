@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
@@ -18,10 +20,30 @@ namespace Bearded.TD.Game
         public GameCamera Camera { get; private set; }
         public CursorState Cursor { get; private set; }
 
+        private readonly List<Player> players = new List<Player>();
+        public ReadOnlyCollection<Player> Players { get; }
+        private readonly Dictionary<Player> playersById = new Dictionary<Player>();
+
+        public Player PlayerFor(Id<Player> id) => playersById[id];
+
         public GameInstance(Player me, IRequestDispatcher requestDispatcher)
         {
             Me = me;
             RequestDispatcher = requestDispatcher;
+
+            Players = players.AsReadOnly();
+        }
+
+        public void AddPlayer(Player player)
+        {
+            players.Add(player);
+            playersById.Add(player);
+        }
+
+        public void RemovePlayer(Player player)
+        {
+            players.Remove(player);
+            playersById.Remove(player);
         }
 
         public void Start(GameState state, GameCamera camera)

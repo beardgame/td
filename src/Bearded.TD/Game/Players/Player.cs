@@ -3,7 +3,7 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Players
 {
-    sealed class Player
+    sealed class Player : IIdable<Player>
     {
         public Id<Player> Id { get; }
         public string Name { get; }
