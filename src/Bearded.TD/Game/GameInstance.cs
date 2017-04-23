@@ -21,11 +21,8 @@ namespace Bearded.TD.Game
         public CursorState Cursor { get; private set; }
 
         private readonly List<Player> players = new List<Player>();
-        public ReadOnlyCollection<Player> Players { get; }
         private readonly Dictionary<Player> playersById = new Dictionary<Player>();
-
-        public Player PlayerFor(Id<Player> id) => playersById[id];
-
+        public ReadOnlyCollection<Player> Players { get; }
 
         public GameInstance(Player me, IRequestDispatcher requestDispatcher, IdManager ids)
         {
@@ -47,6 +44,8 @@ namespace Bearded.TD.Game
             players.Remove(player);
             playersById.Remove(player);
         }
+
+        public Player PlayerFor(Id<Player> id) => playersById[id];
 
         public void Start(GameState state, GameCamera camera)
         {
