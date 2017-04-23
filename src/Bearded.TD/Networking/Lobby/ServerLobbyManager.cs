@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
@@ -16,13 +14,9 @@ namespace Bearded.TD.Networking.Lobby
         private readonly ServerNetworkInterface networkInterface;
 
         public override bool GameStarted => gameStarted;
-        private readonly List<Player> players;
-        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
         {
-            players = new List<Player> { Game.Me };
-            players[0].ConnectionState = PlayerConnectionState.Waiting;
             networkInterface = new ServerNetworkInterface(logger);
         }
 
@@ -59,8 +53,8 @@ namespace Bearded.TD.Networking.Lobby
                 msg.SenderConnection.Deny(rejectionReason);
                 return;
             }
-            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Black);
-            players.Add(newPlayer);
+            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Blue);
+            Game.AddPlayer(newPlayer);
             newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
@@ -94,7 +88,7 @@ namespace Bearded.TD.Networking.Lobby
                     networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
                     break;
                 case NetConnectionStatus.Disconnected:
-                    players.Remove(networkInterface.GetSender(msg));
+                    Game.RemovePlayer(networkInterface.GetSender(msg));
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
@@ -112,7 +106,7 @@ namespace Bearded.TD.Networking.Lobby
         {
             player.ConnectionState = connectionState;
 
-            if (Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
+            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
                 gameStarted = true;
         }
     }

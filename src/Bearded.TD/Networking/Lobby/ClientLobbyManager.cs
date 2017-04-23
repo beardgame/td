@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.Utilities;
@@ -10,14 +9,10 @@ namespace Bearded.TD.Networking.Lobby
     {
         private readonly ClientNetworkInterface networkInterface;
         public override bool GameStarted { get; }
-        private readonly List<Player> players;
-        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
             : base(logger, player, (new ClientRequestDispatcher(), new ClientDispatcher()))
         {
-            players = new List<Player> { Game.Me };
-            players[0].ConnectionState = PlayerConnectionState.Waiting;
             this.networkInterface = networkInterface;
         }
 

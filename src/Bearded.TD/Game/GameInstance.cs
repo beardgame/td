@@ -30,6 +30,7 @@ namespace Bearded.TD.Game
             RequestDispatcher = requestDispatcher;
             Ids = ids;
 
+            AddPlayer(me);
             Players = players.AsReadOnly();
         }
 

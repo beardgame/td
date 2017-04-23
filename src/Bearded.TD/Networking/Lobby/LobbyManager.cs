@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
@@ -17,14 +16,13 @@ namespace Bearded.TD.Networking.Lobby
         public GameInstance Game { get; }
 
         public abstract bool GameStarted { get; }
-        public abstract IReadOnlyList<Player> Players { get; }
 
         protected LobbyManager(Logger logger,
             (IRequestDispatcher request, IDispatcher master) dispatchers)
             : this(logger, dispatchers.master)
         {
             var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), "The host", Color.Gray);
+            var player = new Player(ids.GetNext<Player>(), "The host", Color.Red);
             Game = new GameInstance(player, dispatchers.request, ids);
         }
 
