@@ -40,12 +40,12 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : UnifiedRequestCommandSerializer
         {
-            private Id player;
+            private Id<Player> player;
             private string message;
 
             public Serializer(Player player, string message)
             {
-                this.player = player.Id.Simple;
+                this.player = player.Id;
                 this.message = message;
             }
 
@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             protected override UnifiedRequestCommand getSerialized(GameInstance game)
-                => new Implementation(game, game.PlayerFor(player.Generic<Player>()), message);
+                => new Implementation(game, game.PlayerFor(player), message);
 
             public override void Serialize(INetBufferStream stream)
             {
