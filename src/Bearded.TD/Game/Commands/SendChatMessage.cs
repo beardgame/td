@@ -11,8 +11,6 @@ namespace Bearded.TD.Game.Commands
         public static IRequest Request(GameInstance game, Player player, string message)
             => new Implementation(game, player, message);
 
-        public static ICommandSerializer GetCommandSerializer() => null;
-
         private class Implementation : UnifiedRequestCommand
         {
             private GameInstance game { get; }
