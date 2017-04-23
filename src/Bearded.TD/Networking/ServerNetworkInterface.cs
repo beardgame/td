@@ -19,8 +19,14 @@ namespace Bearded.TD.Networking
             {
                 Port = Constants.Network.DefaultPort
             };
+            config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             server = new NetServer(config);
             server.Start();
+        }
+
+        public override NetOutgoingMessage CreateMessage()
+        {
+            return server.CreateMessage();
         }
 
         protected override NetIncomingMessage GetNextMessage()

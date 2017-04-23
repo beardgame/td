@@ -5,7 +5,6 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -35,6 +34,9 @@ namespace Bearded.TD.Networking.Lobby
             {
                 switch (msg.MessageType)
                 {
+                    case NetIncomingMessageType.ConnectionApproval:
+                        handleConnectionApproval(msg);
+                        break;
                     case NetIncomingMessageType.StatusChanged:
                         handleStatusChange(msg);
                         break;
@@ -42,17 +44,43 @@ namespace Bearded.TD.Networking.Lobby
             }
         }
 
+        private void handleConnectionApproval(NetIncomingMessage msg)
+        {
+            var clientInfo = ClientInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
+            if (!checkClientInfo(clientInfo, out string rejectionReason))
+            {
+                msg.SenderConnection.Deny(rejectionReason);
+            }
+            var newPlayer = new Player(new Utilities.Id<Player>(), clientInfo.PlayerName, Color.Black);
+            players.Add(new LobbyPlayer(newPlayer));
+            networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
+            sendApproval(newPlayer, msg.SenderConnection);
+        }
+
+        private bool checkClientInfo(ClientInfo clientInfo, out string rejectionReason)
+        {
+            if (clientInfo.PlayerName.Trim() == "")
+            {
+                rejectionReason = "Empty name is not allowed";
+                return false;
+            }
+
+            rejectionReason = null;
+            return true;
+        }
+
+        private void sendApproval(Player player, NetConnection connection)
+        {
+            var msg = networkInterface.CreateMessage();
+            // Write some information to the message.
+            connection.Approve(msg);
+        }
+
         private void handleStatusChange(NetIncomingMessage msg)
         {
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    var clientInfo = ClientInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
-                    // Do some checks with the client info.
-                    var newPlayer = new Player(new Utilities.Id<Player>(), clientInfo.PlayerName, Color.Black);
-                    players.Add(new LobbyPlayer(newPlayer));
-                    networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
-                    // Send connection accepted/rejected command with current lobby info.
                     // Broadcast "new player" command.
                     break;
                 case NetConnectionStatus.Disconnected:

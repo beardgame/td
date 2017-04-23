@@ -18,6 +18,11 @@ namespace Bearded.TD.Networking
             client.Connect(host, Constants.Network.DefaultPort, createHailMessage(clientInfo));
         }
 
+        public override NetOutgoingMessage CreateMessage()
+        {
+            return client.CreateMessage();
+        }
+
         protected override NetIncomingMessage GetNextMessage()
         {
             return client.ReadMessage();

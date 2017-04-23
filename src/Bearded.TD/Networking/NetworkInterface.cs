@@ -13,6 +13,8 @@ namespace Bearded.TD.Networking
             Logger = logger;
         }
 
+        public abstract NetOutgoingMessage CreateMessage();
+
         public IEnumerable<NetIncomingMessage> GetMessages()
         {
             NetIncomingMessage message;
