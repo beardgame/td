@@ -12,5 +12,9 @@ namespace Bearded.TD.Game.UI
             Player = player;
             Text = text;
         }
+
+        public string GetDisplayString() => Player == null
+            ? $"[System] {Text}"
+            : $"{Player}: {Text}";
     }
 }

@@ -14,6 +14,7 @@ namespace Bearded.TD.Networking
         }
 
         public abstract NetOutgoingMessage CreateMessage();
+        public abstract void Shutdown();
 
         public IEnumerable<NetIncomingMessage> GetMessages()
         {

@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using Bearded.Utilities;
 using OpenTK;
@@ -9,6 +11,9 @@ namespace Bearded.TD
     {
         public static void Main(string[] args)
         {
+            var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Directory.SetCurrentDirectory(exeDir);
+
             using (Toolkit.Init(new ToolkitOptions() {Backend = PlatformBackend.PreferNative}))
             {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;

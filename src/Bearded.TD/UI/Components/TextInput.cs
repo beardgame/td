@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Input;
+using Bearded.Utilities;
 using OpenTK;
 using OpenTK.Input;
 
@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Components
 
         public string Text
         {
-            get { return text; }
+            get => text;
             set
             {
                 text = value ?? "";
@@ -27,12 +27,19 @@ namespace Bearded.TD.UI.Components
             }
         }
 
+        public event GenericEventHandler<string> Submitted; 
+
         public TextInput(Bounds bounds) : base(bounds)
         {
         }
 
         public override void HandleInput(InputState inputState)
         {
+            if (inputState.InputManager.IsKeyHit(Key.Enter))
+            {
+                Submitted?.Invoke(text);
+                return;
+            }
             if (inputState.InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
             {
                 text = text.Substring(0, cursorPosition - 1) + text.Substring(cursorPosition);
