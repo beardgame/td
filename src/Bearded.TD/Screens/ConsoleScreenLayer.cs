@@ -26,13 +26,17 @@ namespace Bearded.TD.Screens
         private readonly List<string> commandHistory = new List<string>();
         private int commandHistoryIndex = -1;
 
-        public ConsoleScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, Logger logger) : base(parent, geometries, 0, 1, true)
+        public ConsoleScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, Logger logger)
+            : base(parent, geometries, 0, 1, true)
         {
             this.logger = logger;
 
             bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
-            AddComponent(new ConsoleTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
-            AddComponent(consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding)));
+            AddComponent(
+                new ConsoleTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
+            AddComponent(
+                consoleInput = new TextInput(
+                    Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding)));
             consoleInput.Submitted += execute;
         }
 
