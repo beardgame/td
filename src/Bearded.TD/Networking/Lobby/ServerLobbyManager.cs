@@ -23,7 +23,7 @@ namespace Bearded.TD.Networking.Lobby
 
         public ServerLobbyManager(Logger logger) : base(logger)
         {
-            player = new Player(Color.Gray);
+            player = new Player(new Utilities.Id<Player>(), Color.Gray);
             players = new List<LobbyPlayer> { new LobbyPlayer(player) };
             networkInterface = new ServerNetworkInterface(logger);
         }
@@ -46,7 +46,7 @@ namespace Bearded.TD.Networking.Lobby
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    var newPlayer = new Player(Color.Black);
+                    var newPlayer = new Player(new Utilities.Id<Player>(), Color.Black);
                     players.Add(new LobbyPlayer(newPlayer));
                     networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
                     break;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Utilities.Input.Actions;
+using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Utilities.Input
 {
