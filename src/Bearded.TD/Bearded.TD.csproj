@@ -113,6 +113,7 @@
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
+    <Compile Include="Networking\Lobby\ClientInfo.cs" />
     <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
     <Compile Include="Networking\Lobby\LobbyManager.cs" />
     <Compile Include="Networking\Lobby\LobbyPlayer.cs" />

@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities;
+﻿using Bearded.TD.Networking.Lobby;
+using Bearded.Utilities;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking
@@ -7,12 +8,12 @@ namespace Bearded.TD.Networking
     {
         private readonly NetClient client;
 
-        public ClientNetworkInterface(Logger logger, string host) : base(logger)
+        public ClientNetworkInterface(Logger logger, string host, ClientInfo clientInfo) : base(logger)
         {
             var config = new NetPeerConfiguration(Constants.Network.ApplicationName);
             client = new NetClient(config);
             client.Start();
-            client.Connect(host, Constants.Network.DefaultPort);
+            client.Connect(host, Constants.Network.DefaultPort, createHailMessage(clientInfo));
         }
 
         protected override NetIncomingMessage GetNextMessage()
@@ -23,6 +24,13 @@ namespace Bearded.TD.Networking
         public void SendMessage(NetOutgoingMessage message, NetworkChannel channel)
         {
             client.SendMessage(message, NetDeliveryMethod.ReliableOrdered, (int) channel);
+        }
+
+        private NetOutgoingMessage createHailMessage(ClientInfo clientInfo)
+        {
+            var msg = client.CreateMessage();
+            //msg.Write(clientInfo);
+            return msg;
         }
     }
 }

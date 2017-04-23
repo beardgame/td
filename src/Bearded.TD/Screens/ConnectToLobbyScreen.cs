@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Networking;
+using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
@@ -51,7 +52,8 @@ namespace Bearded.TD.Screens
 
             if (inputState.InputManager.IsKeyHit(Key.Enter))
             {
-                networkInterface = new ClientNetworkInterface(logger, textInput.Text);
+                var clientInfo = new ClientInfo("Client player");
+                networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
                 return true;
             }
 
