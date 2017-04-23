@@ -11,10 +11,11 @@ namespace Bearded.TD.UI.Components
         private const float fontSize = 14;
         private const float lineHeight = 16;
 
-        private readonly Func<IList<T>> itemProvider;
+        private readonly Func<IReadOnlyList<T>> itemProvider;
         private readonly Func<T, (string, Color)> itemTransformer;
 
-        public TextBox(Bounds bounds, Func<IList<T>> itemProvider, Func<T, (string, Color)> itemTransformer) : base(bounds)
+        public TextBox(Bounds bounds, Func<IReadOnlyList<T>> itemProvider, Func<T, (string, Color)> itemTransformer)
+            : base(bounds)
         {
             this.itemProvider = itemProvider;
             this.itemTransformer = itemTransformer;
