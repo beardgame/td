@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands
                 game.Add(new DebugWorker(building.BuildManager));
             }
 
-            protected override IUnifiedRequestCommandSerializer GetSerializer()
+            protected override UnifiedRequestCommandSerializer GetSerializer()
             {
                 throw new System.NotImplementedException();
             }

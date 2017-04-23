@@ -3,9 +3,13 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
-    interface IUnifiedRequestCommandSerializer : IRequestSerializer, ICommandSerializer
+    abstract class UnifiedRequestCommandSerializer : IRequestSerializer, ICommandSerializer
     {
+        public IRequest GetRequest(GameInstance game) => getSerialized(game);
+        public ICommand GetCommand(GameInstance game) => getSerialized(game);
 
+        protected abstract UnifiedRequestCommand getSerialized(GameInstance game);
+        public abstract void Serialize(INetBufferStream stream);
     }
 
     abstract class UnifiedRequestCommand : IRequest, ICommand
@@ -15,7 +19,7 @@ namespace Bearded.TD.Game.Commands
 
         public abstract void Execute();
 
-        protected abstract IUnifiedRequestCommandSerializer GetSerializer();
+        protected abstract UnifiedRequestCommandSerializer GetSerializer();
 
         IRequestSerializer IRequest.Serializer => GetSerializer();
         ICommandSerializer ICommand.Serializer => GetSerializer();

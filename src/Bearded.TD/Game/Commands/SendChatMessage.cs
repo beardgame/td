@@ -34,11 +34,11 @@ namespace Bearded.TD.Game.Commands
                 game.ChatLog.Add(new ChatMessage(player, message));
             }
 
-            protected override IUnifiedRequestCommandSerializer GetSerializer()
+            protected override UnifiedRequestCommandSerializer GetSerializer()
                 => new Serializer(player, message);
         }
 
-        private class Serializer : IUnifiedRequestCommandSerializer
+        private class Serializer : UnifiedRequestCommandSerializer
         {
             private Id player;
             private string message;
@@ -53,13 +53,10 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public IRequest GetRequest(GameInstance game)
-                => SendChatMessage.Request(game, null, message);
+            protected override UnifiedRequestCommand getSerialized(GameInstance game)
+                => new Implementation(game, game.PlayerFor(player.Generic<Player>()), message);
 
-            public ICommand GetCommand(GameInstance game)
-                => GetRequest(game).ToCommand();
-
-            public void Serialize(INetBufferStream stream)
+            public override void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref player);
                 stream.Serialize(ref message);
