@@ -8,7 +8,6 @@ using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
 using OpenTK;
-using OpenTK.Input;
 
 namespace Bearded.TD.Screens
 {
@@ -27,7 +26,8 @@ namespace Bearded.TD.Screens
             this.logger = logger;
             this.inputManager = inputManager;
 
-            textInput = new TextInput(new Bounds(new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
+            AddComponent(textInput = new TextInput(new Bounds(new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f))));
+            textInput.Submitted += tryConnect;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -66,6 +66,12 @@ namespace Bearded.TD.Screens
             }
         }
 
+        private void tryConnect(string host)
+        {
+            var clientInfo = new ClientInfo("a client");
+            networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
+        }
+
         private void goToLobby(NetIncomingMessage msg)
         {
             // We should be getting enough information from the lobby here to make our own lobby instance.
@@ -73,19 +79,7 @@ namespace Bearded.TD.Screens
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            if (networkInterface != null)
-                return true;
-
-            if (inputState.InputManager.IsKeyHit(Key.Enter))
-            {
-                var clientInfo = new ClientInfo("a client");
-                networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
-                return true;
-            }
-
-            textInput.HandleInput(inputState);
-
-            return true;
+            return networkInterface != null || base.HandleInput(args, inputState);
         }
 
         public override void Draw()

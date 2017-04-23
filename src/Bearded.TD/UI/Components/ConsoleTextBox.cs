@@ -5,7 +5,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Components
 {
-    class ConsoleTextComponent : TextBox<Logger.Entry>
+    class ConsoleTextBox : TextBox<Logger.Entry>
     {
         private static readonly Dictionary<Logger.Severity, Color> colors = new Dictionary<Logger.Severity, Color>
         {
@@ -30,7 +30,7 @@ namespace Bearded.TD.UI.Components
         };
 #endif
         
-        public ConsoleTextComponent(Bounds bounds, Logger logger)
+        public ConsoleTextBox(Bounds bounds, Logger logger)
             : base(bounds, () => getLoggerEntries(logger), formatLoggerEntry)
         {
         }

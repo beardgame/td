@@ -31,8 +31,9 @@ namespace Bearded.TD.Screens
             this.logger = logger;
 
             bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
-            AddComponent(new ConsoleTextComponent(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
+            AddComponent(new ConsoleTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
             AddComponent(consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding)));
+            consoleInput.Submitted += execute;
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -43,9 +44,7 @@ namespace Bearded.TD.Screens
             if (!isConsoleEnabled) return true;
 
             base.HandleInput(args, inputState);
-
-            if (inputState.InputManager.IsKeyHit(Key.Enter))
-                execute();
+            
             if (inputState.InputManager.IsKeyHit(Key.Tab))
                 consoleInput.Text = autoComplete(consoleInput.Text);
             if (inputState.InputManager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
@@ -61,10 +60,8 @@ namespace Bearded.TD.Screens
             return false;
         }
 
-        private void execute()
+        private void execute(string command)
         {
-            var command = consoleInput.Text.Trim();
-
             addToHistory(command);
 
             logger.Info.Log("> {0}", command);
