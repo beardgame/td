@@ -40,13 +40,13 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : IUnifiedRequestCommandSerializer
         {
-            private Id Player;
-            private string Message;
+            private Id player;
+            private string message;
 
             public Serializer(Player player, string message)
             {
-                Player = player.Id.Simple;
-                Message = message;
+                this.player = player.Id.Simple;
+                this.message = message;
             }
 
             public Serializer()
@@ -54,15 +54,15 @@ namespace Bearded.TD.Game.Commands
             }
 
             public IRequest GetRequest(GameInstance game)
-                => SendChatMessage.Request(game, null, Message);
+                => SendChatMessage.Request(game, null, message);
 
             public ICommand GetCommand(GameInstance game)
                 => GetRequest(game).ToCommand();
 
             public void Serialize(INetBufferStream stream)
             {
-                stream.Serialize(ref Player);
-                stream.Serialize(ref Message);
+                stream.Serialize(ref player);
+                stream.Serialize(ref message);
             }
         }
     }
