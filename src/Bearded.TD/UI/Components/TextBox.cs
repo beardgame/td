@@ -14,7 +14,8 @@ namespace Bearded.TD.UI.Components
         private readonly Func<IReadOnlyList<T>> itemProvider;
         private readonly Func<T, (string, Color)> itemTransformer;
 
-        public TextBox(Bounds bounds, Func<IReadOnlyList<T>> itemProvider, Func<T, (string, Color)> itemTransformer) : base(bounds)
+        public TextBox(Bounds bounds, Func<IReadOnlyList<T>> itemProvider, Func<T, (string, Color)> itemTransformer)
+            : base(bounds)
         {
             this.itemProvider = itemProvider;
             this.itemTransformer = itemTransformer;
