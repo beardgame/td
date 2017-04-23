@@ -14,7 +14,7 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
-        public IdManager Ids { get; } = new IdManager();
+        public IdManager Ids { get; }
 
         public GameState State { get; private set; }
         public GameCamera Camera { get; private set; }
@@ -26,10 +26,12 @@ namespace Bearded.TD.Game
 
         public Player PlayerFor(Id<Player> id) => playersById[id];
 
-        public GameInstance(Player me, IRequestDispatcher requestDispatcher)
+
+        public GameInstance(Player me, IRequestDispatcher requestDispatcher, IdManager ids)
         {
             Me = me;
             RequestDispatcher = requestDispatcher;
+            Ids = ids;
 
             Players = players.AsReadOnly();
         }

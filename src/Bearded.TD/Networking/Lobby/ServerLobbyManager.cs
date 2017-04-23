@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Utilities.Input;
+using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -17,12 +16,13 @@ namespace Bearded.TD.Networking.Lobby
         private readonly ServerNetworkInterface networkInterface;
 
         public override bool GameStarted => gameStarted;
-        private readonly List<LobbyPlayer> players;
-        public override IReadOnlyList<LobbyPlayer> Players => players.AsReadOnly();
+        private readonly List<Player> players;
+        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
         {
-            players = new List<LobbyPlayer> { new LobbyPlayer(Game.Me) };
+            players = new List<Player> { Game.Me };
+            players[0].ConnectionState = PlayerConnectionState.Waiting;
             networkInterface = new ServerNetworkInterface(logger);
         }
 
@@ -57,9 +57,11 @@ namespace Bearded.TD.Networking.Lobby
             if (!checkClientInfo(clientInfo, out string rejectionReason))
             {
                 msg.SenderConnection.Deny(rejectionReason);
+                return;
             }
-            var newPlayer = new Player(new Utilities.Id<Player>(), clientInfo.PlayerName, Color.Black);
-            players.Add(new LobbyPlayer(newPlayer));
+            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Black);
+            players.Add(newPlayer);
+            newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }
@@ -79,7 +81,8 @@ namespace Bearded.TD.Networking.Lobby
         private void sendApproval(Player player, NetConnection connection)
         {
             var msg = networkInterface.CreateMessage();
-            // Write some information to the message.
+            var info = LobbyPlayerInfo.ForPlayer(player);
+            info.Serialize(new NetBufferWriter(msg));
             connection.Approve(msg);
         }
 
@@ -88,11 +91,10 @@ namespace Bearded.TD.Networking.Lobby
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    // Broadcast "new player" command.
+                    networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
                     break;
                 case NetConnectionStatus.Disconnected:
-                    var player = networkInterface.GetSender(msg);
-                    players.RemoveAll(lobbyPlayer => lobbyPlayer.Player == player);
+                    players.Remove(networkInterface.GetSender(msg));
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
@@ -100,21 +102,18 @@ namespace Bearded.TD.Networking.Lobby
 
         public override void ToggleReadyState()
         {
-            var lobbyPlayer = getLobbyPlayer(Game.Me);
-            setReadyStateForPlayer(lobbyPlayer, !lobbyPlayer.IsReady);
+            setConnectionStateForPlayer(Game.Me,
+                Game.Me.ConnectionState == PlayerConnectionState.Ready
+                    ? PlayerConnectionState.Waiting
+                    : PlayerConnectionState.Ready);
         }
 
-        private void setReadyStateForPlayer(LobbyPlayer player, bool isReady)
+        private void setConnectionStateForPlayer(Player player, PlayerConnectionState connectionState)
         {
-            player.IsReady = isReady;
+            player.ConnectionState = connectionState;
 
-            if (Players.All(lobbyPlayer => lobbyPlayer.IsReady))
+            if (Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
                 gameStarted = true;
-        }
-
-        private LobbyPlayer getLobbyPlayer(Player player)
-        {
-            return Players.First(lobbyPlayer => lobbyPlayer.Player == player) ?? throw new ArgumentException();
         }
     }
 }

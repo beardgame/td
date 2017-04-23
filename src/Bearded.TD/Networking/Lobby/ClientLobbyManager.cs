@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Lobby
@@ -13,11 +10,14 @@ namespace Bearded.TD.Networking.Lobby
     {
         private readonly ClientNetworkInterface networkInterface;
         public override bool GameStarted { get; }
-        public override IReadOnlyList<LobbyPlayer> Players { get; }
+        private readonly List<Player> players;
+        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
             : base(logger, player, (new ClientRequestDispatcher(), new ClientDispatcher()))
         {
+            players = new List<Player> { Game.Me };
+            players[0].ConnectionState = PlayerConnectionState.Waiting;
             this.networkInterface = networkInterface;
         }
 
@@ -29,13 +29,11 @@ namespace Bearded.TD.Networking.Lobby
             // * Game settings changed
             // * Game started
             // * Chat messages
-            throw new System.NotImplementedException();
         }
         
         public override void ToggleReadyState()
         {
             // Ask server to change our state
-            throw new System.NotImplementedException();
         }
     }
 }

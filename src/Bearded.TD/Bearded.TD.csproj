@@ -128,7 +128,8 @@
     <Compile Include="Networking\Lobby\ClientInfo.cs" />
     <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
     <Compile Include="Networking\Lobby\LobbyManager.cs" />
-    <Compile Include="Networking\Lobby\LobbyPlayer.cs" />
+    <Compile Include="Networking\Lobby\LobbyPlayerInfo.cs" />
+    <Compile Include="Networking\PlayerConnectionState.cs" />
     <Compile Include="Networking\Lobby\ServerLobbyManager.cs" />
     <Compile Include="Networking\NetworkChannel.cs" />
     <Compile Include="Networking\NetworkInterface.cs" />
