@@ -5,10 +5,10 @@ namespace Bearded.TD.Game.Commands
 {
     abstract class UnifiedRequestCommandSerializer : IRequestSerializer, ICommandSerializer
     {
-        public IRequest GetRequest(GameInstance game) => getSerialized(game);
-        public ICommand GetCommand(GameInstance game) => getSerialized(game);
+        public IRequest GetRequest(GameInstance game) => GetSerialized(game);
+        public ICommand GetCommand(GameInstance game) => GetSerialized(game);
 
-        protected abstract UnifiedRequestCommand getSerialized(GameInstance game);
+        protected abstract UnifiedRequestCommand GetSerialized(GameInstance game);
         public abstract void Serialize(INetBufferStream stream);
     }
 
