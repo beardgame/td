@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -15,5 +16,6 @@ namespace Bearded.TD.Game.Commands
         }
 
         public void Execute() => unit.Kill();
+        public ICommandSerializer Serializer { get; }
     }
 }

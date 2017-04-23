@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Commands;
+using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -14,5 +15,6 @@ namespace Bearded.TD.Game.Commands
         }
 
         public void Execute() => game.Meta.DoGameOver();
+        public ICommandSerializer Serializer { get; }
     }
 }
