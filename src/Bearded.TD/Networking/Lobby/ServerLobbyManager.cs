@@ -14,18 +14,25 @@ namespace Bearded.TD.Networking.Lobby
     class ServerLobbyManager : LobbyManager
     {
         private bool gameStarted;
-        private readonly Player player;
         private readonly ServerNetworkInterface networkInterface;
 
         public override bool GameStarted => gameStarted;
         private readonly List<LobbyPlayer> players;
         public override IReadOnlyList<LobbyPlayer> Players => players.AsReadOnly();
 
-        public ServerLobbyManager(Logger logger) : base(logger)
+        public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
         {
-            player = new Player(new Utilities.Id<Player>(), "The host", Color.Gray);
-            players = new List<LobbyPlayer> { new LobbyPlayer(player) };
+            players = new List<LobbyPlayer> { new LobbyPlayer(Game.Me) };
             networkInterface = new ServerNetworkInterface(logger);
+        }
+
+        private static (IRequestDispatcher, IDispatcher) createDispatchers()
+        {
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var dispatcher = new ServerDispatcher(commandDispatcher);
+
+            return (requestDispatcher, dispatcher);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -93,17 +100,8 @@ namespace Bearded.TD.Networking.Lobby
 
         public override void ToggleReadyState()
         {
-            var lobbyPlayer = getLobbyPlayer(player);
+            var lobbyPlayer = getLobbyPlayer(Game.Me);
             setReadyStateForPlayer(lobbyPlayer, !lobbyPlayer.IsReady);
-        }
-
-        public override GameInstance BuildInstance(InputManager inputManager)
-        {
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
-            var dispatcher = new ServerDispatcher(commandDispatcher);
-
-            return BuildInstance(player, requestDispatcher, dispatcher, inputManager);
         }
 
         private void setReadyStateForPlayer(LobbyPlayer player, bool isReady)

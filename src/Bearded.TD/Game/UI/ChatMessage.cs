@@ -15,6 +15,6 @@ namespace Bearded.TD.Game.UI
 
         public string GetDisplayString() => Player == null
             ? $"[System] {Text}"
-            : $"{Player}: {Text}";
+            : $"{Player.Name}: {Text}";
     }
 }

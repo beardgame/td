@@ -35,7 +35,7 @@ namespace Bearded.TD.UI.Components
         {
         }
 
-        private static IList<Logger.Entry> getLoggerEntries(Logger logger)
+        private static List<Logger.Entry> getLoggerEntries(Logger logger)
         {
             return logger.GetSafeRecentEntries().Where(entry => visibleSeverities.Contains(entry.Severity)).ToList();
         }

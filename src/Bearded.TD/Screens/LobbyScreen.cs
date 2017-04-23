@@ -22,8 +22,7 @@ namespace Bearded.TD.Screens
             this.lobbyManager = lobbyManager;
             this.inputManager = inputManager;
 
-            // TODO: put in actual chat log
-            AddComponent(new ChatComponent(new Bounds(new ScalingDimension(Screen.X, .3f, .7f), new ScalingDimension(Screen.Y)), new ChatLog()));
+            AddComponent(new ChatComponent(new Bounds(new ScalingDimension(Screen.X, .3f, .7f), new ScalingDimension(Screen.Y)), lobbyManager.Game));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -60,7 +59,7 @@ namespace Bearded.TD.Screens
 
         private void startGame()
         {
-            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, lobbyManager.BuildInstance(inputManager), inputManager));
+            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, lobbyManager.GetStartedInstance(inputManager), inputManager));
             Destroy();
         }
     }

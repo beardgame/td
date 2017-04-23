@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Bearded.TD.Game.UI
 {
     sealed class ChatLog
     {
         private readonly List<ChatMessage> messages = new List<ChatMessage>();
-        public IReadOnlyCollection<ChatMessage> Messages { get; }
+        public ReadOnlyCollection<ChatMessage> Messages { get; }
 
         public ChatLog()
         {

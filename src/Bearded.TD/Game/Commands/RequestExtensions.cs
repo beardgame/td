@@ -25,5 +25,15 @@ namespace Bearded.TD.Game.Commands
             => game.Request(func(game.State, p1, p2));
         public static void Request<T1, T2, T3>(this GameInstance game, Func<GameState, T1, T2, T3, IRequest> func, T1 p1, T2 p2, T3 p3)
             => game.Request(func(game.State, p1, p2, p3));
+
+
+        public static void Request(this GameInstance game, Func<GameInstance, IRequest> func)
+            => game.Request(func(game));
+        public static void Request<T>(this GameInstance game, Func<GameInstance, T, IRequest> func, T p)
+            => game.Request(func(game, p));
+        public static void Request<T1, T2>(this GameInstance game, Func<GameInstance, T1, T2, IRequest> func, T1 p1, T2 p2)
+            => game.Request(func(game, p1, p2));
+        public static void Request<T1, T2, T3>(this GameInstance game, Func<GameInstance, T1, T2, T3, IRequest> func, T1 p1, T2 p2, T3 p3)
+            => game.Request(func(game, p1, p2, p3));
     }
 }
