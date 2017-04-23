@@ -5,6 +5,7 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -23,7 +24,7 @@ namespace Bearded.TD.Networking.Lobby
 
         public ServerLobbyManager(Logger logger) : base(logger)
         {
-            player = new Player(new Utilities.Id<Player>(), Color.Gray);
+            player = new Player(new Utilities.Id<Player>(), "The host", Color.Gray);
             players = new List<LobbyPlayer> { new LobbyPlayer(player) };
             networkInterface = new ServerNetworkInterface(logger);
         }
@@ -46,9 +47,13 @@ namespace Bearded.TD.Networking.Lobby
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    var newPlayer = new Player(new Utilities.Id<Player>(), Color.Black);
+                    var clientInfo = ClientInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
+                    // Do some checks with the client info.
+                    var newPlayer = new Player(new Utilities.Id<Player>(), clientInfo.PlayerName, Color.Black);
                     players.Add(new LobbyPlayer(newPlayer));
                     networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
+                    // Send connection accepted/rejected command with current lobby info.
+                    // Broadcast "new player" command.
                     break;
                 case NetConnectionStatus.Disconnected:
                     var player = networkInterface.GetSender(msg);

@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
@@ -45,6 +46,7 @@ namespace Bearded.TD.Screens
             txtGeo.Height = 48;
             txtGeo.DrawString(Vector2.Zero, "Press [enter] to start", .5f, .5f);
             txtGeo.DrawString(64 * Vector2.UnitY, $"Player count: {lobbyManager.Players.Count}", .5f, .5f);
+            txtGeo.DrawString(128 * Vector2.UnitY, string.Join(", ", lobbyManager.Players.Select(p => p.Player.Name)), .5f, .5f);
         }
 
         private void startGame()

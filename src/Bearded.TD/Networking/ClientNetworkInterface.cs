@@ -1,4 +1,6 @@
 ﻿using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -29,7 +31,7 @@ namespace Bearded.TD.Networking
         private NetOutgoingMessage createHailMessage(ClientInfo clientInfo)
         {
             var msg = client.CreateMessage();
-            //msg.Write(clientInfo);
+            clientInfo.Serialize(new NetBufferWriter(msg));
             return msg;
         }
     }

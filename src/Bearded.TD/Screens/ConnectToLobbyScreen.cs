@@ -52,7 +52,7 @@ namespace Bearded.TD.Screens
 
             if (inputState.InputManager.IsKeyHit(Key.Enter))
             {
-                var clientInfo = new ClientInfo("Client player");
+                var clientInfo = new ClientInfo("A client");
                 networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
                 return true;
             }
