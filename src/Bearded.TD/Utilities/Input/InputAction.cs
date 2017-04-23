@@ -60,7 +60,7 @@ namespace Bearded.TD.Utilities.Input
             if (others == null)
                 throw new ArgumentNullException(nameof(others));
 
-            return InputAction.AnyOf(others.Append(me));
+            return InputAction.AnyOf(Extensions.Append(others, me));
         }
 
         private abstract class BinaryAction : IAction
