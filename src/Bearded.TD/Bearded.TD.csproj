@@ -72,6 +72,7 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Commands\AddPlayer.cs" />
     <Compile Include="Game\Commands\BuildBuilding.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\SendChatMessage.cs" />
