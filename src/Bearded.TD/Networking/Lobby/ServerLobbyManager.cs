@@ -16,13 +16,13 @@ namespace Bearded.TD.Networking.Lobby
         private readonly ServerNetworkInterface networkInterface;
 
         public override bool GameStarted => gameStarted;
-        private readonly List<LobbyPlayer> players;
-        public override IReadOnlyList<LobbyPlayer> Players => players.AsReadOnly();
+        private readonly List<Player> players;
+        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
         {
-            players = new List<LobbyPlayer> { new LobbyPlayer(Game.Me) };
-            players[0].State = LobbyPlayerState.Waiting;
+            players = new List<Player> { Game.Me };
+            players[0].ConnectionState = PlayerConnectionState.Waiting;
             networkInterface = new ServerNetworkInterface(logger);
         }
 
@@ -60,9 +60,8 @@ namespace Bearded.TD.Networking.Lobby
                 return;
             }
             var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Black);
-            LobbyPlayer lobbyPlayer;
-            players.Add(lobbyPlayer = new LobbyPlayer(newPlayer));
-            lobbyPlayer.State = LobbyPlayerState.Connecting;
+            players.Add(newPlayer);
+            newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }
@@ -89,17 +88,13 @@ namespace Bearded.TD.Networking.Lobby
 
         private void handleStatusChange(NetIncomingMessage msg)
         {
-            Player player;
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    player = networkInterface.GetSender(msg);
-                    var lobbyPlayer = getLobbyPlayer(player);
-                    lobbyPlayer.State = LobbyPlayerState.Waiting;
+                    networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
                     break;
                 case NetConnectionStatus.Disconnected:
-                    player = networkInterface.GetSender(msg);
-                    players.RemoveAll(lp => lp.Player == player);
+                    players.Remove(networkInterface.GetSender(msg));
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
@@ -107,22 +102,18 @@ namespace Bearded.TD.Networking.Lobby
 
         public override void ToggleReadyState()
         {
-            var lobbyPlayer = getLobbyPlayer(Game.Me);
-            setReadyStateForPlayer(lobbyPlayer,
-                lobbyPlayer.State == LobbyPlayerState.Ready ? LobbyPlayerState.Waiting : LobbyPlayerState.Ready);
+            setConnectionStateForPlayer(Game.Me,
+                Game.Me.ConnectionState == PlayerConnectionState.Ready
+                    ? PlayerConnectionState.Waiting
+                    : PlayerConnectionState.Ready);
         }
 
-        private void setReadyStateForPlayer(LobbyPlayer player, LobbyPlayerState lobbyPlayerState)
+        private void setConnectionStateForPlayer(Player player, PlayerConnectionState connectionState)
         {
-            player.State = lobbyPlayerState;
+            player.ConnectionState = connectionState;
 
-            if (Players.All(lobbyPlayer => lobbyPlayer.State == LobbyPlayerState.Ready))
+            if (Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
                 gameStarted = true;
-        }
-
-        private LobbyPlayer getLobbyPlayer(Player player)
-        {
-            return Players.First(lobbyPlayer => lobbyPlayer.Player == player) ?? throw new ArgumentException();
         }
     }
 }

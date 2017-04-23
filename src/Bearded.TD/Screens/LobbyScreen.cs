@@ -53,7 +53,7 @@ namespace Bearded.TD.Screens
             txtGeo.SizeCoefficient = Vector2.One;
             txtGeo.Height = 48;
             txtGeo.DrawString(new Vector2(16, 16), $"Player count: {lobbyManager.Players.Count}");
-            txtGeo.DrawString(new Vector2(16, 80), string.Join(", ", lobbyManager.Players.Select(p => p.Player.Name)));
+            txtGeo.DrawString(new Vector2(16, 80), string.Join(", ", lobbyManager.Players.Select(p => p.Name)));
             txtGeo.DrawString(new Vector2(16, 144), "Press [shift+enter] to start");
         }
 

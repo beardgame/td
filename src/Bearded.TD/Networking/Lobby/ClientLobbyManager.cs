@@ -10,14 +10,14 @@ namespace Bearded.TD.Networking.Lobby
     {
         private readonly ClientNetworkInterface networkInterface;
         public override bool GameStarted { get; }
-        private readonly List<LobbyPlayer> players;
-        public override IReadOnlyList<LobbyPlayer> Players => players.AsReadOnly();
+        private readonly List<Player> players;
+        public override IReadOnlyList<Player> Players => players.AsReadOnly();
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
             : base(logger, player, (new ClientRequestDispatcher(), new ClientDispatcher()))
         {
-            players = new List<LobbyPlayer> { new LobbyPlayer(Game.Me) };
-            players[0].State = LobbyPlayerState.Waiting;
+            players = new List<Player> { Game.Me };
+            players[0].ConnectionState = PlayerConnectionState.Waiting;
             this.networkInterface = networkInterface;
         }
 
