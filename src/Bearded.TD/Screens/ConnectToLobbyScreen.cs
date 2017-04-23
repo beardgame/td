@@ -1,6 +1,8 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
@@ -13,6 +15,8 @@ namespace Bearded.TD.Screens
 {
     class ConnectToLobbyScreen : UIScreenLayer
     {
+        private const string playerName = "a client";
+
         private readonly Logger logger;
         private readonly InputManager inputManager;
 
@@ -49,13 +53,13 @@ namespace Bearded.TD.Screens
 
         private void handleStatusChange(NetIncomingMessage msg)
         {
+            msg.ReadByte(); // Read status byte.
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
                     goToLobby(msg);
-                    break;
+                    return;
                 case NetConnectionStatus.Disconnected:
-                    msg.ReadByte(); // Read status byte.
                     rejectionReason = msg.ReadString();
                     logger.Info.Log(string.IsNullOrEmpty(rejectionReason)
                         ? "Disconnected"
@@ -68,13 +72,17 @@ namespace Bearded.TD.Screens
 
         private void tryConnect(string host)
         {
-            var clientInfo = new ClientInfo("a client");
+            var clientInfo = new ClientInfo(playerName);
             networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
         }
 
         private void goToLobby(NetIncomingMessage msg)
         {
-            // We should be getting enough information from the lobby here to make our own lobby instance.
+            var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
+            var lobbyManager =
+                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName, info.Color), logger);
+            Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(Parent, Geometries, lobbyManager, inputManager));
+            Destroy();
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)

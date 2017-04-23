@@ -5,6 +5,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 
@@ -23,15 +24,16 @@ namespace Bearded.TD.Networking.Lobby
             (IRequestDispatcher request, IDispatcher master) dispatchers)
             : this(logger, dispatchers.master)
         {
-            var player = new Player(new Utilities.Id<Player>(), "The host", Color.Gray);
-            Game = new GameInstance(player, dispatchers.request);
+            var ids = new IdManager();
+            var player = new Player(ids.GetNext<Player>(), "The host", Color.Gray);
+            Game = new GameInstance(player, dispatchers.request, ids);
         }
 
         protected LobbyManager(Logger logger, Player player,
             (IRequestDispatcher request, IDispatcher master) dispatchers)
             : this(logger, dispatchers.master)
         {
-            Game = new GameInstance(player, dispatchers.request);
+            Game = new GameInstance(player, dispatchers.request, null);
         }
 
         private LobbyManager(Logger logger, IDispatcher dispatcher)

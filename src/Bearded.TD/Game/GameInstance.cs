@@ -12,16 +12,17 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
-        public IdManager Ids { get; } = new IdManager();
+        public IdManager Ids { get; }
 
         public GameState State { get; private set; }
         public GameCamera Camera { get; private set; }
         public CursorState Cursor { get; private set; }
 
-        public GameInstance(Player me, IRequestDispatcher requestDispatcher)
+        public GameInstance(Player me, IRequestDispatcher requestDispatcher, IdManager ids)
         {
             Me = me;
             RequestDispatcher = requestDispatcher;
+            Ids = ids;
         }
 
         public void Start(GameState state, GameCamera camera)

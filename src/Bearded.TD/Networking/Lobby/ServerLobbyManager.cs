@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Utilities.Input;
+using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -23,6 +22,7 @@ namespace Bearded.TD.Networking.Lobby
         public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
         {
             players = new List<LobbyPlayer> { new LobbyPlayer(Game.Me) };
+            players[0].State = LobbyPlayerState.Waiting;
             networkInterface = new ServerNetworkInterface(logger);
         }
 
@@ -57,9 +57,12 @@ namespace Bearded.TD.Networking.Lobby
             if (!checkClientInfo(clientInfo, out string rejectionReason))
             {
                 msg.SenderConnection.Deny(rejectionReason);
+                return;
             }
-            var newPlayer = new Player(new Utilities.Id<Player>(), clientInfo.PlayerName, Color.Black);
-            players.Add(new LobbyPlayer(newPlayer));
+            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Black);
+            LobbyPlayer lobbyPlayer;
+            players.Add(lobbyPlayer = new LobbyPlayer(newPlayer));
+            lobbyPlayer.State = LobbyPlayerState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }
@@ -79,20 +82,24 @@ namespace Bearded.TD.Networking.Lobby
         private void sendApproval(Player player, NetConnection connection)
         {
             var msg = networkInterface.CreateMessage();
-            // Write some information to the message.
+            var info = LobbyPlayerInfo.ForPlayer(player);
+            info.Serialize(new NetBufferWriter(msg));
             connection.Approve(msg);
         }
 
         private void handleStatusChange(NetIncomingMessage msg)
         {
+            Player player;
             switch (msg.SenderConnection.Status)
             {
                 case NetConnectionStatus.Connected:
-                    // Broadcast "new player" command.
+                    player = networkInterface.GetSender(msg);
+                    var lobbyPlayer = getLobbyPlayer(player);
+                    lobbyPlayer.State = LobbyPlayerState.Waiting;
                     break;
                 case NetConnectionStatus.Disconnected:
-                    var player = networkInterface.GetSender(msg);
-                    players.RemoveAll(lobbyPlayer => lobbyPlayer.Player == player);
+                    player = networkInterface.GetSender(msg);
+                    players.RemoveAll(lp => lp.Player == player);
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
@@ -101,14 +108,15 @@ namespace Bearded.TD.Networking.Lobby
         public override void ToggleReadyState()
         {
             var lobbyPlayer = getLobbyPlayer(Game.Me);
-            setReadyStateForPlayer(lobbyPlayer, !lobbyPlayer.IsReady);
+            setReadyStateForPlayer(lobbyPlayer,
+                lobbyPlayer.State == LobbyPlayerState.Ready ? LobbyPlayerState.Waiting : LobbyPlayerState.Ready);
         }
 
-        private void setReadyStateForPlayer(LobbyPlayer player, bool isReady)
+        private void setReadyStateForPlayer(LobbyPlayer player, LobbyPlayerState lobbyPlayerState)
         {
-            player.IsReady = isReady;
+            player.State = lobbyPlayerState;
 
-            if (Players.All(lobbyPlayer => lobbyPlayer.IsReady))
+            if (Players.All(lobbyPlayer => lobbyPlayer.State == LobbyPlayerState.Ready))
                 gameStarted = true;
         }
 
