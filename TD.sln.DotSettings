@@ -15,4 +15,122 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=08867884_002D4804_002D42a5_002Da549_002D6c574892e005/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Static, Instance" AccessRightKinds="Private" Description="Methods, Properties &amp;amp; Events (private)"&gt;&lt;ElementKinds&gt;&lt;Kind Name="METHOD" /&gt;&lt;Kind Name="PROPERTY" /&gt;&lt;Kind Name="EVENT" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EAddAccessorOwnerDeclarationBracesMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateBlankLinesAroundFieldToBlankLinesAroundProperty/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateThisQualifierSettings/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateThisQualifierSettings/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/CustomProperties/=FileName/@EntryIndexedValue">Request</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/CustomProperties/=ValidateFileName/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Description/@EntryValue">TD Request</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=CLASS/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=CLASS/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=HEADER/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=HEADER/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=NAMESPACE/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Field/=NAMESPACE/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;&#xD;
+using Bearded.TD.Networking.Serialization;&#xD;
+&#xD;
+namespace $NAMESPACE$&#xD;
+{&#xD;
+    static class $CLASS$&#xD;
+    {&#xD;
+        public static IRequest Request() =&gt; new Implementation();&#xD;
+&#xD;
+        private class Implementation : IRequest&#xD;
+        {&#xD;
+            public bool CheckPreconditions()&#xD;
+            {&#xD;
+                throw new System.NotImplementedException();&#xD;
+            }&#xD;
+&#xD;
+            public ICommand ToCommand()&#xD;
+            {&#xD;
+                throw new System.NotImplementedException();&#xD;
+            }&#xD;
+&#xD;
+            public IRequestSerializer Serializer =&gt; new Serializer();&#xD;
+        }&#xD;
+&#xD;
+        private class Serializer : IRequestSerializer&#xD;
+        {&#xD;
+            // ReSharper disable once UnusedMember.Local&#xD;
+            public Serializer()&#xD;
+            {&#xD;
+            }&#xD;
+&#xD;
+            public IRequest GetRequest(GameInstance game)&#xD;
+                =&gt; new Implementation();&#xD;
+&#xD;
+            public void Serialize(INetBufferStream stream)&#xD;
+            {&#xD;
+            }&#xD;
+        }&#xD;
+    }&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/CustomProperties/=FileName/@EntryIndexedValue">Command</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/CustomProperties/=ValidateFileName/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Description/@EntryValue">TD Command</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=CLASS/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=CLASS/Expression/@EntryValue">getFileNameWithoutExtension()</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=CLASS/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=HEADER/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=HEADER/Expression/@EntryValue">fileheader()</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=HEADER/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=NAMESPACE/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=NAMESPACE/Expression/@EntryValue">fileDefaultNamespace()</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Field/=NAMESPACE/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;&#xD;
+using Bearded.TD.Networking.Serialization;&#xD;
+&#xD;
+namespace $NAMESPACE$&#xD;
+{&#xD;
+    static class $CLASS$&#xD;
+    {&#xD;
+        public static ICommand Command(GameInstance game)&#xD;
+            =&gt; new Implementation(game);&#xD;
+&#xD;
+        private class Implementation : ICommand&#xD;
+        {&#xD;
+            private readonly GameInstance game;&#xD;
+&#xD;
+            public Implementation(GameInstance game)&#xD;
+            {&#xD;
+                this.game = game;&#xD;
+            }&#xD;
+&#xD;
+            public void Execute()&#xD;
+            {&#xD;
+                throw new System.NotImplementedException();&#xD;
+            }&#xD;
+&#xD;
+            public ICommandSerializer Serializer =&gt; new Serializer();&#xD;
+        }&#xD;
+&#xD;
+        private class Serializer : ICommandSerializer&#xD;
+        {&#xD;
+            // ReSharper disable once UnusedMember.Local&#xD;
+            public Serializer()&#xD;
+            {&#xD;
+            }&#xD;
+&#xD;
+            public ICommand GetCommand(GameInstance game)&#xD;
+                =&gt; new Implementation(game);&#xD;
+&#xD;
+            public void Serialize(INetBufferStream stream)&#xD;
+            {&#xD;
+            }&#xD;
+        }&#xD;
+    }&#xD;
+}</s:String></wpf:ResourceDictionary>
