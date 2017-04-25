@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bearded.TD.Networking;
+using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands
 {
@@ -9,9 +10,30 @@ namespace Bearded.TD.Commands
 
     class ClientRequestDispatcher : IRequestDispatcher
     {
+        private readonly ClientNetworkInterface network;
+
+        public ClientRequestDispatcher(ClientNetworkInterface network)
+        {
+            this.network = network;
+        }
+
         public void Dispatch(IRequest request)
         {
-            throw new NotImplementedException();
+            sendToServer(request);
+        }
+
+        private void sendToServer(IRequest request)
+        {
+            var message = network.CreateMessage();
+
+            var serializer = request.Serializer;
+            var serializers = Serializers.Instance;
+            var id = serializers.RequestId(request.Serializer);
+
+            message.Write(id);
+            serializer.Serialize(new NetBufferWriter(message));
+
+            network.SendMessage(message, NetworkChannel.Chat);
         }
     }
 

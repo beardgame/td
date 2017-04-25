@@ -140,7 +140,7 @@
     <Compile Include="Networking\Serialization\NetBufferReader.cs" />
     <Compile Include="Networking\Serialization\NetBufferWriter.cs" />
     <Compile Include="Networking\Serialization\SerializerExtensions.cs" />
-    <Compile Include="Networking\Serialization\SerializerManager.cs" />
+    <Compile Include="Networking\Serialization\Serializers.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
