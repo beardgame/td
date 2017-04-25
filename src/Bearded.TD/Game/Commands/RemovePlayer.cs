@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Commands
                 game.RemovePlayer(player);
             }
 
-            public ICommandSerializer Serializer => new Serializer();
+            public ICommandSerializer Serializer => new Serializer(player);
         }
 
         private class Serializer : ICommandSerializer
