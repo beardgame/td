@@ -16,15 +16,15 @@ namespace Bearded.TD.Networking.Lobby
         public override bool GameStarted => gameStarted;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
-            : base(logger, createDispatchers(networkInterface))
+            : base(logger, createDispatchers(networkInterface, logger))
         {
             this.networkInterface = networkInterface;
         }
 
-        private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network)
+        private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network, Logger logger)
         {
             var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
             var dispatcher = new ServerDispatcher(commandDispatcher);
 
             return (requestDispatcher, dispatcher);
@@ -41,6 +41,9 @@ namespace Bearded.TD.Networking.Lobby
                         break;
                     case NetIncomingMessageType.StatusChanged:
                         handleStatusChange(msg);
+                        break;
+                    case NetIncomingMessageType.Data:
+                        handleIncomingDataMessage(msg);
                         break;
                 }
             }
@@ -93,6 +96,20 @@ namespace Bearded.TD.Networking.Lobby
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
+        }
+
+        private void handleIncomingDataMessage(NetIncomingMessage msg)
+        {
+            var typeId = msg.ReadInt32();
+            // We only accept requests. We should not be receiving commands on the server.
+            if (Serializers.Instance.IsRequestSerializer(typeId))
+            {
+                Game.RequestDispatcher.Dispatch(
+                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), Game));
+                return;
+            }
+
+            Logger.Error.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
         }
 
         public override void ToggleReadyState()
