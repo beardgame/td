@@ -11,7 +11,7 @@ namespace Bearded.TD.Networking.Lobby
         public override bool GameStarted { get; }
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
-            : base(logger, player, (new ClientRequestDispatcher(), new ClientDispatcher()))
+            : base(logger, player, (new ClientRequestDispatcher(networkInterface), new ClientDispatcher()))
         {
             this.networkInterface = networkInterface;
         }

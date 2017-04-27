@@ -15,14 +15,15 @@ namespace Bearded.TD.Networking.Lobby
 
         public override bool GameStarted => gameStarted;
 
-        public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
+        public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
+            : base(logger, createDispatchers(networkInterface))
         {
-            networkInterface = new ServerNetworkInterface(logger);
+            this.networkInterface = networkInterface;
         }
 
-        private static (IRequestDispatcher, IDispatcher) createDispatchers()
+        private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network)
         {
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
             var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
             var dispatcher = new ServerDispatcher(commandDispatcher);
 
