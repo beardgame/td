@@ -7,7 +7,7 @@ namespace Bearded.TD.Rendering
 {
     class SurfaceManager
     {
-        private readonly ShaderManager shaders = new ShaderManager();
+        public ShaderManager Shaders { get; } = new ShaderManager();
 
         public Matrix4Uniform ViewMatrix { get; } = new Matrix4Uniform("view");
         public Matrix4Uniform ProjectionMatrix { get; } = new Matrix4Uniform("projection");
@@ -18,21 +18,21 @@ namespace Bearded.TD.Rendering
 
         public SurfaceManager()
         {
-            shaders.Add(
+            Shaders.Add(
                 ShaderFileLoader.CreateDefault(asset("shaders/")).Load(".")
             );
             new[]
             {
                 "geometry", "uvcolor"
-            }.ForEach(name => shaders.MakeShaderProgram(name));
+            }.ForEach(name => Shaders.MakeShaderProgram(name));
 
             ConsoleBackground = new IndexedSurface<PrimitiveVertexData>()
-                .WithShader(shaders["geometry"])
+                .WithShader(Shaders["geometry"])
                 .AndSettings(ViewMatrix, ProjectionMatrix);
 
             ConsoleFont = Font.FromJsonFile(font("inconsolata.json"));
             ConsoleFontSurface = new IndexedSurface<UVColorVertexData>()
-                .WithShader(shaders["uvcolor"])
+                .WithShader(Shaders["uvcolor"])
                 .AndSettings(
                     ViewMatrix, ProjectionMatrix,
                     new TextureUniform("diffuse", new Texture(font("inconsolata.png"), preMultiplyAlpha:true))

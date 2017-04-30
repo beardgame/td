@@ -11,9 +11,11 @@ namespace Bearded.TD.Rendering
 
         private readonly Texture diffuseBuffer = createTexture(); // rgba
         private readonly Texture normalHeightBuffer = createTexture(); // xyzh
-        private readonly Texture accumBuffer = createTexture(); // rgba
+        private readonly Texture accumBuffer = createTexture(); // rgb
         private readonly RenderTarget gTarget = new RenderTarget();
         private readonly RenderTarget accumTarget = new RenderTarget();
+
+        private readonly PostProcessSurface compositeSurface;
 
         public DeferredRenderer(SurfaceManager surfaces)
         {
@@ -23,37 +25,52 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalHeightBuffer);
 
             accumTarget.Attach(FramebufferAttachment.ColorAttachment0, accumBuffer);
-        }
 
-        private static Texture createTexture()
-        {
-            var texture = new Texture(1, 1);
-            texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Linear,
-                TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-            return texture;
+            surfaces.Shaders.MakeShaderProgram("" /* TODO */);
+            compositeSurface = new PostProcessSurface()
+                .WithShader(surfaces.Shaders["" /* TODO */ ])
+                .AndSettings(
+                    new TextureUniform("diffuse", diffuseBuffer),
+                    new TextureUniform("light", accumBuffer)
+                );
         }
 
         public void Render(RenderTarget target = null)
         {
-            // fill vertex buffers (maybe outside this?)
+            // TODO: fill vertex buffers (maybe outside this?)
 
             resizeIfNeeded();
 
+            renderWorldToGBuffers();
+
+            renderLightsToAccumBuffer();
+
+            compositeTo(target);
+        }
+
+        private void renderWorldToGBuffers()
+        {
             renderTo(gTarget);
 
             clearWithColor();
 
-            // render geometries
+            // TODO: render geometries
+        }
 
+        private void renderLightsToAccumBuffer()
+        {
             renderTo(accumTarget);
 
             clearWithColor();
 
-            // render lights to accum buffer (from normal+height only)
+            // TODO: render lights to accum buffer (from normal+height only)
+        }
 
+        private void compositeTo(RenderTarget target)
+        {
             renderTo(target);
 
-            // multiply accum buffer with diffuse
+            compositeSurface.Render();
         }
 
         private static void renderTo(RenderTarget target)
@@ -79,10 +96,8 @@ namespace Bearded.TD.Rendering
 
         private void resizeIfNeeded()
         {
-            if (!needsResize)
-                return;
-
-            resize();
+            if (needsResize)
+                resize();
 
             needsResize = false;
         }
@@ -91,7 +106,15 @@ namespace Bearded.TD.Rendering
         {
             diffuseBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba);
             normalHeightBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba16f);
-            accumBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba16f);
+            accumBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgb16f);
+        }
+
+        private static Texture createTexture()
+        {
+            var texture = new Texture(1, 1);
+            texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Linear,
+                TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+            return texture;
         }
     }
 }
