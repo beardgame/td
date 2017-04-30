@@ -44,12 +44,17 @@ namespace Bearded.TD.Rendering
             surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
             surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
 
+            // TODO: need to render deferred part here(?) if needed
+
             surfaces.ConsoleBackground.Render();
             surfaces.ConsoleFontSurface.Render();
         }
 
         private void renderDeferred()
         {
+            // TODO: how do we get here?
+
+            deferredRenderer.Render();
         }
 
         public void FinalizeFrame()
