@@ -40,6 +40,12 @@ namespace Bearded.TD.Rendering
 
         }
 
+        public void InjectDeferredBuffer(Texture buffer)
+        {
+            var uniform = new TextureUniform("geometry", buffer);
+
+            // TODO: add uniform to light surfaces
+        }
 
         private static string asset(string path) => "assets/" + path;
         private static string font(string path) => asset("font/" + path);

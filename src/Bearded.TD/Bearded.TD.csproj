@@ -143,6 +143,7 @@
     <Compile Include="Networking\Serialization\SerializerExtensions.cs" />
     <Compile Include="Networking\Serialization\SerializerManager.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
+    <Compile Include="Rendering\DeferredRenderer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />

@@ -13,5 +13,10 @@ namespace Bearded.TD.Rendering
             Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(Surfaces);
         }
+
+        public void OnResize(ViewportSize viewPort)
+        {
+            Compositor.OnResize(viewPort);
+        }
     }
 }
