@@ -72,6 +72,7 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Commands\ChangePlayerState.cs" />
     <Compile Include="Game\Commands\AddPlayer.cs" />
     <Compile Include="Game\Commands\BuildBuilding.cs" />
     <Compile Include="Game\Commands\FillTilemap.cs" />
@@ -82,14 +83,17 @@
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\Commands\GameOver.cs" />
     <Compile Include="Game\Commands\SpawnEnemy.cs" />
+    <Compile Include="Game\Commands\BeginLoadingGame.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
     <Compile Include="Game\Commands\UnitDeath.cs" />
+    <Compile Include="Game\FinishLoadingGame.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\GameStatus.cs" />
     <Compile Include="Game\Generation\DefaultTilemapGenerator.cs" />
     <Compile Include="Game\Generation\ITilemapGenerator.cs" />
     <Compile Include="Game\GameInstance.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="Game\Resources\IResourceConsumer.cs" />
     <Compile Include="Game\Resources\ResourceGrant.cs" />
     <Compile Include="Game\Resources\ResourceManager.cs" />
+    <Compile Include="Game\StartGame.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
@@ -129,6 +134,9 @@
     <Compile Include="Game\Tiles\Tilemap.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
     <Compile Include="Networking\DataMessageHandler.cs" />
+    <Compile Include="Networking\Loading\ClientLoadingManager.cs" />
+    <Compile Include="Networking\Loading\LoadingManager.cs" />
+    <Compile Include="Networking\Loading\ServerLoadingManager.cs" />
     <Compile Include="Networking\Lobby\ClientInfo.cs" />
     <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
     <Compile Include="Networking\Lobby\LobbyManager.cs" />

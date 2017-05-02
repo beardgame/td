@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
+using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game
 {
@@ -23,6 +25,18 @@ namespace Bearded.TD.Game
         private readonly List<Player> players = new List<Player>();
         private readonly Dictionary<Player> playersById = new Dictionary<Player>();
         public ReadOnlyCollection<Player> Players { get; }
+
+        private GameStatus status = GameStatus.Lobby;
+        public GameStatus Status
+        {
+            get => status;
+            set
+            {
+                status = value;
+                GameStatusChanged?.Invoke(status);
+            }
+        }
+        public event GenericEventHandler<GameStatus> GameStatusChanged; 
 
         public GameInstance(Player me, IRequestDispatcher requestDispatcher, IdManager ids)
         {
@@ -46,11 +60,20 @@ namespace Bearded.TD.Game
             playersById.Remove(player);
         }
 
-        public Player PlayerFor(Id<Player> id) => playersById[id];
+        public Player PlayerFor(Utilities.Id<Player> id) => playersById[id];
+
+        public void SetLoading()
+        {
+            if (Status != GameStatus.Lobby)
+                throw new Exception();
+            Status = GameStatus.Loading;
+            foreach (var p in Players)
+                p.ConnectionState = PlayerConnectionState.Loading;
+        }
 
         public void Start(GameState state, GameCamera camera)
         {
-            if (State != null)
+            if (Status != GameStatus.Loading || State != null)
                 throw new Exception();
 
             State = state;
