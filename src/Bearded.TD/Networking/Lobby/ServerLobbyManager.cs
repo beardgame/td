@@ -13,6 +13,7 @@ namespace Bearded.TD.Networking.Lobby
     {
         private bool gameStarted;
         private readonly ServerNetworkInterface networkInterface;
+        private readonly IDataMessageHandler dataMessageHandler;
 
         public override bool GameStarted => gameStarted;
 
@@ -20,6 +21,7 @@ namespace Bearded.TD.Networking.Lobby
             : base(logger, createDispatchers(networkInterface, logger))
         {
             this.networkInterface = networkInterface;
+            dataMessageHandler = new ServerDataMessageHandler(Game, logger);
         }
 
         private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network, Logger logger)
@@ -44,7 +46,7 @@ namespace Bearded.TD.Networking.Lobby
                         handleStatusChange(msg);
                         break;
                     case NetIncomingMessageType.Data:
-                        handleIncomingDataMessage(msg);
+                        dataMessageHandler.HandleIncomingMessage(msg);
                         break;
                 }
             }
@@ -104,20 +106,6 @@ namespace Bearded.TD.Networking.Lobby
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
-        }
-
-        private void handleIncomingDataMessage(NetIncomingMessage msg)
-        {
-            var typeId = msg.ReadInt32();
-            // We only accept requests. We should not be receiving commands on the server.
-            if (Serializers.Instance.IsRequestSerializer(typeId))
-            {
-                Game.RequestDispatcher.Dispatch(
-                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), Game));
-                return;
-            }
-
-            Logger.Error.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
         }
 
         public override void ToggleReadyState()
