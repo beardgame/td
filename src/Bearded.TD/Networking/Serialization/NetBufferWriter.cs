@@ -13,6 +13,7 @@ namespace Bearded.TD.Networking.Serialization
         }
 
         public void Serialize(ref int i) => buffer.Write(i);
+        public void Serialize(ref byte b) => buffer.Write(b);
 
         public void Serialize(ref string s) => buffer.Write(s);
 
