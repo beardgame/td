@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using Bearded.TD.Commands;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
@@ -28,6 +30,7 @@ namespace Bearded.TD.Networking.Serialization
 
         private Serializers()
         {
+            var timer = Stopwatch.StartNew();
             init(
                 out requestIds,
                 out commandIds,
@@ -36,6 +39,7 @@ namespace Bearded.TD.Networking.Serialization
                 out firstCommandId,
                 out maxId
             );
+            Console.WriteLine($"Initialised {maxId} serializers in {timer.Elapsed.TotalMilliseconds:0.00}ms.");
         }
 
         private static void init(
@@ -70,21 +74,25 @@ namespace Bearded.TD.Networking.Serialization
                 if (!type.IsClass || type.IsAbstract)
                     continue;
 
-                if (type.GetConstructor(Type.EmptyTypes) == null)
+                var isRequestSerializer = type.Implements<IRequestSerializer>();
+                var isCommandSerializer = type.Implements<ICommandSerializer>();
+
+                if (!(isRequestSerializer || isCommandSerializer))
+                    continue;
+
+                if (!type.HasDefaultConstructor())
                 {
                     #if DEBUG
-                    if (type.Implements<ICommandSerializer>() || type.Implements<IRequestSerializer>())
-                    {
-                        Console.WriteLine($"Found potential serializer {type.FullName} without default constructor.");
-                    }
+                    writeWarning($"Found serializer without default constructor: {type.FullName}. "
+                                 + "Please add one to allow for serialisation.");
                     #endif
                     continue;
                 }
 
-                if (type.Implements<IRequestSerializer>())
+                if (isRequestSerializer)
                     requests.Add(type);
 
-                if (type.Implements<ICommandSerializer>())
+                if (isCommandSerializer)
                     commands.Add(type);
             }
 
@@ -101,11 +109,16 @@ namespace Bearded.TD.Networking.Serialization
 
         private static Func<T> constructor<T>(Type type)
         {
-            if (!type.HasDefaultConstructor())
-                return () => (T)FormatterServices.GetUninitializedObject(type);
-
             var body = Expression.New(type);
             return Expression.Lambda<Func<T>>(body).Compile();
+        }
+
+        private static void writeWarning(string text)
+        {
+            var rgb = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(text);
+            Console.ForegroundColor = rgb;
         }
     }
 }
