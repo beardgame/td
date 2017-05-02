@@ -6,8 +6,10 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
 {
-    class Serializers
+    sealed class Serializers
     {
+        public static Serializers Instance { get; } = new Serializers();
+
         private readonly Dictionary<Type, int> requestIds;
         private readonly Dictionary<Type, int> commandIds;
         private readonly Dictionary<int, Func<IRequestSerializer>> requestSerializers;
@@ -23,7 +25,7 @@ namespace Bearded.TD.Networking.Serialization
         public bool IsCommandSerializer(int id) => id >= firstCommandId && id < maxId;
         public bool IsValidId(int id) => id >= 0 && id < maxId;
 
-        public Serializers()
+        private Serializers()
         {
             init(
                 out requestIds,
@@ -101,10 +103,5 @@ namespace Bearded.TD.Networking.Serialization
             var body = Expression.New(type);
             return Expression.Lambda<Func<T>>(body).Compile();
         }
-    }
-
-    public class SerializerManager
-    {
-
     }
 }

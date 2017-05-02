@@ -21,10 +21,16 @@ namespace Bearded.TD.Networking
             NetIncomingMessage message;
             while ((message = GetNextMessage()) != null)
             {
+                Logger.Trace.Log($"Incoming message: {message.MessageType} (length: {message.Data.Length})");
+
                 if (message.MessageType == NetIncomingMessageType.DebugMessage)
                 {
                     Logger.Debug.Log("Network debug: {0}", message.ReadString());
                     continue;
+                }
+                if (message.MessageType == NetIncomingMessageType.StatusChanged)
+                {
+                    Logger.Debug.Log("Network status changed: {0}", message.SenderConnection.Status);
                 }
 
                 yield return message;

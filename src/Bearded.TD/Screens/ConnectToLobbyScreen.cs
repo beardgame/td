@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
-using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
@@ -48,6 +47,7 @@ namespace Bearded.TD.Screens
                         handleStatusChange(msg);
                         break;
                 }
+                if (Destroyed) return;
             }
         }
 

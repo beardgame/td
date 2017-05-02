@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -15,15 +16,16 @@ namespace Bearded.TD.Networking.Lobby
 
         public override bool GameStarted => gameStarted;
 
-        public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
+        public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
+            : base(logger, createDispatchers(networkInterface, logger))
         {
-            networkInterface = new ServerNetworkInterface(logger);
+            this.networkInterface = networkInterface;
         }
 
-        private static (IRequestDispatcher, IDispatcher) createDispatchers()
+        private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network, Logger logger)
         {
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
             var dispatcher = new ServerDispatcher(commandDispatcher);
 
             return (requestDispatcher, dispatcher);
@@ -41,6 +43,9 @@ namespace Bearded.TD.Networking.Lobby
                     case NetIncomingMessageType.StatusChanged:
                         handleStatusChange(msg);
                         break;
+                    case NetIncomingMessageType.Data:
+                        handleIncomingDataMessage(msg);
+                        break;
                 }
             }
         }
@@ -54,7 +59,8 @@ namespace Bearded.TD.Networking.Lobby
                 return;
             }
             var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Blue);
-            Game.AddPlayer(newPlayer);
+            Dispatcher.RunOnlyOnServer(
+                commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(Game, newPlayer)));
             newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
@@ -86,12 +92,32 @@ namespace Bearded.TD.Networking.Lobby
             {
                 case NetConnectionStatus.Connected:
                     networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
+                    // For now we manually send this event to just the one player, but we should make an interface for this.
+                    var outMsg = networkInterface.CreateMessage();
+                    var serializer = AddPlayer.Command(Game, Game.Me).Serializer;
+                    outMsg.Write(Serializers.Instance.CommandId(serializer));
+                    serializer.Serialize(new NetBufferWriter(outMsg));
+                    networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
                     break;
                 case NetConnectionStatus.Disconnected:
                     Game.RemovePlayer(networkInterface.GetSender(msg));
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
+        }
+
+        private void handleIncomingDataMessage(NetIncomingMessage msg)
+        {
+            var typeId = msg.ReadInt32();
+            // We only accept requests. We should not be receiving commands on the server.
+            if (Serializers.Instance.IsRequestSerializer(typeId))
+            {
+                Game.RequestDispatcher.Dispatch(
+                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), Game));
+                return;
+            }
+
+            Logger.Error.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
         }
 
         public override void ToggleReadyState()
