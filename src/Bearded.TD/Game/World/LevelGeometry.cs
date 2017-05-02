@@ -14,10 +14,9 @@ namespace Bearded.TD.Game.World
         public LevelGeometry(Tilemap<TileInfo> tilemap)
         {
             Tilemap = tilemap;
-            initialise();
         }
 
-        private void initialise()
+        public void Initialise()
         {
             Tilemap.ForEach(updatePassability);
         }

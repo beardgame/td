@@ -27,6 +27,8 @@ namespace Bearded.TD.Game
         public MultipleSinkNavigationSystem Navigator { get; }
         public ResourceManager Resources { get; }
 
+        public bool IsLoading { get; private set; } = true;
+
         public GameState(GameMeta meta, Level level)
         {
             Meta = meta;
@@ -34,6 +36,12 @@ namespace Bearded.TD.Game
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
             Resources = new ResourceManager();
+        }
+
+        public void FinishLoading()
+        {
+            Geometry.Initialise();
+            IsLoading = false;
         }
 
         public void Add(GameObject obj)
