@@ -11,9 +11,9 @@ namespace Bearded.TD.Networking.Lobby
 {
     abstract class LobbyManager
     {
-        private readonly IDispatcher dispatcher;
         public Logger Logger { get; }
         public GameInstance Game { get; }
+        protected IDispatcher Dispatcher { get; }
 
         public abstract bool GameStarted { get; }
 
@@ -36,7 +36,7 @@ namespace Bearded.TD.Networking.Lobby
         private LobbyManager(Logger logger, IDispatcher dispatcher)
         {
             Logger = logger;
-            this.dispatcher = dispatcher;
+            Dispatcher = dispatcher;
         }
 
         public abstract void Update(UpdateEventArgs args);
@@ -45,7 +45,7 @@ namespace Bearded.TD.Networking.Lobby
 
         public GameInstance GetStartedInstance(InputManager inputManager)
         {
-            var meta = new GameMeta(Logger, dispatcher, Game.Ids);
+            var meta = new GameMeta(Logger, Dispatcher, Game.Ids);
             var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(Logger));
             var camera = new GameCamera(inputManager, meta, gameState.Level.Tilemap.Radius);
 
