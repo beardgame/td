@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Players

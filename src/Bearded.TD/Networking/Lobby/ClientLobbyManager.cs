@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Loading;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -29,6 +30,11 @@ namespace Bearded.TD.Networking.Lobby
                         break;
                 }
             }
+        }
+
+        public override LoadingManager GetLoadingManager()
+        {
+            return new ClientLoadingManager(Game, Dispatcher, networkInterface, dataMessageHandler, Logger);
         }
     }
 }

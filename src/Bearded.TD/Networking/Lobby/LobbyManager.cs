@@ -2,10 +2,9 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Loading;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Lobby
@@ -22,6 +21,7 @@ namespace Bearded.TD.Networking.Lobby
         {
             var ids = new IdManager();
             var player = new Player(ids.GetNext<Player>(), "The host", Color.Red);
+            player.ConnectionState = PlayerConnectionState.Waiting;
             Game = new GameInstance(player, dispatchers.request, ids);
         }
 
@@ -38,8 +38,6 @@ namespace Bearded.TD.Networking.Lobby
             Dispatcher = dispatcher;
         }
 
-        public abstract void Update(UpdateEventArgs args);
-
         public void ToggleReadyState()
         {
             var connectionState =
@@ -50,15 +48,7 @@ namespace Bearded.TD.Networking.Lobby
             Game.RequestDispatcher.Dispatch(ChangePlayerState.Request(Game.Me, connectionState));
         }
 
-        public GameInstance GetStartedInstance(InputManager inputManager)
-        {
-            var meta = new GameMeta(Logger, Dispatcher, Game.Ids);
-            var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(Logger));
-            var camera = new GameCamera(inputManager, meta, gameState.Level.Tilemap.Radius);
-
-            Game.Start(gameState, camera);
-
-            return Game;
-        }
+        public abstract void Update(UpdateEventArgs args);
+        public abstract LoadingManager GetLoadingManager();
     }
 }

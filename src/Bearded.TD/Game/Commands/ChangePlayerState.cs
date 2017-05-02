@@ -1,6 +1,7 @@
-﻿using Bearded.TD.Commands;
+﻿using System;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
 
@@ -26,7 +27,22 @@ namespace Bearded.TD.Game.Commands
 
             public override bool CheckPreconditions()
             {
-                return true;
+                switch (player.ConnectionState)
+                {
+                    case PlayerConnectionState.Connecting:
+                    case PlayerConnectionState.AwaitingLoadingData:
+                    case PlayerConnectionState.FinishedLoading:
+                    case PlayerConnectionState.Playing:
+                        return false;
+                    case PlayerConnectionState.Waiting:
+                        return state == PlayerConnectionState.Ready;
+                    case PlayerConnectionState.Ready:
+                        return state == PlayerConnectionState.Waiting;
+                    case PlayerConnectionState.ProcessingLoadingData:
+                        return state == PlayerConnectionState.FinishedLoading;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             public override void Execute()

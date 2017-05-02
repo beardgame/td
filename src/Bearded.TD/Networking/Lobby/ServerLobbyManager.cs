@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Loading;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -107,6 +108,11 @@ namespace Bearded.TD.Networking.Lobby
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
+        }
+
+        public override LoadingManager GetLoadingManager()
+        {
+            return new ServerLoadingManager(Game, Dispatcher, networkInterface, dataMessageHandler, Logger);
         }
     }
 }

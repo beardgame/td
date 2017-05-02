@@ -2,6 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.UI;
+using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -70,12 +71,12 @@ namespace Bearded.TD.Screens
         {
             if (gameStatus != GameStatus.Loading)
                 throw new Exception("Unexpected game status change.");
-            startGame();
+            beginLoading();
         }
 
-        private void startGame()
+        private void beginLoading()
         {
-            Parent.AddScreenLayerOnTopOf(this, new GameUI(Parent, Geometries, lobbyManager.GetStartedInstance(inputManager), inputManager));
+            Parent.AddScreenLayerOnTopOf(this, new LoadingScreen(Parent, Geometries, lobbyManager.GetLoadingManager(), inputManager));
             lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
             Destroy();
         }

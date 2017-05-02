@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
-using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 
@@ -68,14 +68,20 @@ namespace Bearded.TD.Game
                 throw new Exception();
             Status = GameStatus.Loading;
             foreach (var p in Players)
-                p.ConnectionState = PlayerConnectionState.Loading;
+                p.ConnectionState = PlayerConnectionState.AwaitingLoadingData;
         }
 
-        public void Start(GameState state, GameCamera camera)
+        public void Start()
         {
-            if (Status != GameStatus.Loading || State != null)
+            if (Status != GameStatus.Loading)
                 throw new Exception();
+            Status = GameStatus.Playing;
+            foreach (var p in Players)
+                p.ConnectionState = PlayerConnectionState.Playing;
+        }
 
+        public void Debug_SetStateAndCamera(GameState state, GameCamera camera)
+        {
             State = state;
             Camera = camera;
             Cursor = new CursorState(this); // bad.

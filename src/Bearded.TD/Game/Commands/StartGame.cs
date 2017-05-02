@@ -1,8 +1,7 @@
-﻿using System;
-using Bearded.TD.Commands;
+﻿using Bearded.TD.Commands;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game.Commands
 {
     static class StartGame
     {
@@ -20,7 +19,7 @@ namespace Bearded.TD.Game
 
             public void Execute()
             {
-                throw new NotImplementedException();
+                game.Start();
             }
 
             public ICommandSerializer Serializer => new Serializer();
