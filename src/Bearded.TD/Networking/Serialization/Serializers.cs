@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
@@ -100,6 +101,9 @@ namespace Bearded.TD.Networking.Serialization
 
         private static Func<T> constructor<T>(Type type)
         {
+            if (!type.HasDefaultConstructor())
+                return () => (T)FormatterServices.GetUninitializedObject(type);
+
             var body = Expression.New(type);
             return Expression.Lambda<Func<T>>(body).Compile();
         }
