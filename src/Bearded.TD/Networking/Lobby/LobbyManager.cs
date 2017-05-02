@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Utilities;
@@ -14,8 +15,6 @@ namespace Bearded.TD.Networking.Lobby
         public Logger Logger { get; }
         public GameInstance Game { get; }
         protected IDispatcher Dispatcher { get; }
-
-        public abstract bool GameStarted { get; }
 
         protected LobbyManager(Logger logger,
             (IRequestDispatcher request, IDispatcher master) dispatchers)
@@ -41,7 +40,15 @@ namespace Bearded.TD.Networking.Lobby
 
         public abstract void Update(UpdateEventArgs args);
 
-        public abstract void ToggleReadyState();
+        public void ToggleReadyState()
+        {
+            var connectionState =
+                    Game.Me.ConnectionState == PlayerConnectionState.Ready
+                        ? PlayerConnectionState.Waiting
+                        : PlayerConnectionState.Ready;
+
+            Game.RequestDispatcher.Dispatch(ChangePlayerState.Request(Game.Me, connectionState));
+        }
 
         public GameInstance GetStartedInstance(InputManager inputManager)
         {

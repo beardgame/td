@@ -10,7 +10,6 @@ namespace Bearded.TD.Networking.Lobby
     {
         private readonly ClientNetworkInterface networkInterface;
         private readonly IDataMessageHandler dataMessageHandler;
-        public override bool GameStarted { get; }
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
             : base(logger, player, (new ClientRequestDispatcher(networkInterface, logger), new ClientDispatcher()))
@@ -30,11 +29,6 @@ namespace Bearded.TD.Networking.Lobby
                         break;
                 }
             }
-        }
-
-        public override void ToggleReadyState()
-        {
-            // Ask server to change our state
         }
     }
 }

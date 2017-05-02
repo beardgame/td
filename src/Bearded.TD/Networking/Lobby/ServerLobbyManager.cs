@@ -11,11 +11,8 @@ namespace Bearded.TD.Networking.Lobby
 {
     class ServerLobbyManager : LobbyManager
     {
-        private bool gameStarted;
         private readonly ServerNetworkInterface networkInterface;
         private readonly IDataMessageHandler dataMessageHandler;
-
-        public override bool GameStarted => gameStarted;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
             : base(logger, createDispatchers(networkInterface, logger))
@@ -50,6 +47,10 @@ namespace Bearded.TD.Networking.Lobby
                         break;
                 }
             }
+
+            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
+                Dispatcher.RunOnlyOnServer(
+                    commandDispatcher => commandDispatcher.Dispatch(BeginLoadingGame.Command(Game)));
         }
 
         private void handleConnectionApproval(NetIncomingMessage msg)
@@ -106,22 +107,6 @@ namespace Bearded.TD.Networking.Lobby
                     networkInterface.RemovePlayerConnection(msg.SenderConnection);
                     break;
             }
-        }
-
-        public override void ToggleReadyState()
-        {
-            setConnectionStateForPlayer(Game.Me,
-                Game.Me.ConnectionState == PlayerConnectionState.Ready
-                    ? PlayerConnectionState.Waiting
-                    : PlayerConnectionState.Ready);
-        }
-
-        private void setConnectionStateForPlayer(Player player, PlayerConnectionState connectionState)
-        {
-            player.ConnectionState = connectionState;
-
-            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
-                gameStarted = true;
         }
     }
 }
