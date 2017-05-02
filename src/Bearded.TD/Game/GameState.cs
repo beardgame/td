@@ -40,6 +40,9 @@ namespace Bearded.TD.Game
 
         public void FinishLoading()
         {
+            if (!IsLoading)
+                throw new Exception("Can only finish loading game state once.");
+
             Geometry.Initialise();
             IsLoading = false;
         }
@@ -100,6 +103,9 @@ namespace Bearded.TD.Game
 
         public void Advance(TimeSpan elapsedTime)
         {
+            if (IsLoading)
+                throw new Exception("Must finish loading before advancing game state.");
+
             Time += elapsedTime;
 
             foreach (var obj in gameObjects)
