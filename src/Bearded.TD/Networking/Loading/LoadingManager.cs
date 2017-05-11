@@ -11,7 +11,7 @@ namespace Bearded.TD.Networking.Loading
     class LoadingManager
     {
         protected IDispatcher Dispatcher { get; }
-        private readonly NetworkInterface networkInterface;
+        public NetworkInterface Network { get; }
         private readonly Logger logger;
 
         public GameInstance Game { get; }
@@ -21,13 +21,13 @@ namespace Bearded.TD.Networking.Loading
         {
             Game = game;
             Dispatcher = dispatcher;
-            this.networkInterface = networkInterface;
+            Network = networkInterface;
             this.logger = logger;
         }
 
         public virtual void Update(UpdateEventArgs args)
         {
-            foreach (var msg in networkInterface.GetMessages())
+            foreach (var msg in Network.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)
                     Game.DataMessageHandler.HandleIncomingMessage(msg);
         }
