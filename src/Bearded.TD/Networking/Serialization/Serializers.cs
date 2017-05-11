@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
-using Bearded.TD.Commands;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization

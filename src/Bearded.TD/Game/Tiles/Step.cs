@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bearded.TD.Game.Tiles
+﻿namespace Bearded.TD.Game.Tiles
 {
     struct Step
     {

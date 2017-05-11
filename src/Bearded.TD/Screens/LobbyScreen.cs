@@ -1,7 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;

@@ -1,5 +1,4 @@
-﻿
-namespace Bearded.TD.Rendering
+﻿namespace Bearded.TD.Rendering
 {
     class RenderContext
     {

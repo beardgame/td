@@ -1,5 +1,4 @@
-﻿
-using Bearded.TD.Networking;
+﻿using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands
