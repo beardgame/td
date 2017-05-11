@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Loading;
 using Bearded.Utilities;
@@ -10,13 +11,17 @@ namespace Bearded.TD.Networking.Lobby
     class ClientLobbyManager : LobbyManager
     {
         private readonly ClientNetworkInterface networkInterface;
-        private readonly IDataMessageHandler dataMessageHandler;
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
-            : base(logger, player, (new ClientRequestDispatcher(networkInterface, logger), new ClientDispatcher()))
+            : base(logger, player, (new ClientRequestDispatcher(networkInterface, logger), new ClientDispatcher()),
+                  game => createDataMessageHandler(game, logger))
         {
             this.networkInterface = networkInterface;
-            dataMessageHandler = new ClientDataMessageHandler(Game, logger);
+        }
+
+        private static IDataMessageHandler createDataMessageHandler(GameInstance game, Logger logger)
+        {
+            return new ClientDataMessageHandler(game, logger);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -26,7 +31,7 @@ namespace Bearded.TD.Networking.Lobby
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.Data:
-                        dataMessageHandler.HandleIncomingMessage(msg);
+                        Game.DataMessageHandler.HandleIncomingMessage(msg);
                         break;
                 }
             }
@@ -34,7 +39,7 @@ namespace Bearded.TD.Networking.Lobby
 
         public override LoadingManager GetLoadingManager()
         {
-            return new ClientLoadingManager(Game, Dispatcher, networkInterface, dataMessageHandler, Logger);
+            return new ClientLoadingManager(Game, Dispatcher, networkInterface, Logger);
         }
     }
 }

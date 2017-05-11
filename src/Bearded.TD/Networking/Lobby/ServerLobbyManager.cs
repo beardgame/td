@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Loading;
@@ -13,13 +14,11 @@ namespace Bearded.TD.Networking.Lobby
     class ServerLobbyManager : LobbyManager
     {
         private readonly ServerNetworkInterface networkInterface;
-        private readonly IDataMessageHandler dataMessageHandler;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
-            : base(logger, createDispatchers(networkInterface, logger))
+            : base(logger, createDispatchers(networkInterface, logger), game => createDataMessageHandler(game, logger))
         {
             this.networkInterface = networkInterface;
-            dataMessageHandler = new ServerDataMessageHandler(Game, logger);
         }
 
         private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network, Logger logger)
@@ -30,6 +29,9 @@ namespace Bearded.TD.Networking.Lobby
 
             return (requestDispatcher, dispatcher);
         }
+
+        private static IDataMessageHandler createDataMessageHandler(GameInstance game, Logger logger)
+            => new ServerDataMessageHandler(game, logger);
 
         public override void Update(UpdateEventArgs args)
         {
@@ -44,7 +46,7 @@ namespace Bearded.TD.Networking.Lobby
                         handleStatusChange(msg);
                         break;
                     case NetIncomingMessageType.Data:
-                        dataMessageHandler.HandleIncomingMessage(msg);
+                        Game.DataMessageHandler.HandleIncomingMessage(msg);
                         break;
                 }
             }
@@ -112,7 +114,7 @@ namespace Bearded.TD.Networking.Lobby
 
         public override LoadingManager GetLoadingManager()
         {
-            return new ServerLoadingManager(Game, Dispatcher, networkInterface, dataMessageHandler, Logger);
+            return new ServerLoadingManager(Game, Dispatcher, networkInterface, Logger);
         }
     }
 }

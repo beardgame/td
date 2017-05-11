@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
@@ -15,21 +16,28 @@ namespace Bearded.TD.Networking.Lobby
         public GameInstance Game { get; }
         protected IDispatcher Dispatcher { get; }
 
-        protected LobbyManager(Logger logger,
-            (IRequestDispatcher request, IDispatcher master) dispatchers)
+        protected LobbyManager(
+            Logger logger,
+            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
             var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), "The host", Color.Red);
-            player.ConnectionState = PlayerConnectionState.Waiting;
-            Game = new GameInstance(player, dispatchers.request, ids);
+            var player = new Player(ids.GetNext<Player>(), "The host", Color.Red)
+            {
+                ConnectionState = PlayerConnectionState.Waiting
+            };
+            Game = new GameInstance(player, dispatchers.request, dataMessageHandlerFactory, ids);
         }
 
-        protected LobbyManager(Logger logger, Player player,
-            (IRequestDispatcher request, IDispatcher master) dispatchers)
+        protected LobbyManager(
+            Logger logger,
+            Player player,
+            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
-            Game = new GameInstance(player, dispatchers.request, null);
+            Game = new GameInstance(player, dispatchers.request, dataMessageHandlerFactory, null);
         }
 
         private LobbyManager(Logger logger, IDispatcher dispatcher)

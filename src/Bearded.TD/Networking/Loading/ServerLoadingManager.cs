@@ -10,9 +10,8 @@ namespace Bearded.TD.Networking.Loading
     class ServerLoadingManager : LoadingManager
     {
         public ServerLoadingManager(
-            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface,
-            IDataMessageHandler dataMessageHandler, Logger logger)
-            : base(game, dispatcher, networkInterface, dataMessageHandler, logger)
+            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
+            : base(game, dispatcher, networkInterface, logger)
         {
         }
 

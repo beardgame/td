@@ -8,12 +8,15 @@ using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 
+using DataMessageHandlerFactory = System.Func<Bearded.TD.Game.GameInstance, Bearded.TD.Networking.IDataMessageHandler>;
+
 namespace Bearded.TD.Game
 {
     class GameInstance
     {
         public Player Me { get; }
         public IRequestDispatcher RequestDispatcher { get; }
+        public IDataMessageHandler DataMessageHandler { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
         public IdManager Ids { get; }
@@ -38,10 +41,13 @@ namespace Bearded.TD.Game
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged; 
 
-        public GameInstance(Player me, IRequestDispatcher requestDispatcher, IdManager ids)
+        public GameInstance(
+            Player me, IRequestDispatcher requestDispatcher,
+            DataMessageHandlerFactory dataMessageHandlerFactory, IdManager ids)
         {
             Me = me;
             RequestDispatcher = requestDispatcher;
+            DataMessageHandler = dataMessageHandlerFactory(this);
             Ids = ids;
 
             AddPlayer(me);

@@ -12,19 +12,16 @@ namespace Bearded.TD.Networking.Loading
     {
         protected IDispatcher Dispatcher { get; }
         private readonly NetworkInterface networkInterface;
-        private readonly IDataMessageHandler dataMessageHandler;
         private readonly Logger logger;
 
         public GameInstance Game { get; }
 
         public LoadingManager(
-            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface,
-            IDataMessageHandler dataMessageHandler, Logger logger)
+            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
         {
             Game = game;
             Dispatcher = dispatcher;
             this.networkInterface = networkInterface;
-            this.dataMessageHandler = dataMessageHandler;
             this.logger = logger;
         }
 
@@ -32,7 +29,7 @@ namespace Bearded.TD.Networking.Loading
         {
             foreach (var msg in networkInterface.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)
-                    dataMessageHandler.HandleIncomingMessage(msg);
+                    Game.DataMessageHandler.HandleIncomingMessage(msg);
         }
 
         public void Debug_PopulateGame(InputManager inputManager)
