@@ -33,6 +33,7 @@ namespace Bearded.TD
         {
             ConsoleCommands.Initialise();
             UserSettings.Load(logger);
+            UserSettings.Save(logger);
 
             renderContext = new RenderContext();
 
