@@ -21,6 +21,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
+                game.State.FinishLoading();
                 game.Players.ForEach(p => p.ConnectionState = PlayerConnectionState.ProcessingLoadingData);
             }
 
