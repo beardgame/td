@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
@@ -9,29 +12,28 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
-    static class GameStateBuilder
+    class GameStateBuilder
     {
-        public static GameState Empty(GameMeta meta)
+        private readonly GameInstance game;
+        private readonly int radius;
+        private readonly ITilemapGenerator tilemapGenerator;
+
+        public GameStateBuilder(GameInstance game, int radius, ITilemapGenerator tilemapGenerator)
         {
-            var tilemap = getEmptyTilemap(Constants.Game.World.Radius);
-            return getGameStateFromTilemap(meta, tilemap);
+            this.game = game;
+            this.radius = radius;
+            this.tilemapGenerator = tilemapGenerator;
         }
 
-        public static GameState Generate(GameMeta meta, ITilemapGenerator generator)
+        public IEnumerable<ICommand> Generate()
         {
-            var tilemap = getEmptyTilemap(Constants.Game.World.Radius);
-            generator.Fill(tilemap);
-            return getGameStateFromTilemap(meta, tilemap);
-        }
+            yield return CreateGameState.Command(game, radius);
 
-        private static Tilemap<TileInfo> getEmptyTilemap(int radius)
-        {
-            var tilemap = new Tilemap<TileInfo>(radius);
-            foreach (var tile in tilemap)
-            {
-                tilemap[tile] = new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Floor);
-            }
-            return tilemap;
+            var tilemapTypes = tilemapGenerator.Generate(radius);
+
+            yield return FillTilemap.Command(game, tilemapTypes);
+
+            // TODO: fill in remaining stuff from getGameStateFromTilemap
         }
 
         private static GameState getGameStateFromTilemap(GameMeta meta, Tilemap<TileInfo> tilemap)

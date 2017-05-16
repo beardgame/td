@@ -27,7 +27,7 @@ namespace Bearded.TD.Networking.Lobby
             {
                 ConnectionState = PlayerConnectionState.Waiting
             };
-            Game = new GameInstance(player, dispatchers.request, dataMessageHandlerFactory, ids);
+            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, ids);
         }
 
         protected LobbyManager(
@@ -37,7 +37,7 @@ namespace Bearded.TD.Networking.Lobby
             Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
-            Game = new GameInstance(player, dispatchers.request, dataMessageHandlerFactory, null);
+            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, null);
         }
 
         private LobbyManager(Logger logger, IDispatcher dispatcher)

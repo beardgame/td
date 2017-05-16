@@ -17,6 +17,8 @@ namespace Bearded.TD.Game
         public Player Me { get; }
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
+
+        public GameMeta Meta { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
         public IdManager Ids { get; }
@@ -43,6 +45,7 @@ namespace Bearded.TD.Game
 
         public GameInstance(
             Player me, IRequestDispatcher requestDispatcher,
+            IDispatcher dispatcher, Logger logger,
             DataMessageHandlerFactory dataMessageHandlerFactory, IdManager ids)
         {
             Me = me;
@@ -52,6 +55,8 @@ namespace Bearded.TD.Game
 
             AddPlayer(me);
             Players = players.AsReadOnly();
+
+            Meta = new GameMeta(logger, dispatcher, ids);
         }
 
         public void AddPlayer(Player player)
@@ -86,11 +91,19 @@ namespace Bearded.TD.Game
                 p.ConnectionState = PlayerConnectionState.Playing;
         }
 
-        public void Debug_SetStateAndCamera(GameState state, GameCamera camera)
+        public void IntegrateUI(GameCamera camera)
         {
-            State = state;
+            if (Camera != null)
+                throw new Exception();
             Camera = camera;
-            Cursor = new CursorState(this); // bad.
+            Cursor = new CursorState(this);
+        }
+
+        public void InitialiseState(GameState state)
+        {
+            if (State != null)
+                throw new Exception();
+            State = state;
         }
     }
 }

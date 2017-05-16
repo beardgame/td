@@ -41,6 +41,15 @@ namespace Bearded.TD.Game.Tiles
          *
          */
 
+        public Tilemap(int radius, Func<Tile<TTileInfo>, TTileInfo> initialiseTile)
+            : this(radius)
+        {
+            foreach (var tile in this)
+            {
+                this[tile] = initialiseTile(tile);
+            }
+        }
+
         public Tilemap(int radius)
         {
             Radius = radius;

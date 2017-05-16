@@ -24,8 +24,6 @@ namespace Bearded.TD.Screens
             this.inputManager = inputManager;
 
             loadingManager.Game.GameStatusChanged += onGameStatusChanged;
-
-            loadingManager.Debug_PopulateGame(inputManager);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -61,6 +59,7 @@ namespace Bearded.TD.Screens
 
         private void startGame()
         {
+            loadingManager.IntegrateUI(inputManager);
             Parent.AddScreenLayerOnTopOf(this,
                 new GameUI(Parent, Geometries, loadingManager.Game, loadingManager.Network, inputManager));
             loadingManager.Game.GameStatusChanged -= onGameStatusChanged;

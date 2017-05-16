@@ -1,7 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Generation;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -12,7 +11,7 @@ namespace Bearded.TD.Networking.Loading
     {
         protected IDispatcher Dispatcher { get; }
         public NetworkInterface Network { get; }
-        private readonly Logger logger;
+        protected Logger Logger { get; }
 
         public GameInstance Game { get; }
 
@@ -22,7 +21,7 @@ namespace Bearded.TD.Networking.Loading
             Game = game;
             Dispatcher = dispatcher;
             Network = networkInterface;
-            this.logger = logger;
+            this.Logger = logger;
         }
 
         public virtual void Update(UpdateEventArgs args)
@@ -32,13 +31,13 @@ namespace Bearded.TD.Networking.Loading
                     Game.DataMessageHandler.HandleIncomingMessage(msg);
         }
 
-        public void Debug_PopulateGame(InputManager inputManager)
+        public void IntegrateUI(InputManager inputManager)
         {
-            var meta = new GameMeta(logger, Dispatcher, Game.Ids);
-            var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
-            var camera = new GameCamera(inputManager, meta, gameState.Level.Tilemap.Radius);
+            //var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
 
-            Game.Debug_SetStateAndCamera(gameState, camera);
+            var camera = new GameCamera(inputManager, Game.State.Meta, Game.State.Level.Tilemap.Radius);
+
+            Game.IntegrateUI(camera);
         }
     }
 }

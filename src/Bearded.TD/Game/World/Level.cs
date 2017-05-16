@@ -7,16 +7,16 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.World
 {
-    sealed class Level
+    class Level<TTileInfo>
     {
-        public Tilemap<TileInfo> Tilemap { get; }
+        public Tilemap<TTileInfo> Tilemap { get; }
 
-        public Level(Tilemap<TileInfo> tilemap)
+        public Level(Tilemap<TTileInfo> tilemap)
         {
             Tilemap = tilemap;
         }
 
-        public Tile<TileInfo> GetTile(Position2 position)
+        public Tile<TTileInfo> GetTile(Position2 position)
         {
             var yf = position.Y.NumericValue * (1 / HexagonDistanceY) + 1 / 1.5f;
             var y = Floor(yf);
@@ -37,14 +37,22 @@ namespace Bearded.TD.Game.World
             else if (-xRemainder > yRemainder)
                 ty--;
 
-            return new Tile<TileInfo>(Tilemap, tx, ty);
+            return new Tile<TTileInfo>(Tilemap, tx, ty);
         }
 
-        public Position2 GetPosition(Tile<TileInfo> tile)
+        public Position2 GetPosition(Tile<TTileInfo> tile)
             => new Position2(
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
             );
+    }
+
+    sealed class Level : Level<TileInfo>
+    {
+        public Level(Tilemap<TileInfo> tilemap)
+            : base(tilemap)
+        {
+        }
 
         public void Draw(GeometryManager geos)
         {

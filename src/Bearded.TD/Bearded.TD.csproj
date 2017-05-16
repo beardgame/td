@@ -76,6 +76,7 @@
     <Compile Include="Game\Commands\ChangePlayerState.cs" />
     <Compile Include="Game\Commands\AddPlayer.cs" />
     <Compile Include="Game\Commands\BuildBuilding.cs" />
+    <Compile Include="Game\Commands\CreateGameState.cs" />
     <Compile Include="Game\Commands\FillTilemap.cs" />
     <Compile Include="Game\Commands\RemovePlayer.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />

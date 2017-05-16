@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Generation;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Loading
@@ -21,17 +22,32 @@ namespace Bearded.TD.Networking.Loading
 
             // Just instantly finish sending everything.
             if (Game.Me.ConnectionState == PlayerConnectionState.AwaitingLoadingData)
-                Dispatcher.RunOnlyOnServer(
-                    commandDispatcher => commandDispatcher.Dispatch(AllLoadingDataSent.Command(Game)));
+                generateGame();
 
             // Also just instantly finish loading for now.
             if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
-                Game.RequestDispatcher.Dispatch(
-                    ChangePlayerState.Request(Game.Me, PlayerConnectionState.FinishedLoading));
+                Game.Request(ChangePlayerState.Request, Game.Me, PlayerConnectionState.FinishedLoading);
 
             // Check if all players finished loading and start the game if so.
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.FinishedLoading))
-                Dispatcher.RunOnlyOnServer(commandDispatcher => commandDispatcher.Dispatch(StartGame.Command(Game)));
+                Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
+        }
+
+        private void generateGame()
+        {
+            var radius = Constants.Game.World.Radius;
+
+            var tilemapGenerator = new DefaultTilemapGenerator(Logger);
+            var builder = new GameStateBuilder(Game, radius, tilemapGenerator);
+
+            var commands = builder.Generate();
+
+            foreach (var command in commands)
+            {
+                Dispatcher.RunOnlyOnServer(() => command);
+            }
+
+            Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
         }
     }
 }
