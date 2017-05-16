@@ -6,10 +6,10 @@
         public int Height { get; }
         public float AspectRatio { get; }
 
-        public ViewportSize(int width, int height)
+        public ViewportSize(int width, int height, float uiScale = 1f)
         {
-            Width = width;
-            Height = height;
+            Width = (int) (width / uiScale);
+            Height = (int) (height / uiScale);
             AspectRatio = (float) Width / Height;
         }
     }

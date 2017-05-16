@@ -1,6 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
-using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
@@ -31,6 +31,8 @@ namespace Bearded.TD
         protected override void OnLoad(EventArgs e)
         {
             ConsoleCommands.Initialise();
+            UserSettings.Load(logger);
+            UserSettings.Save(logger);
 
             renderContext = new RenderContext();
 
@@ -48,7 +50,7 @@ namespace Bearded.TD
 
         protected override void OnResize(EventArgs e)
         {
-            screenManager.OnResize(new ViewportSize(Width,Height));
+            screenManager.OnResize(new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale));
         }
 
         protected override void OnUpdateUIThread()
