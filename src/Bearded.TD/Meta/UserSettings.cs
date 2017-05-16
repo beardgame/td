@@ -83,7 +83,25 @@ namespace Bearded.TD.Meta
         [Command("setting")]
         private static void setSetting(Logger logger, CommandParameters p)
         {
-            throw new NotImplementedException();
+            if (p.Args.Length != 2)
+            {
+                logger.Warning.Log("Usage: \"setting [setting_name] [setting_value]\"");
+                return;
+            }
+
+            // Convert to JSON.
+            var splitSettingName = p.Args[0].Split('.');
+            (var jsonBefore, var jsonAfter) = buildJson(splitSettingName, 0);
+            var json = jsonBefore + p.Args[1] + jsonAfter;
+            serializer.Populate(new StringReader(json), Instance);
+            Save(logger);
+        }
+
+        private static (string, string) buildJson(string[] parts, int i)
+        {
+            if (i >= parts.Length) return ("", "");
+            (var before, var after) = buildJson(parts, i + 1);
+            return ($"{{ \"{parts[i]}\": {before}", $"{after} }}");
         }
         #endregion
 
