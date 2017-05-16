@@ -1,5 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
@@ -31,6 +32,7 @@ namespace Bearded.TD
         protected override void OnLoad(EventArgs e)
         {
             ConsoleCommands.Initialise();
+            UserSettings.Load(logger);
 
             renderContext = new RenderContext();
 

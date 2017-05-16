@@ -64,6 +64,7 @@
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
     <Compile Include="Constants\Network.cs" />
+    <Compile Include="Constants\Paths.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Game\Tiles\Step.cs" />
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
+    <Compile Include="Meta\UserSettings.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
     <Compile Include="Networking\DataMessageHandler.cs" />
     <Compile Include="Networking\Loading\ClientLoadingManager.cs" />
