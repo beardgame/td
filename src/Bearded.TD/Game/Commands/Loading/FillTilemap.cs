@@ -16,15 +16,19 @@ namespace Bearded.TD.Game.Commands
         {
             private readonly Tilemap<TileInfo> tilemap;
             private readonly IList<TileInfo.Type> tiles;
+            private readonly GameInstance game;
 
             public Implementation(GameInstance game, IList<TileInfo.Type> tiles)
             {
+                this.game = game;
                 tilemap = game.State.Level.Tilemap;
                 this.tiles = tiles;
             }
 
             public void Execute()
             {
+                game.MustBeLoading();
+
                 foreach (var (tile, i) in tilemap.Select((t, i) => (t, i)))
                 {
                     tile.Info.SetTileType(tiles[i]);
