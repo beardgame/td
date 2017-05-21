@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Linq;
 using Bearded.TD.Game.World;
-using Bearded.Utilities.Math;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Tiles
@@ -31,30 +31,20 @@ namespace Bearded.TD.Game.Tiles
 
         private class TriangleSelection : TileSelection
         {
+            private static readonly Footprint[] footprints = { Footprint.TriangleDown, Footprint.TriangleUp };
+
             public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
             {
-                var currentTile = level.GetTile(position);
-                var tileCenter = level.GetPosition(currentTile);
-                var direction2 = (position - tileCenter).Direction;
-                var directionEnum = (direction2 - 30.Degrees()).Hexagonal();
+                var (footprint, root, _) = footprints.Select(f =>
+                    {
+                        var bestRoot = f.RootTileClosestToWorldPosition(level, position);
+                        var center = f.Center(level, bestRoot);
+                        var distance = (center - position).LengthSquared;
+                        return (f, bestRoot, Distance: distance);
+                    })
+                    .MinBy(r => r.Distance.NumericValue);
 
-                switch (directionEnum)
-                {
-                    case Direction.Left:
-                        return new PositionedFootprint(level, Footprint.TriangleDown, currentTile.Neighbour(Direction.Left));
-                    case Direction.DownLeft:
-                        return new PositionedFootprint(level, Footprint.TriangleUp, currentTile.Neighbour(Direction.DownLeft));
-                    case Direction.DownRight:
-                        return new PositionedFootprint(level, Footprint.TriangleDown, currentTile);
-                    case Direction.Right:
-                        return new PositionedFootprint(level, Footprint.TriangleUp, currentTile);
-                    case Direction.UpRight:
-                        return new PositionedFootprint(level, Footprint.TriangleDown, currentTile.Neighbour(Direction.UpLeft));
-                    case Direction.UpLeft:
-                        return new PositionedFootprint(level, Footprint.TriangleUp, currentTile.Neighbour(Direction.Left));
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                return new PositionedFootprint(level, footprint, root);
             }
         }
     }
