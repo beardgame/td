@@ -66,6 +66,8 @@
     <Compile Include="Constants\Network.cs" />
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Blueprints\BlueprintCollection.cs" />
+    <Compile Include="Game\Blueprints\BlueprintManager.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
@@ -73,12 +75,14 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Buildings\SerializableBuildingBlueprint.cs" />
     <Compile Include="Game\Commands\AllLoadingDataSent.cs" />
     <Compile Include="Game\Commands\ChangePlayerState.cs" />
     <Compile Include="Game\Commands\AddPlayer.cs" />
     <Compile Include="Game\Commands\BuildBuilding.cs" />
     <Compile Include="Game\Commands\CreateGameState.cs" />
     <Compile Include="Game\Commands\FillTilemap.cs" />
+    <Compile Include="Game\Commands\RegisterBuildingBlueprint.cs" />
     <Compile Include="Game\Commands\RemovePlayer.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\SendChatMessage.cs" />

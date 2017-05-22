@@ -21,7 +21,7 @@ namespace Bearded.TD.Networking.Loading
             Game = game;
             Dispatcher = dispatcher;
             Network = networkInterface;
-            this.Logger = logger;
+            Logger = logger;
         }
 
         public virtual void Update(UpdateEventArgs args)

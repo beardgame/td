@@ -49,5 +49,15 @@ namespace Bearded.TD.Networking.Loading
 
             Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
         }
+
+        private void debug_sendBlueprints()
+        {
+            // In the future these would be loaded from a mod file.
+
+            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, 5, null)), // 1
+            new BuildingClickHandler(new BuildingBlueprint(
+                TileSelection.Triangle, 300, 20, new Func<Component>[] { () => new Turret() })
+            ), // 2
+        }
     }
 }

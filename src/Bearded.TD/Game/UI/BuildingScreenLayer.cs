@@ -1,8 +1,5 @@
-﻿using System;
-using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Buildings.Components;
-using Bearded.TD.Game.Tiles;
+﻿using amulware.Graphics;
+using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.UI;
@@ -18,12 +15,15 @@ namespace Bearded.TD.Game.UI
         private const float padding = 6;
 
         private readonly GameInstance game;
+        private readonly IClickHandler[] clickHandlers;
         private int selectedHandler = -1;
 
         public BuildingScreenLayer(ScreenLayerCollection parent, GameInstance game, GeometryManager geometries)
             : base(parent, geometries, 0, 1, true)
         {
             this.game = game;
+
+            clickHandlers = initializeClickHandlers(game.Blueprints);
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -77,20 +77,21 @@ namespace Bearded.TD.Game.UI
         }
 
         #region Definitions
-        private static readonly IClickHandler[] clickHandlers = {
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, 5, null)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(
-                TileSelection.Triangle, 300, 20, new Func<Component>[] { () => new Turret() })
-            ), // 2
-            null, // 3
-            null, // 4
-            null, // 5
-            null, // 6
-            null, // 7
-            new DebugToggleTileTypeClickHandler(), // 8
-            new DebugSpawnEnemyClickHandler(), // 9
-            null // 0
-        };
+        private static IClickHandler[] initializeClickHandlers(BlueprintManager blueprints)
+        {
+            return new IClickHandler[] {
+                new BuildingClickHandler(blueprints.Buildings["wall"]), // 1
+                new BuildingClickHandler(blueprints.Buildings["triangle"]), // 2
+                null, // 3
+                null, // 4
+                null, // 5
+                null, // 6
+                null, // 7
+                new DebugToggleTileTypeClickHandler(), // 8
+                new DebugSpawnEnemyClickHandler(), // 9
+                null // 0
+            };
+        }
 
         private static readonly Key[] clickHandlerKeys =
         {
