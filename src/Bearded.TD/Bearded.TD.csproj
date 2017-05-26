@@ -109,6 +109,7 @@
     <Compile Include="Game\Resources\ResourceGrant.cs" />
     <Compile Include="Game\Resources\ResourceManager.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
+    <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\BuildingClickHandler.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using Bearded.TD.Game.World;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
@@ -7,18 +8,18 @@ namespace Bearded.TD.Game.Tiles
 {
     abstract class TileSelection
     {
-        public static TileSelection Single => FromFootprint(Footprint.Single);
-        public static TileSelection Triangle = new TriangleSelection();
-
-        public static TileSelection FromFootprint(Footprint footprint) => new FootprintSelection(footprint);
+        public static TileSelection FromFootprints(FootprintGroup footprints)
+            => footprints.Footprints.Count == 1
+                ? new SingleSelection(footprints.Footprints[0])
+                : (TileSelection)new GroupSelection(footprints);
 
         public abstract PositionedFootprint GetPositionedFootprint(Level level, Position2 position);
 
-        private class FootprintSelection : TileSelection
+        private sealed class SingleSelection : TileSelection
         {
             private readonly Footprint footprint;
 
-            public FootprintSelection(Footprint footprint)
+            public SingleSelection(Footprint footprint)
             {
                 this.footprint = footprint;
             }
@@ -29,9 +30,14 @@ namespace Bearded.TD.Game.Tiles
             }
         }
 
-        private class TriangleSelection : TileSelection
+        private sealed class GroupSelection : TileSelection
         {
-            private static readonly Footprint[] footprints = { Footprint.TriangleDown, Footprint.TriangleUp };
+            private readonly ReadOnlyCollection<Footprint> footprints;
+
+            public GroupSelection(FootprintGroup footprints)
+            {
+                this.footprints = footprints.Footprints;
+            }
 
             public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
             {
