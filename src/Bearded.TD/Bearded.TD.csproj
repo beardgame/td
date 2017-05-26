@@ -137,6 +137,9 @@
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
     <Compile Include="Meta\UserSettings.cs" />
+    <Compile Include="Mods\Serialization\Converters\JsonConverterBase.cs" />
+    <Compile Include="Mods\Serialization\Converters\StepConverter.cs" />
+    <Compile Include="Mods\Serialization\Models\FootprintGroup.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
     <Compile Include="Networking\DataMessageHandler.cs" />
     <Compile Include="Networking\Loading\ClientLoadingManager.cs" />

@@ -1,0 +1,7 @@
+{
+    "name" : "triangle",
+    "footprints" : [
+        [ "base", "right", "upright" ],
+        [ "base", "right", "downright" ]
+    ]
+}
