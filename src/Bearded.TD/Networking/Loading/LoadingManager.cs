@@ -33,8 +33,6 @@ namespace Bearded.TD.Networking.Loading
 
         public void IntegrateUI(InputManager inputManager)
         {
-            //var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(logger));
-
             var camera = new GameCamera(inputManager, Game.State.Meta, Game.State.Level.Tilemap.Radius);
 
             Game.IntegrateUI(camera);
