@@ -8,7 +8,6 @@ using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.UI;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Loading
