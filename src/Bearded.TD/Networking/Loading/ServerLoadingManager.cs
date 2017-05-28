@@ -51,19 +51,21 @@ namespace Bearded.TD.Networking.Loading
                 Dispatcher.RunOnlyOnServer(() => command);
             }
 
+            debug_sendBlueprints();
+
             Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
         }
 
         private void debug_sendBlueprints()
         {
             // In the future these would be loaded from a mod file.
-            Game.Blueprints.Buildings.RegisterBlueprint("wall",
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(),
-                    TileSelection.FromFootprints(FootprintGroup.Single), 100, 5, null));
-            Game.Blueprints.Buildings.RegisterBlueprint("triangle",
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(),
+            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall",
+                    TileSelection.FromFootprints(FootprintGroup.Single), 100, 5, null)));
+            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle",
                     TileSelection.FromFootprints(FootprintGroup.Triangle), 300, 20,
-                    new Func<Component>[] {() => new Turret()}));
+                    new Func<Component>[] {() => new Turret()})));
         }
     }
 }
