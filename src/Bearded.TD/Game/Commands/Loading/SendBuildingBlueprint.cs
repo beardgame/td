@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
@@ -38,7 +39,7 @@ namespace Bearded.TD.Game.Commands
             private Id<FootprintGroup> footprint;
             private int maxHealth;
             private int resourceCost;
-            // missing: components
+            private ICollection<Id<ComponentFactory>> components;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
@@ -52,6 +53,7 @@ namespace Bearded.TD.Game.Commands
                 footprint = blueprint.Footprints.Id;
                 maxHealth = blueprint.MaxHealth;
                 resourceCost = blueprint.ResourceCost;
+                components = blueprint.ComponentFactories.Select(c => c.Id).ToList();
             }
 
             public ICommand GetCommand(GameInstance game)
@@ -64,13 +66,13 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref footprint);
                 stream.Serialize(ref maxHealth);
                 stream.Serialize(ref resourceCost);
-                // missing: components
+                stream.Serialize(ref components);
             }
 
             private BuildingBlueprint getBuildingBlueprint(GameInstance game)
             {
                 return new BuildingBlueprint(id, name, game.Blueprints.Footprints[footprint], maxHealth,
-                    resourceCost, null);
+                    resourceCost, components.Select(cId => game.Blueprints.Components[cId]));
             }
         }
     }

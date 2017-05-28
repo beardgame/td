@@ -1,5 +1,7 @@
-﻿using Bearded.TD.Utilities;
+﻿using System.Collections.Generic;
+using Bearded.TD.Utilities;
 using Lidgren.Network;
+// ReSharper disable RedundantAssignment
 
 namespace Bearded.TD.Networking.Serialization
 {
@@ -22,5 +24,13 @@ namespace Bearded.TD.Networking.Serialization
             => buffer.Read<T>(out t);
 
         public void Serialize<T>(ref Id<T> t) => t = new Id<T>(buffer.ReadInt32());
+
+        public void Serialize<T>(ref ICollection<Id<T>> collection)
+        {
+            var collectionSize = buffer.ReadInt32();
+            collection = new List<Id<T>>();
+            for (var i = 0; i < collectionSize; i++)
+                collection.Add(new Id<T>(buffer.ReadInt32()));
+        }
     }
 }

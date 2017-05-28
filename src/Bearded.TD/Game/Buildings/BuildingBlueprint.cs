@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Utilities;
@@ -13,6 +14,9 @@ namespace Bearded.TD.Game.Buildings
         public int MaxHealth { get; }
         public int ResourceCost { get; }
         private readonly List<ComponentFactory> componentFactories;
+
+        public IReadOnlyList<ComponentFactory> ComponentFactories => componentFactories?.AsReadOnly()
+            ?? (IReadOnlyList<ComponentFactory>) Array.Empty<ComponentFactory>();
 
         public BuildingBlueprint(Id<BuildingBlueprint> id, string name, FootprintGroup footprints, int maxHealth,
             int resourceCost, IEnumerable<ComponentFactory> componentFactories)

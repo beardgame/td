@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <LangVersion>7</LangVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>

@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Utilities;
+﻿using System.Collections.Generic;
+using Bearded.TD.Utilities;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Serialization
@@ -22,5 +23,12 @@ namespace Bearded.TD.Networking.Serialization
             => buffer.Write(t);
 
         public void Serialize<T>(ref Id<T> t) => buffer.Write(t.Value);
+
+        public void Serialize<T>(ref ICollection<Id<T>> collection)
+        {
+            buffer.Write(collection.Count);
+            foreach (var i in collection)
+                buffer.Write(i.Value);
+        }
     }
 }
