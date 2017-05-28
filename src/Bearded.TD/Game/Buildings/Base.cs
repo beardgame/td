@@ -3,6 +3,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 
@@ -56,6 +57,7 @@ namespace Bearded.TD.Game.Buildings
         }
 
         private static readonly BuildingBlueprint Blueprint
-            = new BuildingBlueprint(TileSelection.FromFootprint(Footprint.CircleSeven), 1000, 1, null);
+                = new BuildingBlueprint(new Id<BuildingBlueprint>(),
+                    TileSelection.FromFootprints(FootprintGroup.CircleSeven), 1000, 1, null);
     }
 }

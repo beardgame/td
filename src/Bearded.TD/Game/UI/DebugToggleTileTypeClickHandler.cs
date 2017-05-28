@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.UI
 {
     class DebugToggleTileTypeClickHandler : IClickHandler
     {
-        public TileSelection Selection => TileSelection.Single;
+        public TileSelection Selection => TileSelection.FromFootprints(FootprintGroup.Single);
 
         public void HandleHover(GameInstance game, PositionedFootprint footprint)
         { }

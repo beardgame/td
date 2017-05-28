@@ -1,9 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.UI;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Loading
@@ -53,11 +58,13 @@ namespace Bearded.TD.Networking.Loading
         private void debug_sendBlueprints()
         {
             // In the future these would be loaded from a mod file.
-
-            new BuildingClickHandler(new BuildingBlueprint(TileSelection.Single, 100, 5, null)), // 1
-            new BuildingClickHandler(new BuildingBlueprint(
-                TileSelection.Triangle, 300, 20, new Func<Component>[] { () => new Turret() })
-            ), // 2
+            Game.Blueprints.Buildings.RegisterBlueprint("wall",
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(),
+                    TileSelection.FromFootprints(FootprintGroup.Single), 100, 5, null));
+            Game.Blueprints.Buildings.RegisterBlueprint("triangle",
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(),
+                    TileSelection.FromFootprints(FootprintGroup.Triangle), 300, 20,
+                    new Func<Component>[] {() => new Turret()}));
         }
     }
 }

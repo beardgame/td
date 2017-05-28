@@ -1,0 +1,6 @@
+{
+    "name" : "single",
+    "footprints" : [
+        [ "base" ]
+    ]
+}

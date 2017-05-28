@@ -1,0 +1,6 @@
+{
+    "name" : "seven",
+    "footprints" : [
+        [ "base", "left", "downleft", "downright", "right", "upright", "upleft" ]
+    ]
+}

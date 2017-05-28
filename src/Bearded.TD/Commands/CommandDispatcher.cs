@@ -46,6 +46,9 @@ namespace Bearded.TD.Commands
 
         private void sendToAllPlayers(ICommand command)
         {
+            if (network.PeerCount == 0)
+                return;
+
             var message = network.CreateMessage();
 
             var serializer = command.Serializer;
