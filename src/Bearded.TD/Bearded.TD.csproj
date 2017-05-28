@@ -75,7 +75,6 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
-    <Compile Include="Game\Buildings\SerializableBuildingBlueprint.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
     <Compile Include="Game\Commands\Gameplay\BuildBuilding.cs" />
     <Compile Include="Game\Commands\Gameplay\GameOver.cs" />
