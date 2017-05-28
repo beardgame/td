@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingBlueprint
+    class BuildingBlueprint : IIdable<BuildingBlueprint>
     {
-        private readonly List<Func<Component>> componentFactories;
+        public Id<BuildingBlueprint> Id { get; }
         public TileSelection FootprintSelector { get; }
         public int MaxHealth { get; }
         public int ResourceCost { get; }
+        private readonly List<Func<Component>> componentFactories;
 
-        public BuildingBlueprint(TileSelection footprint, int maxHealth, int resourceCost,
+        public BuildingBlueprint(Id<BuildingBlueprint> id, TileSelection footprint, int maxHealth, int resourceCost,
             IEnumerable<Func<Component>> componentFactories)
         {
-            this.componentFactories = componentFactories?.ToList();
+            Id = id;
             FootprintSelector = footprint;
             MaxHealth = maxHealth;
             ResourceCost = resourceCost;
+            this.componentFactories = componentFactories?.ToList();
         }
 
         public IEnumerable<Component> GetComponents()

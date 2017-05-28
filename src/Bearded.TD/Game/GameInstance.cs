@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
@@ -30,6 +31,8 @@ namespace Bearded.TD.Game
         private readonly List<Player> players = new List<Player>();
         private readonly Dictionary<Player> playersById = new Dictionary<Player>();
         public ReadOnlyCollection<Player> Players { get; }
+
+        public BlueprintManager Blueprints { get; } = new BlueprintManager();
 
         private GameStatus status = GameStatus.Lobby;
         public GameStatus Status

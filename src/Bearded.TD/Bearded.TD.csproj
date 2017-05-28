@@ -66,6 +66,8 @@
     <Compile Include="Constants\Network.cs" />
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Blueprints\BlueprintCollection.cs" />
+    <Compile Include="Game\Blueprints\BlueprintManager.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Buildings\SerializableBuildingBlueprint.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
     <Compile Include="Game\Commands\Gameplay\BuildBuilding.cs" />
     <Compile Include="Game\Commands\Gameplay\GameOver.cs" />
