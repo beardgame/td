@@ -57,7 +57,6 @@ namespace Bearded.TD.Game.Buildings
         }
 
         private static readonly BuildingBlueprint Blueprint
-                = new BuildingBlueprint(new Id<BuildingBlueprint>(), "base",
-                    TileSelection.FromFootprints(FootprintGroup.CircleSeven), 1000, 1, null);
+                = new BuildingBlueprint(new Id<BuildingBlueprint>(), "base", FootprintGroup.CircleSeven, 1000, 1, null);
     }
 }

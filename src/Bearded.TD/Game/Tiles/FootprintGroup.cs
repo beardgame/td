@@ -12,6 +12,14 @@ namespace Bearded.TD.Game.Tiles
         public static FootprintGroup Triangle { get; } = new FootprintGroup(new Id<FootprintGroup>(2), Footprint.TriangleUp, Footprint.TriangleDown);
         public static FootprintGroup CircleSeven { get; } = new FootprintGroup(new Id<FootprintGroup>(3), Footprint.CircleSeven);
 
+        public static Dictionary<FootprintGroup> FootprintsById = new Dictionary<FootprintGroup>();
+        static FootprintGroup()
+        {
+            FootprintsById.Add(Single);
+            FootprintsById.Add(Triangle);
+            FootprintsById.Add(CircleSeven);
+        }
+
         public Id<FootprintGroup> Id { get; }
         public ReadOnlyCollection<Footprint> Footprints { get; }
 

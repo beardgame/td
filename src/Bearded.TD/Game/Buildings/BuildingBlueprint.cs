@@ -10,17 +10,17 @@ namespace Bearded.TD.Game.Buildings
     {
         public Id<BuildingBlueprint> Id { get; }
         public string Name { get; }
-        public TileSelection FootprintSelector { get; }
+        public FootprintGroup Footprints { get; }
         public int MaxHealth { get; }
         public int ResourceCost { get; }
         private readonly List<Func<Component>> componentFactories;
 
-        public BuildingBlueprint(Id<BuildingBlueprint> id, string name, TileSelection footprint, int maxHealth,
+        public BuildingBlueprint(Id<BuildingBlueprint> id, string name, FootprintGroup footprints, int maxHealth,
             int resourceCost, IEnumerable<Func<Component>> componentFactories)
         {
             Id = id;
             Name = name;
-            FootprintSelector = footprint;
+            Footprints = footprints;
             MaxHealth = maxHealth;
             ResourceCost = resourceCost;
             this.componentFactories = componentFactories?.ToList();

@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<BuildingBlueprint> id;
             private string name;
-            // missing: footprint
+            private Id<FootprintGroup> footprint;
             private int maxHealth;
             private int resourceCost;
             // missing: components
@@ -49,6 +49,7 @@ namespace Bearded.TD.Game.Commands
             {
                 id = blueprint.Id;
                 name = blueprint.Name;
+                footprint = blueprint.Footprints.Id;
                 maxHealth = blueprint.MaxHealth;
                 resourceCost = blueprint.ResourceCost;
             }
@@ -60,7 +61,7 @@ namespace Bearded.TD.Game.Commands
             {
                 stream.Serialize(ref id);
                 stream.Serialize(ref name);
-                // missing: footprint
+                stream.Serialize(ref footprint);
                 stream.Serialize(ref maxHealth);
                 stream.Serialize(ref resourceCost);
                 // missing: components
@@ -68,7 +69,7 @@ namespace Bearded.TD.Game.Commands
 
             private BuildingBlueprint getBuildingBlueprint(GameInstance game)
             {
-                return new BuildingBlueprint(id, name, TileSelection.FromFootprints(FootprintGroup.Single), maxHealth,
+                return new BuildingBlueprint(id, name, FootprintGroup.FootprintsById[footprint], maxHealth,
                     resourceCost, new Func<Component>[0]);
             }
         }
