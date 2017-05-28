@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Utilities;
@@ -13,10 +12,10 @@ namespace Bearded.TD.Game.Buildings
         public FootprintGroup Footprints { get; }
         public int MaxHealth { get; }
         public int ResourceCost { get; }
-        private readonly List<Func<Component>> componentFactories;
+        private readonly List<ComponentFactory> componentFactories;
 
         public BuildingBlueprint(Id<BuildingBlueprint> id, string name, FootprintGroup footprints, int maxHealth,
-            int resourceCost, IEnumerable<Func<Component>> componentFactories)
+            int resourceCost, IEnumerable<ComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;
@@ -28,7 +27,7 @@ namespace Bearded.TD.Game.Buildings
 
         public IEnumerable<Component> GetComponents()
         {
-            return componentFactories?.Select(f => f()) ?? Enumerable.Empty<Component>();
+            return componentFactories?.Select(f => f.Create()) ?? Enumerable.Empty<Component>();
         }
     }
 }

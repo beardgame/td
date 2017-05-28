@@ -1,14 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Networking.Loading
 {
@@ -51,6 +50,7 @@ namespace Bearded.TD.Networking.Loading
                 Dispatcher.RunOnlyOnServer(() => command);
             }
 
+            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
             debug_sendBlueprints();
 
             Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
@@ -64,7 +64,7 @@ namespace Bearded.TD.Networking.Loading
                     null)));
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
-                    20, new Func<Component>[] {() => new Turret()})));
+                    20, Game.Blueprints.Components["turret"].Yield())));
         }
     }
 }

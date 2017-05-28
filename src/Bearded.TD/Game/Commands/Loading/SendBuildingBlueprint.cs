@@ -69,8 +69,8 @@ namespace Bearded.TD.Game.Commands
 
             private BuildingBlueprint getBuildingBlueprint(GameInstance game)
             {
-                return new BuildingBlueprint(id, name, FootprintGroup.FootprintsById[footprint], maxHealth,
-                    resourceCost, new Func<Component>[0]);
+                return new BuildingBlueprint(id, name, game.Blueprints.Footprints[footprint], maxHealth,
+                    resourceCost, null);
             }
         }
     }
