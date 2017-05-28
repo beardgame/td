@@ -89,6 +89,7 @@
     <Compile Include="Game\Commands\Loading\BeginLoadingGame.cs" />
     <Compile Include="Game\Commands\Loading\CreateGameState.cs" />
     <Compile Include="Game\Commands\Loading\FillTilemap.cs" />
+    <Compile Include="Game\Commands\Loading\SendBuildingBlueprint.cs" />
     <Compile Include="Game\Commands\Loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Utilities\Id.cs" />
     <Compile Include="Utilities\IdManager.cs" />
     <Compile Include="Utilities\IIdable.cs" />
+    <Compile Include="Utilities\INamed.cs" />
     <Compile Include="Utilities\Input\Actions\DigitalAction.cs" />
     <Compile Include="Utilities\Input\Actions\DummyAction.cs" />
     <Compile Include="Utilities\Input\Actions\GamePadAction.cs" />
