@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<BuildingBlueprint> id;
             private string name;
-            private Id<FootprintGroup> footprint;
+            private Id<Footprint>[] footprints;
             private int maxHealth;
             private int resourceCost;
             private ICollection<Id<ComponentFactory>> components;
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Commands
             {
                 id = blueprint.Id;
                 name = blueprint.Name;
-                footprint = blueprint.Footprints.Id;
+                footprints = blueprint.Footprints.Footprints.Select(f => f.Id).ToArray();
                 maxHealth = blueprint.MaxHealth;
                 resourceCost = blueprint.ResourceCost;
                 components = blueprint.ComponentFactories.Select(c => c.Id).ToList();
@@ -63,16 +63,31 @@ namespace Bearded.TD.Game.Commands
             {
                 stream.Serialize(ref id);
                 stream.Serialize(ref name);
-                stream.Serialize(ref footprint);
+                serializeFootprints(stream);
                 stream.Serialize(ref maxHealth);
                 stream.Serialize(ref resourceCost);
                 stream.Serialize(ref components);
             }
 
+            private void serializeFootprints(INetBufferStream stream)
+            {
+                var footprintCount = footprints.Length;
+                stream.Serialize(ref footprintCount);
+                if (footprintCount != footprints.Length)
+                    footprints = new Id<Footprint>[footprintCount];
+                for (var i = 0; i < footprintCount; i++)
+                    stream.Serialize(ref footprints[i]);
+            }
+
             private BuildingBlueprint getBuildingBlueprint(GameInstance game)
             {
-                return new BuildingBlueprint(id, name, game.Blueprints.Footprints[footprint], maxHealth,
+                return new BuildingBlueprint(id, name, getFootprintGroup(game), maxHealth,
                     resourceCost, components.Select(cId => game.Blueprints.Components[cId]));
+            }
+
+            private FootprintGroup getFootprintGroup(GameInstance game)
+            {
+                return new FootprintGroup(footprints.Select(f => game.Blueprints.Footprints[f]));
             }
         }
     }

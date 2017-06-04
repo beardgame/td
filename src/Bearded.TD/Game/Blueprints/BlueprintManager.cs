@@ -5,8 +5,8 @@ namespace Bearded.TD.Game.Blueprints
 {
     class BlueprintManager
     {
-        public BlueprintCollection<FootprintGroup> Footprints { get; } = new BlueprintCollection<FootprintGroup>();
-        public BlueprintCollection<ComponentFactory> Components { get; } = new BlueprintCollection<ComponentFactory>();
-        public BlueprintCollection<BuildingBlueprint> Buildings { get; } = new BlueprintCollection<BuildingBlueprint>();
+        public BlueprintCollection<Footprint> Footprints { get; } = new BlueprintCollection<Footprint>();
+        public NamedBlueprintCollection<ComponentFactory> Components { get; } = new NamedBlueprintCollection<ComponentFactory>();
+        public NamedBlueprintCollection<BuildingBlueprint> Buildings { get; } = new NamedBlueprintCollection<BuildingBlueprint>();
     }
 }
