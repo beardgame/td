@@ -62,7 +62,7 @@ namespace Bearded.TD.Screens
                 0);
             viewMatrix = Matrix4.LookAt(
                 new Vector3(0, 0, -.5f * ViewportSize.ScaledHeight) + originCenter,
-                Vector3.Zero + originCenter,
+                originCenter,
                 Vector3.UnitY * (flipY ? -1 : 1));
             Screen.OnResize(ViewportSize);
         }

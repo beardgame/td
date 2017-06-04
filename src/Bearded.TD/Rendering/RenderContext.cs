@@ -12,5 +12,10 @@
             Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(Surfaces);
         }
+
+        public void OnResize(ViewportSize viewportSize)
+        {
+            Compositor.SetViewportSize(viewportSize);
+        }
     }
 }

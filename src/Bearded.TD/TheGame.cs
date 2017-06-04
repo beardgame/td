@@ -50,7 +50,10 @@ namespace Bearded.TD
 
         protected override void OnResize(EventArgs e)
         {
-            screenManager.OnResize(new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale));
+            var viewportSize = new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale);
+            screenManager.OnResize(viewportSize);
+            renderContext.OnResize(viewportSize);
+            base.OnResize(e);
         }
 
         protected override void OnUpdateUIThread()
