@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
 
@@ -43,7 +44,9 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<BuildingBlueprint> blueprint;
-            private PositionedFootprint footprint;
+            private Id<Footprint> footprint;
+            private int footprintX;
+            private int footprintY;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
@@ -53,18 +56,28 @@ namespace Bearded.TD.Game.Commands
             public Serializer(BuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.blueprint = blueprint.Id;
-                this.footprint = footprint;
+                this.footprint = footprint.Footprint.Id;
+                footprintX = footprint.RootTile.X;
+                footprintY = footprint.RootTile.Y;
             }
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
-                return new Implementation(game, game.Blueprints.Buildings[blueprint], footprint);
+                return new Implementation(
+                    game,
+                    game.Blueprints.Buildings[blueprint],
+                    new PositionedFootprint(
+                        game.State.Level,
+                        game.Blueprints.Footprints[footprint],
+                        new Tile<TileInfo>(game.State.Level.Tilemap, footprintX, footprintY)));
             }
 
             public override void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref blueprint);
-                // TODO: serialize footprint
+                stream.Serialize(ref footprint);
+                stream.Serialize(ref footprintX);
+                stream.Serialize(ref footprintY);
             }
         }
     }
