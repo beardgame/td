@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<BuildingBlueprint> id;
             private string name;
-            private Id<Footprint>[] footprints;
+            private Id<Footprint>[] footprints = new Id<Footprint>[0];
             private int maxHealth;
             private int resourceCost;
             private ICollection<Id<ComponentFactory>> components;
