@@ -4,6 +4,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking.Loading;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -23,7 +24,7 @@ namespace Bearded.TD.Networking.Lobby
             : this(logger, dispatchers.master)
         {
             var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), "The host", Color.Red)
+            var player = new Player(ids.GetNext<Player>(), getPlayerName(), Color.Red)
             {
                 ConnectionState = PlayerConnectionState.Waiting
             };
@@ -58,5 +59,10 @@ namespace Bearded.TD.Networking.Lobby
 
         public abstract void Update(UpdateEventArgs args);
         public abstract LoadingManager GetLoadingManager();
+
+        private static string getPlayerName()
+        {
+            return UserSettings.Instance.Misc.Username?.Length > 0 ? UserSettings.Instance.Misc.Username : "the host";
+        }
     }
 }

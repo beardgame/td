@@ -11,7 +11,7 @@ namespace Bearded.TD.UI.Components
     {
         private const float fontSize = 14;
 
-        private static readonly HashSet<char> allowedChars = new HashSet<char> {' ', '-', '_', '.', '+'};
+        private static readonly HashSet<char> allowedChars = new HashSet<char> {' ', '-', '_', '.', '+', '"'};
         private const string cursorString = "|";
 
         private int cursorPosition;

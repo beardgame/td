@@ -105,7 +105,14 @@ namespace Bearded.TD.Meta
         }
         #endregion
 
+        public MiscSettings Misc = new MiscSettings();
         public UISettings UI = new UISettings();
+
+        public class MiscSettings
+        {
+            public string Username = "";
+            public string SavedNetworkAddress = "";
+        }
 
         public class UISettings
         {
