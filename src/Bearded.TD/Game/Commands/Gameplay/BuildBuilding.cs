@@ -28,8 +28,8 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions()
-                // TODO: check if the positionedfootprint matches the building blueprint conditions
-                => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.IsPassable);
+                => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.IsPassable)
+                       && blueprint.Footprints.Footprints.Contains(footprint.Footprint);
 
             public override void Execute()
             {
