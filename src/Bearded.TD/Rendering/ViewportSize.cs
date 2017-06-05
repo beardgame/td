@@ -20,7 +20,10 @@ namespace Bearded.TD.Rendering
         }
 
         public bool Equals(ViewportSize other)
-            => Width == other.Width && Height == other.Height;
+            => Width == other.Width
+                && Height == other.Height
+                && ScaledWidth == other.ScaledWidth
+                && ScaledHeight == other.ScaledHeight;
 
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj) && (obj is ViewportSize && Equals((ViewportSize) obj));
