@@ -1,57 +1,68 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
+using Bearded.TD.Networking.Loading;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Networking.Lobby
 {
     abstract class LobbyManager
     {
-        private readonly IDispatcher dispatcher;
         public Logger Logger { get; }
         public GameInstance Game { get; }
+        protected IDispatcher Dispatcher { get; }
 
-        public abstract bool GameStarted { get; }
-
-        protected LobbyManager(Logger logger,
-            (IRequestDispatcher request, IDispatcher master) dispatchers)
+        protected LobbyManager(
+            Logger logger,
+            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
             var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), "The host", Color.Red);
-            Game = new GameInstance(player, dispatchers.request, ids);
+            var player = new Player(ids.GetNext<Player>(), getPlayerName(), Color.Red)
+            {
+                ConnectionState = PlayerConnectionState.Waiting
+            };
+            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, ids);
         }
 
-        protected LobbyManager(Logger logger, Player player,
-            (IRequestDispatcher request, IDispatcher master) dispatchers)
+        protected LobbyManager(
+            Logger logger,
+            Player player,
+            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
-            Game = new GameInstance(player, dispatchers.request, null);
+            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, null);
         }
 
         private LobbyManager(Logger logger, IDispatcher dispatcher)
         {
             Logger = logger;
-            this.dispatcher = dispatcher;
+            Dispatcher = dispatcher;
+        }
+
+        public void ToggleReadyState()
+        {
+            var connectionState =
+                    Game.Me.ConnectionState == PlayerConnectionState.Ready
+                        ? PlayerConnectionState.Waiting
+                        : PlayerConnectionState.Ready;
+
+            Game.RequestDispatcher.Dispatch(ChangePlayerState.Request(Game.Me, connectionState));
         }
 
         public abstract void Update(UpdateEventArgs args);
+        public abstract LoadingManager GetLoadingManager();
 
-        public abstract void ToggleReadyState();
-
-        public GameInstance GetStartedInstance(InputManager inputManager)
+        private static string getPlayerName()
         {
-            var meta = new GameMeta(Logger, dispatcher, Game.Ids);
-            var gameState = GameStateBuilder.Generate(meta, new DefaultTilemapGenerator(Logger));
-            var camera = new GameCamera(inputManager, meta, gameState.Level.Tilemap.Radius);
-
-            Game.Start(gameState, camera);
-
-            return Game;
+            return UserSettings.Instance.Misc.Username?.Length > 0 ? UserSettings.Instance.Misc.Username : "the host";
         }
     }
 }

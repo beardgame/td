@@ -13,6 +13,8 @@ namespace Bearded.TD.Networking
         private readonly Dictionary<NetConnection, Player> connectionToPlayer = new Dictionary<NetConnection, Player>();
         private readonly Dictionary<Player, NetConnection> playerToConnection = new Dictionary<Player, NetConnection>();
 
+        public int PeerCount => connectedPeers.Count;
+
         public ServerNetworkInterface(Logger logger) : base(logger)
         {
             var config = new NetPeerConfiguration(Constants.Network.ApplicationName)

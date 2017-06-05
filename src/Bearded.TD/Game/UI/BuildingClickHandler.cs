@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.UI
         private readonly BuildingBlueprint blueprint;
         private BuildingGhost ghost;
 
-        public TileSelection Selection => blueprint.FootprintSelector;
+        public TileSelection Selection => TileSelection.FromFootprints(blueprint.Footprints);
 
         public BuildingClickHandler(BuildingBlueprint blueprint)
         {

@@ -1,5 +1,4 @@
-﻿
-namespace Bearded.TD.Rendering
+﻿namespace Bearded.TD.Rendering
 {
     class RenderContext
     {
@@ -13,10 +12,10 @@ namespace Bearded.TD.Rendering
             Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(Surfaces);
         }
-
-        public void OnResize(ViewportSize viewPort)
+        
+        public void OnResize(ViewportSize viewportSize)
         {
-            Compositor.OnResize(viewPort);
+            Compositor.SetViewportSize(viewportSize);
         }
     }
 }

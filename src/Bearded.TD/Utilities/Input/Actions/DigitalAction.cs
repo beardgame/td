@@ -1,4 +1,3 @@
-
 namespace Bearded.TD.Utilities.Input.Actions
 {
     abstract class DigitalAction : IAction

@@ -1,7 +1,10 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Loading;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -10,24 +13,25 @@ namespace Bearded.TD.Networking.Lobby
 {
     class ServerLobbyManager : LobbyManager
     {
-        private bool gameStarted;
         private readonly ServerNetworkInterface networkInterface;
 
-        public override bool GameStarted => gameStarted;
-
-        public ServerLobbyManager(Logger logger) : base(logger, createDispatchers())
+        public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
+            : base(logger, createDispatchers(networkInterface, logger), game => createDataMessageHandler(game, logger))
         {
-            networkInterface = new ServerNetworkInterface(logger);
+            this.networkInterface = networkInterface;
         }
 
-        private static (IRequestDispatcher, IDispatcher) createDispatchers()
+        private static (IRequestDispatcher, IDispatcher) createDispatchers(ServerNetworkInterface network, Logger logger)
         {
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor());
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher);
+            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
+            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
             var dispatcher = new ServerDispatcher(commandDispatcher);
 
             return (requestDispatcher, dispatcher);
         }
+
+        private static IDataMessageHandler createDataMessageHandler(GameInstance game, Logger logger)
+            => new ServerDataMessageHandler(game, logger);
 
         public override void Update(UpdateEventArgs args)
         {
@@ -41,8 +45,15 @@ namespace Bearded.TD.Networking.Lobby
                     case NetIncomingMessageType.StatusChanged:
                         handleStatusChange(msg);
                         break;
+                    case NetIncomingMessageType.Data:
+                        Game.DataMessageHandler.HandleIncomingMessage(msg);
+                        break;
                 }
             }
+
+            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
+                Dispatcher.RunOnlyOnServer(
+                    commandDispatcher => commandDispatcher.Dispatch(BeginLoadingGame.Command(Game)));
         }
 
         private void handleConnectionApproval(NetIncomingMessage msg)
@@ -54,7 +65,8 @@ namespace Bearded.TD.Networking.Lobby
                 return;
             }
             var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Blue);
-            Game.AddPlayer(newPlayer);
+            Dispatcher.RunOnlyOnServer(
+                commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(Game, newPlayer)));
             newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
@@ -86,6 +98,12 @@ namespace Bearded.TD.Networking.Lobby
             {
                 case NetConnectionStatus.Connected:
                     networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
+                    // For now we manually send this event to just the one player, but we should make an interface for this.
+                    var outMsg = networkInterface.CreateMessage();
+                    var serializer = AddPlayer.Command(Game, Game.Me).Serializer;
+                    outMsg.Write(Serializers.Instance.CommandId(serializer));
+                    serializer.Serialize(new NetBufferWriter(outMsg));
+                    networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
                     break;
                 case NetConnectionStatus.Disconnected:
                     Game.RemovePlayer(networkInterface.GetSender(msg));
@@ -94,20 +112,9 @@ namespace Bearded.TD.Networking.Lobby
             }
         }
 
-        public override void ToggleReadyState()
+        public override LoadingManager GetLoadingManager()
         {
-            setConnectionStateForPlayer(Game.Me,
-                Game.Me.ConnectionState == PlayerConnectionState.Ready
-                    ? PlayerConnectionState.Waiting
-                    : PlayerConnectionState.Ready);
-        }
-
-        private void setConnectionStateForPlayer(Player player, PlayerConnectionState connectionState)
-        {
-            player.ConnectionState = connectionState;
-
-            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
-                gameStarted = true;
+            return new ServerLoadingManager(Game, Dispatcher, networkInterface, Logger);
         }
     }
 }

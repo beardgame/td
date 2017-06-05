@@ -36,12 +36,12 @@ namespace Bearded.TD.UI
 
         private class ScreenWidth : ScreenDimension
         {
-            protected override float GetDimension(ViewportSize size) => size.Width;
+            protected override float GetDimension(ViewportSize size) => size.ScaledWidth;
         }
 
         private class ScreenHeight : ScreenDimension
         {
-            protected override float GetDimension(ViewportSize size) => size.Height;
+            protected override float GetDimension(ViewportSize size) => size.ScaledHeight;
         }
     }
 }

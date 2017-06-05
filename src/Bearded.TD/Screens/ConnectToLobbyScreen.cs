@@ -1,8 +1,8 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
-using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
@@ -15,13 +15,14 @@ namespace Bearded.TD.Screens
 {
     class ConnectToLobbyScreen : UIScreenLayer
     {
-        private const string playerName = "a client";
+        private const string defaultPlayerName = "a client";
 
         private readonly Logger logger;
         private readonly InputManager inputManager;
 
         private readonly TextInput textInput;
         private ClientNetworkInterface networkInterface;
+        private readonly string playerName;
         private string rejectionReason;
 
         public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
@@ -32,6 +33,12 @@ namespace Bearded.TD.Screens
 
             AddComponent(textInput = new TextInput(new Bounds(new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f))));
             textInput.Submitted += tryConnect;
+
+            playerName = UserSettings.Instance.Misc.Username?.Length > 0
+                ? UserSettings.Instance.Misc.Username
+                : defaultPlayerName;
+            if (UserSettings.Instance.Misc.SavedNetworkAddress?.Length > 0)
+                textInput.Text = UserSettings.Instance.Misc.SavedNetworkAddress;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -48,6 +55,7 @@ namespace Bearded.TD.Screens
                         handleStatusChange(msg);
                         break;
                 }
+                if (Destroyed) return;
             }
         }
 
@@ -78,6 +86,8 @@ namespace Bearded.TD.Screens
 
         private void goToLobby(NetIncomingMessage msg)
         {
+            UserSettings.Instance.Misc.SavedNetworkAddress = textInput.Text;
+            UserSettings.Save(logger);
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
             var lobbyManager =
                 new ClientLobbyManager(networkInterface, new Player(info.Id, playerName, info.Color), logger);

@@ -41,6 +41,7 @@ namespace Bearded.TD.Game
 
         private void queueEnemyWave()
         {
+            return;
             var source = game.State.Enumerate<UnitSource>().RandomElement();
             source.QueueEnemies(debugBlueprint, StaticRandom.Int(5, 10));
         }

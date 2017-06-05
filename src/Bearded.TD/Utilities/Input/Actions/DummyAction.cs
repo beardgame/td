@@ -1,4 +1,3 @@
-
 namespace Bearded.TD.Utilities.Input.Actions
 {
     sealed class DummyAction : IAction

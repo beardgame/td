@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Utilities.Input.Actions;
 
 namespace Bearded.TD.Utilities.Input
 {

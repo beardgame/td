@@ -1,34 +1,45 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Loading;
 using Bearded.Utilities;
+using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Lobby
 {
     class ClientLobbyManager : LobbyManager
     {
         private readonly ClientNetworkInterface networkInterface;
-        public override bool GameStarted { get; }
 
         public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
-            : base(logger, player, (new ClientRequestDispatcher(), new ClientDispatcher()))
+            : base(logger, player, (new ClientRequestDispatcher(networkInterface, logger), new ClientDispatcher()),
+                  game => createDataMessageHandler(game, logger))
         {
             this.networkInterface = networkInterface;
         }
 
+        private static IDataMessageHandler createDataMessageHandler(GameInstance game, Logger logger)
+        {
+            return new ClientDataMessageHandler(game, logger);
+        }
+
         public override void Update(UpdateEventArgs args)
         {
-            // Read lobby messages the server sends us:
-            // * Player added/removed
-            // * Player ready status changed (including ours)
-            // * Game settings changed
-            // * Game started
-            // * Chat messages
+            foreach (var msg in networkInterface.GetMessages())
+            {
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.Data:
+                        Game.DataMessageHandler.HandleIncomingMessage(msg);
+                        break;
+                }
+            }
         }
-        
-        public override void ToggleReadyState()
+
+        public override LoadingManager GetLoadingManager()
         {
-            // Ask server to change our state
+            return new ClientLoadingManager(Game, Dispatcher, networkInterface, Logger);
         }
     }
 }

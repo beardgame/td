@@ -5,7 +5,6 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings.Components

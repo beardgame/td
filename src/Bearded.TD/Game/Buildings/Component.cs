@@ -1,5 +1,7 @@
-﻿using Bearded.TD.Rendering;
-using Bearded.Utilities.SpaceTime;
+﻿using System;
+using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -18,5 +20,14 @@ namespace Bearded.TD.Game.Buildings
         public abstract void Update(TimeSpan elapsedTime);
 
         public abstract void Draw(GeometryManager geometries);
+    }
+
+    static class ComponentExtensions
+    {
+        public static ComponentFactory Factory(
+            this Func<Component> factory, Id<ComponentFactory> id, string name)
+        {
+            return new ComponentFactory(id, name, factory);
+        }
     }
 }

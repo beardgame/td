@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Utilities.Input;
-using Bearded.TD.Utilities.Input.Actions;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.UI

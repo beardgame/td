@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -14,7 +15,8 @@ namespace Bearded.TD.Screens
         private readonly Logger logger;
         private readonly InputManager inputManager;
 
-        public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager) : base(parent, geometries, .5f, .5f, true)
+        public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
+            : base(parent, geometries, .5f, .5f, true)
         {
             this.logger = logger;
             this.inputManager = inputManager;
@@ -52,7 +54,11 @@ namespace Bearded.TD.Screens
 
         private void startServerLobby()
         {
-            Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(Parent, Geometries, new ServerLobbyManager(logger), inputManager));
+            Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(
+                Parent,
+                Geometries,
+                new ServerLobbyManager(new ServerNetworkInterface(logger), logger),
+                inputManager));
             Destroy();
         }
 

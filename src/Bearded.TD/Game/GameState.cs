@@ -27,6 +27,8 @@ namespace Bearded.TD.Game
         public MultipleSinkNavigationSystem Navigator { get; }
         public ResourceManager Resources { get; }
 
+        public bool IsLoading { get; private set; } = true;
+
         public GameState(GameMeta meta, Level level)
         {
             Meta = meta;
@@ -34,6 +36,15 @@ namespace Bearded.TD.Game
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
             Resources = new ResourceManager();
+        }
+
+        public void FinishLoading()
+        {
+            if (!IsLoading)
+                throw new Exception("Can only finish loading game state once.");
+
+            Geometry.Initialise();
+            IsLoading = false;
         }
 
         public void Add(GameObject obj)
@@ -92,6 +103,9 @@ namespace Bearded.TD.Game
 
         public void Advance(TimeSpan elapsedTime)
         {
+            if (IsLoading)
+                throw new Exception("Must finish loading before advancing game state.");
+
             Time += elapsedTime;
 
             foreach (var obj in gameObjects)

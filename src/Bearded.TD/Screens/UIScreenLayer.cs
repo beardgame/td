@@ -56,10 +56,13 @@ namespace Bearded.TD.Screens
 
         protected override void OnViewportSizeChanged()
         {
-            var originCenter = new Vector3((.5f - originX) * ViewportSize.Width, (originY - .5f) * ViewportSize.Height, 0);
+            var originCenter = new Vector3(
+                (.5f - originX) * ViewportSize.ScaledWidth,
+                (originY - .5f) * ViewportSize.ScaledHeight,
+                0);
             viewMatrix = Matrix4.LookAt(
-                new Vector3(0, 0, -.5f * ViewportSize.Height) + originCenter,
-                Vector3.Zero + originCenter,
+                new Vector3(0, 0, -.5f * ViewportSize.ScaledHeight) + originCenter,
+                originCenter,
                 Vector3.UnitY * (flipY ? -1 : 1));
             Screen.OnResize(ViewportSize);
         }

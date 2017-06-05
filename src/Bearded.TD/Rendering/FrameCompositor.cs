@@ -16,7 +16,7 @@ namespace Bearded.TD.Rendering
             deferredRenderer = new DeferredRenderer(surfaces);
         }
 
-        public void OnResize(ViewportSize viewPort)
+        public void SetViewportSize(ViewportSize viewPort)
         {
             this.viewPort = viewPort;
             deferredRenderer.OnResize(viewPort);
@@ -60,6 +60,5 @@ namespace Bearded.TD.Rendering
         public void FinalizeFrame()
         {
         }
-
     }
 }

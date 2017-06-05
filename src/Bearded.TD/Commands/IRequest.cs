@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Game.Commands;
-using Bearded.TD.Networking.Serialization;
+﻿using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands
 {

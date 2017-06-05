@@ -15,6 +15,7 @@ namespace Bearded.TD.Screens
         protected readonly ScreenLayerCollection Parent;
 
         protected ViewportSize ViewportSize { get; private set; }
+        protected bool Destroyed { get; private set; }
 
         public abstract Matrix4 ViewMatrix { get; }
 
@@ -54,6 +55,7 @@ namespace Bearded.TD.Screens
         protected void Destroy()
         {
             Parent.RemoveScreenLayer(this);
+            Destroyed = true;
         }
     }
 }

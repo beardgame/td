@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <LangVersion>7</LangVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -64,31 +64,45 @@
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
     <Compile Include="Constants\Network.cs" />
+    <Compile Include="Constants\Paths.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Blueprints\BlueprintCollection.cs" />
+    <Compile Include="Game\Blueprints\BlueprintManager.cs" />
     <Compile Include="Game\Buildings\Base.cs" />
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
     <Compile Include="Game\Buildings\Component.cs" />
+    <Compile Include="Game\Buildings\ComponentFactory.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
-    <Compile Include="Game\Commands\AddPlayer.cs" />
-    <Compile Include="Game\Commands\BuildBuilding.cs" />
-    <Compile Include="Game\Commands\RemovePlayer.cs" />
+    <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
+    <Compile Include="Game\Commands\Gameplay\BuildBuilding.cs" />
+    <Compile Include="Game\Commands\Gameplay\GameOver.cs" />
+    <Compile Include="Game\Commands\Gameplay\SetTileType.cs" />
+    <Compile Include="Game\Commands\Gameplay\SpawnEnemy.cs" />
+    <Compile Include="Game\Commands\Gameplay\UnitDeath.cs" />
+    <Compile Include="Game\Commands\General\AddPlayer.cs" />
+    <Compile Include="Game\Commands\General\ChangePlayerState.cs" />
+    <Compile Include="Game\Commands\General\RemovePlayer.cs" />
+    <Compile Include="Game\Commands\General\SendChatMessage.cs" />
+    <Compile Include="Game\Commands\Loading\AllLoadingDataSent.cs" />
+    <Compile Include="Game\Commands\Loading\BeginLoadingGame.cs" />
+    <Compile Include="Game\Commands\Loading\CreateGameState.cs" />
+    <Compile Include="Game\Commands\Loading\FillTilemap.cs" />
+    <Compile Include="Game\Commands\Loading\LoadBasicData.cs" />
+    <Compile Include="Game\Commands\Loading\SendBuildingBlueprint.cs" />
+    <Compile Include="Game\Commands\Loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
-    <Compile Include="Game\Commands\SendChatMessage.cs" />
-    <Compile Include="Game\Commands\SetTileType.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
-    <Compile Include="Game\Commands\GameOver.cs" />
-    <Compile Include="Game\Commands\SpawnEnemy.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
-    <Compile Include="Game\Commands\UnitDeath.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameRunner.cs" />
     <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\GameStatus.cs" />
     <Compile Include="Game\Generation\DefaultTilemapGenerator.cs" />
     <Compile Include="Game\Generation\ITilemapGenerator.cs" />
     <Compile Include="Game\GameInstance.cs" />
@@ -100,6 +114,7 @@
     <Compile Include="Game\Resources\ResourceGrant.cs" />
     <Compile Include="Game\Resources\ResourceManager.cs" />
     <Compile Include="Game\Tiles\Footprint.cs" />
+    <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\BuildingClickHandler.cs" />
@@ -126,7 +141,15 @@
     <Compile Include="Game\Tiles\Step.cs" />
     <Compile Include="Game\Tiles\Tile.cs" />
     <Compile Include="Game\Tiles\Tilemap.cs" />
+    <Compile Include="Meta\UserSettings.cs" />
+    <Compile Include="Mods\Serialization\Converters\JsonConverterBase.cs" />
+    <Compile Include="Mods\Serialization\Converters\StepConverter.cs" />
+    <Compile Include="Mods\Serialization\Models\FootprintGroup.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
+    <Compile Include="Networking\DataMessageHandler.cs" />
+    <Compile Include="Networking\Loading\ClientLoadingManager.cs" />
+    <Compile Include="Networking\Loading\LoadingManager.cs" />
+    <Compile Include="Networking\Loading\ServerLoadingManager.cs" />
     <Compile Include="Networking\Lobby\ClientInfo.cs" />
     <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
     <Compile Include="Networking\Lobby\LobbyManager.cs" />
@@ -141,7 +164,7 @@
     <Compile Include="Networking\Serialization\NetBufferReader.cs" />
     <Compile Include="Networking\Serialization\NetBufferWriter.cs" />
     <Compile Include="Networking\Serialization\SerializerExtensions.cs" />
-    <Compile Include="Networking\Serialization\SerializerManager.cs" />
+    <Compile Include="Networking\Serialization\Serializers.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\DeferredRenderer.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
@@ -151,6 +174,7 @@
     <Compile Include="Rendering\ViewportSize.cs" />
     <Compile Include="Screens\ConnectToLobbyScreen.cs" />
     <Compile Include="Screens\ConsoleScreenLayer.cs" />
+    <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\LobbyScreen.cs" />
     <Compile Include="Screens\StartScreen.cs" />
     <Compile Include="UI\Components\ChatComponent.cs" />
@@ -183,6 +207,7 @@
     <Compile Include="Utilities\Id.cs" />
     <Compile Include="Utilities\IdManager.cs" />
     <Compile Include="Utilities\IIdable.cs" />
+    <Compile Include="Utilities\INamed.cs" />
     <Compile Include="Utilities\Input\Actions\DigitalAction.cs" />
     <Compile Include="Utilities\Input\Actions\DummyAction.cs" />
     <Compile Include="Utilities\Input\Actions\GamePadAction.cs" />

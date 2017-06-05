@@ -9,7 +9,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using Tile = Bearded.TD.Game.Tiles.Tile<Bearded.TD.Game.World.TileInfo>;
+using Tile = Bearded.TD.Game.Tiles.Tile<Bearded.TD.Game.World.TileInfo.Type>;
 using static Bearded.TD.Game.World.TileInfo.Type;
 using static Bearded.TD.Game.Tiles.Directions;
 
@@ -24,10 +24,11 @@ namespace Bearded.TD.Game.Generation
             this.logger = logger;
         }
 
-        public void Fill(Tilemap<TileInfo> tilemap)
+        public Tilemap<TileInfo.Type> Generate(int radius)
         {
-            logger.Debug.Log($"Started generating map with radius {tilemap.Radius}");
+            logger.Debug.Log($"Started generating map with radius {radius}");
             var timer = Stopwatch.StartNew();
+            var tilemap = new Tilemap<TileInfo.Type>(radius);
             var gen = new Generator(tilemap, logger);
             logger.Trace.Log("Filling tilemap");
             gen.FillAll();
@@ -47,22 +48,25 @@ namespace Bearded.TD.Game.Generation
             gen.ConnectCornersToGraph();
             logger.Trace.Log("Digging tunnels");
             gen.ClearTunnels();
+
             logger.Debug.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
+
+            return tilemap;
         }
 
         private class Generator
         {
-            private readonly Tilemap<TileInfo> tilemap;
+            private readonly Tilemap<TileInfo.Type> tilemap;
             private readonly Logger logger;
-            private readonly Level level;
+            private readonly Level<TileInfo.Type> level;
             private List<Position2> intersections = new List<Position2>();
             private List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
 
-            public Generator(Tilemap<TileInfo> tilemap, Logger logger)
+            public Generator(Tilemap<TileInfo.Type> tilemap, Logger logger)
             {
                 this.tilemap = tilemap;
                 this.logger = logger;
-                level = new Level(tilemap);
+                level = new Level<TileInfo.Type>(tilemap);
             }
 
             public void ClearTunnels() => tunnels.ForEach(clearTunnel);
@@ -223,7 +227,7 @@ namespace Bearded.TD.Game.Generation
             private void close(Tile tile) => set(tile, Wall);
 
             private void set(Tile tile, TileInfo.Type type)
-                => tile.Info.SetTileType(type);
+                => tilemap[tile] = type;
 
             private IEnumerable<Tile> spiral(Tile tile, int radius)
                 => tilemap.SpiralCenteredAt(tile, radius);
