@@ -53,6 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="assets\shaders\deferred\compose.fs" />
+    <Compile Include="assets\shaders\deferred\debug.fs" />
+    <Compile Include="assets\shaders\deferred\gSprite.fs" />
     <Compile Include="Commands\ClientDispatcher.cs" />
     <Compile Include="Commands\CommandExecutor.cs" />
     <Compile Include="Commands\ICommand.cs" />
@@ -271,6 +274,9 @@
     <Content Include="assets\gfx\sprites\smallobjects.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="assets\shaders\deferred\debug.vs" />
+    <Content Include="assets\shaders\deferred\gSprite.vs" />
+    <Content Include="assets\shaders\deferred\compose.vs" />
     <Content Include="assets\shaders\geometry.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

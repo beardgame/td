@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.Linq;
+using amulware.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
@@ -10,10 +11,13 @@ namespace Bearded.TD.Rendering
         private bool needsResize;
 
         private readonly Texture diffuseBuffer = createTexture(); // rgba
-        private readonly Texture normalHeightBuffer = createTexture(); // xyzh
+        private readonly Texture normalBuffer = createTexture(); // xyz
+        private readonly Texture depthBuffer = createTexture(); // z
         private readonly Texture accumBuffer = createTexture(); // rgb
         private readonly RenderTarget gTarget = new RenderTarget();
         private readonly RenderTarget accumTarget = new RenderTarget();
+
+        private readonly IndexedSurface<UVColorVertexData>[] debugSurfaces;
 
         private readonly PostProcessSurface compositeSurface;
 
@@ -22,18 +26,28 @@ namespace Bearded.TD.Rendering
             this.surfaces = surfaces;
 
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
-            gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalHeightBuffer);
+            gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
+            gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
 
             accumTarget.Attach(FramebufferAttachment.ColorAttachment0, accumBuffer);
 
-            surfaces.Shaders.MakeShaderProgram("" /* TODO */);
             compositeSurface = new PostProcessSurface()
-                .WithShader(surfaces.Shaders["" /* TODO */ ])
+                .WithShader(surfaces.Shaders.MakeShaderProgram("deferred/compose"))
                 .AndSettings(
-                    new TextureUniform("diffuse", diffuseBuffer),
-                    new TextureUniform("light", accumBuffer)
+                    new TextureUniform("albedoTexture", diffuseBuffer),
+                    new TextureUniform("lightTexture", accumBuffer)
                 );
+
+            surfaces.Shaders.MakeShaderProgram("deferred/debug");
+
+            debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, accumBuffer}
+                .Select(createDebugSurface).ToArray();
         }
+
+        private IndexedSurface<UVColorVertexData> createDebugSurface(Texture buffer)
+            => new IndexedSurface<UVColorVertexData>()
+                .WithShader(surfaces.Shaders["deferred/debug"])
+                .AndSettings(new TextureUniform("bufferTexture", buffer));
 
         public void Render(RenderTarget target = null)
         {
@@ -48,13 +62,36 @@ namespace Bearded.TD.Rendering
             compositeTo(target);
         }
 
+        public void RenderDebug(RenderTarget target = null)
+        {
+            var width = 1f / debugSurfaces.Length;
+            var v2 = width / viewport.AspectRatio;
+            var u = 0f;
+            var v = 0f;
+            var color = Color.White;
+
+            foreach (var surface in debugSurfaces)
+            {
+                var u2 = u + width;
+                
+                surface.AddQuad(
+                    new UVColorVertexData(u, v, 1, 0, 0, color),
+                    new UVColorVertexData(u2, v, 1, 1, 0, color),
+                    new UVColorVertexData(u2, v2, 1, 1, 1, color),
+                    new UVColorVertexData(u, v2, 1, 0, 1, color)
+                    );
+                
+                u = u2;
+            }
+        }
+
         private void renderWorldToGBuffers()
         {
             renderTo(gTarget);
 
             clearWithColor();
 
-            // TODO: render geometries
+            // TODO: render geometries to g buffers
         }
 
         private void renderLightsToAccumBuffer()
@@ -63,7 +100,7 @@ namespace Bearded.TD.Rendering
 
             clearWithColor();
 
-            // TODO: render lights to accum buffer (from normal+height only)
+            // TODO: render lights to accum buffer (from normal+depth only)
         }
 
         private void compositeTo(RenderTarget target)
@@ -105,7 +142,8 @@ namespace Bearded.TD.Rendering
         private void resize()
         {
             diffuseBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba);
-            normalHeightBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba16f);
+            normalBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba16f);
+            depthBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.R16f);
             accumBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgb16f);
         }
 
