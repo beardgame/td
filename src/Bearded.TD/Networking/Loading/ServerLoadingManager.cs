@@ -4,8 +4,10 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 
@@ -25,7 +27,10 @@ namespace Bearded.TD.Networking.Loading
 
             // Just instantly finish sending everything.
             if (Game.Me.ConnectionState == PlayerConnectionState.AwaitingLoadingData)
+            {
+                setupFactions();
                 generateGame();
+            }
 
             // Also just instantly finish loading for now.
             if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
@@ -34,6 +39,19 @@ namespace Bearded.TD.Networking.Loading
             // Check if all players finished loading and start the game if so.
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.FinishedLoading))
                 Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
+        }
+
+        private void setupFactions()
+        {
+            var rootFaction = new Faction(Game.Ids.GetNext<Faction>(), null);
+            Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, rootFaction);
+
+            foreach (var p in Game.Players)
+            {
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), rootFaction);
+                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
+                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, Game, p, playerFaction);
+            }
         }
 
         private void generateGame()

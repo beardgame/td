@@ -90,7 +90,7 @@ namespace Bearded.TD.Screens
             UserSettings.Save(logger);
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
             var lobbyManager =
-                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName, info.Color), logger);
+                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName), logger);
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(Parent, Geometries, lobbyManager, inputManager));
             Destroy();
         }

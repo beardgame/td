@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 
@@ -8,15 +9,21 @@ namespace Bearded.TD.Game.Players
     {
         public Id<Player> Id { get; }
         public string Name { get; }
-        public Color Color { get; }
+        public Faction Faction { get; private set; }
         public PlayerConnectionState ConnectionState { get; set; }
 
-        public Player(Id<Player> id, string name, Color color)
+        public Color Color => Faction.Color;
+
+        public Player(Id<Player> id, string name)
         {
             Id = id;
             Name = name;
-            Color = color;
             ConnectionState = PlayerConnectionState.Unknown;
+        }
+
+        public void SetFaction(Faction faction)
+        {
+            Faction = faction;
         }
     }
 }

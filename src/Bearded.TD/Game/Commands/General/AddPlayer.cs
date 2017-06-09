@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Commands;
+﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
@@ -34,13 +33,11 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<Player> id;
             private string name;
-            private Color color;
 
             public Serializer(Player player)
             {
                 id = player.Id;
                 name = player.Name;
-                color = player.Color;
             }
 
             // ReSharper disable once UnusedMember.Local
@@ -49,13 +46,12 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, new Player(id, name, color));
+                => new Implementation(game, new Player(id, name));
 
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref id);
                 stream.Serialize(ref name);
-                stream.Serialize(ref color);
             }
         }
     }

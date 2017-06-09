@@ -82,10 +82,12 @@
     <Compile Include="Game\Commands\Gameplay\SetTileType.cs" />
     <Compile Include="Game\Commands\Gameplay\SpawnEnemy.cs" />
     <Compile Include="Game\Commands\Gameplay\UnitDeath.cs" />
+    <Compile Include="Game\Commands\General\AddFaction.cs" />
     <Compile Include="Game\Commands\General\AddPlayer.cs" />
     <Compile Include="Game\Commands\General\ChangePlayerState.cs" />
     <Compile Include="Game\Commands\General\RemovePlayer.cs" />
     <Compile Include="Game\Commands\General\SendChatMessage.cs" />
+    <Compile Include="Game\Commands\General\SetPlayerFaction.cs" />
     <Compile Include="Game\Commands\Loading\AllLoadingDataSent.cs" />
     <Compile Include="Game\Commands\Loading\BeginLoadingGame.cs" />
     <Compile Include="Game\Commands\Loading\CreateGameState.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
+    <Compile Include="Game\Factions\Faction.cs" />
     <Compile Include="Game\GameCamera.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\GameMeta.cs" />
@@ -204,6 +207,7 @@
     <Compile Include="Utilities\Dictionary.cs" />
     <Compile Include="Utilities\EnumerableProxy.cs" />
     <Compile Include="Utilities\Id.cs" />
+    <Compile Include="Utilities\IdCollection.cs" />
     <Compile Include="Utilities\IdManager.cs" />
     <Compile Include="Utilities\IIdable.cs" />
     <Compile Include="Utilities\INamed.cs" />
