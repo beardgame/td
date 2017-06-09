@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -8,10 +9,12 @@ namespace Bearded.TD.Game.Resources
     {
         private const double buildRate = 5;
 
+        private readonly Faction faction;
         private readonly DebugWorkerResourceConsumer consumer;
 
-        public DebugWorker(Building.BuildProcessManager processManager)
+        public DebugWorker(Faction faction, Building.BuildProcessManager processManager)
         {
+            this.faction = faction;
             consumer = new DebugWorkerResourceConsumer(processManager);
         }
 
@@ -22,7 +25,7 @@ namespace Bearded.TD.Game.Resources
                 Delete();
                 return;
             }
-            Game.Resources.RegisterConsumer(consumer);
+            faction.Resources.RegisterConsumer(consumer);
         }
 
         public override void Draw(GeometryManager geometries)

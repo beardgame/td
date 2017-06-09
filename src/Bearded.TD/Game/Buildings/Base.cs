@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Buildings
     {
         private const float incomePerSecond = 5;
 
-        public Base(PositionedFootprint footprint) : base(Blueprint, footprint)
+        public Base(PositionedFootprint footprint, Faction faction) : base(Blueprint, footprint, faction)
         {
             BuildManager.Progress(ResourceGrant.Infinite);
         }
@@ -32,7 +33,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Update(TimeSpan elapsedTime)
         {
-            Game.Resources.ProvideResourcesOverTime(incomePerSecond);
+            Faction.Resources.ProvideResourcesOverTime(incomePerSecond);
         }
 
         public override void Draw(GeometryManager geometries)

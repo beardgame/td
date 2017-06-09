@@ -1,7 +1,9 @@
 ﻿using System;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -54,17 +56,17 @@ namespace Bearded.TD.Game.Units
                        + movementProgress * currentMovementDir.SpaceTimeDirection();
         }
 
-        public void Damage(int damage)
+        public void Damage(int damage, Building damageSource)
         {
             Health -= damage;
             OnDamage();
             if (Health <= 0)
-                this.Sync(UnitDeath.Command);
+                this.Sync(UnitDeath.Command, this, damageSource.Faction);
         }
 
-        public void Kill()
+        public void Kill(Faction killingBlowFaction)
         {
-            OnKill();
+            OnKill(killingBlowFaction);
             // boom! <-- almost as good as particle explosions
             Delete();
         }
@@ -97,7 +99,7 @@ namespace Bearded.TD.Game.Units
         protected virtual void OnDamage()
         { }
 
-        protected virtual void OnKill()
+        protected virtual void OnKill(Faction killingBlowFaction)
         { }
     }
 }

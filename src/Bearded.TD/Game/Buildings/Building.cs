@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
@@ -17,18 +18,20 @@ namespace Bearded.TD.Game.Buildings
 
         public BuildProcessManager BuildManager { get; private set; }
         
+        public Faction Faction { get; }
         public Position2 Position { get; private set; }
         protected int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
         protected List<Component> Components { get; } = new List<Component>();
 
-        protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint)
+        protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
         {
             if (!footprint.IsValid) throw new ArgumentOutOfRangeException();
 
             this.blueprint = blueprint;
             this.footprint = footprint;
+            Faction = faction;
             Health = 1;
             BuildManager = new BuildProcessManager(this, blueprint);
         }

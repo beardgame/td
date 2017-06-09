@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
@@ -25,9 +26,12 @@ namespace Bearded.TD.Game
         public Level Level { get; }
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
-        public ResourceManager Resources { get; }
 
         public bool IsLoading { get; private set; } = true;
+
+        private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
+        public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
+        public Faction RootFaction { get; private set; }
 
         public GameState(GameMeta meta, Level level)
         {
@@ -35,7 +39,6 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
-            Resources = new ResourceManager();
         }
 
         public void FinishLoading()
@@ -99,6 +102,23 @@ namespace Bearded.TD.Game
             var l = new DeletableObjectList<T>();
             lists.Add(typeof(T), l);
             return l;
+        }
+
+        public Faction FactionFor(Id<Faction> id) => factions[id];
+
+        public void AddFaction(Faction faction)
+        {
+            factions.Add(faction);
+            if (faction.Parent != null) return;
+
+            if (RootFaction != null)
+                throw new Exception("Can only have one root faction. All other factions need parents.");
+            RootFaction = faction;
+        }
+
+        public void RemoveFaction(Faction faction)
+        {
+            factions.Remove(faction);
         }
 
         public void Advance(TimeSpan elapsedTime)

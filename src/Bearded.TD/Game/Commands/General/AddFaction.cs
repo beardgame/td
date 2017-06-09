@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                game.AddFaction(faction);
+                game.State.AddFaction(faction);
             }
 
             public ICommandSerializer Serializer => new Serializer(faction);
@@ -34,12 +34,14 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<Faction> id;
             private Id<Faction> parent;
+            private bool hasResources;
             private Color? color;
 
             public Serializer(Faction faction)
             {
                 id = faction.Id;
                 parent = faction.Parent?.Id ?? Id<Faction>.Invalid;
+                hasResources = faction.HasResources;
                 color = faction.Color;
             }
 
@@ -49,12 +51,15 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, new Faction(id, parent.IsValid ? game.FactionFor(parent) : null, color));
+                => new Implementation(
+                    game,
+                    new Faction(id, parent.IsValid ? game.State.FactionFor(parent) : null, hasResources, color));
 
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref id);
                 stream.Serialize(ref parent);
+                stream.Serialize(ref hasResources);
                 stream.Serialize(ref color, 0U);
             }
         }

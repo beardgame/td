@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
-using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
@@ -31,9 +29,6 @@ namespace Bearded.TD.Game
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
-
-        private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
-        public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
 
         public BlueprintManager Blueprints { get; } = new BlueprintManager();
 
@@ -72,18 +67,6 @@ namespace Bearded.TD.Game
         public void RemovePlayer(Player player)
         {
             players.Remove(player);
-        }
-
-        public Faction FactionFor(Utilities.Id<Faction> id) => factions[id];
-
-        public void AddFaction(Faction faction)
-        {
-            factions.Add(faction);
-        }
-
-        public void RemoveFaction(Faction faction)
-        {
-            factions.Remove(faction);
         }
 
         public Player PlayerFor(Utilities.Id<Player> id) => players[id];

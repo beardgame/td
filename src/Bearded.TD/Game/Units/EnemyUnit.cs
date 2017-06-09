@@ -2,9 +2,11 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -39,7 +41,7 @@ namespace Bearded.TD.Game.Units
                 return;
             target.Damage(Blueprint.Damage);
             dealtDamage = true;
-            this.Sync(UnitDeath.Command);
+            this.Sync(UnitDeath.Command, this, new Faction(new Id<Faction>(0), null, false));
         }
 
         public override void Draw(GeometryManager geometries)
@@ -72,9 +74,9 @@ namespace Bearded.TD.Game.Units
                 newTile.Info.AddEnemy(this);
         }
 
-        protected override void OnKill()
+        protected override void OnKill(Faction killingBlowFaction)
         {
-            Game.Resources.ProvideOneTimeResource(Blueprint.Value);
+            killingBlowFaction.Resources.ProvideOneTimeResource(Blueprint.Value);
         }
     }
 }

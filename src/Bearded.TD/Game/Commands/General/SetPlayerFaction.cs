@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.Commands;
+﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
@@ -9,18 +8,16 @@ namespace Bearded.TD.Game.Commands
 {
     static class SetPlayerFaction
     {
-        public static ICommand Command(GameInstance game, Player player, Faction faction)
-            => new Implementation(game, player, faction);
+        public static ICommand Command(Player player, Faction faction)
+            => new Implementation(player, faction);
 
         private class Implementation : ICommand
         {
-            private readonly GameInstance game;
             private readonly Player player;
             private readonly Faction faction;
 
-            public Implementation(GameInstance game, Player player, Faction faction)
+            public Implementation(Player player, Faction faction)
             {
-                this.game = game;
                 this.player = player;
                 this.faction = faction;
             }
@@ -50,7 +47,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, game.PlayerFor(player), game.FactionFor(faction));
+                => new Implementation(game.PlayerFor(player), game.State.FactionFor(faction));
 
             public void Serialize(INetBufferStream stream)
             {
