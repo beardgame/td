@@ -47,6 +47,7 @@ namespace Bearded.TD.Game
                 throw new Exception("Can only finish loading game state once.");
 
             Geometry.Initialise();
+            Navigator.Initialise(Geometry);
             IsLoading = false;
         }
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -20,10 +22,12 @@ namespace Bearded.TD.Game.Buildings
         
         public Faction Faction { get; }
         public Position2 Position { get; private set; }
-        protected int Health { get; private set; }
+        public int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
         protected List<Component> Components { get; } = new List<Component>();
+
+        public event VoidEventHandler Damaged;
 
         protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
         {
@@ -39,7 +43,7 @@ namespace Bearded.TD.Game.Buildings
         public void Damage(int damage)
         {
             Health -= damage;
-            OnDamaged();
+            Damaged?.Invoke();
         }
 
         protected override void OnAdded()
@@ -63,9 +67,6 @@ namespace Bearded.TD.Game.Buildings
             OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, null));
         }
 
-        protected virtual void OnDamaged()
-        { }
-
         public override void Update(TimeSpan elapsedTime)
         {
             foreach (var component in Components)
@@ -76,6 +77,11 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var component in Components)
                 component.Draw(geometries);
+        }
+
+        public bool HasComponentOfType<T>()
+        {
+            return Components.OfType<T>().FirstOrDefault() != null;
         }
 
         public class BuildProcessManager

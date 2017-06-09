@@ -19,11 +19,15 @@ namespace Bearded.TD.Game.Navigation
         public MultipleSinkNavigationSystem(LevelGeometry geometry)
         {
             tilemap = geometry.Tilemap;
-            geometry.TilePassabilityChanged += tilePassabilityChanged;
 
             directions = new Tilemap<Directions>(tilemap.Radius);
             foreach (var tile in directions)
                 directions[tile] = None;
+        }
+
+        public void Initialise(LevelGeometry geometry)
+        {
+            geometry.TilePassabilityChanged += tilePassabilityChanged;
         }
 
         public Direction GetDirections(Tile<TileInfo> from) => directions[from.X, from.Y].Direction;

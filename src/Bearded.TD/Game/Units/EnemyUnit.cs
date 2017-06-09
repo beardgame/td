@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
@@ -36,7 +36,8 @@ namespace Bearded.TD.Game.Units
 
         private void tryDealDamage()
         {
-            var target = CurrentTile.Neighbours.Select(t => t.Info.Building).OfType<Base>().FirstOrDefault();
+            var target = CurrentTile.Neighbours
+                .Select(t => t.Info.Building).FirstOrDefault(b => b != null && b.HasComponentOfType<EnemySink>());
             if (target == null)
                 return;
             target.Damage(Blueprint.Damage);

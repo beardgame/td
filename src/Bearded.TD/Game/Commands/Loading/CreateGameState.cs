@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                var tilemap = new Tilemap<TileInfo>(radius, _ => new TileInfo(Directions.None, TileInfo.Type.Unknown));
+                var tilemap = new Tilemap<TileInfo>(radius, tile => new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Unknown));
                 var state = new GameState(game.Meta, new Level(tilemap));
                 game.InitialiseState(state);
             }

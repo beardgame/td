@@ -52,6 +52,9 @@ namespace Bearded.TD.Networking.Loading
 
         private void generateGame()
         {
+            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
+            debug_sendBlueprints();
+
             var radius = Constants.Game.World.Radius;
 
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
@@ -64,14 +67,18 @@ namespace Bearded.TD.Networking.Loading
                 Dispatcher.RunOnlyOnServer(() => command);
             }
 
-            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
-            debug_sendBlueprints();
-
             Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
         }
 
         private void debug_sendBlueprints()
         {
+            Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
+            new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "base", FootprintGroup.CircleSeven, 1000, 1,
+                new[] {
+                    Game.Blueprints.Components["sink"],
+                    Game.Blueprints.Components["income_over_time"],
+                    Game.Blueprints.Components["game_over_on_destroy"],
+                }));
             // In the future these would be loaded from a mod file.
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall", FootprintGroup.Single, 100, 5,
