@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using OpenTK;
@@ -7,8 +8,8 @@ namespace Bearded.TD.Game.Buildings
 {
     class PlayerBuilding : Building
     {
-        public PlayerBuilding(BuildingBlueprint blueprint, PositionedFootprint footprint)
-            : base(blueprint, footprint)
+        public PlayerBuilding(BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
+            : base(blueprint, footprint, faction)
         { }
 
         public override void Draw(GeometryManager geometries)

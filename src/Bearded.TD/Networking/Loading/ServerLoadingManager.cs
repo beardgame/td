@@ -4,10 +4,13 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Networking.Loading
 {
@@ -25,7 +28,10 @@ namespace Bearded.TD.Networking.Loading
 
             // Just instantly finish sending everything.
             if (Game.Me.ConnectionState == PlayerConnectionState.AwaitingLoadingData)
+            {
                 generateGame();
+                setupFactions();
+            }
 
             // Also just instantly finish loading for now.
             if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
@@ -36,8 +42,21 @@ namespace Bearded.TD.Networking.Loading
                 Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
         }
 
+        private void setupFactions()
+        {
+            foreach (var p in Game.Players)
+            {
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false);
+                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
+                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command,  p, playerFaction);
+            }
+        }
+
         private void generateGame()
         {
+            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
+            debug_sendBlueprints();
+
             var radius = Constants.Game.World.Radius;
 
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
@@ -50,14 +69,19 @@ namespace Bearded.TD.Networking.Loading
                 Dispatcher.RunOnlyOnServer(() => command);
             }
 
-            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
-            debug_sendBlueprints();
-
             Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
         }
 
         private void debug_sendBlueprints()
         {
+            // === Buildings ===
+            Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
+            new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "base", FootprintGroup.CircleSeven, 1000, 1,
+                new[] {
+                    Game.Blueprints.Components["sink"],
+                    Game.Blueprints.Components["income_over_time"],
+                    Game.Blueprints.Components["game_over_on_destroy"],
+                }));
             // In the future these would be loaded from a mod file.
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall", FootprintGroup.Single, 100, 5,
@@ -65,6 +89,10 @@ namespace Bearded.TD.Networking.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
                     20, Game.Blueprints.Components["turret"].Yield())));
+
+            // === Enemies ===
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game,
+                new UnitBlueprint(Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 25, new Speed(2), 10)));
         }
     }
 }

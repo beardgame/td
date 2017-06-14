@@ -76,7 +76,7 @@ namespace Bearded.TD.Game.Buildings.Components
 
         private void shootTarget()
         {
-            target.Damage(Damage);
+            target.Damage(Damage, Building);
 
             laserTargetPoint = target.Position;
             laserTargetEndTime = Building.Game.Time + new TimeSpan(0.1);

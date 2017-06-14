@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Utilities;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.UI
 {
@@ -17,7 +17,8 @@ namespace Bearded.TD.Game.UI
         {
             footprint.OccupiedTiles
                 .Where(t => t.IsValid && t.Info.IsPassable)
-                .ForEach(tile => game.State.Add(new EnemyUnit(new UnitBlueprint(100, 25, new Speed(2), 10), tile)));
+                .ForEach(tile => game.State.Meta.Dispatcher.RunOnlyOnServer(
+                    SpawnEnemy.Command, game.State, tile, game.Blueprints.Units["debug"]));
         }
 
         public void Enable(GameInstance game)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
@@ -13,5 +14,8 @@ namespace Bearded.TD.Networking.Serialization
         void Serialize<T>(ref Id<T> t);
 
         void Serialize<T>(ref ICollection<Id<T>> collection);
+
+        void Serialize(ref Color color);
+        void Serialize(ref Color? color, uint nullValue = 0);
     }
 }

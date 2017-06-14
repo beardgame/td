@@ -68,7 +68,7 @@ namespace Bearded.TD.Rendering
         private void renderDeferred()
         {
             deferredRenderer.Render();
-            deferredRenderer.RenderDebug();
+            //deferredRenderer.RenderDebug();
         }
 
         private void renderConsoleSurfaces()

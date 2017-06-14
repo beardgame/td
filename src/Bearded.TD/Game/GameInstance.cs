@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
@@ -28,9 +27,8 @@ namespace Bearded.TD.Game
         public GameCamera Camera { get; private set; }
         public CursorState Cursor { get; private set; }
 
-        private readonly List<Player> players = new List<Player>();
-        private readonly Dictionary<Player> playersById = new Dictionary<Player>();
-        public ReadOnlyCollection<Player> Players { get; }
+        private readonly IdCollection<Player> players = new IdCollection<Player>();
+        public ReadOnlyCollection<Player> Players => players.AsReadOnly;
 
         public BlueprintManager Blueprints { get; } = new BlueprintManager();
 
@@ -57,7 +55,6 @@ namespace Bearded.TD.Game
             Ids = ids;
 
             AddPlayer(me);
-            Players = players.AsReadOnly();
 
             Meta = new GameMeta(logger, dispatcher, ids);
         }
@@ -65,16 +62,14 @@ namespace Bearded.TD.Game
         public void AddPlayer(Player player)
         {
             players.Add(player);
-            playersById.Add(player);
         }
 
         public void RemovePlayer(Player player)
         {
             players.Remove(player);
-            playersById.Remove(player);
         }
 
-        public Player PlayerFor(Utilities.Id<Player> id) => playersById[id];
+        public Player PlayerFor(Utilities.Id<Player> id) => players[id];
 
         public void SetLoading()
         {

@@ -31,7 +31,16 @@ namespace Bearded.TD.Game.Commands
 
                 // Components
                 var components = game.Blueprints.Components;
-                components.RegisterBlueprint(new ComponentFactory(new Utilities.Id<ComponentFactory>(1), "turret", () => new Turret()));
+                components.RegisterBlueprint(
+                    new ComponentFactory(new Utilities.Id<ComponentFactory>(1), "sink", () => new EnemySink()));
+                components.RegisterBlueprint(
+                    new ComponentFactory(
+                        new Utilities.Id<ComponentFactory>(2), "game_over_on_destroy", () => new GameOverOnDestroy()));
+                components.RegisterBlueprint(
+                    new ComponentFactory(
+                        new Utilities.Id<ComponentFactory>(3), "income_over_time", () => new IncomeOverTime()));
+                components.RegisterBlueprint(
+                    new ComponentFactory(new Utilities.Id<ComponentFactory>(4), "turret", () => new Turret()));
             }
 
             public ICommandSerializer Serializer => new Serializer();

@@ -1,9 +1,6 @@
-﻿using System;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Game.Blueprints;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Buildings.Components;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.UI;
@@ -27,7 +24,7 @@ namespace Bearded.TD.Game.UI
         {
             this.game = game;
 
-            clickHandlers = initializeClickHandlers(game.Blueprints);
+            clickHandlers = initializeClickHandlers(game.Me.Faction, game.Blueprints);
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
@@ -77,17 +74,17 @@ namespace Bearded.TD.Game.UI
             txtGeo.Color = Color.Beige;
             txtGeo.DrawString(
                 new Vector2(padding, padding + actionDescriptions.Length * lineHeight),
-                $"Resources: {game.State.Resources.CurrentResources}");
+                $"Resources: {game.Me.Faction.Resources.CurrentResources}");
         }
 
         #region Definitions
 
-        private static IClickHandler[] initializeClickHandlers(BlueprintManager blueprints)
+        private static IClickHandler[] initializeClickHandlers(Faction faction, BlueprintManager blueprints)
         {
             return new IClickHandler[]
             {
-                new BuildingClickHandler(blueprints.Buildings["wall"]), // 1
-                new BuildingClickHandler(blueprints.Buildings["triangle"]), // 2
+                new BuildingClickHandler(faction, blueprints.Buildings["wall"]), // 1
+                new BuildingClickHandler(faction, blueprints.Buildings["triangle"]), // 2
                 null, // 3
                 null, // 4
                 null, // 5

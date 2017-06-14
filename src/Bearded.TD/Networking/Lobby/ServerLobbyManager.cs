@@ -64,7 +64,7 @@ namespace Bearded.TD.Networking.Lobby
                 msg.SenderConnection.Deny(rejectionReason);
                 return;
             }
-            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName, Color.Blue);
+            var newPlayer = new Player(Game.Ids.GetNext<Player>(), clientInfo.PlayerName);
             Dispatcher.RunOnlyOnServer(
                 commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(Game, newPlayer)));
             newPlayer.ConnectionState = PlayerConnectionState.Connecting;

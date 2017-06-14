@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -34,12 +36,13 @@ namespace Bearded.TD.Game.Units
 
         private void tryDealDamage()
         {
-            var target = CurrentTile.Neighbours.Select(t => t.Info.Building).OfType<Base>().FirstOrDefault();
+            var target = CurrentTile.Neighbours
+                .Select(t => t.Info.Building).FirstOrDefault(b => b != null && b.HasComponentOfType<EnemySink>());
             if (target == null)
                 return;
             target.Damage(Blueprint.Damage);
             dealtDamage = true;
-            this.Sync(UnitDeath.Command);
+            this.Sync(UnitDeath.Command, this, (Faction) null);
         }
 
         public override void Draw(GeometryManager geometries)
@@ -72,9 +75,9 @@ namespace Bearded.TD.Game.Units
                 newTile.Info.AddEnemy(this);
         }
 
-        protected override void OnKill()
+        protected override void OnKill(Faction killingBlowFaction)
         {
-            Game.Resources.ProvideOneTimeResource(Blueprint.Value);
+            killingBlowFaction?.Resources.ProvideOneTimeResource(Blueprint.Value);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Utilities;
 using Lidgren.Network;
 // ReSharper disable RedundantAssignment
@@ -31,6 +32,17 @@ namespace Bearded.TD.Networking.Serialization
             collection = new List<Id<T>>();
             for (var i = 0; i < collectionSize; i++)
                 collection.Add(new Id<T>(buffer.ReadInt32()));
+        }
+
+        public void Serialize(ref Color color) => color = new Color(buffer.ReadUInt32());
+
+        public void Serialize(ref Color? color, uint nullValue = 0)
+        {
+            var val = buffer.ReadUInt32();
+            if (val == nullValue)
+                color = null;
+            else
+                color = new Color(val);
         }
     }
 }

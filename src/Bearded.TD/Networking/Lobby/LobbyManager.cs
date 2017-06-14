@@ -24,7 +24,7 @@ namespace Bearded.TD.Networking.Lobby
             : this(logger, dispatchers.master)
         {
             var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), getPlayerName(), Color.Red)
+            var player = new Player(ids.GetNext<Player>(), getPlayerName())
             {
                 ConnectionState = PlayerConnectionState.Waiting
             };
