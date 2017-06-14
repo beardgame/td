@@ -17,7 +17,8 @@ namespace Bearded.TD.Game.Units
     {
         private bool dealtDamage;
 
-        public EnemyUnit(UnitBlueprint blueprint, Tile<TileInfo> currentTile) : base(blueprint, currentTile)
+        public EnemyUnit(Id<GameUnit> unitId, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
+            : base(unitId, blueprint, currentTile)
         { }
 
         protected override void OnDelete()

@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.UI
             footprint.OccupiedTiles
                 .Where(t => t.IsValid && t.Info.IsPassable)
                 .ForEach(tile => game.State.Meta.Dispatcher.RunOnlyOnServer(
-                    SpawnEnemy.Command, game.State, tile, game.Blueprints.Units["debug"]));
+                    SpawnUnit.Command, game.State, tile, game.Blueprints.Units["debug"], game.Ids.GetNext<GameUnit>()));
         }
 
         public void Enable(GameInstance game)

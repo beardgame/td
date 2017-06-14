@@ -4,14 +4,16 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {
-    abstract class GameUnit : GameObject
+    abstract class GameUnit : GameObject, IIdable<GameUnit>
     {
+        public Id<GameUnit> Id { get; }
         protected UnitBlueprint Blueprint { get; }
         private Direction currentMovementDir;
         private Unit movementProgress;
@@ -21,10 +23,11 @@ namespace Bearded.TD.Game.Units
         protected Tile<TileInfo> CurrentTile { get; private set; }
         public int Health { get; private set; }
 
-        protected GameUnit(UnitBlueprint blueprint, Tile<TileInfo> currentTile)
+        protected GameUnit(Id<GameUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
             if (!currentTile.IsValid) throw new ArgumentOutOfRangeException();
 
+            Id = id;
             Blueprint = blueprint;
             anchorTile = currentTile;
             currentMovementDir = Direction.Unknown;

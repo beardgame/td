@@ -98,7 +98,7 @@
     <Compile Include="Game\Commands\Gameplay\BuildBuilding.cs" />
     <Compile Include="Game\Commands\Gameplay\GameOver.cs" />
     <Compile Include="Game\Commands\Gameplay\SetTileType.cs" />
-    <Compile Include="Game\Commands\Gameplay\SpawnEnemy.cs" />
+    <Compile Include="Game\Commands\Gameplay\SpawnUnit.cs" />
     <Compile Include="Game\Commands\Gameplay\UnitDeath.cs" />
     <Compile Include="Game\Commands\General\AddFaction.cs" />
     <Compile Include="Game\Commands\General\AddPlayer.cs" />

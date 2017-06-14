@@ -21,6 +21,9 @@ namespace Bearded.TD.Game.Commands
         public static void Sync<T, T1, T2, T3>(this T obj, Action<T1, T2, T3> action, T1 p1, T2 p2, T3 p3)
             where T : GameObject
             => d(obj).RunOnlyOnServer(action, p1, p2, p3);
+        public static void Sync<T, T1, T2, T3, T4>(this T obj, Action<T1, T2, T3, T4> action, T1 p1, T2 p2, T3 p3, T4 p4)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(action, p1, p2, p3, p4);
 
         public static void Sync<T>(this T obj, Action<ICommandDispatcher> action)
             where T : GameObject
@@ -34,6 +37,9 @@ namespace Bearded.TD.Game.Commands
         public static void Sync<T, T1, T2, T3>(this T obj, Action<T1, T2, T3, ICommandDispatcher> action, T1 p1, T2 p2, T3 p3)
             where T : GameObject
             => d(obj).RunOnlyOnServer(action, p1, p2, p3);
+        public static void Sync<T, T1, T2, T3, T4>(this T obj, Action<T1, T2, T3, T4, ICommandDispatcher> action, T1 p1, T2 p2, T3 p3, T4 p4)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(action, p1, p2, p3, p4);
 
         public static void Sync<T>(this T obj, Func<ICommand> func)
             where T : GameObject
@@ -47,6 +53,9 @@ namespace Bearded.TD.Game.Commands
         public static void Sync<T, T1, T2, T3>(this T obj, Func<T1, T2, T3, ICommand> func, T1 p1, T2 p2, T3 p3)
             where T : GameObject
             => d(obj).RunOnlyOnServer(func, p1, p2, p3);
+        public static void Sync<T, T1, T2, T3, T4>(this T obj, Func<T1, T2, T3, T4, ICommand> func, T1 p1, T2 p2, T3 p3, T4 p4)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(func, p1, p2, p3, p4);
 
         // convenience methods
 
@@ -76,5 +85,8 @@ namespace Bearded.TD.Game.Commands
         public static void Sync<T, T1, T2>(this T obj, Func<GameState, T1, T2, ICommand> func, T1 p1, T2 p2)
             where T : GameObject
             => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2);
+        public static void Sync<T, T1, T2, T3>(this T obj, Func<GameState, T1, T2, T3, ICommand> func, T1 p1, T2 p2, T3 p3)
+            where T : GameObject
+            => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2, p3);
     }
 }
