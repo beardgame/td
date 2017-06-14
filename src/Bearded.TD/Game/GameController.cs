@@ -1,14 +1,10 @@
 ﻿using Bearded.TD.Game.UI;
-using Bearded.TD.Game.Units;
-using Bearded.Utilities;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
     class GameController
     {
-        private static readonly UnitBlueprint debugBlueprint = new UnitBlueprint(100, 25, new Speed(2), 10);
         private static readonly TimeSpan timeBetweenWaves = new TimeSpan(15);
 
         private readonly GameInstance game;
@@ -42,8 +38,6 @@ namespace Bearded.TD.Game
         private void queueEnemyWave()
         {
             return;
-            var source = game.State.Enumerate<UnitSource>().RandomElement();
-            source.QueueEnemies(debugBlueprint, StaticRandom.Int(5, 10));
         }
     }
 }

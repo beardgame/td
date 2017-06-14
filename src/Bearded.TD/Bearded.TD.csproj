@@ -97,6 +97,7 @@
     <Compile Include="Game\Commands\Loading\FillTilemap.cs" />
     <Compile Include="Game\Commands\Loading\LoadBasicData.cs" />
     <Compile Include="Game\Commands\Loading\SendBuildingBlueprint.cs" />
+    <Compile Include="Game\Commands\Loading\SendUnitBlueprint.cs" />
     <Compile Include="Game\Commands\Loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />

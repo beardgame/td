@@ -7,8 +7,10 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Networking.Loading
 {
@@ -72,6 +74,7 @@ namespace Bearded.TD.Networking.Loading
 
         private void debug_sendBlueprints()
         {
+            // === Buildings ===
             Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
             new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "base", FootprintGroup.CircleSeven, 1000, 1,
                 new[] {
@@ -86,6 +89,10 @@ namespace Bearded.TD.Networking.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
                     20, Game.Blueprints.Components["turret"].Yield())));
+
+            // === Enemies ===
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game,
+                new UnitBlueprint(Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 25, new Speed(2), 10)));
         }
     }
 }
