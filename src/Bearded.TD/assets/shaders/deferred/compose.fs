@@ -12,7 +12,7 @@ void main()
     vec4 albedo = texture(albedoTexture, fragmentUV);
     vec3 lightTexture = texture(lightTexture, fragmentUV).rgb;
 
-    vec3 rgb = albedo.rgb * lightTexture;
+    vec3 rgb = albedo.rgb * (lightTexture + vec3(0.1, 0.1, 0.1)) + vec3(0.1, 0.1, 0.1);
 
     outColor = vec4(rgb, albedo.a);
 }

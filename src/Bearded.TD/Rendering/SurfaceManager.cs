@@ -1,5 +1,4 @@
-﻿using System;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Utilities;
 
@@ -15,6 +14,8 @@ namespace Bearded.TD.Rendering
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
         public IndexedSurface<UVColorVertexData> ConsoleFontSurface { get; }
         public Font ConsoleFont { get; }
+        
+        public GameSurfaceManager GameSurfaces { get; }
 
         public SurfaceManager()
         {
@@ -23,7 +24,8 @@ namespace Bearded.TD.Rendering
             );
             new[]
             {
-                "geometry", "uvcolor"
+                "geometry", "uvcolor",
+                "deferred/gSprite", "deferred/debug", "deferred/compose"
             }.ForEach(name => Shaders.MakeShaderProgram(name));
 
             ConsoleBackground = new IndexedSurface<PrimitiveVertexData>()
@@ -37,12 +39,15 @@ namespace Bearded.TD.Rendering
                     ViewMatrix, ProjectionMatrix,
                     new TextureUniform("diffuse", new Texture(font("inconsolata.png"), preMultiplyAlpha:true))
                 );
-
+            
+            
+            GameSurfaces = new GameSurfaceManager(Shaders, ViewMatrix, ProjectionMatrix);
         }
 
-        public void InjectDeferredBuffer(Texture buffer)
+        public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
         {
-            var uniform = new TextureUniform("geometry", buffer);
+            var normalUniform = new TextureUniform("normalBuffer", normalBuffer);
+            var depthUniform = new TextureUniform("depthBuffer", depthBuffer);
 
             // TODO: add uniform to light surfaces
         }
@@ -50,36 +55,5 @@ namespace Bearded.TD.Rendering
         private static string asset(string path) => "assets/" + path;
         private static string font(string path) => asset("font/" + path);
 
-    }
-
-    static class SurfaceExtensions
-    {
-        public struct SurfaceWrapper<T>
-            where T : Surface
-        {
-            private readonly T surface;
-
-            public SurfaceWrapper(T surface)
-            {
-                this.surface = surface;
-            }
-
-            public T AndSettings(params SurfaceSetting[] settings)
-            {
-                surface.AddSettings(settings);
-                return surface;
-            }
-        }
-
-
-        public static SurfaceWrapper<T> WithShader<T>(this T surface, ISurfaceShader shader)
-            where T : Surface
-        {
-            if (shader == null)
-                throw new Exception("Shader not found");
-
-            shader.UseOnSurface(surface);
-            return new SurfaceWrapper<T>(surface);
-        }
     }
 }

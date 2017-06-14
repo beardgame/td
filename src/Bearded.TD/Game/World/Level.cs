@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
@@ -56,19 +57,17 @@ namespace Bearded.TD.Game.World
 
         public void Draw(GeometryManager geos)
         {
-            var geo = geos.ConsoleBackground;
-
-            const float w = HexagonDistanceX * 0.5f - 0.1f;
-            const float h = HexagonDistanceY * 0.5f - 0.1f;
-
+            var sprite = geos.Sprites["hex"];
+            
+            sprite.Size = new Vector2(HexagonDiameter, HexagonDiameter);
+            
             foreach (var tile in Tilemap)
             {
                 var p = GetPosition(tile).NumericValue;
 
-                geo.Color = Tilemap[tile].IsPassable ? Color.Gray : Color.DarkSlateGray;
+                sprite.Color = Tilemap[tile].IsPassable ? Color.Gray : Color.DarkSlateGray;
 
-                geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
-
+                sprite.DrawSprite(new Vector2(p.X, p.Y));
             }
         }
     }

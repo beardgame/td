@@ -8,5 +8,5 @@ out vec2 fragmentUV;
 void main()
 {
     gl_Position = vec4(v_position, 0, 1);
-    fragmentUV = v_TexCoord;
+    fragmentUV = v_texCoord;
 }

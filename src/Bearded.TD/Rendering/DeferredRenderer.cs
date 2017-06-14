@@ -28,17 +28,23 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
+            renderTo(gTarget);
+            GL.DrawBuffers(3, new []
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment1,
+                DrawBuffersEnum.ColorAttachment2,
+            });
+            renderTo(null);
 
             accumTarget.Attach(FramebufferAttachment.ColorAttachment0, accumBuffer);
 
             compositeSurface = new PostProcessSurface()
-                .WithShader(surfaces.Shaders.MakeShaderProgram("deferred/compose"))
+                .WithShader(surfaces.Shaders["deferred/compose"])
                 .AndSettings(
-                    new TextureUniform("albedoTexture", diffuseBuffer),
-                    new TextureUniform("lightTexture", accumBuffer)
+                    new TextureUniform("albedoTexture", diffuseBuffer, TextureUnit.Texture0),
+                    new TextureUniform("lightTexture", accumBuffer, TextureUnit.Texture1)
                 );
-
-            surfaces.Shaders.MakeShaderProgram("deferred/debug");
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, accumBuffer}
                 .Select(createDebugSurface).ToArray();
@@ -51,8 +57,6 @@ namespace Bearded.TD.Rendering
 
         public void Render(RenderTarget target = null)
         {
-            // TODO: fill vertex buffers (maybe outside this?)
-
             resizeIfNeeded();
 
             renderWorldToGBuffers();
@@ -64,24 +68,26 @@ namespace Bearded.TD.Rendering
 
         public void RenderDebug(RenderTarget target = null)
         {
-            var width = 1f / debugSurfaces.Length;
-            var v2 = width / viewport.AspectRatio;
-            var u = 0f;
-            var v = 0f;
+            var width = 2f / debugSurfaces.Length;
+            var height = 2f / debugSurfaces.Length;
+            var u = -1f;
+            var v = -1f;
             var color = Color.White;
 
             foreach (var surface in debugSurfaces)
             {
-                var u2 = u + width;
-                
+                var u2 = u + width * 0.95f;
+                var v2 = v + height * 0.95f;
                 surface.AddQuad(
-                    new UVColorVertexData(u, v, 1, 0, 0, color),
-                    new UVColorVertexData(u2, v, 1, 1, 0, color),
-                    new UVColorVertexData(u2, v2, 1, 1, 1, color),
-                    new UVColorVertexData(u, v2, 1, 0, 1, color)
-                    );
+                    new UVColorVertexData(u, v, 0, 0, 0, color),
+                    new UVColorVertexData(u2, v, 0, 1, 0, color),
+                    new UVColorVertexData(u2, v2, 0, 1, 1, color),
+                    new UVColorVertexData(u, v2, 0, 0, 1, color)
+                );
                 
-                u = u2;
+                u = u + width;
+                
+                surface.Render();
             }
         }
 
@@ -91,7 +97,10 @@ namespace Bearded.TD.Rendering
 
             clearWithColor();
 
-            // TODO: render geometries to g buffers
+            foreach (var surface in surfaces.GameSurfaces.SurfaceList)
+            {
+                surface.Render();
+            }
         }
 
         private void renderLightsToAccumBuffer()
