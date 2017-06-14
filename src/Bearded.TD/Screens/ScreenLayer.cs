@@ -18,6 +18,7 @@ namespace Bearded.TD.Screens
         protected bool Destroyed { get; private set; }
 
         public abstract Matrix4 ViewMatrix { get; }
+        public virtual RenderOptions RenderOptions => RenderOptions.Default;
 
         public virtual Matrix4 ProjectionMatrix
         {

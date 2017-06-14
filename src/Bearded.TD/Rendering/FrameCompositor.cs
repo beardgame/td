@@ -39,22 +39,42 @@ namespace Bearded.TD.Rendering
 
         public void RenderLayer(ScreenLayer layer)
         {
-            layer.Draw();
-
-            surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
-            surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
-
-            // TODO: need to render deferred part here(?) if needed
-
-            surfaces.ConsoleBackground.Render();
-            surfaces.ConsoleFontSurface.Render();
+            prepareForRendering(layer);
+            renderWithOptions(layer.RenderOptions);
         }
 
+        private void prepareForRendering(ScreenLayer layer)
+        {
+            layer.Draw();
+            setMatricesFrom(layer);
+        }
+
+        private void setMatricesFrom(ScreenLayer layer)
+        {
+            surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
+            surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
+        }
+
+        private void renderWithOptions(RenderOptions options)
+        {
+            if (options.RenderDeferred)
+            {
+                renderDeferred();
+            }
+
+            renderConsoleSurfaces();
+        }
+        
         private void renderDeferred()
         {
-            // TODO: how do we get here?
-
             deferredRenderer.Render();
+            deferredRenderer.RenderDebug();
+        }
+
+        private void renderConsoleSurfaces()
+        {
+            surfaces.ConsoleBackground.Render();
+            surfaces.ConsoleFontSurface.Render();
         }
 
         public void FinalizeFrame()

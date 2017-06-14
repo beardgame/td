@@ -32,9 +32,9 @@ namespace Bearded.TD.Game.UI
             var bgGeo = Geometries.ConsoleBackground;
             var txtGeo = Geometries.ConsoleFont;
 
-            bgGeo.Color = Color.Red.WithAlpha(.5f).Premultiplied;
+            bgGeo.Color = Color.Red * 0.5f;
             bgGeo.DrawRectangle(-2000 * Vector2.One, 4000 * Vector2.One);
-            bgGeo.Color = Color.Black.WithAlpha(.5f).Premultiplied;
+            bgGeo.Color = Color.Black * 0.5f;
             bgGeo.DrawRectangle(new Vector2(-2000, -32), new Vector2(4000, 64));
 
             txtGeo.Color = Color.White;

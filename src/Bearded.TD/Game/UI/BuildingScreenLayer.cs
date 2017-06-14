@@ -59,7 +59,7 @@ namespace Bearded.TD.Game.UI
             var bgGeo = Geometries.ConsoleBackground;
             var txtGeo = Geometries.ConsoleFont;
 
-            bgGeo.Color = Color.Black.WithAlpha(.7f).Premultiplied;
+            bgGeo.Color = Color.Black * 0.7f;
             bgGeo.DrawRectangle(
                 Vector2.Zero,
                 new Vector2(160, (1 + actionDescriptions.Length) * lineHeight + 2 * padding));
