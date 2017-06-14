@@ -38,6 +38,8 @@ namespace Bearded.TD.Game.Units
         {
             base.OnAdded();
 
+            Game.IdAs(this);
+
             updateCurrentTile(anchorTile);
             Position = Game.Level.GetPosition(anchorTile);
         }
@@ -64,7 +66,7 @@ namespace Bearded.TD.Game.Units
             Health -= damage;
             OnDamage();
             if (Health <= 0)
-                this.Sync(UnitDeath.Command, this, damageSource.Faction);
+                this.Sync(KillUnit.Command, this, damageSource.Faction);
         }
 
         public void Kill(Faction killingBlowFaction)

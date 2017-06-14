@@ -17,6 +17,7 @@ namespace Bearded.TD.Game
 
         private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
         private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> dictionaries = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> singletons = new Dictionary<Type, object>();
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
@@ -93,6 +94,21 @@ namespace Bearded.TD.Game
             where T : class, IDeletable
             => getList<T>().AsReadOnlyEnumerable();
 
+        public void IdAs<T>(T obj)
+            where T : GameObject, IIdable<T>
+        {
+            ListAs(obj);
+            var dict = getDictionary<T>();
+            dict.Add(obj);
+            obj.Deleting += () => dict.Remove(obj);
+        }
+
+        public T Find<T>(Id<T> id)
+            where T : class, IIdable<T>
+        {
+            return getDictionary<T>()[id];
+        }
+
         private DeletableObjectList<T> getList<T>()
             where T : class, IDeletable
         {
@@ -103,6 +119,19 @@ namespace Bearded.TD.Game
             var l = new DeletableObjectList<T>();
             lists.Add(typeof(T), l);
             return l;
+        }
+
+
+        private Dictionary<T> getDictionary<T>()
+            where T : class, IIdable<T>
+        {
+            object dict;
+            if (dictionaries.TryGetValue(typeof(T), out dict))
+                return (Dictionary<T>)dict;
+
+            var d = new Dictionary<T>();
+            dictionaries.Add(typeof(T), d);
+            return d;
         }
 
         public Faction FactionFor(Id<Faction> id) => factions[id];

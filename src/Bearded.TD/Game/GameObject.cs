@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Rendering;
+using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -10,6 +11,7 @@ namespace Bearded.TD.Game
         public GameState Game { get; private set; }
 
         public bool Deleted { get; private set; }
+        public event VoidEventHandler Deleting;
 
         public void Add(GameState game)
         {
@@ -53,6 +55,7 @@ namespace Bearded.TD.Game
         public void Delete()
         {
             OnDelete();
+            Deleting?.Invoke();
             Deleted = true;
         }
 

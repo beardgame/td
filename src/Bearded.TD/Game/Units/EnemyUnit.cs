@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Units
                 return;
             target.Damage(Blueprint.Damage);
             dealtDamage = true;
-            this.Sync(UnitDeath.Command, this, (Faction) null);
+            this.Sync(KillUnit.Command, this, (Faction) null);
         }
 
         public override void Draw(GeometryManager geometries)
