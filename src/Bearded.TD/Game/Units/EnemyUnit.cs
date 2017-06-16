@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Units
             geo.Color = Color.DarkRed;
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
 
-            var p = Health / (float)Blueprint.Health;
+            var p = (Health / (float)Blueprint.Health).Clamped(0, 1);
             geo.Color = Color.DarkGray;
             geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1, 0.1f));
             geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), 0.8f, 0.8f);
