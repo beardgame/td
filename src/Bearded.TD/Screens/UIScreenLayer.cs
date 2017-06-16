@@ -13,8 +13,10 @@ namespace Bearded.TD.Screens
         private readonly float originY;
         private readonly bool flipY;
 
+        private Vector3 eye;
         private Matrix4 viewMatrix;
         public override Matrix4 ViewMatrix => viewMatrix;
+        private Matrix4 viewProjectionInverse;
 
         protected GeometryManager Geometries { get; }
         protected Screen Screen { get; }
@@ -41,6 +43,8 @@ namespace Bearded.TD.Screens
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             components.ForEach(c => c.HandleInput(inputState));
+            if (inputState.InputManager.RightMouseHit)
+                System.Console.WriteLine($"mouse screen pos for {GetType()}: {TransformScreenToWorld(inputState.InputManager.MousePosition)}");
             return true;
         }
 
@@ -60,11 +64,33 @@ namespace Bearded.TD.Screens
                 (.5f - originX) * ViewportSize.ScaledWidth,
                 (originY - .5f) * ViewportSize.ScaledHeight,
                 0);
+            eye = new Vector3(0, 0, -.5f * ViewportSize.ScaledHeight) + originCenter;
             viewMatrix = Matrix4.LookAt(
-                new Vector3(0, 0, -.5f * ViewportSize.ScaledHeight) + originCenter,
+                eye,
                 originCenter,
                 Vector3.UnitY * (flipY ? -1 : 1));
+            viewProjectionInverse = Matrix4.Mult(ProjectionMatrix, ViewMatrix).Inverted();
             Screen.OnResize(ViewportSize);
+        }
+
+        public Vector2 TransformScreenToWorld(Vector2 screenPos)
+        {
+            screenPos *= (float)ViewportSize.ScaledWidth / ViewportSize.Width;
+
+            // Transform back to world position.
+            var worldPos3D = Vector3.TransformPosition(new Vector3(screenPos.X, screenPos.Y, 0), viewProjectionInverse);
+
+            // Correct x/y
+            worldPos3D.X /= ViewportSize.AspectRatio;
+            if (flipY)
+                worldPos3D.Y *= -1;
+            worldPos3D.X -= originX * ViewportSize.ScaledWidth;
+            worldPos3D.Y -= originY * ViewportSize.ScaledHeight;
+
+            // Project on z=0 plane.
+            var t = -eye.Z / (worldPos3D.Z - eye.Z);
+            var projected = eye + (worldPos3D - eye) * t;
+            return projected.Xy;
         }
     }
 }

@@ -73,6 +73,8 @@ namespace Bearded.TD.Rendering
 
         private void renderConsoleSurfaces()
         {
+            surfaces.Primitives.Render();
+            surfaces.UIFontSurface.Render();
             surfaces.ConsoleBackground.Render();
             surfaces.ConsoleFontSurface.Render();
         }

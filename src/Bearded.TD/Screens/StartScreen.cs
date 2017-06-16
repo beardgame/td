@@ -3,6 +3,7 @@ using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using OpenTK;
@@ -20,10 +21,19 @@ namespace Bearded.TD.Screens
         {
             this.logger = logger;
             this.inputManager = inputManager;
+
+            AddComponent(new Button(this,
+                Bounds.Box(Screen, -35 * Vector2.UnitY, new Vector2(200, 50)),
+                startServerLobby, "Start lobby", 48, .5f));
+            AddComponent(new Button(this,
+                Bounds.Box(Screen, 35 * Vector2.UnitY, new Vector2(200, 50)),
+                startServerLobby, "Join lobby", 48, .5f));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
+            base.HandleInput(args, inputState);
+
             if (inputState.InputManager.IsKeyHit(Key.Number1))
                 startGame();
             else if (inputState.InputManager.IsKeyHit(Key.Number2))
@@ -32,18 +42,6 @@ namespace Bearded.TD.Screens
                 startConnect();
 
             return false;
-        }
-
-        public override void Draw()
-        {
-            var txtGeo = Geometries.ConsoleFont;
-
-            txtGeo.Color = Color.White;
-            txtGeo.SizeCoefficient = Vector2.One;
-            txtGeo.Height = 48;
-            txtGeo.DrawString(-64 * Vector2.UnitY, "Press 1 to start game in single player", .5f, .5f);
-            txtGeo.DrawString(Vector2.Zero, "Press 2 to host lobby", .5f, .5f);
-            txtGeo.DrawString(64 * Vector2.UnitY, "Press 3 to join lobby", .5f, .5f);
         }
 
         private void startGame()

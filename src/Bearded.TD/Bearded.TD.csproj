@@ -221,6 +221,7 @@
     <Compile Include="UI\Components\TextBox.cs" />
     <Compile Include="UI\Components\UIComponent.cs" />
     <Compile Include="UI\FixedOffsetDimension.cs" />
+    <Compile Include="UI\FixedSizeAndOffsetDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
     <Compile Include="UI\InputState.cs" />
