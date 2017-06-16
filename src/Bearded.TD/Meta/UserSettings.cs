@@ -93,7 +93,15 @@ namespace Bearded.TD.Meta
             var splitSettingName = p.Args[0].Split('.');
             (var jsonBefore, var jsonAfter) = buildJson(splitSettingName, 0);
             var json = jsonBefore + p.Args[1] + jsonAfter;
-            serializer.Populate(new StringReader(json), Instance);
+            try
+            {
+                serializer.Populate(new StringReader(json), Instance);
+            }
+            catch (JsonReaderException e)
+            {
+                logger.Warning.Log($"Problem with parsing your setting: {e.Message}");
+                return;
+            }
             Save(logger);
         }
 
