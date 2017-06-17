@@ -23,31 +23,23 @@ namespace Bearded.TD.Screens
             this.inputManager = inputManager;
 
             AddComponent(new Button(this,
-                Bounds.Box(Screen, -35 * Vector2.UnitY, new Vector2(200, 50)),
+                Bounds.Box(Screen, -35 * Vector2.UnitY, new Vector2(220, 50)),
                 startServerLobby, "Start lobby", 48, .5f));
             AddComponent(new Button(this,
-                Bounds.Box(Screen, 35 * Vector2.UnitY, new Vector2(200, 50)),
-                startServerLobby, "Join lobby", 48, .5f));
+                Bounds.Box(Screen, 35 * Vector2.UnitY, new Vector2(220, 50)),
+                startConnect, "Join lobby", 48, .5f));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             base.HandleInput(args, inputState);
-
-            if (inputState.InputManager.IsKeyHit(Key.Number1))
-                startGame();
-            else if (inputState.InputManager.IsKeyHit(Key.Number2))
+            
+            if (inputState.InputManager.IsKeyHit(Key.Number2))
                 startServerLobby();
             else if (inputState.InputManager.IsKeyHit(Key.Number3))
                 startConnect();
 
             return false;
-        }
-
-        private void startGame()
-        {
-            logger.Error.Log("Sorry not yet");
-            //Destroy();
         }
 
         private void startServerLobby()
