@@ -28,11 +28,9 @@ namespace Bearded.TD.Networking.Lobby
         {
             foreach (var msg in networkInterface.GetMessages())
             {
-                switch (msg.MessageType)
+                if (msg.MessageType == NetIncomingMessageType.Data)
                 {
-                    case NetIncomingMessageType.Data:
-                        Game.DataMessageHandler.HandleIncomingMessage(msg);
-                        break;
+                    Game.DataMessageHandler.HandleIncomingMessage(msg);
                 }
             }
         }

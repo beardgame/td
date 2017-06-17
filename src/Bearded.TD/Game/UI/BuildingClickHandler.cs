@@ -31,7 +31,8 @@ namespace Bearded.TD.Game.UI
 
         public void Enable(GameInstance game)
         {
-            game.State.Add(ghost = new BuildingGhost(blueprint));
+            ghost = new BuildingGhost(blueprint);
+            game.State.Add(ghost);
         }
 
         public void Disable(GameInstance game)
