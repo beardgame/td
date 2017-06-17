@@ -17,9 +17,12 @@ namespace Bearded.TD.UI.Components
         public ChatComponent(Bounds bounds, GameInstance game) : base(bounds)
         {
             this.game = game;
+
+            textInput = new TextInput(
+                new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, textInputHeight, 1, 1)));
             AddComponent(new TextBox<ChatMessage>(
                 Bounds.Within(bounds, 0, 0, textInputHeight, 0), () => game.ChatLog.Messages, msg => (msg.GetDisplayString(), textColor)));
-            AddComponent(textInput = new TextInput(new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, textInputHeight, 1, 1))));
+            AddComponent(textInput);
 
             textInput.Submitted += sendChatMessage;
         }

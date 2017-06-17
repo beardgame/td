@@ -31,7 +31,9 @@ namespace Bearded.TD.Screens
             this.logger = logger;
             this.inputManager = inputManager;
 
-            AddComponent(textInput = new TextInput(new Bounds(new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f))));
+            textInput = new TextInput(new Bounds(
+                new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
+            AddComponent(textInput);
             textInput.Submitted += tryConnect;
 
             playerName = UserSettings.Instance.Misc.Username?.Length > 0

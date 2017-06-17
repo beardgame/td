@@ -1,14 +1,15 @@
 ﻿using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
     abstract class UnifiedRequestCommandSerializer : IRequestSerializer, ICommandSerializer
     {
-        public IRequest GetRequest(GameInstance game) => GetSerialized(game);
-        public ICommand GetCommand(GameInstance game) => GetSerialized(game);
+        public IRequest GetRequest(GameInstance game, Player player) => GetSerialized(game, player);
+        public ICommand GetCommand(GameInstance game) => GetSerialized(game, game.Me);
 
-        protected abstract UnifiedRequestCommand GetSerialized(GameInstance game);
+        protected abstract UnifiedRequestCommand GetSerialized(GameInstance game, Player player);
         public abstract void Serialize(INetBufferStream stream);
     }
 

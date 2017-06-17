@@ -32,11 +32,10 @@ namespace Bearded.TD.Screens
             this.logger = logger;
 
             bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
+            consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding));
             AddComponent(
                 new ConsoleTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
-            AddComponent(
-                consoleInput = new TextInput(
-                    Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding)));
+            AddComponent(consoleInput);
             consoleInput.Submitted += execute;
         }
 
