@@ -29,6 +29,9 @@ namespace Bearded.TD.Screens
 
             AddComponent(new ChatComponent(new Bounds(
                 new ScalingDimension(Screen.X, .3f, .7f), new ScalingDimension(Screen.Y)), lobbyManager.Game));
+            AddComponent(new Button(this, Bounds.AnchoredBox(
+                Screen, BoundsAnchor.Start, BoundsAnchor.End, new Vector2(220, 50), new Vector2(10, -10)),
+                lobbyManager.ToggleReadyState, "Toggle ready", 36));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
