@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Components
 {
-    class Button : UIComponent
+    class Button : FocusableUIComponent
     {
         private const float padding = 8f;
 
@@ -15,7 +15,6 @@ namespace Bearded.TD.UI.Components
         private readonly string text;
         private readonly float fontSize;
         private readonly float textAlign;
-        private bool hovered;
 
         public Button(UIScreenLayer screen, Bounds bounds, Action action, string text, float fontSize, float textAlign = 0f) : base(bounds)
         {
@@ -29,8 +28,8 @@ namespace Bearded.TD.UI.Components
         public override void HandleInput(InputState inputState)
         {
             base.HandleInput(inputState);
-            hovered = Bounds.Contains(screen.TransformScreenToWorld(inputState.InputManager.MousePosition));
-            if (inputState.InputManager.LeftMouseHit && hovered)
+            SetFocus(Bounds.Contains(screen.TransformScreenToWorld(inputState.InputManager.MousePosition)));
+            if (inputState.InputManager.LeftMouseHit && IsFocused)
                 action();
         }
 
@@ -38,13 +37,13 @@ namespace Bearded.TD.UI.Components
         {
             var primitivesGeo = geometries.Primitives;
 
-            primitivesGeo.Color = Color.HotPink * (hovered ? .2f : .05f);
+            primitivesGeo.Color = Color.HotPink * (IsFocused ? .2f : .05f);
             primitivesGeo.DrawRectangle(Bounds.XStart, Bounds.YStart, Bounds.Width, Bounds.Height);
 
 
             var fontGeo = geometries.UIFont;
 
-            fontGeo.Color = hovered ? Color.Yellow : Color.White;
+            fontGeo.Color = IsFocused ? Color.Yellow : Color.White;
             fontGeo.Height = fontSize;
 
             var pos = new Vector2(
