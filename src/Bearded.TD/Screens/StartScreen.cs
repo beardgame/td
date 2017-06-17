@@ -18,13 +18,13 @@ namespace Bearded.TD.Screens
         private readonly InputManager inputManager;
 
         public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
-            : base(parent, geometries, .5f, .5f, true)
+            : base(parent, geometries, 0f, 1f, true)
         {
             this.logger = logger;
             this.inputManager = inputManager;
 
             AddComponent(new Menu(
-                new Bounds(new FixedSizeDimension(Screen.X, 220), new FixedSizeDimension(Screen.Y, 200)),
+                Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(220, 200), -25 * Vector2.One),
                 new Func<Bounds, FocusableUIComponent> []
                 {
                     bounds => new Button(this, bounds, startServerLobby, "Start lobby", 48, .5f),

@@ -11,12 +11,22 @@ namespace Bearded.TD.UI
                 new FixedOffsetDimension(parent.Y, top, bottom));
         }
 
-        public static Bounds Box(Bounds parent, Vector2 centerOffset, Vector2 size)
+        public static Bounds AnchoredBox(Bounds parent, float xAnchor, float yAnchor, Vector2 size)
+            => AnchoredBox(parent, xAnchor, yAnchor, size, Vector2.Zero);
+
+        public static Bounds AnchoredBox(Bounds parent, float xAnchor, float yAnchor, Vector2 size, Vector2 offset)
         {
             return new Bounds(
-                new FixedSizeAndOffsetDimension(parent.X, size.X, centerOffset.X),
-                new FixedSizeAndOffsetDimension(parent.Y, size.Y, centerOffset.Y));
+                new AnchoredFixedSizeDimension(parent.X, xAnchor, size.X, offset.X),
+                new AnchoredFixedSizeDimension(parent.Y, yAnchor, size.Y, offset.Y));
         }
+    }
+
+    static class BoundsAnchor
+    {
+        public static float Start => 0;
+        public static float Center => .5f;
+        public static float End => 1;
     }
 
     static class BoundsExtensions

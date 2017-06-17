@@ -12,11 +12,11 @@ namespace Bearded.TD.UI.Components
 
         public Menu(Bounds bounds, IEnumerable<Func<Bounds, FocusableUIComponent>> itemFactories) : base(bounds)
         {
-            var y = bounds.YStart;
+            var y = 0f;
 
             foreach (var factory in itemFactories)
             {
-                addMenuItem(factory(new Bounds(Bounds.X, new FixedSizeAndOffsetDimension(Bounds.Y, buttonHeight, y, 0))));
+                addMenuItem(factory(new Bounds(Bounds.X, new AnchoredFixedSizeDimension(Bounds.Y, BoundsAnchor.Start, buttonHeight, y))));
                 y += buttonHeight + spaceBetweenButtons;
             }
         }
