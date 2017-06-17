@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Meta;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
@@ -20,6 +21,7 @@ namespace Bearded.TD.Rendering
         private readonly IndexedSurface<UVColorVertexData>[] debugSurfaces;
 
         private readonly PostProcessSurface compositeSurface;
+        private (int width, int height) bufferSize;
 
         public DeferredRenderer(SurfaceManager surfaces)
         {
@@ -28,14 +30,14 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
-            renderTo(gTarget);
+            renderTo(gTarget, (0, 0));
             GL.DrawBuffers(3, new []
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
                 DrawBuffersEnum.ColorAttachment2,
             });
-            renderTo(null);
+            renderTo(null, (0, 0));
 
             accumTarget.Attach(FramebufferAttachment.ColorAttachment0, accumBuffer);
 
@@ -93,7 +95,7 @@ namespace Bearded.TD.Rendering
 
         private void renderWorldToGBuffers()
         {
-            renderTo(gTarget);
+            renderTo(gTarget, bufferSize);
 
             clearWithColor();
 
@@ -105,7 +107,7 @@ namespace Bearded.TD.Rendering
 
         private void renderLightsToAccumBuffer()
         {
-            renderTo(accumTarget);
+            renderTo(accumTarget, bufferSize);
 
             clearWithColor();
 
@@ -114,13 +116,14 @@ namespace Bearded.TD.Rendering
 
         private void compositeTo(RenderTarget target)
         {
-            renderTo(target);
+            renderTo(target, (viewport.Width, viewport.Height));
 
             compositeSurface.Render();
         }
 
-        private static void renderTo(RenderTarget target)
+        private static void renderTo(RenderTarget target, (int width, int height) viewport)
         {
+            GL.Viewport(0, 0, viewport.width, viewport.height);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);
         }
 
@@ -133,8 +136,15 @@ namespace Bearded.TD.Rendering
 
         public void OnResize(ViewportSize viewport)
         {
-            if (viewport == this.viewport)
+            var bufferSizeFactor = 1 / UserSettings.Instance.Graphics.UpSample;
+            
+            var w = (int) (viewport.Width * bufferSizeFactor);
+            var h = (int) (viewport.Height * bufferSizeFactor);
+
+            if (viewport == this.viewport && (w, h).Equals(bufferSize))
                 return;
+
+            bufferSize = (w, h);
 
             this.viewport = viewport;
             needsResize = true;
@@ -150,10 +160,11 @@ namespace Bearded.TD.Rendering
 
         private void resize()
         {
-            diffuseBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba);
-            normalBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgba16f);
-            depthBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.R16f);
-            accumBuffer.Resize(viewport.Width, viewport.Height, PixelInternalFormat.Rgb16f);
+            var (w, h) = bufferSize;
+            diffuseBuffer.Resize(w, h, PixelInternalFormat.Rgba);
+            normalBuffer.Resize(w, h, PixelInternalFormat.Rgba16f);
+            depthBuffer.Resize(w, h, PixelInternalFormat.R16f);
+            accumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
         }
 
         private static Texture createTexture()

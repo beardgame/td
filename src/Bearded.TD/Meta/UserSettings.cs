@@ -119,7 +119,8 @@ namespace Bearded.TD.Meta
 
         public MiscSettings Misc = new MiscSettings();
         public UISettings UI = new UISettings();
-
+        public GraphicsSettings Graphics = new GraphicsSettings();
+        
         public class MiscSettings
         {
             public string Username = "";
@@ -129,6 +130,11 @@ namespace Bearded.TD.Meta
         public class UISettings
         {
             public float UIScale = 1f;
+        }
+
+        public class GraphicsSettings
+        {
+            public float UpSample = 1f;
         }
     }
 }
