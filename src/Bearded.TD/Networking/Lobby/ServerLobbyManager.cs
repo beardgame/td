@@ -16,7 +16,8 @@ namespace Bearded.TD.Networking.Lobby
         private readonly ServerNetworkInterface networkInterface;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
-            : base(logger, createDispatchers(networkInterface, logger), game => createDataMessageHandler(game, logger))
+            : base(logger, createDispatchers(networkInterface, logger),
+                  game => new ServerDataMessageHandler(game, networkInterface, logger))
         {
             this.networkInterface = networkInterface;
         }
@@ -29,9 +30,6 @@ namespace Bearded.TD.Networking.Lobby
 
             return (requestDispatcher, dispatcher);
         }
-
-        private static IDataMessageHandler createDataMessageHandler(GameInstance game, Logger logger)
-            => new ServerDataMessageHandler(game, logger);
 
         public override void Update(UpdateEventArgs args)
         {

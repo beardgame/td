@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -14,11 +15,13 @@ namespace Bearded.TD.Networking
     class ServerDataMessageHandler : IDataMessageHandler
     {
         private readonly GameInstance game;
+        private readonly ServerNetworkInterface networkInterface;
         private readonly Logger logger;
 
-        public ServerDataMessageHandler(GameInstance game, Logger logger)
+        public ServerDataMessageHandler(GameInstance game, ServerNetworkInterface networkInterface, Logger logger)
         {
             this.game = game;
+            this.networkInterface = networkInterface;
             this.logger = logger;
         }
 
@@ -29,7 +32,7 @@ namespace Bearded.TD.Networking
             if (Serializers.Instance.IsRequestSerializer(typeId))
             {
                 game.RequestDispatcher.Dispatch(
-                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game));
+                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game, networkInterface.GetSender(msg)));
                 return;
             }
 
