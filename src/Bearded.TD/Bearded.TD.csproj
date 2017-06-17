@@ -192,6 +192,8 @@
     <Compile Include="Networking\Serialization\Serializers.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\DeferredRenderer.cs" />
+    <Compile Include="Rendering\Deferred\PointLightGeometry.cs" />
+    <Compile Include="Rendering\Deferred\PointLightVertex.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\GameSurfaceManager.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
@@ -262,6 +264,12 @@
     <Compile Include="Utilities\NetworkHelpers.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
+    <Content Include="assets\shaders\deferred\pointlight.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\deferred\pointlight.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

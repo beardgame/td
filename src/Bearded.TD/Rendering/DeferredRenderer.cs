@@ -50,6 +50,8 @@ namespace Bearded.TD.Rendering
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, accumBuffer}
                 .Select(createDebugSurface).ToArray();
+            
+            surfaces.InjectDeferredBuffer(normalBuffer, depthBuffer);
         }
 
         private IndexedSurface<UVColorVertexData> createDebugSurface(Texture buffer)
@@ -111,7 +113,7 @@ namespace Bearded.TD.Rendering
 
             clearWithColor();
 
-            // TODO: render lights to accum buffer (from normal+depth only)
+            surfaces.PointLights.Render();
         }
 
         private void compositeTo(RenderTarget target)

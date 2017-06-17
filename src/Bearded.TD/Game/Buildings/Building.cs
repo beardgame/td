@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
@@ -8,6 +9,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -77,6 +79,8 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var component in Components)
                 component.Draw(geometries);
+            
+            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 5, Color.Orange);
         }
 
         public bool HasComponentOfType<T>()

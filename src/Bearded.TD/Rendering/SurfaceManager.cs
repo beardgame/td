@@ -1,6 +1,8 @@
 ﻿using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
+using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
 {
@@ -18,6 +20,8 @@ namespace Bearded.TD.Rendering
         public Font ConsoleFont { get; }
         public Font UIFont { get; }
         
+        public IndexedSurface<PointLightVertex> PointLights { get; }
+        
         public GameSurfaceManager GameSurfaces { get; }
 
         public SurfaceManager()
@@ -28,7 +32,8 @@ namespace Bearded.TD.Rendering
             new[]
             {
                 "geometry", "uvcolor",
-                "deferred/gSprite", "deferred/debug", "deferred/compose"
+                "deferred/gSprite", "deferred/debug", "deferred/compose",
+                "deferred/pointlight"
             }.ForEach(name => Shaders.MakeShaderProgram(name));
 
             Primitives = new IndexedSurface<PrimitiveVertexData>()
@@ -53,16 +58,20 @@ namespace Bearded.TD.Rendering
                         ViewMatrix, ProjectionMatrix,
                         new TextureUniform("diffuse", new Texture(font("helveticaneue.png"), preMultiplyAlpha: true))
                     );
+            
+            PointLights = new IndexedSurface<PointLightVertex>()
+                .WithShader(Shaders["deferred/pointlight"])
+                .AndSettings(ViewMatrix, ProjectionMatrix);
 
             GameSurfaces = new GameSurfaceManager(Shaders, ViewMatrix, ProjectionMatrix);
         }
 
         public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
         {
-            var normalUniform = new TextureUniform("normalBuffer", normalBuffer);
-            var depthUniform = new TextureUniform("depthBuffer", depthBuffer);
-
-            // TODO: add uniform to light surfaces
+            var normalUniform = new TextureUniform("normalBuffer", normalBuffer, TextureUnit.Texture0);
+            var depthUniform = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
+            
+            PointLights.AddSettings(normalUniform, depthUniform);
         }
 
         private static string asset(string path) => "assets/" + path;

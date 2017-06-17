@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Rendering.Deferred;
 
 namespace Bearded.TD.Rendering
 {
@@ -15,6 +16,8 @@ namespace Bearded.TD.Rendering
 
         public FontGeometry UIFont { get; }
         
+        public PointLightGeometry PointLight { get; }
+        
         public Dictionary<string, Sprite2DGeometry> Sprites { get; }
 
         public GeometryManager(SurfaceManager surfaces)
@@ -25,6 +28,7 @@ namespace Bearded.TD.Rendering
             ConsoleBackground = new PrimitiveGeometry(surfaces.ConsoleBackground);
             ConsoleFont = new FontGeometry(surfaces.ConsoleFontSurface, surfaces.ConsoleFont);
             UIFont = new FontGeometry(surfaces.UIFontSurface, surfaces.UIFont);
+            PointLight = new PointLightGeometry(surfaces.PointLights);
             
             Sprites = surfaces.GameSurfaces.Surfaces.ToDictionary(
                 kvp => kvp.Key, kvp => new Sprite2DGeometry(kvp.Value)
