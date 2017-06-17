@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
@@ -22,12 +23,13 @@ namespace Bearded.TD.Screens
             this.logger = logger;
             this.inputManager = inputManager;
 
-            AddComponent(new Button(this,
-                Bounds.Box(Screen, -35 * Vector2.UnitY, new Vector2(220, 50)),
-                startServerLobby, "Start lobby", 48, .5f));
-            AddComponent(new Button(this,
-                Bounds.Box(Screen, 35 * Vector2.UnitY, new Vector2(220, 50)),
-                startConnect, "Join lobby", 48, .5f));
+            AddComponent(new Menu(
+                new Bounds(new FixedSizeDimension(Screen.X, 220), new FixedSizeDimension(Screen.Y, 200)),
+                new Func<Bounds, FocusableUIComponent> []
+                {
+                    bounds => new Button(this, bounds, startServerLobby, "Start lobby", 48, .5f),
+                    bounds => new Button(this, bounds, startConnect, "Join lobby", 48, .5f)
+                }));
         }
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
