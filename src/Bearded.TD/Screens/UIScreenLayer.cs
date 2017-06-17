@@ -22,10 +22,10 @@ namespace Bearded.TD.Screens
 
         private readonly List<UIComponent> components = new List<UIComponent>();
 
-        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries) : this(parent, geometries, .5f, 1, true)
-        { }
-
-        protected UIScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, float originX, float originY, bool flipY) : base(parent)
+        protected UIScreenLayer(
+                ScreenLayerCollection parent, GeometryManager geometries,
+                float originX = .5f, float originY = 1, bool flipY = true)
+            : base(parent)
         {
             Geometries = geometries;
             Screen = Screen.GetCanvas();
@@ -42,8 +42,6 @@ namespace Bearded.TD.Screens
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
             components.ForEach(c => c.HandleInput(inputState));
-            if (inputState.InputManager.RightMouseHit)
-                System.Console.WriteLine($"mouse screen pos for {GetType()}: {TransformScreenToWorld(inputState.InputManager.MousePosition)}");
             return true;
         }
 

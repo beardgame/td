@@ -37,7 +37,9 @@ namespace Bearded.TD.Networking.Serialization
                 out firstCommandId,
                 out maxId
             );
+#if DEBUG
             Console.WriteLine($"Initialised {maxId} serializers in {timer.Elapsed.TotalMilliseconds:0.00}ms.");
+#endif
         }
 
         private static void init(
@@ -80,10 +82,10 @@ namespace Bearded.TD.Networking.Serialization
 
                 if (!type.HasDefaultConstructor())
                 {
-                    #if DEBUG
+#if DEBUG
                     writeWarning($"Found serializer without default constructor: {type.FullName}. "
                                  + "Please add one to allow for serialisation.");
-                    #endif
+#endif
                     continue;
                 }
 
