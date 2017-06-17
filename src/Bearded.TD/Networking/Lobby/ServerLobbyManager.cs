@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Loading;
