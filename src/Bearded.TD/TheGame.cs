@@ -45,6 +45,8 @@ namespace Bearded.TD
 
             KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
 
+            UserSettings.SettingsChanged += () => OnResize(null);
+
             OnResize(EventArgs.Empty);
         }
 

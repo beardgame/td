@@ -12,6 +12,8 @@ namespace Bearded.TD.Meta
     {
         public static UserSettings Instance { get; private set; }
 
+        public static event VoidEventHandler SettingsChanged;
+
         #region I/O
         private static readonly JsonSerializer serializer = makeSerializer();
 
@@ -33,6 +35,7 @@ namespace Bearded.TD.Meta
                 using (var reader = File.OpenText(Constants.Paths.UserSettingsFile))
                 {
                     Instance = serializer.Deserialize<UserSettings>(new JsonTextReader(reader));
+                    SettingsChanged?.Invoke();
                 }
                 logger.Trace.Log("Finished loading user settings.");
             }
@@ -96,6 +99,7 @@ namespace Bearded.TD.Meta
             try
             {
                 serializer.Populate(new StringReader(json), Instance);
+                SettingsChanged?.Invoke();
             }
             catch (JsonReaderException e)
             {
