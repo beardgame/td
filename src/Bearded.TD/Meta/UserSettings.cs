@@ -135,6 +135,7 @@ namespace Bearded.TD.Meta
         public class GraphicsSettings
         {
             public float UpSample = 1f;
+            public bool DebugDeferred = false;
         }
     }
 }

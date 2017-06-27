@@ -101,6 +101,8 @@ namespace Bearded.TD.Rendering
 
             clearWithColor();
 
+            surfaces.LevelSurface.Render();
+
             foreach (var surface in surfaces.GameSurfaces.SurfaceList)
             {
                 surface.Render();

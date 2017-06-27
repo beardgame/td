@@ -192,10 +192,12 @@
     <Compile Include="Networking\Serialization\Serializers.cs" />
     <Compile Include="Networking\ServerNetworkInterface.cs" />
     <Compile Include="Rendering\DeferredRenderer.cs" />
+    <Compile Include="Rendering\Deferred\LevelVertex.cs" />
     <Compile Include="Rendering\Deferred\PointLightGeometry.cs" />
     <Compile Include="Rendering\Deferred\PointLightVertex.cs" />
     <Compile Include="Rendering\FrameCompositor.cs" />
     <Compile Include="Rendering\GameSurfaceManager.cs" />
+    <Compile Include="Rendering\Deferred\LevelGeometry.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Rendering\GeometryManager.cs" />
     <Compile Include="Rendering\RenderOptions.cs" />
@@ -276,6 +278,12 @@
     <Content Include="assets\font\HelveticaNeue.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="assets\shaders\deferred\gLevel.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\shaders\deferred\gLevel.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -351,5 +359,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

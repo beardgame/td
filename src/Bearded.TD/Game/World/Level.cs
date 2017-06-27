@@ -57,6 +57,22 @@ namespace Bearded.TD.Game.World
 
         public void Draw(GeometryManager geos)
         {
+            var geo = geos.Level;
+
+            foreach (var tile in Tilemap)
+            {
+                var info = tile.Info;
+
+                geo.DrawTile(
+                    GetPosition(tile).NumericValue,
+                    info.TileType == TileInfo.Type.Floor,
+                    info.OpenDirections
+                    );
+            }
+
+            return;
+
+
             var sprite = geos.Sprites["hex"];
             
             sprite.Size = new Vector2(HexagonDiameter, HexagonDiameter);

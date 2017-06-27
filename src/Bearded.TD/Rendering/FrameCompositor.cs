@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Meta;
 using Bearded.TD.Screens;
 using OpenTK.Graphics.OpenGL;
 
@@ -68,7 +69,9 @@ namespace Bearded.TD.Rendering
         private void renderDeferred()
         {
             deferredRenderer.Render();
-            //deferredRenderer.RenderDebug();
+
+            if (UserSettings.Instance.Graphics.DebugDeferred)
+                deferredRenderer.RenderDebug();
         }
 
         private void renderConsoleSurfaces()
