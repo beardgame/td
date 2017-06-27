@@ -6,6 +6,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Console;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using OpenTK.Input;
 
