@@ -9,8 +9,8 @@ namespace Bearded.TD.Rendering.Deferred
 {
     class LevelGeometry
     {
-        private static readonly Color openColor = Color.Silver;
-        private static readonly Color closedColor = Color.DarkGray;
+        private static readonly Color openColor = Color.White;
+        private static readonly Color closedColor = Color.White;
 
         private readonly IndexedSurface<LevelVertex> surface;
 
@@ -29,14 +29,16 @@ namespace Bearded.TD.Rendering.Deferred
              */
 
             var open0 = isOpen;
-            var open1 = openDirections.Includes(Right);
-            var open2 = openDirections.Includes(UpRight);
-            var open3 = openDirections.Includes(DownRight);
+            var open1 = openDirections.Includes(Left);
+            var open2 = openDirections.Includes(DownLeft);
+            var open3 = openDirections.Includes(UpLeft);
 
-            var p0 = position.WithZ(open0 ? 0 : 1);
-            var p1 = (position + new Vector2(HexagonDistanceX, 0)).WithZ(open1 ? 0 : 1);
-            var p2 = (position + new Vector2(HexagonDistanceX * 0.5f, HexagonDistanceY)).WithZ(open2 ? 0 : 1);
-            var p3 = (position + new Vector2(HexagonDistanceX * 0.5f, -HexagonDistanceY)).WithZ(open3 ? 0 : 1);
+            const float z = 2;
+
+            var p0 = position.WithZ(open0 ? 0 : z);
+            var p1 = (position + new Vector2(HexagonDistanceX, 0)).WithZ(open1 ? 0 : z);
+            var p2 = (position + new Vector2(HexagonDistanceX * 0.5f, HexagonDistanceY)).WithZ(open2 ? 0 : z);
+            var p3 = (position + new Vector2(HexagonDistanceX * 0.5f, -HexagonDistanceY)).WithZ(open3 ? 0 : z);
 
             var c0 = open0 ? openColor : closedColor;
             var c1 = open1 ? openColor : closedColor;
@@ -46,15 +48,17 @@ namespace Bearded.TD.Rendering.Deferred
             var n0 = Vector3.Cross(p1 - p0, p2 - p0).Normalized();
             var n1 = Vector3.Cross(p3 - p0, p1 - p0).Normalized();
 
+            var nUp = Vector3.UnitZ;
+
             surface.AddTriangle(
-                new LevelVertex(p0, n0, Vector2.Zero, openColor),
-                new LevelVertex(p2, n0, Vector2.Zero, openColor),
-                new LevelVertex(p1, n0, Vector2.Zero, openColor)
+                new LevelVertex(p0, open0 ? nUp : n0, Vector2.Zero, c0),
+                new LevelVertex(p2, open2 ? nUp : n0, Vector2.Zero, c2),
+                new LevelVertex(p1, open1 ? nUp : n0, Vector2.Zero, c1)
             );
             surface.AddTriangle(
-                new LevelVertex(p0, n1, Vector2.Zero, openColor),
-                new LevelVertex(p1, n1, Vector2.Zero, openColor),
-                new LevelVertex(p3, n1, Vector2.Zero, openColor)
+                new LevelVertex(p0, open0 ? nUp : n1, Vector2.Zero, c0),
+                new LevelVertex(p1, open1 ? nUp : n1, Vector2.Zero, c1),
+                new LevelVertex(p3, open3 ? nUp : n1, Vector2.Zero, c3)
             );
         }
     }

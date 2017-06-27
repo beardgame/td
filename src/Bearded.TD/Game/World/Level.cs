@@ -1,8 +1,10 @@
-﻿using amulware.Graphics;
+﻿using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
+using OpenTK.Input;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
@@ -66,11 +68,16 @@ namespace Bearded.TD.Game.World
                 geo.DrawTile(
                     GetPosition(tile).NumericValue,
                     info.TileType == TileInfo.Type.Floor,
-                    info.OpenDirections
+                    Directions.All.Enumerate().Where(d =>
+                    {
+                        var n = tile.Neighbour(d);
+                        return n.IsValid && n.Info.TileType == TileInfo.Type.Floor;
+                    })
+                    .Aggregate(Directions.None, (ds, d) => ds.And(d))
                     );
             }
-
-            return;
+            
+                return;
 
 
             var sprite = geos.Sprites["hex"];

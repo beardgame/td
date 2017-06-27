@@ -15,7 +15,7 @@ out vec4 outDepth;
 void main()
 {
     vec4 diffuse = vec4(1, 1, 1, 1); //texture(diffuseTexture, fragmentUV);
-    vec3 normal = fragmentNormal; //texture(normalTexture, fragmentUV).rgb;
+    vec3 normal = fragmentNormal * 0.5 + 0.5; //texture(normalTexture, fragmentUV).rgb;
 
     vec4 rgba = diffuse * fragmentColor;
 
