@@ -146,6 +146,7 @@
     <Compile Include="Game\UI\BuildingScreenLayer.cs" />
     <Compile Include="Game\UI\ChatLog.cs" />
     <Compile Include="Game\UI\ChatMessage.cs" />
+    <Compile Include="Game\UI\Cursor.cs" />
     <Compile Include="Game\UI\CursorState.cs" />
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\DebugToggleTileTypeClickHandler.cs" />
@@ -232,7 +233,8 @@
     <Compile Include="UI\AnchoredFixedSizeDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
-    <Compile Include="UI\InputState.cs" />
+    <Compile Include="Utilities\Input\InputContext.cs" />
+    <Compile Include="Utilities\Input\InputState.cs" />
     <Compile Include="UI\ScalingDimension.cs" />
     <Compile Include="UI\Screen.cs" />
     <Compile Include="Utilities\AsyncAtomicUpdating.cs" />

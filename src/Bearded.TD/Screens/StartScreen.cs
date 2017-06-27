@@ -1,5 +1,4 @@
 ﻿using System;
-using amulware.Graphics;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
@@ -27,18 +26,18 @@ namespace Bearded.TD.Screens
                 Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(220, 200), -25 * Vector2.One),
                 new Func<Bounds, FocusableUIComponent> []
                 {
-                    bounds => new Button(this, bounds, startServerLobby, "Start lobby", 48, .5f),
-                    bounds => new Button(this, bounds, startConnect, "Join lobby", 48, .5f)
+                    bounds => new Button(bounds, startServerLobby, "Start lobby", 48, .5f),
+                    bounds => new Button(bounds, startConnect, "Join lobby", 48, .5f)
                 }));
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
-            base.HandleInput(args, inputState);
+            base.DoHandleInput(input);
             
-            if (inputState.InputManager.IsKeyHit(Key.Number2))
+            if (input.Manager.IsKeyHit(Key.Number2))
                 startServerLobby();
-            else if (inputState.InputManager.IsKeyHit(Key.Number3))
+            else if (input.Manager.IsKeyHit(Key.Number3))
                 startConnect();
 
             return false;

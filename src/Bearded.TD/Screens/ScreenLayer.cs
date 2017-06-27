@@ -1,6 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
-using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
 

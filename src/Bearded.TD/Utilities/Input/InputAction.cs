@@ -10,7 +10,7 @@ namespace Bearded.TD.Utilities.Input
     static class InputAction
     {
         public static bool IsSameAs(this IAction me, IAction other)
-            => me == other || me.ToString() == other.ToString();
+            => other != null && (ReferenceEquals(me, other) || me.ToString() == other.ToString());
 
         public static IAction Unbound { get; } = new DummyAction("unbound");
 

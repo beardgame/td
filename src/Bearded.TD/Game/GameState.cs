@@ -70,7 +70,11 @@ namespace Bearded.TD.Game
             if (obj != ObjectBeingAdded)
                 throw new Exception("Sad!");
 
-            singletons.Add(typeof(T), obj);
+            var type = typeof(T);
+            if (singletons.ContainsKey(type))
+                throw new Exception($"Can only instantiate one {type.Name} per game.");
+
+            singletons.Add(type, obj);
         }
 
         public T Get<T>()

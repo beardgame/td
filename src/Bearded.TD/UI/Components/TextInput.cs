@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using OpenTK;
 using OpenTK.Input;
@@ -33,36 +34,36 @@ namespace Bearded.TD.UI.Components
         {
         }
 
-        public override void HandleInput(InputState inputState)
+        public override void HandleInput(InputContext input)
         {
-            if (inputState.InputManager.IsKeyHit(Key.Enter))
+            if (input.Manager.IsKeyHit(Key.Enter))
             {
                 Submitted?.Invoke(text);
                 return;
             }
-            if (inputState.InputManager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
+            if (input.Manager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
             {
                 text = text.Substring(0, cursorPosition - 1) + text.Substring(cursorPosition);
                 cursorPosition--;
             }
-            if (inputState.InputManager.IsKeyPressed(Key.Left) && cursorPosition > 0)
+            if (input.Manager.IsKeyPressed(Key.Left) && cursorPosition > 0)
             {
                 cursorPosition--;
             }
-            if (inputState.InputManager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
+            if (input.Manager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
             {
                 cursorPosition++;
             }
-            if (inputState.InputManager.IsKeyPressed(Key.Home))
+            if (input.Manager.IsKeyPressed(Key.Home))
             {
                 cursorPosition = 0;
             }
-            if (inputState.InputManager.IsKeyPressed(Key.End))
+            if (input.Manager.IsKeyPressed(Key.End))
             {
                 cursorPosition = text.Length;
             }
 
-            foreach (var c in inputState.PressedCharacters)
+            foreach (var c in input.State.PressedCharacters)
             {
                 if ((c < '0' || c > '9') && (c < '@' || c > 'Z') && (c < 'a' || c > 'z') && !allowedChars.Contains(c))
                 {

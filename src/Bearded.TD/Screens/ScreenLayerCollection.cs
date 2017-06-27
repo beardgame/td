@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
-using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.Screens
 {

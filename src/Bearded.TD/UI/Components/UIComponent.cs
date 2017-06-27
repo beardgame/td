@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.UI.Components
 {
@@ -13,7 +14,7 @@ namespace Bearded.TD.UI.Components
         }
 
         public virtual void Update(UpdateEventArgs args) { }
-        public virtual void HandleInput(InputState inputState) { }
+        public virtual void HandleInput(InputContext input) { }
         public abstract void Draw(GeometryManager geometries);
     }
 }

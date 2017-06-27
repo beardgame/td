@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
-using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 using OpenTK;
 
 namespace Bearded.TD.Game.UI
@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.UI
             this.game = game;
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
             // Disable inputs below if game over.
             return !game.State.Meta.GameOver;

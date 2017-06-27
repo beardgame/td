@@ -3,7 +3,7 @@ using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
-using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -27,11 +27,11 @@ namespace Bearded.TD.Game.UI
             clickHandlers = initializeClickHandlers(game.Me.Faction, game.Blueprints);
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
-                if (!inputState.InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
+                if (!input.Manager.IsKeyHit(clickHandlerKeys[i])) continue;
                 if (i == selectedHandler)
                 {
                     game.Cursor.SetClickHandler(null);

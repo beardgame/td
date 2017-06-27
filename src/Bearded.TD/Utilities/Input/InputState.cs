@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Utilities.Input;
 
-namespace Bearded.TD.UI
+namespace Bearded.TD.Utilities.Input
 {
     class InputState
     {

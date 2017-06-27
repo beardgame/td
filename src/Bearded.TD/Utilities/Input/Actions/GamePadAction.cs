@@ -107,6 +107,8 @@ namespace Bearded.TD.Utilities.Input.Actions
         public float AnalogAmount => adjustedAnalog;
 
         public override string ToString() => "gamepad" + pad.Id + ":" + axisName;
+
+        public override bool Equals(object obj) => Equals(obj as IAction);
         public bool Equals(IAction other) => other is GamePadAxisAction && this.IsSameAs(other);
         public override int GetHashCode() => ToString().GetHashCode();
     }
@@ -159,16 +161,10 @@ namespace Bearded.TD.Utilities.Input.Actions
                     return 0;
                 if (input > AnalogMaxValue)
                     return 1;
-                return (float)System.Math.Pow(
+                return (float)Math.Pow(
                     (input - AnalogDeadZone) / AnalogDeadToMaxRange,
                     analogPower);
             }
         }
-
-
-
-
-
     }
-
 }

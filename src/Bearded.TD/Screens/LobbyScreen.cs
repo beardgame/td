@@ -29,17 +29,17 @@ namespace Bearded.TD.Screens
 
             AddComponent(new ChatComponent(new Bounds(
                 new ScalingDimension(Screen.X, .3f, .7f), new ScalingDimension(Screen.Y)), lobbyManager.Game));
-            AddComponent(new Button(this, Bounds.AnchoredBox(
+            AddComponent(new Button(Bounds.AnchoredBox(
                 Screen, BoundsAnchor.Start, BoundsAnchor.End, new Vector2(220, 50), new Vector2(10, -10)),
                 lobbyManager.ToggleReadyState, "Toggle ready", 36));
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
-            if (inputState.InputManager.IsKeyPressed(Key.ShiftLeft) && inputState.InputManager.IsKeyHit(Key.Enter))
+            if (input.Manager.IsKeyPressed(Key.ShiftLeft) && input.Manager.IsKeyHit(Key.Enter))
                 lobbyManager.ToggleReadyState();
             else
-                return base.HandleInput(args, inputState);
+                return base.DoHandleInput(input);
 
             return false;
         }

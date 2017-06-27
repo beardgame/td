@@ -16,7 +16,9 @@ namespace Bearded.TD.Utilities.Input.Actions
         public float AnalogAmount => 0;
 
         public override string ToString() => name;
-        public bool Equals(IAction other) => this.IsSameAs(other);
+
+        public override bool Equals(object obj) => Equals(obj as IAction);
+        public bool Equals(IAction other) => other is DummyAction && this.IsSameAs(other);
         public override int GetHashCode() => ToString().GetHashCode();
     }
 }

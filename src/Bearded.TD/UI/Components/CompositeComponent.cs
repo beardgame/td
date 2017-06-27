@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.UI.Components
 {
@@ -17,9 +18,9 @@ namespace Bearded.TD.UI.Components
             components.ForEach(c => c.Update(args));
         }
 
-        public override void HandleInput(InputState inputState)
+        public override void HandleInput(InputContext input)
         {
-            components.ForEach(c => c.HandleInput(inputState));
+            components.ForEach(c => c.HandleInput(input));
         }
 
         public override void Draw(GeometryManager geometries)
