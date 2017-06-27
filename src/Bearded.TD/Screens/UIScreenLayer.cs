@@ -39,11 +39,14 @@ namespace Bearded.TD.Screens
             components.ForEach(c => c.Update(args));
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        public sealed override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            components.ForEach(c => c.HandleInput(inputState));
-            return true;
+            var context = new InputContext(inputState, transformScreenToWorld);
+            components.ForEach(c => c.HandleInput(context));
+            return DoHandleInput(context);
         }
+
+        protected virtual bool DoHandleInput(InputContext input) => true;
 
         public override void Draw()
         {
@@ -70,7 +73,7 @@ namespace Bearded.TD.Screens
             Screen.OnResize(ViewportSize);
         }
 
-        public Vector2 TransformScreenToWorld(Vector2 screenPos)
+        private Vector2 transformScreenToWorld(Vector2 screenPos)
         {
             // Transform back to world position [-1, 1] x [-1, 1].
             var worldPos = unproject(screenPos);

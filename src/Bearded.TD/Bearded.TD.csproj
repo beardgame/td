@@ -230,6 +230,7 @@
     <Compile Include="UI\AnchoredFixedSizeDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
+    <Compile Include="UI\InputContext.cs" />
     <Compile Include="UI\InputState.cs" />
     <Compile Include="UI\ScalingDimension.cs" />
     <Compile Include="UI\Screen.cs" />

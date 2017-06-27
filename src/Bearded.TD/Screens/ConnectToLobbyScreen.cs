@@ -97,9 +97,9 @@ namespace Bearded.TD.Screens
             Destroy();
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
-            return networkInterface != null || base.HandleInput(args, inputState);
+            return networkInterface != null || base.DoHandleInput(input);
         }
 
         public override void Draw()

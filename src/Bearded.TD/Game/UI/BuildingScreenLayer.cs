@@ -27,11 +27,11 @@ namespace Bearded.TD.Game.UI
             clickHandlers = initializeClickHandlers(game.Me.Faction, game.Blueprints);
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
             for (var i = 0; i < clickHandlers.Length; i++)
             {
-                if (!inputState.InputManager.IsKeyHit(clickHandlerKeys[i])) continue;
+                if (!input.Manager.IsKeyHit(clickHandlerKeys[i])) continue;
                 if (i == selectedHandler)
                 {
                     game.Cursor.SetClickHandler(null);

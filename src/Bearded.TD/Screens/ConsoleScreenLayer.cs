@@ -39,25 +39,25 @@ namespace Bearded.TD.Screens
             consoleInput.Submitted += execute;
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
-            if (inputState.InputManager.IsKeyHit(Key.Tilde))
+            if (input.Manager.IsKeyHit(Key.Tilde))
                 isConsoleEnabled = !isConsoleEnabled;
 
             if (!isConsoleEnabled) return true;
 
-            base.HandleInput(args, inputState);
+            base.DoHandleInput(input);
             
-            if (inputState.InputManager.IsKeyHit(Key.Tab))
+            if (input.Manager.IsKeyHit(Key.Tab))
                 consoleInput.Text = autoComplete(consoleInput.Text);
-            if (inputState.InputManager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
+            if (input.Manager.IsKeyHit(Key.Up) && commandHistory.Count > 0 && commandHistoryIndex != 0)
             {
                 if (commandHistoryIndex == -1)
                     setCommandHistoryIndex(commandHistory.Count - 1);
                 else
                     setCommandHistoryIndex(commandHistoryIndex - 1);
             }
-            if (inputState.InputManager.IsKeyHit(Key.Down) && commandHistoryIndex != -1)
+            if (input.Manager.IsKeyHit(Key.Down) && commandHistoryIndex != -1)
                 setCommandHistoryIndex(commandHistoryIndex + 1);
 
             return false;

@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.UI
             this.game = game;
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        protected override bool DoHandleInput(InputContext input)
         {
             // Disable inputs below if game over.
             return !game.State.Meta.GameOver;
