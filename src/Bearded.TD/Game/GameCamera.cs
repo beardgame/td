@@ -68,8 +68,10 @@ namespace Bearded.TD.Game
         public void Update(float elapsedTime)
         {
             updateDragging();
-
             updateScrolling(elapsedTime);
+            updateZoom(elapsedTime);
+
+            constrictCameraToLevel();
 
             recalculateViewMatrix();
         }
@@ -106,9 +108,29 @@ namespace Bearded.TD.Game
 
             meta.Logger.Trace.Log("End drag");
         }
+        private void constrictCameraToLevel()
+        {
+            if (isDragging) return;
 
+            var maxDistanceFromOrigin = levelRadius - cameraDistance;
+            if (cameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
+            {
+                cameraPosition = cameraPosition.Normalized() * maxDistanceFromOrigin;
+            }
+        }
 
         private void updateScrolling(float elapsedTime)
+        {
+            var scrollSpeed = BaseScrollSpeed * cameraDistance;
+
+            foreach (var scrollAction in scrollActions)
+            {
+                cameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
+                                  * scrollSpeed * scrollAction.Value;
+            }
+        }
+
+        private void updateZoom(float elapsedTime)
         {
             cameraDistance -= inputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
             foreach (var zoomAction in zoomActions)
@@ -117,22 +139,6 @@ namespace Bearded.TD.Game
                                   * zoomSpeed * zoomAction.Value;
             }
             cameraDistance = cameraDistance.Clamped(ZMin, levelRadius);
-
-            var scrollSpeed = BaseScrollSpeed * cameraDistance;
-
-            foreach (var scrollAction in scrollActions)
-            {
-                cameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
-                                  * scrollSpeed * scrollAction.Value;
-            }
-
-            if (isDragging) return;
-
-            var maxDistanceFromOrigin = levelRadius - cameraDistance;
-            if (cameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
-            {
-                cameraPosition = cameraPosition.Normalized() * maxDistanceFromOrigin;
-            }
         }
 
         private void recalculateViewMatrix()
