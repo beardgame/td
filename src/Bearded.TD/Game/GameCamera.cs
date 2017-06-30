@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Input;
@@ -18,6 +19,9 @@ namespace Bearded.TD.Game
         private readonly InputManager inputManager;
         private readonly GameMeta meta;
         private readonly float levelRadius;
+
+        private float maxCameraRadius => levelRadius;
+        private float maxCameraDistance => levelRadius;
 
         private bool isDragging;
         private Vector2 mousePosInWorldSpace;
@@ -39,7 +43,7 @@ namespace Bearded.TD.Game
             cameraDistance = ZDefault;
             recalculateViewMatrix();
 
-            scrollActions =  new Dictionary<IAction, Vector2>
+            scrollActions = new Dictionary<IAction, Vector2>
             {
                 { axisOrKeys("-x", Key.Left, Key.A), -Vector2.UnitX },
                 { axisOrKeys("+x", Key.Right, Key.D), Vector2.UnitX },
@@ -71,7 +75,8 @@ namespace Bearded.TD.Game
             updateScrolling(elapsedTime);
             updateZoom(elapsedTime);
 
-            constrictCameraToLevel();
+            if (!isDragging)
+                constrictCameraToLevel(elapsedTime);
 
             recalculateViewMatrix();
         }
@@ -108,15 +113,22 @@ namespace Bearded.TD.Game
 
             meta.Logger.Trace.Log("End drag");
         }
-        private void constrictCameraToLevel()
-        {
-            if (isDragging) return;
 
-            var maxDistanceFromOrigin = levelRadius - cameraDistance;
-            if (cameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
-            {
-                cameraPosition = cameraPosition.Normalized() * maxDistanceFromOrigin;
-            }
+        private void constrictCameraToLevel(float elapsedTime)
+        {
+            var currentMaxCameraRadiusNormalised = 1 - (cameraDistance / maxCameraDistance).Squared().Clamped(0, 1);
+            var currentMaxCameraRadius = maxCameraRadius * currentMaxCameraRadiusNormalised;
+
+            if (cameraPosition.LengthSquared <= currentMaxCameraRadius.Squared())
+                return;
+
+            var snapBackFactor = 1 - Mathf.Pow(0.01f, elapsedTime);
+
+            var goalPosition = cameraPosition.Normalized() * currentMaxCameraRadius;
+
+            var error = goalPosition - cameraPosition;
+
+            cameraPosition += error * snapBackFactor;
         }
 
         private void updateScrolling(float elapsedTime)
@@ -138,7 +150,7 @@ namespace Bearded.TD.Game
                 cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
                                   * zoomSpeed * zoomAction.Value;
             }
-            cameraDistance = cameraDistance.Clamped(ZMin, levelRadius);
+            cameraDistance = cameraDistance.Clamped(ZMin, maxCameraDistance);
         }
 
         private void recalculateViewMatrix()
