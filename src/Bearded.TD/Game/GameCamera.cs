@@ -67,10 +67,9 @@ namespace Bearded.TD.Game
 
         public void Update(float elapsedTime)
         {
-            if (inputManager.RightMousePressed || isDragging)
-                updateDragging();
-            if (!inputManager.RightMousePressed)
-                updateScrolling(elapsedTime);
+            updateDragging();
+
+            updateScrolling(elapsedTime);
 
             recalculateViewMatrix();
         }
@@ -126,6 +125,8 @@ namespace Bearded.TD.Game
                 cameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
                                   * scrollSpeed * scrollAction.Value;
             }
+
+            if (isDragging) return;
 
             var maxDistanceFromOrigin = levelRadius - cameraDistance;
             if (cameraPosition.LengthSquared > maxDistanceFromOrigin.Squared())
