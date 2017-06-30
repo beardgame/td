@@ -135,22 +135,20 @@ namespace Bearded.TD.Game
         {
             var scrollSpeed = BaseScrollSpeed * cameraDistance;
 
-            foreach (var scrollAction in scrollActions)
-            {
-                cameraPosition += scrollAction.Key.AnalogAmount * elapsedTime
-                                  * scrollSpeed * scrollAction.Value;
-            }
+            var velocity = scrollActions.Aggregate(Vector2.Zero, (v, a) => v + a.Key.AnalogAmount * a.Value);
+
+            cameraPosition += velocity * scrollSpeed * elapsedTime;
         }
 
         private void updateZoom(float elapsedTime)
         {
-            cameraDistance -= inputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
-            foreach (var zoomAction in zoomActions)
-            {
-                cameraDistance += zoomAction.Key.AnalogAmount * elapsedTime
-                                  * zoomSpeed * zoomAction.Value;
-            }
-            cameraDistance = cameraDistance.Clamped(ZMin, maxCameraDistance);
+            var mouseScroll = -inputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
+            
+            var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key.AnalogAmount * a.Value);
+
+            var newCameraDistance = cameraDistance + mouseScroll + velocity * zoomSpeed * elapsedTime;
+
+            cameraDistance = newCameraDistance.Clamped(ZMin, maxCameraDistance);
         }
 
         private void recalculateViewMatrix()
