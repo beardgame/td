@@ -37,7 +37,8 @@ namespace Bearded.TD.Game
             if (game.State.Meta.GameOver) return;
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS);
             foreach (var f in game.State.Factions)
-                f.Resources.DistributeResources(elapsedTime);
+                if (f.HasResources)
+                    f.Resources.DistributeResources(elapsedTime);
             game.State.Navigator.Update();
             game.State.Advance(elapsedTime);
         }
