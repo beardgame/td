@@ -73,9 +73,10 @@ namespace Bearded.TD.Game
 
         public void Update(float elapsedTime)
         {
-            updateDragging();
             updateScrolling(elapsedTime);
             updateZoom(elapsedTime);
+
+            updateDragging();
 
             if (!isDragging)
                 constrictCameraToLevel(elapsedTime);
@@ -156,7 +157,15 @@ namespace Bearded.TD.Game
 
             var snapFactor = 1 - Mathf.Pow(1e-6f, elapsedTime);
 
+            var oldMouseWorldPosition = getMouseWorldPosition();
+
             cameraDistance += error * snapFactor;
+
+            var newMouseWorldPosition = getMouseWorldPosition();
+
+            var positionError = oldMouseWorldPosition - newMouseWorldPosition;
+
+            cameraPosition += positionError;
         }
 
         private void recalculateViewMatrix()
