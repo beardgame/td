@@ -10,9 +10,9 @@ namespace Bearded.TD.Game.UI.Components
 {
     class FactionStatus : UIComponent
     {
-        private const float fontSize = 14;
-        private const float lineHeight = 16;
-        private const float padding = 6;
+        private const float fontSize = Constants.UI.FontSize;
+        private const float lineHeight = Constants.UI.LineHeight;
+        private const float padding = Constants.UI.BoxPadding;
         
         private readonly Faction faction;
 

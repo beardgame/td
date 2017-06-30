@@ -10,8 +10,6 @@ namespace Bearded.TD.UI.Components
 {
     class TextInput : UIComponent
     {
-        private const float fontSize = 14;
-
         private static readonly HashSet<char> allowedChars = new HashSet<char> {' ', '-', '_', '.', '+', '"'};
         private const string cursorString = "|";
 
@@ -77,7 +75,7 @@ namespace Bearded.TD.UI.Components
 
         public override void Draw(GeometryManager geometries)
         {
-            geometries.ConsoleFont.Height = fontSize;
+            geometries.ConsoleFont.Height = Constants.UI.FontSize;
             geometries.ConsoleFont.Color = Color.White;
 
             var height = Bounds.YStart + .5f * Bounds.Height;
