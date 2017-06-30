@@ -8,9 +8,12 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 
 namespace Bearded.TD.Networking.Loading
 {
@@ -44,9 +47,10 @@ namespace Bearded.TD.Networking.Loading
 
         private void setupFactions()
         {
-            foreach (var p in Game.Players)
+            foreach (var (p, i) in Game.Players.Indexed())
             {
-                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false);
+                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
                 Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
                 Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command,  p, playerFaction);
             }

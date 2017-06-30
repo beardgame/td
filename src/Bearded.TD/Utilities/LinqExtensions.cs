@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Bearded.TD.Utilities
 {
@@ -16,5 +17,8 @@ namespace Bearded.TD.Utilities
             dict.TryGetValue(key, out var value);
             return value;
         }
+
+        public static IEnumerable<(T, int)> Indexed<T>(this IEnumerable<T> source)
+            => source.Select((t, i) => (t, i));
     }
 }
