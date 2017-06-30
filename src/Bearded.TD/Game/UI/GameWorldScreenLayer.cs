@@ -41,6 +41,11 @@ namespace Bearded.TD.Game.UI
             game.State.Level.Draw(geometries);
             //game.State.Navigator.DrawDebug(geometries, game.State.Level);
 
+
+            var sunDistance = 10000f;
+
+            geometries.PointLight.Draw(new Vector3(-sunDistance, sunDistance, sunDistance / 2), sunDistance * 10, Color.White * 0.15f);
+
             foreach (var obj in game.State.GameObjects)
             {
                 obj.Draw(geometries);
