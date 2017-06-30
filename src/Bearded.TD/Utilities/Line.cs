@@ -20,8 +20,8 @@ namespace Bearded.TD.Utilities
 
         public bool IntersectsAsSegments(Line other)
         {
-            var a = this.Start;
-            var b = this.Direction;
+            var a = Start;
+            var b = Direction;
             var c = other.Start;
             var d = other.Direction;
 

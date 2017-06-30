@@ -266,7 +266,7 @@
     <Compile Include="Utilities\Input\InputManager.Actions.Mouse.cs" />
     <Compile Include="Utilities\Input\InputManager.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
-    <Compile Include="Utilities\Math.cs" />
+    <Compile Include="Utilities\Line.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
