@@ -78,18 +78,12 @@ namespace Bearded.TD.Game
         private void updateDragging()
         {
             if (isDragging)
-            {
                 continueDragging();
-            }
             else if (inputManager.RightMousePressed)
-            {
                 startDragging();
-            }
 
             if (inputManager.RightMouseReleased && isDragging)
-            {
                 stopDragging();
-            }
         }
 
         private void startDragging()
