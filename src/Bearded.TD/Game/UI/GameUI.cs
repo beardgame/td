@@ -13,6 +13,7 @@ namespace Bearded.TD.Game.UI
 
             AddScreenLayerOnTop(new GameWorldScreenLayer(this, gameInstance, gameRunner, geometries));
             AddScreenLayerOnTop(new BuildingScreenLayer(this, gameInstance, geometries));
+            AddScreenLayerOnTop(new StatusScreenLayer(this, geometries, gameInstance));
             AddScreenLayerOnTop(new GameOverScreenLayer(this, geometries, gameInstance));
         }
     }

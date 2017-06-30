@@ -146,6 +146,7 @@
     <Compile Include="Game\UI\BuildingScreenLayer.cs" />
     <Compile Include="Game\UI\ChatLog.cs" />
     <Compile Include="Game\UI\ChatMessage.cs" />
+    <Compile Include="Game\UI\Components\FactionStatus.cs" />
     <Compile Include="Game\UI\Cursor.cs" />
     <Compile Include="Game\UI\CursorState.cs" />
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Game\UI\GameUI.cs" />
     <Compile Include="Game\UI\IClickHandler.cs" />
     <Compile Include="Game\UI\PlayerInput.cs" />
+    <Compile Include="Game\UI\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />

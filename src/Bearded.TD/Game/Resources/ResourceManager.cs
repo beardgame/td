@@ -12,8 +12,10 @@ namespace Bearded.TD.Game.Resources
         private double totalResourcesProvided;
 
         private double currentResources;
+        private double currentIncome;
 
-        public long CurrentResources => (long)currentResources;
+        public long CurrentResources => (long) currentResources;
+        public int CurrentIncome => (int) currentIncome;
 
         public void ProvideOneTimeResource(double amount)
         {
@@ -75,6 +77,7 @@ namespace Bearded.TD.Game.Resources
 
         private void resetForFrame()
         {
+            currentIncome = totalResourcesProvided - totalResourcesRequested;
             resourceConsumers.Clear();
             totalResourcesRequested = 0;
             totalResourcesProvided = 0;
