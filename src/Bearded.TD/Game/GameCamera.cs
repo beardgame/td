@@ -2,7 +2,6 @@
 using System.Linq;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Input;
-using Bearded.TD.Utilities.Input.Actions;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
