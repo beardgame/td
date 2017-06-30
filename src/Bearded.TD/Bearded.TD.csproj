@@ -83,6 +83,7 @@
     <Compile Include="Constants\Game.cs" />
     <Compile Include="Constants\Network.cs" />
     <Compile Include="Constants\Paths.cs" />
+    <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Blueprints\BlueprintCollection.cs" />
     <Compile Include="Game\Blueprints\BlueprintManager.cs" />

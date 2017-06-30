@@ -11,9 +11,9 @@ namespace Bearded.TD.Game.UI
 {
     class BuildingScreenLayer : UIScreenLayer
     {
-        private const float fontSize = 14;
-        private const float lineHeight = 16;
-        private const float padding = 6;
+        private const float fontSize = Constants.UI.FontSize;
+        private const float lineHeight = Constants.UI.LineHeight;
+        private const float padding = Constants.UI.BoxPadding;
 
         private readonly GameInstance game;
         private readonly IClickHandler[] clickHandlers;
@@ -59,7 +59,7 @@ namespace Bearded.TD.Game.UI
             bgGeo.Color = Color.Black * 0.7f;
             bgGeo.DrawRectangle(
                 Vector2.Zero,
-                new Vector2(160, actionDescriptions.Length * lineHeight + 2 * padding));
+                new Vector2(180, actionDescriptions.Length * lineHeight + 2 * padding));
 
             txtGeo.Height = fontSize;
             txtGeo.SizeCoefficient = Vector2.One;

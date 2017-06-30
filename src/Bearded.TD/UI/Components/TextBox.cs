@@ -8,9 +8,6 @@ namespace Bearded.TD.UI.Components
 {
     class TextBox<T> : UIComponent
     {
-        private const float fontSize = 14;
-        private const float lineHeight = 16;
-
         private readonly Func<IReadOnlyList<T>> itemProvider;
         private readonly Func<T, (string, Color)> itemTransformer;
 
@@ -26,17 +23,17 @@ namespace Bearded.TD.UI.Components
             var entries = itemProvider();
 
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
-            geometries.ConsoleFont.Height = fontSize;
+            geometries.ConsoleFont.Height = Constants.UI.FontSize;
 
-            var y = Bounds.YEnd - lineHeight;
+            var y = Bounds.YEnd - Constants.UI.LineHeight;
             var i = entries.Count;
 
-            while (y >= -lineHeight && i > 0)
+            while (y >= -Constants.UI.LineHeight && i > 0)
             {
                 (var text, var color) = itemTransformer(entries[--i]);
                 geometries.ConsoleFont.Color = color;
                 geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, y), text);
-                y -= lineHeight;
+                y -= Constants.UI.LineHeight;
             }
         }
     }

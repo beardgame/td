@@ -8,14 +8,14 @@ namespace Bearded.TD.UI.Components
 {
     class Button : FocusableUIComponent
     {
-        private const float padding = 8f;
-        
         private readonly Action action;
         private readonly string text;
         private readonly float fontSize;
         private readonly float textAlign;
 
-        public Button(Bounds bounds, Action action, string text, float fontSize, float textAlign = 0f) : base(bounds)
+        public Button(
+            Bounds bounds, Action action, string text, float fontSize = Constants.UI.FontSize, float textAlign = 0f)
+            : base(bounds)
         {
             this.action = action;
             this.text = text;
@@ -45,7 +45,7 @@ namespace Bearded.TD.UI.Components
             fontGeo.Height = fontSize;
 
             var pos = new Vector2(
-                Bounds.XStart + padding + textAlign * (Bounds.Width - 2 * padding),
+                Bounds.XStart + Constants.UI.BoxPadding + textAlign * (Bounds.Width - 2 * Constants.UI.BoxPadding),
                 Bounds.CenterY());
 
             fontGeo.DrawString(pos, text, textAlign, .5f);

@@ -9,7 +9,6 @@ namespace Bearded.TD.UI.Components
     class ChatComponent : CompositeComponent
     {
         private readonly GameInstance game;
-        private const float textInputHeight = 16;
         private static readonly Color textColor = Color.White;
         
         private readonly TextInput textInput;
@@ -19,9 +18,10 @@ namespace Bearded.TD.UI.Components
             this.game = game;
 
             textInput = new TextInput(
-                new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, textInputHeight, 1, 1)));
+                new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, Constants.UI.FontSize, 1, 1)));
             AddComponent(new TextBox<ChatMessage>(
-                Bounds.Within(bounds, 0, 0, textInputHeight, 0), () => game.ChatLog.Messages, msg => (msg.GetDisplayString(), textColor)));
+                Bounds.Within(bounds, 0, 0, Constants.UI.FontSize, 0),
+                () => game.ChatLog.Messages, msg => (msg.GetDisplayString(), textColor)));
             AddComponent(textInput);
 
             textInput.Submitted += sendChatMessage;
