@@ -35,5 +35,10 @@ namespace Bearded.TD.Networking.Serialization
         public void Serialize(ref Color color) => buffer.Write(color.ARGB);
 
         public void Serialize(ref Color? color, uint nullValue = 0) => buffer.Write(color?.ARGB ?? nullValue);
+
+        public void SerializeArrayCount<T>(ref T[] array)
+        {
+            buffer.Write(array.Length);
+        }
     }
 }

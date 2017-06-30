@@ -120,6 +120,7 @@
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
+    <Compile Include="Game\Commands\synchronization\SyncUnits.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
     <Compile Include="Game\Factions\Faction.cs" />
     <Compile Include="Game\GameCamera.cs" />
@@ -159,6 +160,8 @@
     <Compile Include="Game\UI\PlayerInput.cs" />
     <Compile Include="Game\UI\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
+    <Compile Include="Game\Units\GameUnitState.cs" />
+    <Compile Include="Utilities\ISyncable.cs" />
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />
     <Compile Include="Game\Units\UnitSource.cs" />

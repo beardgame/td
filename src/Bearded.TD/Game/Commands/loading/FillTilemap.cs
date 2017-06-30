@@ -57,12 +57,9 @@ namespace Bearded.TD.Game.Commands
 
             public void Serialize(INetBufferStream stream)
             {
-                var count = tiles?.Length ?? 0;
-                stream.Serialize(ref count);
-                if (tiles == null)
-                    tiles = new TileInfo.Type[count];
+                stream.SerializeArrayCount(ref tiles);
                 var bytes = (byte[]) (object) tiles;
-                foreach (var i in Enumerable.Range(0, count))
+                foreach (var i in Enumerable.Range(0, tiles.Length))
                 {
                     stream.Serialize(ref bytes[i]);
                 }

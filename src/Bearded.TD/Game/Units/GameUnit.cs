@@ -11,7 +11,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {
-    abstract class GameUnit : GameObject, IIdable<GameUnit>
+    abstract class GameUnit : GameObject, IIdable<GameUnit>, ISyncable<GameUnitState>
     {
         public Id<GameUnit> Id { get; }
         protected UnitBlueprint Blueprint { get; }
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Units
         public Position2 Position { get; private set; }
         private Tile<TileInfo> anchorTile;
         protected Tile<TileInfo> CurrentTile { get; private set; }
-        public int Health { get; private set; }
+        protected int Health { get; private set; }
 
         protected GameUnit(Id<GameUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
@@ -106,5 +106,19 @@ namespace Bearded.TD.Game.Units
 
         protected virtual void OnKill(Faction killingBlowFaction)
         { }
+
+        public GameUnitState GetCurrentState()
+        {
+            return new GameUnitState(
+                anchorTile.X, anchorTile.Y, (byte) currentMovementDir, movementProgress.NumericValue, Health);
+        }
+
+        public void SyncFrom(GameUnitState state)
+        {
+            anchorTile = new Tile<TileInfo>(Game.Level.Tilemap, state.TileX, state.TileY);
+            currentMovementDir = (Direction) state.Direction;
+            movementProgress = new Unit(state.MovementProgress);
+            Health = state.Health;
+        }
     }
 }

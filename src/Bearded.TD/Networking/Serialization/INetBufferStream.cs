@@ -17,5 +17,7 @@ namespace Bearded.TD.Networking.Serialization
 
         void Serialize(ref Color color);
         void Serialize(ref Color? color, uint nullValue = 0);
+
+        void SerializeArrayCount<T>(ref T[] array);
     }
 }
