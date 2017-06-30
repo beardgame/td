@@ -8,8 +8,6 @@ namespace Bearded.TD.Game.UI
 {
     class StatusScreenLayer : UIScreenLayer
     {
-        private readonly GameInstance game;
-
         public StatusScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, GameInstance game)
             : base(parent, geometries)
         {
