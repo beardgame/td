@@ -18,7 +18,7 @@ namespace Bearded.TD.Screens
         public LoadingScreen(
             ScreenLayerCollection parent, GeometryManager geometries,
             LoadingManager loadingManager, InputManager inputManager)
-            : base(parent, geometries, 0, 1, true)
+            : base(parent, geometries)
         {
             this.loadingManager = loadingManager;
             this.inputManager = inputManager;

@@ -17,7 +17,7 @@ namespace Bearded.TD.Screens
         private readonly InputManager inputManager;
 
         public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
-            : base(parent, geometries, 0f, 1f, true)
+            : base(parent, geometries)
         {
             this.logger = logger;
             this.inputManager = inputManager;

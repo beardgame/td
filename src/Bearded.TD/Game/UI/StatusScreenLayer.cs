@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.UI
         private readonly GameInstance game;
 
         public StatusScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, GameInstance game)
-            : base(parent, geometries, 0, 1, true)
+            : base(parent, geometries)
         {
             AddComponent(new FactionStatus(
                 Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.Start, new Vector2(160, 100)),
