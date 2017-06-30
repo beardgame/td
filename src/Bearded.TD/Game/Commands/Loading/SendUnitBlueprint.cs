@@ -36,6 +36,7 @@ namespace Bearded.TD.Game.Commands
             private string name;
             private int health;
             private int damage;
+            private double timeBetweenAttacks;
             private float speed;
             private float value;
 
@@ -50,12 +51,14 @@ namespace Bearded.TD.Game.Commands
                 name = blueprint.Name;
                 health = blueprint.Health;
                 damage = blueprint.Damage;
+                timeBetweenAttacks = blueprint.TimeBetweenAttacks.NumericValue;
                 speed = blueprint.Speed.NumericValue;
                 value = blueprint.Value;
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, new UnitBlueprint(id, name, health, damage, new Speed(speed), value));
+                => new Implementation(game, new UnitBlueprint(
+                    id, name, health, damage, new TimeSpan(timeBetweenAttacks), new Speed(speed), value));
 
             public void Serialize(INetBufferStream stream)
             {
@@ -63,6 +66,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref name);
                 stream.Serialize(ref health);
                 stream.Serialize(ref damage);
+                stream.Serialize(ref timeBetweenAttacks);
                 stream.Serialize(ref speed);
                 stream.Serialize(ref value);
             }

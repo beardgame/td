@@ -96,7 +96,7 @@ namespace Bearded.TD.Networking.Loading
 
             // === Enemies ===
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game,
-                new UnitBlueprint(Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 25, new Speed(2), 10)));
+                new UnitBlueprint(Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 10, TimeSpan.One, new Speed(2), 10)));
         }
     }
 }

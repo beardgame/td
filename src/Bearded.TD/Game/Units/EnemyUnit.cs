@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings.Components;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
@@ -15,7 +14,7 @@ namespace Bearded.TD.Game.Units
 {
     class EnemyUnit : GameUnit
     {
-        private bool dealtDamage;
+        private Instant? nextAttack;
 
         public EnemyUnit(Id<GameUnit> unitId, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
             : base(unitId, blueprint, currentTile)
@@ -31,19 +30,21 @@ namespace Bearded.TD.Game.Units
         {
             base.Update(elapsedTime);
 
-            if (!dealtDamage)
-                tryDealDamage();
+            tryDealDamage();
         }
 
         private void tryDealDamage()
         {
-            var target = CurrentTile.Neighbours
-                .Select(t => t.Info.Building).FirstOrDefault(b => b != null && b.HasComponentOfType<EnemySink>());
-            if (target == null)
-                return;
-            target.Damage(Blueprint.Damage);
-            dealtDamage = true;
-            this.Sync(KillUnit.Command, this, (Faction) null);
+            while (nextAttack == null || nextAttack.Value <= Game.Time)
+            {
+                var target = CurrentTile.Neighbours
+                        .Select(t => t.Info.Building)
+                        .FirstOrDefault(b => b != null && !b.Deleted && b.HasComponentOfType<EnemySink>());
+                if (target == null) return;
+                
+                target.Damage(Blueprint.Damage);
+                nextAttack = (nextAttack ?? Game.Time) + Blueprint.TimeBetweenAttacks;
+            }
         }
 
         public override void Draw(GeometryManager geometries)
