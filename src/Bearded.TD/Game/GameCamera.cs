@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Input;
+using Bearded.TD.Utilities.Input.Actions;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
@@ -26,7 +28,6 @@ namespace Bearded.TD.Game
         private float zoomSpeed => BaseZoomSpeed * (1 + cameraDistance * ZoomSpeedFactor);
 
         public Matrix4 ViewMatrix { get; private set; }
-        public Matrix4 ScreenToWorld { get; private set; }
 
         public GameCamera(InputManager inputManager, GameMeta meta, float levelRadius)
         {
@@ -40,21 +41,24 @@ namespace Bearded.TD.Game
 
             scrollActions =  new Dictionary<IAction, Vector2>
             {
-                {keyOrAxis(Key.Left,"-x"), -Vector2.UnitX},
-                {keyOrAxis(Key.Right, "+x"), Vector2.UnitX},
-                {keyOrAxis(Key.Up,"+y"), Vector2.UnitY},
-                {keyOrAxis(Key.Down,"-y"), -Vector2.UnitY},
+                { axisOrKeys("-x", Key.Left, Key.A), -Vector2.UnitX },
+                { axisOrKeys("+x", Key.Right, Key.D), Vector2.UnitX },
+                { axisOrKeys("+y", Key.Up, Key.W), Vector2.UnitY },
+                { axisOrKeys("-y", Key.Down, Key.S), -Vector2.UnitY },
             };
 
             zoomActions = new Dictionary<IAction, float>
             {
-                {keyOrAxis(Key.PageDown,"+z"), 1f},
-                {keyOrAxis(Key.PageUp,"-z"), -1f},
+                {axisOrKeys("+z", Key.PageDown), 1f},
+                {axisOrKeys("-z", Key.PageUp), -1f},
             };
         }
 
-        private IAction keyOrAxis(Key key, string axis)
-            => inputManager.Actions.Keyboard.FromKey(key).Or(inputManager.Actions.Gamepad.WithId(0).FromButtonName(axis));
+        private IAction axisOrKeys(string axis, params Key[] keys)
+        {
+            return inputManager.Actions.Gamepad.WithId(0).FromButtonName(axis)
+                    .Or(InputAction.AnyOf(keys.Select(k => inputManager.Actions.Keyboard.FromKey(k)).ToArray()));
+        }
 
         public void OnViewportSizeChanged(ViewportSize viewportSize)
         {
