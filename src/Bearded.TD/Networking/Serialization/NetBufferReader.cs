@@ -44,5 +44,10 @@ namespace Bearded.TD.Networking.Serialization
             else
                 color = new Color(val);
         }
+
+        public void SerializeArrayCount<T>(ref T[] array)
+        {
+            array = new T[buffer.ReadInt32()];
+        }
     }
 }
