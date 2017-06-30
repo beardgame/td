@@ -19,7 +19,8 @@ namespace Bearded.TD.Game
         private readonly GameMeta meta;
         private readonly float levelRadius;
 
-        private Vector2? mousePosInWorldSpace;
+        private bool isDragging;
+        private Vector2 mousePosInWorldSpace;
         private ViewportSize viewportSize;
 
         private Vector2 cameraPosition;
@@ -66,7 +67,7 @@ namespace Bearded.TD.Game
 
         public void Update(float elapsedTime)
         {
-            if (inputManager.RightMousePressed || mousePosInWorldSpace != null)
+            if (inputManager.RightMousePressed || isDragging)
                 updateDragging();
             if (!inputManager.RightMousePressed)
                 updateScrolling(elapsedTime);
@@ -76,23 +77,43 @@ namespace Bearded.TD.Game
 
         private void updateDragging()
         {
-            if (inputManager.RightMousePressed && !mousePosInWorldSpace.HasValue)
+            if (isDragging)
             {
-                mousePosInWorldSpace = getMouseWorldPosition();
-                meta.Logger.Trace.Log("Start drag at {0}", mousePosInWorldSpace);
-            } else if (mousePosInWorldSpace.HasValue)
+                continueDragging();
+            }
+            else if (inputManager.RightMousePressed)
             {
-                var currMousePos = getMouseWorldPosition();
-                var error = currMousePos - mousePosInWorldSpace.Value;
-                cameraPosition -= error;
+                startDragging();
             }
 
-            if (inputManager.RightMouseReleased && mousePosInWorldSpace != null)
+            if (inputManager.RightMouseReleased && isDragging)
             {
-                mousePosInWorldSpace = null;
-                meta.Logger.Trace.Log("End drag");
+                stopDragging();
             }
         }
+
+        private void startDragging()
+        {
+            mousePosInWorldSpace = getMouseWorldPosition();
+            isDragging = true;
+
+            meta.Logger.Trace.Log("Start drag at {0}", mousePosInWorldSpace);
+        }
+
+        private void continueDragging()
+        {
+            var currMousePos = getMouseWorldPosition();
+            var error = currMousePos - mousePosInWorldSpace;
+            cameraPosition -= error;
+        }
+
+        private void stopDragging()
+        {
+            isDragging = false;
+
+            meta.Logger.Trace.Log("End drag");
+        }
+
 
         private void updateScrolling(float elapsedTime)
         {
