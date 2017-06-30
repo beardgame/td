@@ -70,6 +70,7 @@ namespace Bearded.TD.Utilities.Input
         public bool MouseMoved => mouseState.Current.X != mouseState.Previous.X
                                || mouseState.Current.Y != mouseState.Previous.Y;
         public int DeltaScroll => mouseState.Current.ScrollWheelValue - mouseState.Previous.ScrollWheelValue;
+        public float DeltaScrollF => mouseState.Current.WheelPrecise - mouseState.Previous.WheelPrecise;
 
         public bool IsMouseButtonPressed(MouseButton button) => mouseState.Current[button];
         public bool IsMouseButtonHit(MouseButton button) => mouseState.Current[button] && !mouseState.Previous[button];

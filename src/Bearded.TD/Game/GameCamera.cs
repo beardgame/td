@@ -31,6 +31,8 @@ namespace Bearded.TD.Game
         private float cameraDistance;
         private float zoomSpeed => BaseZoomSpeed * (1 + cameraDistance * ZoomSpeedFactor);
 
+        private float cameraGoalDistance;
+
         public Matrix4 ViewMatrix { get; private set; }
 
         public GameCamera(InputManager inputManager, GameMeta meta, float levelRadius)
@@ -41,6 +43,7 @@ namespace Bearded.TD.Game
 
             cameraPosition = Vector2.Zero;
             cameraDistance = ZDefault;
+            cameraGoalDistance = ZDefault;
             recalculateViewMatrix();
 
             scrollActions = new Dictionary<IAction, Vector2>
@@ -142,13 +145,19 @@ namespace Bearded.TD.Game
 
         private void updateZoom(float elapsedTime)
         {
-            var mouseScroll = -inputManager.DeltaScroll * ScrollTickValue * zoomSpeed;
+            var mouseScroll = -inputManager.DeltaScrollF * ScrollTickValue * zoomSpeed;
             
             var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key.AnalogAmount * a.Value);
 
-            var newCameraDistance = cameraDistance + mouseScroll + velocity * zoomSpeed * elapsedTime;
+            var newCameraDistance = cameraGoalDistance + mouseScroll + velocity * zoomSpeed * elapsedTime;
 
-            cameraDistance = newCameraDistance.Clamped(ZMin, maxCameraDistance);
+            cameraGoalDistance = newCameraDistance.Clamped(ZMin, maxCameraDistance);
+
+            var error = cameraGoalDistance - cameraDistance;
+
+            var snapFactor = 1 - Mathf.Pow(1e-6f, elapsedTime);
+
+            cameraDistance += error * snapFactor;
         }
 
         private void recalculateViewMatrix()
