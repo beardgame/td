@@ -15,7 +15,6 @@ void main()
 {
     vec3 normal = texture(normalBuffer, fragmentUV).xyz;
     normal = normal * 2 - 1;
-    normal.y = -normal.y;
     float fragmentZ = texture(depthBuffer, fragmentUV).x;
 
     vec3 fragmentPosition = vec3(fragmentXY, fragmentZ);
