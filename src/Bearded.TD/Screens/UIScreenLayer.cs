@@ -25,7 +25,7 @@ namespace Bearded.TD.Screens
 
         protected UIScreenLayer(
                 ScreenLayerCollection parent, GeometryManager geometries,
-                float originX = .5f, float originY = 1, bool flipY = true)
+                float originX = 0, float originY = 1, bool flipY = true)
             : base(parent)
         {
             Geometries = geometries;

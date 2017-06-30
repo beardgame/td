@@ -20,7 +20,7 @@ namespace Bearded.TD.Screens
         public LobbyScreen(
                 ScreenLayerCollection parent, GeometryManager geometries,
                 LobbyManager lobbyManager, InputManager inputManager)
-            : base(parent, geometries, 0, 1, true)
+            : base(parent, geometries)
         {
             this.lobbyManager = lobbyManager;
             this.inputManager = inputManager;

@@ -28,7 +28,7 @@ namespace Bearded.TD.Screens
         private int commandHistoryIndex = -1;
 
         public ConsoleScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, Logger logger)
-            : base(parent, geometries, 0, 1, true)
+            : base(parent, geometries)
         {
             this.logger = logger;
 
