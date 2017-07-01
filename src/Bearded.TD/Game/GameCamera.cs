@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Input;
@@ -145,27 +146,54 @@ namespace Bearded.TD.Game
 
         private void updateZoom(float elapsedTime)
         {
+            updateCameraGoalDistance(elapsedTime);
+
+            updateCameraDistance(elapsedTime);
+        }
+
+        private void updateCameraGoalDistance(float elapsedTime)
+        {
             var mouseScroll = -inputManager.DeltaScrollF * ScrollTickValue * zoomSpeed;
-            
+
             var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key.AnalogAmount * a.Value);
 
             var newCameraDistance = cameraGoalDistance + mouseScroll + velocity * zoomSpeed * elapsedTime;
 
-            cameraGoalDistance = newCameraDistance.Clamped(ZMin, maxCameraDistance);
+            newCameraDistance = newCameraDistance.Clamped(ZMin * 0.9f, maxCameraDistance * 1.1f);
 
-            var error = cameraGoalDistance - cameraDistance;
+            float error = 0;
+
+            if (newCameraDistance < ZMin)
+            {
+                error = newCameraDistance - ZMin;
+            }
+            else if (newCameraDistance > maxCameraDistance)
+            {
+                error = newCameraDistance - maxCameraDistance;
+            }
+
+            var snapFactor = 1 - Mathf.Pow(1e-8f, elapsedTime);
+
+            newCameraDistance -= error * snapFactor;
+
+            cameraGoalDistance = newCameraDistance;
+        }
+
+        private void updateCameraDistance(float elapsedTime)
+        {
+            var error = cameraDistance - cameraGoalDistance;
 
             var snapFactor = 1 - Mathf.Pow(1e-6f, elapsedTime);
 
             var oldMouseWorldPosition = getMouseWorldPosition();
 
-            cameraDistance += error * snapFactor;
+            cameraDistance -= error * snapFactor;
 
             var newMouseWorldPosition = getMouseWorldPosition();
 
-            var positionError = oldMouseWorldPosition - newMouseWorldPosition;
+            var positionError = newMouseWorldPosition - oldMouseWorldPosition;
 
-            cameraPosition += positionError;
+            cameraPosition -= positionError;
         }
 
         private void recalculateViewMatrix()
