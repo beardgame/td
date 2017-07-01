@@ -4,6 +4,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking.Loading;
 using Bearded.TD.Utilities;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Networking.Lobby
 
         protected LobbyManager(
             Logger logger,
-            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            (IRequestDispatcher request, IDispatcher master, IGameSynchronizer synchronizer) dispatchers,
             Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
@@ -28,17 +29,21 @@ namespace Bearded.TD.Networking.Lobby
             {
                 ConnectionState = PlayerConnectionState.Waiting
             };
-            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, ids);
+            Game = new GameInstance(
+                player, dispatchers.request, dispatchers.master,
+                logger, dataMessageHandlerFactory, dispatchers.synchronizer, ids);
         }
 
         protected LobbyManager(
             Logger logger,
             Player player,
-            (IRequestDispatcher request, IDispatcher master) dispatchers,
+            (IRequestDispatcher request, IDispatcher master, IGameSynchronizer synchronizer) dispatchers,
             Func<GameInstance, IDataMessageHandler> dataMessageHandlerFactory)
             : this(logger, dispatchers.master)
         {
-            Game = new GameInstance(player, dispatchers.request, dispatchers.master, logger, dataMessageHandlerFactory, null);
+            Game = new GameInstance(
+                player, dispatchers.request, dispatchers.master,
+                logger, dataMessageHandlerFactory, dispatchers.synchronizer, null);
         }
 
         private LobbyManager(Logger logger, IDispatcher dispatcher)

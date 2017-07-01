@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game
         public GameInstance(
             Player me, IRequestDispatcher requestDispatcher,
             IDispatcher dispatcher, Logger logger,
-            DataMessageHandlerFactory dataMessageHandlerFactory, IdManager ids)
+            DataMessageHandlerFactory dataMessageHandlerFactory, IGameSynchronizer synchronizer, IdManager ids)
         {
             Me = me;
             RequestDispatcher = requestDispatcher;
@@ -56,7 +57,7 @@ namespace Bearded.TD.Game
 
             AddPlayer(me);
 
-            Meta = new GameMeta(logger, dispatcher, ids);
+            Meta = new GameMeta(logger, dispatcher, synchronizer, ids);
         }
 
         public void AddPlayer(Player player)

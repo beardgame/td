@@ -4,6 +4,7 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
@@ -39,6 +40,7 @@ namespace Bearded.TD.Game.Units
             base.OnAdded();
 
             Game.IdAs(this);
+            Game.Meta.Synchronizer.RegisterSyncable(this);
 
             updateCurrentTile(anchorTile);
             Position = Game.Level.GetPosition(anchorTile);

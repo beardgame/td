@@ -1,4 +1,4 @@
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Game.Synchronization
 {
     interface ISyncable<TState>
     {

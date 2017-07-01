@@ -41,6 +41,8 @@ namespace Bearded.TD.Game
                     f.Resources.DistributeResources(elapsedTime);
             game.State.Navigator.Update();
             game.State.Advance(elapsedTime);
+
+            game.State.Meta.Synchronizer.Synchronize(game.State.Time);
         }
     }
 }
