@@ -5,7 +5,7 @@
         public static class Network
         {
             public const string ApplicationName = "Bearded.TD";
-            public const int DefaultPort = 24291;
+            public const int DefaultPort = 24292;
         }
     }
 }
