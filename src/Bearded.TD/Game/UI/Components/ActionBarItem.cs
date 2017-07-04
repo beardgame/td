@@ -16,12 +16,14 @@ namespace Bearded.TD.Game.UI.Components
 
         private Content content;
 
-        public ActionBarItem(Bounds bounds) : base(bounds) { }
+        public ActionBarItem(Bounds bounds) : base(bounds)
+        {
+            Unfocused += _ => content?.Undo?.Invoke();
+        }
 
         public void SetContent(Content content)
         {
             this.content = content;
-            Unfocused += _ => content?.Undo?.Invoke();
         }
 
         public override void HandleInput(InputContext input)
