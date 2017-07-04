@@ -6,6 +6,9 @@ namespace Bearded.TD.UI.Components
 {
     class ConsoleTextBox : TextBox<Logger.Entry>
     {
+        private readonly List<Logger.Entry> entries = new List<Logger.Entry>(); 
+        private readonly Logger logger;
+
         private static readonly Dictionary<Logger.Severity, Color> colors = new Dictionary<Logger.Severity, Color>
         {
             { Logger.Severity.Fatal, Color.DeepPink },
@@ -23,14 +26,19 @@ namespace Bearded.TD.UI.Components
 #endif
 
         public ConsoleTextBox(Bounds bounds, Logger logger)
-            : base(bounds, () => getLoggerEntries(logger), formatLoggerEntry)
+            : base(bounds)
         {
+            this.logger = logger;
         }
 
-        private static IReadOnlyList<Logger.Entry> getLoggerEntries(Logger logger)
-            => logger.GetSafeRecentEntriesWithSeverity(lowestVisibleSeverity);
+        protected override IReadOnlyList<Logger.Entry> GetItems()
+        {
+            entries.Clear();
+            logger.CopyRecentEntriesWithSeverity(lowestVisibleSeverity, entries);
+            return entries;
+        }
 
-        private static (string, Color) formatLoggerEntry(Logger.Entry entry)
-            => (entry.Text, colors[entry.Severity]);
+        protected override (string, Color) Format(Logger.Entry item)
+            => (item.Text, colors[item.Severity]);
     }
 }

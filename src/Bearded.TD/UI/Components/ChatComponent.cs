@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Components
 
             textInput = new TextInput(
                 new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, Constants.UI.FontSize, 1, 1)));
-            AddComponent(new TextBox<ChatMessage>(
+            AddComponent(new InjectedTextBox<ChatMessage>(
                 Bounds.Within(bounds, 0, 0, Constants.UI.FontSize, 0),
                 () => game.ChatLog.Messages, msg => (msg.GetDisplayString(), textColor)));
             AddComponent(textInput);
