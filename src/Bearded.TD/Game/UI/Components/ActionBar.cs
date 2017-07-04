@@ -23,6 +23,8 @@ namespace Bearded.TD.Game.UI.Components
             this.unfocusAction = unfocusAction;
             actionBarItems = new ActionBarItem[actionBarSize];
             createActionBarItems();
+            if (actionPages.Count > 1)
+                createPageButtons();
             updateActionBarItemContents();
         }
 
@@ -39,6 +41,18 @@ namespace Bearded.TD.Game.UI.Components
             }
         }
 
+        private void createPageButtons()
+        {
+            var size = new Vector2(Bounds.Width, Bounds.Height / actionBarItems.Length);
+
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Bounds, 0, 0, size, -size.Y * Vector2.UnitY),
+                () => updatePage(currentPage - 1), "Previous"));
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Bounds, 0, 1, size, size.Y * Vector2.UnitY),
+                () => updatePage(currentPage + 1), "Next"));
+        }
+
         private void updateActionBarItemContents()
         {
             unfocusAll();
@@ -48,16 +62,16 @@ namespace Bearded.TD.Game.UI.Components
             }
         }
 
-        private void onActionBarFocus(IFocusable focusable)
-        {
-            unfocusAll(focusable);
-        }
-
         public override void HandleInput(InputContext input)
         {
             if (unfocusAction.Hit)
                 unfocusAll();
             base.HandleInput(input);
+        }
+
+        private void onActionBarFocus(IFocusable focusable)
+        {
+            unfocusAll(focusable);
         }
 
         private void unfocusAll(IFocusable except = null)
@@ -69,6 +83,14 @@ namespace Bearded.TD.Game.UI.Components
                     item.Unfocus();
                 }
             }
+        }
+
+        private void updatePage(int newPageNo)
+        {
+            if (newPageNo == currentPage) return;
+
+            currentPage = (newPageNo + actionPages.Count) % actionPages.Count;
+            updateActionBarItemContents();
         }
     }
 }
