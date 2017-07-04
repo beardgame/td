@@ -41,6 +41,8 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
+
+            Add(new RayCastingTestObject());
         }
 
         public void FinishLoading()

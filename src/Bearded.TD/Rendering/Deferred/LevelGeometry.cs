@@ -29,9 +29,9 @@ namespace Bearded.TD.Rendering.Deferred
              */
 
             var open0 = isOpen;
-            var open1 = openDirections.Includes(Left);
-            var open2 = openDirections.Includes(DownLeft);
-            var open3 = openDirections.Includes(UpLeft);
+            var open1 = openDirections.Includes(Right);
+            var open2 = openDirections.Includes(UpRight);
+            var open3 = openDirections.Includes(DownRight);
 
             const float z = 2;
 

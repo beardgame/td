@@ -9,16 +9,8 @@ namespace Bearded.TD.Game.Tiles
 {
     static class Tilemap
     {
-        public static ReadOnlyCollection<Direction> Directions { get; } = new[]
-            {
-                Direction.Left,
-                Direction.DownLeft,
-                Direction.DownRight,
-                Direction.Right,
-                Direction.UpRight,
-                Direction.UpLeft,
-            }.ToList()
-            .AsReadOnly();
+        public static ReadOnlyCollection<Direction> Directions { get; }
+            = Extensions.Directions;
 
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
     }
@@ -30,11 +22,14 @@ namespace Bearded.TD.Game.Tiles
 
         /* Layout of array:
          * (radius 1)
+         *   
+         *   /#/#/_/
+         *  /#/0/#/
+         * /_/#/#/
          *
-         * \_\#\#\
-         *  \#\0\#\
-         *   \#\#\_\
-         *
+         * > +x
+         * ^ +y
+         * 
          * 0 = 0,0 origin tile
          * # = other tiles
          * _ = empty tiles (not used)

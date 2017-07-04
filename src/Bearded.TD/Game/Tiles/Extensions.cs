@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Utilities.Math;
 using OpenTK;
@@ -24,22 +25,22 @@ namespace Bearded.TD.Game.Tiles
         private static readonly Direction[] directionOpposite =
         {
             Direction.Unknown,
-            Direction.Right,
-            Direction.UpRight,
-            Direction.UpLeft,
             Direction.Left,
             Direction.DownLeft,
             Direction.DownRight,
+            Direction.Right,
+            Direction.UpRight,
+            Direction.UpLeft,
         };
 
         private static readonly Direction[] directions =
         {
-            Direction.Left,
-            Direction.DownLeft,
-            Direction.DownRight,
             Direction.Right,
             Direction.UpRight,
             Direction.UpLeft,
+            Direction.Left,
+            Direction.DownLeft,
+            Direction.DownRight,
         };
 
         private static readonly Vector2[] corners =
@@ -52,16 +53,19 @@ namespace Bearded.TD.Game.Tiles
         private static readonly Direction2[] direction2s =
             Enumerable.Range(0, 7)
                 .Select(i =>
-                    Direction2.FromDegrees(i * 60f - 60f)
+                    Direction2.FromDegrees((i - 1) * 60f)
                 )
                 .ToArray();
 
         private static readonly Vector2[] vectors =
             Enumerable.Range(0, 7)
                 .Select(i =>
-                    Direction2.FromDegrees(i * 60f - 60f).Vector
+                    Direction2.FromDegrees((i - 1) * 60f).Vector
                 )
                 .ToArray();
+
+        public static ReadOnlyCollection<Direction> Directions { get; }
+            = directions.ToList().AsReadOnly();
 
         #endregion
 
@@ -87,8 +91,8 @@ namespace Bearded.TD.Game.Tiles
         public static Direction2 SpaceTimeDirection(this Direction direction) => direction2s[(int) direction];
         public static Vector2 Vector(this Direction direction) => vectors[(int) direction];
         public static Step Step(this Direction direction) => directionDelta[(int) direction];
-        public static bool Any(this Directions direction) => direction != Directions.None;
-        public static bool Any(this Directions direction, Directions match) => direction.Intersect(match) != Directions.All;
+        public static bool Any(this Directions direction) => direction != Tiles.Directions.None;
+        public static bool Any(this Directions direction, Directions match) => direction.Intersect(match) != Tiles.Directions.All;
         public static bool All(this Directions direction, Directions match) => direction.Intersect(match) == match;
         public static Direction Hexagonal(this Direction2 direction) => (Direction) ((int) Math.Floor(direction.Degrees * 1 / 60f + 0.5f) % 6 + 1);
         public static Direction Opposite(this Direction direction) => directionOpposite[(int) direction];
