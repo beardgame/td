@@ -125,6 +125,8 @@ namespace Bearded.TD.Meta
         {
             public string Username = "";
             public string SavedNetworkAddress = "";
+
+            public bool ShowTraceMessages = true;
         }
 
         public class UISettings
