@@ -19,8 +19,8 @@ namespace Bearded.TD
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-                var logger = new Logger();
-
+                var logger = new Logger {MirrorToConsole = false};
+                
                 logger.Info.Log("");
                 logger.Info.Log("Creating game");
                 var game = new TheGame(logger);

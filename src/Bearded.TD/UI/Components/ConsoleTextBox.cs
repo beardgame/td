@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Meta;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Components
@@ -20,9 +21,10 @@ namespace Bearded.TD.UI.Components
         };
         
 #if DEBUG
-        private static readonly Logger.Severity lowestVisibleSeverity = Logger.Severity.Trace;
+        private static Logger.Severity lowestVisibleSeverity() =>
+            UserSettings.Instance.Misc.ShowTraceMessages ? Logger.Severity.Trace : Logger.Severity.Debug;
 #else
-        private static readonly Logger.Severity lowestVisibleSeverity = Logger.Severity.Info;
+        private static Logger.Severity lowestVisibleSeverity() => Logger.Severity.Info;
 #endif
 
         public ConsoleTextBox(Bounds bounds, Logger logger)
@@ -30,11 +32,11 @@ namespace Bearded.TD.UI.Components
         {
             this.logger = logger;
         }
-
+        
         protected override IReadOnlyList<Logger.Entry> GetItems()
         {
             entries.Clear();
-            logger.CopyRecentEntriesWithSeverity(lowestVisibleSeverity, entries);
+            logger.CopyRecentEntriesWithSeverity(lowestVisibleSeverity(), entries);
             return entries;
         }
 
