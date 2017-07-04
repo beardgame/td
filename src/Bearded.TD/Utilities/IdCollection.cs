@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Utilities
 {
     class IdCollection<T> where T : IIdable<T>
     {
         private readonly List<T> objects = new List<T>();
-        private readonly Dictionary<T> objectsById = new Dictionary<T>();
+        private readonly IdDictionary<T> objectsById = new IdDictionary<T>();
         public ReadOnlyCollection<T> AsReadOnly { get; }
 
         public IdCollection()

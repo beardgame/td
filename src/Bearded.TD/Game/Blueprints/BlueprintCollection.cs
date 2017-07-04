@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Blueprints
 {
     class BlueprintCollection<T> where T : IIdable<T>
     {
-        private readonly Dictionary<T> blueprintsById = new Dictionary<T>();
+        private readonly IdDictionary<T> blueprintsById = new IdDictionary<T>();
 
         public T this[Id<T> id] => blueprintsById[id];
 

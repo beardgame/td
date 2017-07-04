@@ -5,6 +5,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -126,14 +127,14 @@ namespace Bearded.TD.Game
         }
 
 
-        private Dictionary<T> getDictionary<T>()
+        private IdDictionary<T> getDictionary<T>()
             where T : class, IIdable<T>
         {
             object dict;
             if (dictionaries.TryGetValue(typeof(T), out dict))
-                return (Dictionary<T>)dict;
+                return (IdDictionary<T>)dict;
 
-            var d = new Dictionary<T>();
+            var d = new IdDictionary<T>();
             dictionaries.Add(typeof(T), d);
             return d;
         }

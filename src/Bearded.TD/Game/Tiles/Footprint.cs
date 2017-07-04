@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.World;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Tiles

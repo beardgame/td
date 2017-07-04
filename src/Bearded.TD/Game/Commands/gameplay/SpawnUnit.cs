@@ -3,7 +3,7 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {

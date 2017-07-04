@@ -40,6 +40,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bearded.Utilities, Version=0.2.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.14-develop\lib\net45\Bearded.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="OpenTK">
       <HintPath>..\..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
@@ -309,10 +312,6 @@
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj">
       <Project>{49ba1c69-6104-41ac-a5d8-b54fa9f696e8}</Project>
       <Name>Lidgren.Network</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\libs\utilities\src\Bearded.Utilities.csproj">
-      <Project>{2F580B9D-6255-4427-8395-5EF236C9401C}</Project>
-      <Name>Bearded.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

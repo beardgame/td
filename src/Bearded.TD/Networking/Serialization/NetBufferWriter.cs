@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Serialization

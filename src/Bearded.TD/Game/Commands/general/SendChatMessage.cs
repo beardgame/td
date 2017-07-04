@@ -2,7 +2,7 @@
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {

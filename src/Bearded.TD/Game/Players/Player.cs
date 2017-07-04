@@ -1,7 +1,8 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Networking;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Players
 {

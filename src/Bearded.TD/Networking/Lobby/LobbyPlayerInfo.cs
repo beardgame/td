@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Lobby

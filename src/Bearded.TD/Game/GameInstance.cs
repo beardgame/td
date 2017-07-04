@@ -70,7 +70,7 @@ namespace Bearded.TD.Game
             players.Remove(player);
         }
 
-        public Player PlayerFor(Utilities.Id<Player> id) => players[id];
+        public Player PlayerFor(Id<Player> id) => players[id];
 
         public void SetLoading()
         {
