@@ -238,6 +238,7 @@
     <Compile Include="UI\Components\FocusableUIComponent.cs" />
     <Compile Include="UI\Components\FocusContainer.cs" />
     <Compile Include="UI\Components\IFocusable.cs" />
+    <Compile Include="UI\Components\InjectedTextBox.cs" />
     <Compile Include="UI\Components\Menu.cs" />
     <Compile Include="UI\Components\TextBox.cs" />
     <Compile Include="UI\Components\UIComponent.cs" />
