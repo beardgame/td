@@ -26,6 +26,11 @@ namespace Bearded.TD
                 public const float HexagonInnerRadiusSquared = (HexagonWidth * 0.5f) * (HexagonWidth * 0.5f);
                 public const float HexagonOuterRadiusSquared = HexagonSide * HexagonSide;
             }
+
+            public static class UI
+            {
+                public const int ActionBarSize = 10;
+            }
         }
     }
 }

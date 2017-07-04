@@ -21,13 +21,17 @@ namespace Bearded.TD.Game.UI.Components
         public void SetContent(Content content)
         {
             this.content = content;
+            Unfocused += _ => content?.Undo?.Invoke();
         }
 
         public override void HandleInput(InputContext input)
         {
             base.HandleInput(input);
             if (input.Manager.LeftMouseHit && Bounds.Contains(input.MousePosition))
+            {
                 Focus();
+                content.Action();
+            }
         }
 
         public override void Draw(GeometryManager geometries)
@@ -47,11 +51,13 @@ namespace Bearded.TD.Game.UI.Components
         public class Content
         {
             public Action Action { get; }
+            public Action Undo { get; }
             public string Description { get; }
 
-            public Content(Action action, string description)
+            public Content(Action action, Action undo, string description)
             {
                 Action = action;
+                Undo = undo;
                 Description = description;
             }
         }
