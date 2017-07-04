@@ -13,20 +13,20 @@ namespace Bearded.TD.UI.Components
 
         public void Focus()
         {
+            if (IsFocused) return;
             IsFocused = true;
             Focused?.Invoke(this);
         }
 
         public void Unfocus()
         {
+            if (!IsFocused) return;
             IsFocused = false;
             Unfocused?.Invoke(this);
         }
 
         protected void SetFocus(bool value)
         {
-            if (value == IsFocused)
-                return;
             if (value)
                 Focus();
             else

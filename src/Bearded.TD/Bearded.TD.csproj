@@ -150,10 +150,13 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\ActionBarScreenLayer.cs" />
     <Compile Include="Game\UI\BuildingClickHandler.cs" />
     <Compile Include="Game\UI\BuildingScreenLayer.cs" />
     <Compile Include="Game\UI\ChatLog.cs" />
     <Compile Include="Game\UI\ChatMessage.cs" />
+    <Compile Include="Game\UI\Components\ActionBar.cs" />
+    <Compile Include="Game\UI\Components\ActionBarItem.cs" />
     <Compile Include="Game\UI\Components\FactionStatus.cs" />
     <Compile Include="Game\UI\Cursor.cs" />
     <Compile Include="Game\UI\CursorState.cs" />
