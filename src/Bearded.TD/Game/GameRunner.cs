@@ -30,7 +30,7 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
-            game.Controller.Update(args);
+            game.Controller.Update();
 
             foreach (var msg in networkInterface.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)
