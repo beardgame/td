@@ -130,7 +130,8 @@ namespace Bearded.TD.Game
 
             private void showWarning()
             {
-                // No command for this yet
+                game.State.Meta.Dispatcher.RunOnlyOnServer(() => ShowUnitSpawnWarning.Command(
+                   game, tile, start + (size - 1) * timeBetweenSpawns));
                 warningSent = true;
             }
 

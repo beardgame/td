@@ -101,6 +101,7 @@
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
+    <Compile Include="Game\Commands\gameplay\ShowUnitSpawnWarning.cs" />
     <Compile Include="Game\Commands\loading\PlopBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\BuildBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\GameOver.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />
     <Compile Include="Game\Units\UnitSource.cs" />
+    <Compile Include="Game\Units\UnitWarning.cs" />
     <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
