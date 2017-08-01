@@ -15,7 +15,7 @@ out float fragmentDepth;
 
 void main()
 {
-    gl_Position = projection * view * vec4(vertexPosition.xy, 0, 1.0);
+    gl_Position = projection * view * vec4(vertexPosition, 1.0);
     fragmentNormal = vertexNormal;
     fragmentUV = vertexUV;
     fragmentColor = vertexColor;
