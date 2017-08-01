@@ -3,13 +3,10 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-
-using DataMessageHandlerFactory = System.Func<Bearded.TD.Game.GameInstance, Bearded.TD.Networking.IDataMessageHandler>;
 
 namespace Bearded.TD.Game
 {
@@ -18,6 +15,7 @@ namespace Bearded.TD.Game
         public Player Me { get; }
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
+        public IGameSimulator Simulator { get; }
 
         public GameMeta Meta { get; }
         
@@ -50,6 +48,7 @@ namespace Bearded.TD.Game
             Me = me;
             RequestDispatcher = context.RequestDispatcher;
             DataMessageHandler = context.DataMessageHandlerFactory(this);
+            Simulator = context.GameSimulatorFactory(this);
             Ids = ids;
 
             AddPlayer(me);

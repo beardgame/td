@@ -14,7 +14,8 @@ namespace Bearded.TD.Game
         private readonly InputManager inputManager;
         private readonly GameController controller;
 
-        public GameRunner(GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
+        public GameRunner(
+            GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
         {
             this.game = game;
             this.networkInterface = networkInterface;
@@ -30,6 +31,8 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
+            game.Simulator.Update(args);
+
             foreach (var msg in networkInterface.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)
                     game.DataMessageHandler.HandleIncomingMessage(msg);

@@ -5,43 +5,25 @@ namespace Bearded.TD.Game
 {
     class GameController
     {
-        private static readonly TimeSpan timeBetweenWaves = new TimeSpan(15);
-
         private readonly GameInstance game;
         private Position2 mousePosition;
-        private Instant nextWave;
 
         public GameController(GameInstance game)
         {
             this.game = game;
             game.State.Add(new Cursor(() => mousePosition));
-
-            queueEnemyWave();
-            nextWave = game.State.Time + timeBetweenWaves;
         }
 
         public void Update(PlayerInput input)
         {
             mousePosition = input.MousePos;
 
-            if (game.Cursor.ClickHandler != null)
-            {
-                var footprint = game.Cursor.GetFootprintForPosition(input.MousePos);
-                game.Cursor.Hover(footprint);
-                if (input.ClickAction.Hit)
-                    game.Cursor.Click(footprint);
-            }
+            if (game.Cursor.ClickHandler == null) return;
 
-            if (nextWave <= game.State.Time)
-            {
-                queueEnemyWave();
-                nextWave += timeBetweenWaves;
-            }
-        }
-
-        private void queueEnemyWave()
-        {
-            return;
+            var footprint = game.Cursor.GetFootprintForPosition(input.MousePos);
+            game.Cursor.Hover(footprint);
+            if (input.ClickAction.Hit)
+                game.Cursor.Click(footprint);
         }
     }
 }

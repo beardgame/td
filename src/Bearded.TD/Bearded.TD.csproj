@@ -123,6 +123,7 @@
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
+    <Compile Include="Game\GameSimulator.cs" />
     <Compile Include="Game\IGameContext.cs" />
     <Compile Include="Game\Synchronization\ClientGameSynchronizer.cs" />
     <Compile Include="Game\Commands\synchronization\SyncUnits.cs" />
