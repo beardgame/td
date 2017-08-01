@@ -45,19 +45,16 @@ namespace Bearded.TD.Game
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged; 
 
-        public GameInstance(
-            Player me, IRequestDispatcher requestDispatcher,
-            IDispatcher dispatcher, Logger logger,
-            DataMessageHandlerFactory dataMessageHandlerFactory, IGameSynchronizer synchronizer, IdManager ids)
+        public GameInstance(IGameContext context, Player me, IdManager ids)
         {
             Me = me;
-            RequestDispatcher = requestDispatcher;
-            DataMessageHandler = dataMessageHandlerFactory(this);
+            RequestDispatcher = context.RequestDispatcher;
+            DataMessageHandler = context.DataMessageHandlerFactory(this);
             Ids = ids;
 
             AddPlayer(me);
 
-            Meta = new GameMeta(logger, dispatcher, synchronizer, ids);
+            Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
         }
 
         public void AddPlayer(Player player)
