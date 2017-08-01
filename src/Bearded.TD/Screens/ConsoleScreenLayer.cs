@@ -43,7 +43,13 @@ namespace Bearded.TD.Screens
         protected override bool DoHandleInput(InputContext input)
         {
             if (input.Manager.IsKeyHit(Key.Tilde))
+            {
                 isConsoleEnabled = !isConsoleEnabled;
+                if (isConsoleEnabled)
+                    consoleInput.Focus();
+                else
+                    consoleInput.Unfocus();
+            }
 
             if (!isConsoleEnabled) return true;
 

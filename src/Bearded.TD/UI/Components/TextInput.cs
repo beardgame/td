@@ -8,7 +8,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.UI.Components
 {
-    class TextInput : UIComponent
+    class TextInput : FocusableUIComponent
     {
         private static readonly HashSet<char> allowedChars = new HashSet<char> {' ', '-', '_', '.', '+', '"'};
         private const string cursorString = "|";
@@ -34,6 +34,10 @@ namespace Bearded.TD.UI.Components
 
         public override void HandleInput(InputContext input)
         {
+            if (!IsFocused)
+            {
+                return;
+            }
             if (input.Manager.IsKeyHit(Key.Enter))
             {
                 Submitted?.Invoke(text);
@@ -80,6 +84,11 @@ namespace Bearded.TD.UI.Components
 
             var height = Bounds.YStart + .5f * Bounds.Height;
             geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, height), text, 0, .5f);
+
+            if (!IsFocused)
+            {
+                return;
+            }
 
             var cursorXOffset = Bounds.XStart + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
             geometries.ConsoleFont.DrawString(new Vector2(cursorXOffset, height), cursorString, .5f, .5f);

@@ -33,6 +33,7 @@ namespace Bearded.TD.Screens
 
             textInput = new TextInput(new Bounds(
                 new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
+            textInput.Focus();
             AddComponent(textInput);
             textInput.Submitted += tryConnect;
 
