@@ -14,8 +14,7 @@ namespace Bearded.TD.Game
         private readonly InputManager inputManager;
         private readonly GameInputHandler inputHandler;
 
-        public GameRunner(
-            GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
+        public GameRunner(GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
         {
             this.game = game;
             this.networkInterface = networkInterface;
