@@ -33,7 +33,7 @@ namespace Bearded.TD.Rendering.Deferred
             var open2 = openDirections.Includes(DownLeft);
             var open3 = openDirections.Includes(UpLeft);
 
-            const float z = 2;
+            const float z = 1f;
 
             var p0 = position.WithZ(open0 ? 0 : z);
             var p1 = (position + new Vector2(HexagonDistanceX, 0)).WithZ(open1 ? 0 : z);

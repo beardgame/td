@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Meta;
 using OpenTK.Graphics.OpenGL;
@@ -15,6 +16,8 @@ namespace Bearded.TD.Rendering
         private readonly Texture normalBuffer = createTexture(); // xyz
         private readonly Texture depthBuffer = createTexture(); // z
         private readonly Texture accumBuffer = createTexture(); // rgb
+        private readonly Texture depthMaskBuffer = createDepthTexture();
+
         private readonly RenderTarget gTarget = new RenderTarget();
         private readonly RenderTarget accumTarget = new RenderTarget();
 
@@ -30,6 +33,7 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
+            gTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
             renderTo(gTarget, (0, 0));
             GL.DrawBuffers(3, new []
             {
@@ -98,15 +102,28 @@ namespace Bearded.TD.Rendering
         private void renderWorldToGBuffers()
         {
             renderTo(gTarget, bufferSize);
+            
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            GL.Disable(EnableCap.Blend);
 
-            clearWithColor();
+            GL.ClearColor(0, 0, 0, 0);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             surfaces.LevelSurface.Render();
+            
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Blend);
 
             foreach (var surface in surfaces.GameSurfaces.SurfaceList)
             {
                 surface.Render();
             }
+
+            GL.Disable(EnableCap.DepthTest);
         }
 
         private void renderLightsToAccumBuffer()
@@ -169,6 +186,14 @@ namespace Bearded.TD.Rendering
             normalBuffer.Resize(w, h, PixelInternalFormat.Rgba16f);
             depthBuffer.Resize(w, h, PixelInternalFormat.R16f);
             accumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
+            resizeDepthMask(w, h);
+        }
+
+        private void resizeDepthMask(int w, int h)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, depthMaskBuffer);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, w, h, 0, PixelFormat.DepthComponent, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         private static Texture createTexture()
@@ -178,5 +203,17 @@ namespace Bearded.TD.Rendering
                 TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
             return texture;
         }
+
+        private static Texture createDepthTexture()
+        {
+            var texture = createTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.DepthTextureMode, (int)All.Intensity);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)TextureCompareMode.CompareRToTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            return texture;
+        }
+
     }
 }
