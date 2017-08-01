@@ -15,7 +15,7 @@ namespace Bearded.TD.Game
         public Player Me { get; }
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
-        public IGameSimulator Simulator { get; }
+        public IGameController Controller { get; }
 
         public GameMeta Meta { get; }
         
@@ -48,7 +48,7 @@ namespace Bearded.TD.Game
             Me = me;
             RequestDispatcher = context.RequestDispatcher;
             DataMessageHandler = context.DataMessageHandlerFactory(this);
-            Simulator = context.GameSimulatorFactory(this);
+            Controller = context.GameSimulatorFactory(this);
             Ids = ids;
 
             AddPlayer(me);

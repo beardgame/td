@@ -13,7 +13,7 @@ namespace Bearded.TD.Game
         IRequestDispatcher RequestDispatcher { get; }
         IGameSynchronizer GameSynchronizer { get; }
         Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
-        Func<GameInstance, IGameSimulator> GameSimulatorFactory { get; }
+        Func<GameInstance, IGameController> GameSimulatorFactory { get; }
     }
 
     sealed class ServerGameContext : IGameContext
@@ -23,7 +23,7 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
-        public Func<GameInstance, IGameSimulator> GameSimulatorFactory { get; }
+        public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
 
         public ServerGameContext(ServerNetworkInterface network, Logger logger)
         {
@@ -35,7 +35,7 @@ namespace Bearded.TD.Game
             GameSynchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
 
             DataMessageHandlerFactory = game => new ServerDataMessageHandler(game, network, logger);
-            GameSimulatorFactory = game => new GameSimulator(game);
+            GameSimulatorFactory = game => new GameController(game);
         }
     }
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
-        public Func<GameInstance, IGameSimulator> GameSimulatorFactory { get; }
+        public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
 
         public ClientGameContext(ClientNetworkInterface network, Logger logger)
         {
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game
             GameSynchronizer = new ClientGameSynchronizer();
             
             DataMessageHandlerFactory = game => new ClientDataMessageHandler(game, logger);
-            GameSimulatorFactory = game => new DummyGameSimulator();
+            GameSimulatorFactory = game => new DummyGameController();
         }
     }
 }

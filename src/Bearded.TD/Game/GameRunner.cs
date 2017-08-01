@@ -12,7 +12,7 @@ namespace Bearded.TD.Game
         private readonly GameInstance game;
         private readonly NetworkInterface networkInterface;
         private readonly InputManager inputManager;
-        private readonly GameController controller;
+        private readonly GameInputHandler inputHandler;
 
         public GameRunner(
             GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
@@ -20,18 +20,18 @@ namespace Bearded.TD.Game
             this.game = game;
             this.networkInterface = networkInterface;
             this.inputManager = inputManager;
-            controller = new GameController(game);
+            inputHandler = new GameInputHandler(game);
         }
 
         public void HandleInput(UpdateEventArgs args)
         {
-            controller.Update(PlayerInput.Construct(inputManager, game.Camera));
-            game.Camera.Update(args.ElapsedTimeInSf);
+            inputHandler.HandleInput(PlayerInput.Construct(inputManager, game.Camera));
+            game.Camera.HandleInput(args.ElapsedTimeInSf);
         }
 
         public void Update(UpdateEventArgs args)
         {
-            game.Simulator.Update(args);
+            game.Controller.Update(args);
 
             foreach (var msg in networkInterface.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)

@@ -72,7 +72,7 @@ namespace Bearded.TD.Game
             this.viewportSize = viewportSize;
         }
 
-        public void Update(float elapsedTime)
+        public void HandleInput(float elapsedTime)
         {
             updateScrolling(elapsedTime);
             updateZoom(elapsedTime);
