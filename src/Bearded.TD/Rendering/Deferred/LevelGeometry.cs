@@ -49,10 +49,10 @@ namespace Bearded.TD.Rendering.Deferred
             var n = Vector3.UnitZ;
             var c = openColor;
 
-            addTriangle(topV, topRightV, bottomRightV, n, c);
-            addTriangle(topV, bottomRightV, bottomV, n, c);
-            addTriangle(topV, bottomV, bottomLeftV, n, c);
-            addTriangle(topV, bottomLeftV, topLeftV, n, c);
+            if (isOpen)
+            {
+                addHex(topV, topRightV, bottomRightV, bottomV, bottomLeftV, topLeftV, n, c);
+            }
 
             var rightCorners = cornerOffsetsWithScale(rightScale);
             var downCorners = cornerOffsetsWithScale(downScale);
@@ -64,21 +64,38 @@ namespace Bearded.TD.Rendering.Deferred
 
             var upBottomLeftV = (upPosition + new Vector2(-upCorners.sideX, -upCorners.sideY)).WithZ(upZ);
             var upBottomV = (upPosition + new Vector2(0, -upCorners.topY)).WithZ(upZ);
-            
-            addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
+
+            if (isOpen || upIsOpen)
+            {
+                addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
+            }
 
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
             var downTopLeftV = (downPosition + new Vector2(-selfCorners.sideX, selfCorners.sideY)).WithZ(downZ);
 
-            addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
+            if (isOpen || downIsOpen)
+            {
+                addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
+            }
 
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
             var rightBottomLeftV = (rightPosition + new Vector2(-rightCorners.sideX, -rightCorners.sideY)).WithZ(rightZ);
 
-           addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
+            if (isOpen || rightIsOpen)
+            {
+                addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
+            }
 
-            addTriangle(topRightV, upBottomV, rightTopLeftV, c);
-            addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
+            if (isOpen || upIsOpen || rightIsOpen)
+            {
+                addTriangle(topRightV, upBottomV, rightTopLeftV, c);
+            }
+
+
+            if (isOpen || downIsOpen || rightIsOpen)
+            {
+                addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
+            }
         }
 
         private static (float topY, float sideY, float sideX) cornerOffsetsWithScale(float scale)
@@ -114,6 +131,37 @@ namespace Bearded.TD.Rendering.Deferred
                 new LevelVertex(v2, n, Vector2.Zero, c),
                 new LevelVertex(v3, n, Vector2.Zero, c)
             );
+        }
+
+        private void addHex(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Vector3 v5, Vector3 n, Color c)
+        {
+
+            var vertices = surface.WriteVerticesDirectly(6, out var vOffset);
+
+            vertices[vOffset] = new LevelVertex(v0, n, Vector2.Zero, c);
+            vertices[vOffset + 1] = new LevelVertex(v1, n, Vector2.Zero, c);
+            vertices[vOffset + 2] = new LevelVertex(v2, n, Vector2.Zero, c);
+            vertices[vOffset + 3] = new LevelVertex(v3, n, Vector2.Zero, c);
+            vertices[vOffset + 4] = new LevelVertex(v4, n, Vector2.Zero, c);
+            vertices[vOffset + 5] = new LevelVertex(v5, n, Vector2.Zero, c);
+
+            var indices = surface.WriteIndicesDirectly(12, out var iOffset);
+
+            indices[iOffset++] = vOffset;
+            indices[iOffset++] = (ushort) (vOffset + 1);
+            indices[iOffset++] = (ushort) (vOffset + 2);
+
+            indices[iOffset++] = vOffset;
+            indices[iOffset++] = (ushort) (vOffset + 2);
+            indices[iOffset++] = (ushort) (vOffset + 3);
+
+            indices[iOffset++] = vOffset;
+            indices[iOffset++] = (ushort) (vOffset + 3);
+            indices[iOffset++] = (ushort) (vOffset + 4);
+
+            indices[iOffset++] = vOffset;
+            indices[iOffset++] = (ushort) (vOffset + 4);
+            indices[iOffset] = (ushort) (vOffset + 5);
         }
     }
 }
