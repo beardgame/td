@@ -101,6 +101,7 @@
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
+    <Compile Include="Game\Commands\gameplay\ShowUnitSpawnWarning.cs" />
     <Compile Include="Game\Commands\loading\PlopBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\BuildBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\GameOver.cs" />
@@ -124,12 +125,14 @@
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
     <Compile Include="Game\RayCastingTestObject.cs" />
+    <Compile Include="Game\GameController.cs" />
+    <Compile Include="Game\IGameContext.cs" />
     <Compile Include="Game\Synchronization\ClientGameSynchronizer.cs" />
     <Compile Include="Game\Commands\synchronization\SyncUnits.cs" />
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
     <Compile Include="Game\Factions\Faction.cs" />
     <Compile Include="Game\GameCamera.cs" />
-    <Compile Include="Game\GameController.cs" />
+    <Compile Include="Game\GameInputHandler.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameRunner.cs" />
@@ -175,6 +178,7 @@
     <Compile Include="Game\Units\UnitBlueprint.cs" />
     <Compile Include="Game\Units\GameUnit.cs" />
     <Compile Include="Game\Units\UnitSource.cs" />
+    <Compile Include="Game\Units\UnitWarning.cs" />
     <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
@@ -251,6 +255,7 @@
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
     <Compile Include="Utilities\DeconstructionExtensions.cs" />
+    <Compile Include="Utilities\DebugAssert.cs" />
     <Compile Include="Utilities\Input\InputContext.cs" />
     <Compile Include="Utilities\Input\InputState.cs" />
     <Compile Include="UI\ScalingDimension.cs" />

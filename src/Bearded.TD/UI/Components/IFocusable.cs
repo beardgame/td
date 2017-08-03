@@ -7,7 +7,7 @@ namespace Bearded.TD.UI.Components
         void Focus();
         void Unfocus();
 
-        event GenericEventHandler<IFocusable> Focused;
+        event GenericEventHandler<IFocusable> Focused; 
         event GenericEventHandler<IFocusable> Unfocused;
     }
 }

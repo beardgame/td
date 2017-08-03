@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Commands;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Loading;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -16,20 +15,9 @@ namespace Bearded.TD.Networking.Lobby
         private readonly ServerNetworkInterface networkInterface;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
-            : base(logger, createDispatchers(networkInterface, logger),
-                  game => new ServerDataMessageHandler(game, networkInterface, logger))
+            : base(new ServerGameContext(networkInterface, logger))
         {
             this.networkInterface = networkInterface;
-        }
-
-        private static (IRequestDispatcher, IDispatcher, IGameSynchronizer) createDispatchers(ServerNetworkInterface network, Logger logger)
-        {
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
-            var requestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
-            var dispatcher = new ServerDispatcher(commandDispatcher);
-            var synchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
-
-            return (requestDispatcher, dispatcher, synchronizer);
         }
 
         public override void Update(UpdateEventArgs args)

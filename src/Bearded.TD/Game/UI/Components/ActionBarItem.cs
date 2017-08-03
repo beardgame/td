@@ -16,7 +16,10 @@ namespace Bearded.TD.Game.UI.Components
 
         private Content content;
 
-        public ActionBarItem(Bounds bounds) : base(bounds) { }
+        public ActionBarItem(Bounds bounds) : base(bounds)
+        {
+            Unfocused += _ => content?.Undo?.Invoke();
+        }
 
         public void SetContent(Content content)
         {
@@ -27,7 +30,10 @@ namespace Bearded.TD.Game.UI.Components
         {
             base.HandleInput(input);
             if (input.Manager.LeftMouseHit && Bounds.Contains(input.MousePosition))
+            {
                 Focus();
+                content.Action();
+            }
         }
 
         public override void Draw(GeometryManager geometries)
@@ -47,11 +53,13 @@ namespace Bearded.TD.Game.UI.Components
         public class Content
         {
             public Action Action { get; }
+            public Action Undo { get; }
             public string Description { get; }
 
-            public Content(Action action, string description)
+            public Content(Action action, Action undo, string description)
             {
                 Action = action;
+                Undo = undo;
                 Description = description;
             }
         }
