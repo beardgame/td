@@ -10,7 +10,6 @@ namespace Bearded.TD.Rendering.Deferred
     class LevelGeometry
     {
         private static readonly Color openColor = Color.White;
-        private static readonly Color closedColor = Color.White;
 
         private readonly IndexedSurface<LevelVertex> surface;
 
@@ -135,7 +134,6 @@ namespace Bearded.TD.Rendering.Deferred
 
         private void addHex(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Vector3 v5, Vector3 n, Color c)
         {
-
             var vertices = surface.WriteVerticesDirectly(6, out var vOffset);
 
             vertices[vOffset] = new LevelVertex(v0, n, Vector2.Zero, c);
