@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Tiles
         /*
             X
         */
-        public static Footprint Single = new Footprint(new Id<Footprint>(1), new []
+        public static readonly Footprint Single = new Footprint(new Id<Footprint>(1), new []
         {
             new Step(0, 0),
         });
@@ -21,26 +21,26 @@ namespace Bearded.TD.Game.Tiles
             #
            X #
         */
-        public static Footprint TriangleUp = new Footprint(new Id<Footprint>(2), new[]
+        public static readonly Footprint TriangleUp = new Footprint(new Id<Footprint>(2), new[]
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.UpRight),
-        }, .5f * new Difference2(Constants.Game.World.HexagonWidth, Constants.Game.World.HexagonSide));
+        }, .5f * new Difference2(-Constants.Game.World.HexagonWidth, -Constants.Game.World.HexagonSide));
 
         /*
            X #
             #
         */
-        public static Footprint TriangleDown = new Footprint(new Id<Footprint>(3), new[]
+        public static readonly Footprint TriangleDown = new Footprint(new Id<Footprint>(3), new[]
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.DownRight),
-        }, .5f * new Difference2(Constants.Game.World.HexagonWidth, -Constants.Game.World.HexagonSide));
+        }, .5f * new Difference2(-Constants.Game.World.HexagonWidth, Constants.Game.World.HexagonSide));
 
         /*
            # #
           # X #
            # #
         */
-        public static Footprint CircleSeven = new Footprint(new Id<Footprint>(4), new[]
+        public static readonly Footprint CircleSeven = new Footprint(new Id<Footprint>(4), new[]
         {
             new Step(0, 0),
             new Step(Direction.Left), new Step(Direction.DownLeft), new Step(Direction.DownRight),
