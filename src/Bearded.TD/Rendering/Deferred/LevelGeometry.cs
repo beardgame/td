@@ -1,16 +1,16 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.Tiles;
+﻿using System;
+using amulware.Graphics;
 using Bearded.Utilities.Math;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
-using static Bearded.TD.Game.Tiles.Direction;
+using TileType = Bearded.TD.Game.World.TileInfo.Type;
 
 namespace Bearded.TD.Rendering.Deferred
 {
     class LevelGeometry
     {
         private static readonly Color openColor = Color.White;
-
+        
         private readonly IndexedSurface<LevelVertex> surface;
 
         public LevelGeometry(IndexedSurface<LevelVertex> surface)
@@ -18,23 +18,14 @@ namespace Bearded.TD.Rendering.Deferred
             this.surface = surface;
         }
 
-        public void DrawTile(Vector2 position, bool isOpen, Directions openDirections)
+        public void DrawTile(Vector2 position,
+            TileType tileType, TileType rightTileType,
+            TileType upRightTileType, TileType downRightTileType)
         {
-            var rightIsOpen = openDirections.Includes(Right);
-            var downIsOpen = openDirections.Includes(DownRight);
-            var upIsOpen = openDirections.Includes(UpRight);
-
-            var floorZ = 0f;
-            var wallZ = 0.5f;
-            var selfZ = isOpen ? floorZ : wallZ;
-            var rightZ = rightIsOpen ? floorZ : wallZ;
-            var downZ = downIsOpen ? floorZ : wallZ;
-            var upZ = upIsOpen ? floorZ : wallZ;
-
-            var selfScale = 0.8f;
-            var rightScale = 0.8f;
-            var downScale = 0.8f;
-            var upScale = 0.8f;
+            var (selfZ, selfScale) = getHeightAndScale(tileType);
+            var (rightZ, rightScale) = getHeightAndScale(rightTileType);
+            var (downZ, downScale) = getHeightAndScale(downRightTileType);
+            var (upZ, upScale) = getHeightAndScale(upRightTileType);
             
             var selfCorners = cornerOffsetsWithScale(selfScale);
 
@@ -47,11 +38,8 @@ namespace Bearded.TD.Rendering.Deferred
 
             var n = Vector3.UnitZ;
             var c = openColor;
-
-            if (isOpen)
-            {
-                addHex(topV, topRightV, bottomRightV, bottomV, bottomLeftV, topLeftV, n, c);
-            }
+            
+            addHex(topV, topRightV, bottomRightV, bottomV, bottomLeftV, topLeftV, n, c);
 
             var rightCorners = cornerOffsetsWithScale(rightScale);
             var downCorners = cornerOffsetsWithScale(downScale);
@@ -64,15 +52,15 @@ namespace Bearded.TD.Rendering.Deferred
             var upBottomLeftV = (upPosition + new Vector2(-upCorners.sideX, -upCorners.sideY)).WithZ(upZ);
             var upBottomV = (upPosition + new Vector2(0, -upCorners.topY)).WithZ(upZ);
 
-            if (isOpen || upIsOpen)
+            if (upRightTileType != TileType.Unknown)
             {
                 addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
             }
 
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
-            var downTopLeftV = (downPosition + new Vector2(-selfCorners.sideX, selfCorners.sideY)).WithZ(downZ);
+            var downTopLeftV = (downPosition + new Vector2(-downCorners.sideX, downCorners.sideY)).WithZ(downZ);
 
-            if (isOpen || downIsOpen)
+            if (downRightTileType != TileType.Unknown)
             {
                 addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
             }
@@ -80,20 +68,36 @@ namespace Bearded.TD.Rendering.Deferred
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
             var rightBottomLeftV = (rightPosition + new Vector2(-rightCorners.sideX, -rightCorners.sideY)).WithZ(rightZ);
 
-            if (isOpen || rightIsOpen)
+            if (rightTileType != TileType.Unknown)
             {
                 addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
             }
 
-            if (isOpen || upIsOpen || rightIsOpen)
+            if (rightTileType != TileType.Unknown && upRightTileType != TileType.Unknown)
             {
                 addTriangle(topRightV, upBottomV, rightTopLeftV, c);
             }
-
-
-            if (isOpen || downIsOpen || rightIsOpen)
+            
+            if (rightTileType != TileType.Unknown && downRightTileType != TileType.Unknown)
             {
                 addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
+            }
+        }
+
+        private static (float, float) getHeightAndScale(TileType tileType)
+        {
+            switch (tileType)
+            {
+                case TileType.Unknown:
+                    return (0, 0);
+                case TileType.Floor:
+                    return (0, 0.8f);
+                case TileType.Wall:
+                    return (0.5f, 0.5f);
+                case TileType.Crevice:
+                    return (-3, 0.5f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null);
             }
         }
 
@@ -105,7 +109,6 @@ namespace Bearded.TD.Rendering.Deferred
             var normal = -Vector3.Cross(v1 - v0, v2 - v0).Normalized();
             addTriangle(v0, v1, v2, normal, c);
         }
-
 
         private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n, Color c)
         {

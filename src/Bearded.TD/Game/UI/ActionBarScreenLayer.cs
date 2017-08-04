@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.UI.Components;
+using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.UI;
@@ -32,14 +33,14 @@ namespace Bearded.TD.Game.UI
 
             var buildingPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
             buildingPage[0] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["wall"]), "Wall");
-            buildingPage[1] =
-                contentFor(new BuildingClickHandler(faction, blueprints.Buildings["triangle"]), "Triangle");
+            buildingPage[1] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["triangle"]), "Triangle");
             pages.Add(buildingPage);
 
 #if DEBUG
             var debugPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
             debugPage[0] = contentFor(new DebugToggleTileTypeClickHandler(), "Toggle tile");
             debugPage[1] = contentFor(new DebugSpawnEnemyClickHandler(), "Spawn enemy");
+            debugPage[2] = contentFor(new DebugSetTileTypeClickHandler(TileInfo.Type.Crevice), "Dig Too Deep");
             pages.Add(debugPage);
 #endif
 

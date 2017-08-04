@@ -26,6 +26,8 @@ namespace Bearded.TD.Game.Tiles
         public TTileInfo Info => tilemap[this];
         public bool IsValid => tilemap?.IsValidTile(X, Y) == true;
 
+        public Tile<TTileInfo>? ValidOrNull => IsValid ? (Tile<TTileInfo>?)this : null;
+
         public Tile<TTileInfo> Neighbour(Direction direction) => this.Offset(direction.Step());
         public Tile<TTileInfo> Offset(Step step) => new Tile<TTileInfo>(tilemap, X + step.X, Y + step.Y);
 

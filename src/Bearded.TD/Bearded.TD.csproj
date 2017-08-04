@@ -164,6 +164,7 @@
     <Compile Include="Game\UI\Components\FactionStatus.cs" />
     <Compile Include="Game\UI\Cursor.cs" />
     <Compile Include="Game\UI\CursorState.cs" />
+    <Compile Include="Game\UI\DebugSetTileTypeClickHandler.cs" />
     <Compile Include="Game\UI\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\DebugToggleTileTypeClickHandler.cs" />
     <Compile Include="Game\UI\GameOverScreenLayer.cs" />

@@ -13,6 +13,7 @@ namespace Bearded.TD.Game.World
             Unknown = 0,
             Floor = 1,
             Wall = 2,
+            Crevice = 3,
         }
 
         public Directions ValidDirections { get; }
@@ -50,7 +51,7 @@ namespace Bearded.TD.Game.World
 
         public void SetBuilding(Building building)
         {
-            this.Building = building;
+            Building = building;
         }
 
         public void AddEnemy(EnemyUnit enemy)

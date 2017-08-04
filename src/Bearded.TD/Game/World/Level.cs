@@ -218,20 +218,17 @@ namespace Bearded.TD.Game.World
         public void Draw(GeometryManager geos)
         {
             var geo = geos.Level;
-
+            
             foreach (var tile in Tilemap)
             {
                 var info = tile.Info;
 
                 geo.DrawTile(
                     GetPosition(tile).NumericValue,
-                    info.TileType == TileInfo.Type.Floor,
-                    Directions.All.Enumerate().Where(d =>
-                    {
-                        var n = tile.Neighbour(d);
-                        return n.IsValid && n.Info.TileType == TileInfo.Type.Floor;
-                    })
-                    .Aggregate(Directions.None, (ds, d) => ds.And(d))
+                    info.TileType,
+                    tile.Neighbour(Direction.Right).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown,
+                    tile.Neighbour(Direction.UpRight).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown,
+                    tile.Neighbour(Direction.DownRight).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown
                     );
             }
         }
