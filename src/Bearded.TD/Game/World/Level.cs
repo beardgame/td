@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
+using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
+using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
+using Extensions = Bearded.TD.Game.Tiles.Extensions;
 
 namespace Bearded.TD.Game.World
 {
@@ -80,51 +85,6 @@ namespace Bearded.TD.Game.World
             => new TiledRayHitResult<TTileInfo>(tile, this, offset);
     }
 
-    static class TileMath
-    {
-        public static (Direction direction, Position2 point) GetOutIntersection(Ray ray)
-        {
-            
-            var rayStart = ray.Start.NumericValue;
-            var rayDirection = ray.Direction.NumericValue;
-
-            foreach (var dir in Tiles.Extensions.Directions)
-            {
-                var v = dir.CornerAfter() * HexagonSide;
-                var v2 = dir.CornerBefore() * HexagonSide - v;
-
-                var denominator = rayDirection.Y * v2.X - rayDirection.X * v2.Y;
-
-                // disregard back facing and parallel walls
-                // (denominator is dot product of non-unit normal and ray)
-                if (denominator <= 0)
-                    continue;
-
-                var numerator = (v.Y - rayStart.Y) * v2.X + (rayStart.X - v.X) * v2.Y;
-
-                var f = numerator / denominator;
-
-                // disregard behind result
-                if (f < -0.001f)
-                    continue;
-
-                var point = rayStart + f * rayDirection;
-                
-                var wF = Abs(v2.X) > HexagonSide * 0.001f
-                    ? (point.X - v.X) / v2.X
-                    : (point.Y - v.Y) / v2.Y;
-
-                // disregard outside of line segment
-                if (wF < 0 || wF > 1)
-                    continue;
-
-                return (dir, new Position2(point));
-            }
-
-            throw new Exception("No direction found");
-        }
-    }
-
     class Level<TTileInfo>
     {
         public Tilemap<TTileInfo> Tilemap { get; }
@@ -146,14 +106,12 @@ namespace Bearded.TD.Game.World
 
             var tx = (int) x;
             var ty = (int) y;
+            
+            var isBottomRightCorner = xRemainder > yRemainder;
+            var isBottomLeftConer = -xRemainder > yRemainder;
 
-            if (xRemainder > yRemainder)
-            {
-                tx++;
-                ty--;
-            }
-            else if (-xRemainder > yRemainder)
-                ty--;
+            tx += isBottomRightCorner ? 1 : 0;
+            ty += isBottomRightCorner | isBottomLeftConer ? -1 : 0;
 
             return new Tile<TTileInfo>(Tilemap, tx, ty);
         }
@@ -171,38 +129,7 @@ namespace Bearded.TD.Game.World
 
         public TiledRayHitResult<TTileInfo> ShootRay(Ray ray, Tile<TTileInfo> startTile)
         {
-#if DEBUG
-            if (GetTile(ray.Start) != startTile)
-                throw new ArgumentException("Ray must start on given start tile.");
-#endif
-
-            var tile = startTile;
-            var endTile = GetTile(ray.Start + ray.Direction);
-
-            var tileCenter = new Difference2(GetPosition(tile).NumericValue);
-
-            while (true)
-            {
-                var rayLocal = new Ray(ray.Start - tileCenter, ray.Direction); // direction is not correct length?
-
-                // TODO: try hitting things on this tile
-
-                if (tile == endTile)
-                    return RayHitResult.Miss(ray).OnTile(tile, new Difference2());
-
-
-
-                var (outDirection, outPoint) = TileMath.GetOutIntersection(rayLocal);
-                var outVector = outDirection.Vector();
-                tile = tile.Neighbour(outDirection);
-
-                if (TileBlocksRays(tile))
-                    return RayHitResult
-                        .Hit(ray, outPoint + tileCenter, new Difference2(-outVector))
-                        .OnTile(tile, new Difference2());
-
-                tileCenter += new Difference2(outVector * HexagonWidth);
-            }
+            return new LevelRayCaster<TTileInfo>().ShootRay(this, ray, startTile);
         }
 
         protected virtual bool TileBlocksRays(Tile<TTileInfo> tile) => false;

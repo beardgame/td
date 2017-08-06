@@ -96,6 +96,8 @@ namespace Bearded.TD.Game.Tiles
         public static bool All(this Directions direction, Directions match) => direction.Intersect(match) == match;
         public static Direction Hexagonal(this Direction2 direction) => (Direction) ((int) Math.Floor(direction.Degrees * 1 / 60f + 0.5f) % 6 + 1);
         public static Direction Opposite(this Direction direction) => directionOpposite[(int) direction];
+        public static Direction NextLeft(this Direction direction) => (Direction)((int)direction % 6 + 1);
+        public static Direction NextRight(this Direction direction) => (Direction)(((int)direction + 4) % 6 + 1);
 
         private static Directions toDirections(this Direction direction) => (Directions) (1 << ((int) direction - 1));
         public static bool Includes(this Directions directions, Direction direction) => directions.HasFlag(direction.toDirections());

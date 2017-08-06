@@ -12,6 +12,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -77,10 +78,17 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
+            var geo = geometries.ConsoleBackground;
+            var alpha = (float)(BuildManager?.CurrentProgressFraction * 0.9 ?? 1);
+            geo.Color = Color.Blue * alpha;
+
+            foreach (var tile in footprint.OccupiedTiles)
+                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, HexagonSide, true, 6);
+
             foreach (var component in Components)
                 component.Draw(geometries);
             
-            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 5, Color.Orange);
+            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange);
         }
 
         public bool HasComponentOfType<T>()
