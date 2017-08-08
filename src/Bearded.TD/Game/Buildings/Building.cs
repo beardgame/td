@@ -126,6 +126,7 @@ namespace Bearded.TD.Game.Buildings
 
                 buildProcess += resources.Amount;
                 var expectedHealthGiven = (int)(CurrentProgressFraction * blueprint.MaxHealth);
+                if (expectedHealthGiven < healthGiven) return;
                 building.Health += expectedHealthGiven - healthGiven;
                 healthGiven = expectedHealthGiven;
             }
