@@ -42,9 +42,9 @@ namespace Bearded.TD.Game
         private static readonly TimeSpan minWaveDuration = 10.S();
         private static readonly TimeSpan maxWaveDuration = 30.S();
 
-        private const double initialMinWaveCost = 13.37; // yes the math works out this way
-        private const double initialMaxWaveCost = 18;
-        private const double waveCostGrowth = 1.0058;
+        private const double initialMinWaveCost = 10;
+        private const double initialMaxWaveCost = 14;
+        private const double waveCostGrowth = 1.004;
 
         private readonly GameInstance game;
         private readonly Random random = new Random();
@@ -64,6 +64,8 @@ namespace Bearded.TD.Game
             debit -= args.ElapsedTimeInS;
             minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
             maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
+
+            Console.WriteLine(Math.Round(maxWaveCost, 2));
 
             if (debit <= 0 && game.State.Time >= Instant.Zero + timeBeforeFirstWave)
                 queueNextWave();
