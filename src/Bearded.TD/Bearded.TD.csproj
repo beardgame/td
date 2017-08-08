@@ -40,8 +40,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bearded.Utilities, Version=0.2.0.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.14-develop\lib\net45\Bearded.Utilities.dll</HintPath>
+    <Reference Include="Bearded.Utilities, Version=0.2.0.86, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.86-develop\lib\net462\Bearded.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="OpenTK">
@@ -287,6 +287,7 @@
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Line.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
+    <Compile Include="Utilities\SpaceTimeExtensions.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
     <Content Include="assets\shaders\deferred\pointlight.fs">

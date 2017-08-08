@@ -11,7 +11,7 @@ namespace Bearded.TD.Utilities
 
         public void SetLastKnownState(T state)
         {
-            lastRecorded = Box.This(state);
+            lastRecorded = Do.Box(state);
         }
 
         public void Update() => UpdateTo(lastRecorded.Value);

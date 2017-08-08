@@ -1,59 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
-using Bearded.Utilities;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game
 {
     #region Interface
+
     interface IGameController
     {
-        void Update();
+        void Update(UpdateEventArgs args);
     }
 
     class DummyGameController : IGameController
     {
-        public void Update() { }
+        public void Update(UpdateEventArgs args)
+        {
+        }
     }
+
     #endregion
 
     class GameController : IGameController
     {
-        private static readonly TimeSpan timeBeforeFirstWave = new TimeSpan(20);
-        private const double minTimeBetweenWaves = 10;
-        private const double maxTimeBetweenWaves = 30;
-        private const int minWaveSize = 5;
-        private const int maxWaveSize = 10;
-        private const double chanceOnDoubleWave = .05;
-        private static readonly TimeSpan warningTime = new TimeSpan(10);
-        private static readonly TimeSpan timeBetweenEnemySpawns = TimeSpan.One;
+        private const int numAvailableSpawnPoints = 6;
+
+        private static readonly TimeSpan timeBeforeFirstWave = 2.S();
+        private static readonly TimeSpan warningTime = 10.S();
+        private static readonly TimeSpan minTimeBetweenEnemies = .1.S();
+        private static readonly TimeSpan maxTimeBetweenEnemies = 2.S();
+        private static readonly TimeSpan minWaveDuration = 10.S();
+        private static readonly TimeSpan maxWaveDuration = 30.S();
 
         private readonly GameInstance game;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
-        private Instant nextWaveStart;
+        private double debit;
 
         public GameController(GameInstance game)
         {
             this.game = game;
         }
 
-        public void Update()
+        public void Update(UpdateEventArgs args)
         {
-            if (nextWaveStart == Instant.Zero)
-                nextWaveStart = game.State.Time + timeBeforeFirstWave;
+            debit -= args.ElapsedTimeInS;
 
-            if (game.State.Time >= nextWaveStart - warningTime)
-            {
+            if (debit <= 0 && game.State.Time >= Instant.Zero + timeBeforeFirstWave)
                 queueNextWave();
-            }
 
             var curr = plannedWaves.First;
             while (curr != null)
@@ -68,42 +73,52 @@ namespace Bearded.TD.Game
 
         private void queueNextWave()
         {
-            var tile = selectSpawnLocation();
-            plannedWaves.AddLast(
-                new EnemyWave(
-                    game,
-                    nextWaveStart,
-                    random.Next(minWaveSize, maxWaveSize + 1),
-                    timeBetweenEnemySpawns,
-                    tile));
-            if (random.NextBool(chanceOnDoubleWave))
-            {
-                Tile<TileInfo> otherTile;
-                do
-                {
-                    otherTile = selectSpawnLocation();
-                } while (tile == otherTile);
-                plannedWaves.AddLast(
-                    new EnemyWave(
-                        game,
-                        nextWaveStart,
-                        random.Next(minWaveSize, maxWaveSize + 1),
-                        timeBetweenEnemySpawns,
-                        otherTile));
-            }
-            nextWaveStart += new TimeSpan(random.NextDouble(minTimeBetweenWaves, maxTimeBetweenWaves));
+            const int numEnemies = 10;
+            var blueprint = game.Blueprints.Units["debug"];
+
+            var minTimeToSpawn = numEnemies * minTimeBetweenEnemies;
+            var maxTimeToSpawn = numEnemies * maxTimeBetweenEnemies;
+
+            var minSpawnPoints = Mathf.FloorToInt(minTimeToSpawn / maxWaveDuration);
+            var maxSpawnPoints = Mathf.CeilToInt(maxTimeToSpawn / minWaveDuration);
+            var numSpawnPoints = random.Next(minSpawnPoints, maxSpawnPoints + 1).Clamped(1, numAvailableSpawnPoints);
+
+            var minDuration = TimeSpan.Max(minWaveDuration, minTimeBetweenEnemies / numSpawnPoints * numEnemies);
+            var maxDuration = TimeSpan.Min(maxWaveDuration, maxTimeBetweenEnemies / numSpawnPoints * numEnemies);
+            var waveDuration = random.NextDouble(minDuration.NumericValue, maxDuration.NumericValue).S();
+
+            buildWave(numSpawnPoints, blueprint, numEnemies, numSpawnPoints * waveDuration / numEnemies);
         }
 
-        private Tile<TileInfo> selectSpawnLocation()
+        private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
         {
-            var randomDirection =
-                Directions.All.Enumerate().RandomElement(random).Step() * game.State.Level.Tilemap.Radius;
-            return new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0).Offset(randomDirection);
+            foreach (var (tile, i) in selectSpawnLocations(numSpawnPoints).Indexed())
+            {
+                var numEnemiesForPoint = numEnemies / numSpawnPoints;
+                if (i < numEnemiesForPoint % numSpawnPoints)
+                    numEnemiesForPoint++;
+                plannedWaves.AddLast(
+                    new EnemyWave(game, blueprint, game.State.Time, numEnemiesForPoint, timeBetweenSpawns, tile));
+            }
+
+            debit = blueprint.Value * numEnemies;
+        }
+
+        private IEnumerable<Tile<TileInfo>> selectSpawnLocations(int num)
+        {
+            return Directions
+                .All
+                .Enumerate()
+                .RandomSubset(num)
+                .Select(
+                    dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
+                        .Offset(dir.Step() * game.State.Level.Tilemap.Radius));
         }
 
         private class EnemyWave
         {
             private readonly GameInstance game;
+            private readonly UnitBlueprint blueprint;
             private readonly Instant start;
             private readonly int size;
             private readonly TimeSpan timeBetweenSpawns;
@@ -114,10 +129,16 @@ namespace Bearded.TD.Game
 
             public bool IsFinished => enemiesSpawned == size;
 
-            public EnemyWave
-                (GameInstance game, Instant start, int size, TimeSpan timeBetweenSpawns, Tile<TileInfo> tile)
+            public EnemyWave(
+                GameInstance game,
+                UnitBlueprint blueprint,
+                Instant start,
+                int size,
+                TimeSpan timeBetweenSpawns,
+                Tile<TileInfo> tile)
             {
                 this.game = game;
+                this.blueprint = blueprint;
                 this.start = start;
                 this.size = size;
                 this.timeBetweenSpawns = timeBetweenSpawns;
@@ -143,7 +164,7 @@ namespace Bearded.TD.Game
             private void showWarning()
             {
                 game.State.Meta.Dispatcher.RunOnlyOnServer(() => ShowUnitSpawnWarning.Command(
-                   game, tile, start + (size - 1) * timeBetweenSpawns));
+                    game, tile, start + (size - 1) * timeBetweenSpawns));
                 warningSent = true;
             }
 
@@ -162,7 +183,7 @@ namespace Bearded.TD.Game
                 game.State.Meta.Dispatcher.RunOnlyOnServer(() => SpawnUnit.Command(
                     game.State,
                     tile,
-                    game.Blueprints.Units["debug"],
+                    blueprint,
                     game.Meta.Ids.GetNext<GameUnit>()));
                 enemiesSpawned++;
             }
