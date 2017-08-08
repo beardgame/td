@@ -11,36 +11,39 @@ namespace Bearded.TD.Game.Commands
 {
     static class PlopBuilding
     {
-        public static ICommand Command(GameInstance game, Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
-            => new Implementation(game, faction, blueprint, footprint);
+        public static ICommand Command(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            => new Implementation(game, faction, id, blueprint, footprint);
 
         private class Implementation : ICommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
+            private readonly Id<Building> id;
             private readonly BuildingBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameInstance game, Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.game = game;
                 this.faction = faction;
+                this.id = id;
                 this.blueprint = blueprint;
                 this.footprint = footprint;
             }
 
             public void Execute()
             {
-                var building = new PlayerBuilding(blueprint, footprint, faction);
+                var building = new PlayerBuilding(id, blueprint, footprint, faction);
                 game.State.Add(building);
                 building.BuildManager.Progress(ResourceGrant.Infinite);
             }
 
-            public ICommandSerializer Serializer => new Serializer(faction, blueprint, footprint);
+            public ICommandSerializer Serializer => new Serializer(faction, id, blueprint, footprint);
         }
 
         private class Serializer : ICommandSerializer
         {
+            private Id<Building> id;
             private Id<Faction> faction;
             private Id<BuildingBlueprint> blueprint;
             private Id<Footprint> footprint;
@@ -52,8 +55,9 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Serializer(Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
             {
+                this.id = id;
                 this.faction = faction.Id;
                 this.blueprint = blueprint.Id;
                 this.footprint = footprint.Footprint.Id;
@@ -66,6 +70,7 @@ namespace Bearded.TD.Game.Commands
                 return new Implementation(
                     game,
                     game.State.FactionFor(faction),
+                    id,
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
                         game.State.Level,
@@ -76,6 +81,7 @@ namespace Bearded.TD.Game.Commands
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref faction);
+                stream.Serialize(ref id);
                 stream.Serialize(ref blueprint);
                 stream.Serialize(ref footprint);
                 stream.Serialize(ref footprintX);

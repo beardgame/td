@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Input;
@@ -39,7 +40,6 @@ namespace Bearded.TD.Game.UI
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
             game.State.Level.Draw(geometries);
-            game.State.Navigator.DrawDebug(geometries, game.State.Level);
 
 
             var sunDistance = 10000f;
@@ -49,6 +49,13 @@ namespace Bearded.TD.Game.UI
             foreach (var obj in game.State.GameObjects)
             {
                 obj.Draw(geometries);
+            }
+
+
+            var debugPathfinding = UserSettings.Instance.Graphics.DebugPathfinding;
+            if (debugPathfinding > 0)
+            {
+                game.State.Navigator.DrawDebug(geometries, game.State.Level, debugPathfinding > 1);
             }
         }
 

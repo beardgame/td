@@ -6,6 +6,7 @@ using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -14,11 +15,18 @@ namespace Bearded.TD.Game.Units
 {
     class EnemyUnit : GameUnit
     {
-        private Instant? nextAttack;
+        private Instant nextAttack;
 
         public EnemyUnit(Id<GameUnit> unitId, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
             : base(unitId, blueprint, currentTile)
         { }
+
+        protected override void OnAdded()
+        {
+            base.OnAdded();
+
+            nextAttack = Game.Time + Blueprint.TimeBetweenAttacks;
+        }
 
         protected override void OnDelete()
         {
@@ -35,15 +43,18 @@ namespace Bearded.TD.Game.Units
 
         private void tryDealDamage()
         {
-            while (nextAttack == null || nextAttack.Value <= Game.Time)
+            if (CurrentMovementDirection != Direction.Unknown)
+                return;
+
+            while (nextAttack <= Game.Time)
             {
-                var target = CurrentTile.Neighbours
-                        .Select(t => t.Info.Building)
-                        .FirstOrDefault(b => b != null && !b.Deleted && b.HasComponentOfType<EnemySink>());
+                var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
+                var target = CurrentTile.Neighbour(desiredDirection).Info.Building;
+
                 if (target == null) return;
                 
                 target.Damage(Blueprint.Damage);
-                nextAttack = (nextAttack ?? Game.Time) + Blueprint.TimeBetweenAttacks;
+                nextAttack = Game.Time + Blueprint.TimeBetweenAttacks;
             }
         }
 

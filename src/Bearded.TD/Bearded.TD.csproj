@@ -101,6 +101,7 @@
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
+    <Compile Include="Game\Commands\gameplay\KillBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\ShowUnitSpawnWarning.cs" />
     <Compile Include="Game\Commands\loading\PlopBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\BuildBuilding.cs" />

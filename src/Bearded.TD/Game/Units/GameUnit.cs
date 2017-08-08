@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Units
     {
         public Id<GameUnit> Id { get; }
         protected UnitBlueprint Blueprint { get; }
-        private Direction currentMovementDir;
+        protected Direction CurrentMovementDirection { get; private set; }
         private Unit movementProgress;
 
         public Position2 Position { get; private set; }
@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Units
             Id = id;
             Blueprint = blueprint;
             anchorTile = currentTile;
-            currentMovementDir = Direction.Unknown;
+            CurrentMovementDirection = Direction.Unknown;
             Health = blueprint.Health;
         }
 
@@ -52,16 +52,16 @@ namespace Bearded.TD.Game.Units
             var movementLeft = elapsedTime * Blueprint.Speed;
             while (movementLeft > Unit.Zero)
             {
-                if (currentMovementDir == Direction.Unknown)
+                if (CurrentMovementDirection == Direction.Unknown)
                 {
-                    currentMovementDir = GetNextDirection();
-                    if (currentMovementDir == Direction.Unknown) break;
+                    CurrentMovementDirection = GetNextDirection();
+                    if (CurrentMovementDirection == Direction.Unknown) break;
                 }
 
                 movementLeft = updateMovement(movementLeft);
             }
             Position = Game.Level.GetPosition(anchorTile)
-                       + movementProgress * currentMovementDir.SpaceTimeDirection();
+                       + movementProgress * CurrentMovementDirection.SpaceTimeDirection();
         }
 
         public void Damage(int damage, Building damageSource)
@@ -83,11 +83,11 @@ namespace Bearded.TD.Game.Units
         {
             var halfwayPoint = .5f * HexagonWidth.U();
             if (movementProgress < halfwayPoint && (movementProgress + movementLeft) >= halfwayPoint)
-                updateCurrentTile(anchorTile.Neighbour(currentMovementDir));
+                updateCurrentTile(anchorTile.Neighbour(CurrentMovementDirection));
             movementProgress += movementLeft;
             if (movementProgress < HexagonWidth.U()) return Unit.Zero;
             anchorTile = CurrentTile;
-            currentMovementDir = Direction.Unknown;
+            CurrentMovementDirection = Direction.Unknown;
             movementProgress = Unit.Zero;
             return movementProgress - HexagonWidth.U();
         }
@@ -113,13 +113,13 @@ namespace Bearded.TD.Game.Units
         public GameUnitState GetCurrentState()
         {
             return new GameUnitState(
-                anchorTile.X, anchorTile.Y, (byte) currentMovementDir, movementProgress.NumericValue, Health);
+                anchorTile.X, anchorTile.Y, (byte) CurrentMovementDirection, movementProgress.NumericValue, Health);
         }
 
         public void SyncFrom(GameUnitState state)
         {
             anchorTile = new Tile<TileInfo>(Game.Level.Tilemap, state.TileX, state.TileY);
-            currentMovementDir = (Direction) state.Direction;
+            CurrentMovementDirection = (Direction) state.Direction;
             movementProgress = new Unit(state.MovementProgress);
             Health = state.Health;
         }
