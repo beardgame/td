@@ -11,6 +11,18 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game
 {
+    #region Interface
+    interface IGameController
+    {
+        void Update();
+    }
+
+    class DummyGameController : IGameController
+    {
+        public void Update() { }
+    }
+    #endregion
+
     class GameController : IGameController
     {
         private static readonly TimeSpan timeBeforeFirstWave = new TimeSpan(20);
@@ -156,16 +168,4 @@ namespace Bearded.TD.Game
             }
         }
     }
-
-    #region Interface
-    interface IGameController
-    {
-        void Update();
-    }
-
-    class DummyGameController : IGameController
-    {
-        public void Update() { }
-    }
-    #endregion
 }
