@@ -35,18 +35,24 @@ namespace Bearded.TD.Game
     {
         private const int numAvailableSpawnPoints = 6;
 
-        private static readonly TimeSpan timeBeforeFirstWave = 2.S();
+        private static readonly TimeSpan timeBeforeFirstWave = 20.S();
         private static readonly TimeSpan warningTime = 10.S();
         private static readonly TimeSpan minTimeBetweenEnemies = .1.S();
         private static readonly TimeSpan maxTimeBetweenEnemies = 2.S();
         private static readonly TimeSpan minWaveDuration = 10.S();
         private static readonly TimeSpan maxWaveDuration = 30.S();
 
+        private const double initialMinWaveCost = 13.37; // yes the math works out this way
+        private const double initialMaxWaveCost = 18;
+        private const double waveCostGrowth = 1.0058;
+
         private readonly GameInstance game;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
         private double debit;
+        private double minWaveCost = initialMinWaveCost;
+        private double maxWaveCost = initialMaxWaveCost;
 
         public GameController(GameInstance game)
         {
@@ -56,6 +62,8 @@ namespace Bearded.TD.Game
         public void Update(UpdateEventArgs args)
         {
             debit -= args.ElapsedTimeInS;
+            minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
+            maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
 
             if (debit <= 0 && game.State.Time >= Instant.Zero + timeBeforeFirstWave)
                 queueNextWave();
@@ -73,8 +81,11 @@ namespace Bearded.TD.Game
 
         private void queueNextWave()
         {
-            const int numEnemies = 10;
             var blueprint = game.Blueprints.Units["debug"];
+
+            var minEnemies = Mathf.CeilToInt(minWaveCost / blueprint.Value);
+            var maxEnemies = Mathf.FloorToInt(maxWaveCost / blueprint.Value);
+            var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
 
             var minTimeToSpawn = numEnemies * minTimeBetweenEnemies;
             var maxTimeToSpawn = numEnemies * maxTimeBetweenEnemies;
