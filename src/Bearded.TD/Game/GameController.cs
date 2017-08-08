@@ -65,8 +65,6 @@ namespace Bearded.TD.Game
             minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
             maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
 
-            Console.WriteLine(Math.Round(maxWaveCost, 2));
-
             if (debit <= 0 && game.State.Time >= Instant.Zero + timeBeforeFirstWave)
                 queueNextWave();
 
