@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Resources
             {
                 this.processManager = processManager;
 
-                processManager.Finished += () => Finished = true;
+                processManager.Completed += () => Finished = true;
                 processManager.Aborted += () => Finished = true;
             }
 
