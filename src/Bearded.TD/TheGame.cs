@@ -68,8 +68,7 @@ namespace Bearded.TD
         {
             inputManager.Update(Focused);
 
-            if ((inputManager.IsKeyPressed(Key.AltLeft) && inputManager.IsKeyHit(Key.F4))
-                || inputManager.IsKeyPressed(Key.Escape))
+            if (inputManager.IsKeyPressed(Key.AltLeft) && inputManager.IsKeyHit(Key.F4))
             {
                 Close();
             }
