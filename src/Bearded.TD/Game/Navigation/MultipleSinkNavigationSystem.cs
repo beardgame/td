@@ -113,6 +113,10 @@ namespace Bearded.TD.Game.Navigation
         {
             updateTile(tile.X, tile.Y, Sink);
         }
+        public void AddBackupSink(Tile<TileInfo> tile)
+        {
+            updateTile(tile.X, tile.Y, BackupSink);
+        }
         public void RemoveSink(Tile<TileInfo> tile)
         {
             invalidateTile(tile.X, tile.Y);
@@ -144,7 +148,7 @@ namespace Bearded.TD.Game.Navigation
             updateFront.Enqueue(update);
         }
 
-        public void DrawDebug(GeometryManager geometries, Level level)
+        public void DrawDebug(GeometryManager geometries, Level level, bool drawWeights)
         {
             var geo = geometries.ConsoleBackground;
             var font = geometries.ConsoleFont;
@@ -158,15 +162,18 @@ namespace Bearded.TD.Game.Navigation
             const float w = HexagonDistanceX * 0.5f - 0.1f;
             const float h = HexagonDistanceY * 0.5f - 0.1f;
 
-            var i = 0;
-            foreach (var tile in updateFront)
+            if (drawWeights)
             {
-                var p = level.GetPosition(new Tile<TileInfo>(null, tile.X, tile.Y)).NumericValue;
+                var i = 0;
+                foreach (var tile in updateFront)
+                {
+                    var p = level.GetPosition(new Tile<TileInfo>(null, tile.X, tile.Y)).NumericValue;
 
-                geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
+                    geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
 
-                font.DrawString(p, $"{i}", 0.5f, 1f);
-                i++;
+                    font.DrawString(p, $"{i}", 0.5f, 1f);
+                    i++;
+                }
             }
 
             font.Height = HexagonSide;
@@ -196,14 +203,16 @@ namespace Bearded.TD.Game.Navigation
                     geo.DrawLine(p, p + d);
                 }
 
-                if (!info.IsInvalid)
+                if (drawWeights && !info.IsInvalid)
                     font.DrawString(p, $"{info.Distance}", 0.5f);
             }
         }
-
-
+        
+        private const int backupSinkDistance = 100_000_000;
+        
         private static Directions None => new Directions(int.MaxValue, Direction.Unknown);
         private static Directions Sink => new Directions(0, Direction.Unknown);
+        private static Directions BackupSink => new Directions(backupSinkDistance, Direction.Unknown);
 
         private struct Directions
         {
@@ -219,7 +228,7 @@ namespace Bearded.TD.Game.Navigation
             public Directions Invalidated => new Directions(int.MaxValue, Direction);
 
             public bool IsInvalid => Distance == int.MaxValue;
-            public bool IsSink => Distance == 0;
+            public bool IsSink => Distance == 0 || Distance == backupSinkDistance;
         }
 
         private struct FrontUpdate : IEquatable<FrontUpdate>

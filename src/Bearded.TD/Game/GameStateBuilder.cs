@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
@@ -32,7 +33,7 @@ namespace Bearded.TD.Game
 
             var baseBlueprint = game.Blueprints.Buildings["base"];
             var footprint = baseBlueprint.Footprints.Footprints[0].Positioned(game.State.Level, new Position2(0, 0));
-            yield return PlopBuilding.Command(game, game.State.RootFaction, baseBlueprint, footprint);
+            yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
 
             var tilemapTypes = tilemapGenerator.Generate(radius);
 

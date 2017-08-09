@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
@@ -9,6 +11,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -16,10 +19,12 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class Building : GameObject
+    abstract class Building : GameObject, IIdable<Building>
     {
         private readonly BuildingBlueprint blueprint;
         private PositionedFootprint footprint;
+
+        public Id<Building> Id { get; }
 
         public BuildProcessManager BuildManager { get; private set; }
         
@@ -32,10 +37,11 @@ namespace Bearded.TD.Game.Buildings
 
         public event VoidEventHandler Damaged;
 
-        protected Building(BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
+        protected Building(Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
         {
             if (!footprint.IsValid) throw new ArgumentOutOfRangeException();
 
+            Id = id;
             this.blueprint = blueprint;
             this.footprint = footprint;
             Faction = faction;
@@ -53,9 +59,14 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnAdded();
 
+            Game.IdAs(this);
+
             Position = footprint.CenterPosition;
-            OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, this));
-            
+            OccupiedTiles.ForEach(tile =>
+            {
+                Game.Geometry.SetBuilding(tile, this);
+                Game.Navigator.AddBackupSink(tile);
+            });
         }
 
         private void onCompleted()
@@ -67,13 +78,24 @@ namespace Bearded.TD.Game.Buildings
 
         protected override void OnDelete()
         {
-            OccupiedTiles.ForEach((tile) => Game.Geometry.SetBuilding(tile, null));
+            OccupiedTiles.ForEach(tile =>
+            {
+                Game.Geometry.SetBuilding(tile, null);
+                Game.Navigator.RemoveSink(tile);
+            });
+
+            //TODO: abort resource consumption if still being built
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
             foreach (var component in Components)
                 component.Update(elapsedTime);
+
+            if (Health <= 0)
+            {
+                this.Sync(KillBuilding.Command, this);
+            }
         }
 
         public override void Draw(GeometryManager geometries)
@@ -126,6 +148,7 @@ namespace Bearded.TD.Game.Buildings
 
                 buildProcess += resources.Amount;
                 var expectedHealthGiven = (int)(CurrentProgressFraction * blueprint.MaxHealth);
+                if (expectedHealthGiven < healthGiven) return;
                 building.Health += expectedHealthGiven - healthGiven;
                 healthGiven = expectedHealthGiven;
             }

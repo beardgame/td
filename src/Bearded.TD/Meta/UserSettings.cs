@@ -138,6 +138,7 @@ namespace Bearded.TD.Meta
         {
             public float UpSample = 1f;
             public bool DebugDeferred = false;
+            public int DebugPathfinding = 0;
         }
     }
 }
