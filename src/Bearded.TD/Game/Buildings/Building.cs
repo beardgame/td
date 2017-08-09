@@ -110,7 +110,7 @@ namespace Bearded.TD.Game.Buildings
             foreach (var component in Components)
                 component.Draw(geometries);
             
-            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange);
+            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange * 0.2f);
         }
 
         public bool HasComponentOfType<T>()
