@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Newtonsoft.Json;
@@ -13,6 +16,11 @@ namespace Bearded.TD.Meta
         public static UserSettings Instance { get; private set; }
 
         public static event VoidEventHandler SettingsChanged;
+
+        static UserSettings()
+        {
+            initialiseCommandParameters();
+        }
 
         #region I/O
         private static readonly JsonSerializer serializer = makeSerializer();
@@ -83,7 +91,32 @@ namespace Bearded.TD.Meta
         #endregion
 
         #region Console
-        [Command("setting")]
+
+        private static readonly Assembly thisAssembly = typeof(UserSettings).Assembly;
+
+        private static void initialiseCommandParameters()
+        {
+            var allParameters = getFieldsOf(typeof(UserSettings)).ToList();
+            
+            ConsoleCommands.AddParameterCompletion("allSettingStrings", allParameters);
+        }
+
+        private static IEnumerable<string> getFieldsOf(Type type)
+        {
+            return type.GetFields()
+                .SelectMany(field =>
+                {
+                    var fieldName = field.Name.ToLower();
+                    var fieldType = field.FieldType;
+
+                    if (fieldType.Assembly != thisAssembly)
+                        return new[] {fieldName};
+
+                    return getFieldsOf(fieldType).Select(suffix => $"{fieldName}.{suffix}");
+                });
+        }
+
+        [Command("setting", "allSettingStrings")]
         private static void setSetting(Logger logger, CommandParameters p)
         {
             if (p.Args.Length != 2)

@@ -117,24 +117,26 @@ namespace Bearded.TD.Screens
 
         private string autoComplete(string incompleteCommand)
         {
-            var trimmed = incompleteCommand.Trim();
-            if (trimmed.Contains(" ")) return autoCompleteParameters(incompleteCommand);
+            var trimmed = incompleteCommand.TrimStart();
 
+            if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand);
+            
             var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
 
             if (extended == null)
             {
-                logger.Info.Log("> {0}", trimmed);
+                logger.Info.Log($"> {trimmed}");
                 logger.Warning.Log("No commands found.");
                 return trimmed;
             }
 
             if (ConsoleCommands.Prefixes.Contains(extended))
             {
+                var extendedWithSpace = extended + " ";
                 if (trimmed != extended)
-                    return extended + " ";
+                    return extendedWithSpace;
                 else
-                    return autoCompleteParameters(incompleteCommand);
+                    return autoCompleteParameters(extendedWithSpace);
             }
 
             if (extended == trimmed)
@@ -147,17 +149,53 @@ namespace Bearded.TD.Screens
             return extended;
         }
 
+        private static readonly char[] space = {' '};
+
         private string autoCompleteParameters(string incompleteCommand)
         {
-            logger.Warning.Log("Autocompletion of parameters has not been implemented yet.");
-            return incompleteCommand;
+            var splitBySpace = incompleteCommand.Split(space, StringSplitOptions.RemoveEmptyEntries);
+
+            if (splitBySpace.Length == 0 || splitBySpace.Length > 2)
+                return incompleteCommand;
+
+            var command = splitBySpace[0];
+            var parameterPrefixes = ConsoleCommands.ParameterPrefixesFor(command);
+
+            if (parameterPrefixes == null)
+            {
+                logger.Info.Log($"> {incompleteCommand}");
+                logger.Warning.Log("No parameters for command known.");
+                return incompleteCommand;
+            }
+
+            var parameter = splitBySpace.Length > 1 ? splitBySpace[1] : "";
+            var extended = parameterPrefixes.ExtendPrefix(parameter);
+
+            if (extended == null)
+            {
+                logger.Info.Log($"> {incompleteCommand}");
+                logger.Warning.Log("No matching parameters found.");
+                return incompleteCommand;
+            }
+
+            if (parameterPrefixes.Contains(extended))
+                return $"{command} {extended} ";
+
+            if (extended != parameter)
+                return $"{command} {extended}";
+            
+            var availableParameters = parameterPrefixes.AllKeys(extended);
+            logger.Info.Log($"> {command} {extended}");
+            foreach (var p in availableParameters) logger.Info.Log(p);
+
+            return $"{command} {extended}";
         }
 
         public override void Draw()
         {
             if (!isConsoleEnabled) return;
 
-            Geometries.ConsoleBackground.Color = Color.Black.WithAlpha(.7f).Premultiplied;
+            Geometries.ConsoleBackground.Color = Color.Black * 0.7f;
             Geometries.ConsoleBackground.DrawRectangle(bounds.XStart, bounds.YStart, bounds.Width, bounds.Height);
 
             base.Draw();
