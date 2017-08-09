@@ -12,7 +12,6 @@ using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Bearded.Utilities;
-using OpenTK.Graphics.ES20;
 
 namespace Bearded.TD.Game
 {
@@ -38,13 +37,16 @@ namespace Bearded.TD.Game
         public static GameControllerDebugParameters Empty => new GameControllerDebugParameters();
 
         public double Debit { get; }
+        public double PayoffFactor { get; }
         public double MinWaveCost { get; }
         public double MaxWaveCost { get; }
         public double Lag { get; }
 
-        public GameControllerDebugParameters(double debit, double minWaveCost, double maxWaveCost, double lag)
+        public GameControllerDebugParameters(
+            double debit, double payoffFactor, double minWaveCost, double maxWaveCost, double lag)
         {
             Debit = debit;
+            PayoffFactor = payoffFactor;
             MinWaveCost = minWaveCost;
             MaxWaveCost = maxWaveCost;
             Lag = lag;
@@ -67,17 +69,19 @@ namespace Bearded.TD.Game
         private const double initialMinWaveCost = 10;
         private const double initialMaxWaveCost = 14;
         private const double waveCostGrowth = 1.007;
+        private const double debitPayoffGrowth = 1.009;
 
         private readonly GameInstance game;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
         private double debit;
+        private double debitPayoffFactor = 1;
         private double minWaveCost = initialMinWaveCost;
         private double maxWaveCost = initialMaxWaveCost;
 
-        public GameControllerDebugParameters DebugParameters
-            => new GameControllerDebugParameters(debit, minWaveCost, maxWaveCost, timeBeforeFirstWave.NumericValue);
+        public GameControllerDebugParameters DebugParameters => new GameControllerDebugParameters(
+            debit, debitPayoffFactor, minWaveCost, maxWaveCost, timeBeforeFirstWave.NumericValue);
 
         public GameController(GameInstance game)
         {
@@ -86,9 +90,10 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
-            debit -= args.ElapsedTimeInS;
+            debitPayoffFactor *= debitPayoffGrowth.Powed(args.ElapsedTimeInS);
             minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
             maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
+            debit -= args.ElapsedTimeInS * debitPayoffFactor;
 
             if (debit <= 0)
                 queueNextWave();
