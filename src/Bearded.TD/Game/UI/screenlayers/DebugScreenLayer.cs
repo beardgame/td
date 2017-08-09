@@ -21,7 +21,9 @@ namespace Bearded.TD.Game.UI
             set => UserSettings.Instance.Debug.InfoScreen = value;
         } 
 
-        public DebugScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, GameInstance game, InputManager inputManager) : base(parent, geometries)
+        public DebugScreenLayer(
+            ScreenLayerCollection parent, GeometryManager geometries, GameInstance game, InputManager inputManager)
+            : base(parent, geometries)
         {
             this.game = game;
             rotateAction = inputManager.Actions.Keyboard.FromKey(Key.F3);
