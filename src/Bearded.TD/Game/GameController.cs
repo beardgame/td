@@ -65,7 +65,7 @@ namespace Bearded.TD.Game
             minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
             maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
 
-            if (debit <= 0 && game.State.Time >= Instant.Zero + timeBeforeFirstWave)
+            if (debit <= 0)
                 queueNextWave();
 
             var curr = plannedWaves.First;
@@ -109,7 +109,13 @@ namespace Bearded.TD.Game
                 if (i < numEnemiesForPoint % numSpawnPoints)
                     numEnemiesForPoint++;
                 plannedWaves.AddLast(
-                    new EnemyWave(game, blueprint, game.State.Time, numEnemiesForPoint, timeBetweenSpawns, tile));
+                    new EnemyWave(
+                        game,
+                        blueprint,
+                        game.State.Time + timeBeforeFirstWave,
+                        numEnemiesForPoint,
+                        timeBetweenSpawns,
+                        tile));
             }
 
             debit = blueprint.Value * numEnemies;
