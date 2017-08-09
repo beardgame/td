@@ -83,8 +83,6 @@ namespace Bearded.TD.Game.Buildings
                 Game.Geometry.SetBuilding(tile, null);
                 Game.Navigator.RemoveSink(tile);
             });
-
-            //TODO: abort resource consumption if still being built
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -128,10 +126,14 @@ namespace Bearded.TD.Game.Buildings
             public double ResourcesStillNeeded => blueprint.ResourceCost - buildProcess;
             public double CurrentProgressFraction => buildProcess / blueprint.ResourceCost;
 
+            public event VoidEventHandler Completed;
+            public event VoidEventHandler Aborted;
+
             public BuildProcessManager(Building building, BuildingBlueprint blueprint)
             {
                 this.building = building;
                 this.blueprint = blueprint;
+                building.Deleting += onBuildingAborted;
             }
 
             public void Progress(ResourceGrant resources)
@@ -140,18 +142,28 @@ namespace Bearded.TD.Game.Buildings
 
                 if (resources.ReachedCapacity)
                 {
-                    buildProcess = blueprint.ResourceCost;
-                    building.Health += blueprint.MaxHealth - healthGiven;
-                    building.onCompleted();
+                    completeBuilding();
                     return;
                 }
 
                 buildProcess += resources.Amount;
                 var expectedHealthGiven = (int)(CurrentProgressFraction * blueprint.MaxHealth);
-                if (expectedHealthGiven < healthGiven) return;
+                if (expectedHealthGiven < healthGiven)
+                    return;
                 building.Health += expectedHealthGiven - healthGiven;
                 healthGiven = expectedHealthGiven;
             }
+
+            private void completeBuilding()
+            {
+                buildProcess = blueprint.ResourceCost;
+                building.Health += blueprint.MaxHealth - healthGiven;
+                building.onCompleted();
+                Completed?.Invoke();
+                building.Deleting -= onBuildingAborted;
+            }
+
+            private void onBuildingAborted() => Aborted?.Invoke();
         }
     }
 }

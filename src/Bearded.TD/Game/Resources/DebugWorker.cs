@@ -35,11 +35,14 @@ namespace Bearded.TD.Game.Resources
         {
             private readonly Building.BuildProcessManager processManager;
 
-            public bool Finished => processManager.ResourcesStillNeeded <= 0;
+            public bool Finished { get; private set; }
 
             public DebugWorkerResourceConsumer(Building.BuildProcessManager processManager)
             {
                 this.processManager = processManager;
+
+                processManager.Finished += () => Finished = true;
+                processManager.Aborted += () => Finished = true;
             }
 
             public double RatePerS => buildRate;
