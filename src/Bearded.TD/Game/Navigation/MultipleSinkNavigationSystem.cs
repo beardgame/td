@@ -4,6 +4,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using OpenTK.Graphics.OpenGL;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation
@@ -42,7 +43,7 @@ namespace Bearded.TD.Game.Navigation
 
         public void Update()
         {
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 1; i++)
             {
                 if (updateFront.Count == 0)
                     break;
@@ -90,7 +91,6 @@ namespace Bearded.TD.Game.Navigation
                 var gameTile = new Tile<TileInfo>(tilemap, xy.X, xy.Y);
 
                 foreach (var direction in gameTile.Info.OpenDirections.Enumerate())
-
                 {
                     var neighbour = tile.Neighbour(direction);
                     var neighbourInfo = neighbour.Info;
@@ -116,6 +116,11 @@ namespace Bearded.TD.Game.Navigation
         public void AddBackupSink(Tile<TileInfo> tile)
         {
             updateTile(tile.X, tile.Y, BackupSink);
+            foreach (var direction in tile.Info.OpenDirections.Enumerate())
+            {
+                var neighbour = tile.Neighbour(direction);
+                touchTile(neighbour.X, neighbour.Y);
+            }
         }
         public void RemoveSink(Tile<TileInfo> tile)
         {
@@ -177,7 +182,6 @@ namespace Bearded.TD.Game.Navigation
             }
 
             font.Height = HexagonSide;
-            font.Color = Color.Yellow;
 
             foreach (var tile in directions)
             {
@@ -204,7 +208,17 @@ namespace Bearded.TD.Game.Navigation
                 }
 
                 if (drawWeights && !info.IsInvalid)
-                    font.DrawString(p, $"{info.Distance}", 0.5f);
+                {
+                    font.Color = Color.Yellow;
+                    var distance = info.Distance;
+                    if (distance >= backupSinkDistance)
+                    {
+                        distance -= backupSinkDistance;
+                        font.Color = Color.Red;
+                    }
+
+                    font.DrawString(p, $"{distance}", 0.5f);
+                }
             }
         }
         
