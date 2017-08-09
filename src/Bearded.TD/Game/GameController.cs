@@ -44,7 +44,7 @@ namespace Bearded.TD.Game
 
         private const double initialMinWaveCost = 10;
         private const double initialMaxWaveCost = 14;
-        private const double waveCostGrowth = 1.004;
+        private const double waveCostGrowth = 1.007;
 
         private readonly GameInstance game;
         private readonly Random random = new Random();
