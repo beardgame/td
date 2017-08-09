@@ -12,6 +12,7 @@ using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Bearded.Utilities;
+using OpenTK.Graphics.ES20;
 
 namespace Bearded.TD.Game
 {
@@ -19,13 +20,34 @@ namespace Bearded.TD.Game
 
     interface IGameController
     {
+        GameControllerDebugParameters DebugParameters { get; }
         void Update(UpdateEventArgs args);
     }
 
     class DummyGameController : IGameController
     {
+        public GameControllerDebugParameters DebugParameters => GameControllerDebugParameters.Empty;
+
         public void Update(UpdateEventArgs args)
         {
+        }
+    }
+
+    struct GameControllerDebugParameters
+    {
+        public static GameControllerDebugParameters Empty => new GameControllerDebugParameters();
+
+        public double Debit { get; }
+        public double MinWaveCost { get; }
+        public double MaxWaveCost { get; }
+        public double Lag { get; }
+
+        public GameControllerDebugParameters(double debit, double minWaveCost, double maxWaveCost, double lag)
+        {
+            Debit = debit;
+            MinWaveCost = minWaveCost;
+            MaxWaveCost = maxWaveCost;
+            Lag = lag;
         }
     }
 
@@ -53,6 +75,9 @@ namespace Bearded.TD.Game
         private double debit;
         private double minWaveCost = initialMinWaveCost;
         private double maxWaveCost = initialMaxWaveCost;
+
+        public GameControllerDebugParameters DebugParameters
+            => new GameControllerDebugParameters(debit, minWaveCost, maxWaveCost, timeBeforeFirstWave.NumericValue);
 
         public GameController(GameInstance game)
         {
