@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.UI
             }
 
 
-            var debugPathfinding = UserSettings.Instance.Graphics.DebugPathfinding;
+            var debugPathfinding = UserSettings.Instance.Debug.Pathfinding;
             if (debugPathfinding > 0)
             {
                 game.State.Navigator.DrawDebug(geometries, game.State.Level, debugPathfinding > 1);

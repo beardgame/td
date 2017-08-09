@@ -168,6 +168,7 @@
     <Compile Include="Game\UI\clickhandlers\DebugSetTileTypeClickHandler.cs" />
     <Compile Include="Game\UI\clickhandlers\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\clickhandlers\DebugToggleTileTypeClickHandler.cs" />
+    <Compile Include="Game\UI\screenlayers\DebugScreenLayer.cs" />
     <Compile Include="Game\UI\screenlayers\GameOverScreenLayer.cs" />
     <Compile Include="Game\UI\screenlayers\GameWorldScreenLayer.cs" />
     <Compile Include="Game\UI\GameUI.cs" />

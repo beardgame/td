@@ -15,6 +15,9 @@ namespace Bearded.TD.Game.UI
             AddScreenLayerOnTop(new ActionBarScreenLayer(this, geometries, gameInstance, inputManager));
             AddScreenLayerOnTop(new StatusScreenLayer(this, geometries, gameInstance));
             AddScreenLayerOnTop(new GameOverScreenLayer(this, geometries, gameInstance));
+#if DEBUG
+            AddScreenLayerOnTop(new DebugScreenLayer(this, geometries, gameInstance, inputManager));
+#endif
         }
     }
 }

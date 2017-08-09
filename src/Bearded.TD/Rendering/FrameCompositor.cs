@@ -70,7 +70,7 @@ namespace Bearded.TD.Rendering
         {
             deferredRenderer.Render();
 
-            if (UserSettings.Instance.Graphics.DebugDeferred)
+            if (UserSettings.Instance.Debug.Deferred)
                 deferredRenderer.RenderDebug();
         }
 

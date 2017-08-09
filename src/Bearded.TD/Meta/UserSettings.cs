@@ -120,6 +120,7 @@ namespace Bearded.TD.Meta
         public MiscSettings Misc = new MiscSettings();
         public UISettings UI = new UISettings();
         public GraphicsSettings Graphics = new GraphicsSettings();
+        public DebugSettings Debug = new DebugSettings();
         
         public class MiscSettings
         {
@@ -137,8 +138,13 @@ namespace Bearded.TD.Meta
         public class GraphicsSettings
         {
             public float UpSample = 1f;
-            public bool DebugDeferred = false;
-            public int DebugPathfinding = 0;
+        }
+
+        public class DebugSettings
+        {
+            public bool Deferred = false;
+            public int Pathfinding = 0;
+            public int InfoScreen = 0;
         }
     }
 }
