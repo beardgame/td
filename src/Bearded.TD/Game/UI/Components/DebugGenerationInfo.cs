@@ -36,9 +36,11 @@ namespace Bearded.TD.Game.UI.Components
 
             var start = Bounds.Start() + Constants.UI.BoxPadding * Vector2.One;
             var i = 0;
-            
+
             textGeo.DrawString(
-                start + i++ * lineHeight * Vector2.UnitY, $"next wave in: {debugParams.Debit:0.00}s");
+                start + i++ * lineHeight * Vector2.UnitY, $"debit: {debugParams.Debit:0.00}");
+            textGeo.DrawString(
+                start + i++ * lineHeight * Vector2.UnitY, $"payoff factor: {debugParams.PayoffFactor:0.00}");
             textGeo.DrawString(
                 start + i++ * lineHeight * Vector2.UnitY, $"min wave cost: {debugParams.MinWaveCost:0.00}");
             textGeo.DrawString(
