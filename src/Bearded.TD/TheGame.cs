@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
@@ -83,6 +84,12 @@ namespace Bearded.TD
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            UserSettings.Save(logger);
+            base.OnClosing(e);
         }
     }
 }

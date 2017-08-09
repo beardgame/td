@@ -155,6 +155,7 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
     <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />
     <Compile Include="Game\UI\clickhandlers\BuildingClickHandler.cs" />
     <Compile Include="Game\UI\screenlayers\BuildingScreenLayer.cs" />

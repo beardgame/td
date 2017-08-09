@@ -1,10 +1,13 @@
-﻿using Bearded.TD.Meta;
+﻿using Bearded.TD.Game.UI.Components;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
+using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Linq;
+using OpenTK;
 using OpenTK.Input;
 
 namespace Bearded.TD.Game.UI
@@ -32,6 +35,7 @@ namespace Bearded.TD.Game.UI
 
             if (currentOpenComponent < 0 || currentOpenComponent >= debugComponents.Length)
                 currentOpenComponent = 0;
+            debugComponents[currentOpenComponent]?.Focus();
         }
 
         protected override bool DoHandleInput(InputContext input)
@@ -50,9 +54,12 @@ namespace Bearded.TD.Game.UI
 
         private FocusableUIComponent[] createComponents()
         {
+            var bounds = Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(240, 300));
+            
             return new FocusableUIComponent[]
             {
-                null
+                null,
+                new DebugGenerationInfo(bounds, game), 
             };
         }
     }
