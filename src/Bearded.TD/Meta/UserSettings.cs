@@ -17,6 +17,8 @@ namespace Bearded.TD.Meta
 
         public static event VoidEventHandler SettingsChanged;
 
+        public static void RaiseSettingsChanged() => SettingsChanged?.Invoke();
+
         static UserSettings()
         {
             initialiseCommandParameters();
