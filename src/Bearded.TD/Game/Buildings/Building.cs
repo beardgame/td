@@ -8,6 +8,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -51,7 +52,8 @@ namespace Bearded.TD.Game.Buildings
 
         public void Damage(int damage)
         {
-            Health -= damage;
+            if (!UserSettings.Instance.Debug.InvulnerableBuildings)
+                Health -= damage;
             Damaged?.Invoke();
         }
 
