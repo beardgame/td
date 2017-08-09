@@ -5,7 +5,6 @@ using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.Math;
 using OpenTK.Input;
 
 namespace Bearded.TD.Game.UI
