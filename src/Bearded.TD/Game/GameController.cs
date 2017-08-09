@@ -60,7 +60,7 @@ namespace Bearded.TD.Game
         private const int numAvailableSpawnPoints = 6;
 
         private static readonly TimeSpan timeBeforeFirstWave = 20.S();
-        private static readonly TimeSpan warningTime = 10.S();
+        private static readonly TimeSpan warningTime = 20.S();
         private static readonly TimeSpan minTimeBetweenEnemies = .1.S();
         private static readonly TimeSpan maxTimeBetweenEnemies = 2.S();
         private static readonly TimeSpan minWaveDuration = 10.S();

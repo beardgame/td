@@ -88,11 +88,11 @@ namespace Bearded.TD.Networking.Loading
                 }));
             // In the future these would be loaded from a mod file.
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall", FootprintGroup.Single, 100, 5,
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall", FootprintGroup.Single, 100, 15,
                     null)));
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
-                    20, Game.Blueprints.Components["turret"].Yield())));
+                    75, Game.Blueprints.Components["turret"].Yield())));
 
             // === Enemies ===
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game,
