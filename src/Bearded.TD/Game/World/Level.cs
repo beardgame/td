@@ -121,18 +121,6 @@ namespace Bearded.TD.Game.World
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
             );
-        
-        public TiledRayHitResult<TTileInfo> ShootRay(Ray ray)
-        {
-            return ShootRay(ray, GetTile(ray.Start));
-        }
-
-        public TiledRayHitResult<TTileInfo> ShootRay(Ray ray, Tile<TTileInfo> startTile)
-        {
-            return new LevelRayCaster<TTileInfo>().ShootRay(this, ray, startTile);
-        }
-
-        protected virtual bool TileBlocksRays(Tile<TTileInfo> tile) => false;
     }
 
     sealed class Level : Level<TileInfo>
@@ -159,8 +147,5 @@ namespace Bearded.TD.Game.World
                     );
             }
         }
-
-        protected override bool TileBlocksRays(Tile<TileInfo> tile)
-            => !tile.IsValid || tile.Info.TileType == TileInfo.Type.Wall;
     }
 }

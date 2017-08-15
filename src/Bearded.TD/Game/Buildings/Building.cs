@@ -5,6 +5,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;

@@ -5,6 +5,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -24,6 +25,8 @@ namespace Bearded.TD.Game.Units
         private Tile<TileInfo> anchorTile;
         protected Tile<TileInfo> CurrentTile { get; private set; }
         protected int Health { get; private set; }
+
+        public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
         protected GameUnit(Id<GameUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {

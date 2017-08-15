@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings.Components
 {
     class Turret : Component
     {
-        private static readonly TimeSpan ShootInterval = new TimeSpan(0.3);
+        private static readonly TimeSpan ShootInterval = new TimeSpan(0.15);
         private static readonly TimeSpan IdleInterval = new TimeSpan(0.3);
         private const int Damage = 10;
         private static readonly Unit Range = 5.U();
@@ -76,7 +78,14 @@ namespace Bearded.TD.Game.Buildings.Components
 
         private void shootTarget()
         {
-            target.Damage(Damage, Building);
+            var p = new Projectile(
+                Building.Position,
+                (target.Position - Building.Position).Direction,
+                20.U() / 1.S(),
+                Damage, Building
+                );
+            
+            Building.Game.Add(p);
 
             laserTargetPoint = target.Position;
             laserTargetEndTime = Building.Game.Time + new TimeSpan(0.1);

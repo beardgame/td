@@ -19,19 +19,18 @@ namespace Bearded.TD.Game.World
         private float nextCenterIntersection, centerFullStep, centerHalfStep;
         private float nextLeftIntersection, leftFullStep, leftHalfStep;
         private float nextRightIntersection, rightFullStep, rightHalfStep;
+        private float currentRayFactor;
         private Tile<TTileInfo> tile;
 
         private bool reachedFinalTile => nextCenterIntersection > 1 && nextLeftIntersection > 1 && nextRightIntersection > 1;
-
-        public IEnumerable<Tile<TTileInfo>> EnumerateTiles(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
+        
+        public IEnumerable<Tile<TTileInfo>> EnumerateTiles(Level<TTileInfo> level, Ray ray)
         {
-#if DEBUG
-            if (level.GetTile(ray.Start) != startTile)
-                throw new ArgumentException("Ray must start on given start tile.");
-#endif
-            initialise(level, ray, startTile);
+            var startTile = level.GetTile(ray.Start);
 
-            yield return tile;
+            yield return startTile;
+
+            initialise(level, ray, startTile);
 
             if (reachedFinalTile)
             {
@@ -50,18 +49,16 @@ namespace Bearded.TD.Game.World
                 }
             }
         }
-        
-        public TiledRayHitResult<TTileInfo> ShootRay(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
+
+        public (Tile<TTileInfo>, Position2) GetEndOfRay(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
         {
-#if DEBUG
-            if (level.GetTile(ray.Start) != startTile)
-                throw new ArgumentException("Ray must start on given start tile.");
-#endif
+            checkPreconditions(level, ray, startTile);
+
             initialise(level, ray, startTile);
 
             if (reachedFinalTile)
             {
-                return RayHitResult.Miss(ray).OnTile(startTile, new Difference2());
+                return (startTile, ray.Start + ray.Direction);
             }
 
             while (true)
@@ -74,7 +71,16 @@ namespace Bearded.TD.Game.World
                 }
             }
 
-            return RayHitResult.Miss(ray).OnTile(tile, new Difference2());
+            return (tile, ray.Start + ray.Direction);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void checkPreconditions(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
+        {
+#if DEBUG
+            if (level.GetTile(ray.Start) != startTile)
+                throw new ArgumentException("Ray must start on given start tile.");
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,6 +129,7 @@ namespace Bearded.TD.Game.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void stepCenter()
         {
+            currentRayFactor = nextCenterIntersection;
             nextCenterIntersection += centerFullStep;
             nextLeftIntersection += leftHalfStep;
             nextRightIntersection += rightHalfStep;
@@ -132,6 +139,7 @@ namespace Bearded.TD.Game.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void stepLeft()
         {
+            currentRayFactor = nextLeftIntersection;
             nextCenterIntersection += centerHalfStep;
             nextLeftIntersection += leftFullStep;
             nextRightIntersection -= rightHalfStep;
@@ -141,6 +149,7 @@ namespace Bearded.TD.Game.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void stepRight()
         {
+            currentRayFactor = nextRightIntersection;
             nextCenterIntersection += centerHalfStep;
             nextLeftIntersection -= leftHalfStep;
             nextRightIntersection += rightFullStep;
@@ -148,7 +157,8 @@ namespace Bearded.TD.Game.World
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static (float Start, float FullStep, float HalfStep) getRayTraceParameters(Vector2 rayStart, Vector2 rayDir, Direction side)
+        private static (float Start, float FullStep, float HalfStep) getRayTraceParameters(
+            Vector2 rayStart, Vector2 rayDir, Direction side)
         {
             var sideVector = directionVectorsWithHexWidthLength[(int)side];
 
