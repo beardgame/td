@@ -1,19 +1,20 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Generation.Enemies;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
     interface IGameController
     {
         EnemySpawnDebugParameters DebugParameters { get; }
-        void Update(UpdateEventArgs args);
+        void Update(TimeSpan elapsedTime);
     }
 
     class DummyGameController : IGameController
     {
         public EnemySpawnDebugParameters DebugParameters => EnemySpawnDebugParameters.Empty;
 
-        public void Update(UpdateEventArgs args)
+        public void Update(TimeSpan elapsedTime)
         {
         }
     }
@@ -27,9 +28,9 @@ namespace Bearded.TD.Game
             enemySpawnController = new EnemySpawnController(game);
         }
 
-        public void Update(UpdateEventArgs args)
+        public void Update(TimeSpan elapsedTime)
         {
-            enemySpawnController.Update(args);
+            enemySpawnController.Update(elapsedTime);
         }
 
         public EnemySpawnDebugParameters DebugParameters => enemySpawnController.DebugParameters;

@@ -40,12 +40,12 @@ namespace Bearded.TD.Game.Generation.Enemies
             enemies = EnemySpawnDefinitions.BuildSpawnDefinitions();
         }
 
-        public void Update(UpdateEventArgs args)
+        public void Update(TimeSpan elapsedTime)
         {
-            debitPayoffFactor *= DebitPayoffGrowth.Powed(args.ElapsedTimeInS);
-            minWaveCost *= WaveCostGrowth.Powed(args.ElapsedTimeInS);
-            maxWaveCost *= WaveCostGrowth.Powed(args.ElapsedTimeInS);
-            debit -= args.ElapsedTimeInS * debitPayoffFactor;
+            debitPayoffFactor *= DebitPayoffGrowth.Powed(elapsedTime.NumericValue);
+            minWaveCost *= WaveCostGrowth.Powed(elapsedTime.NumericValue);
+            maxWaveCost *= WaveCostGrowth.Powed(elapsedTime.NumericValue);
+            debit -= elapsedTime.NumericValue * debitPayoffFactor;
 
             if (debit <= 0)
                 queueNextWave();
