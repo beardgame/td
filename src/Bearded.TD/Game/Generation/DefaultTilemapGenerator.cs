@@ -34,9 +34,9 @@ namespace Bearded.TD.Game.Generation
             gen.FillAll();
             gen.ClearCenter(tilemap.Radius - 1, 0.1);
             logger.Trace.Log("Clearing tilemap center and corners");
-            gen.ClearCenter(2);
-            gen.ClearCenter(3, 0.5);
-            gen.ClearCenter(5, 0.2);
+            gen.ClearCenter(3);
+            gen.ClearCenter(4, 0.3);
+            gen.ClearCenter(6, 0.1);
             gen.ClearCorners(1);
             gen.ClearCorners(2, 0.5);
             gen.ClearCorners(3, 0.2);
@@ -48,6 +48,7 @@ namespace Bearded.TD.Game.Generation
             gen.ConnectCornersToGraph();
             logger.Trace.Log("Digging tunnels");
             gen.ClearTunnels();
+            gen.DigDeep(30);
 
             logger.Debug.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
@@ -104,7 +105,8 @@ namespace Bearded.TD.Game.Generation
                     tile = newTile;
 
                     open(tile);
-                    spray(tile.Neighbours, open, 0.1);
+                    spray(spiral(tile, 1), open, 0.05);
+                    spray(spiral(tile, 2), open, 0.03);
                 }
             }
 
@@ -211,6 +213,44 @@ namespace Bearded.TD.Game.Generation
 
             public void ClearCorner(Direction direction, int radius, double fraction = 1)
                 => spray(spiral(corner(direction), radius), open, fraction);
+            
+            public void DigDeep(int count = 10)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    var tile = randomTile();
+                    if (tile.Info != Wall)
+                        continue;
+                    var tiles = new List<Tile> {tile};
+                    while (tiles.Count < 8)
+                    {
+                        var closedNeighbours = tile.Neighbours.Where(t => t.Info == Wall && !tiles.Contains(t)).ToList();
+                        if (closedNeighbours.Count == 0)
+                            break;
+
+                        tile = closedNeighbours.RandomElement();
+                        tiles.Add(tile);
+                    }
+
+                    if (tiles.Count > 3)
+                    {
+                        foreach (var t in tiles)
+                            set(t, Crevice);
+                    }
+                }
+            }
+
+            private Tile randomTile()
+            {
+                var r = tilemap.Radius;
+                while (true)
+                {
+                    var tile = this.tile(StaticRandom.Int(-r, r), StaticRandom.Int(-r, r));
+
+                    if (tile.IsValid)
+                        return tile;
+                }
+            }
 
             private void spray(IEnumerable<Tile> area, Action<Tile> action, double fraction)
                 => area.ForEach(t =>

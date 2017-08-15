@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.UI.Components
             if (input.Manager.LeftMouseHit && Bounds.Contains(input.MousePosition))
             {
                 Focus();
-                content.Action();
+                content?.Action();
             }
         }
 

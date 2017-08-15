@@ -181,6 +181,7 @@ namespace Bearded.TD.Meta
             public int Pathfinding = 0;
             public int InfoScreen = 0;
             public bool InvulnerableBuildings = false;
+            public double GameSpeed = 1;
         }
     }
 }
