@@ -158,7 +158,6 @@
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
     <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />
     <Compile Include="Game\UI\clickhandlers\BuildingClickHandler.cs" />
-    <Compile Include="Game\UI\screenlayers\BuildingScreenLayer.cs" />
     <Compile Include="Game\UI\model\ChatLog.cs" />
     <Compile Include="Game\UI\model\ChatMessage.cs" />
     <Compile Include="Game\UI\Components\ActionBar.cs" />
