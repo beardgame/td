@@ -10,7 +10,7 @@ namespace Bearded.TD.Rendering.Deferred
     class LevelGeometry
     {
         private static readonly Color openColor = Color.White;
-        
+
         private readonly IndexedSurface<LevelVertex> surface;
 
         public LevelGeometry(IndexedSurface<LevelVertex> surface)
@@ -113,9 +113,9 @@ namespace Bearded.TD.Rendering.Deferred
         private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n, Color c)
         {
             surface.AddTriangle(
-                new LevelVertex(v0, n, Vector2.Zero, c),
-                new LevelVertex(v1, n, Vector2.Zero, c),
-                new LevelVertex(v2, n, Vector2.Zero, c)
+                vertex(v0, n, Vector2.Zero, c),
+                vertex(v1, n, Vector2.Zero, c),
+                vertex(v2, n, Vector2.Zero, c)
             );
         }
 
@@ -128,10 +128,10 @@ namespace Bearded.TD.Rendering.Deferred
         private void addQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 n, Color c)
         {
             surface.AddQuad(
-                new LevelVertex(v0, n, Vector2.Zero, c),
-                new LevelVertex(v1, n, Vector2.Zero, c),
-                new LevelVertex(v2, n, Vector2.Zero, c),
-                new LevelVertex(v3, n, Vector2.Zero, c)
+                vertex(v0, n, Vector2.Zero, c),
+                vertex(v1, n, Vector2.Zero, c),
+                vertex(v2, n, Vector2.Zero, c),
+                vertex(v3, n, Vector2.Zero, c)
             );
         }
 
@@ -139,12 +139,12 @@ namespace Bearded.TD.Rendering.Deferred
         {
             var vertices = surface.WriteVerticesDirectly(6, out var vOffset);
 
-            vertices[vOffset] = new LevelVertex(v0, n, Vector2.Zero, c);
-            vertices[vOffset + 1] = new LevelVertex(v1, n, Vector2.Zero, c);
-            vertices[vOffset + 2] = new LevelVertex(v2, n, Vector2.Zero, c);
-            vertices[vOffset + 3] = new LevelVertex(v3, n, Vector2.Zero, c);
-            vertices[vOffset + 4] = new LevelVertex(v4, n, Vector2.Zero, c);
-            vertices[vOffset + 5] = new LevelVertex(v5, n, Vector2.Zero, c);
+            vertices[vOffset] = vertex(v0, n, Vector2.Zero, c);
+            vertices[vOffset + 1] = vertex(v1, n, Vector2.Zero, c);
+            vertices[vOffset + 2] = vertex(v2, n, Vector2.Zero, c);
+            vertices[vOffset + 3] = vertex(v3, n, Vector2.Zero, c);
+            vertices[vOffset + 4] = vertex(v4, n, Vector2.Zero, c);
+            vertices[vOffset + 5] = vertex(v5, n, Vector2.Zero, c);
 
             var indices = surface.WriteIndicesDirectly(12, out var iOffset);
 
@@ -163,6 +163,13 @@ namespace Bearded.TD.Rendering.Deferred
             indices[iOffset++] = vOffset;
             indices[iOffset++] = (ushort) (vOffset + 4);
             indices[iOffset] = (ushort) (vOffset + 5);
+        }
+
+        private static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
+        {
+            var a = (1 - Math.Abs(v.Z * 0.3f)).Clamped(0, 1);
+
+            return new LevelVertex(v, n, Vector2.Zero, new Color(c * a, c.A));
         }
     }
 }
