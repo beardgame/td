@@ -111,7 +111,7 @@ namespace Bearded.TD.Game
 
         private void queueNextWave()
         {
-            var blueprint = game.Blueprints.Units["debug"];
+            var blueprint = selectBlueprint();
 
             var minEnemies = Mathf.CeilToInt(minWaveCost / blueprint.Value);
             var maxEnemies = Mathf.FloorToInt(maxWaveCost / blueprint.Value);
@@ -129,6 +129,25 @@ namespace Bearded.TD.Game
             var waveDuration = random.NextDouble(minDuration.NumericValue, maxDuration.NumericValue).S();
 
             buildWave(numSpawnPoints, blueprint, numEnemies, numSpawnPoints * waveDuration / numEnemies);
+        }
+
+        private UnitBlueprint selectBlueprint()
+        {
+            var blueprints = game.Blueprints.Units.All.ToList();
+            var probabilities = new double[blueprints.Count + 1];
+            foreach (var (blueprint, i) in blueprints.Indexed())
+            {
+                probabilities[i + 1] = getBlueprintProbability(blueprint) + probabilities[i];
+            }
+            var t = random.NextDouble(probabilities[probabilities.Length - 1]);
+            var result = Array.BinarySearch(probabilities, t);
+            
+            return result >= 0 ? blueprints[result] : blueprints[~result - 1];
+        }
+
+        private double getBlueprintProbability(UnitBlueprint blueprint)
+        {
+            return 1 / blueprint.Value;
         }
 
         private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
