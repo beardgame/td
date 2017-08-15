@@ -147,7 +147,7 @@ namespace Bearded.TD.Game
 
         private double getBlueprintProbability(UnitBlueprint blueprint)
         {
-            return 1 / blueprint.Value;
+            return 1 / blueprint.Value.Squared();
         }
 
         private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
