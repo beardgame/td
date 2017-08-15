@@ -39,9 +39,15 @@ namespace Bearded.TD.Game.UI
 #if DEBUG
             var debugPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
             debugPage[0] = contentFor(new DebugToggleTileTypeClickHandler(), "Toggle tile");
-            debugPage[1] = contentFor(new DebugSpawnEnemyClickHandler(), "Spawn enemy");
-            debugPage[2] = contentFor(new DebugSetTileTypeClickHandler(TileInfo.Type.Crevice), "Dig Too Deep");
+            debugPage[1] = contentFor(new DebugSetTileTypeClickHandler(TileInfo.Type.Crevice), "Dig Too Deep");
             pages.Add(debugPage);
+
+            var enemyPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
+            enemyPage[0] = contentFor(new DebugSpawnEnemyClickHandler("debug"), "Default enemy");
+            enemyPage[1] = contentFor(new DebugSpawnEnemyClickHandler("fast"), "Fast enemy");
+            enemyPage[2] = contentFor(new DebugSpawnEnemyClickHandler("strong"), "Strong enemy");
+            enemyPage[3] = contentFor(new DebugSpawnEnemyClickHandler("tank"), "Tank enemy");
+            pages.Add(enemyPage);
 #endif
 
             return pages;
