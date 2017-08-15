@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Units
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.DarkRed;
+            geo.Color = Blueprint.Color;
             geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
 
             var p = (Health / (float)Blueprint.Health).Clamped(0, 1);

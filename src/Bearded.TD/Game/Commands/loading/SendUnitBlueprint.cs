@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Commands;
+﻿using amulware.Graphics;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -39,6 +40,7 @@ namespace Bearded.TD.Game.Commands
             private double timeBetweenAttacks;
             private float speed;
             private float value;
+            private Color color;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
@@ -54,11 +56,12 @@ namespace Bearded.TD.Game.Commands
                 timeBetweenAttacks = blueprint.TimeBetweenAttacks.NumericValue;
                 speed = blueprint.Speed.NumericValue;
                 value = blueprint.Value;
+                color = blueprint.Color;
             }
 
             public ICommand GetCommand(GameInstance game)
                 => new Implementation(game, new UnitBlueprint(
-                    id, name, health, damage, new TimeSpan(timeBetweenAttacks), new Speed(speed), value));
+                    id, name, health, damage, new TimeSpan(timeBetweenAttacks), new Speed(speed), value, color));
 
             public void Serialize(INetBufferStream stream)
             {
@@ -69,6 +72,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref timeBetweenAttacks);
                 stream.Serialize(ref speed);
                 stream.Serialize(ref value);
+                stream.Serialize(ref color);
             }
         }
     }

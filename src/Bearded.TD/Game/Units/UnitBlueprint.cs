@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Utilities;
+﻿using amulware.Graphics;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -14,8 +15,17 @@ namespace Bearded.TD.Game.Units
         public TimeSpan TimeBetweenAttacks { get; }
         public Speed Speed { get; }
         public float Value { get; }
+        public Color Color { get; }
 
-        public UnitBlueprint(Id<UnitBlueprint> id, string name, int health, int damage, TimeSpan timeBetweenAttacks, Speed speed, float value)
+        public UnitBlueprint(
+            Id<UnitBlueprint> id,
+            string name,
+            int health,
+            int damage,
+            TimeSpan timeBetweenAttacks,
+            Speed speed,
+            float value,
+            Color color)
         {
             Id = id;
             Name = name;
@@ -24,6 +34,7 @@ namespace Bearded.TD.Game.Units
             TimeBetweenAttacks = timeBetweenAttacks;
             Speed = speed;
             Value = value;
+            Color = color;
         }
     }
 }

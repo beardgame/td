@@ -95,8 +95,14 @@ namespace Bearded.TD.Networking.Loading
                     75, Game.Blueprints.Components["turret"].Yield())));
 
             // === Enemies ===
-            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game,
-                new UnitBlueprint(Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 10, TimeSpan.One, new Speed(2), 2)));
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
+                Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 10, 2.S(), new Speed(2), 2, Color.DarkRed)));
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
+                Game.Ids.GetNext<UnitBlueprint>(), "strong", 250, 20, 1.5.S(), new Speed(1), 3f, Color.Yellow)));
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
+                Game.Ids.GetNext<UnitBlueprint>(), "fast", 50, 4, .5.S(), new Speed(4), 3f, Color.CornflowerBlue)));
+            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
+                Game.Ids.GetNext<UnitBlueprint>(), "tank", 1000, 50, 2.S(), new Speed(1), 10f, Color.FireBrick)));
         }
     }
 }
