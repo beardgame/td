@@ -6,24 +6,18 @@ namespace Bearded.TD.Game.Units
     [StructLayout(LayoutKind.Sequential)]
     struct GameUnitState
     {
-        private readonly int tileX;
-        private readonly int tileY;
-        private readonly byte direction;
-        private readonly float movementProgress;
+        private readonly float x;
+        private readonly float y;
         private readonly int health;
 
-        public int TileX => tileX;
-        public int TileY => tileY;
-        public byte Direction => direction;
-        public float MovementProgress => movementProgress;
+        public float X => x;
+        public float Y => y;
         public int Health => health;
 
-        public GameUnitState(int tileX, int tileY, byte direction, float movementProgress, int health)
+        public GameUnitState(float x, float y, int health)
         {
-            this.tileX = tileX;
-            this.tileY = tileY;
-            this.direction = direction;
-            this.movementProgress = movementProgress;
+            this.x = x;
+            this.y = y;
             this.health = health;
         }
     }

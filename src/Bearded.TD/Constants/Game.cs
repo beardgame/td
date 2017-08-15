@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities.SpaceTime;
+﻿using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD
 {
@@ -23,13 +24,30 @@ namespace Bearded.TD
                 public static readonly Difference2 HexagonGridUnitX = new Difference2(HexagonDistanceX, 0); // step in (1, 0) direction
                 public static readonly Difference2 HexagonGridUnitY = new Difference2(HexagonDistanceX * 0.5f, HexagonDistanceY); // step in (0, 1) direction
 
-                public const float HexagonInnerRadiusSquared = (HexagonWidth * 0.5f) * (HexagonWidth * 0.5f);
-                public const float HexagonOuterRadiusSquared = HexagonSide * HexagonSide;
+                public static readonly Squared<Unit> HexagonInnerRadiusSquared = (HexagonWidth * 0.5f).U().Squared;
+                public static readonly Squared<Unit> HexagonOuterRadiusSquared = HexagonSide.U().Squared;
             }
 
             public static class UI
             {
                 public const int ActionBarSize = 10;
+            }
+
+            public static class EnemyGeneration
+            {
+                public static readonly TimeSpan TimeBeforeFirstWave = 20.S();
+                public static readonly TimeSpan WarningTime = 20.S();
+                public static readonly TimeSpan MinTimeBetweenEnemies = .1.S();
+                public static readonly TimeSpan MaxTimeBetweenEnemies = 2.S();
+                public static readonly TimeSpan MinWaveDuration = 10.S();
+                public static readonly TimeSpan MaxWaveDuration = 30.S();
+
+                public const double InitialMinWaveCost = 12;
+                public const double InitialMaxWaveCost = 16;
+                public const double WaveCostGrowth = 1.007;
+
+                public const double InitialDebitPayoffRate = .8;
+                public const double DebitPayoffGrowth = 1.009;
             }
         }
     }

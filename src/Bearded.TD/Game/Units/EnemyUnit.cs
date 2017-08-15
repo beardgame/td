@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using amulware.Graphics;
-using Bearded.TD.Game.Buildings.Components;
+﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -43,8 +40,7 @@ namespace Bearded.TD.Game.Units
 
         private void tryDealDamage()
         {
-            if (CurrentMovementDirection != Direction.Unknown)
-                return;
+            if (IsMoving) return;
 
             while (nextAttack <= Game.Time)
             {
@@ -61,14 +57,15 @@ namespace Bearded.TD.Game.Units
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.DarkRed;
-            geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
+            geo.Color = Blueprint.Color;
+            var size = (Mathf.Atan(.005f * (Blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi;
+            geo.DrawRectangle(Position.NumericValue - Vector2.One * size * .5f, Vector2.One * size);
 
             var p = (Health / (float)Blueprint.Health).Clamped(0, 1);
             geo.Color = Color.DarkGray;
-            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1, 0.1f));
-            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), 0.8f, 0.8f);
-            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1 * p, 0.1f));
+            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
+            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
+            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
         }
 
         protected override Direction GetNextDirection()

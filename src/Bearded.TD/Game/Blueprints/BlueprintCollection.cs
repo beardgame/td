@@ -15,6 +15,8 @@ namespace Bearded.TD.Game.Blueprints
         {
             blueprintsById.Add(blueprint);
         }
+
+        public IEnumerable<T> All => blueprintsById.Values;
     }
 
     class NamedBlueprintCollection<T> : BlueprintCollection<T> where T : IIdable<T>, INamed
