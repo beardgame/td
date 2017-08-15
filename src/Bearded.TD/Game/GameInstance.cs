@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
+using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;

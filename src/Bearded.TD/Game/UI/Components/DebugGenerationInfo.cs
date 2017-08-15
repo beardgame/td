@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
@@ -25,7 +26,7 @@ namespace Bearded.TD.Game.UI.Components
             drawText(geometries, game.Controller.DebugParameters);
         }
 
-        private void drawText(GeometryManager geometries, GameControllerDebugParameters debugParams)
+        private void drawText(GeometryManager geometries, EnemySpawnDebugParameters debugParams)
         {
             const float lineHeight = Constants.UI.LineHeight;
 

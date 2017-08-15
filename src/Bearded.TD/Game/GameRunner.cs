@@ -31,14 +31,16 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
-            game.Controller.Update(args);
+            var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
+
+            game.Controller.Update(elapsedTime);
 
             foreach (var msg in networkInterface.GetMessages())
                 if (msg.MessageType == NetIncomingMessageType.Data)
                     game.DataMessageHandler.HandleIncomingMessage(msg);
 
             if (game.State.Meta.GameOver) return;
-            var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
+            
             foreach (var f in game.State.Factions)
                 if (f.HasResources)
                     f.Resources.DistributeResources(elapsedTime);
