@@ -12,6 +12,7 @@ using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.Game.EnemyGeneration;
 
 namespace Bearded.TD.Game
 {
@@ -59,29 +60,17 @@ namespace Bearded.TD.Game
     {
         private const int numAvailableSpawnPoints = 6;
 
-        private static readonly TimeSpan timeBeforeFirstWave = 20.S();
-        private static readonly TimeSpan warningTime = 20.S();
-        private static readonly TimeSpan minTimeBetweenEnemies = .1.S();
-        private static readonly TimeSpan maxTimeBetweenEnemies = 2.S();
-        private static readonly TimeSpan minWaveDuration = 10.S();
-        private static readonly TimeSpan maxWaveDuration = 30.S();
-
-        private const double initialMinWaveCost = 12;
-        private const double initialMaxWaveCost = 16;
-        private const double waveCostGrowth = 1.007;
-        private const double debitPayoffGrowth = 1.009;
-
         private readonly GameInstance game;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
         private double debit;
-        private double debitPayoffFactor = .8f;
-        private double minWaveCost = initialMinWaveCost;
-        private double maxWaveCost = initialMaxWaveCost;
+        private double debitPayoffFactor = InitialDebitPayoffRate;
+        private double minWaveCost = InitialMinWaveCost;
+        private double maxWaveCost = InitialMaxWaveCost;
 
         public GameControllerDebugParameters DebugParameters => new GameControllerDebugParameters(
-            debit, debitPayoffFactor, minWaveCost, maxWaveCost, timeBeforeFirstWave.NumericValue);
+            debit, debitPayoffFactor, minWaveCost, maxWaveCost, TimeBeforeFirstWave.NumericValue);
 
         public GameController(GameInstance game)
         {
@@ -90,9 +79,9 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
-            debitPayoffFactor *= debitPayoffGrowth.Powed(args.ElapsedTimeInS);
-            minWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
-            maxWaveCost *= waveCostGrowth.Powed(args.ElapsedTimeInS);
+            debitPayoffFactor *= DebitPayoffGrowth.Powed(args.ElapsedTimeInS);
+            minWaveCost *= WaveCostGrowth.Powed(args.ElapsedTimeInS);
+            maxWaveCost *= WaveCostGrowth.Powed(args.ElapsedTimeInS);
             debit -= args.ElapsedTimeInS * debitPayoffFactor;
 
             if (debit <= 0)
@@ -117,15 +106,15 @@ namespace Bearded.TD.Game
             var maxEnemies = Mathf.FloorToInt(maxWaveCost / blueprint.Value);
             var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
 
-            var minTimeToSpawn = numEnemies * minTimeBetweenEnemies;
-            var maxTimeToSpawn = numEnemies * maxTimeBetweenEnemies;
+            var minTimeToSpawn = numEnemies * MinTimeBetweenEnemies;
+            var maxTimeToSpawn = numEnemies * MaxTimeBetweenEnemies;
 
-            var minSpawnPoints = Mathf.FloorToInt(minTimeToSpawn / maxWaveDuration);
-            var maxSpawnPoints = Mathf.CeilToInt(maxTimeToSpawn / minWaveDuration);
+            var minSpawnPoints = Mathf.FloorToInt(minTimeToSpawn / MaxWaveDuration);
+            var maxSpawnPoints = Mathf.CeilToInt(maxTimeToSpawn / MinWaveDuration);
             var numSpawnPoints = random.Next(minSpawnPoints, maxSpawnPoints + 1).Clamped(1, numAvailableSpawnPoints);
 
-            var minDuration = TimeSpan.Max(minWaveDuration, minTimeBetweenEnemies / numSpawnPoints * numEnemies);
-            var maxDuration = TimeSpan.Min(maxWaveDuration, maxTimeBetweenEnemies / numSpawnPoints * numEnemies);
+            var minDuration = TimeSpan.Max(MinWaveDuration, MinTimeBetweenEnemies / numSpawnPoints * numEnemies);
+            var maxDuration = TimeSpan.Min(MaxWaveDuration, MaxTimeBetweenEnemies / numSpawnPoints * numEnemies);
             var waveDuration = random.NextDouble(minDuration.NumericValue, maxDuration.NumericValue).S();
 
             buildWave(numSpawnPoints, blueprint, numEnemies, numSpawnPoints * waveDuration / numEnemies);
@@ -161,7 +150,7 @@ namespace Bearded.TD.Game
                     new EnemyWave(
                         game,
                         blueprint,
-                        game.State.Time + timeBeforeFirstWave,
+                        game.State.Time + TimeBeforeFirstWave,
                         numEnemiesForPoint,
                         timeBetweenSpawns,
                         tile));
@@ -222,7 +211,7 @@ namespace Bearded.TD.Game
 
             private void updateWarning()
             {
-                var showWarningAt = start - warningTime;
+                var showWarningAt = start - WarningTime;
                 if (showWarningAt <= game.State.Time)
                     showWarning();
             }
