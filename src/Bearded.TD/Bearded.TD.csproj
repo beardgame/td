@@ -128,6 +128,7 @@
     <Compile Include="Game\Generation\Enemies\EnemySpawnController.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDebugParameters.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
+    <Compile Include="Game\Generation\Enemies\EnemySpawnDefinitions.cs" />
     <Compile Include="Game\Generation\Enemies\IEnemySpawnFactor.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
     <Compile Include="Game\GameController.cs" />

@@ -24,6 +24,8 @@ namespace Bearded.TD.Game.Generation.Enemies
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
+        private readonly IReadOnlyList<EnemySpawnDefinition> enemies;
+
         private double debit;
         private double debitPayoffFactor = InitialDebitPayoffRate;
         private double minWaveCost = InitialMinWaveCost;
@@ -35,6 +37,7 @@ namespace Bearded.TD.Game.Generation.Enemies
         public EnemySpawnController(GameInstance game)
         {
             this.game = game;
+            enemies = EnemySpawnDefinitions.BuildSpawnDefinitions();
         }
 
         public void Update(UpdateEventArgs args)
@@ -82,21 +85,16 @@ namespace Bearded.TD.Game.Generation.Enemies
 
         private UnitBlueprint selectBlueprint()
         {
-            var blueprints = game.Blueprints.Units.All.ToList();
-            var probabilities = new double[blueprints.Count + 1];
-            foreach (var (blueprint, i) in blueprints.Indexed())
+            var probabilities = new double[enemies.Count + 1];
+            foreach (var (enemy, i) in enemies.Indexed())
             {
-                probabilities[i + 1] = getBlueprintProbability(blueprint) + probabilities[i];
+                probabilities[i + 1] = enemy.GetProbability(game) + probabilities[i];
             }
             var t = random.NextDouble(probabilities[probabilities.Length - 1]);
             var result = Array.BinarySearch(probabilities, t);
 
-            return result >= 0 ? blueprints[result] : blueprints[~result - 1];
-        }
-
-        private double getBlueprintProbability(UnitBlueprint blueprint)
-        {
-            return 1 / blueprint.Value.Squared();
+            var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
+            return game.Blueprints.Units[definition.BlueprintName];
         }
 
         private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
