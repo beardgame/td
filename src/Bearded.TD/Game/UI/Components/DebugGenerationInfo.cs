@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;

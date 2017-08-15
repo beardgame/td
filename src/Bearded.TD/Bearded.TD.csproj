@@ -125,8 +125,10 @@
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
+    <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
+    <Compile Include="Game\Generation\Enemies\IEnemySpawnFactor.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
-    <Compile Include="Game\GameController.cs" />
+    <Compile Include="Game\Generation\Enemies\GameController.cs" />
     <Compile Include="Game\IGameContext.cs" />
     <Compile Include="Game\Synchronization\ClientGameSynchronizer.cs" />
     <Compile Include="Game\Commands\synchronization\SyncUnits.cs" />
