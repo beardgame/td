@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using amulware.Graphics;
-using Bearded.TD.Game.Buildings.Components;
+﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -43,8 +40,7 @@ namespace Bearded.TD.Game.Units
 
         private void tryDealDamage()
         {
-            if (CurrentMovementDirection != Direction.Unknown)
-                return;
+            if (IsMoving) return;
 
             while (nextAttack <= Game.Time)
             {

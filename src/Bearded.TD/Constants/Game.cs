@@ -23,8 +23,8 @@ namespace Bearded.TD
                 public static readonly Difference2 HexagonGridUnitX = new Difference2(HexagonDistanceX, 0); // step in (1, 0) direction
                 public static readonly Difference2 HexagonGridUnitY = new Difference2(HexagonDistanceX * 0.5f, HexagonDistanceY); // step in (0, 1) direction
 
-                public const float HexagonInnerRadiusSquared = (HexagonWidth * 0.5f) * (HexagonWidth * 0.5f);
-                public const float HexagonOuterRadiusSquared = HexagonSide * HexagonSide;
+                public static readonly Squared<Unit> HexagonInnerRadiusSquared = (HexagonWidth * 0.5f).U().Squared;
+                public static readonly Squared<Unit> HexagonOuterRadiusSquared = HexagonSide.U().Squared;
             }
 
             public static class UI
