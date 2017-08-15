@@ -15,47 +15,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
-    #region Interface
-
-    interface IGameController
-    {
-        GameControllerDebugParameters DebugParameters { get; }
-        void Update(UpdateEventArgs args);
-    }
-
-    class DummyGameController : IGameController
-    {
-        public GameControllerDebugParameters DebugParameters => GameControllerDebugParameters.Empty;
-
-        public void Update(UpdateEventArgs args)
-        {
-        }
-    }
-
-    struct GameControllerDebugParameters
-    {
-        public static GameControllerDebugParameters Empty => new GameControllerDebugParameters();
-
-        public double Debit { get; }
-        public double PayoffFactor { get; }
-        public double MinWaveCost { get; }
-        public double MaxWaveCost { get; }
-        public double Lag { get; }
-
-        public GameControllerDebugParameters(
-            double debit, double payoffFactor, double minWaveCost, double maxWaveCost, double lag)
-        {
-            Debit = debit;
-            PayoffFactor = payoffFactor;
-            MinWaveCost = minWaveCost;
-            MaxWaveCost = maxWaveCost;
-            Lag = lag;
-        }
-    }
-
-    #endregion
-
-    class GameController : IGameController
+    class EnemySpawnController
     {
         private const int numAvailableSpawnPoints = 6;
 
@@ -68,10 +28,10 @@ namespace Bearded.TD.Game.Generation.Enemies
         private double minWaveCost = Constants.Game.EnemyGeneration.InitialMinWaveCost;
         private double maxWaveCost = Constants.Game.EnemyGeneration.InitialMaxWaveCost;
 
-        public GameControllerDebugParameters DebugParameters => new GameControllerDebugParameters(
+        public EnemySpawnDebugParameters DebugParameters => new EnemySpawnDebugParameters(
             debit, debitPayoffFactor, minWaveCost, maxWaveCost, Constants.Game.EnemyGeneration.TimeBeforeFirstWave.NumericValue);
 
-        public GameController(GameInstance game)
+        public EnemySpawnController(GameInstance game)
         {
             this.game = game;
         }
@@ -129,7 +89,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             }
             var t = random.NextDouble(probabilities[probabilities.Length - 1]);
             var result = Array.BinarySearch(probabilities, t);
-            
+
             return result >= 0 ? blueprints[result] : blueprints[~result - 1];
         }
 
@@ -161,12 +121,12 @@ namespace Bearded.TD.Game.Generation.Enemies
         private IEnumerable<Tile<TileInfo>> selectSpawnLocations(int num)
         {
             return Directions
-                .All
-                .Enumerate()
-                .RandomSubset(num)
-                .Select(
-                    dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
-                        .Offset(dir.Step() * game.State.Level.Tilemap.Radius));
+                    .All
+                    .Enumerate()
+                    .RandomSubset(num)
+                    .Select(
+                        dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
+                                .Offset(dir.Step() * game.State.Level.Tilemap.Radius));
         }
 
         private class EnemyWave
