@@ -71,6 +71,8 @@ namespace Bearded.TD.Game.Units
                 }
                 Position = goalPosition;
                 movementLeft -= distanceToGoal;
+                if (CurrentTile != goalTile)
+                    setCurrentTile(goalTile);
                 goalTile = goalTile.Neighbour(GetNextDirection());
 
                 // We did not receive a new goal, so unit is standing still.
