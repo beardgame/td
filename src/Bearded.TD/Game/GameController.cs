@@ -66,8 +66,8 @@ namespace Bearded.TD.Game
         private static readonly TimeSpan minWaveDuration = 10.S();
         private static readonly TimeSpan maxWaveDuration = 30.S();
 
-        private const double initialMinWaveCost = 10;
-        private const double initialMaxWaveCost = 14;
+        private const double initialMinWaveCost = 12;
+        private const double initialMaxWaveCost = 16;
         private const double waveCostGrowth = 1.007;
         private const double debitPayoffGrowth = 1.009;
 
@@ -76,7 +76,7 @@ namespace Bearded.TD.Game
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
         private double debit;
-        private double debitPayoffFactor = 1;
+        private double debitPayoffFactor = .8f;
         private double minWaveCost = initialMinWaveCost;
         private double maxWaveCost = initialMaxWaveCost;
 

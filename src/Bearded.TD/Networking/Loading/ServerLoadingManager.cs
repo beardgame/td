@@ -98,11 +98,11 @@ namespace Bearded.TD.Networking.Loading
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
                 Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 10, 2.S(), new Speed(2), 2, Color.DarkRed)));
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "strong", 250, 20, 1.5.S(), new Speed(1.2f), 4f, Color.Yellow)));
+                Game.Ids.GetNext<UnitBlueprint>(), "strong", 250, 20, 1.5.S(), new Speed(1.2f), 4, Color.Yellow)));
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "fast", 50, 4, .5.S(), new Speed(3), 4f, Color.CornflowerBlue)));
+                Game.Ids.GetNext<UnitBlueprint>(), "fast", 50, 4, .5.S(), new Speed(3), 4, Color.CornflowerBlue)));
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "tank", 1000, 50, 2.S(), new Speed(.8f), 12f, Color.SandyBrown)));
+                Game.Ids.GetNext<UnitBlueprint>(), "tank", 1000, 50, 2.S(), new Speed(.8f), 12, Color.SandyBrown)));
         }
     }
 }
