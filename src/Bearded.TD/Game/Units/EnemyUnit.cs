@@ -58,13 +58,14 @@ namespace Bearded.TD.Game.Units
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = Blueprint.Color;
-            geo.DrawRectangle(Position.NumericValue - Vector2.One * .25f, Vector2.One * .5f);
+            var size = (Mathf.Atan(.005f * (Blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi;
+            geo.DrawRectangle(Position.NumericValue - Vector2.One * size * .5f, Vector2.One * size);
 
             var p = (Health / (float)Blueprint.Health).Clamped(0, 1);
             geo.Color = Color.DarkGray;
-            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1, 0.1f));
-            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), 0.8f, 0.8f);
-            geo.DrawRectangle(Position.NumericValue - new Vector2(0.5f), new Vector2(1 * p, 0.1f));
+            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
+            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
+            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
         }
 
         protected override Direction GetNextDirection()
