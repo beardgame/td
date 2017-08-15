@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.UI;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
@@ -37,7 +38,7 @@ namespace Bearded.TD.Game
                     game.DataMessageHandler.HandleIncomingMessage(msg);
 
             if (game.State.Meta.GameOver) return;
-            var elapsedTime = new TimeSpan(args.ElapsedTimeInS);
+            var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
             foreach (var f in game.State.Factions)
                 if (f.HasResources)
                     f.Resources.DistributeResources(elapsedTime);
