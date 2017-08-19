@@ -63,5 +63,8 @@ namespace Bearded.TD.Game.World
         {
             enemies.Remove(enemy);
         }
+
+        public override string ToString()
+            => $"{TileType}";
     }
 }

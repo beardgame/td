@@ -59,9 +59,8 @@ namespace Bearded.TD.Game.Tiles
 
         private static readonly Vector2[] vectors =
             Enumerable.Range(0, 7)
-                .Select(i =>
-                    Direction2.FromDegrees((i - 1) * 60f).Vector
-                )
+                .Select(i => (i - 1) * 60 * Math.PI / 180)
+                .Select(a => new Vector2((float)Math.Round(Math.Cos(a), 7), (float)Math.Round(Math.Sin(a), 7)))
                 .ToArray();
 
         public static ReadOnlyCollection<Direction> Directions { get; }

@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Bearded.TD.Game.Tiles;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
-using Extensions = Bearded.Utilities.Linq.Extensions;
 
 namespace Bearded.TD.Game.World
 {
     struct LevelRayCaster<TTileInfo>
     {
         private static readonly Vector2[] directionVectorsWithHexWidthLength =
-            Extensions.Prepend(Tiles.Extensions.Directions.Select(d => d.Vector() * HexagonWidth), Vector2.Zero).ToArray();
+            Tiles.Extensions.Directions
+                .Select(d => d.Vector() * HexagonWidth)
+                .Prepend(Vector2.Zero).ToArray();
         
         private Direction centerDirection, leftDirection, rightDirection;
         private float nextCenterIntersection, centerFullStep, centerHalfStep;
@@ -105,9 +107,10 @@ namespace Bearded.TD.Game.World
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void goToNextTile()
         {
-            if (nextCenterIntersection < nextLeftIntersection)
+            // bias towards center for nicer edge case routes
+            if (nextCenterIntersection <= nextLeftIntersection)
             {
-                if (nextCenterIntersection < nextRightIntersection)
+                if (nextCenterIntersection <= nextRightIntersection)
                 {
                     stepCenter();
                 }
@@ -116,7 +119,7 @@ namespace Bearded.TD.Game.World
                     stepRight();
                 }
             }
-            else if (nextLeftIntersection < nextRightIntersection)
+            else if (nextLeftIntersection <= nextRightIntersection)
             {
                 stepLeft();
             }
@@ -163,6 +166,13 @@ namespace Bearded.TD.Game.World
             var sideVector = directionVectorsWithHexWidthLength[(int)side];
 
             var rayDirProjection = Vector2.Dot(rayDir, sideVector);
+            
+            // non-positive values may occur due to rounding issues
+            // in case of (nearly) orthogonal vectors in the dot product above
+            // returning halfStep 0 will ensure we avoid `infinity - infinity` NaN
+            if (rayDirProjection <= 0)
+                return (float.PositiveInfinity, float.PositiveInfinity, 0);
+
             var stepLength = 1 / rayDirProjection;
 
             var pointOnSide = side.CornerAfter() * HexagonSide;

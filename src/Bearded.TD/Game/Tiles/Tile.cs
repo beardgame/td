@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Tiles
 
         public Tile<TTileInfo>? ValidOrNull => IsValid ? (Tile<TTileInfo>?)this : null;
 
-        public Tile<TTileInfo> Neighbour(Direction direction) => this.Offset(direction.Step());
+        public Tile<TTileInfo> Neighbour(Direction direction) => Offset(direction.Step());
         public Tile<TTileInfo> Offset(Step step) => new Tile<TTileInfo>(tilemap, X + step.X, Y + step.Y);
 
         public IEnumerable<Tile<TTileInfo>> Neighbours => this.PossibleNeighbours().Where(t => t.IsValid);
@@ -84,5 +84,8 @@ namespace Bearded.TD.Game.Tiles
 
         public static bool operator ==(Tile<TTileInfo> t1, Tile<TTileInfo> t2) => t1.Equals(t2);
         public static bool operator !=(Tile<TTileInfo> t1, Tile<TTileInfo> t2) => !(t1 == t2);
+
+        public override string ToString()
+            => $"{X},{Y}:{(IsValid?(Info?.ToString()??"null"):"invalid")}";
     }
 }
