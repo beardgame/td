@@ -20,5 +20,25 @@ namespace Bearded.TD.Utilities
 
         public static IEnumerable<(T, int)> Indexed<T>(this IEnumerable<T> source)
             => source.Select((t, i) => (t, i));
+
+        public static IEnumerable<(T one, T next)> ConsecutivePairs<T>(this IEnumerable<T> source)
+        {
+            using (var enumerator = source.GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                    yield break;
+
+                var one = enumerator.Current;
+
+                while (enumerator.MoveNext())
+                {
+                    var other = enumerator.Current;
+
+                    yield return (one, other);
+
+                    one = other;
+                }
+            }
+        }
     }
 }
