@@ -40,8 +40,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bearded.Utilities, Version=0.2.0.86, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.86-develop\lib\net462\Bearded.Utilities.dll</HintPath>
+    <Reference Include="Bearded.Utilities, Version=0.2.0.91, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.91-develop\lib\net462\Bearded.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="OpenTK">
@@ -190,6 +190,7 @@
     <Compile Include="Game\World\LevelGeometry.cs" />
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
+    <Compile Include="Game\World\LevelVisibilityChecker.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tiles\Direction.cs" />
     <Compile Include="Game\Tiles\Extensions.cs" />
