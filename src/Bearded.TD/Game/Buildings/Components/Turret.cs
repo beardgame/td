@@ -13,10 +13,11 @@ namespace Bearded.TD.Game.Buildings.Components
 {
     class Turret : Component
     {
+        public static readonly Unit Range = 5.U();
+
         private static readonly TimeSpan ShootInterval = new TimeSpan(0.15);
         private static readonly TimeSpan IdleInterval = new TimeSpan(0.3);
         private const int Damage = 10;
-        private static readonly Unit Range = 5.U();
 
         private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;

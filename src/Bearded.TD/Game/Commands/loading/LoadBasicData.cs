@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Buildings.Components;
+using Bearded.TD.Game.Components.IPositionable;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -41,7 +42,8 @@ namespace Bearded.TD.Game.Commands
                     new ComponentFactory(
                         new Id<ComponentFactory>(3), "income_over_time", () => new IncomeOverTime()));
                 components.RegisterBlueprint(
-                    new ComponentFactory(new Id<ComponentFactory>(4), "turret", () => new Turret()));
+                    new ComponentFactory(new Id<ComponentFactory>(4), "turret", () => new Turret(),
+                        () => new TileVisibility(Turret.Range)));
                 components.RegisterBlueprint(
                     new ComponentFactory(new Id<ComponentFactory>(5), "worker_hub", () => new WorkerHub()));
             }

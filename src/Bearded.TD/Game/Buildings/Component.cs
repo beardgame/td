@@ -5,13 +5,22 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class Component
+    interface IComponent<in TOwner>
     {
-        public Building Building { get; private set; }
+        void OnAdded(TOwner owner);
+        
+        void Update(TimeSpan elapsedTime);
 
-        public void OnAdded(Building building)
+        void Draw(GeometryManager geometries);
+    }
+
+    abstract class Component<TOwner> : IComponent<TOwner>
+    {
+        public TOwner Owner { get; private set; }
+
+        public void OnAdded(TOwner owner)
         {
-            Building = building;
+            Owner = owner;
             Initialise();
         }
 
@@ -20,6 +29,11 @@ namespace Bearded.TD.Game.Buildings
         public abstract void Update(TimeSpan elapsedTime);
 
         public abstract void Draw(GeometryManager geometries);
+    }
+
+    abstract class Component : Component<Building>
+    {
+        public Building Building => Owner;
     }
 
     static class ComponentExtensions
