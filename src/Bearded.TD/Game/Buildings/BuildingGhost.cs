@@ -1,18 +1,29 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingGhost : GameObject
+    class BuildingGhost : GameObject, IPositionableGameObject
     {
-        private readonly BuildingBlueprint blueprint;
         private PositionedFootprint footprint;
+
+        private readonly List<IComponent<BuildingGhost>> components = new List<IComponent<BuildingGhost>>();
+
+        public Position2 Position => footprint.CenterPosition;
 
         public BuildingGhost(BuildingBlueprint blueprint)
         {
-            this.blueprint = blueprint;
+            components.AddRange(blueprint.ComponentFactories.Select(f => f.CreateForGhost()).NotNull());
+        }
+
+        protected override void OnAdded()
+        {
+            components.ForEach(c => c.OnAdded(this));
         }
 
         public void SetFootprint(PositionedFootprint footprint)
@@ -21,7 +32,12 @@ namespace Bearded.TD.Game.Buildings
         }
 
         public override void Update(TimeSpan elapsedTime)
-        { }
+        {
+            foreach (var component in components)
+            {
+                component.Update(elapsedTime);
+            }
+        }
 
         public override void Draw(GeometryManager geometries)
         {
@@ -31,8 +47,13 @@ namespace Bearded.TD.Game.Buildings
             {
                 if (!tile.IsValid) continue;
 
-                geo.Color = tile.Info.IsPassable ? Color.Green : Color.Red;
-                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, .2f);
+                geo.Color = (tile.Info.IsPassable ? Color.Green : Color.Red) * 0.5f;
+                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            }
+
+            foreach (var component in components)
+            {
+                component.Draw(geometries);
             }
         }
     }
