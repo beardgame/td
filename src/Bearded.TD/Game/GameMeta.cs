@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game

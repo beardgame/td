@@ -34,6 +34,11 @@ namespace Bearded.TD.Game.Resources
             setState(WorkerState.Idle(manager, this));
         }
 
+        public void AssignTask(WorkerTask task)
+        {
+            setState(WorkerState.ExecuteTask(manager, this, task));
+        }
+
         private void setState(WorkerState newState)
         {
             if (currentState != null)
@@ -77,7 +82,7 @@ namespace Bearded.TD.Game.Resources
             {
                 velocity -= diff.Direction * Constants.Game.Worker.Acceleration * elapsedTime;
             }
-            velocity *= 1 - Constants.Game.Worker.Friction.Powed((float) elapsedTime.NumericValue);
+            velocity *= Constants.Game.Worker.Friction.Powed((float) elapsedTime.NumericValue);
 
             Position += velocity * elapsedTime;
         }
@@ -85,7 +90,7 @@ namespace Bearded.TD.Game.Resources
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.HotPink;
+            geo.Color = Color.DeepPink;
             geo.DrawCircle(Position.NumericValue, .3f * Constants.Game.World.HexagonDiameter);
         }
     }

@@ -5,7 +5,6 @@ using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
@@ -35,7 +34,7 @@ namespace Bearded.TD.Game.Buildings
         public int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
 
-        protected List<Component> Components { get; } = new List<Component>();
+        private List<Component> components { get; } = new List<Component>();
 
         public event VoidEventHandler Damaged;
 
@@ -74,8 +73,8 @@ namespace Bearded.TD.Game.Buildings
 
         private void onCompleted()
         {
-            blueprint.GetComponents().ForEach(Components.Add);
-            Components.ForEach(c => c.OnAdded(this));
+            blueprint.GetComponents().ForEach(components.Add);
+            components.ForEach(c => c.OnAdded(this));
             BuildManager = null;
         }
 
@@ -90,7 +89,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Update(TimeSpan elapsedTime)
         {
-            foreach (var component in Components)
+            foreach (var component in components)
                 component.Update(elapsedTime);
 
             if (Health <= 0)
@@ -108,7 +107,7 @@ namespace Bearded.TD.Game.Buildings
             foreach (var tile in footprint.OccupiedTiles)
                 geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, HexagonSide, true, 6);
 
-            foreach (var component in Components)
+            foreach (var component in components)
                 component.Draw(geometries);
             
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange * 0.2f);
@@ -116,7 +115,7 @@ namespace Bearded.TD.Game.Buildings
 
         public bool HasComponentOfType<T>()
         {
-            return Components.OfType<T>().FirstOrDefault() != null;
+            return components.OfType<T>().FirstOrDefault() != null;
         }
 
         public class BuildProcessManager

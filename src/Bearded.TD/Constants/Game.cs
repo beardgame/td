@@ -52,8 +52,8 @@ namespace Bearded.TD
 
             public static class Worker
             {
-                public static readonly Acceleration Acceleration = 1.UnitsPerSecondSquared();
-                public const float Friction = .5f;
+                public static readonly Acceleration Acceleration = 10.UnitsPerSecondSquared();
+                public const float Friction = .1f;
 
                 public static readonly Squared<Unit> WorkerWorkRadiusSquared = World.HexagonOuterRadiusSquared;
                 public const double WorkerBuildSpeed = 15;
