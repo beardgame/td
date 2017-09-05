@@ -85,6 +85,7 @@ namespace Bearded.TD.Networking.Loading
                     Game.Blueprints.Components["sink"],
                     Game.Blueprints.Components["income_over_time"],
                     Game.Blueprints.Components["game_over_on_destroy"],
+                    Game.Blueprints.Components["worker_hub"],
                 }));
             // In the future these would be loaded from a mod file.
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,

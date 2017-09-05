@@ -42,6 +42,8 @@ namespace Bearded.TD.Game.Commands
                         new Id<ComponentFactory>(3), "income_over_time", () => new IncomeOverTime()));
                 components.RegisterBlueprint(
                     new ComponentFactory(new Id<ComponentFactory>(4), "turret", () => new Turret()));
+                components.RegisterBlueprint(
+                    new ComponentFactory(new Id<ComponentFactory>(5), "worker_hub", () => new WorkerHub()));
             }
 
             public ICommandSerializer Serializer => new Serializer();

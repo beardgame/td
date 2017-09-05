@@ -49,6 +49,15 @@ namespace Bearded.TD
                 public const double InitialDebitPayoffRate = .8;
                 public const double DebitPayoffGrowth = 1.009;
             }
+
+            public static class Worker
+            {
+                public static readonly Acceleration Acceleration = 1.UnitsPerSecondSquared();
+                public const float Friction = .5f;
+
+                public static readonly Squared<Unit> WorkerWorkRadiusSquared = World.HexagonOuterRadiusSquared;
+                public const double WorkerBuildSpeed = 15;
+            }
         }
     }
 }
