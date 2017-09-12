@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Tiles
                         var bestRoot = f.RootTileClosestToWorldPosition(level, position);
                         var center = f.Center(level, bestRoot);
                         var distance = (center - position).LengthSquared;
-                        return (f, bestRoot, Distance: distance);
+                        return (f: f, bestRoot: bestRoot, Distance: distance);
                     })
                     .MinBy(r => r.Distance.NumericValue);
 

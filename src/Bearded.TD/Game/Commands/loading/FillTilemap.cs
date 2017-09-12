@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Commands
             {
                 game.MustBeLoading();
 
-                foreach (var (tile, i) in tilemap.Select((t, i) => (t, i)))
+                foreach (var (tile, i) in tilemap.Select((t, i) => (t: t, i: i)))
                 {
                     tile.Info.SetTileType(tiles[i]);
                 }
