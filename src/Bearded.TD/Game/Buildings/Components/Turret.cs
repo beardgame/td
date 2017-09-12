@@ -17,8 +17,10 @@ namespace Bearded.TD.Game.Buildings.Components
 
         private static readonly TimeSpan ShootInterval = new TimeSpan(0.15);
         private static readonly TimeSpan IdleInterval = new TimeSpan(0.3);
+        private static readonly TimeSpan ReCalculateTilesInRangeInterval = 1.S();
         private const int Damage = 10;
 
+        private Instant nextTileInRangeRecalculationTime;
         private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;
         private EnemyUnit target;
@@ -32,13 +34,8 @@ namespace Bearded.TD.Game.Buildings.Components
             var position = Building.Position;
             var tile = level.GetTile(position);
 
-            var rangeRadius = (int) (Range.NumericValue / Constants.Game.World.HexagonWidth) + 1;
+            var rangeRadius = (int)(Range.NumericValue / Constants.Game.World.HexagonWidth) + 1;
             var rangeSquared = Range.Squared;
-
-            tilesInRange = level.Tilemap
-                .SpiralCenteredAt(tile, rangeRadius)
-                .Where(t => (level.GetPosition(t) - position).LengthSquared < rangeSquared)
-                .ToList();
 
             nextPossibleShootTime = Building.Game.Time;
         }
@@ -48,6 +45,7 @@ namespace Bearded.TD.Game.Buildings.Components
             var time = Building.Game.Time;
             while (nextPossibleShootTime <= time)
             {
+                ensureTilesInRangeList();
                 ensureTargetingState();
 
                 if (target == null)
@@ -63,12 +61,28 @@ namespace Bearded.TD.Game.Buildings.Components
             }
         }
 
+        private void ensureTilesInRangeList()
+        {
+            if (nextTileInRangeRecalculationTime > Building.Game.Time)
+                return;
+
+            tilesInRange = new LevelVisibilityChecker<TileInfo>()
+                .EnumerateVisibleTiles(Building.Game.Level, Building.Position, Range,
+                                       t => !t.IsValid || t.Info.TileType == TileInfo.Type.Wall)
+                .Where(((Tile<TileInfo> _, TileVisibility visibility) arg) =>
+                       !arg.visibility.IsBlocking && arg.visibility.VisiblePercentage > 0.2)
+                .Select(((Tile<TileInfo>, TileVisibility) arg) => arg.Item1)
+                .ToList();
+
+            nextTileInRangeRecalculationTime = Building.Game.Time + ReCalculateTilesInRangeInterval;
+        }
+
         private void ensureTargetingState()
         {
             if (target?.Deleted == true)
                 target = null;
 
-            if (target != null && (target.Position - Building.Position).LengthSquared < Range.Squared)
+            if (target != null && !tilesInRange.Contains(target.CurrentTile))
                 target = null;
 
             if (target != null)

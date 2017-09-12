@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Units
 
         public Position2 Position { get; private set; }
         protected int Health { get; private set; }
-        protected Tile<TileInfo> CurrentTile { get; private set; }
+        public Tile<TileInfo> CurrentTile { get; private set; }
         private Position2 currentTilePosition => Game.Level.GetPosition(CurrentTile);
         private Tile<TileInfo> goalTile;
         private Position2 goalPosition => Game.Level.GetPosition(goalTile);
