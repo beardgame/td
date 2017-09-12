@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Tiles
         */
         public static readonly Footprint Single = new Footprint(new Id<Footprint>(1), new []
         {
-            new Step(0, 0),
+            new Step(0, 0)
         });
 
         /*
@@ -46,6 +46,60 @@ namespace Bearded.TD.Game.Tiles
             new Step(Direction.Left), new Step(Direction.DownLeft), new Step(Direction.DownRight),
             new Step(Direction.Right), new Step(Direction.UpRight), new Step(Direction.UpLeft),
         });
+
+        /*
+           #
+          X #
+           #
+        */
+        public static readonly Footprint DiamondTopBottom = new Footprint(new Id<Footprint>(5), new[]
+        {
+            new Step(0, 0), new Step(Direction.DownRight), new Step(Direction.Right), new Step(Direction.UpRight)
+        }, -.5f * new Difference2(Direction.Right.Vector()));
+
+        /*
+            X #
+           # #
+        */
+        public static readonly Footprint DiamondBottomLeftTopRight = new Footprint(new Id<Footprint>(6), new[]
+        {
+            new Step(0, 0), new Step(Direction.DownLeft), new Step(Direction.DownRight), new Step(Direction.Right)
+        }, -.5f * new Difference2(Direction.DownRight.Vector()));
+
+        /*
+           # #
+            X #
+        */
+        public static readonly Footprint DiamondTopLeftBottomRight = new Footprint(new Id<Footprint>(7), new[]
+        {
+            new Step(0, 0), new Step(Direction.Right), new Step(Direction.UpRight), new Step(Direction.UpLeft)
+        }, -.5f * new Difference2(Direction.UpRight.Vector()));
+
+        /*
+            #
+           X
+        */
+        public static readonly Footprint LineUp = new Footprint(new Id<Footprint>(8), new[]
+        {
+            new Step(0, 0), new Step(Direction.UpRight)
+        }, -.5f * new Difference2(Direction.UpRight.Vector()));
+
+        /*
+          X #
+        */
+        public static readonly Footprint LineStraight = new Footprint(new Id<Footprint>(9), new[]
+        {
+            new Step(0, 0), new Step(Direction.Right)
+        }, -.5f * new Difference2(Direction.Right.Vector()));
+
+        /*
+           X
+            #
+        */
+        public static readonly Footprint LineDown = new Footprint(new Id<Footprint>(10), new[]
+        {
+            new Step(0, 0), new Step(Direction.DownRight)
+        }, -.5f * new Difference2(Direction.DownRight.Vector()));
 
         public Id<Footprint> Id { get; }
         private readonly IEnumerable<Step> tileOffsets;

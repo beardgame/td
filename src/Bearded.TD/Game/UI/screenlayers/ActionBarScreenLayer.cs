@@ -34,6 +34,8 @@ namespace Bearded.TD.Game.UI
             var buildingPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
             buildingPage[0] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["wall"]), "Wall");
             buildingPage[1] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["triangle"]), "Triangle");
+            buildingPage[2] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["diamond"]), "Diamond");
+            buildingPage[3] = contentFor(new BuildingClickHandler(faction, blueprints.Buildings["line"]), "Line");
             pages.Add(buildingPage);
 
 #if DEBUG

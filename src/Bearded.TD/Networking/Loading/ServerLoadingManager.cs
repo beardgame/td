@@ -94,6 +94,12 @@ namespace Bearded.TD.Networking.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
                     75, Game.Blueprints.Components["turret"].Yield())));
+            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "diamond", FootprintGroup.Diamond, 200, 40,
+                    null)));
+            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
+                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "line", FootprintGroup.Line, 150, 25,
+                    null)));
 
             // === Enemies ===
             Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
