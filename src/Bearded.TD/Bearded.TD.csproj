@@ -170,6 +170,8 @@
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
+    <Compile Include="Game\UI\ICursorHandler.cs" />
+    <Compile Include="Game\UI\MouseCursorHandler.cs" />
     <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />
     <Compile Include="Game\UI\clickhandlers\BuildingClickHandler.cs" />
     <Compile Include="Game\UI\model\ChatLog.cs" />
@@ -187,7 +189,7 @@
     <Compile Include="Game\UI\screenlayers\GameWorldScreenLayer.cs" />
     <Compile Include="Game\UI\GameUI.cs" />
     <Compile Include="Game\UI\clickhandlers\IClickHandler.cs" />
-    <Compile Include="Game\UI\model\PlayerInput.cs" />
+    <Compile Include="Game\UI\model\GameInputContext.cs" />
     <Compile Include="Game\UI\screenlayers\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\GameUnitState.cs" />

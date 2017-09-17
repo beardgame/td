@@ -14,7 +14,7 @@ namespace Bearded.TD.Game
             game.State.Add(new Cursor(() => mousePosition));
         }
 
-        public void HandleInput(PlayerInput input)
+        public void HandleInput(GameInputContext input)
         {
             mousePosition = input.MousePos;
 

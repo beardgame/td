@@ -3,20 +3,20 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.UI
 {
-    struct PlayerInput
+    struct GameInputContext
     {
         public Position2 MousePos { get; }
         public IAction ClickAction { get; }
 
-        private PlayerInput(Position2 mousePos, IAction clickAction)
+        private GameInputContext(Position2 mousePos, IAction clickAction)
         {
             MousePos = mousePos;
             ClickAction = clickAction;
         }
 
-        public static PlayerInput Construct(InputState inputState, GameCamera camera)
+        public static GameInputContext Construct(InputState inputState, GameCamera camera)
         {
-            return new PlayerInput(
+            return new GameInputContext(
                 new Position2(camera.TransformScreenToWorldPos(inputState.MousePosition)), inputState.Click);
         }
     }
