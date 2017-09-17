@@ -170,7 +170,8 @@
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\input\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
-    <Compile Include="Game\UI\input\DebugCommandInteractionHandler.cs" />
+    <Compile Include="Game\UI\input\DebugSetTileTypeClickHandler.cs" />
+    <Compile Include="Game\UI\input\DebugSpawnEnemyClickHandler.cs" />
     <Compile Include="Game\UI\input\DefaultInteractionHandler.cs" />
     <Compile Include="Game\UI\input\ICursorHandler.cs" />
     <Compile Include="Game\UI\input\InteractionHandler.cs" />
