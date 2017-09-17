@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Tiles;
 
@@ -28,7 +29,10 @@ namespace Bearded.TD.Game.UI
 
         public override void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor)
         {
-            ghost.SetFootprint(cursor.CurrentFootprint);
+            var footprint = cursor.CurrentFootprint;
+            ghost.SetFootprint(footprint);
+            if (cursor.ClickAction.Hit)
+                Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
         }
 
         protected override void OnEnd(ICursorHandler cursor)

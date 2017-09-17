@@ -5,12 +5,12 @@ namespace Bearded.TD.Game.UI
 {
     struct GameInputContext
     {
-        public Position2 MousePos { get; }
+        public Position2 MousePosition { get; }
         public IAction ClickAction { get; }
 
-        private GameInputContext(Position2 mousePos, IAction clickAction)
+        private GameInputContext(Position2 mousePosition, IAction clickAction)
         {
-            MousePos = mousePos;
+            MousePosition = mousePosition;
             ClickAction = clickAction;
         }
 

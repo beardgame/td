@@ -24,7 +24,7 @@ namespace Bearded.TD.Game
 
         public void HandleInput(UpdateEventArgs args, GameInputContext input)
         {
-            mousePosition = input.MousePos;
+            mousePosition = input.MousePosition;
             
             cursor.Update(args, input);
             interactionHandler.Update(args, input, cursor);
