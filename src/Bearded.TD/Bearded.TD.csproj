@@ -132,9 +132,9 @@
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinitions.cs" />
     <Compile Include="Game\Generation\Enemies\IEnemySpawnFactor.cs" />
-    <Compile Include="Game\Interfaces\IGameObject.cs" />
-    <Compile Include="Game\Interfaces\IPositionable.cs" />
-    <Compile Include="Game\Interfaces\IPositionableGameObject.cs" />
+    <Compile Include="Game\interfaces\IGameObject.cs" />
+    <Compile Include="Game\interfaces\IPositionable.cs" />
+    <Compile Include="Game\interfaces\IPositionableGameObject.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\IGameContext.cs" />
