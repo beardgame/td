@@ -12,18 +12,16 @@ namespace Bearded.TD.Game
     {
         private readonly GameInstance game;
         private readonly NetworkInterface networkInterface;
-        private readonly GameInputHandler inputHandler;
 
         public GameRunner(GameInstance game, NetworkInterface networkInterface)
         {
             this.game = game;
             this.networkInterface = networkInterface;
-            inputHandler = new GameInputHandler(game);
         }
 
         public void HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            inputHandler.HandleInput(args, GameInputContext.Construct(inputState, game.Camera));
+            game.PlayerInput.HandleInput(args, GameInputContext.Construct(inputState, game.Camera));
             game.Camera.HandleInput(args.ElapsedTimeInSf);
         }
 

@@ -147,7 +147,6 @@
     <Compile Include="Game\Commands\UnifiedRequestCommand.cs" />
     <Compile Include="Game\Factions\Faction.cs" />
     <Compile Include="Game\GameCamera.cs" />
-    <Compile Include="Game\GameInputHandler.cs" />
     <Compile Include="Game\GameMeta.cs" />
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\GameRunner.cs" />
@@ -176,6 +175,7 @@
     <Compile Include="Game\UI\input\ICursorHandler.cs" />
     <Compile Include="Game\UI\input\InteractionHandler.cs" />
     <Compile Include="Game\UI\input\MouseCursorHandler.cs" />
+    <Compile Include="Game\UI\input\PlayerInput.cs" />
     <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />
     <Compile Include="Game\UI\clickhandlers\BuildingClickHandler.cs" />
     <Compile Include="Game\UI\model\ChatLog.cs" />

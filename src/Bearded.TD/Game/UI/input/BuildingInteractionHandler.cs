@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.UI
             ghost.SetFootprint(cursor.CurrentFootprint);
         }
 
-        public override void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor)
+        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
         {
             var footprint = cursor.CurrentFootprint;
             ghost.SetFootprint(footprint);

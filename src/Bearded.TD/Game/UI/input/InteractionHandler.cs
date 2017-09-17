@@ -27,6 +27,6 @@ namespace Bearded.TD.Game.UI
         }
         protected virtual void OnEnd(ICursorHandler cursor) { }
 
-        public abstract void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor);
+        public abstract void Update(UpdateEventArgs args, ICursorHandler cursor);
     }
 }

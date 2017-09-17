@@ -23,6 +23,7 @@ namespace Bearded.TD.Game
         public IdManager Ids { get; }
 
         public GameState State { get; private set; }
+        public PlayerInput PlayerInput { get; private set; }
         public GameCamera Camera { get; private set; }
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
@@ -90,6 +91,7 @@ namespace Bearded.TD.Game
             if (Camera != null)
                 throw new Exception();
             Camera = camera;
+            PlayerInput = new PlayerInput(this);
         }
 
         public void InitialiseState(GameState state)

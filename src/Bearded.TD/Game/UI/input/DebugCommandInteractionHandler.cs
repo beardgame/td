@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.UI
             TileSelection = tileSelection;
         }
 
-        public override void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor)
+        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
         {
             if (cursor.ClickAction.Hit)
                 Game.Request(requestFactory(cursor.CurrentFootprint));
