@@ -169,6 +169,7 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
     <Compile Include="Game\UI\DefaultInteractionHandler.cs" />
     <Compile Include="Game\UI\ICursorHandler.cs" />

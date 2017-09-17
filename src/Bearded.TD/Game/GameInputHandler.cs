@@ -17,7 +17,8 @@ namespace Bearded.TD.Game
             game.State.Add(new Cursor(() => mousePosition));
 
             cursor = new MouseCursorHandler(game.State.Level);
-            interactionHandler = new DefaultInteractionHandler(game);
+            //interactionHandler = new DefaultInteractionHandler(game);
+            interactionHandler = new BuildingInteractionHandler(game, game.State.RootFaction, game.Blueprints.Buildings["triangle"]);
             interactionHandler.Start(cursor);
         }
 

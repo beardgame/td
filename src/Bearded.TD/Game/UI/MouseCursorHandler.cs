@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.UI
 {
@@ -8,6 +9,7 @@ namespace Bearded.TD.Game.UI
     {
         private readonly Level level;
         private TileSelection tileSelection;
+        private Position2 mousePosition;
 
         public PositionedFootprint CurrentFootprint { get; private set; }
 
@@ -19,12 +21,19 @@ namespace Bearded.TD.Game.UI
 
         public void Update(UpdateEventArgs args, GameInputContext inputContext)
         {
-            CurrentFootprint = tileSelection.GetPositionedFootprint(level, inputContext.MousePos);
+            mousePosition = inputContext.MousePos;
+            updateFootprint();
         }
 
         public void SetTileSelection(TileSelection tileSelection)
         {
             this.tileSelection = tileSelection;
+            updateFootprint();
+        }
+
+        private void updateFootprint()
+        {
+            CurrentFootprint = tileSelection.GetPositionedFootprint(level, mousePosition);
         }
     }
 }
