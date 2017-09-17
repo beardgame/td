@@ -171,6 +171,7 @@
     <Compile Include="Game\Tiles\TileSelection.cs" />
     <Compile Include="Game\UI\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
+    <Compile Include="Game\UI\DebugCommandInteractionHandler.cs" />
     <Compile Include="Game\UI\DefaultInteractionHandler.cs" />
     <Compile Include="Game\UI\ICursorHandler.cs" />
     <Compile Include="Game\UI\InteractionHandler.cs" />
