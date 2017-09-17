@@ -13,6 +13,8 @@ namespace Bearded.TD.Game.Tiles
                 ? new SingleSelection(footprints.Footprints[0])
                 : (TileSelection)new GroupSelection(footprints);
 
+        public static TileSelection Single { get; } = new SingleSelection(Footprint.Single);
+
         public abstract PositionedFootprint GetPositionedFootprint(Level level, Position2 position);
 
         private sealed class SingleSelection : TileSelection
