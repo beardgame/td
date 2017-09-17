@@ -12,14 +12,12 @@ namespace Bearded.TD.Game
     {
         private readonly GameInstance game;
         private readonly NetworkInterface networkInterface;
-        private readonly InputManager inputManager;
         private readonly GameInputHandler inputHandler;
 
-        public GameRunner(GameInstance game, NetworkInterface networkInterface, InputManager inputManager)
+        public GameRunner(GameInstance game, NetworkInterface networkInterface)
         {
             this.game = game;
             this.networkInterface = networkInterface;
-            this.inputManager = inputManager;
             inputHandler = new GameInputHandler(game);
         }
 

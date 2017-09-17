@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.UI
     {
         public GameUI(ScreenLayerCollection parent, GeometryManager geometries, GameInstance gameInstance, NetworkInterface networkInterface, InputManager inputManager) : base(parent)
         {
-            var gameRunner = new GameRunner(gameInstance, networkInterface, inputManager);
+            var gameRunner = new GameRunner(gameInstance, networkInterface);
 
             AddScreenLayerOnTop(new GameWorldScreenLayer(this, gameInstance, gameRunner, geometries));
             AddScreenLayerOnTop(new ActionBarScreenLayer(this, geometries, gameInstance, inputManager));
