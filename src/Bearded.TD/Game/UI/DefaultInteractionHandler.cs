@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.UI
 
         public override void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor)
         {
-            
+            // Set hover state of thing below cursor.
         }
     }
 }

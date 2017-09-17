@@ -19,8 +19,13 @@ namespace Bearded.TD.Game.UI
             cursor.SetTileSelection(TileSelection);
             OnStart(cursor);
         }
-
         protected virtual void OnStart(ICursorHandler cursor) { }
+
+        public void End(ICursorHandler cursor)
+        {
+            OnEnd(cursor);
+        }
+        protected virtual void OnEnd(ICursorHandler cursor) { }
 
         public abstract void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor);
     }
