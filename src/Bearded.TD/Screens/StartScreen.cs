@@ -34,12 +34,6 @@ namespace Bearded.TD.Screens
         protected override bool DoHandleInput(InputContext input)
         {
             base.DoHandleInput(input);
-            
-            if (input.Manager.IsKeyHit(Key.Number2))
-                startServerLobby();
-            else if (input.Manager.IsKeyHit(Key.Number3))
-                startConnect();
-
             return false;
         }
 

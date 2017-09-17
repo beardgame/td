@@ -38,29 +38,29 @@ namespace Bearded.TD.UI.Components
             {
                 return;
             }
-            if (input.Manager.IsKeyHit(Key.Enter))
+            if (input.State.ForKey(Key.Enter).Hit)
             {
                 Submitted?.Invoke(text);
                 return;
             }
-            if (input.Manager.IsKeyHit(Key.BackSpace) && cursorPosition > 0)
+            if (input.State.ForKey(Key.BackSpace).Hit && cursorPosition > 0)
             {
                 text = text.Substring(0, cursorPosition - 1) + text.Substring(cursorPosition);
                 cursorPosition--;
             }
-            if (input.Manager.IsKeyPressed(Key.Left) && cursorPosition > 0)
+            if (input.State.ForKey(Key.Left).Hit && cursorPosition > 0)
             {
                 cursorPosition--;
             }
-            if (input.Manager.IsKeyPressed(Key.Right) && cursorPosition < text.Length)
+            if (input.State.ForKey(Key.Right).Hit && cursorPosition < text.Length)
             {
                 cursorPosition++;
             }
-            if (input.Manager.IsKeyPressed(Key.Home))
+            if (input.State.ForKey(Key.Home).Hit)
             {
                 cursorPosition = 0;
             }
-            if (input.Manager.IsKeyPressed(Key.End))
+            if (input.State.ForKey(Key.End).Hit)
             {
                 cursorPosition = text.Length;
             }

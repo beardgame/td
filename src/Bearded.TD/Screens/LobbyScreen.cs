@@ -34,16 +34,6 @@ namespace Bearded.TD.Screens
                 lobbyManager.ToggleReadyState, "Toggle ready", 36));
         }
 
-        protected override bool DoHandleInput(InputContext input)
-        {
-            if (input.Manager.IsKeyPressed(Key.ShiftLeft) && input.Manager.IsKeyHit(Key.Enter))
-                lobbyManager.ToggleReadyState();
-            else
-                return base.DoHandleInput(input);
-
-            return false;
-        }
-
         public override void Update(UpdateEventArgs args)
         {
             base.Update(args);

@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Components
         {
             base.HandleInput(input);
             SetFocus(Bounds.Contains(input.MousePosition));
-            if (input.Manager.LeftMouseHit && IsFocused)
+            if (input.State.Click.Hit && IsFocused)
                 action();
         }
 
