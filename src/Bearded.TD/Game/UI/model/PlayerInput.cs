@@ -14,11 +14,10 @@ namespace Bearded.TD.Game.UI
             ClickAction = clickAction;
         }
 
-        public static PlayerInput Construct(InputManager inputManager, GameCamera camera)
+        public static PlayerInput Construct(InputState inputState, GameCamera camera)
         {
             return new PlayerInput(
-                new Position2(camera.TransformScreenToWorldPos(inputManager.MousePosition)),
-                inputManager.Actions.Mouse.LeftButton);
+                new Position2(camera.TransformScreenToWorldPos(inputState.MousePosition)), inputState.Click);
         }
     }
 }

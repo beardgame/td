@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.UI
 
         public override bool HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            runner.HandleInput(args);
+            runner.HandleInput(args, inputState);
             return false;
         }
 
