@@ -12,6 +12,6 @@ namespace Bearded.TD.Game.UI
         }
 
         public abstract void Start(ICursorHandler cursor);
-        public abstract void Update(UpdateEventArgs args, ICursorHandler cursor);
+        public abstract void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor);
     }
 }

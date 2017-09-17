@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.UI
             cursor.SetTileSelection(TileSelection.FromFootprints(FootprintGroup.Single));
         }
 
-        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        public override void Update(UpdateEventArgs args, GameInputContext inputContext, ICursorHandler cursor)
         {
             
         }

@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
-using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
@@ -25,7 +24,6 @@ namespace Bearded.TD.Game
 
         public GameState State { get; private set; }
         public GameCamera Camera { get; private set; }
-        public CursorState Cursor { get; private set; }
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
@@ -92,7 +90,6 @@ namespace Bearded.TD.Game
             if (Camera != null)
                 throw new Exception();
             Camera = camera;
-            Cursor = new CursorState(this);
         }
 
         public void InitialiseState(GameState state)

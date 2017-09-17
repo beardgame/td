@@ -56,9 +56,6 @@ namespace Bearded.TD.Game.UI
         }
 
         private ActionBarItem.Content contentFor(IClickHandler clickHandler, string description)
-            => new ActionBarItem.Content(
-                () => game.Cursor.SetClickHandler(clickHandler),
-                () => game.Cursor.SetClickHandler(null),
-                description);
+            => new ActionBarItem.Content(() => { }, () => { }, description);
     }
 }
