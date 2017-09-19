@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.UI
 
         private void setTile(GameInstance game, Tile<TileInfo> tile)
         {
-            game.Request(SetTileType.Request, tile, tileType);
+            game.Request(SetTileType.Request, tile, tileType, TileDrawInfo.For(tileType));
         }
 
         public void Enable(GameInstance game)

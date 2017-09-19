@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.UI
             var type = tile.Info.TileType == TileInfo.Type.Floor
                 ? TileInfo.Type.Wall
                 : TileInfo.Type.Floor;
-            game.Request(SetTileType.Request, tile, type);
+            game.Request(SetTileType.Request, tile, type, TileDrawInfo.For(type));
         }
 
         public void Enable(GameInstance game)

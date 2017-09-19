@@ -1,5 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
+using Bearded.TD.Game.World;
 using Bearded.Utilities.Math;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
@@ -19,13 +20,13 @@ namespace Bearded.TD.Rendering.Deferred
         }
 
         public void DrawTile(Vector2 position,
-            TileType tileType, TileType rightTileType,
-            TileType upRightTileType, TileType downRightTileType)
+            TileInfo tileInfo, TileInfo rightTileInfo,
+            TileInfo upRightTileInfo, TileInfo downRightTileInfo)
         {
-            var (selfZ, selfScale) = getHeightAndScale(tileType);
-            var (rightZ, rightScale) = getHeightAndScale(rightTileType);
-            var (downZ, downScale) = getHeightAndScale(downRightTileType);
-            var (upZ, upScale) = getHeightAndScale(upRightTileType);
+            var (selfZ, selfScale) = getHeightAndScale(tileInfo);
+            var (rightZ, rightScale) = getHeightAndScale(rightTileInfo);
+            var (downZ, downScale) = getHeightAndScale(downRightTileInfo);
+            var (upZ, upScale) = getHeightAndScale(upRightTileInfo);
             
             var selfCorners = cornerOffsetsWithScale(selfScale);
 
@@ -52,7 +53,7 @@ namespace Bearded.TD.Rendering.Deferred
             var upBottomLeftV = (upPosition + new Vector2(-upCorners.sideX, -upCorners.sideY)).WithZ(upZ);
             var upBottomV = (upPosition + new Vector2(0, -upCorners.topY)).WithZ(upZ);
 
-            if (upRightTileType != TileType.Unknown)
+            if (upRightTileInfo.TileType != TileType.Unknown)
             {
                 addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
             }
@@ -60,7 +61,7 @@ namespace Bearded.TD.Rendering.Deferred
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
             var downTopLeftV = (downPosition + new Vector2(-downCorners.sideX, downCorners.sideY)).WithZ(downZ);
 
-            if (downRightTileType != TileType.Unknown)
+            if (downRightTileInfo.TileType != TileType.Unknown)
             {
                 addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
             }
@@ -68,37 +69,26 @@ namespace Bearded.TD.Rendering.Deferred
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
             var rightBottomLeftV = (rightPosition + new Vector2(-rightCorners.sideX, -rightCorners.sideY)).WithZ(rightZ);
 
-            if (rightTileType != TileType.Unknown)
+            if (rightTileInfo.TileType != TileType.Unknown)
             {
                 addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
             }
 
-            if (rightTileType != TileType.Unknown && upRightTileType != TileType.Unknown)
+            if (rightTileInfo.TileType != TileType.Unknown && upRightTileInfo.TileType != TileType.Unknown)
             {
                 addTriangle(topRightV, upBottomV, rightTopLeftV, c);
             }
             
-            if (rightTileType != TileType.Unknown && downRightTileType != TileType.Unknown)
+            if (rightTileInfo.TileType != TileType.Unknown && downRightTileInfo.TileType != TileType.Unknown)
             {
                 addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
             }
         }
 
-        private static (float, float) getHeightAndScale(TileType tileType)
+        private (float height, float scale) getHeightAndScale(TileInfo info)
         {
-            switch (tileType)
-            {
-                case TileType.Unknown:
-                    return (0, 0);
-                case TileType.Floor:
-                    return (0, 0.8f);
-                case TileType.Wall:
-                    return (0.5f, 0.5f);
-                case TileType.Crevice:
-                    return (-3, 0.5f);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(tileType), tileType, null);
-            }
+            var drawInfo = info.DrawInfo;
+            return (drawInfo.Height.NumericValue, drawInfo.HexScale);
         }
 
         private static (float topY, float sideY, float sideX) cornerOffsetsWithScale(float scale)

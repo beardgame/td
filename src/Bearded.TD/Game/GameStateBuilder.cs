@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
-using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
@@ -37,21 +34,21 @@ namespace Bearded.TD.Game
 
             var tilemapTypes = tilemapGenerator.Generate(radius);
 
-            yield return FillTilemap.Command(game, tilemapTypes);
+            var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
 
-            // TODO: fill in remaining stuff from getGameStateFromTilemap
+            yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
         }
 
-        private static GameState getGameStateFromTilemap(GameMeta meta, Tilemap<TileInfo> tilemap)
+        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileInfo.Type> types)
         {
-            var gameState = new GameState(meta, new Level(tilemap));
-            //gameState.Add(new Base(Footprint.CircleSeven.Positioned(gameState.Level, new Position2()), gameState.RootFaction));
-            var center = new Tile<TileInfo>(tilemap, 0, 0);
-            Directions.All.Enumerate()
-                .Select((d) => center.Offset(d.Step() * tilemap.Radius))
-                .ForEach((t) => gameState.Add(new UnitSource(t)));
+            var drawInfos = new Tilemap<TileDrawInfo>(types.Radius);
 
-            return gameState;
+            foreach (var type in types)
+            {
+                drawInfos[type.X, type.Y] = TileDrawInfo.For(type.Info);
+            }
+
+            return drawInfos;
         }
     }
 }

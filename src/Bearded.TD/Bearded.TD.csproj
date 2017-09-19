@@ -200,6 +200,7 @@
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
     <Compile Include="Game\World\LevelVisibilityChecker.cs" />
+    <Compile Include="Game\World\TileDrawInfo.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tiles\Direction.cs" />
     <Compile Include="Game\Tiles\Extensions.cs" />

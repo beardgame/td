@@ -140,10 +140,10 @@ namespace Bearded.TD.Game.World
 
                 geo.DrawTile(
                     GetPosition(tile).NumericValue,
-                    info.TileType,
-                    tile.Neighbour(Direction.Right).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown,
-                    tile.Neighbour(Direction.UpRight).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown,
-                    tile.Neighbour(Direction.DownRight).ValidOrNull?.Info.TileType ?? TileInfo.Type.Unknown
+                    info,
+                    tile.Neighbour(Direction.Right).ValidOrNull?.Info ?? TileInfo.Dummy,
+                    tile.Neighbour(Direction.UpRight).ValidOrNull?.Info ?? TileInfo.Dummy,
+                    tile.Neighbour(Direction.DownRight).ValidOrNull?.Info ?? TileInfo.Dummy
                     );
             }
         }

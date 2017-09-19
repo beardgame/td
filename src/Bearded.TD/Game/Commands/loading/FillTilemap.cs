@@ -1,50 +1,62 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Commands
 {
     static class FillTilemap
     {
-        public static ICommand Command(GameInstance game, Tilemap<TileInfo.Type> tilemap)
-            => new Implementation(game, tilemap.Select(t => t.Info).ToList());
+        public static ICommand Command(GameInstance game, Tilemap<TileInfo.Type> types, Tilemap<TileDrawInfo> drawInfos)
+            => new Implementation(game, types.Select(t => t.Info).ToList(), drawInfos.Select(t => t.Info).ToList());
 
         private class Implementation : ICommand
         {
             private readonly Tilemap<TileInfo> tilemap;
-            private readonly IList<TileInfo.Type> tiles;
+            private readonly IList<TileInfo.Type> types;
+            private readonly IList<TileDrawInfo> drawInfos;
             private readonly GameInstance game;
 
-            public Implementation(GameInstance game, IList<TileInfo.Type> tiles)
+            public Implementation(GameInstance game, IList<TileInfo.Type> types, IList<TileDrawInfo> drawInfos)
             {
+                if (types.Count != drawInfos.Count)
+                    throw new ArgumentException();
+
                 this.game = game;
                 tilemap = game.State.Level.Tilemap;
-                this.tiles = tiles;
+                this.types = types;
+                this.drawInfos = drawInfos;
             }
 
             public void Execute()
             {
                 game.MustBeLoading();
 
-                foreach (var (tile, i) in tilemap.Select((t, i) => (t: t, i: i)))
+                foreach (var (tile, i) in tilemap.Select((t, i) => (t: t.Info, i: i)))
                 {
-                    tile.Info.SetTileType(tiles[i]);
+                    tile.SetTileType(types[i]);
+                    tile.SetDrawInfo(drawInfos[i]);
                 }
             }
 
-            public ICommandSerializer Serializer => new Serializer(tiles);
+            public ICommandSerializer Serializer => new Serializer(types, drawInfos);
         }
 
         private class Serializer : ICommandSerializer
         {
-            private TileInfo.Type[] tiles;
+            private TileInfo.Type[] types;
+            private Unit[] drawHeights;
+            private float[] drawSizeFactors;
 
-            public Serializer(IList<TileInfo.Type> tiles)
+            public Serializer(IList<TileInfo.Type> types, IList<TileDrawInfo> drawInfos)
             {
-                this.tiles = tiles.ToArray();
+                this.types = types.ToArray();
+                drawHeights = drawInfos.Select(i => i.Height).ToArray();
+                drawSizeFactors = drawInfos.Select(i => i.HexScale).ToArray();
             }
 
             // ReSharper disable once UnusedMember.Local
@@ -53,15 +65,21 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, tiles);
+                => new Implementation(game, types, Enumerable.Range(0, types.Length)
+                    .Select(i => new TileDrawInfo(drawHeights[i], drawSizeFactors[i])).ToList()
+                    );
 
             public void Serialize(INetBufferStream stream)
             {
-                stream.SerializeArrayCount(ref tiles);
-                var bytes = (byte[]) (object) tiles;
-                foreach (var i in Enumerable.Range(0, tiles.Length))
+                stream.SerializeArrayCount(ref types);
+                drawHeights = drawHeights ?? new Unit[types.Length];
+                drawSizeFactors = drawSizeFactors ?? new float[types.Length];
+                var typeBytes = (byte[]) (object) types;
+                foreach (var i in Enumerable.Range(0, types.Length))
                 {
-                    stream.Serialize(ref bytes[i]);
+                    stream.Serialize(ref typeBytes[i]);
+                    stream.Serialize(ref drawHeights[i]);
+                    stream.Serialize(ref drawSizeFactors[i]);
                 }
             }
         }
