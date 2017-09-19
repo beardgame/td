@@ -174,8 +174,8 @@
     <Compile Include="Game\UI\input\ActionState.cs" />
     <Compile Include="Game\UI\input\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
-    <Compile Include="Game\UI\input\DebugSetTileTypeClickHandler.cs" />
-    <Compile Include="Game\UI\input\DebugSpawnEnemyClickHandler.cs" />
+    <Compile Include="Game\UI\input\DebugSetTileTypeInteractionHandler.cs" />
+    <Compile Include="Game\UI\input\DebugSpawnEnemyInteractionHandler.cs" />
     <Compile Include="Game\UI\input\DefaultInteractionHandler.cs" />
     <Compile Include="Game\UI\input\ICursorHandler.cs" />
     <Compile Include="Game\UI\input\InteractionHandler.cs" />
@@ -205,6 +205,7 @@
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
     <Compile Include="Game\World\LevelVisibilityChecker.cs" />
+    <Compile Include="Game\World\TileDrawInfo.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tiles\Direction.cs" />
     <Compile Include="Game\Tiles\Extensions.cs" />

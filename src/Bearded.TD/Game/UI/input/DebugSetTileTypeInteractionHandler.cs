@@ -11,8 +11,6 @@ namespace Bearded.TD.Game.UI
     {
         private readonly TileInfo.Type tileType;
 
-        public TileSelection Selection => TileSelection.FromFootprints(FootprintGroup.Single);
-
         public DebugSetTileTypeInteractionHandler(GameInstance game, TileInfo.Type tileType)
             : base(game)
         {
@@ -27,6 +25,6 @@ namespace Bearded.TD.Game.UI
                     .ForEach(setTile);
         }
         
-        private void setTile(Tile<TileInfo> tile) => Game.Request(SetTileType.Request, tile, tileType);
+        private void setTile(Tile<TileInfo> tile) => Game.Request(SetTileType.Request, tile, tileType, TileDrawInfo.For(tileType));
     }
 }

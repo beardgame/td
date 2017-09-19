@@ -2,6 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using Lidgren.Network;
 // ReSharper disable RedundantAssignment
 
@@ -20,6 +21,7 @@ namespace Bearded.TD.Networking.Serialization
         public void Serialize(ref byte b) => b = buffer.ReadByte();
 
         public void Serialize(ref string s) => s = buffer.ReadString();
+        public void Serialize(ref float f) => f = buffer.ReadSingle();
 
         public void Serialize<T>(ref T t)
             where T : struct
@@ -46,9 +48,8 @@ namespace Bearded.TD.Networking.Serialization
                 color = new Color(val);
         }
 
-        public void SerializeArrayCount<T>(ref T[] array)
-        {
-            array = new T[buffer.ReadInt32()];
-        }
+        public void SerializeArrayCount<T>(ref T[] array) => array = new T[buffer.ReadInt32()];
+
+        public void Serialize(ref Unit unit) => unit = new Unit(buffer.ReadSingle());
     }
 }

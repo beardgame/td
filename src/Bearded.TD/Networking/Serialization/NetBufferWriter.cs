@@ -2,6 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Serialization
@@ -19,6 +20,7 @@ namespace Bearded.TD.Networking.Serialization
         public void Serialize(ref byte b) => buffer.Write(b);
 
         public void Serialize(ref string s) => buffer.Write(s);
+        public void Serialize(ref float f) => buffer.Write(f);
 
         public void Serialize<T>(ref T t)
             where T : struct
@@ -37,9 +39,8 @@ namespace Bearded.TD.Networking.Serialization
 
         public void Serialize(ref Color? color, uint nullValue = 0) => buffer.Write(color?.ARGB ?? nullValue);
 
-        public void SerializeArrayCount<T>(ref T[] array)
-        {
-            buffer.Write(array.Length);
-        }
+        public void SerializeArrayCount<T>(ref T[] array) => buffer.Write(array.Length);
+
+        public void Serialize(ref Unit unit) => buffer.Write(unit.NumericValue);
     }
 }

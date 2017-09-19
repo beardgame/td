@@ -21,11 +21,14 @@ namespace Bearded.TD.Game.World
             Tilemap.ForEach(updatePassability);
         }
 
-        public void SetTileType(Tile<TileInfo> tile, TileInfo.Type type)
+        public void SetTileType(Tile<TileInfo> tile, TileInfo.Type type, TileDrawInfo drawInfo)
         {
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
 
-            Tilemap[tile].SetTileType(type);
+            var tileInfo = tile.Info;
+
+            tileInfo.SetTileType(type);
+            tileInfo.SetDrawInfo(drawInfo);
 
             updatePassability(tile);
         }

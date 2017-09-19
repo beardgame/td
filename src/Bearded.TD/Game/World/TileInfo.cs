@@ -8,6 +8,8 @@ namespace Bearded.TD.Game.World
 {
     class TileInfo
     {
+        public static TileInfo Dummy { get; } = new TileInfo(Directions.None, Type.Unknown);
+
         public enum Type : byte
         {
             Unknown = 0,
@@ -25,6 +27,8 @@ namespace Bearded.TD.Game.World
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }
         public Type TileType { get; private set; }
+
+        public TileDrawInfo DrawInfo { get; private set; }
 
         public TileInfo(Directions validDirections, Type tileType)
         {
@@ -47,6 +51,11 @@ namespace Bearded.TD.Game.World
         public void SetTileType(Type tileType)
         {
             TileType = tileType;
+        }
+
+        public void SetDrawInfo(TileDrawInfo info)
+        {
+            DrawInfo = info;
         }
 
         public void SetBuilding(Building building)
