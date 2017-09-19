@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.UI.Components
         public override void HandleInput(InputContext input)
         {
             base.HandleInput(input);
-            if (input.State.Click.Hit && Bounds.Contains(input.MousePosition))
+            if (input.State.Mouse.Click.Hit && Bounds.Contains(input.MousePosition))
             {
                 Focus();
                 content?.Action();

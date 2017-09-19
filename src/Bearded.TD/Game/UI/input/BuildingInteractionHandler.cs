@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.UI
         {
             var footprint = cursor.CurrentFootprint;
             ghost.SetFootprint(footprint);
-            if (cursor.ClickAction.Hit)
+            if (cursor.Click.Hit)
                 Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
         }
 

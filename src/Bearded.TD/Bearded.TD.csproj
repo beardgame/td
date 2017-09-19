@@ -168,6 +168,7 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\input\ActionState.cs" />
     <Compile Include="Game\UI\input\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
     <Compile Include="Game\UI\input\DebugSetTileTypeClickHandler.cs" />
@@ -189,7 +190,6 @@
     <Compile Include="Game\UI\screenlayers\GameOverScreenLayer.cs" />
     <Compile Include="Game\UI\screenlayers\GameWorldScreenLayer.cs" />
     <Compile Include="Game\UI\GameUI.cs" />
-    <Compile Include="Game\UI\model\GameInputContext.cs" />
     <Compile Include="Game\UI\screenlayers\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\GameUnitState.cs" />

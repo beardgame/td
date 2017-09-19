@@ -65,7 +65,7 @@ namespace Bearded.TD.UI.Components
                 cursorPosition = text.Length;
             }
 
-            foreach (var c in input.State.PressedCharacters)
+            foreach (var c in input.State.Keyboard.PressedCharacters)
             {
                 if ((c < '0' || c > '9') && (c < '@' || c > 'Z') && (c < 'a' || c > 'z') && !allowedChars.Contains(c))
                 {

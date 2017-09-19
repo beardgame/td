@@ -20,8 +20,8 @@ namespace Bearded.TD.Game.UI
         private float maxCameraDistance => levelRadius;
         private float zoomSpeed => BaseZoomSpeed * (1 + camera.Distance * ZoomSpeedFactor);
 
-        private readonly Dictionary<Func<InputState, IAction>, Vector2> scrollActions;
-        private readonly Dictionary<Func<InputState, IAction>, float> zoomActions;
+        private readonly Dictionary<Func<InputState, ActionState>, Vector2> scrollActions;
+        private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
 
         private bool isDragging;
         private float cameraGoalDistance;
@@ -33,23 +33,23 @@ namespace Bearded.TD.Game.UI
             this.levelRadius = levelRadius;
             cameraGoalDistance = camera.Distance;
 
-            scrollActions = new Dictionary<Func<InputState, IAction>, Vector2>
+            scrollActions = new Dictionary<Func<InputState, ActionState>, Vector2>
             {
                 { actionFunc(Key.Left, Key.A), -Vector2.UnitX },
                 { actionFunc(Key.Right, Key.D), Vector2.UnitX },
                 { actionFunc(Key.Up, Key.W), Vector2.UnitY },
                 { actionFunc(Key.Down, Key.S), -Vector2.UnitY },
             };
-            zoomActions = new Dictionary<Func<InputState, IAction>, float>
+            zoomActions = new Dictionary<Func<InputState, ActionState>, float>
             {
                 { actionFunc(Key.PageDown), 1f },
                 { actionFunc(Key.PageUp), -1f },
             };
         }
 
-        private static Func<InputState, IAction> actionFunc(params Key[] keys)
+        private static Func<InputState, ActionState> actionFunc(params Key[] keys)
         {
-            return input => InputAction.AnyOf(keys.Select(input.ForKey));
+            return input => input.ForAnyKey(keys);
         }
 
         public void HandleInput(UpdateEventArgs args, InputState input)
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.UI
 
         private void updateCameraGoalDistance(UpdateEventArgs args, InputState input)
         {
-            var mouseScroll = -input.DeltaScroll * ScrollTickValue * zoomSpeed;
+            var mouseScroll = -input.Mouse.DeltaScroll * ScrollTickValue * zoomSpeed;
 
             var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
 
@@ -107,10 +107,10 @@ namespace Bearded.TD.Game.UI
         {
             var error = camera.Distance - cameraGoalDistance;
             var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
-            var oldMouseWorldPosition = camera.TransformScreenToWorldPos(input.MousePosition);
+            var oldMouseWorldPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
             camera.Distance -= error * snapFactor;
 
-            var newMouseWorldPosition = camera.TransformScreenToWorldPos(input.MousePosition);
+            var newMouseWorldPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
             var positionError = newMouseWorldPosition - oldMouseWorldPosition;
             camera.Position -= positionError;
         }
@@ -118,11 +118,11 @@ namespace Bearded.TD.Game.UI
         private void updateDragging(InputState input)
         {
             if (isDragging)
-                continueDragging(input.MousePosition);
-            else if (input.Drag.Active)
-                startDragging(input.MousePosition);
+                continueDragging(input.Mouse.Position);
+            else if (input.Mouse.Drag.Active)
+                startDragging(input.Mouse.Position);
 
-            if (!input.Drag.Active && isDragging)
+            if (!input.Mouse.Drag.Active && isDragging)
                 stopDragging();
         }
 

@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.UI
 {
     interface ICursorHandler
     {
-        IAction ClickAction { get; }
+        ActionState Click { get; }
         PositionedFootprint CurrentFootprint { get; }
         void Update(UpdateEventArgs args, InputState inputContext);
         void SetTileSelection(TileSelection tileSelection);

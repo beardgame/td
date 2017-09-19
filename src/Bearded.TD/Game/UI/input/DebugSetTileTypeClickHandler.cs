@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.UI
 
         public override void Update(UpdateEventArgs args, ICursorHandler cursor)
         {
-            if (cursor.ClickAction.Hit)
+            if (cursor.Click.Hit)
                 cursor.CurrentFootprint.OccupiedTiles
                     .Where(t => t.IsValid)
                     .ForEach(setTile);
