@@ -17,9 +17,9 @@ namespace Bearded.TD.Screens
             UpdateAll(args);
         }
 
-        public bool HandleInput(UpdateEventArgs args, InputState inputState)
+        public void HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            return PropagateInput(args, inputState);
+            PropagateInput(args, inputState);
         }
 
         protected void Destroy()

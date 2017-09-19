@@ -43,7 +43,7 @@ namespace Bearded.TD.Screens
             OnViewportSizeChanged();
         }
 
-        public virtual bool HandleInput(UpdateEventArgs args, InputState inputState) => true;
+        public virtual void HandleInput(UpdateEventArgs args, InputState inputState) { }
         public abstract void Update(UpdateEventArgs args);
         public abstract void Draw();
         protected virtual void OnViewportSizeChanged() { }

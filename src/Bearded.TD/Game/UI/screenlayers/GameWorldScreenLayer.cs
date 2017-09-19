@@ -24,10 +24,9 @@ namespace Bearded.TD.Game.UI
             this.geometries = geometries;
         }
 
-        public override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        public override void HandleInput(UpdateEventArgs args, InputState inputState)
         {
             runner.HandleInput(args, inputState);
-            return false;
         }
 
         public override void Update(UpdateEventArgs args)

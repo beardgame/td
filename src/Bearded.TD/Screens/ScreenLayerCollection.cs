@@ -15,14 +15,12 @@ namespace Bearded.TD.Screens
 
         private bool isEnumerating;
 
-        protected bool PropagateInput(UpdateEventArgs args, InputState inputState)
+        protected void PropagateInput(UpdateEventArgs args, InputState inputState)
         {
             isEnumerating = true;
             for (var i = screenLayers.Count - 1; i >= 0; i--)
-                if (!screenLayers[i].HandleInput(args, inputState))
-                    return false;
+                screenLayers[i].HandleInput(args, inputState);
             isEnumerating = false;
-            return true;
         }
         
         protected void UpdateAll(UpdateEventArgs args)

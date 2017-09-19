@@ -40,11 +40,11 @@ namespace Bearded.TD.Screens
             components.ForEach(c => c.Update(args));
         }
 
-        public sealed override bool HandleInput(UpdateEventArgs args, InputState inputState)
+        public sealed override void HandleInput(UpdateEventArgs args, InputState inputState)
         {
             var context = new InputContext(inputState, transformScreenToWorld);
             components.ForEach(c => c.HandleInput(context));
-            return DoHandleInput(context);
+            DoHandleInput(context);
         }
 
         protected virtual bool DoHandleInput(InputContext input) => true;
