@@ -135,6 +135,7 @@
     <Compile Include="Game\interfaces\IGameObject.cs" />
     <Compile Include="Game\interfaces\IPositionable.cs" />
     <Compile Include="Game\interfaces\IPositionableGameObject.cs" />
+    <Compile Include="Game\interfaces\ISelectable.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
     <Compile Include="Game\GameController.cs" />
     <Compile Include="Game\IGameContext.cs" />
@@ -168,6 +169,8 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Game\UI\SelectionManager.cs" />
+    <Compile Include="Game\UI\SelectionState.cs" />
     <Compile Include="Game\UI\input\ActionState.cs" />
     <Compile Include="Game\UI\input\BuildingInteractionHandler.cs" />
     <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />

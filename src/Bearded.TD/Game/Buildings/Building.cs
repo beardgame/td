@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.UI;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
@@ -20,8 +21,15 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class Building : GameObject, IIdable<Building>
+    abstract class Building : GameObject, IIdable<Building>, ISelectable
     {
+        private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
+        {
+            {SelectionState.Default, Color.Blue},
+            {SelectionState.Focused, Color.DarkBlue},
+            {SelectionState.Selected, Color.RoyalBlue}
+        };
+
         private readonly BuildingBlueprint blueprint;
         private PositionedFootprint footprint;
 
@@ -33,6 +41,7 @@ namespace Bearded.TD.Game.Buildings
         public Position2 Position { get; private set; }
         public int Health { get; private set; }
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
+        public SelectionState SelectionState { get; private set; }
 
         private List<Component> components { get; } = new List<Component>();
 
@@ -102,7 +111,7 @@ namespace Bearded.TD.Game.Buildings
         {
             var geo = geometries.ConsoleBackground;
             var alpha = (float)(BuildManager?.CurrentProgressFraction * 0.9 ?? 1);
-            geo.Color = Color.Blue * alpha;
+            geo.Color = drawColors[SelectionState] * alpha;
 
             foreach (var tile in footprint.OccupiedTiles)
                 geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, HexagonSide, true, 6);
@@ -166,6 +175,25 @@ namespace Bearded.TD.Game.Buildings
             }
 
             private void onBuildingAborted() => Aborted?.Invoke();
+        }
+
+        public void ResetSelection()
+        {
+            SelectionState = SelectionState.Default;
+        }
+
+        public void Focus(SelectionManager selectionManager)
+        {
+            if (selectionManager.FocusedObject != this)
+                throw new Exception("Cannot focus an object that is not the currently focused object.");
+            SelectionState = SelectionState.Focused;
+        }
+
+        public void Select(SelectionManager selectionManager)
+        {
+            if (selectionManager.SelectedObject != this)
+                throw new Exception("Cannot select an object that is not the currently selected object.");
+            SelectionState = SelectionState.Selected;
         }
     }
 }
