@@ -41,6 +41,7 @@ namespace Bearded.TD.UI.Components
             if (input.State.ForKey(Key.Enter).Hit)
             {
                 Submitted?.Invoke(text);
+                input.State.Keyboard.Capture();
                 return;
             }
             if (input.State.ForKey(Key.BackSpace).Hit && cursorPosition > 0)
@@ -75,6 +76,7 @@ namespace Bearded.TD.UI.Components
                 text = text.Substring(0, cursorPosition) + c + text.Substring(cursorPosition);
                 cursorPosition++;
             }
+            input.State.Keyboard.Capture();
         }
 
         public override void Draw(GeometryManager geometries)
