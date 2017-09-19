@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.UI;
 using OpenTK;
 
 namespace Bearded.TD.Utilities.Input
@@ -14,6 +15,12 @@ namespace Bearded.TD.Utilities.Input
         {
             State = inputState;
             mousePosition = new Lazy<Vector2>(() => mouseTransformation(inputState.Mouse.Position));
+        }
+
+        public void CaptureMouseInBounds(Bounds bounds)
+        {
+            if (bounds.Contains(MousePosition))
+                State.Mouse.Capture();
         }
     }
 }

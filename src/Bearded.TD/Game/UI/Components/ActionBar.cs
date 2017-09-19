@@ -67,6 +67,7 @@ namespace Bearded.TD.Game.UI.Components
             if (unfocusAction.Hit)
                 unfocusAll();
             base.HandleInput(input);
+            input.CaptureMouseInBounds(Bounds);
         }
 
         private void onActionBarFocus(IFocusable focusable)
