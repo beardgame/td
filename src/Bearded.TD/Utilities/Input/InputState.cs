@@ -12,6 +12,8 @@ namespace Bearded.TD.Utilities.Input
         public IReadOnlyList<char> PressedCharacters { get; }
         public Vector2 MousePosition => inputManager.MousePosition;
         public IAction Click { get; }
+        public IAction Drag { get; }
+        public float DeltaScroll => inputManager.DeltaScrollF;
 
         public InputState(IReadOnlyList<char> pressedCharacters, InputManager inputManager)
         {
@@ -19,6 +21,7 @@ namespace Bearded.TD.Utilities.Input
             this.inputManager = inputManager;
 
             Click = new MouseButtonAction(inputManager, MouseButton.Left);
+            Drag = new MouseButtonAction(inputManager, MouseButton.Right);
         }
 
         public IAction ForKey(Key key)

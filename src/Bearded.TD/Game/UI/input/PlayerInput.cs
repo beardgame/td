@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.Utilities.SpaceTime;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.Game.UI
 {
@@ -9,22 +9,18 @@ namespace Bearded.TD.Game.UI
         private readonly InteractionHandler defaultInteractionHandler;
         private ICursorHandler cursor;
         private InteractionHandler interactionHandler;
-        private Position2 mousePosition;
 
         public PlayerInput(GameInstance game)
         {
             this.game = game;
-            game.State.Add(new Cursor(() => mousePosition));
 
-            cursor = new MouseCursorHandler(game.State.Level);
+            cursor = new MouseCursorHandler(game.Camera, game.State.Level);
             defaultInteractionHandler = new DefaultInteractionHandler(game);
             ResetInteractionHandler();
         }
 
-        public void HandleInput(UpdateEventArgs args, GameInputContext input)
+        public void HandleInput(UpdateEventArgs args, InputState input)
         {
-            mousePosition = input.MousePosition;
-
             cursor.Update(args, input);
             interactionHandler.Update(args, cursor);
         }

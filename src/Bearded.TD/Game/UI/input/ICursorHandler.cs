@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.UI
     {
         IAction ClickAction { get; }
         PositionedFootprint CurrentFootprint { get; }
-        void Update(UpdateEventArgs args, GameInputContext inputContext);
+        void Update(UpdateEventArgs args, InputState inputContext);
         void SetTileSelection(TileSelection tileSelection);
     }
 }

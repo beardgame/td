@@ -1,211 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bearded.TD.Rendering;
-using Bearded.TD.Utilities.Input;
+﻿using Bearded.TD.Rendering;
 using Bearded.Utilities.Math;
 using OpenTK;
-using OpenTK.Input;
 using static Bearded.TD.Constants.Camera;
 
 namespace Bearded.TD.Game
 {
     class GameCamera
     {
-        private readonly Dictionary<IAction, Vector2> scrollActions;
-
-        private readonly Dictionary<IAction, float> zoomActions;
-
-        private readonly InputManager inputManager;
-        private readonly GameMeta meta;
-        private readonly float levelRadius;
-
-        private float maxCameraRadius => levelRadius;
-        private float maxCameraDistance => levelRadius;
-
-        private bool isDragging;
-        private Vector2 mousePosInWorldSpace;
         private ViewportSize viewportSize;
 
-        private Vector2 cameraPosition;
-        private float cameraDistance;
-        private float zoomSpeed => BaseZoomSpeed * (1 + cameraDistance * ZoomSpeedFactor);
+        private Vector2 position;
+        private float distance;
 
-        private float cameraGoalDistance;
-
-        public Matrix4 ViewMatrix { get; private set; }
-
-        public GameCamera(InputManager inputManager, GameMeta meta, float levelRadius)
+        public Vector2 Position
         {
-            this.inputManager = inputManager;
-            this.meta = meta;
-            this.levelRadius = levelRadius;
-
-            cameraPosition = Vector2.Zero;
-            cameraDistance = ZDefault;
-            cameraGoalDistance = ZDefault;
-            recalculateViewMatrix();
-
-            scrollActions = new Dictionary<IAction, Vector2>
+            get => position;
+            set
             {
-                { axisOrKeys("-x", Key.Left, Key.A), -Vector2.UnitX },
-                { axisOrKeys("+x", Key.Right, Key.D), Vector2.UnitX },
-                { axisOrKeys("+y", Key.Up, Key.W), Vector2.UnitY },
-                { axisOrKeys("-y", Key.Down, Key.S), -Vector2.UnitY },
-            };
-
-            zoomActions = new Dictionary<IAction, float>
-            {
-                { axisOrKeys("+z", Key.PageDown), 1f },
-                { axisOrKeys("-z", Key.PageUp), -1f },
-            };
+                position = value;
+                recalculateViewMatrix();
+            }
         }
 
-        private IAction axisOrKeys(string axis, params Key[] keys)
+        public float Distance
         {
-            return inputManager.Actions.Gamepad.WithId(0).FromButtonName(axis)
-                    .Or(InputAction.AnyOf(keys.Select(k => inputManager.Actions.Keyboard.FromKey(k)).ToArray()));
+            get => distance;
+            set
+            {
+                distance = value;
+                recalculateViewMatrix();
+            }
+        }
+        
+        public Matrix4 ViewMatrix { get; private set; }
+
+        public GameCamera()
+        {
+            resetCameraPosition();
+        }
+
+        private void resetCameraPosition()
+        {
+            position = Vector2.Zero;
+            distance = ZDefault;
+            recalculateViewMatrix();
+        }
+
+        private void recalculateViewMatrix()
+        {
+            var eye = position.WithZ(distance);
+            var target = position.WithZ();
+            ViewMatrix = Matrix4.LookAt(eye, target, Vector3.UnitY);
         }
 
         public void OnViewportSizeChanged(ViewportSize viewportSize)
         {
             this.viewportSize = viewportSize;
-        }
-
-        public void HandleInput(float elapsedTime)
-        {
-            updateScrolling(elapsedTime);
-            updateZoom(elapsedTime);
-
-            updateDragging();
-
-            if (!isDragging)
-                constrictCameraToLevel(elapsedTime);
-
-            recalculateViewMatrix();
-        }
-
-        private void updateDragging()
-        {
-            if (isDragging)
-                continueDragging();
-            else if (inputManager.RightMousePressed)
-                startDragging();
-
-            if (inputManager.RightMouseReleased && isDragging)
-                stopDragging();
-        }
-
-        private void startDragging()
-        {
-            mousePosInWorldSpace = getMouseWorldPosition();
-            isDragging = true;
-
-            meta.Logger.Trace.Log("Start drag at {0}", mousePosInWorldSpace);
-        }
-
-        private void continueDragging()
-        {
-            var currMousePos = getMouseWorldPosition();
-            var error = currMousePos - mousePosInWorldSpace;
-            cameraPosition -= error;
-        }
-
-        private void stopDragging()
-        {
-            isDragging = false;
-
-            meta.Logger.Trace.Log("End drag");
-        }
-
-        private void constrictCameraToLevel(float elapsedTime)
-        {
-            var currentMaxCameraRadiusNormalised = 1 - (cameraDistance / maxCameraDistance).Squared().Clamped(0, 1);
-            var currentMaxCameraRadius = maxCameraRadius * currentMaxCameraRadiusNormalised;
-
-            if (cameraPosition.LengthSquared <= currentMaxCameraRadius.Squared())
-                return;
-
-            var snapBackFactor = 1 - Mathf.Pow(0.01f, elapsedTime);
-
-            var goalPosition = cameraPosition.Normalized() * currentMaxCameraRadius;
-
-            var error = goalPosition - cameraPosition;
-
-            cameraPosition += error * snapBackFactor;
-        }
-
-        private void updateScrolling(float elapsedTime)
-        {
-            var scrollSpeed = BaseScrollSpeed * cameraDistance;
-
-            var velocity = scrollActions.Aggregate(Vector2.Zero, (v, a) => v + a.Key.AnalogAmount * a.Value);
-
-            cameraPosition += velocity * scrollSpeed * elapsedTime;
-        }
-
-        private void updateZoom(float elapsedTime)
-        {
-            updateCameraGoalDistance(elapsedTime);
-
-            updateCameraDistance(elapsedTime);
-        }
-
-        private void updateCameraGoalDistance(float elapsedTime)
-        {
-            var mouseScroll = -inputManager.DeltaScrollF * ScrollTickValue * zoomSpeed;
-
-            var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key.AnalogAmount * a.Value);
-
-            var newCameraDistance = cameraGoalDistance + mouseScroll + velocity * zoomSpeed * elapsedTime;
-
-            newCameraDistance = newCameraDistance.Clamped(ZMin * 0.9f, maxCameraDistance * 1.1f);
-
-            float error = 0;
-
-            if (newCameraDistance < ZMin)
-            {
-                error = newCameraDistance - ZMin;
-            }
-            else if (newCameraDistance > maxCameraDistance)
-            {
-                error = newCameraDistance - maxCameraDistance;
-            }
-
-            var snapFactor = 1 - Mathf.Pow(1e-8f, elapsedTime);
-
-            newCameraDistance -= error * snapFactor;
-
-            cameraGoalDistance = newCameraDistance;
-        }
-
-        private void updateCameraDistance(float elapsedTime)
-        {
-            var error = cameraDistance - cameraGoalDistance;
-
-            var snapFactor = 1 - Mathf.Pow(1e-6f, elapsedTime);
-
-            var oldMouseWorldPosition = getMouseWorldPosition();
-
-            cameraDistance -= error * snapFactor;
-
-            var newMouseWorldPosition = getMouseWorldPosition();
-
-            var positionError = newMouseWorldPosition - oldMouseWorldPosition;
-
-            cameraPosition -= positionError;
-        }
-
-        private void recalculateViewMatrix()
-        {
-            var eye = cameraPosition.WithZ(cameraDistance);
-            var target = cameraPosition.WithZ();
-            ViewMatrix = Matrix4.LookAt(eye, target, Vector3.UnitY);
-        }
-
-        private Vector2 getMouseWorldPosition()
-        {
-            return TransformScreenToWorldPos(inputManager.MousePosition);
         }
 
         public Vector2 TransformScreenToWorldPos(Vector2 screenPos)
@@ -214,7 +64,7 @@ namespace Bearded.TD.Game
             // * The camera always looks straight down. That is, the camera eye and target both lie
             //   along the infinite extension of cameraPosition in the Z axis.
             // * The FoV is Pi/2
-            return cameraPosition + cameraDistance * getNormalisedScreenPosition(screenPos);
+            return position + distance * getNormalisedScreenPosition(screenPos);
         }
 
         private Vector2 getNormalisedScreenPosition(Vector2 screenPos)

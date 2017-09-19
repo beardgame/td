@@ -21,8 +21,7 @@ namespace Bearded.TD.Game
 
         public void HandleInput(UpdateEventArgs args, InputState inputState)
         {
-            game.PlayerInput.HandleInput(args, GameInputContext.Construct(inputState, game.Camera));
-            game.Camera.HandleInput(args.ElapsedTimeInSf);
+            game.PlayerInput.HandleInput(args, inputState);
         }
 
         public void Update(UpdateEventArgs args)

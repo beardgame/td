@@ -175,6 +175,7 @@
     <Compile Include="Game\UI\input\DefaultInteractionHandler.cs" />
     <Compile Include="Game\UI\input\ICursorHandler.cs" />
     <Compile Include="Game\UI\input\InteractionHandler.cs" />
+    <Compile Include="Game\UI\input\MouseCameraController.cs" />
     <Compile Include="Game\UI\input\MouseCursorHandler.cs" />
     <Compile Include="Game\UI\input\PlayerInput.cs" />
     <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />

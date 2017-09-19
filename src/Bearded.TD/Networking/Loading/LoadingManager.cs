@@ -33,7 +33,7 @@ namespace Bearded.TD.Networking.Loading
 
         public void IntegrateUI(InputManager inputManager)
         {
-            var camera = new GameCamera(inputManager, Game.State.Meta, Game.State.Level.Tilemap.Radius);
+            var camera = new GameCamera();
 
             Game.IntegrateUI(camera);
         }
