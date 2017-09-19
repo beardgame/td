@@ -10,9 +10,9 @@ namespace Bearded.TD.Utilities.Input
         private readonly InputManager inputManager;
 
         public IReadOnlyList<char> PressedCharacters { get; }
-        public Vector2 MousePosition => inputManager.MousePosition;
         public IAction Click { get; }
         public IAction Drag { get; }
+        public Vector2 MousePosition => inputManager.MousePosition;
         public float DeltaScroll => inputManager.DeltaScrollF;
 
         public InputState(IReadOnlyList<char> pressedCharacters, InputManager inputManager)
