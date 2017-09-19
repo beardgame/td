@@ -3,6 +3,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.UI;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -121,7 +122,8 @@ namespace Bearded.TD.Game.Buildings.Components
             geo.LineWidth = 0.05f;
             geo.Color = Color.Red * 0.5f;
 
-            geo.DrawCircle(Building.Position.NumericValue, Range.NumericValue, false);
+            if (Owner.SelectionState != SelectionState.Default)
+                geo.DrawCircle(Building.Position.NumericValue, Range.NumericValue, false);
 
             var laserAlpha = (laserTargetEndTime - Building.Game.Time).NumericValue * 5;
             if (laserAlpha > 0)
