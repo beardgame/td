@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
