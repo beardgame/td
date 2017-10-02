@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Buildings.Components
         protected override void Initialise()
         {
             for (var i = 0; i < numWorkers; i++)
-                Building.Game.Add(new Worker(Building.Game.WorkerManager, Building.Faction));
+                Building.Game.Add(new Worker(Building.Faction.Workers, Building.Faction));
         }
 
         public override void Update(TimeSpan elapsedTime) { }

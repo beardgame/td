@@ -9,12 +9,14 @@ namespace Bearded.TD.Game.Factions
     {
         private readonly Color? color;
         private readonly ResourceManager resources;
+        private readonly WorkerManager workers;
 
         public Id<Faction> Id { get; }
         public Faction Parent { get; }
         public bool HasResources { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
         public ResourceManager Resources => resources ?? Parent?.Resources;
+        public WorkerManager Workers => workers ?? Parent?.Workers;
 
         public Faction(Id<Faction> id, Faction parent, bool hasResources, Color? color = null)
         {
@@ -24,7 +26,10 @@ namespace Bearded.TD.Game.Factions
             this.color = color;
 
             if (hasResources)
+            {
                 resources = new ResourceManager();
+                workers = new WorkerManager();
+            }
         }
     }
 }

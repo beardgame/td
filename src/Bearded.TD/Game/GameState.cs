@@ -29,7 +29,6 @@ namespace Bearded.TD.Game
         public Level Level { get; }
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
-        public WorkerManager WorkerManager { get; }
 
         public bool IsLoading { get; private set; } = true;
 
@@ -43,7 +42,6 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
-            WorkerManager = new WorkerManager();
         }
 
         public void FinishLoading()
