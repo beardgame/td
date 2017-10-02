@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Buildings
                 building.Deleting += onBuildingAborted;
             }
 
-            public override void Progress(ResourceManager resourceManager, double ratePerS)
+            public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
             {
                 var remaining = blueprint.ResourceCost - buildProgress;
                 if (remaining <= 0)

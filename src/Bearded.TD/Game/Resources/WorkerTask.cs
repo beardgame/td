@@ -7,6 +7,6 @@ namespace Bearded.TD.Game.Resources
         public abstract Position2 Position { get; }
         public abstract bool Finished { get; }
 
-        public abstract void Progress(ResourceManager resourceManager, double ratePerS);
+        public abstract void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS);
     }
 }

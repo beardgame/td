@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Resources
         private Velocity2 velocity = Velocity2.Zero;
 
         public Faction Faction { get; }
-        public double WorkingSpeed => Constants.Game.Worker.WorkerBuildSpeed;
+        public double WorkingSpeed => Constants.Game.Worker.WorkerSpeed;
         public Squared<Unit> WorkRadiusSquared => Constants.Game.Worker.WorkerWorkRadiusSquared;
 
         private WorkerState currentState;

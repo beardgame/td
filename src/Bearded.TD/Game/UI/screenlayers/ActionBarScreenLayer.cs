@@ -36,6 +36,7 @@ namespace Bearded.TD.Game.UI
             buildingPage[1] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["triangle"]), "Triangle");
             buildingPage[2] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["diamond"]), "Diamond");
             buildingPage[3] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["line"]), "Line");
+            buildingPage[9] = contentFor(new MiningInteractionHandler(game, faction), "Mine tile");
             pages.Add(buildingPage);
 
 #if DEBUG

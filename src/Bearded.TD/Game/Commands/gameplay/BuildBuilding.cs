@@ -3,7 +3,6 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
