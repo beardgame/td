@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Commands
             {
                 var building = new PlayerBuilding(id, blueprint, footprint, faction);
                 game.State.Add(building);
-                faction.Workers.RegisterTask(WorkerTask.ForBuilding(building));
+                faction.Workers.RegisterTask(building.WorkerTask);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, id, blueprint, footprint);

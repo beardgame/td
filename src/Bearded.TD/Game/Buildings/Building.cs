@@ -21,7 +21,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class Building : GameObject, IIdable<Building>, ISelectable
+    abstract partial class Building : GameObject, IIdable<Building>, ISelectable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -34,18 +34,28 @@ namespace Bearded.TD.Game.Buildings
         private PositionedFootprint footprint;
 
         public Id<Building> Id { get; }
-
-        public BuildProcessManager BuildManager { get; private set; }
         
         public Faction Faction { get; }
         public Position2 Position { get; private set; }
         public int Health { get; private set; }
+        private bool isCompleted;
+        private double buildProgress;
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
         public SelectionState SelectionState { get; private set; }
 
         private List<Component> components { get; } = new List<Component>();
 
         public event VoidEventHandler Damaged;
+
+        public WorkerTask WorkerTask
+        {
+            get
+            {
+                if (isCompleted)
+                    throw new Exception("Cannot create a worker task for a completed building.");
+                return new BuildingWorkerTask(this, blueprint);
+            }
+        }
 
         protected Building(Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
         {
@@ -56,7 +66,6 @@ namespace Bearded.TD.Game.Buildings
             this.footprint = footprint;
             Faction = faction;
             Health = 1;
-            BuildManager = new BuildProcessManager(this, blueprint);
         }
 
         public void Damage(int damage)
@@ -80,11 +89,18 @@ namespace Bearded.TD.Game.Buildings
             });
         }
 
+        public void ResetToComplete()
+        {
+            Health = blueprint.MaxHealth;
+            if (!isCompleted)
+                onCompleted();
+        }
+
         private void onCompleted()
         {
             blueprint.GetComponents().ForEach(components.Add);
             components.ForEach(c => c.OnAdded(this));
-            BuildManager = null;
+            isCompleted = true;
         }
 
         protected override void OnDelete()
@@ -110,7 +126,7 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            var alpha = (float)(BuildManager?.CurrentProgressFraction * 0.9 ?? 1);
+            var alpha = isCompleted ? 1 : (float)(buildProgress * 0.9);
             geo.Color = drawColors[SelectionState] * alpha;
 
             foreach (var tile in footprint.OccupiedTiles)
@@ -125,56 +141,6 @@ namespace Bearded.TD.Game.Buildings
         public bool HasComponentOfType<T>()
         {
             return components.OfType<T>().FirstOrDefault() != null;
-        }
-
-        public class BuildProcessManager
-        {
-            private readonly Building building;
-            private readonly BuildingBlueprint blueprint;
-            private double buildProcess;
-            private int healthGiven = 1;
-
-            public double ResourcesStillNeeded => blueprint.ResourceCost - buildProcess;
-            public double CurrentProgressFraction => buildProcess / blueprint.ResourceCost;
-
-            public event VoidEventHandler Completed;
-            public event VoidEventHandler Aborted;
-
-            public BuildProcessManager(Building building, BuildingBlueprint blueprint)
-            {
-                this.building = building;
-                this.blueprint = blueprint;
-                building.Deleting += onBuildingAborted;
-            }
-
-            public void Progress(ResourceGrant resources)
-            {
-                if (ResourcesStillNeeded <= 0 || building.Deleted) return;
-
-                if (resources.ReachedCapacity)
-                {
-                    completeBuilding();
-                    return;
-                }
-
-                buildProcess += resources.Amount;
-                var expectedHealthGiven = (int)(CurrentProgressFraction * blueprint.MaxHealth);
-                if (expectedHealthGiven < healthGiven)
-                    return;
-                building.Health += expectedHealthGiven - healthGiven;
-                healthGiven = expectedHealthGiven;
-            }
-
-            private void completeBuilding()
-            {
-                buildProcess = blueprint.ResourceCost;
-                building.Health += blueprint.MaxHealth - healthGiven;
-                building.onCompleted();
-                Completed?.Invoke();
-                building.Deleting -= onBuildingAborted;
-            }
-
-            private void onBuildingAborted() => Aborted?.Invoke();
         }
 
         public void ResetSelection()

@@ -93,6 +93,7 @@
     <Compile Include="Game\Buildings\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
+    <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
     <Compile Include="Game\Buildings\Component.cs" />
     <Compile Include="Game\Buildings\ComponentFactory.cs" />
     <Compile Include="Game\Buildings\Components\EnemySink.cs" />
@@ -160,7 +161,6 @@
     <Compile Include="Game\Navigation\MultipleSinkNavigationSystem.cs" />
     <Compile Include="Game\GameStateBuilder.cs" />
     <Compile Include="Game\Players\Player.cs" />
-    <Compile Include="Game\Resources\DebugWorker.cs" />
     <Compile Include="Game\Resources\IResourceConsumer.cs" />
     <Compile Include="Game\Resources\ResourceGrant.cs" />
     <Compile Include="Game\Resources\ResourceManager.cs" />

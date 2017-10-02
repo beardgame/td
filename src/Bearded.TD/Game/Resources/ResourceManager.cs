@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Resources
 {
     class ResourceManager
     {
-        private readonly IList<IResourceConsumer> resourceConsumers = new List<IResourceConsumer>();
+        private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
         private double totalResourcesRequested;
         private double totalResourcesProvided;
 
@@ -27,10 +27,10 @@ namespace Bearded.TD.Game.Resources
             totalResourcesProvided += ratePerS;
         }
 
-        public void RegisterConsumer(IResourceConsumer consumer)
+        public void RegisterConsumer(IResourceConsumer consumer, double ratePerS, double maximum)
         {
-            resourceConsumers.Add(consumer);
-            totalResourcesRequested += consumer.RatePerS;
+            requestedResources.Add(new ResourceRequest(consumer, ratePerS, maximum));
+            totalResourcesRequested += ratePerS;
         }
 
         public void DistributeResources(TimeSpan elapsedTime)
@@ -40,35 +40,35 @@ namespace Bearded.TD.Game.Resources
 
             if (resourceOut <= currentResources)
             {
-                foreach (var consumer in resourceConsumers)
+                foreach (var request in requestedResources)
                 {
-                    var consumerGrantedResources = elapsedTime.NumericValue * consumer.RatePerS;
+                    var consumerGrantedResources = elapsedTime.NumericValue * request.RatePerS;
                     var grant = new ResourceGrant(
-                        Math.Min(consumer.Maximum, consumerGrantedResources),
-                        consumerGrantedResources >= consumer.Maximum);
+                        Math.Min(request.Maximum, consumerGrantedResources),
+                        consumerGrantedResources >= request.Maximum);
                     currentResources -= grant.Amount;
-                    consumer.ConsumeResources(grant);
+                    request.Consumer.ConsumeResources(grant);
                 }
                 resetForFrame();
                 return;
             }
 
-            var sortedConsumers = resourceConsumers.OrderBy((consumer) => (consumer.Maximum / consumer.RatePerS));
+            var sortedRequests = requestedResources.OrderBy((consumer) => (consumer.Maximum / consumer.RatePerS));
             var resourceRatio = currentResources / resourceOut;
-            foreach (var consumer in sortedConsumers)
+            foreach (var request in sortedRequests)
             {
-                var consumerGrantedResources = resourceRatio * elapsedTime.NumericValue * consumer.RatePerS;
-                if (consumer.Maximum <= consumerGrantedResources)
+                var requestGrantedResources = resourceRatio * elapsedTime.NumericValue * request.RatePerS;
+                if (request.Maximum <= requestGrantedResources)
                 {
-                    consumer.ConsumeResources(new ResourceGrant(consumer.Maximum, true));
-                    resourceOut -= consumer.Maximum;
-                    currentResources -= consumer.Maximum;
+                    request.Consumer.ConsumeResources(new ResourceGrant(request.Maximum, true));
+                    resourceOut -= request.Maximum;
+                    currentResources -= request.Maximum;
                     resourceRatio = currentResources / resourceOut;
                 }
                 else
                 {
-                    consumer.ConsumeResources(new ResourceGrant(consumerGrantedResources, false));
-                    currentResources -= consumerGrantedResources;
+                    request.Consumer.ConsumeResources(new ResourceGrant(requestGrantedResources, false));
+                    currentResources -= requestGrantedResources;
                 }
             }
                 
@@ -78,9 +78,23 @@ namespace Bearded.TD.Game.Resources
         private void resetForFrame()
         {
             currentIncome = totalResourcesProvided - totalResourcesRequested;
-            resourceConsumers.Clear();
+            requestedResources.Clear();
             totalResourcesRequested = 0;
             totalResourcesProvided = 0;
+        }
+
+        private struct ResourceRequest
+        {
+            public IResourceConsumer Consumer { get; }
+            public double RatePerS { get; }
+            public double Maximum { get; }
+
+            public ResourceRequest(IResourceConsumer consumer, double ratePerS, double maximum)
+            {
+                Consumer = consumer;
+                RatePerS = ratePerS;
+                Maximum = maximum;
+            }
         }
     }
 }
