@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;

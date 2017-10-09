@@ -7,17 +7,17 @@ using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {

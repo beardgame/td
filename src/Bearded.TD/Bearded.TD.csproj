@@ -171,32 +171,33 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
-    <Compile Include="Game\UI\input\MiningInteractionHandler.cs" />
-    <Compile Include="Game\UI\SelectionManager.cs" />
-    <Compile Include="Game\UI\SelectionState.cs" />
-    <Compile Include="Game\UI\input\ActionState.cs" />
-    <Compile Include="Game\UI\input\BuildingInteractionHandler.cs" />
-    <Compile Include="Game\UI\Components\DebugGenerationInfo.cs" />
-    <Compile Include="Game\UI\input\DebugSetTileTypeInteractionHandler.cs" />
-    <Compile Include="Game\UI\input\DebugSpawnEnemyInteractionHandler.cs" />
-    <Compile Include="Game\UI\input\DefaultInteractionHandler.cs" />
-    <Compile Include="Game\UI\input\ICursorHandler.cs" />
-    <Compile Include="Game\UI\input\InteractionHandler.cs" />
-    <Compile Include="Game\UI\input\MouseCameraController.cs" />
-    <Compile Include="Game\UI\input\MouseCursorHandler.cs" />
-    <Compile Include="Game\UI\input\PlayerInput.cs" />
-    <Compile Include="Game\UI\screenlayers\ActionBarScreenLayer.cs" />
-    <Compile Include="Game\UI\model\ChatLog.cs" />
-    <Compile Include="Game\UI\model\ChatMessage.cs" />
-    <Compile Include="Game\UI\Components\ActionBar.cs" />
-    <Compile Include="Game\UI\Components\ActionBarItem.cs" />
-    <Compile Include="Game\UI\Components\FactionStatus.cs" />
-    <Compile Include="Game\UI\model\Cursor.cs" />
-    <Compile Include="Game\UI\screenlayers\DebugScreenLayer.cs" />
-    <Compile Include="Game\UI\screenlayers\GameOverScreenLayer.cs" />
-    <Compile Include="Game\UI\screenlayers\GameWorldScreenLayer.cs" />
-    <Compile Include="Game\UI\GameUI.cs" />
-    <Compile Include="Game\UI\screenlayers\StatusScreenLayer.cs" />
+    <Compile Include="UI\Input\MiningInteractionHandler.cs" />
+    <Compile Include="UI\Model\SelectionManager.cs" />
+    <Compile Include="UI\Model\SelectionState.cs" />
+    <Compile Include="Rendering\IRenderLayer.cs" />
+    <Compile Include="Utilities\Input\ActionState.cs" />
+    <Compile Include="UI\Input\BuildingInteractionHandler.cs" />
+    <Compile Include="UI\Components\game\DebugGenerationInfo.cs" />
+    <Compile Include="UI\Input\DebugSetTileTypeInteractionHandler.cs" />
+    <Compile Include="UI\Input\DebugSpawnEnemyInteractionHandler.cs" />
+    <Compile Include="UI\Input\DefaultInteractionHandler.cs" />
+    <Compile Include="UI\Input\ICursorHandler.cs" />
+    <Compile Include="UI\Input\InteractionHandler.cs" />
+    <Compile Include="UI\Input\MouseCameraController.cs" />
+    <Compile Include="UI\Input\MouseCursorHandler.cs" />
+    <Compile Include="UI\Input\PlayerInput.cs" />
+    <Compile Include="Screens\game\ActionBarScreenLayer.cs" />
+    <Compile Include="UI\Model\ChatLog.cs" />
+    <Compile Include="UI\Model\ChatMessage.cs" />
+    <Compile Include="UI\Components\game\ActionBar.cs" />
+    <Compile Include="UI\Components\game\ActionBarItem.cs" />
+    <Compile Include="UI\Components\game\FactionStatus.cs" />
+    <Compile Include="Game\Cursor.cs" />
+    <Compile Include="Screens\game\DebugScreenLayer.cs" />
+    <Compile Include="Screens\game\GameOverScreenLayer.cs" />
+    <Compile Include="Screens\game\GameWorldScreenLayer.cs" />
+    <Compile Include="Screens\game\GameUI.cs" />
+    <Compile Include="Screens\game\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
     <Compile Include="Game\Units\GameUnitState.cs" />
     <Compile Include="Game\Synchronization\ISyncable.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
     <Compile Include="Game\World\LevelVisibilityChecker.cs" />
+    <Compile Include="Utilities\Ray.cs" />
     <Compile Include="Game\World\TileDrawInfo.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Game\Tiles\Direction.cs" />
@@ -221,15 +223,15 @@
     <Compile Include="Mods\Serialization\Models\FootprintGroup.cs" />
     <Compile Include="Networking\ClientNetworkInterface.cs" />
     <Compile Include="Networking\DataMessageHandler.cs" />
-    <Compile Include="Networking\Loading\ClientLoadingManager.cs" />
-    <Compile Include="Networking\Loading\LoadingManager.cs" />
-    <Compile Include="Networking\Loading\ServerLoadingManager.cs" />
-    <Compile Include="Networking\Lobby\ClientInfo.cs" />
-    <Compile Include="Networking\Lobby\ClientLobbyManager.cs" />
-    <Compile Include="Networking\Lobby\LobbyManager.cs" />
-    <Compile Include="Networking\Lobby\LobbyPlayerInfo.cs" />
+    <Compile Include="UI\Model\Loading\ClientLoadingManager.cs" />
+    <Compile Include="UI\Model\Loading\LoadingManager.cs" />
+    <Compile Include="UI\Model\Loading\ServerLoadingManager.cs" />
+    <Compile Include="UI\Model\Lobby\ClientInfo.cs" />
+    <Compile Include="UI\Model\Lobby\ClientLobbyManager.cs" />
+    <Compile Include="UI\Model\Lobby\LobbyManager.cs" />
+    <Compile Include="UI\Model\Lobby\LobbyPlayerInfo.cs" />
     <Compile Include="Networking\PlayerConnectionState.cs" />
-    <Compile Include="Networking\Lobby\ServerLobbyManager.cs" />
+    <Compile Include="UI\Model\Lobby\ServerLobbyManager.cs" />
     <Compile Include="Networking\NetworkChannel.cs" />
     <Compile Include="Networking\NetworkInterface.cs" />
     <Compile Include="Networking\Serialization\ICommandSerializer.cs" />
@@ -259,7 +261,7 @@
     <Compile Include="Screens\LobbyScreen.cs" />
     <Compile Include="Screens\StartScreen.cs" />
     <Compile Include="UI\Components\Button.cs" />
-    <Compile Include="UI\Components\ChatComponent.cs" />
+    <Compile Include="UI\Components\game\ChatComponent.cs" />
     <Compile Include="UI\Components\CompositeComponent.cs" />
     <Compile Include="UI\Components\ConsoleTextBox.cs" />
     <Compile Include="Screens\IScreenLayer.cs" />
@@ -285,7 +287,7 @@
     <Compile Include="Utilities\Circle.cs" />
     <Compile Include="Utilities\DeconstructionExtensions.cs" />
     <Compile Include="Utilities\DebugAssert.cs" />
-    <Compile Include="Utilities\Input\InputContext.cs" />
+    <Compile Include="UI\InputContext.cs" />
     <Compile Include="Utilities\Input\InputState.cs" />
     <Compile Include="UI\ScalingDimension.cs" />
     <Compile Include="UI\Screen.cs" />
@@ -406,6 +408,10 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Game\UI\Components\" />
+    <Folder Include="Game\UI\model\" />
+    <Folder Include="Game\UI\screenlayers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

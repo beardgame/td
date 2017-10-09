@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Networking;
+using Bearded.TD.UI.Input;
+using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 

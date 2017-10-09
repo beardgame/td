@@ -3,10 +3,10 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 

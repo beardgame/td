@@ -1,31 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using amulware.Graphics;
-using Bearded.TD.Game.Tiles;
+﻿using Bearded.TD.Game.Tiles;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
-using Bearded.Utilities.Linq;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
-using Extensions = Bearded.TD.Game.Tiles.Extensions;
 
 namespace Bearded.TD.Game.World
 {
-    struct Ray
-    {
-        public Position2 Start { get; }
-        public Difference2 Direction { get; }
-
-        public Ray(Position2 start, Difference2 direction)
-        {
-            Start = start;
-            Direction = direction;
-        }
-    }
-
     struct TiledRayHitResult<TTileInfo>
     {
         public Tile<TTileInfo> Tile { get; }
@@ -38,7 +19,6 @@ namespace Bearded.TD.Game.World
             GlobalPoint = results.Point + tileOffset;
             Results = results;
         }
-
     }
 
     struct RayHitResult

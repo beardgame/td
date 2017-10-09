@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.UI;
 using Bearded.TD.Utilities.Input.Actions;
 using OpenTK;
 using OpenTK.Input;

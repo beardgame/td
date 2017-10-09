@@ -1,7 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities.Input;
 using OpenTK;
 
 namespace Bearded.TD.UI.Components

@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.Generation.Enemies;
+﻿using Bearded.TD.Game.Generation.Enemies;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game

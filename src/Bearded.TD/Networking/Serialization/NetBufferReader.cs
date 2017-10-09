@@ -4,6 +4,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using Lidgren.Network;
+
 // ReSharper disable RedundantAssignment
 
 namespace Bearded.TD.Networking.Serialization

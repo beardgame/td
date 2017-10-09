@@ -4,7 +4,6 @@ using amulware.Graphics;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
-using OpenTK.Graphics.OpenGL;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation

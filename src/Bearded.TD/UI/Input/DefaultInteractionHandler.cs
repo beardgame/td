@@ -1,0 +1,38 @@
+﻿using amulware.Graphics;
+using Bearded.TD.Game;
+
+namespace Bearded.TD.UI.Input
+{
+    class DefaultInteractionHandler : InteractionHandler
+    {
+        public DefaultInteractionHandler(GameInstance game) : base(game) { }
+
+        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        {
+            var currentTile = cursor.CurrentFootprint;
+            if (!currentTile.IsValid)
+                return;
+            var building = currentTile.RootTile.Info.Building;
+            var clicked = cursor.Click.Hit;
+            if (building == null)
+            {
+                if (clicked)
+                    Game.SelectionManager.ResetSelection();
+                else
+                    Game.SelectionManager.ResetFocus();
+            }
+            else
+            {
+                if (clicked)
+                    Game.SelectionManager.SelectObject(building);
+                else
+                    Game.SelectionManager.FocusObject(building);
+            }
+        }
+
+        protected override void OnEnd(ICursorHandler cursor)
+        {
+            Game.SelectionManager.ResetSelection();
+        }
+    }
+}

@@ -1,6 +1,5 @@
 ﻿using System;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking;
 using Bearded.Utilities;

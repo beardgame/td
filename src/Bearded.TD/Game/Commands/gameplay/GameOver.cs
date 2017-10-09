@@ -24,17 +24,12 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer
         {
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            public Serializer() { }
 
             public ICommand GetCommand(GameInstance game)
                 => new Implementation(game.State);
 
-            public void Serialize(INetBufferStream stream)
-            {
-            }
+            public void Serialize(INetBufferStream stream) { }
         }
     }
 }
