@@ -183,7 +183,7 @@ namespace Bearded.TD.Rendering
         {
             var (w, h) = bufferSize;
             diffuseBuffer.Resize(w, h, PixelInternalFormat.Rgba);
-            normalBuffer.Resize(w, h, PixelInternalFormat.Rgba16f);
+            normalBuffer.Resize(w, h, PixelInternalFormat.Rgba);
             depthBuffer.Resize(w, h, PixelInternalFormat.R16f);
             accumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
             resizeDepthMask(w, h);
