@@ -41,9 +41,9 @@ namespace Bearded.TD.Game.UI
             game.State.Level.Draw(geometries);
 
 
-            var sunDistance = 10000f;
+            var radius = game.State.Level.Tilemap.Radius;
 
-            geometries.PointLight.Draw(new Vector3(-sunDistance, sunDistance, sunDistance / 2), sunDistance * 10, Color.White * 0.15f);
+            geometries.PointLight.Draw(new Vector3(-radius * 2, radius * 2, radius), radius * 10, Color.White * 0.15f);
 
             foreach (var obj in game.State.GameObjects)
             {
