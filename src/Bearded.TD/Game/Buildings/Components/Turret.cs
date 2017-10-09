@@ -118,18 +118,18 @@ namespace Bearded.TD.Game.Buildings.Components
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-            geo.LineWidth = 0.05f;
-            geo.Color = Color.Red * 0.5f;
-
             if (Owner.SelectionState != SelectionState.Default)
-                geo.DrawCircle(Building.Position.NumericValue, Range.NumericValue, false);
-
-            var laserAlpha = (laserTargetEndTime - Building.Game.Time).NumericValue * 5;
-            if (laserAlpha > 0)
             {
-                geo.Color = Color.Red * (float) laserAlpha;
-                geo.DrawLine(Building.Position.NumericValue, laserTargetPoint.NumericValue);
+                var geo = geometries.ConsoleBackground;
+
+                geo.Color = Color.Green * (Owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
+
+                var level = Owner.Game.Level;
+
+                foreach (var tile in tilesInRange)
+                {
+                    geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+                }
             }
         }
     }
