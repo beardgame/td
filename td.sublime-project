@@ -1,0 +1,13 @@
+{
+    "folders":
+    [
+        {
+            "path": "src/Bearded.TD",
+            "folder_exclude_patterns": ["obj"],
+        }
+    ],
+    "settings":
+    {
+        "tab_size": 4
+    },
+}
