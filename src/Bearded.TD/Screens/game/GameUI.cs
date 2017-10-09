@@ -1,9 +1,9 @@
-﻿using Bearded.TD.Networking;
+﻿using Bearded.TD.Game;
+using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
-using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Input;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Screens
 {
     class GameUI : ScreenLayerGroup
     {

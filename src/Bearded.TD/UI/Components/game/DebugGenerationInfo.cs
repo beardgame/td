@@ -1,11 +1,10 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Rendering;
-using Bearded.TD.UI;
-using Bearded.TD.UI.Components;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI.Components
+namespace Bearded.TD.UI.Components
 {
     class DebugGenerationInfo : FocusableUIComponent
     {

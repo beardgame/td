@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
-using static Bearded.TD.Constants.Camera;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.UI.Input
 {
     class MouseCameraController
     {
@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.UI
 
         private float maxCameraRadius => levelRadius;
         private float maxCameraDistance => levelRadius;
-        private float zoomSpeed => BaseZoomSpeed * (1 + camera.Distance * ZoomSpeedFactor);
+        private float zoomSpeed => Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
 
         private readonly Dictionary<Func<InputState, ActionState>, Vector2> scrollActions;
         private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
@@ -63,7 +63,7 @@ namespace Bearded.TD.Game.UI
         
         private void updateScrolling(UpdateEventArgs args, InputState input)
         {
-            var scrollSpeed = BaseScrollSpeed * camera.Distance;
+            var scrollSpeed = Constants.Camera.BaseScrollSpeed * camera.Distance;
             var velocity = scrollActions.Aggregate(Vector2.Zero, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
             camera.Position += velocity * scrollSpeed * args.ElapsedTimeInSf;
         }
@@ -76,19 +76,19 @@ namespace Bearded.TD.Game.UI
 
         private void updateCameraGoalDistance(UpdateEventArgs args, InputState input)
         {
-            var mouseScroll = -input.Mouse.DeltaScroll * ScrollTickValue * zoomSpeed;
+            var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue * zoomSpeed;
 
             var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
 
             var newCameraDistance = cameraGoalDistance + mouseScroll + velocity * zoomSpeed * args.ElapsedTimeInSf;
 
-            newCameraDistance = newCameraDistance.Clamped(ZMin * 0.9f, maxCameraDistance * 1.1f);
+            newCameraDistance = newCameraDistance.Clamped(Constants.Camera.ZMin * 0.9f, maxCameraDistance * 1.1f);
 
             float error = 0;
 
-            if (newCameraDistance < ZMin)
+            if (newCameraDistance < Constants.Camera.ZMin)
             {
-                error = newCameraDistance - ZMin;
+                error = newCameraDistance - Constants.Camera.ZMin;
             }
             else if (newCameraDistance > maxCameraDistance)
             {

@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Game.Players;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.UI.Model
 {
     sealed class ChatMessage
     {

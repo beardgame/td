@@ -1,11 +1,11 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
-using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Screens
 {
     class GameWorldScreenLayer : ScreenLayer
     {

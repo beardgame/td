@@ -2,11 +2,9 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
-using Bearded.TD.UI;
-using Bearded.TD.UI.Components;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI.Components
+namespace Bearded.TD.UI.Components
 {
     class FactionStatus : UIComponent
     {

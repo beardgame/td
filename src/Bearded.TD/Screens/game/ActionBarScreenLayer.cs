@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.UI.Components;
+using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
-using Bearded.TD.Screens;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Components;
+using Bearded.TD.UI.Input;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Screens
 {
     class ActionBarScreenLayer : UIScreenLayer
     {

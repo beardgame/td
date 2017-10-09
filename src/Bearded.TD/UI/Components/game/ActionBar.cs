@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.UI;
-using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI.Components
+namespace Bearded.TD.UI.Components
 {
     class ActionBar : CompositeComponent
     {

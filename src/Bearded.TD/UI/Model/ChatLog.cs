@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.UI.Model
 {
     sealed class ChatLog
     {

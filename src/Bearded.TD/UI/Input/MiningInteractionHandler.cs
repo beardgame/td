@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.UI.Input
 {
     class MiningInteractionHandler : InteractionHandler
     {

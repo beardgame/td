@@ -1,6 +1,5 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Meta;
-using Bearded.TD.Screens;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
@@ -38,19 +37,19 @@ namespace Bearded.TD.Rendering
             SurfaceBlendSetting.PremultipliedAlpha.Set(null);
         }
 
-        public void RenderLayer(ScreenLayer layer)
+        public void RenderLayer(IRenderLayer layer)
         {
             prepareForRendering(layer);
             renderWithOptions(layer.RenderOptions);
         }
 
-        private void prepareForRendering(ScreenLayer layer)
+        private void prepareForRendering(IRenderLayer layer)
         {
             layer.Draw();
             setMatricesFrom(layer);
         }
 
-        private void setMatricesFrom(ScreenLayer layer)
+        private void setMatricesFrom(IRenderLayer layer)
         {
             surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
             surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;

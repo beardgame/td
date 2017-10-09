@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Game.UI
+﻿using Bearded.TD.Game;
+
+namespace Bearded.TD.UI.Model
 {
     class SelectionManager
     {

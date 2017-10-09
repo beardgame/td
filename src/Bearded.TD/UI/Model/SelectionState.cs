@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Game.UI
+﻿namespace Bearded.TD.UI.Model
 {
     enum SelectionState
     {

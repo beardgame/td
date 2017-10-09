@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace Bearded.TD.Screens
 {
-    abstract class ScreenLayer : IScreenLayer
+    abstract class ScreenLayer : IScreenLayer, IRenderLayer
     {
         private const float fovy = Mathf.PiOver2;
         private const float zNear = .1f;

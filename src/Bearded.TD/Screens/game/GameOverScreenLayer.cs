@@ -1,10 +1,10 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Rendering;
-using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using OpenTK;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Screens
 {
     class GameOverScreenLayer : UIScreenLayer
     {

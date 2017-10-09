@@ -1,7 +1,6 @@
-﻿using Bearded.TD.Game.UI.Components;
+﻿using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
-using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
@@ -11,7 +10,7 @@ using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Screens
 {
     class DebugScreenLayer : UIScreenLayer
     {

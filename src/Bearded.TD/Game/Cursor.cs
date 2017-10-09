@@ -5,7 +5,7 @@ using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.UI
+namespace Bearded.TD.Game
 {
     class Cursor : GameObject
     {
