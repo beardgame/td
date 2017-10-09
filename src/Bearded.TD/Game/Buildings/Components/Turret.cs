@@ -67,12 +67,14 @@ namespace Bearded.TD.Game.Buildings.Components
             if (nextTileInRangeRecalculationTime > Building.Game.Time)
                 return;
 
+            var rangeSquared = Range.Squared;
+
             tilesInRange = new LevelVisibilityChecker<TileInfo>()
                 .EnumerateVisibleTiles(Building.Game.Level, Building.Position, Range,
                                        t => !t.IsValid || t.Info.TileType == TileInfo.Type.Wall)
-                .Where(((Tile<TileInfo> _, TileVisibility visibility) arg) =>
-                       !arg.visibility.IsBlocking && arg.visibility.VisiblePercentage > 0.2)
-                .Select(((Tile<TileInfo>, TileVisibility) arg) => arg.Item1)
+                .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
+                       (Building.Game.Level.GetPosition(t.tile) - Building.Position).LengthSquared < rangeSquared)
+                .Select(t => t.tile)
                 .ToList();
 
             nextTileInRangeRecalculationTime = Building.Game.Time + ReCalculateTilesInRangeInterval;
@@ -109,11 +111,9 @@ namespace Bearded.TD.Game.Buildings.Components
 
         private void tryFindTarget()
         {
-            var position = Building.Position;
-            var rangeSquared = Range.Squared;
             target = tilesInRange
                 .SelectMany(t => t.Info.Enemies)
-                .FirstOrDefault(e => (e.Position - position).LengthSquared < rangeSquared);
+                .FirstOrDefault();
         }
 
         public override void Draw(GeometryManager geometries)

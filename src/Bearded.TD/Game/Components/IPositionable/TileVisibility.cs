@@ -31,11 +31,16 @@ namespace Bearded.TD.Game.Components.IPositionable
                 .EnumerateVisibleTiles(level, Owner.Position, radius,
                     tile => tile.Info.TileType == TileInfo.Type.Wall);
 
+            var radiusSquared = radius.Squared;
+
             var geo = geometries.ConsoleBackground;
 
             foreach (var (tile, visibility) in tiles)
             {
                 if (visibility.IsBlocking || visibility.VisiblePercentage <= 0)
+                    continue;
+
+                if ((level.GetPosition(tile) - Owner.Position).LengthSquared >= radiusSquared)
                     continue;
 
                 geo.Color = Color.Lerp(Color.Green, Color.Orange, 1 - visibility.VisiblePercentage) * 0.25f;
