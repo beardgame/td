@@ -16,8 +16,8 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {

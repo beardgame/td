@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Game.World;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Utilities

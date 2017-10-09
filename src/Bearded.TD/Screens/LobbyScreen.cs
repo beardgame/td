@@ -8,7 +8,6 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
-using OpenTK.Input;
 
 namespace Bearded.TD.Screens
 {

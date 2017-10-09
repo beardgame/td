@@ -3,7 +3,6 @@ using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
-using Bearded.TD.Utilities.Input;
 using OpenTK;
 
 namespace Bearded.TD.Game.UI.Components

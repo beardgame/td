@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
-using Bearded.TD.Utilities.Input;
+using Bearded.TD.UI;
 using OpenTK;
 
 namespace Bearded.TD.Game.UI

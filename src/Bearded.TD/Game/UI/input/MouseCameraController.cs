@@ -6,7 +6,6 @@ using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
-
 using static Bearded.TD.Constants.Camera;
 
 namespace Bearded.TD.Game.UI

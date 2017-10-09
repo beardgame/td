@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using Color = amulware.Graphics.Color;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {

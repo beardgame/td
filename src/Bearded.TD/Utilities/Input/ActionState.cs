@@ -1,6 +1,4 @@
-﻿using Bearded.TD.Utilities.Input;
-
-namespace Bearded.TD.Game.UI
+﻿namespace Bearded.TD.Utilities.Input
 {
     struct ActionState
     {

@@ -13,7 +13,6 @@ using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 
 namespace Bearded.TD.Networking.Loading
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using amulware.Graphics;
-using Bearded.TD.UI;
 using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.Screens
