@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.Utilities;
 
@@ -14,6 +17,7 @@ namespace Bearded.TD.Game
         IGameSynchronizer GameSynchronizer { get; }
         Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        IEnumerable<Mod> Mods { get; }
     }
 
     sealed class ServerGameContext : IGameContext
@@ -24,6 +28,7 @@ namespace Bearded.TD.Game
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        public IEnumerable<Mod> Mods { get; } = new[] {DebugMod.Create()};
 
         public ServerGameContext(ServerNetworkInterface network, Logger logger)
         {
@@ -47,6 +52,7 @@ namespace Bearded.TD.Game
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        public IEnumerable<Mod> Mods { get; } = Enumerable.Empty<Mod>();
 
         public ClientGameContext(ClientNetworkInterface network, Logger logger)
         {

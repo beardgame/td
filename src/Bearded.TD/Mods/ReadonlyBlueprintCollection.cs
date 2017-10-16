@@ -21,6 +21,8 @@ namespace Bearded.TD.Mods
         }
 
         public T this[Id<T> id] => blueprintsById[id];
+
+        public IEnumerable<T> All => blueprintsById.Values;
     }
 
     class ReadonlyNamedBlueprintCollection<T> : ReadonlyBlueprintCollection<T>  where T : IIdable<T>, INamed

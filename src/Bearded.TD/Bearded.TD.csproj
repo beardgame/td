@@ -91,6 +91,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
     <Compile Include="Mods\Blueprints.cs" />
+    <Compile Include="Mods\DebugMod.cs" />
     <Compile Include="Mods\ModDependency.cs" />
     <Compile Include="Mods\Models\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />

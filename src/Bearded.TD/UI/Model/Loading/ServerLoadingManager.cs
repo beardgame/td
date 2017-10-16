@@ -5,7 +5,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Loading;
@@ -14,7 +13,6 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Model.Loading
 {
@@ -101,16 +99,12 @@ namespace Bearded.TD.UI.Model.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "line", FootprintGroup.Line, 150, 25,
                     null)));
-
-            // === Enemies ===
-            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "debug", 100, 10, 2.S(), new Speed(2), 2, Color.DarkRed)));
-            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "strong", 250, 20, 1.5.S(), new Speed(1.2f), 4, Color.Yellow)));
-            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "fast", 50, 4, .5.S(), new Speed(3), 4, Color.CornflowerBlue)));
-            Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, new UnitBlueprint(
-                Game.Ids.GetNext<UnitBlueprint>(), "tank", 1000, 50, 2.S(), new Speed(.8f), 12, Color.SandyBrown)));
+            
+            foreach (var mod in Game.Mods)
+            {
+                mod.Units.All.ForEach(
+                    blueprint => Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, blueprint)));
+            }
         }
     }
 }

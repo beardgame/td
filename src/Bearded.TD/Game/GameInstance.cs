@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
@@ -17,7 +18,7 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
         public IGameController Controller { get; }
-
+        public IEnumerable<Mod> Mods { get; }
         public GameMeta Meta { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
@@ -47,10 +48,11 @@ namespace Bearded.TD.Game
 
         public GameInstance(IGameContext context, Player me, IdManager ids)
         {
-            Me = me;
             RequestDispatcher = context.RequestDispatcher;
             DataMessageHandler = context.DataMessageHandlerFactory(this);
             Controller = context.GameSimulatorFactory(this);
+            Mods = context.Mods;
+            Me = me;
             Ids = ids;
 
             AddPlayer(me);

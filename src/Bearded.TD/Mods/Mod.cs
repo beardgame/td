@@ -18,5 +18,10 @@ namespace Bearded.TD.Mods
         {
             
         }
+
+        public Mod(ReadonlyNamedBlueprintCollection<UnitBlueprint> units)
+        {
+            Units = units;
+        }
     }
 }
