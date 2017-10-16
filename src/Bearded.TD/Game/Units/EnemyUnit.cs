@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;

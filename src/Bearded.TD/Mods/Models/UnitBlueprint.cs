@@ -4,7 +4,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Units
+namespace Bearded.TD.Mods.Models
 {
     class UnitBlueprint : IIdable<UnitBlueprint>, INamed
     {

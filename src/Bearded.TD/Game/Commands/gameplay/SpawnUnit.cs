@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;

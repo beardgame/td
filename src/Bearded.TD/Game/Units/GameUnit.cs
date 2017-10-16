@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
