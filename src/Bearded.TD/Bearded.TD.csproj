@@ -65,6 +65,7 @@
     <Content Include="assets\gfx\sprites\hex-normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="assets\mods\default\mod.json" />
     <Content Include="assets\shaders\deferred\compose.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
