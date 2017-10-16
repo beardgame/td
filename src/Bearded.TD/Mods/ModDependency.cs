@@ -1,8 +1,8 @@
 ﻿namespace Bearded.TD.Mods
 {
-    sealed class Mod
+    sealed class ModDependency
     {
-        public string Name { get; }
         public string Id { get; }
+        public string Alias { get; }
     }
 }

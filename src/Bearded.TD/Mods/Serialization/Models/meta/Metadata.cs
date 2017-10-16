@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
-    sealed class MetaData
+    sealed class Metadata
     {
         public string Name { get; set; }
         public string Id { get; set; }
