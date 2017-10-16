@@ -1,5 +1,5 @@
-﻿using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.Worker;

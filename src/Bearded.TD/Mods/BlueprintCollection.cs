@@ -3,7 +3,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.Game.Blueprints
+namespace Bearded.TD.Mods
 {
     class BlueprintCollection<T> where T : IIdable<T>
     {

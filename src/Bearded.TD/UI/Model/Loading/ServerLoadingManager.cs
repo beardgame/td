@@ -2,19 +2,21 @@
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Mods.Models;
+using Bearded.TD.Networking;
+using Bearded.TD.Networking.Loading;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Networking.Loading
+namespace Bearded.TD.UI.Model.Loading
 {
     class ServerLoadingManager : LoadingManager
     {

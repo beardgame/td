@@ -1,8 +1,9 @@
 ﻿using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Mods.Models;
+using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Blueprints
+namespace Bearded.TD.Mods
 {
     class BlueprintManager
     {

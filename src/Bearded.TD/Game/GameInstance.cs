@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Blueprints;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.UI.Input;
 using Bearded.TD.UI.Model;

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Game.World
 {
     struct PositionedFootprint
     {
@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Tiles
         }
 
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => Footprint?.OccupiedTiles(RootTile);
-        public bool IsValid => OccupiedTiles?.All((tile) => tile.IsValid) ?? false;
+        public bool IsValid => OccupiedTiles?.All(tile => tile.IsValid) ?? false;
         public Position2 CenterPosition => Footprint?.Center(level, RootTile) ?? new Position2();
     }
 }

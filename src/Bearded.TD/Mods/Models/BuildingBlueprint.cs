@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.Game.Buildings
+namespace Bearded.TD.Mods.Models
 {
     class BuildingBlueprint : IIdable<BuildingBlueprint>, INamed
     {

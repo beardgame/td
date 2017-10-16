@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Mods.Serialization.Models
 {

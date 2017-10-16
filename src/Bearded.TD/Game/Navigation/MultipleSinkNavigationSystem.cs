@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using amulware.Graphics;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation

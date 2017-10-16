@@ -1,8 +1,8 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;

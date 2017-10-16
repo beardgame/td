@@ -5,7 +5,7 @@ using System.Linq;
 using Bearded.Utilities.Math;
 using OpenTK;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Tiles
 {
     static class Extensions
     {
@@ -90,8 +90,8 @@ namespace Bearded.TD.Game.Tiles
         public static Direction2 SpaceTimeDirection(this Direction direction) => direction2s[(int) direction];
         public static Vector2 Vector(this Direction direction) => vectors[(int) direction];
         public static Step Step(this Direction direction) => directionDelta[(int) direction];
-        public static bool Any(this Directions direction) => direction != Tiles.Directions.None;
-        public static bool Any(this Directions direction, Directions match) => direction.Intersect(match) != Tiles.Directions.All;
+        public static bool Any(this Directions direction) => direction != TD.Tiles.Directions.None;
+        public static bool Any(this Directions direction, Directions match) => direction.Intersect(match) != TD.Tiles.Directions.All;
         public static bool All(this Directions direction, Directions match) => direction.Intersect(match) == match;
         public static Direction Hexagonal(this Direction2 direction) => (Direction) ((int) Math.Floor(direction.Degrees * 1 / 60f + 0.5f) % 6 + 1);
         public static Direction Opposite(this Direction direction) => directionOpposite[(int) direction];

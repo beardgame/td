@@ -2,8 +2,9 @@
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Tiles;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands

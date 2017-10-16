@@ -5,7 +5,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Tiles
 {
     sealed class Footprint : IIdable<Footprint>
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;

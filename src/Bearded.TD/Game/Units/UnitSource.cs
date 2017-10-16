@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;

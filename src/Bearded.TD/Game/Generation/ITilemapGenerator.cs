@@ -1,5 +1,5 @@
-﻿using Bearded.TD.Game.Tiles;
-using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation
 {

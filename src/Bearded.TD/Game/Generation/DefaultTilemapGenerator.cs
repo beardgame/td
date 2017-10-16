@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
-using Tile = Bearded.TD.Game.Tiles.Tile<Bearded.TD.Game.World.TileInfo.Type>;
+using Tile = Bearded.TD.Tiles.Tile<Bearded.TD.Game.World.TileInfo.Type>;
 using static Bearded.TD.Game.World.TileInfo.Type;
-using static Bearded.TD.Game.Tiles.Directions;
+using static Bearded.TD.Tiles.Directions;
 
 namespace Bearded.TD.Game.Generation
 {

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Tiles
 {
     static class Tilemap
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Tiles;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Serialization.Converters

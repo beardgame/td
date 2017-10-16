@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Buildings

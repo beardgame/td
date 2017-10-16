@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.UI.Input

@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Game.Resources;
+using Bearded.TD.Mods.Models;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings

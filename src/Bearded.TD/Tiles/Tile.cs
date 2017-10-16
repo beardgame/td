@@ -4,7 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.World;
 using OpenTK;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Tiles
 {
     struct Tile<TTileInfo> : IEquatable<Tile<TTileInfo>>
     {

@@ -1,5 +1,5 @@
-﻿using Bearded.TD.Game.Tiles;
-using Bearded.TD.Rendering;
+﻿using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;

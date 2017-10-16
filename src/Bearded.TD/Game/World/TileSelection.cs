@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Tiles
+namespace Bearded.TD.Game.World
 {
     abstract class TileSelection
     {

@@ -2,8 +2,8 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Components.IPositionable;
-using Bearded.TD.Game.Tiles;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Tiles;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands

@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Game.Tiles
+﻿namespace Bearded.TD.Tiles
 {
     struct Step
     {

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game.Tiles;
+using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
