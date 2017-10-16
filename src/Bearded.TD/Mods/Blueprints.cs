@@ -1,11 +1,10 @@
 ﻿using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Mods
 {
-    class BlueprintManager
+    sealed class Blueprints
     {
         public BlueprintCollection<Footprint> Footprints { get; } = new BlueprintCollection<Footprint>();
         public NamedBlueprintCollection<ComponentFactory> Components { get; } = new NamedBlueprintCollection<ComponentFactory>();

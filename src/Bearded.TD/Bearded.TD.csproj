@@ -90,7 +90,7 @@
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
-    <Compile Include="Mods\BlueprintManager.cs" />
+    <Compile Include="Mods\Blueprints.cs" />
     <Compile Include="Mods\ModDependency.cs" />
     <Compile Include="Mods\Models\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
@@ -174,6 +174,7 @@
     <Compile Include="Mods\Mod.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
     <Compile Include="Mods\ModLister.cs" />
+    <Compile Include="Mods\ReadonlyBlueprintCollection.cs" />
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />
     <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="Mods\ModMetadata.cs" />
@@ -324,6 +325,7 @@
     <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\Line.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
+    <Compile Include="Utilities\ReadonlyIdDictionary.cs" />
     <Compile Include="Utilities\SpaceTimeExtensions.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />

@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
 
-        public BlueprintManager Blueprints { get; } = new BlueprintManager();
+        public Blueprints Blueprints { get; } = new Blueprints();
 
         private GameStatus status = GameStatus.Lobby;
         public GameStatus Status
