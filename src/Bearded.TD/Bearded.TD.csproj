@@ -171,6 +171,8 @@
     <Compile Include="Game\Tiles\FootprintGroup.cs" />
     <Compile Include="Game\Tiles\PositionedFootprint.cs" />
     <Compile Include="Game\Tiles\TileSelection.cs" />
+    <Compile Include="Mods\Serialization\Models\meta\MetaData.cs" />
+    <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="UI\Input\MiningInteractionHandler.cs" />
     <Compile Include="UI\Model\SelectionManager.cs" />
     <Compile Include="UI\Model\SelectionState.cs" />
