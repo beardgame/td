@@ -16,7 +16,7 @@ namespace Bearded.TD.Mods
             blueprintsById.Add(blueprint);
         }
 
-        public IEnumerable<T> All => blueprintsById.Values;
+        public ReadonlyBlueprintCollection<T> AsReadonly() => new ReadonlyBlueprintCollection<T>(blueprintsById);
     }
 
     class NamedBlueprintCollection<T> : BlueprintCollection<T> where T : IIdable<T>, INamed
@@ -30,5 +30,8 @@ namespace Bearded.TD.Mods
             base.RegisterBlueprint(blueprint);
             blueprintsByName.Add(blueprint.Name, blueprint);
         }
+
+        public ReadonlyNamedBlueprintCollection<T> AsNamedReadonly()
+            => new ReadonlyNamedBlueprintCollection<T>(blueprintsByName.Values);
     }
 }
