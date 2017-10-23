@@ -30,7 +30,7 @@ namespace Bearded.TD.Mods
                     skipped++;
 
                     if (skipped == queue.Count)
-                        throw new Exception("Found circular or unknown mod dependencies");
+                        throw new Exception($"Found circular or unknown mod dependencies, involving '{mod.Id}'.");
                 }
             }
 

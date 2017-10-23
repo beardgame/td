@@ -12,5 +12,7 @@ namespace Bearded.TD.Mods
             Alias = dependency.Alias;
         }
 
+        public bool IsValid => !string.IsNullOrWhiteSpace(Id);
+
     }
 }
