@@ -6,6 +6,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Loading;
 using Bearded.TD.Networking.Lobby;
+using Bearded.TD.Networking.MasterServer;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.UI.Model.Loading;
 using Bearded.Utilities;
@@ -16,11 +17,21 @@ namespace Bearded.TD.UI.Model.Lobby
     class ServerLobbyManager : LobbyManager
     {
         private readonly ServerNetworkInterface networkInterface;
+        private readonly MasterServer masterServer;
 
         public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger)
             : base(new ServerGameContext(networkInterface, logger))
         {
             this.networkInterface = networkInterface;
+
+            masterServer = new MasterServer(
+                new OnlineMasterServerClient(logger, new ClientInfo(Game.Me.Name)));
+            masterServer.RegisterLobby(new Proto.Lobby
+            {
+                Name = $"{Game.Me.Name}'s game",
+                MaxNumPlayers = 4,
+                CurrentNumPlayers = 1,
+            });
         }
 
         public override void Update(UpdateEventArgs args)
