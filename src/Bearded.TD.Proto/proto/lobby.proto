@@ -1,0 +1,27 @@
+﻿syntax = "proto3";
+package bearded.td;
+
+option csharp_namespace = "Bearded.TD.Proto";
+
+import 'mod.proto';
+
+message Lobby {
+    // Unique identifier of the lobby. Assigned by the master server.
+    // Can be absent when the lobby is unknown to the master server.
+    int32 id = 1;
+
+    // Human-readable name of the lobby.
+    // Always present.
+    string name = 2;
+
+    // Maximum number of players allowed in the lobby.
+    // Always present.
+    int32 max_num_players = 3;
+
+    // Current number of players allowed in the lobby.
+    // Always present.
+    int32 current_num_players = 4;
+
+    // List of mods currently enabled in the lobby.
+    repeated Mod enabled_mod = 5;
+}

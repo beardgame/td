@@ -34,12 +34,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="generated\Error.g.cs" />
+    <Compile Include="generated\Game.g.cs" />
+    <Compile Include="generated\Lobby.g.cs" />
+    <Compile Include="generated\Messages.g.cs" />
+    <Compile Include="generated\Mod.g.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="proto\lobby.proto" />
+    <None Include="proto\mod.proto" />
+    <None Include="proto\game.proto" />
+    <None Include="proto\messages.proto" />
+    <None Include="proto\error.proto" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="proto\" />
+    <Folder Include="generated\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
