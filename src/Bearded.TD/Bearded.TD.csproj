@@ -240,7 +240,6 @@
     <Compile Include="UI\Model\Loading\ClientLoadingManager.cs" />
     <Compile Include="UI\Model\Loading\LoadingManager.cs" />
     <Compile Include="UI\Model\Loading\ServerLoadingManager.cs" />
-    <Compile Include="UI\Model\Lobby\ClientInfo.cs" />
     <Compile Include="UI\Model\Lobby\ClientLobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyPlayerInfo.cs" />
@@ -340,6 +339,11 @@
     <Content Include="assets\shaders\deferred\pointlight.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Networking\MasterServer\IMasterServerClient.cs" />
+    <Compile Include="Networking\MasterServer\MasterServer.cs" />
+    <Compile Include="Networking\MasterServer\MasterServerException.cs" />
+    <Compile Include="Networking\MasterServer\OnlineMasterServerClient.cs" />
+    <Compile Include="Networking\ClientInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -368,6 +372,10 @@
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj">
       <Project>{49ba1c69-6104-41ac-a5d8-b54fa9f696e8}</Project>
       <Name>Lidgren.Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj">
+      <Project>{4862BBB1-839D-4831-9985-D3399C8C2DED}</Project>
+      <Name>Bearded.TD.Proto</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -430,6 +438,7 @@
     <Folder Include="Game\UI\Components\" />
     <Folder Include="Game\UI\model\" />
     <Folder Include="Game\UI\screenlayers\" />
+    <Folder Include="Networking\MasterServer\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
