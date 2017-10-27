@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Net;
+using Bearded.Utilities;
 using Google.Protobuf;
 using Lidgren.Network;
 
@@ -9,163 +10,117 @@ namespace Bearded.TD.MasterServer
     {
         private readonly object lobbyIdLock = new object();
 
-        // TODO: use IdManager once I have internet. Also add a logger maybe.
-        private int nextLobbyId = 1;
+		private const string applicationName = "Bearded.TD.Master";
+		private const int masterServerPort = 24293;
 
-		private const string applicationName = "Bearded.TD";
-		private const int defaultPort = 24292;
+        private readonly Logger logger;
+        private readonly NetPeer peer;
 
-        private readonly NetServer server;
+        private readonly Dictionary<long, Lobby> lobbiesById = new Dictionary<long, Lobby>();
 
-        private readonly ISet<Proto.Lobby> pendingLobbies = new HashSet<Proto.Lobby>();
-        private readonly IList<Proto.Lobby> activeLobbies = new List<Proto.Lobby>();
-        private readonly IDictionary<int, Proto.Lobby> lobbiesById = new Dictionary<int, Proto.Lobby>();
-        private readonly IDictionary<NetConnection, int> idsByConnection = new Dictionary<NetConnection, int>();
-        private readonly IDictionary<int, NetConnection> connectionsById = new Dictionary<int, NetConnection>();
-
-        public MasterServer()
+        public MasterServer(Logger logger)
         {
-			var config = new NetPeerConfiguration(applicationName)
+            this.logger = logger;
+            var config = new NetPeerConfiguration(applicationName)
 			{
-				Port = defaultPort
+				Port = masterServerPort
 			};
-            config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
-			server = new NetServer(config);
-			server.Start();
+            config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
+            peer = new NetPeer(config);
+			peer.Start();
 
-            server.RegisterReceivedCallback(handleIncomingMessages);
+            peer.RegisterReceivedCallback(handleIncomingMessages);
         }
 
         private void handleIncomingMessages(object state)
         {
-            var msg = server.ReadMessage();
+            var msg = peer.ReadMessage();
             switch (msg.MessageType)
             {
-                case NetIncomingMessageType.ConnectionApproval:
-                    handleConnectionApproval(msg);
-                    break;
-                case NetIncomingMessageType.StatusChanged:
-                    handleStatusChange(msg);
-                    break;
-                case NetIncomingMessageType.Data:
-                    handleData(msg);
-                    break;
                 case NetIncomingMessageType.UnconnectedData:
-                    handleUnconnectedData(msg);
+					var request = Proto.MasterServerMessage.Parser.ParseFrom(
+				        msg.SenderConnection.RemoteHailMessage.ReadBytes(msg.LengthBytes));
+                    handleIncomingRequest(request, msg.SenderEndPoint);
+					break;
+
+				case NetIncomingMessageType.VerboseDebugMessage:
+                    logger.Trace.Log(msg.ReadString());
+                    break;
+				case NetIncomingMessageType.DebugMessage:
+                    logger.Debug.Log(msg.ReadString());
+                    break;
+                case NetIncomingMessageType.WarningMessage:
+					logger.Warning.Log(msg.ReadString());
+					break;
+				case NetIncomingMessageType.ErrorMessage:
+					logger.Error.Log(msg.ReadString());
+					break;
+            }
+        }
+
+        private void handleIncomingRequest(Proto.MasterServerMessage request, IPEndPoint endpoint)
+        {
+            switch (request.RequestCase)
+            {
+                case Proto.MasterServerMessage.RequestOneofCase.None:
+                    logger.Warning.Log("Received incoming message without request case.");
+                    break;
+                case Proto.MasterServerMessage.RequestOneofCase.RegisterLobby:
+                    registerLobby(request.RegisterLobby, endpoint);
+                    break;
+                case Proto.MasterServerMessage.RequestOneofCase.ListLobbies:
+                    listLobbies(request.ListLobbies, endpoint);
+                    break;
+                case Proto.MasterServerMessage.RequestOneofCase.IntroduceToLobby:
+                    introduceToLobby(request.IntroduceToLobby, endpoint);
                     break;
             }
         }
 
-        private void handleConnectionApproval(NetIncomingMessage msg)
+        private void registerLobby(Proto.RegisterLobbyRequest request, IPEndPoint endpoint)
         {
-            var request = Proto.HailRequest.Parser.ParseFrom(
-                msg.SenderConnection.RemoteHailMessage.ReadBytes(msg.LengthBytes));
-            lock (lobbyIdLock)
+            if (lobbiesById.ContainsKey(request.Lobby.Id))
             {
-                var pendingLobby = new Proto.Lobby(request.Lobby)
-                {
-                    Id = nextLobbyId++
-                };
-                pendingLobbies.Add(pendingLobby);
-                lobbiesById.Add(pendingLobby.Id, pendingLobby);
-                idsByConnection.Add(msg.SenderConnection, pendingLobby.Id);
-                connectionsById.Add(pendingLobby.Id, msg.SenderConnection);
+                lobbiesById[request.Lobby.Id].Heartbeat();
+                return;
+            }
 
-                var response = new Proto.HailResponse
-                {
-                    AssignedId = pendingLobby.Id
-                };
-                var responseMsg = server.CreateMessage();
-                responseMsg.Write(response.ToByteArray());
-                msg.SenderConnection.Approve(responseMsg);
+            var lobby = new Lobby(
+                request.Lobby,
+                new IPEndPoint(request.Address, request.Port), // internal
+                endpoint // external
+            );
+
+			lobbiesById.Add(request.Lobby.Id, lobby);
+        }
+
+        private void listLobbies(Proto.ListLobbiesRequest request, IPEndPoint endpoint)
+        {
+            foreach (var lobby in lobbiesById.Values)
+            {
+                var msg = peer.CreateMessage();
+                msg.Write(lobby.LobbyProto.ToByteArray());
+                peer.SendUnconnectedMessage(msg, endpoint);
             }
         }
 
-        private void handleStatusChange(NetIncomingMessage msg)
+        private void introduceToLobby(Proto.IntroduceToLobbyRequest request, IPEndPoint endpoint)
         {
-            // TODO: Is this right? Look up when I have internet.
-            var status = (NetConnectionStatus)msg.ReadByte();
-            var lobby = lobbiesById[idsByConnection[msg.SenderConnection]];
-            switch (status)
+            if (lobbiesById.TryGetValue(request.LobbyId, out var lobby))
             {
-                case NetConnectionStatus.Connected:
-                    if (!pendingLobbies.Contains(lobby))
-                    {
-                        throw new Exception("Can only connect after approval.");
-                    }
-                    pendingLobbies.Remove(lobby);
-                    activeLobbies.Add(lobby);
-                    break;
-                case NetConnectionStatus.Disconnected:
-                    dropLobby(lobby, msg.SenderConnection);
-                    break;
-            }
-        }
-
-        private void handleData(NetIncomingMessage msg)
-        {
-            // This is from a connection, so that means a lobby.
-            // 2 possibilities: lobby is being updated, or lobby is being closed.
-            var request = Proto.LobbyRequest.Parser.ParseFrom(msg.ReadBytes(msg.LengthBytes));
-            var expectedConnection = connectionsById[request.LobbyId];
-            if (expectedConnection != msg.SenderConnection)
-            {
-                throw new Exception("Unexpected connection for lobby id.");
-            }
-
-            if (request.Lobby == null)
-            {
-                // Drop lobby and connection.
-                dropLobby(lobbiesById[request.LobbyId], msg.SenderConnection);
-                msg.SenderConnection.Disconnect("goodbye");
+				var clientInternal = new IPEndPoint(request.Address, request.Port);
+				peer.Introduce(
+                    lobby.InternalEndPoint,
+                    lobby.ExternalEndPoint,
+                    clientInternal,
+                    endpoint,
+                    request.Token
+				);
             }
             else
             {
-                // Update lobby info.
-                lobbiesById[request.LobbyId].EnabledMod.Clear();
-                lobbiesById[request.LobbyId].MergeFrom(request.Lobby);
+                logger.Error.Log($"Peer requested to connect to lobby with unknown ID: {request.LobbyId}");
             }
-
-            // TODO: respond?
         }
-
-        private void dropLobby(Proto.Lobby lobby, NetConnection connection)
-        {
-			pendingLobbies.Remove(lobby);
-			activeLobbies.Remove(lobby);
-			lobbiesById.Remove(lobby.Id);
-			idsByConnection.Remove(connection);
-            connectionsById.Remove(lobby.Id);
-        }
-
-        private void handleUnconnectedData(NetIncomingMessage msg)
-		{
-            // IMPORTANT:
-            // TODO: this actually won't work, we need the peer to open a connection so we can punch through.
-
-			// This is not from a connection, so that means a peer.
-			// 2 possibilities: peer wants a list of lobbies, or peer wants an introduction.
-			// NOTE: in the future, we may want to show a list of peers in the lobby, which means
-			//       we need to handle peers as connections as well.
-            var request = Proto.PeerRequest.Parser.ParseFrom(msg.ReadBytes(msg.LengthBytes));
-
-            if (request.LobbyId > 0)
-            {
-                // Connect to lobby.
-                var hostConnection = connectionsById[request.LobbyId];
-
-                // TODO: Google how to use this method
-                server.Introduce(null, hostConnection.RemoteEndPoint, null, msg.SenderEndPoint, "hi");
-            }
-            else
-            {
-                // Send list of lobbies.
-                var response = new Proto.PeerResponse();
-                response.Lobby.Add(activeLobbies);
-                var responseMsg = server.CreateMessage();
-                responseMsg.Write(response.ToByteArray());
-                server.SendUnconnectedMessage(responseMsg, msg.SenderEndPoint);
-            }
-		}
     }
 }

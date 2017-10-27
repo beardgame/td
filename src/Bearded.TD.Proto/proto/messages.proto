@@ -7,52 +7,33 @@ import 'error.proto';
 import 'game.proto';
 import 'lobby.proto';
 
-message HailRequest {
+message MasterServerMessage {
     // Game info of the requester.
     // Should always be set.
     GameInfo game_info = 1;
 
+    oneof request {
+        RegisterLobbyRequest register_lobby = 2;
+        ListLobbiesRequest list_lobbies = 3;
+        IntroduceToLobbyRequest introduce_to_lobby = 4;
+    }
+}
+
+message RegisterLobbyRequest {
     // Info of the lobby to register.
-    // Should always be set.
-    Lobby lobby = 2;
+    Lobby lobby = 1;
+
+    int64 address = 2;
+    int32 port = 3;
 }
 
-message HailResponse {
-    // Lobby ID assigned by the master server.
-    // Set if and only if the registration of the lobby was successful.
-    int32 assigned_id = 1;
+message ListLobbiesRequest {}
 
-    // Errors occured while registering the lobby.
-    repeated Error error = 2;
-}
+message IntroduceToLobbyRequest {
+    // Identifier of the lobby to be introduced to.
+    int64 lobby_id = 1;
+    string token = 2;
 
-message PeerRequest {
-    // Game info of the peer.
-    // Should always be set.
-    GameInfo game_info = 1;
-
-    // If present, this is request is interpreted as a request to be introduced to a lobby.
-    int32 lobby_id = 2;
-}
-
-message PeerResponse {
-    // All currently available lobbies.
-    repeated Lobby lobby = 1;
-
-    // Errors occurred during request.
-    repeated Error error = 2;
-}
-
-message LobbyRequest {
-    // ID of the lobby to be updated.
-    // Should always be set.
-    int32 lobby_id = 1;
-
-    // Info of the lobby to update. If absent, lobby will be removed and connection dropped.
-    Lobby lobby = 2;
-}
-
-message LobbyResponse {
-    // Errors occurred during request.
-    repeated Error error = 1;
+    int64 address = 3;
+    int32 port = 4;
 }

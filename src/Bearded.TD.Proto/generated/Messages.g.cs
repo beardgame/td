@@ -23,36 +23,35 @@ namespace Bearded.TD.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5tZXNzYWdlcy5wcm90bxIKYmVhcmRlZC50ZBoLZXJyb3IucHJvdG8aCmdh",
-            "bWUucHJvdG8aC2xvYmJ5LnByb3RvIlgKC0hhaWxSZXF1ZXN0EicKCWdhbWVf",
-            "aW5mbxgBIAEoCzIULmJlYXJkZWQudGQuR2FtZUluZm8SIAoFbG9iYnkYAiAB",
-            "KAsyES5iZWFyZGVkLnRkLkxvYmJ5IkUKDEhhaWxSZXNwb25zZRITCgthc3Np",
-            "Z25lZF9pZBgBIAEoBRIgCgVlcnJvchgCIAMoCzIRLmJlYXJkZWQudGQuRXJy",
-            "b3IiSAoLUGVlclJlcXVlc3QSJwoJZ2FtZV9pbmZvGAEgASgLMhQuYmVhcmRl",
-            "ZC50ZC5HYW1lSW5mbxIQCghsb2JieV9pZBgCIAEoBSJSCgxQZWVyUmVzcG9u",
-            "c2USIAoFbG9iYnkYASADKAsyES5iZWFyZGVkLnRkLkxvYmJ5EiAKBWVycm9y",
-            "GAIgAygLMhEuYmVhcmRlZC50ZC5FcnJvciJCCgxMb2JieVJlcXVlc3QSEAoI",
-            "bG9iYnlfaWQYASABKAUSIAoFbG9iYnkYAiABKAsyES5iZWFyZGVkLnRkLkxv",
-            "YmJ5IjEKDUxvYmJ5UmVzcG9uc2USIAoFZXJyb3IYASADKAsyES5iZWFyZGVk",
-            "LnRkLkVycm9yQhOqAhBCZWFyZGVkLlRELlByb3RvYgZwcm90bzM="));
+            "bWUucHJvdG8aC2xvYmJ5LnByb3RvIoACChNNYXN0ZXJTZXJ2ZXJNZXNzYWdl",
+            "EicKCWdhbWVfaW5mbxgBIAEoCzIULmJlYXJkZWQudGQuR2FtZUluZm8SOgoO",
+            "cmVnaXN0ZXJfbG9iYnkYAiABKAsyIC5iZWFyZGVkLnRkLlJlZ2lzdGVyTG9i",
+            "YnlSZXF1ZXN0SAASNgoMbGlzdF9sb2JiaWVzGAMgASgLMh4uYmVhcmRlZC50",
+            "ZC5MaXN0TG9iYmllc1JlcXVlc3RIABJBChJpbnRyb2R1Y2VfdG9fbG9iYnkY",
+            "BCABKAsyIy5iZWFyZGVkLnRkLkludHJvZHVjZVRvTG9iYnlSZXF1ZXN0SABC",
+            "CQoHcmVxdWVzdCJXChRSZWdpc3RlckxvYmJ5UmVxdWVzdBIgCgVsb2JieRgB",
+            "IAEoCzIRLmJlYXJkZWQudGQuTG9iYnkSDwoHYWRkcmVzcxgCIAEoAxIMCgRw",
+            "b3J0GAMgASgFIhQKEkxpc3RMb2JiaWVzUmVxdWVzdCJZChdJbnRyb2R1Y2VU",
+            "b0xvYmJ5UmVxdWVzdBIQCghsb2JieV9pZBgBIAEoAxINCgV0b2tlbhgCIAEo",
+            "CRIPCgdhZGRyZXNzGAMgASgDEgwKBHBvcnQYBCABKAVCE6oCEEJlYXJkZWQu",
+            "VEQuUHJvdG9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Bearded.TD.Proto.ErrorReflection.Descriptor, global::Bearded.TD.Proto.GameReflection.Descriptor, global::Bearded.TD.Proto.LobbyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.HailRequest), global::Bearded.TD.Proto.HailRequest.Parser, new[]{ "GameInfo", "Lobby" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.HailResponse), global::Bearded.TD.Proto.HailResponse.Parser, new[]{ "AssignedId", "Error" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.PeerRequest), global::Bearded.TD.Proto.PeerRequest.Parser, new[]{ "GameInfo", "LobbyId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.PeerResponse), global::Bearded.TD.Proto.PeerResponse.Parser, new[]{ "Lobby", "Error" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.LobbyRequest), global::Bearded.TD.Proto.LobbyRequest.Parser, new[]{ "LobbyId", "Lobby" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.LobbyResponse), global::Bearded.TD.Proto.LobbyResponse.Parser, new[]{ "Error" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.MasterServerMessage), global::Bearded.TD.Proto.MasterServerMessage.Parser, new[]{ "GameInfo", "RegisterLobby", "ListLobbies", "IntroduceToLobby" }, new[]{ "Request" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.RegisterLobbyRequest), global::Bearded.TD.Proto.RegisterLobbyRequest.Parser, new[]{ "Lobby", "Address", "Port" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.ListLobbiesRequest), global::Bearded.TD.Proto.ListLobbiesRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.IntroduceToLobbyRequest), global::Bearded.TD.Proto.IntroduceToLobbyRequest.Parser, new[]{ "LobbyId", "Token", "Address", "Port" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class HailRequest : pb::IMessage<HailRequest> {
-    private static readonly pb::MessageParser<HailRequest> _parser = new pb::MessageParser<HailRequest>(() => new HailRequest());
+  public sealed partial class MasterServerMessage : pb::IMessage<MasterServerMessage> {
+    private static readonly pb::MessageParser<MasterServerMessage> _parser = new pb::MessageParser<MasterServerMessage>(() => new MasterServerMessage());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<HailRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<MasterServerMessage> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -65,21 +64,32 @@ namespace Bearded.TD.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailRequest() {
+    public MasterServerMessage() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailRequest(HailRequest other) : this() {
+    public MasterServerMessage(MasterServerMessage other) : this() {
       GameInfo = other.gameInfo_ != null ? other.GameInfo.Clone() : null;
-      Lobby = other.lobby_ != null ? other.Lobby.Clone() : null;
+      switch (other.RequestCase) {
+        case RequestOneofCase.RegisterLobby:
+          RegisterLobby = other.RegisterLobby.Clone();
+          break;
+        case RequestOneofCase.ListLobbies:
+          ListLobbies = other.ListLobbies.Clone();
+          break;
+        case RequestOneofCase.IntroduceToLobby:
+          IntroduceToLobby = other.IntroduceToLobby.Clone();
+          break;
+      }
+
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailRequest Clone() {
-      return new HailRequest(this);
+    public MasterServerMessage Clone() {
+      return new MasterServerMessage(this);
     }
 
     /// <summary>Field number for the "game_info" field.</summary>
@@ -97,28 +107,66 @@ namespace Bearded.TD.Proto {
       }
     }
 
-    /// <summary>Field number for the "lobby" field.</summary>
-    public const int LobbyFieldNumber = 2;
-    private global::Bearded.TD.Proto.Lobby lobby_;
-    /// <summary>
-    /// Info of the lobby to register.
-    /// Should always be set.
-    /// </summary>
+    /// <summary>Field number for the "register_lobby" field.</summary>
+    public const int RegisterLobbyFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Bearded.TD.Proto.Lobby Lobby {
-      get { return lobby_; }
+    public global::Bearded.TD.Proto.RegisterLobbyRequest RegisterLobby {
+      get { return requestCase_ == RequestOneofCase.RegisterLobby ? (global::Bearded.TD.Proto.RegisterLobbyRequest) request_ : null; }
       set {
-        lobby_ = value;
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.RegisterLobby;
       }
+    }
+
+    /// <summary>Field number for the "list_lobbies" field.</summary>
+    public const int ListLobbiesFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Bearded.TD.Proto.ListLobbiesRequest ListLobbies {
+      get { return requestCase_ == RequestOneofCase.ListLobbies ? (global::Bearded.TD.Proto.ListLobbiesRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.ListLobbies;
+      }
+    }
+
+    /// <summary>Field number for the "introduce_to_lobby" field.</summary>
+    public const int IntroduceToLobbyFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Bearded.TD.Proto.IntroduceToLobbyRequest IntroduceToLobby {
+      get { return requestCase_ == RequestOneofCase.IntroduceToLobby ? (global::Bearded.TD.Proto.IntroduceToLobbyRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.IntroduceToLobby;
+      }
+    }
+
+    private object request_;
+    /// <summary>Enum of possible cases for the "request" oneof.</summary>
+    public enum RequestOneofCase {
+      None = 0,
+      RegisterLobby = 2,
+      ListLobbies = 3,
+      IntroduceToLobby = 4,
+    }
+    private RequestOneofCase requestCase_ = RequestOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public RequestOneofCase RequestCase {
+      get { return requestCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearRequest() {
+      requestCase_ = RequestOneofCase.None;
+      request_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as HailRequest);
+      return Equals(other as MasterServerMessage);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(HailRequest other) {
+    public bool Equals(MasterServerMessage other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -126,7 +174,10 @@ namespace Bearded.TD.Proto {
         return true;
       }
       if (!object.Equals(GameInfo, other.GameInfo)) return false;
-      if (!object.Equals(Lobby, other.Lobby)) return false;
+      if (!object.Equals(RegisterLobby, other.RegisterLobby)) return false;
+      if (!object.Equals(ListLobbies, other.ListLobbies)) return false;
+      if (!object.Equals(IntroduceToLobby, other.IntroduceToLobby)) return false;
+      if (RequestCase != other.RequestCase) return false;
       return true;
     }
 
@@ -134,7 +185,10 @@ namespace Bearded.TD.Proto {
     public override int GetHashCode() {
       int hash = 1;
       if (gameInfo_ != null) hash ^= GameInfo.GetHashCode();
-      if (lobby_ != null) hash ^= Lobby.GetHashCode();
+      if (requestCase_ == RequestOneofCase.RegisterLobby) hash ^= RegisterLobby.GetHashCode();
+      if (requestCase_ == RequestOneofCase.ListLobbies) hash ^= ListLobbies.GetHashCode();
+      if (requestCase_ == RequestOneofCase.IntroduceToLobby) hash ^= IntroduceToLobby.GetHashCode();
+      hash ^= (int) requestCase_;
       return hash;
     }
 
@@ -149,9 +203,17 @@ namespace Bearded.TD.Proto {
         output.WriteRawTag(10);
         output.WriteMessage(GameInfo);
       }
-      if (lobby_ != null) {
+      if (requestCase_ == RequestOneofCase.RegisterLobby) {
         output.WriteRawTag(18);
-        output.WriteMessage(Lobby);
+        output.WriteMessage(RegisterLobby);
+      }
+      if (requestCase_ == RequestOneofCase.ListLobbies) {
+        output.WriteRawTag(26);
+        output.WriteMessage(ListLobbies);
+      }
+      if (requestCase_ == RequestOneofCase.IntroduceToLobby) {
+        output.WriteRawTag(34);
+        output.WriteMessage(IntroduceToLobby);
       }
     }
 
@@ -161,14 +223,20 @@ namespace Bearded.TD.Proto {
       if (gameInfo_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GameInfo);
       }
-      if (lobby_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Lobby);
+      if (requestCase_ == RequestOneofCase.RegisterLobby) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(RegisterLobby);
+      }
+      if (requestCase_ == RequestOneofCase.ListLobbies) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListLobbies);
+      }
+      if (requestCase_ == RequestOneofCase.IntroduceToLobby) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(IntroduceToLobby);
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(HailRequest other) {
+    public void MergeFrom(MasterServerMessage other) {
       if (other == null) {
         return;
       }
@@ -178,12 +246,18 @@ namespace Bearded.TD.Proto {
         }
         GameInfo.MergeFrom(other.GameInfo);
       }
-      if (other.lobby_ != null) {
-        if (lobby_ == null) {
-          lobby_ = new global::Bearded.TD.Proto.Lobby();
-        }
-        Lobby.MergeFrom(other.Lobby);
+      switch (other.RequestCase) {
+        case RequestOneofCase.RegisterLobby:
+          RegisterLobby = other.RegisterLobby;
+          break;
+        case RequestOneofCase.ListLobbies:
+          ListLobbies = other.ListLobbies;
+          break;
+        case RequestOneofCase.IntroduceToLobby:
+          IntroduceToLobby = other.IntroduceToLobby;
+          break;
       }
+
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -202,10 +276,30 @@ namespace Bearded.TD.Proto {
             break;
           }
           case 18: {
-            if (lobby_ == null) {
-              lobby_ = new global::Bearded.TD.Proto.Lobby();
+            global::Bearded.TD.Proto.RegisterLobbyRequest subBuilder = new global::Bearded.TD.Proto.RegisterLobbyRequest();
+            if (requestCase_ == RequestOneofCase.RegisterLobby) {
+              subBuilder.MergeFrom(RegisterLobby);
             }
-            input.ReadMessage(lobby_);
+            input.ReadMessage(subBuilder);
+            RegisterLobby = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Bearded.TD.Proto.ListLobbiesRequest subBuilder = new global::Bearded.TD.Proto.ListLobbiesRequest();
+            if (requestCase_ == RequestOneofCase.ListLobbies) {
+              subBuilder.MergeFrom(ListLobbies);
+            }
+            input.ReadMessage(subBuilder);
+            ListLobbies = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Bearded.TD.Proto.IntroduceToLobbyRequest subBuilder = new global::Bearded.TD.Proto.IntroduceToLobbyRequest();
+            if (requestCase_ == RequestOneofCase.IntroduceToLobby) {
+              subBuilder.MergeFrom(IntroduceToLobby);
+            }
+            input.ReadMessage(subBuilder);
+            IntroduceToLobby = subBuilder;
             break;
           }
         }
@@ -214,10 +308,10 @@ namespace Bearded.TD.Proto {
 
   }
 
-  public sealed partial class HailResponse : pb::IMessage<HailResponse> {
-    private static readonly pb::MessageParser<HailResponse> _parser = new pb::MessageParser<HailResponse>(() => new HailResponse());
+  public sealed partial class RegisterLobbyRequest : pb::IMessage<RegisterLobbyRequest> {
+    private static readonly pb::MessageParser<RegisterLobbyRequest> _parser = new pb::MessageParser<RegisterLobbyRequest>(() => new RegisterLobbyRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<HailResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<RegisterLobbyRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -230,74 +324,85 @@ namespace Bearded.TD.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailResponse() {
+    public RegisterLobbyRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailResponse(HailResponse other) : this() {
-      assignedId_ = other.assignedId_;
-      error_ = other.error_.Clone();
+    public RegisterLobbyRequest(RegisterLobbyRequest other) : this() {
+      Lobby = other.lobby_ != null ? other.Lobby.Clone() : null;
+      address_ = other.address_;
+      port_ = other.port_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public HailResponse Clone() {
-      return new HailResponse(this);
+    public RegisterLobbyRequest Clone() {
+      return new RegisterLobbyRequest(this);
     }
 
-    /// <summary>Field number for the "assigned_id" field.</summary>
-    public const int AssignedIdFieldNumber = 1;
-    private int assignedId_;
+    /// <summary>Field number for the "lobby" field.</summary>
+    public const int LobbyFieldNumber = 1;
+    private global::Bearded.TD.Proto.Lobby lobby_;
     /// <summary>
-    /// Lobby ID assigned by the master server.
-    /// Set if and only if the registration of the lobby was successful.
+    /// Info of the lobby to register.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int AssignedId {
-      get { return assignedId_; }
+    public global::Bearded.TD.Proto.Lobby Lobby {
+      get { return lobby_; }
       set {
-        assignedId_ = value;
+        lobby_ = value;
       }
     }
 
-    /// <summary>Field number for the "error" field.</summary>
-    public const int ErrorFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Bearded.TD.Proto.Error> _repeated_error_codec
-        = pb::FieldCodec.ForMessage(18, global::Bearded.TD.Proto.Error.Parser);
-    private readonly pbc::RepeatedField<global::Bearded.TD.Proto.Error> error_ = new pbc::RepeatedField<global::Bearded.TD.Proto.Error>();
-    /// <summary>
-    /// Errors occured while registering the lobby.
-    /// </summary>
+    /// <summary>Field number for the "address" field.</summary>
+    public const int AddressFieldNumber = 2;
+    private long address_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Bearded.TD.Proto.Error> Error {
-      get { return error_; }
+    public long Address {
+      get { return address_; }
+      set {
+        address_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "port" field.</summary>
+    public const int PortFieldNumber = 3;
+    private int port_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Port {
+      get { return port_; }
+      set {
+        port_ = value;
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as HailResponse);
+      return Equals(other as RegisterLobbyRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(HailResponse other) {
+    public bool Equals(RegisterLobbyRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (AssignedId != other.AssignedId) return false;
-      if(!error_.Equals(other.error_)) return false;
+      if (!object.Equals(Lobby, other.Lobby)) return false;
+      if (Address != other.Address) return false;
+      if (Port != other.Port) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (AssignedId != 0) hash ^= AssignedId.GetHashCode();
-      hash ^= error_.GetHashCode();
+      if (lobby_ != null) hash ^= Lobby.GetHashCode();
+      if (Address != 0L) hash ^= Address.GetHashCode();
+      if (Port != 0) hash ^= Port.GetHashCode();
       return hash;
     }
 
@@ -308,32 +413,52 @@ namespace Bearded.TD.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (AssignedId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(AssignedId);
+      if (lobby_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Lobby);
       }
-      error_.WriteTo(output, _repeated_error_codec);
+      if (Address != 0L) {
+        output.WriteRawTag(16);
+        output.WriteInt64(Address);
+      }
+      if (Port != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(Port);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (AssignedId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(AssignedId);
+      if (lobby_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Lobby);
       }
-      size += error_.CalculateSize(_repeated_error_codec);
+      if (Address != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Address);
+      }
+      if (Port != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
+      }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(HailResponse other) {
+    public void MergeFrom(RegisterLobbyRequest other) {
       if (other == null) {
         return;
       }
-      if (other.AssignedId != 0) {
-        AssignedId = other.AssignedId;
+      if (other.lobby_ != null) {
+        if (lobby_ == null) {
+          lobby_ = new global::Bearded.TD.Proto.Lobby();
+        }
+        Lobby.MergeFrom(other.Lobby);
       }
-      error_.Add(other.error_);
+      if (other.Address != 0L) {
+        Address = other.Address;
+      }
+      if (other.Port != 0) {
+        Port = other.Port;
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -344,12 +469,19 @@ namespace Bearded.TD.Proto {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            AssignedId = input.ReadInt32();
+          case 10: {
+            if (lobby_ == null) {
+              lobby_ = new global::Bearded.TD.Proto.Lobby();
+            }
+            input.ReadMessage(lobby_);
             break;
           }
-          case 18: {
-            error_.AddEntriesFrom(input, _repeated_error_codec);
+          case 16: {
+            Address = input.ReadInt64();
+            break;
+          }
+          case 24: {
+            Port = input.ReadInt32();
             break;
           }
         }
@@ -358,10 +490,10 @@ namespace Bearded.TD.Proto {
 
   }
 
-  public sealed partial class PeerRequest : pb::IMessage<PeerRequest> {
-    private static readonly pb::MessageParser<PeerRequest> _parser = new pb::MessageParser<PeerRequest>(() => new PeerRequest());
+  public sealed partial class ListLobbiesRequest : pb::IMessage<ListLobbiesRequest> {
+    private static readonly pb::MessageParser<ListLobbiesRequest> _parser = new pb::MessageParser<ListLobbiesRequest>(() => new ListLobbiesRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<PeerRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<ListLobbiesRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -374,75 +506,40 @@ namespace Bearded.TD.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerRequest() {
+    public ListLobbiesRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerRequest(PeerRequest other) : this() {
-      GameInfo = other.gameInfo_ != null ? other.GameInfo.Clone() : null;
-      lobbyId_ = other.lobbyId_;
+    public ListLobbiesRequest(ListLobbiesRequest other) : this() {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerRequest Clone() {
-      return new PeerRequest(this);
-    }
-
-    /// <summary>Field number for the "game_info" field.</summary>
-    public const int GameInfoFieldNumber = 1;
-    private global::Bearded.TD.Proto.GameInfo gameInfo_;
-    /// <summary>
-    /// Game info of the peer.
-    /// Should always be set.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Bearded.TD.Proto.GameInfo GameInfo {
-      get { return gameInfo_; }
-      set {
-        gameInfo_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "lobby_id" field.</summary>
-    public const int LobbyIdFieldNumber = 2;
-    private int lobbyId_;
-    /// <summary>
-    /// If present, this is request is interpreted as a request to be introduced to a lobby.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int LobbyId {
-      get { return lobbyId_; }
-      set {
-        lobbyId_ = value;
-      }
+    public ListLobbiesRequest Clone() {
+      return new ListLobbiesRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as PeerRequest);
+      return Equals(other as ListLobbiesRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(PeerRequest other) {
+    public bool Equals(ListLobbiesRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(GameInfo, other.GameInfo)) return false;
-      if (LobbyId != other.LobbyId) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (gameInfo_ != null) hash ^= GameInfo.GetHashCode();
-      if (LobbyId != 0) hash ^= LobbyId.GetHashCode();
       return hash;
     }
 
@@ -453,41 +550,18 @@ namespace Bearded.TD.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (gameInfo_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(GameInfo);
-      }
-      if (LobbyId != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(LobbyId);
-      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (gameInfo_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GameInfo);
-      }
-      if (LobbyId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(LobbyId);
-      }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(PeerRequest other) {
+    public void MergeFrom(ListLobbiesRequest other) {
       if (other == null) {
         return;
-      }
-      if (other.gameInfo_ != null) {
-        if (gameInfo_ == null) {
-          gameInfo_ = new global::Bearded.TD.Proto.GameInfo();
-        }
-        GameInfo.MergeFrom(other.GameInfo);
-      }
-      if (other.LobbyId != 0) {
-        LobbyId = other.LobbyId;
       }
     }
 
@@ -499,27 +573,16 @@ namespace Bearded.TD.Proto {
           default:
             input.SkipLastField();
             break;
-          case 10: {
-            if (gameInfo_ == null) {
-              gameInfo_ = new global::Bearded.TD.Proto.GameInfo();
-            }
-            input.ReadMessage(gameInfo_);
-            break;
-          }
-          case 16: {
-            LobbyId = input.ReadInt32();
-            break;
-          }
         }
       }
     }
 
   }
 
-  public sealed partial class PeerResponse : pb::IMessage<PeerResponse> {
-    private static readonly pb::MessageParser<PeerResponse> _parser = new pb::MessageParser<PeerResponse>(() => new PeerResponse());
+  public sealed partial class IntroduceToLobbyRequest : pb::IMessage<IntroduceToLobbyRequest> {
+    private static readonly pb::MessageParser<IntroduceToLobbyRequest> _parser = new pb::MessageParser<IntroduceToLobbyRequest>(() => new IntroduceToLobbyRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<PeerResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<IntroduceToLobbyRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -532,194 +595,79 @@ namespace Bearded.TD.Proto {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerResponse() {
+    public IntroduceToLobbyRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerResponse(PeerResponse other) : this() {
-      lobby_ = other.lobby_.Clone();
-      error_ = other.error_.Clone();
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PeerResponse Clone() {
-      return new PeerResponse(this);
-    }
-
-    /// <summary>Field number for the "lobby" field.</summary>
-    public const int LobbyFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Bearded.TD.Proto.Lobby> _repeated_lobby_codec
-        = pb::FieldCodec.ForMessage(10, global::Bearded.TD.Proto.Lobby.Parser);
-    private readonly pbc::RepeatedField<global::Bearded.TD.Proto.Lobby> lobby_ = new pbc::RepeatedField<global::Bearded.TD.Proto.Lobby>();
-    /// <summary>
-    /// All currently available lobbies.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Bearded.TD.Proto.Lobby> Lobby {
-      get { return lobby_; }
-    }
-
-    /// <summary>Field number for the "error" field.</summary>
-    public const int ErrorFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Bearded.TD.Proto.Error> _repeated_error_codec
-        = pb::FieldCodec.ForMessage(18, global::Bearded.TD.Proto.Error.Parser);
-    private readonly pbc::RepeatedField<global::Bearded.TD.Proto.Error> error_ = new pbc::RepeatedField<global::Bearded.TD.Proto.Error>();
-    /// <summary>
-    /// Errors occurred during request.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Bearded.TD.Proto.Error> Error {
-      get { return error_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as PeerResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(PeerResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if(!lobby_.Equals(other.lobby_)) return false;
-      if(!error_.Equals(other.error_)) return false;
-      return true;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      hash ^= lobby_.GetHashCode();
-      hash ^= error_.GetHashCode();
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      lobby_.WriteTo(output, _repeated_lobby_codec);
-      error_.WriteTo(output, _repeated_error_codec);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      size += lobby_.CalculateSize(_repeated_lobby_codec);
-      size += error_.CalculateSize(_repeated_error_codec);
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(PeerResponse other) {
-      if (other == null) {
-        return;
-      }
-      lobby_.Add(other.lobby_);
-      error_.Add(other.error_);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            input.SkipLastField();
-            break;
-          case 10: {
-            lobby_.AddEntriesFrom(input, _repeated_lobby_codec);
-            break;
-          }
-          case 18: {
-            error_.AddEntriesFrom(input, _repeated_error_codec);
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  public sealed partial class LobbyRequest : pb::IMessage<LobbyRequest> {
-    private static readonly pb::MessageParser<LobbyRequest> _parser = new pb::MessageParser<LobbyRequest>(() => new LobbyRequest());
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<LobbyRequest> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Bearded.TD.Proto.MessagesReflection.Descriptor.MessageTypes[4]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyRequest() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyRequest(LobbyRequest other) : this() {
+    public IntroduceToLobbyRequest(IntroduceToLobbyRequest other) : this() {
       lobbyId_ = other.lobbyId_;
-      Lobby = other.lobby_ != null ? other.Lobby.Clone() : null;
+      token_ = other.token_;
+      address_ = other.address_;
+      port_ = other.port_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyRequest Clone() {
-      return new LobbyRequest(this);
+    public IntroduceToLobbyRequest Clone() {
+      return new IntroduceToLobbyRequest(this);
     }
 
     /// <summary>Field number for the "lobby_id" field.</summary>
     public const int LobbyIdFieldNumber = 1;
-    private int lobbyId_;
+    private long lobbyId_;
     /// <summary>
-    /// ID of the lobby to be updated.
-    /// Should always be set.
+    /// Identifier of the lobby to be introduced to.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int LobbyId {
+    public long LobbyId {
       get { return lobbyId_; }
       set {
         lobbyId_ = value;
       }
     }
 
-    /// <summary>Field number for the "lobby" field.</summary>
-    public const int LobbyFieldNumber = 2;
-    private global::Bearded.TD.Proto.Lobby lobby_;
-    /// <summary>
-    /// Info of the lobby to update. If absent, lobby will be removed and connection dropped.
-    /// </summary>
+    /// <summary>Field number for the "token" field.</summary>
+    public const int TokenFieldNumber = 2;
+    private string token_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Bearded.TD.Proto.Lobby Lobby {
-      get { return lobby_; }
+    public string Token {
+      get { return token_; }
       set {
-        lobby_ = value;
+        token_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "address" field.</summary>
+    public const int AddressFieldNumber = 3;
+    private long address_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long Address {
+      get { return address_; }
+      set {
+        address_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "port" field.</summary>
+    public const int PortFieldNumber = 4;
+    private int port_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Port {
+      get { return port_; }
+      set {
+        port_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as LobbyRequest);
+      return Equals(other as IntroduceToLobbyRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(LobbyRequest other) {
+    public bool Equals(IntroduceToLobbyRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -727,15 +675,19 @@ namespace Bearded.TD.Proto {
         return true;
       }
       if (LobbyId != other.LobbyId) return false;
-      if (!object.Equals(Lobby, other.Lobby)) return false;
+      if (Token != other.Token) return false;
+      if (Address != other.Address) return false;
+      if (Port != other.Port) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (LobbyId != 0) hash ^= LobbyId.GetHashCode();
-      if (lobby_ != null) hash ^= Lobby.GetHashCode();
+      if (LobbyId != 0L) hash ^= LobbyId.GetHashCode();
+      if (Token.Length != 0) hash ^= Token.GetHashCode();
+      if (Address != 0L) hash ^= Address.GetHashCode();
+      if (Port != 0) hash ^= Port.GetHashCode();
       return hash;
     }
 
@@ -746,41 +698,58 @@ namespace Bearded.TD.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (LobbyId != 0) {
+      if (LobbyId != 0L) {
         output.WriteRawTag(8);
-        output.WriteInt32(LobbyId);
+        output.WriteInt64(LobbyId);
       }
-      if (lobby_ != null) {
+      if (Token.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteMessage(Lobby);
+        output.WriteString(Token);
+      }
+      if (Address != 0L) {
+        output.WriteRawTag(24);
+        output.WriteInt64(Address);
+      }
+      if (Port != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Port);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (LobbyId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(LobbyId);
+      if (LobbyId != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(LobbyId);
       }
-      if (lobby_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Lobby);
+      if (Token.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Token);
+      }
+      if (Address != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Address);
+      }
+      if (Port != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
       }
       return size;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(LobbyRequest other) {
+    public void MergeFrom(IntroduceToLobbyRequest other) {
       if (other == null) {
         return;
       }
-      if (other.LobbyId != 0) {
+      if (other.LobbyId != 0L) {
         LobbyId = other.LobbyId;
       }
-      if (other.lobby_ != null) {
-        if (lobby_ == null) {
-          lobby_ = new global::Bearded.TD.Proto.Lobby();
-        }
-        Lobby.MergeFrom(other.Lobby);
+      if (other.Token.Length != 0) {
+        Token = other.Token;
+      }
+      if (other.Address != 0L) {
+        Address = other.Address;
+      }
+      if (other.Port != 0) {
+        Port = other.Port;
       }
     }
 
@@ -793,126 +762,19 @@ namespace Bearded.TD.Proto {
             input.SkipLastField();
             break;
           case 8: {
-            LobbyId = input.ReadInt32();
+            LobbyId = input.ReadInt64();
             break;
           }
           case 18: {
-            if (lobby_ == null) {
-              lobby_ = new global::Bearded.TD.Proto.Lobby();
-            }
-            input.ReadMessage(lobby_);
+            Token = input.ReadString();
             break;
           }
-        }
-      }
-    }
-
-  }
-
-  public sealed partial class LobbyResponse : pb::IMessage<LobbyResponse> {
-    private static readonly pb::MessageParser<LobbyResponse> _parser = new pb::MessageParser<LobbyResponse>(() => new LobbyResponse());
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<LobbyResponse> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Bearded.TD.Proto.MessagesReflection.Descriptor.MessageTypes[5]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyResponse() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyResponse(LobbyResponse other) : this() {
-      error_ = other.error_.Clone();
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public LobbyResponse Clone() {
-      return new LobbyResponse(this);
-    }
-
-    /// <summary>Field number for the "error" field.</summary>
-    public const int ErrorFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Bearded.TD.Proto.Error> _repeated_error_codec
-        = pb::FieldCodec.ForMessage(10, global::Bearded.TD.Proto.Error.Parser);
-    private readonly pbc::RepeatedField<global::Bearded.TD.Proto.Error> error_ = new pbc::RepeatedField<global::Bearded.TD.Proto.Error>();
-    /// <summary>
-    /// Errors occurred during request.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Bearded.TD.Proto.Error> Error {
-      get { return error_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as LobbyResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(LobbyResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if(!error_.Equals(other.error_)) return false;
-      return true;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      hash ^= error_.GetHashCode();
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      error_.WriteTo(output, _repeated_error_codec);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      size += error_.CalculateSize(_repeated_error_codec);
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(LobbyResponse other) {
-      if (other == null) {
-        return;
-      }
-      error_.Add(other.error_);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            input.SkipLastField();
+          case 24: {
+            Address = input.ReadInt64();
             break;
-          case 10: {
-            error_.AddEntriesFrom(input, _repeated_error_codec);
+          }
+          case 32: {
+            Port = input.ReadInt32();
             break;
           }
         }

@@ -45,6 +45,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MasterServer.cs" />
+    <Compile Include="Lobby.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

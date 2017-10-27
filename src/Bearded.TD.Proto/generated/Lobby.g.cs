@@ -23,7 +23,7 @@ namespace Bearded.TD.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cgtsb2JieS5wcm90bxIKYmVhcmRlZC50ZBoJbW9kLnByb3RvIn0KBUxvYmJ5",
-            "EgoKAmlkGAEgASgFEgwKBG5hbWUYAiABKAkSFwoPbWF4X251bV9wbGF5ZXJz",
+            "EgoKAmlkGAEgASgDEgwKBG5hbWUYAiABKAkSFwoPbWF4X251bV9wbGF5ZXJz",
             "GAMgASgFEhsKE2N1cnJlbnRfbnVtX3BsYXllcnMYBCABKAUSJAoLZW5hYmxl",
             "ZF9tb2QYBSADKAsyDy5iZWFyZGVkLnRkLk1vZEITqgIQQmVhcmRlZC5URC5Q",
             "cm90b2IGcHJvdG8z"));
@@ -75,13 +75,13 @@ namespace Bearded.TD.Proto {
 
     /// <summary>Field number for the "id" field.</summary>
     public const int IdFieldNumber = 1;
-    private int id_;
+    private long id_;
     /// <summary>
     /// Unique identifier of the lobby. Assigned by the master server.
     /// Can be absent when the lobby is unknown to the master server.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Id {
+    public long Id {
       get { return id_; }
       set {
         id_ = value;
@@ -170,7 +170,7 @@ namespace Bearded.TD.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Id != 0) hash ^= Id.GetHashCode();
+      if (Id != 0L) hash ^= Id.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (MaxNumPlayers != 0) hash ^= MaxNumPlayers.GetHashCode();
       if (CurrentNumPlayers != 0) hash ^= CurrentNumPlayers.GetHashCode();
@@ -185,9 +185,9 @@ namespace Bearded.TD.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id != 0) {
+      if (Id != 0L) {
         output.WriteRawTag(8);
-        output.WriteInt32(Id);
+        output.WriteInt64(Id);
       }
       if (Name.Length != 0) {
         output.WriteRawTag(18);
@@ -207,8 +207,8 @@ namespace Bearded.TD.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
+      if (Id != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Id);
       }
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
@@ -228,7 +228,7 @@ namespace Bearded.TD.Proto {
       if (other == null) {
         return;
       }
-      if (other.Id != 0) {
+      if (other.Id != 0L) {
         Id = other.Id;
       }
       if (other.Name.Length != 0) {
@@ -252,7 +252,7 @@ namespace Bearded.TD.Proto {
             input.SkipLastField();
             break;
           case 8: {
-            Id = input.ReadInt32();
+            Id = input.ReadInt64();
             break;
           }
           case 18: {

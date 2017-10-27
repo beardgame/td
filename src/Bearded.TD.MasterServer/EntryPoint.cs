@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.Utilities;
 
 namespace Bearded.TD.MasterServer
 {
@@ -6,7 +7,7 @@ namespace Bearded.TD.MasterServer
     {
         public static void Main(string[] args)
         {
-            var server = new MasterServer();
+            var server = new MasterServer(new Logger());
 
             Console.WriteLine("Master server started. Press 'Q' to quit.");
             while (true)
