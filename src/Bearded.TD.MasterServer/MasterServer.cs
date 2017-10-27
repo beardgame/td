@@ -140,6 +140,9 @@ namespace Bearded.TD.MasterServer
 
         private void handleUnconnectedData(NetIncomingMessage msg)
 		{
+            // IMPORTANT:
+            // TODO: this actually won't work, we need the peer to open a connection so we can punch through.
+
 			// This is not from a connection, so that means a peer.
 			// 2 possibilities: peer wants a list of lobbies, or peer wants an introduction.
 			// NOTE: in the future, we may want to show a list of peers in the lobby, which means
@@ -150,6 +153,8 @@ namespace Bearded.TD.MasterServer
             {
                 // Connect to lobby.
                 var hostConnection = connectionsById[request.LobbyId];
+
+                // TODO: Google how to use this method
                 server.Introduce(null, hostConnection.RemoteEndPoint, null, msg.SenderEndPoint, "hi");
             }
             else
