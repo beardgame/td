@@ -7,7 +7,7 @@ import 'error.proto';
 import 'game.proto';
 import 'lobby.proto';
 
-message RegisterLobbyRequest {
+message HailRequest {
     // Game info of the requester.
     // Should always be set.
     GameInfo game_info = 1;
@@ -17,7 +17,7 @@ message RegisterLobbyRequest {
     Lobby lobby = 2;
 }
 
-message RegisterLobbyResponse {
+message HailResponse {
     // Lobby ID assigned by the master server.
     // Set if and only if the registration of the lobby was successful.
     int32 assigned_id = 1;
@@ -26,40 +26,33 @@ message RegisterLobbyResponse {
     repeated Error error = 2;
 }
 
-message UnregisterLobbyRequest {
-    // Lobby ID of the lobby to unregister.
-    int32 lobby_id = 1;
-}
-
-message UnregisterLobbyResponse {
-    // Errors occured while registering the lobby.
-    repeated Error error = 1;
-}
-
-message ListLobbiesRequest {
-    // Game info of rhe requester.
-    // Should always be set.
-    GameInfo game_info = 1;
-}
-
-message ListLobbiesResponse {
-    // All currently available lobbies.
-    repeated Lobby lobby = 1;
-
-    // Errors occured while listing lobbies.
-    repeated Error error = 2;
-}
-
-message ConnectToLobbyRequest {
-    // Game info of the requester.
+message PeerRequest {
+    // Game info of the peer.
     // Should always be set.
     GameInfo game_info = 1;
 
-    // Lobby ID of the lobby to join.
-    // Should always be set.
+    // If present, this is request is interpreted as a request to be introduced to a lobby.
     int32 lobby_id = 2;
 }
 
-message ConnectToLobbyResponse {
-    // TODO
+message PeerResponse {
+    // All currently available lobbies.
+    repeated Lobby lobby = 1;
+
+    // Errors occurred during request.
+    repeated Error error = 2;
+}
+
+message LobbyRequest {
+    // ID of the lobby to be updated.
+    // Should always be set.
+    int32 lobby_id = 1;
+
+    // Info of the lobby to update. If absent, lobby will be removed and connection dropped.
+    Lobby lobby = 2;
+}
+
+message LobbyResponse {
+    // Errors occurred during request.
+    repeated Error error = 1;
 }
