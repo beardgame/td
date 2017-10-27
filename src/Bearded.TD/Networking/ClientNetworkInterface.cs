@@ -15,13 +15,15 @@ namespace Bearded.TD.Networking
         public ClientNetworkInterface(Logger logger) : base(logger)
         {
 			var config = new NetPeerConfiguration(Constants.Network.ApplicationName);
+            config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
+            config.EnableMessageType(NetIncomingMessageType.NatIntroductionSuccess);
 			client = new NetClient(config);
 			client.Start();
 
 			Master = new ClientMasterServer(client);
         }
 
-        public ClientNetworkInterface(Logger logger, string host, ClientInfo clientInfo) : this(logger)
+        public void Connect(string host, ClientInfo clientInfo)
         {
             client.Connect(host, Constants.Network.DefaultPort, createHailMessage(clientInfo));
         }

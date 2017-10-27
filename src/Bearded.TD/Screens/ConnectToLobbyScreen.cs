@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
@@ -6,6 +7,7 @@ using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -18,37 +20,53 @@ namespace Bearded.TD.Screens
         private const string defaultPlayerName = "a client";
 
         private readonly Logger logger;
-        private readonly InputManager inputManager;
+		private readonly InputManager inputManager;
+		private readonly ClientNetworkInterface networkInterface;
+
+		private readonly List<Proto.Lobby> availableLobbies = new List<Proto.Lobby>();
+        private readonly HashSet<long> availableLobbySet = new HashSet<long>();
+        private readonly LinkedList<Button> lobbyButtons = new LinkedList<Button>();
 
         private readonly TextInput textInput;
-        private ClientNetworkInterface networkInterface;
         private readonly string playerName;
         private string rejectionReason;
 
-        public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
+        public ConnectToLobbyScreen(
+            ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
             : base(parent, geometries, .5f, .5f, true)
         {
             this.logger = logger;
             this.inputManager = inputManager;
+            networkInterface = new ClientNetworkInterface(logger);
 
-            textInput = new TextInput(new Bounds(
-                new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(100, 24), new Vector2(-12, -12)),
+                goToMenu,
+                "back to menu"));
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(100, 24), new Vector2(-118, -12)),
+                refreshLobbies,
+                "refresh lobby list"));
+
+            textInput = new TextInput(
+                Bounds.AnchoredBox(Screen, 0, 0, new Vector2(200, 64), new Vector2(12, 12)));
             textInput.Focus();
             AddComponent(textInput);
-            textInput.Submitted += tryConnect;
+            textInput.Submitted += tryManualConnect;
 
             playerName = UserSettings.Instance.Misc.Username?.Length > 0
                 ? UserSettings.Instance.Misc.Username
                 : defaultPlayerName;
             if (UserSettings.Instance.Misc.SavedNetworkAddress?.Length > 0)
                 textInput.Text = UserSettings.Instance.Misc.SavedNetworkAddress;
+
+            // Kick off retrieval of lobbies.
+            refreshLobbies();
         }
 
         public override void Update(UpdateEventArgs args)
         {
             base.Update(args);
-            if (networkInterface == null)
-                return;
 
             foreach (var msg in networkInterface.GetMessages())
             {
@@ -56,6 +74,10 @@ namespace Bearded.TD.Screens
                 {
                     case NetIncomingMessageType.StatusChanged:
                         handleStatusChange(msg);
+                        break;
+                    case NetIncomingMessageType.UnconnectedData:
+                        // Data coming from an unconnected source. Must be master server.
+                        handleIncomingLobby(Proto.Lobby.Parser.ParseFrom(msg.ReadBytes(msg.LengthBytes)));
                         break;
                 }
                 if (Destroyed) return;
@@ -76,15 +98,65 @@ namespace Bearded.TD.Screens
                         ? "Disconnected"
                         : $"Disconnected with reason: {rejectionReason}");
                     networkInterface.Shutdown();
-                    networkInterface = null;
                     break;
             }
         }
 
-        private void tryConnect(string host)
+        private void handleIncomingLobby(Proto.Lobby lobby)
         {
-            var clientInfo = new ClientInfo(playerName);
-            networkInterface = new ClientNetworkInterface(logger, textInput.Text, clientInfo);
+            if (availableLobbySet.Contains(lobby.Id))
+            {
+                availableLobbies.RemoveAll(l => l.Id == lobby.Id);
+            }
+            availableLobbies.Add(lobby);
+            availableLobbySet.Add(lobby.Id);
+            updateLobbyButtons();
+        }
+
+        private void updateLobbyButtons()
+        {
+            const float buttonHeight = 24;
+            const float buttonPadding = 6;
+
+            foreach (var button in lobbyButtons)
+                RemoveComponent(button);
+            lobbyButtons.Clear();
+
+            foreach (var (lobby, i) in availableLobbies.Indexed())
+            {
+                var bounds = new Bounds(
+                    new ScalingDimension(Screen.X, .5f, .5f),
+                    new AnchoredFixedSizeDimension(Screen.Y, 0, buttonHeight, buttonPadding + i * (buttonHeight + buttonPadding))
+                );
+                var button = new Button(
+                    bounds,
+                    () => tryLobbyConnect(lobby),
+                    lobby.Name
+                );
+                AddComponent(button);
+                lobbyButtons.AddLast(button);
+            }
+        }
+
+        private void tryManualConnect(string host)
+        {
+            networkInterface.Connect(host, new ClientInfo(playerName));
+        }
+
+        private void tryLobbyConnect(Proto.Lobby lobby)
+        {
+            networkInterface.Master.ConnectToLobby(lobby.Id);
+        }
+
+        private void goToMenu()
+        {
+            Parent.AddScreenLayerOnTopOf(this, new StartScreen(Parent, Geometries, logger, inputManager));
+            Destroy();
+        }
+
+        private void refreshLobbies()
+        {
+            networkInterface.Master.ListLobbies();
         }
 
         private void goToLobby(NetIncomingMessage msg)
@@ -98,26 +170,13 @@ namespace Bearded.TD.Screens
             Destroy();
         }
 
-        protected override bool DoHandleInput(InputContext input)
-        {
-            return networkInterface != null || base.DoHandleInput(input);
-        }
-
         public override void Draw()
         {
-            var txtGeo = Geometries.ConsoleFont;
+            base.Draw();
 
-            txtGeo.Color = Color.White;
-            txtGeo.SizeCoefficient = Vector2.One;
-            txtGeo.Height = 48;
-            txtGeo.DrawString(-64 * Vector2.UnitY, "Type host IP and press [enter]", .5f, .5f);
-
-            textInput.Draw(Geometries);
-
-            if (networkInterface != null)
-                txtGeo.DrawString(64 * Vector2.UnitY, "Trying to connect...", .5f, .5f);
-            else if (rejectionReason != null)
-            {
+            if (rejectionReason != null)
+			{
+				var txtGeo = Geometries.ConsoleFont;
                 txtGeo.Color = Color.Red;
                 txtGeo.DrawString(64 * Vector2.UnitY, rejectionReason, .5f, .5f);
             }

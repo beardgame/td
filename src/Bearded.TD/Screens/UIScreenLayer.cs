@@ -59,6 +59,11 @@ namespace Bearded.TD.Screens
             components.Add(component);
         }
 
+        protected void RemoveComponent(UIComponent component)
+        {
+            components.Remove(component);
+        }
+
         protected override void OnViewportSizeChanged()
         {
             var originCenter = new Vector3(
