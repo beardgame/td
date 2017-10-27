@@ -1,62 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Net;
+using Bearded.TD.Meta;
+using Google.Protobuf;
+using Lidgren.Network;
 
 namespace Bearded.TD.Networking.MasterServer
 {
-    class MasterServer
+    abstract class MasterServer
     {
-        private readonly IMasterServerClient client;
+        private readonly NetPeer peer;
+        private readonly IPEndPoint masterServerEndPoint;
 
-        public MasterServer(IMasterServerClient client)
+        protected MasterServer(NetPeer peer)
         {
-            this.client = client;
+            this.peer = peer;
+            masterServerEndPoint = NetUtility.Resolve(
+                UserSettings.Instance.Misc.MasterServerAddress, Constants.Network.MasterServerPort);
         }
 
-        public async Task<int> RegisterLobby(Proto.Lobby lobbyInfo)
+        protected Proto.MasterServerMessage CreateMessage()
         {
-            var request = new Proto.RegisterLobbyRequest
+            return new Proto.MasterServerMessage
             {
-                GameInfo = gameInfo,
-                Lobby = lobbyInfo
+                GameInfo = gameInfo
             };
-            var result = await client.RegisterLobby(request);
-
-            throwErrors(result.Error);
-            return result.AssignedId;
         }
 
-		public async void UnregisterLobby(int lobbyId)
-		{
-			var request = new Proto.UnregisterLobbyRequest
-			{
-				LobbyId = lobbyId
-			};
-            var result = await client.UnregisterLobby(request);
-
-			throwErrors(result.Error);
-		}
-
-		public async Task<IList<Proto.Lobby>> GetLobbies()
-		{
-			var request = new Proto.ListLobbiesRequest
-			{
-				GameInfo = gameInfo
-			};
-			var result = await client.ListLobbies(request);
-
-			throwErrors(result.Error);
-			return result.Lobby;
-		}
-
-        public async void ConnectToLobby()
+        protected void SendMessage(Proto.MasterServerMessage protoMsg)
         {
-            throw new NotImplementedException();
+            var msg = peer.CreateMessage();
+            msg.Write(protoMsg.ToByteArray());
+            peer.SendUnconnectedMessage(msg, masterServerEndPoint);
         }
 
         private Proto.GameInfo gameInfo => new Proto.GameInfo();
-
-        private void throwErrors(IList<Proto.Error> error)
-            => throw new MasterServerException(error[0].ErrorType, error[0].ErrorMessage);
     }
 }

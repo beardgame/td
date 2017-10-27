@@ -87,7 +87,7 @@ namespace Bearded.TD.MasterServer
 
             var lobby = new Lobby(
                 request.Lobby,
-                new IPEndPoint(request.Address, request.Port), // internal
+                new IPEndPoint(new IPAddress(request.Address.ToByteArray()), request.Port), // internal
                 endpoint // external
             );
 
@@ -108,7 +108,7 @@ namespace Bearded.TD.MasterServer
         {
             if (lobbiesById.TryGetValue(request.LobbyId, out var lobby))
             {
-				var clientInternal = new IPEndPoint(request.Address, request.Port);
+                var clientInternal = new IPEndPoint(new IPAddress(request.Address.ToByteArray()), request.Port);
 				peer.Introduce(
                     lobby.InternalEndPoint,
                     lobby.ExternalEndPoint,

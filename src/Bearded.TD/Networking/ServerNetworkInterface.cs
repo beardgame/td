@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.MasterServer;
 using Bearded.Utilities;
 using Lidgren.Network;
 
@@ -13,6 +14,8 @@ namespace Bearded.TD.Networking
         private readonly Dictionary<NetConnection, Player> connectionToPlayer = new Dictionary<NetConnection, Player>();
         private readonly Dictionary<Player, NetConnection> playerToConnection = new Dictionary<Player, NetConnection>();
 
+        public ServerMasterServer Master { get; }
+
         public int PeerCount => connectedPeers.Count;
 
         public ServerNetworkInterface(Logger logger) : base(logger)
@@ -22,8 +25,11 @@ namespace Bearded.TD.Networking
                 Port = Constants.Network.DefaultPort
             };
             config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+            config.EnableMessageType(NetIncomingMessageType.NatIntroductionSuccess);
             server = new NetServer(config);
             server.Start();
+
+            Master = new ServerMasterServer(server);
         }
 
         public override void Shutdown()

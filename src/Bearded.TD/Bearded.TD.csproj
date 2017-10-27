@@ -339,11 +339,11 @@
     <Content Include="assets\shaders\deferred\pointlight.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Networking\MasterServer\IMasterServerClient.cs" />
     <Compile Include="Networking\MasterServer\MasterServer.cs" />
     <Compile Include="Networking\MasterServer\MasterServerException.cs" />
-    <Compile Include="Networking\MasterServer\OnlineMasterServerClient.cs" />
     <Compile Include="Networking\ClientInfo.cs" />
+    <Compile Include="Networking\MasterServer\ServerMasterServer.cs" />
+    <Compile Include="Networking\MasterServer\ClientMasterServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

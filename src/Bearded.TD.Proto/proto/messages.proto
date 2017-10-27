@@ -3,7 +3,6 @@ package bearded.td;
 
 option csharp_namespace = "Bearded.TD.Proto";
 
-import 'error.proto';
 import 'game.proto';
 import 'lobby.proto';
 
@@ -23,7 +22,7 @@ message RegisterLobbyRequest {
     // Info of the lobby to register.
     Lobby lobby = 1;
 
-    int64 address = 2;
+    bytes address = 2;
     int32 port = 3;
 }
 
@@ -34,6 +33,6 @@ message IntroduceToLobbyRequest {
     int64 lobby_id = 1;
     string token = 2;
 
-    int64 address = 3;
+    bytes address = 3;
     int32 port = 4;
 }

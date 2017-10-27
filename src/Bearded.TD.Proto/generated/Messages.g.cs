@@ -22,21 +22,21 @@ namespace Bearded.TD.Proto {
     static MessagesReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg5tZXNzYWdlcy5wcm90bxIKYmVhcmRlZC50ZBoLZXJyb3IucHJvdG8aCmdh",
-            "bWUucHJvdG8aC2xvYmJ5LnByb3RvIoACChNNYXN0ZXJTZXJ2ZXJNZXNzYWdl",
-            "EicKCWdhbWVfaW5mbxgBIAEoCzIULmJlYXJkZWQudGQuR2FtZUluZm8SOgoO",
-            "cmVnaXN0ZXJfbG9iYnkYAiABKAsyIC5iZWFyZGVkLnRkLlJlZ2lzdGVyTG9i",
-            "YnlSZXF1ZXN0SAASNgoMbGlzdF9sb2JiaWVzGAMgASgLMh4uYmVhcmRlZC50",
-            "ZC5MaXN0TG9iYmllc1JlcXVlc3RIABJBChJpbnRyb2R1Y2VfdG9fbG9iYnkY",
-            "BCABKAsyIy5iZWFyZGVkLnRkLkludHJvZHVjZVRvTG9iYnlSZXF1ZXN0SABC",
-            "CQoHcmVxdWVzdCJXChRSZWdpc3RlckxvYmJ5UmVxdWVzdBIgCgVsb2JieRgB",
-            "IAEoCzIRLmJlYXJkZWQudGQuTG9iYnkSDwoHYWRkcmVzcxgCIAEoAxIMCgRw",
-            "b3J0GAMgASgFIhQKEkxpc3RMb2JiaWVzUmVxdWVzdCJZChdJbnRyb2R1Y2VU",
-            "b0xvYmJ5UmVxdWVzdBIQCghsb2JieV9pZBgBIAEoAxINCgV0b2tlbhgCIAEo",
-            "CRIPCgdhZGRyZXNzGAMgASgDEgwKBHBvcnQYBCABKAVCE6oCEEJlYXJkZWQu",
-            "VEQuUHJvdG9iBnByb3RvMw=="));
+            "Cg5tZXNzYWdlcy5wcm90bxIKYmVhcmRlZC50ZBoKZ2FtZS5wcm90bxoLbG9i",
+            "YnkucHJvdG8igAIKE01hc3RlclNlcnZlck1lc3NhZ2USJwoJZ2FtZV9pbmZv",
+            "GAEgASgLMhQuYmVhcmRlZC50ZC5HYW1lSW5mbxI6Cg5yZWdpc3Rlcl9sb2Ji",
+            "eRgCIAEoCzIgLmJlYXJkZWQudGQuUmVnaXN0ZXJMb2JieVJlcXVlc3RIABI2",
+            "CgxsaXN0X2xvYmJpZXMYAyABKAsyHi5iZWFyZGVkLnRkLkxpc3RMb2JiaWVz",
+            "UmVxdWVzdEgAEkEKEmludHJvZHVjZV90b19sb2JieRgEIAEoCzIjLmJlYXJk",
+            "ZWQudGQuSW50cm9kdWNlVG9Mb2JieVJlcXVlc3RIAEIJCgdyZXF1ZXN0IlcK",
+            "FFJlZ2lzdGVyTG9iYnlSZXF1ZXN0EiAKBWxvYmJ5GAEgASgLMhEuYmVhcmRl",
+            "ZC50ZC5Mb2JieRIPCgdhZGRyZXNzGAIgASgMEgwKBHBvcnQYAyABKAUiFAoS",
+            "TGlzdExvYmJpZXNSZXF1ZXN0IlkKF0ludHJvZHVjZVRvTG9iYnlSZXF1ZXN0",
+            "EhAKCGxvYmJ5X2lkGAEgASgDEg0KBXRva2VuGAIgASgJEg8KB2FkZHJlc3MY",
+            "AyABKAwSDAoEcG9ydBgEIAEoBUITqgIQQmVhcmRlZC5URC5Qcm90b2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Bearded.TD.Proto.ErrorReflection.Descriptor, global::Bearded.TD.Proto.GameReflection.Descriptor, global::Bearded.TD.Proto.LobbyReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Bearded.TD.Proto.GameReflection.Descriptor, global::Bearded.TD.Proto.LobbyReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.MasterServerMessage), global::Bearded.TD.Proto.MasterServerMessage.Parser, new[]{ "GameInfo", "RegisterLobby", "ListLobbies", "IntroduceToLobby" }, new[]{ "Request" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Bearded.TD.Proto.RegisterLobbyRequest), global::Bearded.TD.Proto.RegisterLobbyRequest.Parser, new[]{ "Lobby", "Address", "Port" }, null, null, null),
@@ -358,12 +358,12 @@ namespace Bearded.TD.Proto {
 
     /// <summary>Field number for the "address" field.</summary>
     public const int AddressFieldNumber = 2;
-    private long address_;
+    private pb::ByteString address_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long Address {
+    public pb::ByteString Address {
       get { return address_; }
       set {
-        address_ = value;
+        address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -401,7 +401,7 @@ namespace Bearded.TD.Proto {
     public override int GetHashCode() {
       int hash = 1;
       if (lobby_ != null) hash ^= Lobby.GetHashCode();
-      if (Address != 0L) hash ^= Address.GetHashCode();
+      if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
       return hash;
     }
@@ -417,9 +417,9 @@ namespace Bearded.TD.Proto {
         output.WriteRawTag(10);
         output.WriteMessage(Lobby);
       }
-      if (Address != 0L) {
-        output.WriteRawTag(16);
-        output.WriteInt64(Address);
+      if (Address.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(Address);
       }
       if (Port != 0) {
         output.WriteRawTag(24);
@@ -433,8 +433,8 @@ namespace Bearded.TD.Proto {
       if (lobby_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Lobby);
       }
-      if (Address != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Address);
+      if (Address.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Address);
       }
       if (Port != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
@@ -453,7 +453,7 @@ namespace Bearded.TD.Proto {
         }
         Lobby.MergeFrom(other.Lobby);
       }
-      if (other.Address != 0L) {
+      if (other.Address.Length != 0) {
         Address = other.Address;
       }
       if (other.Port != 0) {
@@ -476,8 +476,8 @@ namespace Bearded.TD.Proto {
             input.ReadMessage(lobby_);
             break;
           }
-          case 16: {
-            Address = input.ReadInt64();
+          case 18: {
+            Address = input.ReadBytes();
             break;
           }
           case 24: {
@@ -641,12 +641,12 @@ namespace Bearded.TD.Proto {
 
     /// <summary>Field number for the "address" field.</summary>
     public const int AddressFieldNumber = 3;
-    private long address_;
+    private pb::ByteString address_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long Address {
+    public pb::ByteString Address {
       get { return address_; }
       set {
-        address_ = value;
+        address_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -686,7 +686,7 @@ namespace Bearded.TD.Proto {
       int hash = 1;
       if (LobbyId != 0L) hash ^= LobbyId.GetHashCode();
       if (Token.Length != 0) hash ^= Token.GetHashCode();
-      if (Address != 0L) hash ^= Address.GetHashCode();
+      if (Address.Length != 0) hash ^= Address.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
       return hash;
     }
@@ -706,9 +706,9 @@ namespace Bearded.TD.Proto {
         output.WriteRawTag(18);
         output.WriteString(Token);
       }
-      if (Address != 0L) {
-        output.WriteRawTag(24);
-        output.WriteInt64(Address);
+      if (Address.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(Address);
       }
       if (Port != 0) {
         output.WriteRawTag(32);
@@ -725,8 +725,8 @@ namespace Bearded.TD.Proto {
       if (Token.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Token);
       }
-      if (Address != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Address);
+      if (Address.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Address);
       }
       if (Port != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
@@ -745,7 +745,7 @@ namespace Bearded.TD.Proto {
       if (other.Token.Length != 0) {
         Token = other.Token;
       }
-      if (other.Address != 0L) {
+      if (other.Address.Length != 0) {
         Address = other.Address;
       }
       if (other.Port != 0) {
@@ -769,8 +769,8 @@ namespace Bearded.TD.Proto {
             Token = input.ReadString();
             break;
           }
-          case 24: {
-            Address = input.ReadInt64();
+          case 26: {
+            Address = input.ReadBytes();
             break;
           }
           case 32: {
