@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bearded.TD.Meta;
@@ -62,7 +62,7 @@ namespace Bearded.TD.Networking.MasterServer
 			var message = network.CreateMessage();
 			message.Write((byte) type);
 			message.Write(request.ToByteArray());
-			network.SendMessage(message, NetworkChannel.Chat);
+			network.SendMessage(message, 0);
 
             var task = new TaskCompletionSource<TResponse>();
 
