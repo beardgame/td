@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +31,15 @@
     <Reference Include="Google.Protobuf">
       <HintPath>..\..\packages\Google.Protobuf.3.4.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="Bearded.Utilities">
+      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.91-develop\lib\net462\Bearded.Utilities.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
@@ -39,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="OpenTK.dll.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj">
