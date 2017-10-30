@@ -4,6 +4,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking.Loading;
 using Bearded.Utilities;
 
@@ -15,21 +16,21 @@ namespace Bearded.TD.Networking.Lobby
         protected Logger Logger { get; }
         protected IDispatcher Dispatcher { get; }
 
-        protected LobbyManager(IGameContext gameContext)
+        protected LobbyManager(IGameContext gameContext, ContentManager contentManager)
         {
             var ids = new IdManager();
             var player = new Player(ids.GetNext<Player>(), getPlayerName())
             {
                 ConnectionState = PlayerConnectionState.Waiting
             };
-            Game = new GameInstance(gameContext, player, ids);
+            Game = new GameInstance(gameContext, contentManager, player, ids);
             Logger = gameContext.Logger;
             Dispatcher = gameContext.Dispatcher;
         }
 
-        protected LobbyManager(Player player, IGameContext gameContext)
+        protected LobbyManager(Player player, IGameContext gameContext, ContentManager contentManager)
         {
-            Game = new GameInstance(gameContext, player, null);
+            Game = new GameInstance(gameContext, contentManager, player, null);
             Logger = gameContext.Logger;
             Dispatcher = gameContext.Dispatcher;
         }

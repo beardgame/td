@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
@@ -14,12 +15,14 @@ namespace Bearded.TD.Screens
     {
         private readonly Logger logger;
         private readonly InputManager inputManager;
+        private readonly ContentManager contentManager;
 
-        public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
+        public StartScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager, ContentManager contentManager)
             : base(parent, geometries)
         {
             this.logger = logger;
             this.inputManager = inputManager;
+            this.contentManager = contentManager;
 
             AddComponent(new Menu(
                 Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(220, 200), -25 * Vector2.One),
@@ -41,14 +44,14 @@ namespace Bearded.TD.Screens
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(
                 Parent,
                 Geometries,
-                new ServerLobbyManager(new ServerNetworkInterface(logger), logger),
+                new ServerLobbyManager(new ServerNetworkInterface(logger), logger, contentManager),
                 inputManager));
             Destroy();
         }
 
         private void startConnect()
         {
-            Parent.AddScreenLayerOnTopOf(this, new ConnectToLobbyScreen(Parent, Geometries, logger, inputManager));
+            Parent.AddScreenLayerOnTopOf(this, new ConnectToLobbyScreen(Parent, Geometries, logger, inputManager, contentManager));
             Destroy();
         }
     }

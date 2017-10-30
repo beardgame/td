@@ -14,6 +14,7 @@ namespace Bearded.TD.Game
 {
     class GameInstance
     {
+        public ContentManager ContentManager { get; }
         public Player Me { get; }
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
@@ -46,12 +47,13 @@ namespace Bearded.TD.Game
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged; 
 
-        public GameInstance(IGameContext context, Player me, IdManager ids)
+        public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)
         {
             RequestDispatcher = context.RequestDispatcher;
             DataMessageHandler = context.DataMessageHandlerFactory(this);
             Controller = context.GameSimulatorFactory(this);
             Mods = context.Mods;
+            ContentManager = contentManager;
             Me = me;
             Ids = ids;
 

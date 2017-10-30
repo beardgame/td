@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking.Loading;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -11,8 +12,8 @@ namespace Bearded.TD.Networking.Lobby
     {
         private readonly ClientNetworkInterface networkInterface;
 
-        public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger)
-            : base(player, new ClientGameContext(networkInterface, logger))
+        public ClientLobbyManager(ClientNetworkInterface networkInterface, Player player, Logger logger, ContentManager contentManager)
+            : base(player, new ClientGameContext(networkInterface, logger), contentManager)
         {
             this.networkInterface = networkInterface;
         }
