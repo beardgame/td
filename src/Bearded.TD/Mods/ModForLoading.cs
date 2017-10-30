@@ -28,11 +28,7 @@ namespace Bearded.TD.Mods
 
         private async Task load()
         {
-            // do actual loading here
-
-            await Task.Delay(1000);
-
-            mod = new Mod();
+            mod = await ModLoader.Load(modMetadata);
         }
 
         public Mod GetLoadedMod()
