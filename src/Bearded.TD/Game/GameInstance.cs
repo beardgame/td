@@ -80,7 +80,7 @@ namespace Bearded.TD.Game
                 throw new Exception();
             Status = GameStatus.Loading;
             foreach (var p in Players)
-                p.ConnectionState = PlayerConnectionState.AwaitingLoadingData;
+                p.ConnectionState = PlayerConnectionState.DownloadingMods;
         }
 
         public void Start()

@@ -27,11 +27,18 @@ namespace Bearded.TD.UI.Model.Loading
         {
             base.Update(args);
 
-            // Just instantly finish sending everything.
-            if (Game.Me.ConnectionState == PlayerConnectionState.AwaitingLoadingData)
+            if (Game.Me.ConnectionState == PlayerConnectionState.DownloadingMods)
+            {
+                // TODO: send the mods
+
+                Game.Request(ChangePlayerState.Request, Game.Me, PlayerConnectionState.AwaitingLoadingData);
+            }
+
+            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
             {
                 generateGame();
                 setupFactions();
+                Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
             }
 
             // Also just instantly finish loading for now.
@@ -41,17 +48,6 @@ namespace Bearded.TD.UI.Model.Loading
             // Check if all players finished loading and start the game if so.
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.FinishedLoading))
                 Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
-        }
-
-        private void setupFactions()
-        {
-            foreach (var (p, i) in Game.Players.Indexed())
-            {
-                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
-                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
-                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command,  p, playerFaction);
-            }
         }
 
         private void generateGame()
@@ -70,8 +66,17 @@ namespace Bearded.TD.UI.Model.Loading
             {
                 Dispatcher.RunOnlyOnServer(() => command);
             }
+        }
 
-            Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
+        private void setupFactions()
+        {
+            foreach (var (p, i) in Game.Players.Indexed())
+            {
+                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
+                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
+                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, p, playerFaction);
+            }
         }
 
         private void debug_sendBlueprints()
