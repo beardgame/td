@@ -8,7 +8,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading
 {
-    class LoadingManager
+    abstract class LoadingManager
     {
         protected IDispatcher Dispatcher { get; }
         public NetworkInterface Network { get; }
@@ -16,7 +16,7 @@ namespace Bearded.TD.UI.Model.Loading
 
         public GameInstance Game { get; }
 
-        public LoadingManager(
+        protected LoadingManager(
             GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
         {
             Game = game;
