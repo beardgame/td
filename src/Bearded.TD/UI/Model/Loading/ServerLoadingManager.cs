@@ -29,9 +29,11 @@ namespace Bearded.TD.UI.Model.Loading
 
             if (Game.Me.ConnectionState == PlayerConnectionState.DownloadingMods)
             {
-                // TODO: send the mods
-
-                Game.Request(ChangePlayerState.Request, Game.Me, PlayerConnectionState.AwaitingLoadingData);
+                if (!HasModsQueuedForLoading)
+                    Game.ContentManager.Mods.ForEach(LoadMod);
+                else if (HasModsQueuedForLoading && HaveAllModsFinishedLoading)
+                    Game.RequestDispatcher.Dispatch(
+                        ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
             }
 
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
