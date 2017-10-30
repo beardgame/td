@@ -9,6 +9,8 @@ namespace Bearded.TD.MasterServer
         {
             var server = new MasterServer(new Logger());
 
+            server.Run();
+
             Console.WriteLine("Master server started. Press 'Q' to quit.");
             while (true)
             {

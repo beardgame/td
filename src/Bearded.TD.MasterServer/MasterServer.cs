@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using Bearded.Utilities;
 using Google.Protobuf;
 using Lidgren.Network;
@@ -28,11 +29,19 @@ namespace Bearded.TD.MasterServer
             config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
             peer = new NetPeer(config);
 			peer.Start();
-
-            peer.RegisterReceivedCallback(handleIncomingMessages);
         }
 
-        private void handleIncomingMessages(object state)
+        public void Run()
+        {
+            while (true)
+            {
+                handleIncomingMessages();
+
+                Thread.Sleep(100);
+            }
+        }
+
+        private void handleIncomingMessages()
         {
             var msg = peer.ReadMessage();
             switch (msg.MessageType)
