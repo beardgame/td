@@ -7,7 +7,6 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking;
-using Bearded.TD.Networking.Loading;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;

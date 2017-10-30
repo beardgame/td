@@ -2,10 +2,10 @@
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
-using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
+using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;

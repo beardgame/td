@@ -1,5 +1,5 @@
-﻿using Bearded.TD.Networking.Lobby;
-using Bearded.TD.Networking.Serialization;
+﻿using Bearded.TD.Networking.Serialization;
+using Bearded.TD.UI.Model.Lobby;
 using Bearded.Utilities;
 using Lidgren.Network;
 

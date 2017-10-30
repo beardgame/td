@@ -1,11 +1,12 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Networking.Loading;
+using Bearded.TD.Networking;
+using Bearded.TD.UI.Model.Loading;
 using Bearded.Utilities;
 using Lidgren.Network;
 
-namespace Bearded.TD.Networking.Lobby
+namespace Bearded.TD.UI.Model.Lobby
 {
     class ClientLobbyManager : LobbyManager
     {
