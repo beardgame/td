@@ -9,7 +9,7 @@ namespace Bearded.TD.Mods
         private Mod mod;
         private bool isLoading;
 
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded => mod != null;
 
         public ModForLoading(ModMetadata modMetadata)
         {
@@ -33,13 +33,11 @@ namespace Bearded.TD.Mods
             await Task.Delay(1000);
 
             mod = new Mod();
-
-            IsLoaded = true;
         }
 
         public Mod GetLoadedMod()
         {
-            if (mod == null)
+            if (IsLoaded)
                 throw new InvalidOperationException("Most finish loading mod.");
 
             return mod;
