@@ -2,9 +2,10 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Networking;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Networking.Loading
+namespace Bearded.TD.UI.Model.Loading
 {
     class ClientLoadingManager : LoadingManager
     {

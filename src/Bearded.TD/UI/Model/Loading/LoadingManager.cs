@@ -1,13 +1,14 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Lidgren.Network;
 
-namespace Bearded.TD.Networking.Loading
+namespace Bearded.TD.UI.Model.Loading
 {
-    class LoadingManager
+    abstract class LoadingManager
     {
         protected IDispatcher Dispatcher { get; }
         public NetworkInterface Network { get; }
@@ -15,7 +16,7 @@ namespace Bearded.TD.Networking.Loading
 
         public GameInstance Game { get; }
 
-        public LoadingManager(
+        protected LoadingManager(
             GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
         {
             Game = game;
