@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Resources

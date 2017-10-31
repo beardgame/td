@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using OpenTK;
 
 namespace Bearded.TD

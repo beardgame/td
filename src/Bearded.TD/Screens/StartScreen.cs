@@ -6,7 +6,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using OpenTK;
 
 namespace Bearded.TD.Screens

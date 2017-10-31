@@ -7,7 +7,7 @@ using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.UI.Model.Loading;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Lobby

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Players;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking

@@ -5,8 +5,8 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
+using Bearded.Utilities;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.Math;
 using OpenTK;
 using OpenTK.Input;
 

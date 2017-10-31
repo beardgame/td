@@ -5,7 +5,6 @@ using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
-using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 

@@ -1,5 +1,5 @@
 ﻿using Bearded.TD.Rendering;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using OpenTK;
 using static Bearded.TD.Constants.Camera;
 

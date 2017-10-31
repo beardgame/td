@@ -1,7 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game.World;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
 using TileType = Bearded.TD.Game.World.TileInfo.Type;

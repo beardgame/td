@@ -4,7 +4,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.UI.Model.Loading;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Lobby

@@ -6,7 +6,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;

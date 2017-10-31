@@ -1,5 +1,5 @@
 using System;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using OpenTK.Input;
 
 namespace Bearded.TD.Utilities.Input.Actions

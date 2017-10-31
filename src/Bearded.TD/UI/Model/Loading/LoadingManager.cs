@@ -6,7 +6,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading

@@ -7,7 +7,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
