@@ -7,12 +7,11 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking;
-using Bearded.TD.Networking.Loading;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.Math;
 
 namespace Bearded.TD.UI.Model.Loading
 {
@@ -28,11 +27,20 @@ namespace Bearded.TD.UI.Model.Loading
         {
             base.Update(args);
 
-            // Just instantly finish sending everything.
-            if (Game.Me.ConnectionState == PlayerConnectionState.AwaitingLoadingData)
+            if (Game.Me.ConnectionState == PlayerConnectionState.DownloadingMods)
+            {
+                if (!HasModsQueuedForLoading)
+                    Game.ContentManager.Mods.ForEach(LoadMod);
+                else if (HasModsQueuedForLoading && HaveAllModsFinishedLoading)
+                    Game.RequestDispatcher.Dispatch(
+                        ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
+            }
+
+            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
             {
                 generateGame();
                 setupFactions();
+                Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
             }
 
             // Also just instantly finish loading for now.
@@ -42,17 +50,6 @@ namespace Bearded.TD.UI.Model.Loading
             // Check if all players finished loading and start the game if so.
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.FinishedLoading))
                 Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
-        }
-
-        private void setupFactions()
-        {
-            foreach (var (p, i) in Game.Players.Indexed())
-            {
-                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
-                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
-                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command,  p, playerFaction);
-            }
         }
 
         private void generateGame()
@@ -71,8 +68,17 @@ namespace Bearded.TD.UI.Model.Loading
             {
                 Dispatcher.RunOnlyOnServer(() => command);
             }
+        }
 
-            Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
+        private void setupFactions()
+        {
+            foreach (var (p, i) in Game.Players.Indexed())
+            {
+                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
+                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
+                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, p, playerFaction);
+            }
         }
 
         private void debug_sendBlueprints()

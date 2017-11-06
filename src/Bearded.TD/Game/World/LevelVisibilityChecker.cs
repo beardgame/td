@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Math;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Game.World.VisibilityFlags;

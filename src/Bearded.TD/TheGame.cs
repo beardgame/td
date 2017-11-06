@@ -2,11 +2,12 @@
 using System.ComponentModel;
 using amulware.Graphics;
 using Bearded.TD.Meta;
+using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
@@ -20,6 +21,8 @@ namespace Bearded.TD
         private InputManager inputManager;
         private RenderContext renderContext;
         private ScreenManager screenManager;
+
+        private ContentManager contentManager;
 
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
@@ -35,13 +38,15 @@ namespace Bearded.TD
             UserSettings.Load(logger);
             UserSettings.Save(logger);
 
+            contentManager = new ContentManager();
+
             renderContext = new RenderContext();
 
             inputManager = new InputManager(Mouse);
 
             screenManager = new ScreenManager(inputManager);
             
-            screenManager.AddScreenLayerOnTop(new StartScreen(screenManager, renderContext.Geometries, logger, inputManager));
+            screenManager.AddScreenLayerOnTop(new StartScreen(screenManager, renderContext.Geometries, logger, inputManager, contentManager));
             screenManager.AddScreenLayerOnTop(new ConsoleScreenLayer(screenManager, renderContext.Geometries, logger));
 
             KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);

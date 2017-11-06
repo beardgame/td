@@ -40,19 +40,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bearded.Utilities, Version=0.2.0.91, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.91-develop\lib\net462\Bearded.Utilities.dll</HintPath>
+    <Reference Include="Bearded.Utilities, Version=0.2.0.112, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Bearded.Utilities.0.2.0.112-develop\lib\net462\Bearded.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="OpenTK">
       <HintPath>..\..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.2-beta2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
       <HintPath>..\..\packages\Google.Protobuf.3.4.1\lib\net45\Google.Protobuf.dll</HintPath>
@@ -68,7 +68,9 @@
     <Content Include="assets\gfx\sprites\hex-normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="assets\mods\default\mod.json" />
+    <None Include="assets\mods\default\mod.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="assets\shaders\deferred\compose.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -178,6 +180,8 @@
     <Compile Include="Mods\Mod.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
     <Compile Include="Mods\ModLister.cs" />
+    <Compile Include="Mods\ContentManager.cs" />
+    <Compile Include="Mods\ModLoader.cs" />
     <Compile Include="Mods\ModSorter.cs" />
     <Compile Include="Mods\ReadonlyBlueprintCollection.cs" />
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />
@@ -356,9 +360,15 @@
     <Content Include="assets\shaders\deferred\gLevel.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="assets\mods\default\defs\footprints\seven.json" />
-    <None Include="assets\mods\default\defs\footprints\single.json" />
-    <None Include="assets\mods\default\defs\footprints\triangle.json" />
+    <None Include="assets\mods\default\defs\footprints\seven.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\footprints\single.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\footprints\triangle.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

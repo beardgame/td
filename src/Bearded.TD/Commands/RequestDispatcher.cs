@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Commands
 {

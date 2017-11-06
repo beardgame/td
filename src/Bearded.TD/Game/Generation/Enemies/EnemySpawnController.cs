@@ -9,7 +9,6 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.Math;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.EnemyGeneration;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;

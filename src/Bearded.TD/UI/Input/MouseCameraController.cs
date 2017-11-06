@@ -4,7 +4,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using OpenTK;
 using OpenTK.Input;
 

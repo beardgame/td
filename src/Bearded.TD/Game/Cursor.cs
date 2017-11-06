@@ -1,7 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Math;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

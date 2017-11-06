@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking

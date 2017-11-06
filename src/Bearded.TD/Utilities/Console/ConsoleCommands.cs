@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Bearded.Utilities;
 using Bearded.Utilities.Collections;
+using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Utilities.Console

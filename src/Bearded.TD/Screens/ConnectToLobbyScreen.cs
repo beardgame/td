@@ -2,14 +2,15 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
+using Bearded.TD.Mods;
 using Bearded.TD.Networking;
-using Bearded.TD.Networking.Lobby;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities;
+using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Lidgren.Network;
 using OpenTK;
 
@@ -20,8 +21,9 @@ namespace Bearded.TD.Screens
         private const string defaultPlayerName = "a client";
 
         private readonly Logger logger;
-		private readonly InputManager inputManager;
-		private readonly ClientNetworkInterface networkInterface;
+        private readonly InputManager inputManager;
+        private readonly ContentManager contentManager;
+        private readonly ClientNetworkInterface networkInterface;
 
 		private readonly List<Proto.Lobby> availableLobbies = new List<Proto.Lobby>();
         private readonly HashSet<long> availableLobbySet = new HashSet<long>();
@@ -31,8 +33,8 @@ namespace Bearded.TD.Screens
         private readonly string playerName;
         private string rejectionReason;
 
-        public ConnectToLobbyScreen(
-            ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager)
+        public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager,
+            ContentManager contentManager)
             : base(parent, geometries, .5f, .5f, true)
         {
             this.logger = logger;
@@ -50,6 +52,10 @@ namespace Bearded.TD.Screens
 
             textInput = new TextInput(
                 Bounds.AnchoredBox(Screen, 0, 0, new Vector2(200, 64), new Vector2(12, 12)));
+            this.contentManager = contentManager;
+
+            textInput = new TextInput(new Bounds(
+                new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
             textInput.Focus();
             AddComponent(textInput);
             textInput.Submitted += tryManualConnect;
@@ -150,7 +156,7 @@ namespace Bearded.TD.Screens
 
         private void goToMenu()
         {
-            Parent.AddScreenLayerOnTopOf(this, new StartScreen(Parent, Geometries, logger, inputManager));
+            Parent.AddScreenLayerOnTopOf(this, new StartScreen(Parent, Geometries, logger, inputManager, contentManager));
             Destroy();
         }
 
@@ -165,7 +171,7 @@ namespace Bearded.TD.Screens
             UserSettings.Save(logger);
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
             var lobbyManager =
-                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName), logger);
+                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName), logger, contentManager);
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(Parent, Geometries, lobbyManager, inputManager));
             Destroy();
         }

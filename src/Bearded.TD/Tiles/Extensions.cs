@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Bearded.Utilities.Math;
+using Bearded.Utilities.Geometry;
 using OpenTK;
 
 namespace Bearded.TD.Tiles
