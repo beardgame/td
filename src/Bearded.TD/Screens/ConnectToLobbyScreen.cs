@@ -35,7 +35,7 @@ namespace Bearded.TD.Screens
 
         public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager,
             ContentManager contentManager)
-            : base(parent, geometries, .5f, .5f, true)
+            : base(parent, geometries)
         {
             this.logger = logger;
             this.inputManager = inputManager;
