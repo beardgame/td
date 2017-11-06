@@ -50,7 +50,7 @@ namespace Bearded.TD.MasterServer
             {
                 case NetIncomingMessageType.UnconnectedData:
 					var request = Proto.MasterServerMessage.Parser.ParseFrom(
-				        msg.SenderConnection.RemoteHailMessage.ReadBytes(msg.LengthBytes));
+				        msg.ReadBytes(msg.LengthBytes));
                     handleIncomingRequest(request, msg.SenderEndPoint);
 					break;
 
@@ -92,9 +92,12 @@ namespace Bearded.TD.MasterServer
         {
             if (lobbiesById.ContainsKey(request.Lobby.Id))
             {
+                logger.Debug.Log($"Received heartbeat for lobby {request.Lobby.Id}.");
                 lobbiesById[request.Lobby.Id].Heartbeat();
                 return;
             }
+
+            logger.Debug.Log($"Registered new lobby {request.Lobby.Id}.");
 
             var lobby = new Lobby(
                 request.Lobby,
@@ -107,8 +110,10 @@ namespace Bearded.TD.MasterServer
 
         private void listLobbies(Proto.ListLobbiesRequest request, IPEndPoint endpoint)
         {
+            logger.Debug.Log("Received a request for lobby list.");
             foreach (var lobby in lobbiesById.Values)
             {
+                logger.Trace.Log($"Sending lobby {lobby.LobbyProto.Id}");
                 var msg = peer.CreateMessage();
                 msg.Write(lobby.LobbyProto.ToByteArray());
                 peer.SendUnconnectedMessage(msg, endpoint);
@@ -119,6 +124,7 @@ namespace Bearded.TD.MasterServer
         {
             if (lobbiesById.TryGetValue(request.LobbyId, out var lobby))
             {
+                logger.Debug.Log($"Introducing endpoint with lobby {lobby.LobbyProto.Id}.");
                 var clientInternal = new IPEndPoint(new IPAddress(request.Address.ToByteArray()), request.Port);
 				peer.Introduce(
                     lobby.InternalEndPoint,
