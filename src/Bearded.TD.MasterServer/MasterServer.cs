@@ -35,15 +35,17 @@ namespace Bearded.TD.MasterServer
         {
             while (true)
             {
-                handleIncomingMessages();
+                while (peer.ReadMessage(out var msg))
+                {
+                    handleIncomingMessage(msg);
+                }
 
                 Thread.Sleep(100);
             }
         }
 
-        private void handleIncomingMessages()
+        private void handleIncomingMessage(NetIncomingMessage msg)
         {
-            var msg = peer.ReadMessage();
             switch (msg.MessageType)
             {
                 case NetIncomingMessageType.UnconnectedData:
