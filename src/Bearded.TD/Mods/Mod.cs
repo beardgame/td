@@ -11,20 +11,7 @@ namespace Bearded.TD.Mods
         public string Id { get; }
 
         public Blueprints Blueprints { get; }
-
-        public Mod(
-            IEnumerable<FootprintGroup> footprints = null,
-            IEnumerable<ComponentFactory> components = null,
-            IEnumerable<BuildingBlueprint> buildings = null,
-            IEnumerable<UnitBlueprint> units = null)
-            : this(
-                wrap(footprints),
-                wrap(components),
-                wrap(buildings),
-                wrap(units)
-            )
-        { }
-
+        
         public Mod(
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<ComponentFactory> components,
@@ -33,9 +20,5 @@ namespace Bearded.TD.Mods
         {
             Blueprints = new Blueprints(footprints, components, buildings, units);
         }
-
-        private static ReadonlyBlueprintCollection<T> wrap<T>(IEnumerable<T> blueprints)
-            where T : IBlueprint
-            => new ReadonlyBlueprintCollection<T>(blueprints ?? Enumerable.Empty<T>());
     }
 }

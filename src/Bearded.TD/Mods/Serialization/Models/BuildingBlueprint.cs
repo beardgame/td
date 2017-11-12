@@ -4,6 +4,7 @@ using Bearded.TD.Game.Buildings;
 namespace Bearded.TD.Mods.Serialization.Models
 {
     sealed class BuildingBlueprint
+        : IConvertsTo<Mods.Models.BuildingBlueprint, DependencyResolver<Mods.Models.FootprintGroup>>
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -13,7 +14,8 @@ namespace Bearded.TD.Mods.Serialization.Models
 
         // how to component?
 
-        public Mods.Models.BuildingBlueprint ToGameModel(DependencyResolver<Mods.Models.FootprintGroup> footprints)
+        public Mods.Models.BuildingBlueprint ToGameModel(
+            DependencyResolver<Mods.Models.FootprintGroup> footprints)
         {
             return new Mods.Models.BuildingBlueprint(
                 Id,
@@ -22,7 +24,7 @@ namespace Bearded.TD.Mods.Serialization.Models
                 Health,
                 Cost,
                 Enumerable.Empty<ComponentFactory>()
-                );
+            );
         }
     }
 }

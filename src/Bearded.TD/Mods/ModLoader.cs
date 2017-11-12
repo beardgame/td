@@ -2,9 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
+using Bearded.TD.Mods.Serialization.Models;
+using Bearded.Utilities;
 using Newtonsoft.Json;
+using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
+using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
+using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
+using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
 
 namespace Bearded.TD.Mods
 {
@@ -34,10 +41,25 @@ namespace Bearded.TD.Mods
             {
                 configureSerializer();
 
-                var footprints = loadFootprints();
+                var footprints = loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
+                var buildings =
+                    loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, DependencyResolver<FootprintGroup>>(
+                        "defs/buildings",
+                        new DependencyResolver<FootprintGroup>(meta, footprints, Enumerable.Empty<Mod>(),
+                            m => m.Blueprints.Footprints)
+                    );
 
-                return new Mod(footprints);
+                return new Mod(
+                    footprints,
+                    empty<ComponentFactory>(),
+                    empty<BuildingBlueprint>(),
+                    empty<UnitBlueprint>()
+                    );
             }
+
+            private static ReadonlyBlueprintCollection<T> empty<T>()
+                where T : IBlueprint
+                => new ReadonlyBlueprintCollection<T>(Enumerable.Empty<T>());
 
             private void configureSerializer()
             {
@@ -45,30 +67,37 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(new StepConverter());
             }
 
-            private IEnumerable<FootprintGroup> loadFootprints()
-            {
-                const string path = "defs/footprints";
+            private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
+                <TBlueprint, TJsonModel>(string path)
+                where TBlueprint : IBlueprint
+                where TJsonModel : IConvertsTo<TBlueprint, Void>
+                => loadBlueprints<TBlueprint, TJsonModel, Void>(path, default(Void));
 
+            private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
+                <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers)
+                where TBlueprint : IBlueprint
+                where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
+            {
                 var files = meta.Directory
                     .GetDirectories(path, SearchOption.TopDirectoryOnly)
                     .SingleOrDefault()
                     ?.GetFiles("*.json", SearchOption.AllDirectories);
 
                 if (files == null)
-                    return Enumerable.Empty<FootprintGroup>();
+                    return new ReadonlyBlueprintCollection<TBlueprint>(Enumerable.Empty<TBlueprint>());
 
-                var footPrints = new List<FootprintGroup>();
+                var blueprints = new List<TBlueprint>();
 
                 foreach (var file in files)
                 {
                     var text = file.OpenText();
                     var reader = new JsonTextReader(text);
-                    var footPrint = serializer.Deserialize<Serialization.Models.FootprintGroup>(reader);
+                    var jsonModel = serializer.Deserialize<TJsonModel>(reader);
 
-                    footPrints.Add(footPrint.ToGameModel());
+                    blueprints.Add(jsonModel.ToGameModel(resolvers));
                 }
 
-                return footPrints;
+                return new ReadonlyBlueprintCollection<TBlueprint>(blueprints);
             }
         }
     }
