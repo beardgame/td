@@ -13,16 +13,18 @@ namespace Bearded.TD.Game.Resources
 
         private readonly Level level;
         private readonly Tile<TileInfo> tile;
+        private readonly LevelGeometry geometry;
         private readonly Unit originalTileHeight;
 
         private double miningProgress;
 
-        public MiningTask(Level level, Tile<TileInfo> tile)
+        public MiningTask(Level level, Tile<TileInfo> tile, LevelGeometry geometry)
         {
             DebugAssert.Argument.Satisfies(tile.Info.TileType == TileInfo.Type.Wall);
 
             this.level = level;
             this.tile = tile;
+            this.geometry = geometry;
             originalTileHeight = tile.Info.DrawInfo.Height;
         }
 
@@ -31,8 +33,7 @@ namespace Bearded.TD.Game.Resources
             miningProgress += ratePerS * elapsedTime.NumericValue;
             if (Finished)
             {
-                tile.Info.SetDrawInfo(new TileDrawInfo(0.U(), tile.Info.DrawInfo.HexScale));
-                tile.Info.SetTileType(TileInfo.Type.Floor);
+                geometry.SetTileType(tile, TileInfo.Type.Floor, new TileDrawInfo(0.U(), tile.Info.DrawInfo.HexScale));
             }
             else
             {
