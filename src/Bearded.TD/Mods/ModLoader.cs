@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,7 +52,7 @@ namespace Bearded.TD.Mods
                 var files = meta.Directory
                     .GetDirectories(path, SearchOption.TopDirectoryOnly)
                     .SingleOrDefault()
-                    ?.GetFiles("*.json", SearchOption.TopDirectoryOnly);
+                    ?.GetFiles("*.json", SearchOption.AllDirectories);
 
                 if (files == null)
                     return Enumerable.Empty<FootprintGroup>();

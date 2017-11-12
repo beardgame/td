@@ -95,6 +95,8 @@
     <Compile Include="Mods\BlueprintCollection.cs" />
     <Compile Include="Mods\Blueprints.cs" />
     <Compile Include="Mods\DebugMod.cs" />
+    <Compile Include="Mods\DependencyResolver.cs" />
+    <Compile Include="Mods\ModAwareName.cs" />
     <Compile Include="Mods\ModDependency.cs" />
     <Compile Include="Mods\Models\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="Mods\ContentManager.cs" />
     <Compile Include="Mods\ModLoader.cs" />
     <Compile Include="Mods\ModSorter.cs" />
+    <Compile Include="Mods\Serialization\Models\BuildingBlueprint.cs" />
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />
     <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="Mods\ModMetadata.cs" />
