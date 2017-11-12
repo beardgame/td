@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Lidgren.Network;

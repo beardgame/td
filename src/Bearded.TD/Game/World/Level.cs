@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.World

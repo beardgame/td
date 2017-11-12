@@ -6,7 +6,7 @@ using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.UI.Input;
 using Bearded.TD.UI.Model;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game
