@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.Linq;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Serialization.Converters
@@ -11,13 +12,10 @@ namespace Bearded.TD.Mods.Serialization.Converters
     {
         private static readonly Dictionary<string, Step> namedDirections =
             Directions.All.Enumerate()
-                .ToDictionary(
-                    d => d == Direction.Unknown
-                        ? "base"
-                        // ReSharper disable once PossibleNullReferenceException
-                        : Enum.GetName(typeof(Direction), d).ToLowerInvariant(),
-                    d => d.Step()
-                );
+                // ReSharper disable once PossibleNullReferenceException
+                .Select(d => (name: Enum.GetName(typeof(Direction), d).ToLowerInvariant(), step: d.Step()))
+                .Append((name: "base", step: new Step()))
+                .ToDictionary(d => d.name, d => d.step);
 
         protected override Step ReadJson(JsonReader reader, JsonSerializer serializer)
         {
@@ -29,7 +27,7 @@ namespace Bearded.TD.Mods.Serialization.Converters
 
         private static Step fromString(JsonReader reader)
         {
-            var value = reader.ReadAsString();
+            var value = (string)reader.Value;
             var name = value.ToLowerInvariant();
 
             if (namedDirections.TryGetValue(name, out var step))
