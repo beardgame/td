@@ -17,8 +17,6 @@ namespace Bearded.TD.Mods
             {
                 FootprintGroup.Single,
                 FootprintGroup.CircleSeven,
-                FootprintGroup.Diamond,
-                FootprintGroup.Line,
                 FootprintGroup.Triangle
             });
 
@@ -43,7 +41,7 @@ namespace Bearded.TD.Mods
                     }),
                 new BuildingBlueprint("wall0", "wall", FootprintGroup.Single, 100, 15, null),
                 new BuildingBlueprint("triangle0", "triangle", FootprintGroup.Triangle, 300,
-                    75, componentFactories["turret"].Yield())
+                    75, componentFactories["turret"].Yield()),
             });
 
             var enemies = new ReadonlyBlueprintCollection<UnitBlueprint>(new[]
