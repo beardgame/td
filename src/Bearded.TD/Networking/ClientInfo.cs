@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Networking.Serialization;
 using Lidgren.Network;
 
-namespace Bearded.TD.UI.Model.Lobby
+namespace Bearded.TD.Networking
 {
     struct ClientInfo
     {

@@ -241,7 +241,7 @@
     <Compile Include="UI\Model\Loading\ClientLoadingManager.cs" />
     <Compile Include="UI\Model\Loading\LoadingManager.cs" />
     <Compile Include="UI\Model\Loading\ServerLoadingManager.cs" />
-    <Compile Include="UI\Model\Lobby\ClientInfo.cs" />
+    <Compile Include="Networking\ClientInfo.cs" />
     <Compile Include="UI\Model\Lobby\ClientLobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyPlayerInfo.cs" />
