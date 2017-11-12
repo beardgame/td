@@ -5,7 +5,6 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
-using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
@@ -45,7 +44,7 @@ namespace Bearded.TD.UI.Model.Loading
             modsForLoading.Add(modForLoading);
         }
 
-        public void IntegrateUI(InputManager inputManager)
+        public void IntegrateUI()
         {
             var camera = new GameCamera();
 

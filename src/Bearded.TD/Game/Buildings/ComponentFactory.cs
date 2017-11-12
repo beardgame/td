@@ -1,23 +1,19 @@
 ﻿using System;
-using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.Collections;
+using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class ComponentFactory : IIdable<ComponentFactory>, INamed
+    class ComponentFactory : IBlueprint
     {
-        public Id<ComponentFactory> Id { get; }
         public string Name { get; }
         private readonly Func<Component> factoryMethod;
         private readonly Func<IComponent<BuildingGhost>> ghostFactoryMethod;
 
-        public ComponentFactory(Id<ComponentFactory> id, string name,
-            Func<Component> factoryMethod, Func<IComponent<BuildingGhost>> ghostFactoryMethod = null)
+        public ComponentFactory(
+            string name, Func<Component> factoryMethod, Func<IComponent<BuildingGhost>> ghostFactoryMethod = null)
         {
             this.factoryMethod = factoryMethod;
             this.ghostFactoryMethod = ghostFactoryMethod;
-            Id = id;
             Name = name;
         }
 

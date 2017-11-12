@@ -10,16 +10,16 @@ namespace Bearded.TD.Mods
         public string Id { get; }
 
         public ReadonlyBlueprintCollection<Footprint> Footprints { get; }
-        public ReadonlyNamedBlueprintCollection<ComponentFactory> Components { get; }
-        public ReadonlyNamedBlueprintCollection<BuildingBlueprint> Buildings { get; }
-        public ReadonlyNamedBlueprintCollection<UnitBlueprint> Units { get; }
+        public ReadonlyBlueprintCollection<ComponentFactory> Components { get; }
+        public ReadonlyBlueprintCollection<BuildingBlueprint> Buildings { get; }
+        public ReadonlyBlueprintCollection<UnitBlueprint> Units { get; }
 
         public Mod()
         {
             
         }
 
-        public Mod(ReadonlyNamedBlueprintCollection<UnitBlueprint> units)
+        public Mod(ReadonlyBlueprintCollection<UnitBlueprint> units)
         {
             Units = units;
         }

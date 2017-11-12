@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Mods.Models
 {
-    class BuildingBlueprint : IIdable<BuildingBlueprint>, INamed
+    sealed class BuildingBlueprint : IBlueprint
     {
-        public Id<BuildingBlueprint> Id { get; }
         public string Name { get; }
         public FootprintGroup Footprints { get; }
         public int MaxHealth { get; }
@@ -21,10 +17,9 @@ namespace Bearded.TD.Mods.Models
         public IReadOnlyList<ComponentFactory> ComponentFactories => componentFactories?.AsReadOnly()
             ?? (IReadOnlyList<ComponentFactory>) Array.Empty<ComponentFactory>();
 
-        public BuildingBlueprint(Id<BuildingBlueprint> id, string name, FootprintGroup footprints, int maxHealth,
+        public BuildingBlueprint(string name, FootprintGroup footprints, int maxHealth,
             int resourceCost, IEnumerable<ComponentFactory> componentFactories)
         {
-            Id = id;
             Name = name;
             Footprints = footprints;
             MaxHealth = maxHealth;
@@ -33,8 +28,6 @@ namespace Bearded.TD.Mods.Models
         }
 
         public IEnumerable<Component> GetComponents()
-        {
-            return componentFactories?.Select(f => f.Create()) ?? Enumerable.Empty<Component>();
-        }
+            => componentFactories?.Select(f => f.Create()) ?? Enumerable.Empty<Component>();
     }
 }

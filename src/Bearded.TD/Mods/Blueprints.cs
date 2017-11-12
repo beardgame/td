@@ -7,9 +7,8 @@ namespace Bearded.TD.Mods
     sealed class Blueprints
     {
         public BlueprintCollection<Footprint> Footprints { get; } = new BlueprintCollection<Footprint>();
-        public NamedBlueprintCollection<ComponentFactory> Components { get; } = new NamedBlueprintCollection<ComponentFactory>();
-        public NamedBlueprintCollection<BuildingBlueprint> Buildings { get; } = new NamedBlueprintCollection<BuildingBlueprint>();
-
-        public NamedBlueprintCollection<UnitBlueprint> Units { get; } = new NamedBlueprintCollection<UnitBlueprint>();
+        public BlueprintCollection<ComponentFactory> Components { get; } = new BlueprintCollection<ComponentFactory>();
+        public BlueprintCollection<BuildingBlueprint> Buildings { get; } = new BlueprintCollection<BuildingBlueprint>();
+        public BlueprintCollection<UnitBlueprint> Units { get; } = new BlueprintCollection<UnitBlueprint>();
     }
 }

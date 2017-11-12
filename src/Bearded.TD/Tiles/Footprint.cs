@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.World;
-using Bearded.Utilities;
-using Bearded.Utilities.Collections;
+using Bearded.TD.Mods.Models;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Tiles
 {
-    sealed class Footprint : IIdable<Footprint>
+    sealed class Footprint : IBlueprint
     {
         /*
             X
         */
-        public static readonly Footprint Single = new Footprint(new Id<Footprint>(1), new []
+        public static readonly Footprint Single = new Footprint("single", new[]
         {
             new Step(0, 0)
         });
@@ -21,7 +20,7 @@ namespace Bearded.TD.Tiles
             #
            X #
         */
-        public static readonly Footprint TriangleUp = new Footprint(new Id<Footprint>(2), new[]
+        public static readonly Footprint TriangleUp = new Footprint("triangle_up", new[]
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.UpRight),
         }, .5f * new Difference2(-Constants.Game.World.HexagonWidth, -Constants.Game.World.HexagonSide));
@@ -30,7 +29,7 @@ namespace Bearded.TD.Tiles
            X #
             #
         */
-        public static readonly Footprint TriangleDown = new Footprint(new Id<Footprint>(3), new[]
+        public static readonly Footprint TriangleDown = new Footprint("triangle_down", new[]
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.DownRight),
         }, .5f * new Difference2(-Constants.Game.World.HexagonWidth, Constants.Game.World.HexagonSide));
@@ -40,7 +39,7 @@ namespace Bearded.TD.Tiles
           # X #
            # #
         */
-        public static readonly Footprint CircleSeven = new Footprint(new Id<Footprint>(4), new[]
+        public static readonly Footprint CircleSeven = new Footprint("circle_seven", new[]
         {
             new Step(0, 0),
             new Step(Direction.Left), new Step(Direction.DownLeft), new Step(Direction.DownRight),
@@ -52,7 +51,7 @@ namespace Bearded.TD.Tiles
           X #
            #
         */
-        public static readonly Footprint DiamondTopBottom = new Footprint(new Id<Footprint>(5), new[]
+        public static readonly Footprint DiamondTopBottom = new Footprint("diamond_top_bottom", new[]
         {
             new Step(0, 0), new Step(Direction.DownRight), new Step(Direction.Right), new Step(Direction.UpRight)
         }, -.5f * new Difference2(Direction.Right.Vector()));
@@ -61,7 +60,7 @@ namespace Bearded.TD.Tiles
             X #
            # #
         */
-        public static readonly Footprint DiamondBottomLeftTopRight = new Footprint(new Id<Footprint>(6), new[]
+        public static readonly Footprint DiamondBottomLeftTopRight = new Footprint("diamond_bottom_left_top_right", new[]
         {
             new Step(0, 0), new Step(Direction.DownLeft), new Step(Direction.DownRight), new Step(Direction.Right)
         }, -.5f * new Difference2(Direction.DownRight.Vector()));
@@ -70,7 +69,7 @@ namespace Bearded.TD.Tiles
            # #
             X #
         */
-        public static readonly Footprint DiamondTopLeftBottomRight = new Footprint(new Id<Footprint>(7), new[]
+        public static readonly Footprint DiamondTopLeftBottomRight = new Footprint("diamond_top_left_bottom_right", new[]
         {
             new Step(0, 0), new Step(Direction.Right), new Step(Direction.UpRight), new Step(Direction.UpLeft)
         }, -.5f * new Difference2(Direction.UpRight.Vector()));
@@ -79,7 +78,7 @@ namespace Bearded.TD.Tiles
             #
            X
         */
-        public static readonly Footprint LineUp = new Footprint(new Id<Footprint>(8), new[]
+        public static readonly Footprint LineUp = new Footprint("line_up", new[]
         {
             new Step(0, 0), new Step(Direction.UpRight)
         }, -.5f * new Difference2(Direction.UpRight.Vector()));
@@ -87,7 +86,7 @@ namespace Bearded.TD.Tiles
         /*
           X #
         */
-        public static readonly Footprint LineStraight = new Footprint(new Id<Footprint>(9), new[]
+        public static readonly Footprint LineStraight = new Footprint("line_straight", new[]
         {
             new Step(0, 0), new Step(Direction.Right)
         }, -.5f * new Difference2(Direction.Right.Vector()));
@@ -96,24 +95,24 @@ namespace Bearded.TD.Tiles
            X
             #
         */
-        public static readonly Footprint LineDown = new Footprint(new Id<Footprint>(10), new[]
+        public static readonly Footprint LineDown = new Footprint("line_down", new[]
         {
             new Step(0, 0), new Step(Direction.DownRight)
         }, -.5f * new Difference2(Direction.DownRight.Vector()));
-
-        public Id<Footprint> Id { get; }
+        
+        public string Name { get; }
         private readonly IEnumerable<Step> tileOffsets;
         private readonly Difference2 rootTileOffset;
 
-        private Footprint(Id<Footprint> id, IEnumerable<Step> tileOffsets)
-            : this(id, tileOffsets, new Difference2(0, 0))
+        private Footprint(string name, IEnumerable<Step> tileOffsets)
+            : this(name, tileOffsets, new Difference2(0, 0))
         { }
 
-        private Footprint(Id<Footprint> id, IEnumerable<Step> tileOffsets, Difference2 rootTileOffset)
+        private Footprint(string name, IEnumerable<Step> tileOffsets, Difference2 rootTileOffset)
         {
-            Id = id;
             this.tileOffsets = tileOffsets;
             this.rootTileOffset = rootTileOffset;
+            Name = name;
         }
 
         public IEnumerable<Tile<TileInfo>> OccupiedTiles(Tile<TileInfo> rootTile)

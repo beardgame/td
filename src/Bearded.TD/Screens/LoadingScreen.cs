@@ -58,7 +58,7 @@ namespace Bearded.TD.Screens
 
         private void startGame()
         {
-            loadingManager.IntegrateUI(inputManager);
+            loadingManager.IntegrateUI();
             Parent.AddScreenLayerOnTopOf(this,
                 new GameUI(Parent, Geometries, loadingManager.Game, loadingManager.Network, inputManager));
             loadingManager.Game.GameStatusChanged -= onGameStatusChanged;

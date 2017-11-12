@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Buildings
         public static ComponentFactory Factory(
             this Func<Component> factory, Id<ComponentFactory> id, string name)
         {
-            return new ComponentFactory(id, name, factory);
+            return new ComponentFactory(name, factory);
         }
     }
 }

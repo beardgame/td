@@ -2,7 +2,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Commands
@@ -25,7 +24,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                game.Blueprints.Units.RegisterBlueprint(blueprint);
+                game.Blueprints.Units.Add(blueprint);
             }
 
             public ICommandSerializer Serializer => new Serializer(blueprint);
@@ -33,7 +32,6 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer
         {
-            private Id<UnitBlueprint> id;
             private string name;
             private int health;
             private int damage;
@@ -49,7 +47,6 @@ namespace Bearded.TD.Game.Commands
 
             public Serializer(UnitBlueprint blueprint)
             {
-                id = blueprint.Id;
                 name = blueprint.Name;
                 health = blueprint.Health;
                 damage = blueprint.Damage;
@@ -60,12 +57,10 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ICommand GetCommand(GameInstance game)
-                => new Implementation(game, new UnitBlueprint(
-                    id, name, health, damage, new TimeSpan(timeBetweenAttacks), new Speed(speed), value, color));
+                => new Implementation(game, new UnitBlueprint(name, health, damage, new TimeSpan(timeBetweenAttacks), new Speed(speed), value, color));
 
             public void Serialize(INetBufferStream stream)
             {
-                stream.Serialize(ref id);
                 stream.Serialize(ref name);
                 stream.Serialize(ref health);
                 stream.Serialize(ref damage);

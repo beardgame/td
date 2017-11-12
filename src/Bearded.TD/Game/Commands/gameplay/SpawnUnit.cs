@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer
         {
-            private Id<UnitBlueprint> blueprint;
+            private string blueprint;
             private int x;
             private int y;
             private Id<GameUnit> unitId;
@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Commands
 
             public Serializer(UnitBlueprint blueprint, Tile<TileInfo> tile, Id<GameUnit> unitId)
             {
-                this.blueprint = blueprint.Id;
+                this.blueprint = blueprint.Name;
                 x = tile.X;
                 y = tile.Y;
                 this.unitId = unitId;

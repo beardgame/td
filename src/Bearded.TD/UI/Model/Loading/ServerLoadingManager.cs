@@ -93,7 +93,7 @@ namespace Bearded.TD.UI.Model.Loading
         {
             // === Buildings ===
             Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
-            new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "base", FootprintGroup.CircleSeven, 1000, 1,
+            new BuildingBlueprint("base", FootprintGroup.CircleSeven, 1000, 1,
                 new[] {
                     Game.Blueprints.Components["sink"],
                     Game.Blueprints.Components["income_over_time"],
@@ -102,16 +102,16 @@ namespace Bearded.TD.UI.Model.Loading
                 }));
             // In the future these would be loaded from a mod file.
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "wall", FootprintGroup.Single, 100, 15,
+                new BuildingBlueprint("wall", FootprintGroup.Single, 100, 15,
                     null)));
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "triangle", FootprintGroup.Triangle, 300,
+                new BuildingBlueprint("triangle", FootprintGroup.Triangle, 300,
                     75, Game.Blueprints.Components["turret"].Yield())));
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "diamond", FootprintGroup.Diamond, 200, 40,
+                new BuildingBlueprint("diamond", FootprintGroup.Diamond, 200, 40,
                     null)));
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint(Game.Ids.GetNext<BuildingBlueprint>(), "line", FootprintGroup.Line, 150, 25,
+                new BuildingBlueprint("line", FootprintGroup.Line, 150, 25,
                     null)));
             
             foreach (var mod in Game.Mods)

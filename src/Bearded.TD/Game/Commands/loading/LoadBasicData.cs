@@ -4,7 +4,6 @@ using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Components.IPositionable;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -26,26 +25,30 @@ namespace Bearded.TD.Game.Commands
             {
                 // Footprints
                 var footprints = game.Blueprints.Footprints;
-                footprints.RegisterBlueprint(Footprint.Single);
-                footprints.RegisterBlueprint(Footprint.TriangleUp);
-                footprints.RegisterBlueprint(Footprint.TriangleDown);
-                footprints.RegisterBlueprint(Footprint.CircleSeven);
+                footprints.Add(Footprint.Single);
+                footprints.Add(Footprint.TriangleUp);
+                footprints.Add(Footprint.TriangleDown);
+                footprints.Add(Footprint.CircleSeven);
+                footprints.Add(Footprint.DiamondBottomLeftTopRight);
+                footprints.Add(Footprint.DiamondTopBottom);
+                footprints.Add(Footprint.DiamondTopLeftBottomRight);
+                footprints.Add(Footprint.LineUp);
+                footprints.Add(Footprint.LineStraight);
+                footprints.Add(Footprint.LineDown);
 
                 // Components
                 var components = game.Blueprints.Components;
-                components.RegisterBlueprint(
-                    new ComponentFactory(new Id<ComponentFactory>(1), "sink", () => new EnemySink()));
-                components.RegisterBlueprint(
-                    new ComponentFactory(
-                        new Id<ComponentFactory>(2), "game_over_on_destroy", () => new GameOverOnDestroy()));
-                components.RegisterBlueprint(
-                    new ComponentFactory(
-                        new Id<ComponentFactory>(3), "income_over_time", () => new IncomeOverTime()));
-                components.RegisterBlueprint(
-                    new ComponentFactory(new Id<ComponentFactory>(4), "turret", () => new Turret(),
+                components.Add(
+                    new ComponentFactory("sink", () => new EnemySink()));
+                components.Add(
+                    new ComponentFactory("game_over_on_destroy", () => new GameOverOnDestroy()));
+                components.Add(
+                    new ComponentFactory("income_over_time", () => new IncomeOverTime()));
+                components.Add(
+                    new ComponentFactory("turret", () => new Turret(),
                         () => new TileVisibility(Turret.Range)));
-                components.RegisterBlueprint(
-                    new ComponentFactory(new Id<ComponentFactory>(5), "worker_hub", () => new WorkerHub()));
+                components.Add(
+                    new ComponentFactory("worker_hub", () => new WorkerHub()));
             }
 
             public ICommandSerializer Serializer => new Serializer();
