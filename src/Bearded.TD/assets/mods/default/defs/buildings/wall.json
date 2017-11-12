@@ -1,0 +1,7 @@
+{
+    "id" : "wall",
+    "name" : "Wall",
+    "footprint" : "single",
+    "health" : 100,
+    "cost" : 15
+}

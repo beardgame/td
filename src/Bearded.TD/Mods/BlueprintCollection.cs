@@ -7,7 +7,7 @@ namespace Bearded.TD.Mods
 {
     interface IBlueprintCollection<out T> where T : IBlueprint
     {
-        T this[string name] { get; }
+        T this[string id] { get; }
         IEnumerable<T> All { get; }
     }
 
@@ -15,7 +15,7 @@ namespace Bearded.TD.Mods
     {
         private readonly Dictionary<string, T> blueprintsById = new Dictionary<string, T>();
 
-        public T this[string name] => blueprintsById[name];
+        public T this[string id] => blueprintsById[id];
         public IEnumerable<T> All => blueprintsById.Values;
 
         public void Add(T blueprint)
@@ -38,7 +38,7 @@ namespace Bearded.TD.Mods
             blueprintsById = new ReadOnlyDictionary<string, T>(blueprints);
         }
 
-        public T this[string name] => blueprintsById[name];
+        public T this[string id] => blueprintsById[id];
         public IEnumerable<T> All => blueprintsById.Values;
     }
 }
