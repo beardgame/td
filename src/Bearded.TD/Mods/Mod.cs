@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
@@ -34,5 +36,23 @@ namespace Bearded.TD.Mods
             Buildings = buildings;
             Units = units;
         }
+
+        public Mod(
+            IEnumerable<FootprintGroup> footprints = null,
+            IEnumerable<ComponentFactory> components = null,
+            IEnumerable<BuildingBlueprint> buildings = null,
+            IEnumerable<UnitBlueprint> units = null)
+            : this(
+                wrap(footprints),
+                wrap(components),
+                wrap(buildings),
+                wrap(units)
+            )
+        {
+        }
+
+        private static ReadonlyBlueprintCollection<T> wrap<T>(IEnumerable<T> blueprints)
+            where T : IBlueprint
+            => new ReadonlyBlueprintCollection<T>(blueprints ?? Enumerable.Empty<T>());
     }
 }

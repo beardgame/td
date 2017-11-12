@@ -37,7 +37,7 @@ namespace Bearded.TD.Mods
 
                 var footprints = loadFootprints();
 
-                return new Mod();
+                return new Mod(footprints);
             }
 
             private void configureSerializer()
