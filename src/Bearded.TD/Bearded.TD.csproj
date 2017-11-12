@@ -222,7 +222,7 @@
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
     <Compile Include="Game\World\LevelVisibilityChecker.cs" />
-    <Compile Include="Utilities\Ray.cs" />
+    <Compile Include="Utilities\Geometry\Ray.cs" />
     <Compile Include="Game\World\TileDrawInfo.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Tiles\Direction.cs" />
@@ -299,7 +299,7 @@
     <Compile Include="UI\AnchoredFixedSizeDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
-    <Compile Include="Utilities\Circle.cs" />
+    <Compile Include="Utilities\Geometry\Circle.cs" />
     <Compile Include="Utilities\DeconstructionExtensions.cs" />
     <Compile Include="Utilities\DebugAssert.cs" />
     <Compile Include="UI\InputContext.cs" />
@@ -311,8 +311,8 @@
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\ConsoleCommands.cs" />
-    <Compile Include="Utilities\EnumerableProxy.cs" />
-    <Compile Include="Utilities\IdCollection.cs" />
+    <Compile Include="Utilities\Collections\EnumerableProxy.cs" />
+    <Compile Include="Utilities\Collections\IdCollection.cs" />
     <Compile Include="Utilities\INamed.cs" />
     <Compile Include="Utilities\Input\Actions\DigitalAction.cs" />
     <Compile Include="Utilities\Input\Actions\DummyAction.cs" />
@@ -328,10 +328,10 @@
     <Compile Include="Utilities\Input\InputManager.Actions.Keyboard.cs" />
     <Compile Include="Utilities\Input\InputManager.Actions.Mouse.cs" />
     <Compile Include="Utilities\Input\InputManager.cs" />
-    <Compile Include="Utilities\LinqExtensions.cs" />
-    <Compile Include="Utilities\Line.cs" />
+    <Compile Include="Utilities\Collections\LinqExtensions.cs" />
+    <Compile Include="Utilities\Geometry\Line.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
-    <Compile Include="Utilities\ReadonlyIdDictionary.cs" />
+    <Compile Include="Utilities\Collections\ReadonlyIdDictionary.cs" />
     <Compile Include="Utilities\SpaceTimeExtensions.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
