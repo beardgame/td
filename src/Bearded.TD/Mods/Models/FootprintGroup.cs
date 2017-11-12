@@ -16,10 +16,6 @@ namespace Bearded.TD.Mods.Models
         public static FootprintGroup Triangle { get; }
             = new FootprintGroup("triangle0", Footprint.TriangleUp, Footprint.TriangleDown);
         public static FootprintGroup CircleSeven { get; } = new FootprintGroup("seven0", Footprint.CircleSeven);
-        public static FootprintGroup Diamond { get; }
-            = new FootprintGroup("diamond0", Footprint.DiamondBottomLeftTopRight, Footprint.DiamondTopBottom, Footprint.DiamondTopLeftBottomRight);
-        public static FootprintGroup Line { get; }
-            = new FootprintGroup("line0", Footprint.LineUp, Footprint.LineStraight, Footprint.LineDown);
         
         public ReadOnlyCollection<Footprint> Footprints { get; }
 
