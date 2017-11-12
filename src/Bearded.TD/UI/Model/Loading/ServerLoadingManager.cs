@@ -30,10 +30,14 @@ namespace Bearded.TD.UI.Model.Loading
             if (Game.Me.ConnectionState == PlayerConnectionState.DownloadingMods)
             {
                 if (!HasModsQueuedForLoading)
+                {
                     Game.ContentManager.Mods.ForEach(LoadMod);
+                }
                 else if (HasModsQueuedForLoading && HaveAllModsFinishedLoading)
+                {
                     Game.RequestDispatcher.Dispatch(
                         ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
+                }
             }
 
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
@@ -45,11 +49,15 @@ namespace Bearded.TD.UI.Model.Loading
 
             // Also just instantly finish loading for now.
             if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
+            {
                 Game.Request(ChangePlayerState.Request, Game.Me, PlayerConnectionState.FinishedLoading);
+            }
 
             // Check if all players finished loading and start the game if so.
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.FinishedLoading))
+            {
                 Dispatcher.RunOnlyOnServer(StartGame.Command, Game);
+            }
         }
 
         private void generateGame()
