@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace Bearded.TD.Mods
                     var reader = new JsonTextReader(text);
                     var footPrint = serializer.Deserialize<Serialization.Models.FootprintGroup>(reader);
 
-                    //footPrints.Add();
+                    footPrints.Add(footPrint.ToGameModel());
                 }
 
                 return footPrints;
