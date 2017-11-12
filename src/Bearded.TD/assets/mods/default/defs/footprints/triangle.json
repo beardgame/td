@@ -1,5 +1,5 @@
 {
-    "name" : "triangle",
+    "id" : "triangle",
     "footprints" : [
         [ "base", "right", "upright" ],
         [ "base", "right", "downright" ]

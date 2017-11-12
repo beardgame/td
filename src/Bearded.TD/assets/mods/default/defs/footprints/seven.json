@@ -1,5 +1,5 @@
 {
-    "name" : "seven",
+    "id" : "seven",
     "footprints" : [
         [ "base", "left", "downleft", "downright", "right", "upright", "upleft" ]
     ]
