@@ -5,16 +5,16 @@ namespace Bearded.TD.Game.Buildings
 {
     class ComponentFactory : IBlueprint
     {
-        public string Name { get; }
+        public string Id { get; }
         private readonly Func<Component> factoryMethod;
         private readonly Func<IComponent<BuildingGhost>> ghostFactoryMethod;
 
         public ComponentFactory(
-            string name, Func<Component> factoryMethod, Func<IComponent<BuildingGhost>> ghostFactoryMethod = null)
+            string id, Func<Component> factoryMethod, Func<IComponent<BuildingGhost>> ghostFactoryMethod = null)
         {
+            Id = id;
             this.factoryMethod = factoryMethod;
             this.ghostFactoryMethod = ghostFactoryMethod;
-            Name = name;
         }
 
         public Component Create() => factoryMethod();

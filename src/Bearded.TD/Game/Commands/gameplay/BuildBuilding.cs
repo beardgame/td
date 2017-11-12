@@ -68,8 +68,8 @@ namespace Bearded.TD.Game.Commands
             {
                 this.id = id;
                 this.faction = faction.Id;
-                this.blueprint = blueprint.Name;
-                this.footprint = footprint.Footprint.Name;
+                this.blueprint = blueprint.Id;
+                this.footprint = footprint.Footprint.Id;
                 footprintIndex = footprint.FootprintIndex;
                 footprintX = footprint.RootTile.X;
                 footprintY = footprint.RootTile.Y;

@@ -13,32 +13,32 @@ namespace Bearded.TD.Mods
 
     sealed class BlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
     {
-        private readonly Dictionary<string, T> blueprintsByName = new Dictionary<string, T>();
+        private readonly Dictionary<string, T> blueprintsById = new Dictionary<string, T>();
 
-        public T this[string name] => blueprintsByName[name];
-        public IEnumerable<T> All => blueprintsByName.Values;
+        public T this[string name] => blueprintsById[name];
+        public IEnumerable<T> All => blueprintsById.Values;
 
         public void Add(T blueprint)
         {
-            blueprintsByName.Add(blueprint.Name, blueprint);
+            blueprintsById.Add(blueprint.Id, blueprint);
         }
 
-        public ReadonlyBlueprintCollection<T> AsReadonly() => new ReadonlyBlueprintCollection<T>(blueprintsByName);
+        public ReadonlyBlueprintCollection<T> AsReadonly() => new ReadonlyBlueprintCollection<T>(blueprintsById);
     }
 
     sealed class ReadonlyBlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
     {
-        private readonly IReadOnlyDictionary<string, T> blueprintsByName;
+        private readonly IReadOnlyDictionary<string, T> blueprintsById;
 
         public ReadonlyBlueprintCollection(IEnumerable<T> blueprints)
-            : this(blueprints.ToDictionary(blueprint => blueprint.Name)) { }
+            : this(blueprints.ToDictionary(blueprint => blueprint.Id)) { }
 
         public ReadonlyBlueprintCollection(IDictionary<string, T> blueprints)
         {
-            blueprintsByName = new ReadOnlyDictionary<string, T>(blueprints);
+            blueprintsById = new ReadOnlyDictionary<string, T>(blueprints);
         }
 
-        public T this[string name] => blueprintsByName[name];
-        public IEnumerable<T> All => blueprintsByName.Values;
+        public T this[string name] => blueprintsById[name];
+        public IEnumerable<T> All => blueprintsById.Values;
     }
 }

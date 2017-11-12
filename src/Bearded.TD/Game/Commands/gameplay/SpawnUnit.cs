@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Commands
 
             public Serializer(UnitBlueprint blueprint, Tile<TileInfo> tile, Id<GameUnit> unitId)
             {
-                this.blueprint = blueprint.Name;
+                this.blueprint = blueprint.Id;
                 x = tile.X;
                 y = tile.Y;
                 this.unitId = unitId;

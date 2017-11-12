@@ -34,7 +34,7 @@ namespace Bearded.TD.Mods
 
             var buildings = new ReadonlyBlueprintCollection<BuildingBlueprint>(new[]
             {
-                new BuildingBlueprint("base", FootprintGroup.CircleSeven, 1000, 1,
+                new BuildingBlueprint("base", "base", FootprintGroup.CircleSeven, 1000, 1,
                     new[]
                     {
                         componentFactories["sink"],
@@ -42,19 +42,19 @@ namespace Bearded.TD.Mods
                         componentFactories["game_over_on_destroy"],
                         componentFactories["worker_hub"],
                     }),
-                new BuildingBlueprint("wall", FootprintGroup.Single, 100, 15, null),
-                new BuildingBlueprint("triangle", FootprintGroup.Triangle, 300,
+                new BuildingBlueprint("wall", "wall", FootprintGroup.Single, 100, 15, null),
+                new BuildingBlueprint("triangle", "triangle", FootprintGroup.Triangle, 300,
                     75, componentFactories["turret"].Yield()),
-                new BuildingBlueprint("diamond", FootprintGroup.Diamond, 200, 40, null),
-                new BuildingBlueprint("line", FootprintGroup.Line, 150, 25, null)
+                new BuildingBlueprint("diamond", "diamond", FootprintGroup.Diamond, 200, 40, null),
+                new BuildingBlueprint("line", "line", FootprintGroup.Line, 150, 25, null)
             });
 
             var enemies = new ReadonlyBlueprintCollection<UnitBlueprint>(new[]
             {
-                new UnitBlueprint("debug", 100, 10, 2.S(), new Speed(2), 2, Color.DarkRed),
-                new UnitBlueprint("strong", 250, 20, 1.5.S(), new Speed(1.2f), 4, Color.Yellow),
-                new UnitBlueprint("fast", 50, 4, .5.S(), new Speed(3), 4, Color.CornflowerBlue),
-                new UnitBlueprint("tank", 1000, 50, 2.S(), new Speed(.8f), 12, Color.SandyBrown)
+                new UnitBlueprint("debug", "debug", 100, 10, 2.S(), new Speed(2), 2, Color.DarkRed),
+                new UnitBlueprint("strong", "strong", 250, 20, 1.5.S(), new Speed(1.2f), 4, Color.Yellow),
+                new UnitBlueprint("fast", "fast", 50, 4, .5.S(), new Speed(3), 4, Color.CornflowerBlue),
+                new UnitBlueprint("tank", "tank", 1000, 50, 2.S(), new Speed(.8f), 12, Color.SandyBrown)
             });
 
             return new Mod(

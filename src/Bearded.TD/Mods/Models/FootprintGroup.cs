@@ -10,7 +10,7 @@ namespace Bearded.TD.Mods.Models
 {
     sealed class FootprintGroup : IBlueprint
     {
-        public string Name { get; }
+        public string Id { get; }
 
         public static FootprintGroup Single { get; } = new FootprintGroup("single0", Footprint.Single);
         public static FootprintGroup Triangle { get; }
@@ -23,9 +23,9 @@ namespace Bearded.TD.Mods.Models
         
         public ReadOnlyCollection<Footprint> Footprints { get; }
 
-        public FootprintGroup(string name, IEnumerable<Footprint> footprints)
+        public FootprintGroup(string id, IEnumerable<Footprint> footprints)
         {
-            Name = name;
+            Id = id;
             Footprints = footprints.ToList().AsReadOnly();
 
             if (Footprints.Count == 0)

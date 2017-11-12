@@ -1,11 +1,11 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using Bearded.TD.Game.Buildings;
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
     sealed class BuildingBlueprint
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Footprint { get; set; }
         public int Health { get; set; }
@@ -13,9 +13,10 @@ namespace Bearded.TD.Mods.Serialization.Models
 
         // how to component?
 
-        public Mods.Models.BuildingBlueprint ToGameModel(DependencyResolver<Tiles.FootprintGroup> footprints)
+        public Mods.Models.BuildingBlueprint ToGameModel(DependencyResolver<Mods.Models.FootprintGroup> footprints)
         {
             return new Mods.Models.BuildingBlueprint(
+                Id,
                 Name,
                 footprints.Resolve(Footprint),
                 Health,

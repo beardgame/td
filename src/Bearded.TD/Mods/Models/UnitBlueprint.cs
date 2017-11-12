@@ -5,6 +5,7 @@ namespace Bearded.TD.Mods.Models
 {
     sealed class UnitBlueprint : IBlueprint
     {
+        public string Id { get; }
         public string Name { get; }
         public int Health { get; }
         public int Damage { get; }
@@ -14,6 +15,7 @@ namespace Bearded.TD.Mods.Models
         public Color Color { get; }
 
         public UnitBlueprint(
+            string id,
             string name,
             int health,
             int damage,
@@ -22,6 +24,7 @@ namespace Bearded.TD.Mods.Models
             float value,
             Color color)
         {
+            Id = id;
             Name = name;
             Health = health;
             Damage = damage;

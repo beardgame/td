@@ -1,6 +1,7 @@
-﻿using Bearded.TD.Utilities;
-
-namespace Bearded.TD.Mods.Models
+﻿namespace Bearded.TD.Mods.Models
 {
-    interface IBlueprint : INamed { }
+    interface IBlueprint
+    {
+        string Id { get; }
+    }
 }
