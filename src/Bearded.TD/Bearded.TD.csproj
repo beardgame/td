@@ -91,6 +91,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Meta\GlobalCommands.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
     <Compile Include="Mods\Blueprints.cs" />
     <Compile Include="Mods\DebugMod.cs" />
