@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Lidgren.Network;
@@ -21,7 +22,7 @@ namespace Bearded.TD.UI.Model.Loading
         protected Logger Logger { get; }
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
 
-        protected bool HasModsQueuedForLoading => modsForLoading.Count > 0;
+        private bool hasModsQueuedForLoading => modsForLoading.Count > 0;
         private bool haveModsFinishedLoading;
 
         protected LoadingManager(
@@ -45,10 +46,10 @@ namespace Bearded.TD.UI.Model.Loading
             }
 
             // Mod loading.
-            if (!HasModsQueuedForLoading)
+            if (!hasModsQueuedForLoading)
             {
                 DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
-                Game.ContentManager.Mods.ForEach(LoadMod);
+                Game.ContentManager.Mods.ForEach(loadMod);
             }
             if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsLoaded))
             {
@@ -56,27 +57,24 @@ namespace Bearded.TD.UI.Model.Loading
             }
         }
 
-        private void gatherModBlueprints()
-        {
-            var blueprints = Game.Blueprints;
-
-            foreach (var mod in modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod()).Prepend(DebugMod.Create()))
-            {
-                mod.Footprints.All.ForEach(footprint => blueprints.Footprints.Add(footprint));
-                mod.Components.All.ForEach(component => blueprints.Components.Add(component));
-                mod.Buildings.All.ForEach(building => blueprints.Buildings.Add(building));
-                mod.Units.All.ForEach(unit => blueprints.Units.Add(unit));
-            }
-
-            Game.RequestDispatcher.Dispatch(
-                ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
-        }
-
-        protected void LoadMod(ModMetadata modMetadata)
+        private void loadMod(ModMetadata modMetadata)
         {
             var modForLoading = modMetadata.PrepareForLoading();
             modForLoading.StartLoading();
             modsForLoading.Add(modForLoading);
+        }
+
+        private void gatherModBlueprints()
+        {
+            Game.SetBlueprints(Blueprints.Merge(
+                modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod())
+                    .Prepend(DebugMod.Create())
+                    .Select(mod => mod.Blueprints)));
+
+            Game.RequestDispatcher.Dispatch(
+                ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
+
+            haveModsFinishedLoading = true;
         }
 
         public void IntegrateUI()

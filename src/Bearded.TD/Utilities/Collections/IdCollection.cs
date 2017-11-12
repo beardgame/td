@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities.Collections
 {
     class IdCollection<T> where T : IIdable<T>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {

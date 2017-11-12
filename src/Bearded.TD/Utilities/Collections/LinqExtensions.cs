@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities.Collections
 {
     static class LinqExtensions
     {

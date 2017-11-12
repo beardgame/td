@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities.Geometry
 {
     struct Line
     {

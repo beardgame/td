@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;

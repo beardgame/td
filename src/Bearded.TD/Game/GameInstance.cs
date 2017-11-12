@@ -6,7 +6,7 @@ using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.UI.Input;
 using Bearded.TD.UI.Model;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game
@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
 
-        public Blueprints Blueprints { get; } = new Blueprints();
+        public Blueprints Blueprints { get; private set; }
 
         private GameStatus status = GameStatus.Lobby;
         public GameStatus Status
@@ -71,10 +71,20 @@ namespace Bearded.TD.Game
 
         public Player PlayerFor(Id<Player> id) => players[id];
 
+        public void SetBlueprints(Blueprints blueprints)
+        {
+            if (Status != GameStatus.Loading)
+                throw new InvalidOperationException("Cannot set blueprints if the game is not loading.");
+            if (Blueprints != null)
+                throw new InvalidOperationException("Cannot override the blueprints once set.");
+
+            Blueprints = blueprints;
+        }
+
         public void SetLoading()
         {
             if (Status != GameStatus.Lobby)
-                throw new Exception();
+                throw new InvalidOperationException("Can only initialize loading from the lobby state.");
             Status = GameStatus.Loading;
             foreach (var p in Players)
                 p.ConnectionState = PlayerConnectionState.LoadingMods;
@@ -83,7 +93,9 @@ namespace Bearded.TD.Game
         public void Start()
         {
             if (Status != GameStatus.Loading)
-                throw new Exception();
+                throw new InvalidOperationException("Can only start the game from the loading state.");
+            if (Blueprints == null)
+                throw new InvalidOperationException("Cannot start game before blueprints are set.");
             Status = GameStatus.Playing;
             foreach (var p in Players)
                 p.ConnectionState = PlayerConnectionState.Playing;
@@ -92,7 +104,7 @@ namespace Bearded.TD.Game
         public void IntegrateUI(GameCamera camera)
         {
             if (Camera != null)
-                throw new Exception();
+                throw new InvalidOperationException("Cannot override the camera once set.");
             Camera = camera;
             SelectionManager = new SelectionManager();
             PlayerInput = new PlayerInput(this);
@@ -101,7 +113,7 @@ namespace Bearded.TD.Game
         public void InitialiseState(GameState state)
         {
             if (State != null)
-                throw new Exception();
+                throw new InvalidOperationException("Cannot override the gamestate once set.");
             State = state;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities.Geometry
 {
     struct Circle
     {

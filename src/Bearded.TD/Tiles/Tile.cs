@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.World;
 using OpenTK;
 
 namespace Bearded.TD.Tiles
@@ -60,7 +59,7 @@ namespace Bearded.TD.Tiles
             }
         }
 
-        public int DistanceTo(Tile<TileInfo> other)
+        public int DistanceTo(Tile<TTileInfo> other)
         {
             if (Equals(other)) return 0;
 

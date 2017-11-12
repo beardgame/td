@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Bearded.TD.Tiles;
+using Bearded.TD.Mods.Models;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
