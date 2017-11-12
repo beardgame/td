@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
@@ -19,7 +18,6 @@ namespace Bearded.TD.Game
         public IRequestDispatcher RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
         public IGameController Controller { get; }
-        public IEnumerable<Mod> Mods { get; }
         public GameMeta Meta { get; }
         
         public ChatLog ChatLog { get; } = new ChatLog();
@@ -52,7 +50,6 @@ namespace Bearded.TD.Game
             RequestDispatcher = context.RequestDispatcher;
             DataMessageHandler = context.DataMessageHandlerFactory(this);
             Controller = context.GameSimulatorFactory(this);
-            Mods = context.Mods;
             ContentManager = contentManager;
             Me = me;
             Ids = ids;
@@ -80,7 +77,7 @@ namespace Bearded.TD.Game
                 throw new Exception();
             Status = GameStatus.Loading;
             foreach (var p in Players)
-                p.ConnectionState = PlayerConnectionState.DownloadingMods;
+                p.ConnectionState = PlayerConnectionState.LoadingMods;
         }
 
         public void Start()

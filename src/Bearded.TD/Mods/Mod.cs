@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using System.Collections.Generic;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 
@@ -16,7 +17,7 @@ namespace Bearded.TD.Mods
 
         public Mod()
         {
-            
+            Units = new ReadonlyBlueprintCollection<UnitBlueprint>(new List<UnitBlueprint>());
         }
 
         public Mod(ReadonlyBlueprintCollection<UnitBlueprint> units)

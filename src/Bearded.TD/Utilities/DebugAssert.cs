@@ -21,5 +21,15 @@ namespace Bearded.TD.Utilities
                     throw new ArgumentException();
             }
         }
+
+        public static class State
+        {
+            [Conditional("DEBUG")]
+            public static void Satisfies(bool condition)
+            {
+                if (!condition)
+                    throw new InvalidOperationException();
+            }
+        }
     }
 }

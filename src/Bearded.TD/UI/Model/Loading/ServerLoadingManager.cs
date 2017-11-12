@@ -27,19 +27,6 @@ namespace Bearded.TD.UI.Model.Loading
         {
             base.Update(args);
 
-            if (Game.Me.ConnectionState == PlayerConnectionState.DownloadingMods)
-            {
-                if (!HasModsQueuedForLoading)
-                {
-                    Game.ContentManager.Mods.ForEach(LoadMod);
-                }
-                else if (HasModsQueuedForLoading && HaveAllModsFinishedLoading)
-                {
-                    Game.RequestDispatcher.Dispatch(
-                        ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
-                }
-            }
-
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
             {
                 generateGame();
@@ -113,12 +100,6 @@ namespace Bearded.TD.UI.Model.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint("line", FootprintGroup.Line, 150, 25,
                     null)));
-            
-            foreach (var mod in Game.Mods)
-            {
-                mod.Units.All.ForEach(
-                    blueprint => Dispatcher.RunOnlyOnServer(() => SendUnitBlueprint.Command(Game, blueprint)));
-            }
         }
     }
 }

@@ -33,8 +33,8 @@ namespace Bearded.TD.Mods
 
         public Mod GetLoadedMod()
         {
-            if (IsLoaded)
-                throw new InvalidOperationException("Most finish loading mod.");
+            if (!IsLoaded)
+                throw new InvalidOperationException("Must finish loading mod.");
 
             return mod;
         }
