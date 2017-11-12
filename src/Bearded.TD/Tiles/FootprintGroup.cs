@@ -13,14 +13,14 @@ namespace Bearded.TD.Tiles
     {
         public string Name { get; }
 
-        public static FootprintGroup Single { get; } = new FootprintGroup("singe", Footprint.Single);
+        public static FootprintGroup Single { get; } = new FootprintGroup("single0", Footprint.Single);
         public static FootprintGroup Triangle { get; }
-            = new FootprintGroup("triangle", Footprint.TriangleUp, Footprint.TriangleDown);
-        public static FootprintGroup CircleSeven { get; } = new FootprintGroup("seven", Footprint.CircleSeven);
+            = new FootprintGroup("triangle0", Footprint.TriangleUp, Footprint.TriangleDown);
+        public static FootprintGroup CircleSeven { get; } = new FootprintGroup("seven0", Footprint.CircleSeven);
         public static FootprintGroup Diamond { get; }
-            = new FootprintGroup("diamond", Footprint.DiamondBottomLeftTopRight, Footprint.DiamondTopBottom, Footprint.DiamondTopLeftBottomRight);
+            = new FootprintGroup("diamond0", Footprint.DiamondBottomLeftTopRight, Footprint.DiamondTopBottom, Footprint.DiamondTopLeftBottomRight);
         public static FootprintGroup Line { get; }
-            = new FootprintGroup("line", Footprint.LineUp, Footprint.LineStraight, Footprint.LineDown);
+            = new FootprintGroup("line0", Footprint.LineUp, Footprint.LineStraight, Footprint.LineDown);
         
         public ReadOnlyCollection<Footprint> Footprints { get; }
 
