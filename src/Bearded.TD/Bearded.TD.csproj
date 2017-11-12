@@ -91,6 +91,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
     <Compile Include="Mods\Blueprints.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />
     <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="Mods\ModMetadata.cs" />
+    <Compile Include="Tiles\Level.cs" />
     <Compile Include="UI\Input\MiningInteractionHandler.cs" />
     <Compile Include="UI\Model\SelectionManager.cs" />
     <Compile Include="UI\Model\SelectionState.cs" />
@@ -229,7 +231,7 @@
     <Compile Include="Tiles\Tile.cs" />
     <Compile Include="Tiles\Tilemap.cs" />
     <Compile Include="Tiles\Footprint.cs" />
-    <Compile Include="Tiles\FootprintGroup.cs" />
+    <Compile Include="Mods\Models\FootprintGroup.cs" />
     <Compile Include="Meta\UserSettings.cs" />
     <Compile Include="Mods\Serialization\Converters\JsonConverterBase.cs" />
     <Compile Include="Mods\Serialization\Converters\StepConverter.cs" />

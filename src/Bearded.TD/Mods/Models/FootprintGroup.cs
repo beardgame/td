@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Tiles
+namespace Bearded.TD.Mods.Models
 {
     sealed class FootprintGroup : IBlueprint
     {
