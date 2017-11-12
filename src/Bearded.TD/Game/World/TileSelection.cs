@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Linq;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
@@ -10,49 +9,51 @@ namespace Bearded.TD.Game.World
     {
         public static TileSelection FromFootprints(FootprintGroup footprints)
             => footprints.Footprints.Count == 1
-                ? new SingleSelection(footprints.Footprints[0])
+                ? new SingleSelection(footprints)
                 : (TileSelection)new GroupSelection(footprints);
 
-        public static TileSelection Single { get; } = new SingleSelection(Footprint.Single);
+        public static TileSelection Single { get; } = new SingleSelection(FootprintGroup.Single);
 
         public abstract PositionedFootprint GetPositionedFootprint(Level level, Position2 position);
 
         private sealed class SingleSelection : TileSelection
         {
-            private readonly Footprint footprint;
+            private readonly FootprintGroup footprintGroup;
 
-            public SingleSelection(Footprint footprint)
+            public SingleSelection(FootprintGroup footprintGroup)
             {
-                this.footprint = footprint;
+                this.footprintGroup = footprintGroup;
             }
 
             public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
             {
-                return new PositionedFootprint(level, footprint, footprint.RootTileClosestToWorldPosition(level, position));
+                var footprint = footprintGroup.Footprints[0];
+
+                return new PositionedFootprint(level, footprintGroup, 0, footprint.RootTileClosestToWorldPosition(level, position));
             }
         }
 
         private sealed class GroupSelection : TileSelection
         {
-            private readonly ReadOnlyCollection<Footprint> footprints;
+            private readonly FootprintGroup footprints;
 
             public GroupSelection(FootprintGroup footprints)
             {
-                this.footprints = footprints.Footprints;
+                this.footprints = footprints;
             }
 
             public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
             {
-                var (footprint, root, _) = footprints.Select(f =>
+                var (root, _, index) = footprints.Footprints.Select((f, i) =>
                     {
                         var bestRoot = f.RootTileClosestToWorldPosition(level, position);
                         var center = f.Center(level, bestRoot);
                         var distance = (center - position).LengthSquared;
-                        return (f: f, bestRoot: bestRoot, Distance: distance);
+                        return (bestRoot: bestRoot, Distance: distance, index: i);
                     })
                     .MinBy(r => r.Distance.NumericValue);
 
-                return new PositionedFootprint(level, footprint, root);
+                return new PositionedFootprint(level, footprints, index, root);
             }
         }
     }

@@ -47,6 +47,7 @@ namespace Bearded.TD.Game.Commands
             private Id<Faction> faction;
             private string blueprint;
             private string footprint;
+            private int footprintIndex;
             private int footprintX;
             private int footprintY;
 
@@ -74,7 +75,7 @@ namespace Bearded.TD.Game.Commands
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
                         game.State.Level,
-                        game.Blueprints.Footprints[footprint],
+                        game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile<TileInfo>(game.State.Level.Tilemap, footprintX, footprintY)));
             }
 
@@ -84,6 +85,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref id);
                 stream.Serialize(ref blueprint);
                 stream.Serialize(ref footprint);
+                stream.Serialize(ref footprintIndex);
                 stream.Serialize(ref footprintX);
                 stream.Serialize(ref footprintY);
             }

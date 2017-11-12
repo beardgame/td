@@ -10,7 +10,7 @@ namespace Bearded.TD.Mods
         public string Name { get; }
         public string Id { get; }
 
-        public ReadonlyBlueprintCollection<Footprint> Footprints { get; }
+        public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
         public ReadonlyBlueprintCollection<ComponentFactory> Components { get; }
         public ReadonlyBlueprintCollection<BuildingBlueprint> Buildings { get; }
         public ReadonlyBlueprintCollection<UnitBlueprint> Units { get; }

@@ -5,13 +5,10 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.UI.Model.Loading
 {
@@ -78,6 +75,9 @@ namespace Bearded.TD.UI.Model.Loading
 
         private void debug_sendBlueprints()
         {
+            /*
+             * TODO: Fix this, Tom
+             * 
             // === Buildings ===
             Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
             new BuildingBlueprint("base", FootprintGroup.CircleSeven, 1000, 1,
@@ -100,6 +100,7 @@ namespace Bearded.TD.UI.Model.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint("line", FootprintGroup.Line, 150, 25,
                     null)));
+            */
         }
     }
 }

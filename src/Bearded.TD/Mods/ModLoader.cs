@@ -1,4 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Bearded.TD.Mods.Serialization.Converters;
+using Bearded.TD.Tiles;
+using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods
 {
@@ -8,10 +14,11 @@ namespace Bearded.TD.Mods
         {
             return await new Loader(mod).Load();
         }
-        
+
         private sealed class Loader
         {
             private readonly ModMetadata meta;
+            private JsonSerializer serializer;
 
             public Loader(ModMetadata meta)
             {
@@ -20,11 +27,48 @@ namespace Bearded.TD.Mods
 
             public async Task<Mod> Load()
             {
-                // do loading here
+                return await Task.Run(load);
+            }
 
-                await Task.Delay(1000);
+            private async Task<Mod> load()
+            {
+                configureSerializer();
+
+                var footprints = loadFootprints();
 
                 return new Mod();
+            }
+
+            private void configureSerializer()
+            {
+                serializer = new JsonSerializer();
+                serializer.Converters.Add(new StepConverter());
+            }
+
+            private IEnumerable<FootprintGroup> loadFootprints()
+            {
+                const string path = "defs/footprints";
+
+                var files = meta.Directory
+                    .GetDirectories(path, SearchOption.TopDirectoryOnly)
+                    .SingleOrDefault()
+                    ?.GetFiles("*.json", SearchOption.TopDirectoryOnly);
+
+                if (files == null)
+                    return Enumerable.Empty<FootprintGroup>();
+
+                var footPrints = new List<FootprintGroup>();
+
+                foreach (var file in files)
+                {
+                    var text = file.OpenText();
+                    var reader = new JsonTextReader(text);
+                    var footPrint = serializer.Deserialize<Serialization.Models.FootprintGroup>(reader);
+
+                    //footPrints.Add();
+                }
+
+                return footPrints;
             }
         }
     }

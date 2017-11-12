@@ -9,7 +9,7 @@ namespace Bearded.TD.Mods.Models
     sealed class BuildingBlueprint : IBlueprint
     {
         public string Name { get; }
-        public FootprintGroup Footprints { get; }
+        public FootprintGroup FootprintGroup { get; }
         public int MaxHealth { get; }
         public int ResourceCost { get; }
         private readonly List<ComponentFactory> componentFactories;
@@ -17,11 +17,11 @@ namespace Bearded.TD.Mods.Models
         public IReadOnlyList<ComponentFactory> ComponentFactories => componentFactories?.AsReadOnly()
             ?? (IReadOnlyList<ComponentFactory>) Array.Empty<ComponentFactory>();
 
-        public BuildingBlueprint(string name, FootprintGroup footprints, int maxHealth,
+        public BuildingBlueprint(string name, FootprintGroup footprintGroup, int maxHealth,
             int resourceCost, IEnumerable<ComponentFactory> componentFactories)
         {
             Name = name;
-            Footprints = footprints;
+            FootprintGroup = footprintGroup;
             MaxHealth = maxHealth;
             ResourceCost = resourceCost;
             this.componentFactories = componentFactories?.ToList();
