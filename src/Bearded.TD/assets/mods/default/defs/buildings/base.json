@@ -1,0 +1,13 @@
+{
+    "id" : "base",
+    "name" : "Main Base",
+    "footprint" : "seven",
+    "health" : 1000,
+    "cost" : 1,
+    "components" : [
+        { "sink" : { } },
+        { "gameOverOnDestroy" : { } },
+        { "workerHub" : { "numWorkers" : 2 } },
+        { "incomeOverTime" : { "incomePerSecond" : 5 } }
+    ]
+}

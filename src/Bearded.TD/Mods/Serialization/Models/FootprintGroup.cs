@@ -8,12 +8,12 @@ namespace Bearded.TD.Mods.Serialization.Models
 {
     sealed class FootprintGroup : IConvertsTo<Mods.Models.FootprintGroup, Void>
     {
-        public string Name { get; set; }
+        public string Id { get; set; }
         public List<List<Step>> Footprints { get; set; }
 
         public Mods.Models.FootprintGroup ToGameModel(Void _)
         {
-            return new Mods.Models.FootprintGroup(Name,
+            return new Mods.Models.FootprintGroup(Id,
                 Footprints.Select(steps => new Footprint(steps))
                 );
         }

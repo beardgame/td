@@ -65,6 +65,15 @@
     <Content Include="assets\gfx\sprites\hex-normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="assets\mods\default\defs\buildings\base.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\buildings\triangleTurret.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\buildings\wall.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="assets\mods\default\mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -87,6 +96,7 @@
     <Compile Include="Commands\ServerDispatcher.cs" />
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
+    <Compile Include="Constants\Mods.cs" />
     <Compile Include="Constants\Network.cs" />
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />

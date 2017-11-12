@@ -33,10 +33,8 @@ namespace Bearded.TD.Screens
             var pages = new List<ActionBarItem.Content[]>();
 
             var buildingPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
-            buildingPage[0] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["wall"]), "Wall");
-            buildingPage[1] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["triangle"]), "Triangle");
-            buildingPage[2] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["diamond"]), "Diamond");
-            buildingPage[3] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["line"]), "Line");
+            buildingPage[0] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["wall0"]), "Wall");
+            buildingPage[1] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["triangle0"]), "Triangle");
             buildingPage[9] = contentFor(new MiningInteractionHandler(game, faction), "Mine tile");
             pages.Add(buildingPage);
 
@@ -48,10 +46,10 @@ namespace Bearded.TD.Screens
             pages.Add(debugPage);
 
             var enemyPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
-            enemyPage[0] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "debug"), "Default enemy");
-            enemyPage[1] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "fast"), "Fast enemy");
-            enemyPage[2] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "strong"), "Strong enemy");
-            enemyPage[3] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "tank"), "Tank enemy");
+            enemyPage[0] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "debug0"), "Default enemy");
+            enemyPage[1] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "fast0"), "Fast enemy");
+            enemyPage[2] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "strong0"), "Strong enemy");
+            enemyPage[3] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "tank0"), "Tank enemy");
             pages.Add(enemyPage);
 #endif
 

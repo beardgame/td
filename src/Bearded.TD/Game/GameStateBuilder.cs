@@ -28,7 +28,7 @@ namespace Bearded.TD.Game
             yield return CreateGameState.Command(game, radius);
             yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true));
 
-            var baseBlueprint = game.Blueprints.Buildings["base"];
+            var baseBlueprint = game.Blueprints.Buildings[Constants.Mods.BaseBuildingId];
             var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
             yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
 
