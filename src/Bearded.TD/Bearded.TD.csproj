@@ -128,8 +128,6 @@
     <Compile Include="Game\Commands\loading\BeginLoadingGame.cs" />
     <Compile Include="Game\Commands\loading\CreateGameState.cs" />
     <Compile Include="Game\Commands\loading\FillTilemap.cs" />
-    <Compile Include="Game\Commands\loading\LoadBasicData.cs" />
-    <Compile Include="Game\Commands\loading\SendUnitBlueprint.cs" />
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />

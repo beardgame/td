@@ -17,11 +17,21 @@ namespace Bearded.TD.Mods
 
         public Mod()
         {
+            Footprints = new ReadonlyBlueprintCollection<FootprintGroup>(new List<FootprintGroup>());
+            Components = new ReadonlyBlueprintCollection<ComponentFactory>(new List<ComponentFactory>());
+            Buildings = new ReadonlyBlueprintCollection<BuildingBlueprint>(new List<BuildingBlueprint>());
             Units = new ReadonlyBlueprintCollection<UnitBlueprint>(new List<UnitBlueprint>());
         }
 
-        public Mod(ReadonlyBlueprintCollection<UnitBlueprint> units)
+        public Mod(
+            ReadonlyBlueprintCollection<FootprintGroup> footprints,
+            ReadonlyBlueprintCollection<ComponentFactory> components,
+            ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
+            ReadonlyBlueprintCollection<UnitBlueprint> units)
         {
+            Footprints = footprints;
+            Components = components;
+            Buildings = buildings;
             Units = units;
         }
     }

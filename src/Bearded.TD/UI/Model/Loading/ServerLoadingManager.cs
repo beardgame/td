@@ -46,9 +46,6 @@ namespace Bearded.TD.UI.Model.Loading
 
         private void generateGame()
         {
-            Dispatcher.RunOnlyOnServer(() => LoadBasicData.Command(Game));
-            debug_sendBlueprints();
-
             var radius = Constants.Game.World.Radius;
 
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
@@ -71,36 +68,6 @@ namespace Bearded.TD.UI.Model.Loading
                 Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
                 Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, p, playerFaction);
             }
-        }
-
-        private void debug_sendBlueprints()
-        {
-            /*
-             * TODO: Fix this, Tom
-             * 
-            // === Buildings ===
-            Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
-            new BuildingBlueprint("base", FootprintGroup.CircleSeven, 1000, 1,
-                new[] {
-                    Game.Blueprints.Components["sink"],
-                    Game.Blueprints.Components["income_over_time"],
-                    Game.Blueprints.Components["game_over_on_destroy"],
-                    Game.Blueprints.Components["worker_hub"],
-                }));
-            // In the future these would be loaded from a mod file.
-            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint("wall", FootprintGroup.Single, 100, 15,
-                    null)));
-            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint("triangle", FootprintGroup.Triangle, 300,
-                    75, Game.Blueprints.Components["turret"].Yield())));
-            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint("diamond", FootprintGroup.Diamond, 200, 40,
-                    null)));
-            Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
-                new BuildingBlueprint("line", FootprintGroup.Line, 150, 25,
-                    null)));
-            */
         }
     }
 }

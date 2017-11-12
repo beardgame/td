@@ -62,6 +62,9 @@ namespace Bearded.TD.UI.Model.Loading
 
             foreach (var mod in modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod()).Prepend(DebugMod.Create()))
             {
+                mod.Footprints.All.ForEach(footprint => blueprints.Footprints.Add(footprint));
+                mod.Components.All.ForEach(component => blueprints.Components.Add(component));
+                mod.Buildings.All.ForEach(building => blueprints.Buildings.Add(building));
                 mod.Units.All.ForEach(unit => blueprints.Units.Add(unit));
             }
 
