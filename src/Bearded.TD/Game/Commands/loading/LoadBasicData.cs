@@ -25,16 +25,11 @@ namespace Bearded.TD.Game.Commands
             {
                 // Footprints
                 var footprints = game.Blueprints.Footprints;
-                footprints.Add(Footprint.Single);
-                footprints.Add(Footprint.TriangleUp);
-                footprints.Add(Footprint.TriangleDown);
-                footprints.Add(Footprint.CircleSeven);
-                footprints.Add(Footprint.DiamondBottomLeftTopRight);
-                footprints.Add(Footprint.DiamondTopBottom);
-                footprints.Add(Footprint.DiamondTopLeftBottomRight);
-                footprints.Add(Footprint.LineUp);
-                footprints.Add(Footprint.LineStraight);
-                footprints.Add(Footprint.LineDown);
+                footprints.Add(FootprintGroup.Single);
+                footprints.Add(FootprintGroup.CircleSeven);
+                footprints.Add(FootprintGroup.Diamond);
+                footprints.Add(FootprintGroup.Line);
+                footprints.Add(FootprintGroup.Triangle);
 
                 // Components
                 var components = game.Blueprints.Components;

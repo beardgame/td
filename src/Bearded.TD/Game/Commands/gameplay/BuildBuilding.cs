@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Commands
 
             public override bool CheckPreconditions()
                 => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.IsPassable)
-                       && blueprint.Footprints.Footprints.Contains(footprint.Footprint);
+                       && blueprint.FootprintGroup == footprint.Footprint;
 
             public override ICommand ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<Building>(), blueprint, footprint);
 
@@ -54,6 +54,7 @@ namespace Bearded.TD.Game.Commands
             private Id<Faction> faction;
             private string blueprint;
             private string footprint;
+            private int footprintIndex;
             private Id<Building> id;
             private int footprintX;
             private int footprintY;
@@ -69,6 +70,7 @@ namespace Bearded.TD.Game.Commands
                 this.faction = faction.Id;
                 this.blueprint = blueprint.Name;
                 this.footprint = footprint.Footprint.Name;
+                footprintIndex = footprint.FootprintIndex;
                 footprintX = footprint.RootTile.X;
                 footprintY = footprint.RootTile.Y;
             }
@@ -82,7 +84,7 @@ namespace Bearded.TD.Game.Commands
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
                         game.State.Level,
-                        game.Blueprints.Footprints[footprint],
+                        game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile<TileInfo>(game.State.Level.Tilemap, footprintX, footprintY)));
             }
 
@@ -92,6 +94,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref id);
                 stream.Serialize(ref blueprint);
                 stream.Serialize(ref footprint);
+                stream.Serialize(ref footprintIndex);
                 stream.Serialize(ref footprintX);
                 stream.Serialize(ref footprintY);
             }

@@ -91,6 +91,9 @@ namespace Bearded.TD.UI.Model.Loading
 
         private void debug_sendBlueprints()
         {
+            /*
+             * TODO: Fix this, Tom
+             * 
             // === Buildings ===
             Dispatcher.RunOnlyOnServer(SendBuildingBlueprint.Command, Game, 
             new BuildingBlueprint("base", FootprintGroup.CircleSeven, 1000, 1,
@@ -113,6 +116,7 @@ namespace Bearded.TD.UI.Model.Loading
             Dispatcher.RunOnlyOnServer(() => SendBuildingBlueprint.Command(Game,
                 new BuildingBlueprint("line", FootprintGroup.Line, 150, 25,
                     null)));
+            */
             
             foreach (var mod in Game.Mods)
             {
