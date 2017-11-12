@@ -5,6 +5,6 @@
     "health" : 300,
     "cost" : 75,
     "components" : [
-        { "turret" : { } },
+        { "turret" : { } }
     ]
 }

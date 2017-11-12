@@ -52,7 +52,7 @@ namespace Bearded.TD.Mods
                 return new Mod(
                     footprints,
                     empty<ComponentFactory>(),
-                    empty<BuildingBlueprint>(),
+                    buildings,
                     empty<UnitBlueprint>()
                     );
             }
