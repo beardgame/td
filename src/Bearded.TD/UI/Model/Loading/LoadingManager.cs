@@ -3,9 +3,12 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading
@@ -19,7 +22,7 @@ namespace Bearded.TD.UI.Model.Loading
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
 
         protected bool HasModsQueuedForLoading => modsForLoading.Count > 0;
-        protected bool HaveAllModsFinishedLoading => modsForLoading.All(mod => mod.IsLoaded);
+        private bool haveModsFinishedLoading;
 
         protected LoadingManager(
             GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
@@ -32,9 +35,38 @@ namespace Bearded.TD.UI.Model.Loading
 
         public virtual void Update(UpdateEventArgs args)
         {
+            // Network handling.
             foreach (var msg in Network.GetMessages())
+            {
                 if (msg.MessageType == NetIncomingMessageType.Data)
+                {
                     Game.DataMessageHandler.HandleIncomingMessage(msg);
+                }
+            }
+
+            // Mod loading.
+            if (!HasModsQueuedForLoading)
+            {
+                DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
+                Game.ContentManager.Mods.ForEach(LoadMod);
+            }
+            if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsLoaded))
+            {
+                gatherModBlueprints();
+            }
+        }
+
+        private void gatherModBlueprints()
+        {
+            var blueprints = Game.Blueprints;
+
+            foreach (var mod in modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod()).Prepend(DebugMod.Create()))
+            {
+                mod.Units.All.ForEach(unit => blueprints.Units.Add(unit));
+            }
+
+            Game.RequestDispatcher.Dispatch(
+                ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
         }
 
         protected void LoadMod(ModMetadata modMetadata)
