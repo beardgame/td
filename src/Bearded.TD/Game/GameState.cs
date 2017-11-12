@@ -81,8 +81,7 @@ namespace Bearded.TD.Game
         public T Get<T>()
             where T : class
         {
-            object obj;
-            singletons.TryGetValue(typeof(T), out obj);
+            singletons.TryGetValue(typeof(T), out var obj);
             return (T)obj;
         }
 
@@ -117,8 +116,7 @@ namespace Bearded.TD.Game
         private DeletableObjectList<T> getList<T>()
             where T : class, IDeletable
         {
-            object list;
-            if (lists.TryGetValue(typeof(T), out list))
+            if (lists.TryGetValue(typeof(T), out var list))
                 return (DeletableObjectList<T>)list;
 
             var l = new DeletableObjectList<T>();
@@ -130,8 +128,7 @@ namespace Bearded.TD.Game
         private IdDictionary<T> getDictionary<T>()
             where T : class, IIdable<T>
         {
-            object dict;
-            if (dictionaries.TryGetValue(typeof(T), out dict))
+            if (dictionaries.TryGetValue(typeof(T), out var dict))
                 return (IdDictionary<T>)dict;
 
             var d = new IdDictionary<T>();
@@ -149,11 +146,6 @@ namespace Bearded.TD.Game
             if (RootFaction != null)
                 throw new Exception("Can only have one root faction. All other factions need parents.");
             RootFaction = faction;
-        }
-
-        public void RemoveFaction(Faction faction)
-        {
-            factions.Remove(faction);
         }
 
         public void Advance(TimeSpan elapsedTime)
