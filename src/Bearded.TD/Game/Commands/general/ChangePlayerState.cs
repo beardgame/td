@@ -9,9 +9,9 @@ namespace Bearded.TD.Game.Commands
 {
     static class ChangePlayerState
     {
-        public static ICommand Command(Player player, PlayerConnectionState state)
+        public static ICommand<GameInstance> Command(Player player, PlayerConnectionState state)
             => new Implementation(player, state);
-        public static IRequest Request(Player player, PlayerConnectionState state)
+        public static IRequest<GameInstance, Player> Request(Player player, PlayerConnectionState state)
             => new Implementation(player, state);
 
         private class Implementation : UnifiedRequestCommand

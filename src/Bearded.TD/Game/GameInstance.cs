@@ -15,8 +15,8 @@ namespace Bearded.TD.Game
     {
         public ContentManager ContentManager { get; }
         public Player Me { get; }
-        public IRequestDispatcher RequestDispatcher { get; }
-        public IDataMessageHandler DataMessageHandler { get; }
+        public IRequestDispatcher<GameInstance, Player> RequestDispatcher { get; }
+        public IDataMessageHandler<GameInstance, Player> DataMessageHandler { get; }
         public IGameController Controller { get; }
         public GameMeta Meta { get; }
         

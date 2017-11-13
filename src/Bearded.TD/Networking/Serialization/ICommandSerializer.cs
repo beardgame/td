@@ -1,11 +1,10 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
 
 namespace Bearded.TD.Networking.Serialization
 {
-    interface ICommandSerializer
+    interface ICommandSerializer<in TContext>
     {
-        ICommand GetCommand(GameInstance game);
+        ICommand<TContext> GetCommand(TContext game);
         void Serialize(INetBufferStream stream);
     }
 }

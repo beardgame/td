@@ -3,48 +3,48 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands
 {
-    interface ICommandDispatcher
+    interface ICommandDispatcher<out TContext>
     {
-        void Dispatch(ICommand command);
+        void Dispatch(ICommand<TContext> command);
     }
 
-    class ClientCommandDispatcher : ICommandDispatcher
+    class ClientCommandDispatcher<TContext> : ICommandDispatcher<TContext>
     {
-        private readonly ICommandExecutor executor;
+        private readonly ICommandExecutor<TContext> executor;
 
-        public ClientCommandDispatcher(ICommandExecutor executor)
+        public ClientCommandDispatcher(ICommandExecutor<TContext> executor)
         {
             this.executor = executor;
         }
 
-        public void Dispatch(ICommand command)
+        public void Dispatch(ICommand<TContext> command)
         {
             executor.Execute(command);
         }
     }
 
-    class ServerCommandDispatcher : ICommandDispatcher
+    class ServerCommandDispatcher<TContext, TPeer> : ICommandDispatcher<TContext>
     {
-        private readonly ICommandExecutor executor;
-        private readonly ServerNetworkInterface network;
+        private readonly ICommandExecutor<TContext> executor;
+        private readonly ServerNetworkInterface<TPeer> network;
 
-        public ServerCommandDispatcher(ICommandExecutor executor, ServerNetworkInterface network)
+        public ServerCommandDispatcher(ICommandExecutor<TContext> executor, ServerNetworkInterface<TPeer> network)
         {
             this.executor = executor;
             this.network = network;
         }
 
-        public void Dispatch(ICommand command)
+        public void Dispatch(ICommand<TContext> command)
         {
             if (command == null)
                 return;
 
-            sendToAllPlayers(command);
+            sendToAllPeers(command);
 
             executor.Execute(command);
         }
 
-        private void sendToAllPlayers(ICommand command)
+        private void sendToAllPeers(ICommand<TContext> command)
         {
             if (network.PeerCount == 0)
                 return;
@@ -52,7 +52,7 @@ namespace Bearded.TD.Commands
             var message = network.CreateMessage();
 
             var serializer = command.Serializer;
-            var serializers = Serializers.Instance;
+            var serializers = Serializers<TContext, TPeer>.Instance;
             var id = serializers.CommandId(command.Serializer);
 
             message.Write(id);

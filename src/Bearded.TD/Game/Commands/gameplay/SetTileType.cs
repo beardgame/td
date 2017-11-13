@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class SetTileType
     {
-        public static IRequest Request(GameState game, Tile<TileInfo> tile, TileInfo.Type type, TileDrawInfo drawInfo)
+        public static IRequest<GameInstance, Player> Request(GameState game, Tile<TileInfo> tile, TileInfo.Type type, TileDrawInfo drawInfo)
             => new Implementation(game, tile, type, drawInfo);
 
         private class Implementation : UnifiedDebugRequestCommand

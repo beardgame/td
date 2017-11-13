@@ -7,10 +7,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class RemovePlayer
     {
-        public static ICommand Command(GameInstance game, Player player)
+        public static ICommand<GameInstance> Command(GameInstance game, Player player)
             => new Implementation(game, player);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Player player;
@@ -26,10 +26,10 @@ namespace Bearded.TD.Game.Commands
                 game.RemovePlayer(player);
             }
 
-            public ICommandSerializer Serializer => new Serializer(player);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(player);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Player> player;
 
@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ICommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, game.PlayerFor(player));
 
             public void Serialize(INetBufferStream stream)

@@ -4,12 +4,12 @@ using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Commands
 {
-    interface IRequestDispatcher
+    interface IRequestDispatcher<out TContext, out TSender>
     {
-        void Dispatch(IRequest request);
+        void Dispatch(IRequest<TContext, TSender> request);
     }
 
-    class ClientRequestDispatcher : IRequestDispatcher
+    class ClientRequestDispatcher<TContext, TSender> : IRequestDispatcher<TContext, TSender>
     {
         private readonly ClientNetworkInterface network;
         private readonly Logger logger;
@@ -20,17 +20,17 @@ namespace Bearded.TD.Commands
             this.logger = logger;
         }
 
-        public void Dispatch(IRequest request)
+        public void Dispatch(IRequest<TContext, TSender> request)
         {
             sendToServer(request);
         }
 
-        private void sendToServer(IRequest request)
+        private void sendToServer(IRequest<TContext, TSender> request)
         {
             var message = network.CreateMessage();
 
             var serializer = request.Serializer;
-            var serializers = Serializers.Instance;
+            var serializers = Serializers<TContext, TSender>.Instance;
             var id = serializers.RequestId(request.Serializer);
 
             message.Write(id);
@@ -40,18 +40,18 @@ namespace Bearded.TD.Commands
         }
     }
 
-    class ServerRequestDispatcher : IRequestDispatcher
+    class ServerRequestDispatcher<TContext, TSender> : IRequestDispatcher<TContext, TSender>
     {
-        private readonly ICommandDispatcher commandDispatcher;
+        private readonly ICommandDispatcher<TContext> commandDispatcher;
         private readonly Logger logger;
 
-        public ServerRequestDispatcher(ICommandDispatcher commandDispatcher, Logger logger)
+        public ServerRequestDispatcher(ICommandDispatcher<TContext> commandDispatcher, Logger logger)
         {
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
         }
 
-        public void Dispatch(IRequest request)
+        public void Dispatch(IRequest<TContext, TSender> request)
         {
             var command = request.CheckPreconditions()
                 ? execute(request)
@@ -60,12 +60,12 @@ namespace Bearded.TD.Commands
             commandDispatcher.Dispatch(command);
         }
 
-        private ICommand cancel(IRequest request)
+        private ICommand<TContext> cancel(IRequest<TContext, TSender> request)
         {
             return null;
         }
 
-        private ICommand execute(IRequest request)
+        private ICommand<TContext> execute(IRequest<TContext, TSender> request)
         {
             return request.ToCommand();
         }

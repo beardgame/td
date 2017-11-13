@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
@@ -44,7 +45,7 @@ namespace Bearded.TD.Screens
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(
                 Parent,
                 Geometries,
-                new ServerLobbyManager(new ServerNetworkInterface(logger), logger, contentManager),
+                new ServerLobbyManager(new ServerNetworkInterface<Player>(logger), logger, contentManager),
                 inputManager));
             Destroy();
         }

@@ -7,10 +7,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class CreateGameState
     {
-        public static ICommand Command(GameInstance game, int radius)
+        public static ICommand<GameInstance> Command(GameInstance game, int radius)
             => new Implementation(game, radius);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly int radius;
@@ -28,10 +28,10 @@ namespace Bearded.TD.Game.Commands
                 game.InitialiseState(state);
             }
 
-            public ICommandSerializer Serializer => new Serializer(radius);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(radius);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private int radius;
 
@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Commands
                 this.radius = radius;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ICommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, radius);
 
             public void Serialize(INetBufferStream stream)

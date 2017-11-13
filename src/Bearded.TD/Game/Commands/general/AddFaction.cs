@@ -8,10 +8,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class AddFaction
     {
-        public static ICommand Command(GameInstance game, Faction faction)
+        public static ICommand<GameInstance> Command(GameInstance game, Faction faction)
             => new Implementation(game, faction);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Faction faction;
@@ -27,10 +27,10 @@ namespace Bearded.TD.Game.Commands
                 game.State.AddFaction(faction);
             }
 
-            public ICommandSerializer Serializer => new Serializer(faction);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(faction);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Faction> id;
             private Id<Faction> parent;
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ICommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(
                     game,
                     new Faction(id, parent.IsValid ? game.State.FactionFor(parent) : null, hasResources, color));

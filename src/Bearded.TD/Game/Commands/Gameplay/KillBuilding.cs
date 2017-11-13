@@ -3,13 +3,13 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands.gameplay
+namespace Bearded.TD.Game.Commands
 {
     static class KillBuilding
     {
-        public static ICommand Command(Building building) => new Implementation(building);
+        public static ICommand<GameInstance> Command(Building building) => new Implementation(building);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly Building building;
 
@@ -19,10 +19,10 @@ namespace Bearded.TD.Game.Commands.gameplay
             }
 
             public void Execute() => building.Delete();
-            public ICommandSerializer Serializer => new Serializer(building);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(building);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> building;
 
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands.gameplay
                 this.building = building.Id;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ICommand<GameInstance> GetCommand(GameInstance game)
             {
                 return new Implementation(game.State.Find(building));
             }

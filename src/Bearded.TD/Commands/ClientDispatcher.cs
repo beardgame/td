@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.Commands
 {
-    class ClientDispatcher : BaseClientDispatcher
+    class ClientDispatcher<TContext> : BaseClientDispatcher<TContext>
     {
 
     }
