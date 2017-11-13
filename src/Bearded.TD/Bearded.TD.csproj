@@ -191,6 +191,7 @@
     <Compile Include="Mods\ModLister.cs" />
     <Compile Include="Mods\ContentManager.cs" />
     <Compile Include="Mods\ModLoader.cs" />
+    <Compile Include="Mods\ModLoadingContext.cs" />
     <Compile Include="Mods\ModSorter.cs" />
     <Compile Include="Mods\Serialization\Models\BuildingBlueprint.cs" />
     <Compile Include="Mods\Serialization\Models\IConvertsTo.cs" />
@@ -202,6 +203,7 @@
     <Compile Include="UI\Model\SelectionManager.cs" />
     <Compile Include="UI\Model\SelectionState.cs" />
     <Compile Include="Rendering\IRenderLayer.cs" />
+    <Compile Include="Utilities\Either.cs" />
     <Compile Include="Utilities\Input\ActionState.cs" />
     <Compile Include="UI\Input\BuildingInteractionHandler.cs" />
     <Compile Include="UI\Components\game\DebugGenerationInfo.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="Utilities\Input\InputManager.cs" />
     <Compile Include="Utilities\Collections\LinqExtensions.cs" />
     <Compile Include="Utilities\Geometry\Line.cs" />
+    <Compile Include="Utilities\LinqExtensions.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
     <Compile Include="Utilities\Collections\ReadonlyIdDictionary.cs" />
     <Compile Include="Utilities\SpaceTimeExtensions.cs" />

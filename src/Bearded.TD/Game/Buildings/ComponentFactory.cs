@@ -7,10 +7,10 @@ namespace Bearded.TD.Game.Buildings
     {
         public string Id { get; }
         private readonly Func<Component> factoryMethod;
-        private readonly Func<IComponent<BuildingGhost>> ghostFactoryMethod;
+        private readonly Func<Component<BuildingGhost>> ghostFactoryMethod;
 
         public ComponentFactory(
-            string id, Func<Component> factoryMethod, Func<IComponent<BuildingGhost>> ghostFactoryMethod = null)
+            string id, Func<Component> factoryMethod, Func<Component<BuildingGhost>> ghostFactoryMethod = null)
         {
             Id = id;
             this.factoryMethod = factoryMethod;
@@ -19,6 +19,6 @@ namespace Bearded.TD.Game.Buildings
 
         public Component Create() => factoryMethod();
 
-        public IComponent<BuildingGhost> CreateForGhost() => ghostFactoryMethod?.Invoke();
+        public Component<BuildingGhost> CreateForGhost() => ghostFactoryMethod?.Invoke();
     }
 }

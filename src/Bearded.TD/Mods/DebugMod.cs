@@ -25,7 +25,7 @@ namespace Bearded.TD.Mods
                 new ComponentFactory("sink", () => new EnemySink()),
                 new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy()),
                 new ComponentFactory("incomeOverTime", () => new IncomeOverTime()),
-                new ComponentFactory("turret", () => new Turret(), () => new TileVisibility(Turret.Range)),
+                new ComponentFactory("turret", () => new Turret(), () => new TileVisibility<BuildingGhost>(Turret.Range)),
                 new ComponentFactory("workerHub", () => new WorkerHub())
             });
 

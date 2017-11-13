@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,29 +7,32 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
-using Bearded.Utilities;
+using Bearded.TD.Utilities;
 using Newtonsoft.Json;
 using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
 using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Mods
 {
     static class ModLoader
     {
-        public static async Task<Mod> Load(ModMetadata mod)
+        public static async Task<Mod> Load(ModLoadingContext context, ModMetadata mod)
         {
-            return await new Loader(mod).Load();
+            return await new Loader(context, mod).Load();
         }
 
         private sealed class Loader
         {
+            private readonly ModLoadingContext context;
             private readonly ModMetadata meta;
             private JsonSerializer serializer;
 
-            public Loader(ModMetadata meta)
+            public Loader(ModLoadingContext context, ModMetadata meta)
             {
+                this.context = context;
                 this.meta = meta;
             }
 
@@ -85,27 +89,47 @@ namespace Bearded.TD.Mods
                 where TBlueprint : IBlueprint
                 where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
             {
-                var files = meta.Directory
-                    .GetDirectories(path, SearchOption.TopDirectoryOnly)
-                    .SingleOrDefault()
-                    ?.GetFiles("*.json", SearchOption.AllDirectories);
+                var files = jsonFilesIn(path);
 
-                if (files == null)
-                    return new ReadonlyBlueprintCollection<TBlueprint>(Enumerable.Empty<TBlueprint>());
+                return new ReadonlyBlueprintCollection<TBlueprint>(
+                    files.IsNullOrEmpty()
+                        ? Enumerable.Empty<TBlueprint>()
+                        : loadBlueprintsFromFiles<TBlueprint, TJsonModel, TResolvers>(path, resolvers, files)
+                    );
+            }
 
+            private List<TBlueprint> loadBlueprintsFromFiles
+                <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers, FileInfo[] files)
+                where TBlueprint : IBlueprint
+                where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
+            {
                 var blueprints = new List<TBlueprint>();
 
                 foreach (var file in files)
                 {
-                    var text = file.OpenText();
-                    var reader = new JsonTextReader(text);
-                    var jsonModel = serializer.Deserialize<TJsonModel>(reader);
+                    try
+                    {
+                        var text = file.OpenText();
+                        var reader = new JsonTextReader(text);
+                        var jsonModel = serializer.Deserialize<TJsonModel>(reader);
+                        var gameModel = jsonModel.ToGameModel(resolvers);
 
-                    blueprints.Add(jsonModel.ToGameModel(resolvers));
+                        blueprints.Add(gameModel);
+                    }
+                    catch (Exception e)
+                    {
+                        context.Logger.Warning.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
+                    }
                 }
 
-                return new ReadonlyBlueprintCollection<TBlueprint>(blueprints);
+                return blueprints;
             }
+
+            private FileInfo[] jsonFilesIn(string path)
+                => meta.Directory
+                    .GetDirectories(path, SearchOption.TopDirectoryOnly)
+                    .SingleOrDefault()
+                    ?.GetFiles("*.json", SearchOption.AllDirectories);
         }
     }
 }

@@ -6,7 +6,8 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.IPositionable
 {
-    class TileVisibility : Component<IPositionableGameObject>
+    class TileVisibility<T> : Component<T>
+        where T : GameObject, Game.IPositionable
     {
         private readonly Unit radius;
 

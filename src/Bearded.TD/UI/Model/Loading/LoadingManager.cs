@@ -51,7 +51,7 @@ namespace Bearded.TD.UI.Model.Loading
                 DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
                 Game.ContentManager.Mods.ForEach(loadMod);
             }
-            if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsLoaded))
+            if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
             {
                 gatherModBlueprints();
             }
@@ -60,7 +60,8 @@ namespace Bearded.TD.UI.Model.Loading
         private void loadMod(ModMetadata modMetadata)
         {
             var modForLoading = modMetadata.PrepareForLoading();
-            modForLoading.StartLoading();
+            var context = new ModLoadingContext(Logger);
+            modForLoading.StartLoading(context);
             modsForLoading.Add(modForLoading);
         }
 
