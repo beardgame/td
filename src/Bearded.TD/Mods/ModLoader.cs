@@ -41,13 +41,8 @@ namespace Bearded.TD.Mods
             {
                 configureSerializer();
 
-                var footprints = loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
-                var buildings =
-                    loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, DependencyResolver<FootprintGroup>>(
-                        "defs/buildings",
-                        new DependencyResolver<FootprintGroup>(meta, footprints, Enumerable.Empty<Mod>(),
-                            m => m.Blueprints.Footprints)
-                    );
+                var footprints = loadFootprints();
+                var buildings = loadBuildings(footprints);
 
                 return new Mod(
                     footprints,
@@ -56,6 +51,18 @@ namespace Bearded.TD.Mods
                     empty<UnitBlueprint>()
                     );
             }
+
+            private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
+                => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
+
+            private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints)
+                => loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, DependencyResolver<FootprintGroup>>(
+                "defs/buildings",
+                new DependencyResolver<FootprintGroup>(
+                    meta, footprints, Enumerable.Empty<Mod>(),
+                    m => m.Blueprints.Footprints
+                    )
+                );
 
             private static ReadonlyBlueprintCollection<T> empty<T>()
                 where T : IBlueprint
