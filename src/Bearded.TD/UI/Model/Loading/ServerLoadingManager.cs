@@ -15,7 +15,7 @@ namespace Bearded.TD.UI.Model.Loading
     class ServerLoadingManager : LoadingManager
     {
         public ServerLoadingManager(
-            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
+            GameInstance game, IDispatcher<GameInstance> dispatcher, NetworkInterface networkInterface, Logger logger)
             : base(game, dispatcher, networkInterface, logger)
         {
         }

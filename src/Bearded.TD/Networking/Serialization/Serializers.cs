@@ -7,21 +7,21 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Networking.Serialization
 {
-    sealed class Serializers
+    sealed class Serializers<TContext, TSender>
     {
-        public static Serializers Instance { get; } = new Serializers();
+        public static Serializers<TContext, TSender> Instance { get; } = new Serializers<TContext, TSender>();
 
         private readonly Dictionary<Type, int> requestIds;
         private readonly Dictionary<Type, int> commandIds;
-        private readonly Dictionary<int, Func<IRequestSerializer>> requestSerializers;
-        private readonly Dictionary<int, Func<ICommandSerializer>> commandSerializers;
+        private readonly Dictionary<int, Func<IRequestSerializer<TContext, TSender>>> requestSerializers;
+        private readonly Dictionary<int, Func<ICommandSerializer<TContext>>> commandSerializers;
         private readonly int firstCommandId;
         private readonly int maxId;
 
-        public int RequestId(IRequestSerializer serializer) => requestIds[serializer.GetType()];
-        public int CommandId(ICommandSerializer serializer) => commandIds[serializer.GetType()];
-        public IRequestSerializer RequestSerializer(int id) => requestSerializers[id]();
-        public ICommandSerializer CommandSerializer(int id) => commandSerializers[id]();
+        public int RequestId(IRequestSerializer<TContext, TSender> serializer) => requestIds[serializer.GetType()];
+        public int CommandId(ICommandSerializer<TContext> serializer) => commandIds[serializer.GetType()];
+        public IRequestSerializer<TContext, TSender> RequestSerializer(int id) => requestSerializers[id]();
+        public ICommandSerializer<TContext> CommandSerializer(int id) => commandSerializers[id]();
         public bool IsRequestSerializer(int id) => id >= 0 && id < firstCommandId;
         public bool IsCommandSerializer(int id) => id >= firstCommandId && id < maxId;
         public bool IsValidId(int id) => id >= 0 && id < maxId;
@@ -45,8 +45,8 @@ namespace Bearded.TD.Networking.Serialization
         private static void init(
             out Dictionary<Type, int> rIds,
             out Dictionary<Type, int> cIds,
-            out Dictionary<int, Func<IRequestSerializer>> rSerializers,
-            out Dictionary<int, Func<ICommandSerializer>> cSerializers,
+            out Dictionary<int, Func<IRequestSerializer<TContext, TSender>>> rSerializers,
+            out Dictionary<int, Func<ICommandSerializer<TContext>>> cSerializers,
             out int firstCId,
             out int maxId)
         {
@@ -57,8 +57,8 @@ namespace Bearded.TD.Networking.Serialization
             cIds = getIds(commands, firstCId);
             maxId = firstCId + cIds.Count;
 
-            rSerializers = createConstructors<IRequestSerializer>(requests, rIds);
-            cSerializers = createConstructors<ICommandSerializer>(commands, cIds);
+            rSerializers = createConstructors<IRequestSerializer<TContext, TSender>>(requests, rIds);
+            cSerializers = createConstructors<ICommandSerializer<TContext>>(commands, cIds);
         }
 
         private static (List<Type>, List<Type>) getSerializers()
@@ -66,7 +66,7 @@ namespace Bearded.TD.Networking.Serialization
             var requests = new List<Type>();
             var commands = new List<Type>();
 
-            var assembly = typeof(Serializers).Assembly;
+            var assembly = typeof(Serializers<TContext, TSender>).Assembly;
             var types = assembly.GetTypes();
 
             foreach (var type in types)
@@ -74,8 +74,8 @@ namespace Bearded.TD.Networking.Serialization
                 if (!type.IsClass || type.IsAbstract)
                     continue;
 
-                var isRequestSerializer = type.Implements<IRequestSerializer>();
-                var isCommandSerializer = type.Implements<ICommandSerializer>();
+                var isRequestSerializer = type.Implements<IRequestSerializer<TContext, TSender>>();
+                var isCommandSerializer = type.Implements<ICommandSerializer<TContext>>();
 
                 if (!(isRequestSerializer || isCommandSerializer))
                     continue;

@@ -1,17 +1,16 @@
 using System.Collections.Generic;
-using Bearded.TD.Game.Players;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking
 {
-    class ServerNetworkInterface : NetworkInterface
+    class ServerNetworkInterface<TPeer> : NetworkInterface
     {
         private readonly NetServer server;
         private readonly List<NetConnection> connectedPeers = new List<NetConnection>();
 
-        private readonly Dictionary<NetConnection, Player> connectionToPlayer = new Dictionary<NetConnection, Player>();
-        private readonly Dictionary<Player, NetConnection> playerToConnection = new Dictionary<Player, NetConnection>();
+        private readonly Dictionary<NetConnection, TPeer> connectionToPeer = new Dictionary<NetConnection, TPeer>();
+        private readonly Dictionary<TPeer, NetConnection> peerToConnection = new Dictionary<TPeer, NetConnection>();
 
         public int PeerCount => connectedPeers.Count;
 
@@ -46,37 +45,37 @@ namespace Bearded.TD.Networking
             server.SendToAll(message, null, NetDeliveryMethod.ReliableOrdered, (int) channel);
         }
 
-        public void SendMessageToPlayer(Player player, NetOutgoingMessage message, NetworkChannel channel)
+        public void SendMessageToPeer(TPeer player, NetOutgoingMessage message, NetworkChannel channel)
         {
-            server.SendMessage(message, playerToConnection[player], NetDeliveryMethod.ReliableOrdered, (int) channel);
+            server.SendMessage(message, peerToConnection[player], NetDeliveryMethod.ReliableOrdered, (int) channel);
         }
 
-        public void AddPlayerConnection(Player player, NetConnection connection)
+        public void AddPeerConnection(TPeer player, NetConnection connection)
         {
             connectedPeers.Add(connection);
-            connectionToPlayer.Add(connection, player);
-            playerToConnection.Add(player, connection);
+            connectionToPeer.Add(connection, player);
+            peerToConnection.Add(player, connection);
         }
 
-        public Player GetSender(NetIncomingMessage msg)
+        public TPeer GetSender(NetIncomingMessage msg)
         {
-            return connectionToPlayer[msg.SenderConnection];
+            return connectionToPeer[msg.SenderConnection];
         }
 
-        public void RemovePlayerConnection(Player player)
+        public void RemovePeerConnection(TPeer player)
         {
-            var conn = playerToConnection[player];
+            var conn = peerToConnection[player];
             connectedPeers.Remove(conn);
-            connectionToPlayer.Remove(conn);
-            playerToConnection.Remove(player);
+            connectionToPeer.Remove(conn);
+            peerToConnection.Remove(player);
         }
 
-        public void RemovePlayerConnection(NetConnection conn)
+        public void RemovePeerConnection(NetConnection conn)
         {
-            var player = connectionToPlayer[conn];
+            var player = connectionToPeer[conn];
             connectedPeers.Remove(conn);
-            connectionToPlayer.Remove(conn);
-            playerToConnection.Remove(player);
+            connectionToPeer.Remove(conn);
+            peerToConnection.Remove(player);
         }
     }
 }

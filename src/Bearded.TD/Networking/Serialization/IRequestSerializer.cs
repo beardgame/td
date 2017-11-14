@@ -1,12 +1,10 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Players;
 
 namespace Bearded.TD.Networking.Serialization
 {
-    interface IRequestSerializer
+    interface IRequestSerializer<in TContext, in TSender>
     {
-        IRequest GetRequest(GameInstance game, Player sender);
+        IRequest<TContext, TSender> GetRequest(TContext game, TSender sender);
         void Serialize(INetBufferStream stream);
     }
 }

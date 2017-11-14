@@ -2,11 +2,11 @@
 
 namespace Bearded.TD.Commands
 {
-    interface ICommand
+    interface ICommand<in TContext>
     {
         void Execute();
 
-        ICommandSerializer Serializer { get; }
+        ICommandSerializer<TContext> Serializer { get; }
     }
 
 }

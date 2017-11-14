@@ -1,39 +1,40 @@
 ﻿using System;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 
 namespace Bearded.TD.Game.Commands
 {
     static class RequestExtensions
     {
-        public static void Request(this GameInstance game, IRequest request)
+        public static void Request(this GameInstance game, IRequest<GameInstance, Player> request)
             => game.RequestDispatcher.Dispatch(request);
 
-        public static void Request(this GameInstance game, Func<IRequest> func)
+        public static void Request(this GameInstance game, Func<IRequest<GameInstance, Player>> func)
             => game.Request(func());
-        public static void Request<T>(this GameInstance game, Func<T, IRequest> func, T p)
+        public static void Request<T>(this GameInstance game, Func<T, IRequest<GameInstance, Player>> func, T p)
             => game.Request(func(p));
-        public static void Request<T1, T2>(this GameInstance game, Func<T1, T2, IRequest> func, T1 p1, T2 p2)
+        public static void Request<T1, T2>(this GameInstance game, Func<T1, T2, IRequest<GameInstance, Player>> func, T1 p1, T2 p2)
             => game.Request(func(p1, p2));
-        public static void Request<T1, T2, T3>(this GameInstance game, Func<T1, T2, T3, IRequest> func, T1 p1, T2 p2, T3 p3)
+        public static void Request<T1, T2, T3>(this GameInstance game, Func<T1, T2, T3, IRequest<GameInstance, Player>> func, T1 p1, T2 p2, T3 p3)
             => game.Request(func(p1, p2, p3));
 
-        public static void Request(this GameInstance game, Func<GameState, IRequest> func)
+        public static void Request(this GameInstance game, Func<GameState, IRequest<GameInstance, Player>> func)
             => game.Request(func(game.State));
-        public static void Request<T>(this GameInstance game, Func<GameState, T, IRequest> func, T p)
+        public static void Request<T>(this GameInstance game, Func<GameState, T, IRequest<GameInstance, Player>> func, T p)
             => game.Request(func(game.State, p));
-        public static void Request<T1, T2>(this GameInstance game, Func<GameState, T1, T2, IRequest> func, T1 p1, T2 p2)
+        public static void Request<T1, T2>(this GameInstance game, Func<GameState, T1, T2, IRequest<GameInstance, Player>> func, T1 p1, T2 p2)
             => game.Request(func(game.State, p1, p2));
-        public static void Request<T1, T2, T3>(this GameInstance game, Func<GameState, T1, T2, T3, IRequest> func, T1 p1, T2 p2, T3 p3)
+        public static void Request<T1, T2, T3>(this GameInstance game, Func<GameState, T1, T2, T3, IRequest<GameInstance, Player>> func, T1 p1, T2 p2, T3 p3)
             => game.Request(func(game.State, p1, p2, p3));
 
 
-        public static void Request(this GameInstance game, Func<GameInstance, IRequest> func)
+        public static void Request(this GameInstance game, Func<GameInstance, IRequest<GameInstance, Player>> func)
             => game.Request(func(game));
-        public static void Request<T>(this GameInstance game, Func<GameInstance, T, IRequest> func, T p)
+        public static void Request<T>(this GameInstance game, Func<GameInstance, T, IRequest<GameInstance, Player>> func, T p)
             => game.Request(func(game, p));
-        public static void Request<T1, T2>(this GameInstance game, Func<GameInstance, T1, T2, IRequest> func, T1 p1, T2 p2)
+        public static void Request<T1, T2>(this GameInstance game, Func<GameInstance, T1, T2, IRequest<GameInstance, Player>> func, T1 p1, T2 p2)
             => game.Request(func(game, p1, p2));
-        public static void Request<T1, T2, T3>(this GameInstance game, Func<GameInstance, T1, T2, T3, IRequest> func, T1 p1, T2 p2, T3 p3)
+        public static void Request<T1, T2, T3>(this GameInstance game, Func<GameInstance, T1, T2, T3, IRequest<GameInstance, Player>> func, T1 p1, T2 p2, T3 p3)
             => game.Request(func(game, p1, p2, p3));
     }
 }

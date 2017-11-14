@@ -8,9 +8,9 @@ namespace Bearded.TD.Game.Commands
 {
     static class KillUnit
     {
-        public static ICommand Command(GameUnit unit, Faction faction) => new Implementation(unit, faction);
+        public static ICommand<GameInstance> Command(GameUnit unit, Faction faction) => new Implementation(unit, faction);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly GameUnit unit;
             private readonly Faction killingBlowFaction;
@@ -22,10 +22,10 @@ namespace Bearded.TD.Game.Commands
             }
 
             public void Execute() => unit.Kill(killingBlowFaction);
-            public ICommandSerializer Serializer => new Serializer(unit, killingBlowFaction);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(unit, killingBlowFaction);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<GameUnit> unit;
             private Id<Faction> killingBlowFaction;
@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Commands
                 this.killingBlowFaction = killingBlowFaction?.Id ?? Id<Faction>.Invalid;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ICommand<GameInstance> GetCommand(GameInstance game)
             {
                 return new Implementation(game.State.Find(unit), killingBlowFaction.IsValid ? game.State.FactionFor(killingBlowFaction) : null);
             }

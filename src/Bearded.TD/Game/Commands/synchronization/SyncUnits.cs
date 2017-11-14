@@ -9,10 +9,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class SyncUnits
     {
-        public static ICommand Command(IEnumerable<GameUnit> units)
+        public static ICommand<GameInstance> Command(IEnumerable<GameUnit> units)
             => new Implementation(units.Select(u => (u, u.GetCurrentState())).ToList());
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly IList<(GameUnit, GameUnitState)> units;
 
@@ -29,10 +29,10 @@ namespace Bearded.TD.Game.Commands
                 }
             }
 
-            public ICommandSerializer Serializer => new Serializer(units);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(units);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private (Id<GameUnit> unit, GameUnitState state)[] units;
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public ICommand GetCommand(GameInstance game) =>
+            public ICommand<GameInstance> GetCommand(GameInstance game) =>
                 new Implementation(units.Select(tuple => (game.State.Find(tuple.unit), tuple.state)).ToList());
 
             public void Serialize(INetBufferStream stream)

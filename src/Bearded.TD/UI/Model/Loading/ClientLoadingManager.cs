@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Model.Loading
     class ClientLoadingManager : LoadingManager
     {
         public ClientLoadingManager(
-            GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
+            GameInstance game, IDispatcher<GameInstance> dispatcher, NetworkInterface networkInterface, Logger logger)
             : base(game, dispatcher, networkInterface, logger) { }
 
         public override void Update(UpdateEventArgs args)

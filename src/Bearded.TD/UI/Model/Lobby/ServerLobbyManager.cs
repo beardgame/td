@@ -14,9 +14,9 @@ namespace Bearded.TD.UI.Model.Lobby
 {
     class ServerLobbyManager : LobbyManager
     {
-        private readonly ServerNetworkInterface networkInterface;
+        private readonly ServerNetworkInterface<Player> networkInterface;
 
-        public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)
+        public ServerLobbyManager(ServerNetworkInterface<Player> networkInterface, Logger logger, ContentManager contentManager)
             : base(new ServerGameContext(networkInterface, logger), contentManager)
         {
             this.networkInterface = networkInterface;
@@ -57,7 +57,7 @@ namespace Bearded.TD.UI.Model.Lobby
             Dispatcher.RunOnlyOnServer(
                 commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(Game, newPlayer)));
             newPlayer.ConnectionState = PlayerConnectionState.Connecting;
-            networkInterface.AddPlayerConnection(newPlayer, msg.SenderConnection);
+            networkInterface.AddPeerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }
 
@@ -90,13 +90,13 @@ namespace Bearded.TD.UI.Model.Lobby
                     // For now we manually send this event to just the one player, but we should make an interface for this.
                     var outMsg = networkInterface.CreateMessage();
                     var serializer = AddPlayer.Command(Game, Game.Me).Serializer;
-                    outMsg.Write(Serializers.Instance.CommandId(serializer));
+                    outMsg.Write(Serializers<GameInstance, Player>.Instance.CommandId(serializer));
                     serializer.Serialize(new NetBufferWriter(outMsg));
-                    networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
+                    networkInterface.SendMessageToPeer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
                     break;
                 case NetConnectionStatus.Disconnected:
                     Game.RemovePlayer(networkInterface.GetSender(msg));
-                    networkInterface.RemovePlayerConnection(msg.SenderConnection);
+                    networkInterface.RemovePeerConnection(msg.SenderConnection);
                     break;
             }
         }

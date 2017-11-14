@@ -1,29 +1,29 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Players;
 
 namespace Bearded.TD.Networking.Serialization
 {
     static class SerializerExtensions
     {
-        public static IRequest Read(this IRequestSerializer me, NetBufferReader stream, GameInstance game, Player sender)
+        public static IRequest<TContext, TSender> Read<TContext, TSender>(
+            this IRequestSerializer<TContext, TSender> me, NetBufferReader stream, TContext context, TSender sender)
         {
             me.Serialize(stream);
-            return me.GetRequest(game, sender);
+            return me.GetRequest(context, sender);
         }
 
-        public static ICommand Read(this ICommandSerializer me, NetBufferReader stream, GameInstance game)
+        public static ICommand<TContext> Read<TContext>(
+            this ICommandSerializer<TContext> me, NetBufferReader stream, TContext context)
         {
             me.Serialize(stream);
-            return me.GetCommand(game);
+            return me.GetCommand(context);
         }
 
-        public static void Write(this IRequest me, NetBufferWriter stream)
+        public static void Write<TContext, TSender>(this IRequest<TContext, TSender> me, NetBufferWriter stream)
         {
             me.Serializer.Serialize(stream);
         }
 
-        public static void Write(this ICommand me, NetBufferWriter stream)
+        public static void Write<TContext>(this ICommand<TContext> me, NetBufferWriter stream)
         {
             me.Serializer.Serialize(stream);
         }

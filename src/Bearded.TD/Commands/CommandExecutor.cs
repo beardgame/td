@@ -1,13 +1,13 @@
 ﻿namespace Bearded.TD.Commands
 {
-    interface ICommandExecutor
+    interface ICommandExecutor<out TContext>
     {
-        void Execute(ICommand command);
+        void Execute(ICommand<TContext> command);
     }
 
-    class DefaultCommandExecutor : ICommandExecutor
+    class DefaultCommandExecutor<TContext> : ICommandExecutor<TContext>
     {
-        public void Execute(ICommand command)
+        public void Execute(ICommand<TContext> command)
         {
             command.Execute();
         }

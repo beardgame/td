@@ -1,25 +1,27 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking
 {
-    interface IDataMessageHandler
+    interface IDataMessageHandler<TContext, TSender>
     {
         void HandleIncomingMessage(NetIncomingMessage msg);
     }
 
-    class ServerDataMessageHandler : IDataMessageHandler
+    class ServerDataMessageHandler<TContext, TSender> : IDataMessageHandler<TContext, TSender>
     {
-        private readonly GameInstance game;
-        private readonly ServerNetworkInterface networkInterface;
+        private readonly TContext context;
+        private readonly IRequestDispatcher<TContext, TSender> requestDispatcher;
+        private readonly ServerNetworkInterface<TSender> networkInterface;
         private readonly Logger logger;
 
-        public ServerDataMessageHandler(GameInstance game, ServerNetworkInterface networkInterface, Logger logger)
+        public ServerDataMessageHandler(
+            TContext context, IRequestDispatcher<TContext, TSender> requestDispatcher, ServerNetworkInterface<TSender> networkInterface, Logger logger)
         {
-            this.game = game;
+            this.context = context;
+            this.requestDispatcher = requestDispatcher;
             this.networkInterface = networkInterface;
             this.logger = logger;
         }
@@ -28,10 +30,11 @@ namespace Bearded.TD.Networking
         {
             var typeId = msg.ReadInt32();
             // We only accept requests. We should not be receiving commands on the server.
-            if (Serializers.Instance.IsRequestSerializer(typeId))
+            if (Serializers<TContext, TSender>.Instance.IsRequestSerializer(typeId))
             {
-                game.RequestDispatcher.Dispatch(
-                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game, networkInterface.GetSender(msg)));
+                requestDispatcher.Dispatch(
+                    Serializers<TContext, TSender>.Instance.RequestSerializer(typeId).Read<TContext, TSender>(
+                        new NetBufferReader(msg), context, networkInterface.GetSender(msg)));
                 return;
             }
 
@@ -39,27 +42,27 @@ namespace Bearded.TD.Networking
         }
     }
 
-    class ClientDataMessageHandler : IDataMessageHandler
+    class ClientDataMessageHandler<TContext, TSender> : IDataMessageHandler<TContext, TSender>
     {
-        private readonly GameInstance game;
+        private readonly TContext context;
         private readonly Logger logger;
-        private readonly ICommandDispatcher commandDispatcher;
+        private readonly ICommandDispatcher<TContext> commandDispatcher;
 
-        public ClientDataMessageHandler(GameInstance game, Logger logger)
+        public ClientDataMessageHandler(TContext context, Logger logger)
         {
-            this.game = game;
+            this.context = context;
             this.logger = logger;
-            commandDispatcher = new ClientCommandDispatcher(new DefaultCommandExecutor());
+            commandDispatcher = new ClientCommandDispatcher<TContext>(new DefaultCommandExecutor<TContext>());
         }
 
         public void HandleIncomingMessage(NetIncomingMessage msg)
         {
             var typeId = msg.ReadInt32();
             // We only accept commands. We should not be receiving requests on the client.
-            if (Serializers.Instance.IsCommandSerializer(typeId))
+            if (Serializers<TContext, TSender>.Instance.IsCommandSerializer(typeId))
             {
                 commandDispatcher.Dispatch(
-                    Serializers.Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), game));
+                    Serializers<TContext, TSender>.Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), context));
                 return;
             }
 

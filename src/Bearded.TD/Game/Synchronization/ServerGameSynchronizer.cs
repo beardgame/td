@@ -16,11 +16,11 @@ namespace Bearded.TD.Game.Synchronization
         private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5); 
 
         private readonly Dictionary<Type, object> synchronizers = new Dictionary<Type, object>();
-        private readonly ICommandDispatcher commandDispatcher;
+        private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         private readonly Logger logger;
         private Instant nextSync = Instant.Zero;
 
-        public ServerGameSynchronizer(ICommandDispatcher commandDispatcher, Logger logger)
+        public ServerGameSynchronizer(ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
         {
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
@@ -53,17 +53,17 @@ namespace Bearded.TD.Game.Synchronization
 
         private interface ISynchronizer
         {
-            void SendBatch(ICommandDispatcher commandDispatcher);
+            void SendBatch(ICommandDispatcher<GameInstance> commandDispatcher);
         }
 
         private class Synchronizer<T> : ISynchronizer where T : IDeletable
         {
             private readonly Queue<T> queue = new Queue<T>();
 
-            private readonly Func<IEnumerable<T>, ICommand> commandCreator;
+            private readonly Func<IEnumerable<T>, ICommand<GameInstance>> commandCreator;
             private readonly int batchSize;
 
-            public Synchronizer(Func<IEnumerable<T>, ICommand> commandCreator, int batchSize = 100)
+            public Synchronizer(Func<IEnumerable<T>, ICommand<GameInstance>> commandCreator, int batchSize = 100)
             {
                 this.commandCreator = commandCreator;
                 this.batchSize = batchSize;
@@ -74,7 +74,7 @@ namespace Bearded.TD.Game.Synchronization
                 queue.Enqueue(syncable);
             }
 
-            public void SendBatch(ICommandDispatcher commandDispatcher)
+            public void SendBatch(ICommandDispatcher<GameInstance> commandDispatcher)
             {
                 commandDispatcher.Dispatch(commandCreator(getBatch()));
             }

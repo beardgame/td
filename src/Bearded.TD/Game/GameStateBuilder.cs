@@ -23,7 +23,7 @@ namespace Bearded.TD.Game
             this.tilemapGenerator = tilemapGenerator;
         }
 
-        public IEnumerable<ICommand> Generate()
+        public IEnumerable<ICommand<GameInstance>> Generate()
         {
             yield return CreateGameState.Command(game, radius);
             yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true));

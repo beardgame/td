@@ -16,7 +16,7 @@ namespace Bearded.TD.UI.Model.Lobby
     {
         public GameInstance Game { get; }
         protected Logger Logger { get; }
-        protected IDispatcher Dispatcher { get; }
+        protected IDispatcher<GameInstance> Dispatcher { get; }
 
         protected LobbyManager(IGameContext gameContext, ContentManager contentManager)
         {

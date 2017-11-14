@@ -10,11 +10,11 @@ namespace Bearded.TD.Game.Commands
 {
     static class SpawnUnit
     {
-        public static ICommand Command(
+        public static ICommand<GameInstance> Command(
                 GameState game, Tile<TileInfo> tile, UnitBlueprint blueprint, Id<GameUnit> unitId)
             => new Implementation(game, tile, blueprint, unitId);
 
-        private class Implementation : ICommand
+        private class Implementation : ICommand<GameInstance>
         {
             private readonly GameState game;
             private readonly Tile<TileInfo> tile;
@@ -31,10 +31,10 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute() => game.Add(new EnemyUnit(unitId, blueprint, tile));
 
-            public ICommandSerializer Serializer => new Serializer(blueprint, tile, unitId);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(blueprint, tile, unitId);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private string blueprint;
             private int x;
@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Commands
                 this.unitId = unitId;
             }
 
-            public ICommand GetCommand(GameInstance game) => new Implementation(
+            public ICommand<GameInstance> GetCommand(GameInstance game) => new Implementation(
                 game.State,
                 new Tile<TileInfo>(game.State.Level.Tilemap, x, y),
                 game.Blueprints.Units[blueprint],
