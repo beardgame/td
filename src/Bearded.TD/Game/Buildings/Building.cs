@@ -22,7 +22,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract partial class Building : GameObject, IIdable<Building>, ISelectable
+    abstract partial class Building : GameObject, IFactioned, IIdable<Building>, ISelectable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Buildings
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
         public SelectionState SelectionState { get; private set; }
 
-        private List<Component> components { get; } = new List<Component>();
+        private List<IComponent<Building>> components { get; } = new List<IComponent<Building>>();
 
         public event VoidEventHandler Damaged;
 
