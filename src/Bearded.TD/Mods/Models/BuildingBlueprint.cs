@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 
 namespace Bearded.TD.Mods.Models
 {

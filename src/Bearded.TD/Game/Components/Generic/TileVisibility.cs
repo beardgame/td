@@ -1,20 +1,15 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.World;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.IPositionable
+namespace Bearded.TD.Game.Components.Generic
 {
-    class TileVisibility<T> : Component<T>
-        where T : GameObject, Game.IPositionable
+    class TileVisibility<T> : Component<T, TileVisibilityParameters>
+        where T : GameObject, IPositionable
     {
-        private readonly Unit radius;
-
-        public TileVisibility(Unit radius)
-        {
-            this.radius = radius;
-        }
+        public TileVisibility(TileVisibilityParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
@@ -29,10 +24,10 @@ namespace Bearded.TD.Game.Components.IPositionable
             var level = Owner.Game.Level;
 
             var tiles = new LevelVisibilityChecker<TileInfo>()
-                .EnumerateVisibleTiles(level, Owner.Position, radius,
+                .EnumerateVisibleTiles(level, Owner.Position, Parameters.Range,
                     tile => tile.Info.TileType == TileInfo.Type.Wall);
 
-            var radiusSquared = radius.Squared;
+            var radiusSquared = Parameters.Range.Squared;
 
             var geo = geometries.ConsoleBackground;
 

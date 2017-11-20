@@ -1,7 +1,8 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Buildings.Components;
-using Bearded.TD.Game.Components.IPositionable;
+using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
@@ -25,7 +26,7 @@ namespace Bearded.TD.Mods
                 new ComponentFactory("sink", () => new EnemySink()),
                 new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy()),
                 new ComponentFactory("incomeOverTime", () => new IncomeOverTime()),
-                new ComponentFactory("turret", () => new Turret(), () => new TileVisibility<BuildingGhost>(Turret.Range)),
+                new ComponentFactory("turret", () => new Turret(), () => new TileVisibility<BuildingGhost>(new TileVisibilityParameters(Turret.Range))),
                 new ComponentFactory("workerHub", () => new WorkerHub())
             });
 

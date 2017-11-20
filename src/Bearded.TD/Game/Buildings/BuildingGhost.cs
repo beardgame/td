@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Buildings
     {
         private PositionedFootprint footprint;
 
-        private readonly List<Component<BuildingGhost>> components = new List<Component<BuildingGhost>>();
+        private readonly List<IComponent<BuildingGhost>> components = new List<IComponent<BuildingGhost>>();
 
         public Position2 Position => footprint.CenterPosition;
 

@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Mods
