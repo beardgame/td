@@ -24,7 +24,7 @@ namespace Bearded.TD.Mods
             var componentFactories = new ReadonlyBlueprintCollection<ComponentFactory>(new []
             {
                 new ComponentFactory("sink", () => new EnemySink()),
-                new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy()),
+                new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy<Building>()),
                 new ComponentFactory("incomeOverTime", () => new IncomeOverTime<Building>(new IncomeOverTimeParameters(5))),
                 new ComponentFactory("turret", () => new Turret(), () => new TileVisibility<BuildingGhost>(new TileVisibilityParameters(Turret.Range))),
                 new ComponentFactory("workerHub", () => new WorkerHub<Building>(new WorkerHubParameters(2)))

@@ -101,6 +101,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
     <Compile Include="Game\World\Footprint.cs" />

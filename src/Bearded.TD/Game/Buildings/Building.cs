@@ -22,7 +22,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract partial class Building : GameObject, IFactioned, IIdable<Building>, ISelectable
+    abstract partial class Building : GameObject, IDamageable, IFactioned, IIdable<Building>, ISelectable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
