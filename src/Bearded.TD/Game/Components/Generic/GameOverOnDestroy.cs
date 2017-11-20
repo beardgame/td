@@ -1,9 +1,8 @@
 ﻿using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Buildings.Components
+namespace Bearded.TD.Game.Components.Generic
 {
     class GameOverOnDestroy<T> : Component<T>
         where T : GameObject, IDamageable

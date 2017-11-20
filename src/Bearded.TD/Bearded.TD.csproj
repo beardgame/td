@@ -118,8 +118,8 @@
     <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
     <Compile Include="Game\Components\Component.cs" />
     <Compile Include="Game\Components\ComponentFactory.cs" />
-    <Compile Include="Game\Buildings\Components\EnemySink.cs" />
-    <Compile Include="Game\Buildings\Components\GameOverOnDestroy.cs" />
+    <Compile Include="Game\Components\Generic\EnemySink.cs" />
+    <Compile Include="Game\Components\Generic\GameOverOnDestroy.cs" />
     <Compile Include="Game\Components\Generic\IncomeOverTime.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Components\Generic\WorkerHub.cs" />
