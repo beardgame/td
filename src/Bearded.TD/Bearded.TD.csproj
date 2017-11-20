@@ -193,6 +193,7 @@
     <Compile Include="Mods\ModLoader.cs" />
     <Compile Include="Mods\ModLoadingContext.cs" />
     <Compile Include="Mods\ModSorter.cs" />
+    <Compile Include="Mods\Serialization\Converters\SpaceTime1Converter.cs" />
     <Compile Include="Mods\Serialization\Models\BuildingBlueprint.cs" />
     <Compile Include="Mods\Serialization\Models\IConvertsTo.cs" />
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />

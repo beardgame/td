@@ -8,6 +8,7 @@ using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
 using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
@@ -76,6 +77,7 @@ namespace Bearded.TD.Mods
             {
                 serializer = new JsonSerializer();
                 serializer.Converters.Add(new StepConverter());
+                serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => new Unit(v)));
             }
 
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
