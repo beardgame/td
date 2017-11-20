@@ -119,7 +119,7 @@
     <Compile Include="Game\Components\ComponentFactory.cs" />
     <Compile Include="Game\Buildings\Components\EnemySink.cs" />
     <Compile Include="Game\Buildings\Components\GameOverOnDestroy.cs" />
-    <Compile Include="Game\Buildings\Components\IncomeOverTime.cs" />
+    <Compile Include="Game\Components\Generic\IncomeOverTime.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Components\Generic\WorkerHub.cs" />
     <Compile Include="Game\Buildings\PlayerBuilding.cs" />
@@ -186,6 +186,7 @@
     <Compile Include="Game\World\PositionedFootprint.cs" />
     <Compile Include="Game\World\TileSelection.cs" />
     <Compile Include="Mods\Mod.cs" />
+    <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
     <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
