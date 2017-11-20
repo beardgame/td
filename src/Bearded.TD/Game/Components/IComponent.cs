@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Buildings
+namespace Bearded.TD.Game.Components
 {
     interface IComponent<TOwner>
     {

@@ -1,14 +1,13 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.IPositionable
+namespace Bearded.TD.Game.Components.Generic
 {
     class TileVisibility<T> : Component<T, TileVisibilityParameters>
-        where T : GameObject, Game.IPositionable
+        where T : GameObject, IPositionable
     {
         public TileVisibility(TileVisibilityParameters parameters) : base(parameters) { }
 

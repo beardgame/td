@@ -1,7 +1,8 @@
-﻿using Bearded.TD.Rendering;
+﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Buildings
+namespace Bearded.TD.Game.Components
 {
     abstract class Component<TOwner, TParameters> : IComponent<TOwner>
     {

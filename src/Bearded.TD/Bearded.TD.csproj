@@ -101,7 +101,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="Game\Buildings\IComponent.cs" />
+    <Compile Include="Game\Components\IComponent.cs" />
     <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
@@ -114,8 +114,8 @@
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
     <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
-    <Compile Include="Game\Buildings\Component.cs" />
-    <Compile Include="Game\Buildings\ComponentFactory.cs" />
+    <Compile Include="Game\Components\Component.cs" />
+    <Compile Include="Game\Components\ComponentFactory.cs" />
     <Compile Include="Game\Buildings\Components\EnemySink.cs" />
     <Compile Include="Game\Buildings\Components\GameOverOnDestroy.cs" />
     <Compile Include="Game\Buildings\Components\IncomeOverTime.cs" />
@@ -145,7 +145,7 @@
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
-    <Compile Include="Game\Components\IPositionable\TileVisibility.cs" />
+    <Compile Include="Game\Components\Generic\TileVisibility.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnController.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDebugParameters.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
