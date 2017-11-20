@@ -3,7 +3,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands.gameplay
+namespace Bearded.TD.Game.Commands
 {
     static class KillBuilding
     {

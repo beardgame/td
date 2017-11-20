@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
