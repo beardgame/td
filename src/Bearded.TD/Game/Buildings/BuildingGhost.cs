@@ -10,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingGhost : GameObject, IPositionableGameObject
+    class BuildingGhost : GameObject, IPositionable
     {
         private PositionedFootprint footprint;
 
