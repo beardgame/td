@@ -101,6 +101,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Buildings\IComponent.cs" />
     <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="Game\World\PositionedFootprint.cs" />
     <Compile Include="Game\World\TileSelection.cs" />
     <Compile Include="Mods\Mod.cs" />
+    <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
     <Compile Include="Mods\ModLister.cs" />

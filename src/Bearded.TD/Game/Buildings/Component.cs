@@ -1,21 +1,17 @@
-﻿using System;
-using Bearded.TD.Rendering;
-using Bearded.Utilities;
+﻿using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    interface IComponent<in TOwner>
+    abstract class Component<TOwner, TParameters> : IComponent<TOwner>
     {
-        void OnAdded(TOwner owner);
-        
-        void Update(TimeSpan elapsedTime);
+        protected TParameters Parameters { get; }
 
-        void Draw(GeometryManager geometries);
-    }
+        protected Component(TParameters parameters)
+        {
+            Parameters = parameters;
+        }
 
-    abstract class Component<TOwner> : IComponent<TOwner>
-    {
         public TOwner Owner { get; private set; }
 
         public void OnAdded(TOwner owner)
@@ -31,17 +27,10 @@ namespace Bearded.TD.Game.Buildings
         public abstract void Draw(GeometryManager geometries);
     }
 
-    abstract class Component : Component<Building>
+    abstract class Component : Component<Building, Bearded.Utilities.Void>
     {
-        public Building Building => Owner;
-    }
+        protected Component() : base(default(Bearded.Utilities.Void)) { }
 
-    static class ComponentExtensions
-    {
-        public static ComponentFactory Factory(
-            this Func<Component> factory, Id<ComponentFactory> id, string name)
-        {
-            return new ComponentFactory(name, factory);
-        }
+        public Building Building => Owner;
     }
 }

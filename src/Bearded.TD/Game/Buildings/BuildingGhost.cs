@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Buildings
     {
         private PositionedFootprint footprint;
 
-        private readonly List<Component<BuildingGhost>> components = new List<Component<BuildingGhost>>();
+        private readonly List<IComponent<BuildingGhost>> components = new List<IComponent<BuildingGhost>>();
 
         public Position2 Position => footprint.CenterPosition;
 
