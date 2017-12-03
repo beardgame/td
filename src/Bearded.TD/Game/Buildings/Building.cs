@@ -18,7 +18,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    partial class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable, IFactioned
+    partial class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {

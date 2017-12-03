@@ -24,9 +24,8 @@ namespace Bearded.TD.UI.Input
 
         protected override void OnStart(ICursorHandler cursor)
         {
-            ghost = new BuildingGhost(blueprint);
+            ghost = new BuildingGhost(blueprint, faction, cursor.CurrentFootprint);
             Game.State.Add(ghost);
-            ghost.SetFootprint(cursor.CurrentFootprint);
         }
 
         public override void Update(UpdateEventArgs args, ICursorHandler cursor)

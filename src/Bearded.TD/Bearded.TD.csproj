@@ -102,6 +102,8 @@
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\BuildingBase.cs" />
+    <Compile Include="Game\Buildings\IPlacedBuilding.cs" />
+    <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
     <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
