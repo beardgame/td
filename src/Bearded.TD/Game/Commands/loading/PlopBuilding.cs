@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                var building = new PlayerBuilding(id, blueprint, footprint, faction);
+                var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
                 building.ResetToComplete();
             }

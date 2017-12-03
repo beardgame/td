@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract partial class Building
+    partial class Building
     {
         private class BuildingWorkerTask : WorkerTask, IResourceConsumer
         {

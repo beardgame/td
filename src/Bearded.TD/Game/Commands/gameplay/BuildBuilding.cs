@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Commands
 
             public override void Execute()
             {
-                var building = new PlayerBuilding(id, blueprint, footprint, faction);
+                var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
                 faction.Workers.RegisterTask(building.WorkerTask);
             }

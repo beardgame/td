@@ -101,6 +101,7 @@
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Buildings\BuildingBase.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
     <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
@@ -121,7 +122,6 @@
     <Compile Include="Game\Buildings\Components\IncomeOverTime.cs" />
     <Compile Include="Game\Buildings\Components\Turret.cs" />
     <Compile Include="Game\Buildings\Components\WorkerHub.cs" />
-    <Compile Include="Game\Buildings\PlayerBuilding.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
     <Compile Include="Game\Commands\gameplay\KillBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\MineTile.cs" />

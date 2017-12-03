@@ -15,7 +15,8 @@ namespace Bearded.TD.Game
 {
     class GameState
     {
-        public GameObject ObjectBeingAdded { get; private set; }
+        private readonly Stack<GameObject> objectsBeingAdded = new Stack<GameObject>();
+        public GameObject ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
 
         private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
         private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
@@ -60,9 +61,10 @@ namespace Bearded.TD.Game
                 throw new Exception("Sad!");
 
             gameObjects.Add(obj);
-            ObjectBeingAdded = obj;
+            objectsBeingAdded.Push(obj);
             obj.Add(this);
-            ObjectBeingAdded = null;
+            var sameObj = objectsBeingAdded.Pop();
+            DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
         }
 
