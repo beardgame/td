@@ -103,6 +103,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\BuildingBase.cs" />
     <Compile Include="Game\Buildings\BuildingPlaceholder.cs" />
+    <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
     <Compile Include="Game\Buildings\IPlacedBuilding.cs" />
     <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
     <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
