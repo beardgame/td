@@ -28,10 +28,13 @@ namespace Bearded.TD.Game.Components
         public abstract void Draw(GeometryManager geometries);
     }
 
-    abstract class Component : Component<Building, Bearded.Utilities.Void>
+    abstract class Component<T> : Component<T, Bearded.Utilities.Void>
     {
         protected Component() : base(default(Bearded.Utilities.Void)) { }
+    }
 
+    abstract class Component : Component<Building>
+    {
         public Building Building => Owner;
     }
 }

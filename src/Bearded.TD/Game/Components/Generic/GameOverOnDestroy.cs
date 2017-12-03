@@ -1,21 +1,23 @@
 ﻿using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Buildings.Components
+namespace Bearded.TD.Game.Components.Generic
 {
-    class GameOverOnDestroy : Component
+    class GameOverOnDestroy<T> : Component<T>
+        where T : GameObject, IDamageable
     {
         protected override void Initialise()
         {
-            Building.Damaged += onDamaged;
+            Owner.Damaged += onDamaged;
         }
 
         private void onDamaged()
         {
-            if (Building.Health <= 0)
-                Building.Sync(GameOver.Command);
+            if (Owner.Health <= 0)
+            {
+                Owner.Sync(GameOver.Command);
+            }
         }
 
         public override void Update(TimeSpan elapsedTime) { }

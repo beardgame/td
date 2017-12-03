@@ -1,6 +1,5 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Buildings.Components;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Mods.Models;
@@ -24,10 +23,12 @@ namespace Bearded.TD.Mods
             var componentFactories = new ReadonlyBlueprintCollection<ComponentFactory>(new []
             {
                 new ComponentFactory("sink", () => new EnemySink()),
-                new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy()),
-                new ComponentFactory("incomeOverTime", () => new IncomeOverTime()),
-                new ComponentFactory("turret", () => new Turret(), () => new TileVisibility<BuildingGhost>(new TileVisibilityParameters(Turret.Range))),
-                new ComponentFactory("workerHub", () => new WorkerHub())
+                new ComponentFactory("gameOverOnDestroy", () => new GameOverOnDestroy<Building>()),
+                new ComponentFactory("incomeOverTime", () => new IncomeOverTime<Building>(new IncomeOverTimeParameters(5))),
+                new ComponentFactory("turret",
+                    () => new Turret(new TurretParameters()),
+                    () => new TileVisibility<BuildingGhost>(new TileVisibilityParameters(new TurretParameters().Range))),
+                new ComponentFactory("workerHub", () => new WorkerHub<Building>(new WorkerHubParameters(2)))
             });
 
             var buildings = new ReadonlyBlueprintCollection<BuildingBlueprint>(new[]

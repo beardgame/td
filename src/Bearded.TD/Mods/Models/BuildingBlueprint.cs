@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 
 namespace Bearded.TD.Mods.Models
@@ -28,7 +29,7 @@ namespace Bearded.TD.Mods.Models
             this.componentFactories = componentFactories?.ToList();
         }
 
-        public IEnumerable<Component> GetComponents()
-            => componentFactories?.Select(f => f.Create()) ?? Enumerable.Empty<Component>();
+        public IEnumerable<IComponent<Building>> GetComponents()
+            => componentFactories?.Select(f => f.Create()) ?? Enumerable.Empty<IComponent<Building>>();
     }
 }

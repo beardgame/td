@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.gameplay;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Resources;
@@ -19,7 +18,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    partial class Building : PlacedBuildingBase<Building>, IIdable<Building>
+    partial class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable, IFactioned
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -33,7 +32,7 @@ namespace Bearded.TD.Game.Buildings
         public int Health { get; private set; }
         private bool isCompleted;
         private double buildProgress;
-        
+
         public event VoidEventHandler Damaged;
 
         public WorkerTask WorkerTask

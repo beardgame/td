@@ -102,6 +102,8 @@
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Game\Buildings\BuildingBase.cs" />
+    <Compile Include="Game\interfaces\IDamageable.cs" />
+    <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
     <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
@@ -117,11 +119,11 @@
     <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
     <Compile Include="Game\Components\Component.cs" />
     <Compile Include="Game\Components\ComponentFactory.cs" />
-    <Compile Include="Game\Buildings\Components\EnemySink.cs" />
-    <Compile Include="Game\Buildings\Components\GameOverOnDestroy.cs" />
-    <Compile Include="Game\Buildings\Components\IncomeOverTime.cs" />
-    <Compile Include="Game\Buildings\Components\Turret.cs" />
-    <Compile Include="Game\Buildings\Components\WorkerHub.cs" />
+    <Compile Include="Game\Components\Generic\EnemySink.cs" />
+    <Compile Include="Game\Components\Generic\GameOverOnDestroy.cs" />
+    <Compile Include="Game\Components\Generic\IncomeOverTime.cs" />
+    <Compile Include="Game\Components\Generic\Turret.cs" />
+    <Compile Include="Game\Components\Generic\WorkerHub.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
     <Compile Include="Game\Commands\gameplay\KillBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\MineTile.cs" />
@@ -151,9 +153,7 @@
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinitions.cs" />
     <Compile Include="Game\Generation\Enemies\IEnemySpawnFactor.cs" />
-    <Compile Include="Game\interfaces\IGameObject.cs" />
     <Compile Include="Game\interfaces\IPositionable.cs" />
-    <Compile Include="Game\interfaces\IPositionableGameObject.cs" />
     <Compile Include="Game\interfaces\ISelectable.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
     <Compile Include="Game\GameController.cs" />
@@ -187,7 +187,10 @@
     <Compile Include="Game\World\PositionedFootprint.cs" />
     <Compile Include="Game\World\TileSelection.cs" />
     <Compile Include="Mods\Mod.cs" />
+    <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
+    <Compile Include="Mods\Models\components\TurretParameters.cs" />
+    <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
     <Compile Include="Mods\ModLister.cs" />
