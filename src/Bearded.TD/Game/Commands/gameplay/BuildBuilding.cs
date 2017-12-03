@@ -14,17 +14,17 @@ namespace Bearded.TD.Game.Commands
     static class BuildBuilding
     {
         public static IRequest Request(GameInstance game, Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
-            => new Implementation(game, faction, Id<Building>.Invalid, blueprint, footprint);
+            => new Implementation(game, faction, Id<BuildingPlaceholder>.Invalid, blueprint, footprint);
         
         private class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
-            private readonly Id<Building> id;
+            private readonly Id<BuildingPlaceholder> id;
             private readonly BuildingBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameInstance game, Faction faction, Id<BuildingPlaceholder> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.game = game;
                 this.faction = faction;
@@ -37,13 +37,12 @@ namespace Bearded.TD.Game.Commands
                 => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.IsPassable)
                        && blueprint.FootprintGroup == footprint.Footprint;
 
-            public override ICommand ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<Building>(), blueprint, footprint);
+            public override ICommand ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);
 
             public override void Execute()
             {
-                var building = new Building(id, blueprint, faction, footprint);
-                game.State.Add(building);
-                faction.Workers.RegisterTask(building.WorkerTask);
+                var placeholder = new BuildingPlaceholder(id, blueprint, faction, footprint);
+                game.State.Add(placeholder);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, id, blueprint, footprint);
@@ -55,7 +54,7 @@ namespace Bearded.TD.Game.Commands
             private string blueprint;
             private string footprint;
             private int footprintIndex;
-            private Id<Building> id;
+            private Id<BuildingPlaceholder> id;
             private int footprintX;
             private int footprintY;
 
@@ -64,7 +63,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Serializer(Faction faction, Id<BuildingPlaceholder> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.id = id;
                 this.faction = faction.Id;

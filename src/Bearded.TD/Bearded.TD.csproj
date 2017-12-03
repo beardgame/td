@@ -105,6 +105,8 @@
     <Compile Include="Game\Buildings\BuildingPlaceholder.cs" />
     <Compile Include="Game\Buildings\IPlacedBuilding.cs" />
     <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
+    <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
+    <Compile Include="Game\Commands\gameplay\StartBuildingConstruction.cs" />
     <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
@@ -119,7 +121,6 @@
     <Compile Include="Mods\Models\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
-    <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
     <Compile Include="Game\Components\Component.cs" />
     <Compile Include="Game\Components\ComponentFactory.cs" />
     <Compile Include="Game\Components\Generic\EnemySink.cs" />

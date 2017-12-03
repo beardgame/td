@@ -1,71 +1,77 @@
-﻿using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Mods.Models;
+using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
-    partial class Building
+    class BuildingWorkerTask : WorkerTask, IResourceConsumer
     {
-        private class BuildingWorkerTask : WorkerTask, IResourceConsumer
+        private readonly BuildingBlueprint blueprint;
+
+        private BuildingPlaceholder placeholder;
+        private Building building;
+
+        private double resourcesConsumed;
+        private int healthGiven = 1;
+        private bool finished;
+
+        public override Position2 Position { get; }
+        public override bool Finished => finished;
+
+        public BuildingWorkerTask(BuildingPlaceholder placeholder)
         {
-            private readonly Building building;
-            private readonly BuildingBlueprint blueprint;
-            public override Position2 Position => building.Position;
+            this.placeholder = placeholder;
+            blueprint = placeholder.Blueprint;
+            Position = placeholder.Position;
+        }
 
-            private double buildProgress;
-            private int healthGiven = 1;
-            private bool finished;
-            public override bool Finished => finished;
+        public void SetBuilding(Building building)
+        {
+            DebugAssert.State.Satisfies(this.building == null, "Can only set building once.");
+            this.building = building;
+        }
 
-            private double currentProgressFraction => buildProgress / blueprint.ResourceCost;
-
-            public BuildingWorkerTask(Building building, BuildingBlueprint blueprint)
+        public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        {
+            if (placeholder != null)
             {
-                this.building = building;
-                this.blueprint = blueprint;
-                building.Deleting += onBuildingAborted;
+                onConstructionStart();
             }
 
-            public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+            var remaining = blueprint.ResourceCost - resourcesConsumed;
+            resourceManager.RegisterConsumer(this, ratePerS, remaining);
+        }
+
+        private void onConstructionStart()
+        {
+            placeholder.Sync(StartBuildingConstruction.Command);
+            placeholder = null;
+        }
+
+        public void ConsumeResources(ResourceGrant grant)
+        {
+            resourcesConsumed += grant.Amount;
+            if (building != null)
             {
-                var remaining = blueprint.ResourceCost - buildProgress;
-                if (remaining <= 0)
-                {
-                    completeBuilding();
-                    return;
-                }
-                resourceManager.RegisterConsumer(this, ratePerS, remaining);
+                updateBuildingToMatch();
             }
-
-            public void ConsumeResources(ResourceGrant resources)
+            if (grant.ReachedCapacity)
             {
-                if (buildProgress >= blueprint.ResourceCost || building.Deleted) return;
-
-                if (resources.ReachedCapacity)
-                {
-                    completeBuilding();
-                    return;
-                }
-
-                buildProgress += resources.Amount;
-                var expectedHealthGiven = (int)(currentProgressFraction * blueprint.MaxHealth);
-                if (expectedHealthGiven < healthGiven)
-                    return;
-                building.Health += expectedHealthGiven - healthGiven;
-                building.buildProgress = buildProgress / blueprint.MaxHealth;
-                healthGiven = expectedHealthGiven;
-            }
-
-            private void completeBuilding()
-            {
-                buildProgress = blueprint.ResourceCost;
-                building.Health += blueprint.MaxHealth - healthGiven;
-                building.onCompleted();
                 finished = true;
-                building.Deleting -= onBuildingAborted;
+                building?.Sync(FinishBuildingConstruction.Command);
             }
+        }
 
-            private void onBuildingAborted() => finished = true;
+        private void updateBuildingToMatch()
+        {
+            var buildProgress = resourcesConsumed / blueprint.ResourceCost;
+            DebugAssert.State.Satisfies(buildProgress <= 1);
+            var expectedHealthGiven = Mathf.CeilToInt(buildProgress * blueprint.MaxHealth);
+            var newHealthGiven = expectedHealthGiven - healthGiven;
+            building.SetBuildProgress(buildProgress, newHealthGiven);
         }
     }
 }

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Model;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -18,7 +17,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    partial class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable
+    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -34,16 +33,6 @@ namespace Bearded.TD.Game.Buildings
         private double buildProgress;
 
         public event VoidEventHandler Damaged;
-
-        public WorkerTask WorkerTask
-        {
-            get
-            {
-                if (isCompleted)
-                    throw new Exception("Cannot create a worker task for a completed building.");
-                return new BuildingWorkerTask(this, Blueprint);
-            }
-        }
 
         public Building(Id<Building> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
@@ -75,15 +64,16 @@ namespace Bearded.TD.Game.Buildings
             base.OnAdded();
         }
 
-        public void ResetToComplete()
+        public void SetBuildProgress(double newBuildProgress, int healthAdded)
         {
-            Health = Blueprint.MaxHealth;
-            if (!isCompleted)
-                onCompleted();
+            DebugAssert.State.Satisfies(!isCompleted, "Cannot update build progress after building is completed.");
+            buildProgress = newBuildProgress;
+            Health += healthAdded;
         }
 
-        private void onCompleted()
+        public void SetBuildCompleted()
         {
+            DebugAssert.State.Satisfies(!isCompleted, "Cannot complete building more than once.");
             isCompleted = true;
         }
 

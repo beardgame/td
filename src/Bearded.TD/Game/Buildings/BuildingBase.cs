@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Buildings
         private PositionedFootprint footprint;
         private readonly List<IComponent<T>> components = new List<IComponent<T>>();
 
-        protected BuildingBlueprint Blueprint { get; }
+        public BuildingBlueprint Blueprint { get; }
 
         public PositionedFootprint Footprint
         {

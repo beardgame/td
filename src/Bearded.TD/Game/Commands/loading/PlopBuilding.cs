@@ -35,7 +35,8 @@ namespace Bearded.TD.Game.Commands
             {
                 var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
-                building.ResetToComplete();
+                building.SetBuildProgress(1, building.Blueprint.MaxHealth - 1);
+                building.SetBuildCompleted();
             }
 
             public ICommandSerializer Serializer => new Serializer(faction, id, blueprint, footprint);
