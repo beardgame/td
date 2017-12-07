@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions()
-                => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.IsPassable)
+                => footprint.OccupiedTiles.All(tile => tile.IsValid && tile.Info.PlacedBuilding == null)
                        && blueprint.FootprintGroup == footprint.Footprint;
 
             public override ICommand ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);
