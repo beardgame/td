@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Game.Components;
 
 namespace Bearded.TD.Mods.Serialization.Models
@@ -11,6 +12,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         public string Footprint { get; set; }
         public int Health { get; set; }
         public int Cost { get; set; }
+        public List<IBuildingComponent> Components { get; set; }
 
         // how to component?
 

@@ -5,6 +5,13 @@
     "health" : 300,
     "cost" : 75,
     "components" : [
-        { "turret" : { } }
+	    {
+		    "id" : "turret",
+		    "onPlaceholder" :  true,
+			"onGhost": true,
+			"parameters" : {
+				
+			}
+	    }
     ]
 }
