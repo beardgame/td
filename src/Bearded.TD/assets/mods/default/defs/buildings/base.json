@@ -1,19 +1,19 @@
 {
-	"id" : "base",
-	"name" : "Main Base",
-	"footprint" : "seven",
-	"health" : 1000,
-	"cost" : 1,
-	"components" : [
-		{ "id" : "sink" },
-		{ "id" : "gameOverOnDestroy" },
-		{
-			"id" : "workerHub",
-			"parameters" : { "numWorkers" : 2 }
-		},
-		{
-			"id" : "incomeOverTime",
-			"parameters" : { "incomePerSecond" : 5 }
-		}
+    "id" : "base",
+    "name" : "Main Base",
+    "footprint" : "seven",
+    "health" : 1000,
+    "cost" : 1,
+    "components" : [
+        { "id" : "sink" },
+        { "id" : "gameOverOnDestroy" },
+        {
+            "id" : "workerHub",
+            "parameters" : { "numWorkers" : 2 }
+        },
+        {
+            "id" : "incomeOverTime",
+            "parameters" : { "incomePerSecond" : 5 }
+        }
     ]
 }
