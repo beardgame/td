@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Models;
-using Bearded.TD.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,10 +29,7 @@ namespace Bearded.TD.Mods.Serialization.Converters
         public BuildingComponentConverter(Dictionary<string, Type> componentParameters)
         {
             Type GenericComponent(Type parameter)
-            {
-                DebugAssert.State.Satisfies(typeof(IBuildingComponent).IsAssignableFrom(parameter));
-                return typeof(BuildingComponent<>).MakeGenericType(parameter);
-            }
+                => typeof(BuildingComponent<>).MakeGenericType(parameter);
 
             componentTypes = componentParameters
                 .ToDictionary(t => t.Key, t => GenericComponent(t.Value));
@@ -53,7 +49,9 @@ namespace Bearded.TD.Mods.Serialization.Converters
             if (!componentTypes.TryGetValue(id, out var componentType))
                 throw new InvalidDataException($"Unknown component id '{id}'.");
 
-            return (IBuildingComponent)json.ToObject(componentType, serializer);
+            var component = Activator.CreateInstance(componentType);
+            serializer.Populate(json.CreateReader(), component);
+            return (IBuildingComponent) component;
         }
     }
 }

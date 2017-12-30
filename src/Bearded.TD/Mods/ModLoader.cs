@@ -78,6 +78,7 @@ namespace Bearded.TD.Mods
                 serializer = new JsonSerializer();
                 serializer.Converters.Add(new StepConverter());
                 serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => new Unit(v)));
+                serializer.Converters.Add(BuildingComponentConverterFactory.Make());
             }
 
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
