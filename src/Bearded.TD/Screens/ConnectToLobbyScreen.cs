@@ -31,31 +31,38 @@ namespace Bearded.TD.Screens
 
         private readonly TextInput textInput;
         private readonly string playerName;
-        private string rejectionReason;
 
-        public ConnectToLobbyScreen(ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager,
+        private Color statusColor;
+        private string statusText;
+
+        public ConnectToLobbyScreen(
+            ScreenLayerCollection parent, GeometryManager geometries, Logger logger, InputManager inputManager,
             ContentManager contentManager)
             : base(parent, geometries)
         {
             this.logger = logger;
             this.inputManager = inputManager;
+            this.contentManager = contentManager;
             networkInterface = new ClientNetworkInterface(logger);
 
             AddComponent(new Button(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(100, 24), new Vector2(-12, -12)),
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 50), new Vector2(10, -10)),
                 goToMenu,
-                "back to menu"));
+                "back to menu",
+                32));
             AddComponent(new Button(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(100, 24), new Vector2(-118, -12)),
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 50), new Vector2(240, -10)),
                 refreshLobbies,
-                "refresh lobby list"));
-
+                "refresh lobby list",
+                32));
             textInput = new TextInput(
-                Bounds.AnchoredBox(Screen, 0, 0, new Vector2(200, 64), new Vector2(12, 12)));
-            this.contentManager = contentManager;
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 32), new Vector2(10, -90)));
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 32), new Vector2(240, -90)),
+                () => tryManualConnect(textInput.Text),
+                "join manually",
+                24));
 
-            textInput = new TextInput(new Bounds(
-                new FixedSizeDimension(Screen.X, 200, 0, .5f), new FixedSizeDimension(Screen.Y, 64, 0, .5f)));
             textInput.Focus();
             AddComponent(textInput);
             textInput.Submitted += tryManualConnect;
@@ -99,10 +106,11 @@ namespace Bearded.TD.Screens
                     goToLobby(msg);
                     return;
                 case NetConnectionStatus.Disconnected:
-                    rejectionReason = msg.ReadString();
+                    var rejectionReason = msg.ReadString();
                     logger.Info.Log(string.IsNullOrEmpty(rejectionReason)
                         ? "Disconnected"
                         : $"Disconnected with reason: {rejectionReason}");
+                    setStatusError(rejectionReason);
                     networkInterface.Shutdown();
                     break;
             }
@@ -110,6 +118,7 @@ namespace Bearded.TD.Screens
 
         private void handleIncomingLobby(Proto.Lobby lobby)
         {
+            clearStatus();
             if (availableLobbySet.Contains(lobby.Id))
             {
                 availableLobbies.RemoveAll(l => l.Id == lobby.Id);
@@ -146,11 +155,13 @@ namespace Bearded.TD.Screens
 
         private void tryManualConnect(string host)
         {
+            setStatusInfo($"Attempting to connect to {host}...");
             networkInterface.Connect(host, new ClientInfo(playerName));
         }
 
         private void tryLobbyConnect(Proto.Lobby lobby)
         {
+            setStatusInfo($"Attempting to connect to lobby {lobby.Name}...");
             networkInterface.Master.ConnectToLobby(lobby.Id);
         }
 
@@ -162,6 +173,7 @@ namespace Bearded.TD.Screens
 
         private void refreshLobbies()
         {
+            setStatusInfo("Refreshing lobbies...");
             networkInterface.Master.ListLobbies();
         }
 
@@ -176,15 +188,32 @@ namespace Bearded.TD.Screens
             Destroy();
         }
 
+        private void setStatusInfo(string text)
+        {
+            statusText = text;
+            statusColor = Color.LightBlue;
+        }
+
+        private void setStatusError(string text)
+        {
+            statusText = text;
+            statusColor = Color.Red;
+        }
+
+        private void clearStatus()
+        {
+            statusText = null;
+        }
+
         public override void Draw()
         {
             base.Draw();
 
-            if (rejectionReason != null)
+            if (statusText != null)
 			{
 				var txtGeo = Geometries.ConsoleFont;
-                txtGeo.Color = Color.Red;
-                txtGeo.DrawString(64 * Vector2.UnitY, rejectionReason, .5f, .5f);
+                txtGeo.Color = statusColor;
+                txtGeo.DrawString(new Vector2(Screen.XStart, Screen.YStart) + 10 * Vector2.One, statusText);
             }
         }
     }

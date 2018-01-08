@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using amulware.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
@@ -85,6 +86,10 @@ namespace Bearded.TD.UI.Components
 
             var height = Bounds.YStart + .5f * Bounds.Height;
             geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, height), text, 0, .5f);
+
+            geometries.ConsoleBackground.Color = IsFocused ? Color.HotPink : Color.WhiteSmoke;
+            geometries.ConsoleBackground.LineWidth = 1;
+            geometries.ConsoleBackground.DrawLine(new Vector2(Bounds.XStart, Bounds.YEnd), new Vector2(Bounds.XEnd, Bounds.YEnd));
 
             if (!IsFocused)
             {
