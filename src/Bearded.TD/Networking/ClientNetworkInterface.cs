@@ -1,6 +1,6 @@
+using System.Net;
 using Bearded.TD.Networking.MasterServer;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.UI.Model.Lobby;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
@@ -26,6 +26,11 @@ namespace Bearded.TD.Networking
         public void Connect(string host, ClientInfo clientInfo)
         {
             client.Connect(host, Constants.Network.DefaultPort, createHailMessage(clientInfo));
+        }
+
+        public void Connect(IPEndPoint endpoint, ClientInfo clientInfo)
+        {
+            client.Connect(endpoint, createHailMessage(clientInfo));
         }
 
         public override NetOutgoingMessage CreateMessage()

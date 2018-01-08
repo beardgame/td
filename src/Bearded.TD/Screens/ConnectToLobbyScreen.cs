@@ -92,6 +92,10 @@ namespace Bearded.TD.Screens
                         // Data coming from an unconnected source. Must be master server.
                         handleIncomingLobby(Proto.Lobby.Parser.ParseFrom(msg.ReadBytes(msg.LengthBytes)));
                         break;
+                    case NetIncomingMessageType.NatIntroductionSuccess:
+                        // NAT introduction success. Means we successfully connected with lobby.
+                        networkInterface.Connect(msg.SenderEndPoint, new ClientInfo(playerName));
+                        break;
                 }
                 if (Destroyed) return;
             }
