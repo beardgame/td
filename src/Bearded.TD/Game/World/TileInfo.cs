@@ -23,6 +23,7 @@ namespace Bearded.TD.Game.World
         public Directions OpenDirections { get; private set; }
         public bool IsPassable => Building == null && TileType == Type.Floor;
 
+        public IPlacedBuilding PlacedBuilding { get; set; }
         public Building Building { get; private set; }
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }

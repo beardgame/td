@@ -68,6 +68,15 @@
     <Content Include="assets\gfx\sprites\hex-normal.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="assets\mods\default\defs\buildings\base.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\buildings\triangleTurret.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\mods\default\defs\buildings\wall.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="assets\mods\default\mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -90,26 +99,39 @@
     <Compile Include="Commands\ServerDispatcher.cs" />
     <Compile Include="Constants\Camera.cs" />
     <Compile Include="Constants\Game.cs" />
+    <Compile Include="Constants\Mods.cs" />
     <Compile Include="Constants\Network.cs" />
     <Compile Include="Constants\Paths.cs" />
     <Compile Include="Constants\UI.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Game\Buildings\BuildingBase.cs" />
+    <Compile Include="Game\Buildings\BuildingPlaceholder.cs" />
+    <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
+    <Compile Include="Game\Buildings\IPlacedBuilding.cs" />
+    <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
+    <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
+    <Compile Include="Game\Commands\gameplay\StartBuildingConstruction.cs" />
+    <Compile Include="Game\interfaces\IDamageable.cs" />
+    <Compile Include="Game\interfaces\IFactioned.cs" />
+    <Compile Include="Game\Components\IComponent.cs" />
+    <Compile Include="Game\World\Footprint.cs" />
+    <Compile Include="Meta\GlobalCommands.cs" />
     <Compile Include="Mods\BlueprintCollection.cs" />
     <Compile Include="Mods\Blueprints.cs" />
     <Compile Include="Mods\DebugMod.cs" />
+    <Compile Include="Mods\DependencyResolver.cs" />
+    <Compile Include="Mods\ModAwareId.cs" />
     <Compile Include="Mods\ModDependency.cs" />
     <Compile Include="Mods\Models\BuildingBlueprint.cs" />
     <Compile Include="Game\Buildings\Building.cs" />
     <Compile Include="Game\Buildings\BuildingGhost.cs" />
-    <Compile Include="Game\Buildings\BuildingWorkerTask.cs" />
-    <Compile Include="Game\Buildings\Component.cs" />
-    <Compile Include="Game\Buildings\ComponentFactory.cs" />
-    <Compile Include="Game\Buildings\Components\EnemySink.cs" />
-    <Compile Include="Game\Buildings\Components\GameOverOnDestroy.cs" />
-    <Compile Include="Game\Buildings\Components\IncomeOverTime.cs" />
-    <Compile Include="Game\Buildings\Components\Turret.cs" />
-    <Compile Include="Game\Buildings\Components\WorkerHub.cs" />
-    <Compile Include="Game\Buildings\PlayerBuilding.cs" />
+    <Compile Include="Game\Components\Component.cs" />
+    <Compile Include="Game\Components\ComponentFactory.cs" />
+    <Compile Include="Game\Components\Generic\EnemySink.cs" />
+    <Compile Include="Game\Components\Generic\GameOverOnDestroy.cs" />
+    <Compile Include="Game\Components\Generic\IncomeOverTime.cs" />
+    <Compile Include="Game\Components\Generic\Turret.cs" />
+    <Compile Include="Game\Components\Generic\WorkerHub.cs" />
     <Compile Include="Game\Commands\GameInstanceExtensions.cs" />
     <Compile Include="Game\Commands\gameplay\KillBuilding.cs" />
     <Compile Include="Game\Commands\gameplay\MineTile.cs" />
@@ -130,21 +152,16 @@
     <Compile Include="Game\Commands\loading\BeginLoadingGame.cs" />
     <Compile Include="Game\Commands\loading\CreateGameState.cs" />
     <Compile Include="Game\Commands\loading\FillTilemap.cs" />
-    <Compile Include="Game\Commands\loading\LoadBasicData.cs" />
-    <Compile Include="Game\Commands\loading\SendBuildingBlueprint.cs" />
-    <Compile Include="Game\Commands\loading\SendUnitBlueprint.cs" />
     <Compile Include="Game\Commands\loading\StartGame.cs" />
     <Compile Include="Game\Commands\RequestExtensions.cs" />
     <Compile Include="Game\Commands\DispatcherExtensions.cs" />
-    <Compile Include="Game\Components\IPositionable\TileVisibility.cs" />
+    <Compile Include="Game\Components\Generic\TileVisibility.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnController.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDebugParameters.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinition.cs" />
     <Compile Include="Game\Generation\Enemies\EnemySpawnDefinitions.cs" />
     <Compile Include="Game\Generation\Enemies\IEnemySpawnFactor.cs" />
-    <Compile Include="Game\interfaces\IGameObject.cs" />
     <Compile Include="Game\interfaces\IPositionable.cs" />
-    <Compile Include="Game\interfaces\IPositionableGameObject.cs" />
     <Compile Include="Game\interfaces\ISelectable.cs" />
     <Compile Include="Game\Projectiles\Projectile.cs" />
     <Compile Include="Game\GameController.cs" />
@@ -178,19 +195,32 @@
     <Compile Include="Game\World\PositionedFootprint.cs" />
     <Compile Include="Game\World\TileSelection.cs" />
     <Compile Include="Mods\Mod.cs" />
+    <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
+    <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
+    <Compile Include="Mods\Models\components\TurretParameters.cs" />
+    <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
+    <Compile Include="Mods\Models\IBlueprint.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
     <Compile Include="Mods\ModLister.cs" />
     <Compile Include="Mods\ContentManager.cs" />
     <Compile Include="Mods\ModLoader.cs" />
+    <Compile Include="Mods\ModLoadingContext.cs" />
     <Compile Include="Mods\ModSorter.cs" />
-    <Compile Include="Mods\ReadonlyBlueprintCollection.cs" />
+    <Compile Include="Mods\Serialization\Converters\BuildingComponentConverter.cs" />
+    <Compile Include="Mods\Serialization\Converters\SpaceTime1Converter.cs" />
+    <Compile Include="Mods\Serialization\Models\BuildingBlueprint.cs" />
+    <Compile Include="Mods\Serialization\Models\BuildingComponent.cs" />
+    <Compile Include="Mods\Serialization\Models\IBuildingComponent.cs" />
+    <Compile Include="Mods\Serialization\Models\IConvertsTo.cs" />
     <Compile Include="Mods\Serialization\Models\meta\Metadata.cs" />
     <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="Mods\ModMetadata.cs" />
+    <Compile Include="Tiles\Level.cs" />
     <Compile Include="UI\Input\MiningInteractionHandler.cs" />
     <Compile Include="UI\Model\SelectionManager.cs" />
     <Compile Include="UI\Model\SelectionState.cs" />
     <Compile Include="Rendering\IRenderLayer.cs" />
+    <Compile Include="Utilities\Either.cs" />
     <Compile Include="Utilities\Input\ActionState.cs" />
     <Compile Include="UI\Input\BuildingInteractionHandler.cs" />
     <Compile Include="UI\Components\game\DebugGenerationInfo.cs" />
@@ -225,7 +255,7 @@
     <Compile Include="Game\World\Level.cs" />
     <Compile Include="Game\World\LevelRayCaster.cs" />
     <Compile Include="Game\World\LevelVisibilityChecker.cs" />
-    <Compile Include="Utilities\Ray.cs" />
+    <Compile Include="Utilities\Geometry\Ray.cs" />
     <Compile Include="Game\World\TileDrawInfo.cs" />
     <Compile Include="Game\World\TileInfo.cs" />
     <Compile Include="Tiles\Direction.cs" />
@@ -234,7 +264,7 @@
     <Compile Include="Tiles\Tile.cs" />
     <Compile Include="Tiles\Tilemap.cs" />
     <Compile Include="Tiles\Footprint.cs" />
-    <Compile Include="Tiles\FootprintGroup.cs" />
+    <Compile Include="Mods\Models\FootprintGroup.cs" />
     <Compile Include="Meta\UserSettings.cs" />
     <Compile Include="Mods\Serialization\Converters\JsonConverterBase.cs" />
     <Compile Include="Mods\Serialization\Converters\StepConverter.cs" />
@@ -247,6 +277,7 @@
     <Compile Include="UI\Model\Lobby\ClientLobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyManager.cs" />
     <Compile Include="UI\Model\Lobby\LobbyPlayerInfo.cs" />
+    <Compile Include="Networking\ClientInfo.cs" />
     <Compile Include="Networking\PlayerConnectionState.cs" />
     <Compile Include="UI\Model\Lobby\ServerLobbyManager.cs" />
     <Compile Include="Networking\NetworkChannel.cs" />
@@ -301,7 +332,7 @@
     <Compile Include="UI\AnchoredFixedSizeDimension.cs" />
     <Compile Include="UI\FixedSizeDimension.cs" />
     <Compile Include="UI\IDimension.cs" />
-    <Compile Include="Utilities\Circle.cs" />
+    <Compile Include="Utilities\Geometry\Circle.cs" />
     <Compile Include="Utilities\DeconstructionExtensions.cs" />
     <Compile Include="Utilities\DebugAssert.cs" />
     <Compile Include="UI\InputContext.cs" />
@@ -313,8 +344,8 @@
     <Compile Include="Utilities\Console\CommandAttribute.cs" />
     <Compile Include="Utilities\Console\CommandParameters.cs" />
     <Compile Include="Utilities\Console\ConsoleCommands.cs" />
-    <Compile Include="Utilities\EnumerableProxy.cs" />
-    <Compile Include="Utilities\IdCollection.cs" />
+    <Compile Include="Utilities\Collections\EnumerableProxy.cs" />
+    <Compile Include="Utilities\Collections\IdCollection.cs" />
     <Compile Include="Utilities\INamed.cs" />
     <Compile Include="Utilities\Input\Actions\DigitalAction.cs" />
     <Compile Include="Utilities\Input\Actions\DummyAction.cs" />
@@ -330,10 +361,11 @@
     <Compile Include="Utilities\Input\InputManager.Actions.Keyboard.cs" />
     <Compile Include="Utilities\Input\InputManager.Actions.Mouse.cs" />
     <Compile Include="Utilities\Input\InputManager.cs" />
+    <Compile Include="Utilities\Collections\LinqExtensions.cs" />
+    <Compile Include="Utilities\Geometry\Line.cs" />
     <Compile Include="Utilities\LinqExtensions.cs" />
-    <Compile Include="Utilities\Line.cs" />
     <Compile Include="Utilities\NetworkHelpers.cs" />
-    <Compile Include="Utilities\ReadonlyIdDictionary.cs" />
+    <Compile Include="Utilities\Collections\ReadonlyIdDictionary.cs" />
     <Compile Include="Utilities\SpaceTimeExtensions.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />

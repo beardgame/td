@@ -1,37 +1,44 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.Collections;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Mods
 {
-    class BlueprintCollection<T> where T : IIdable<T>
+    interface IBlueprintCollection<out T> where T : IBlueprint
     {
-        private readonly IdDictionary<T> blueprintsById = new IdDictionary<T>();
+        T this[string id] { get; }
+        IEnumerable<T> All { get; }
+    }
 
-        public T this[Id<T> id] => blueprintsById[id];
+    sealed class BlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
+    {
+        private readonly Dictionary<string, T> blueprintsById = new Dictionary<string, T>();
 
-        public virtual void RegisterBlueprint(T blueprint)
+        public T this[string id] => blueprintsById[id];
+        public IEnumerable<T> All => blueprintsById.Values;
+
+        public void Add(T blueprint)
         {
-            blueprintsById.Add(blueprint);
+            blueprintsById.Add(blueprint.Id, blueprint);
         }
 
         public ReadonlyBlueprintCollection<T> AsReadonly() => new ReadonlyBlueprintCollection<T>(blueprintsById);
     }
 
-    class NamedBlueprintCollection<T> : BlueprintCollection<T> where T : IIdable<T>, INamed
+    sealed class ReadonlyBlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
     {
-        private readonly Dictionary<string, T> blueprintsByName = new Dictionary<string, T>();
+        private readonly IReadOnlyDictionary<string, T> blueprintsById;
 
-        public T this[string name] => blueprintsByName[name];
+        public ReadonlyBlueprintCollection(IEnumerable<T> blueprints)
+            : this(blueprints.ToDictionary(blueprint => blueprint.Id)) { }
 
-        public override void RegisterBlueprint(T blueprint)
+        public ReadonlyBlueprintCollection(IDictionary<string, T> blueprints)
         {
-            base.RegisterBlueprint(blueprint);
-            blueprintsByName.Add(blueprint.Name, blueprint);
+            blueprintsById = new ReadOnlyDictionary<string, T>(blueprints);
         }
 
-        public ReadonlyNamedBlueprintCollection<T> AsNamedReadonly()
-            => new ReadonlyNamedBlueprintCollection<T>(blueprintsByName.Values);
+        public T this[string id] => blueprintsById[id];
+        public IEnumerable<T> All => blueprintsById.Values;
     }
 }

@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.gameplay;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
-using Bearded.TD.Tiles;
 using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract partial class Building : GameObject, IIdable<Building>, ISelectable
+    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -30,43 +26,23 @@ namespace Bearded.TD.Game.Buildings
             {SelectionState.Selected, Color.RoyalBlue}
         };
 
-        private readonly BuildingBlueprint blueprint;
-        private PositionedFootprint footprint;
-
         public Id<Building> Id { get; }
         
-        public Faction Faction { get; }
-        public Position2 Position { get; private set; }
         public int Health { get; private set; }
         private bool isCompleted;
         private double buildProgress;
-        public IEnumerable<Tile<TileInfo>> OccupiedTiles => footprint.OccupiedTiles;
-        public SelectionState SelectionState { get; private set; }
-
-        private List<Component> components { get; } = new List<Component>();
 
         public event VoidEventHandler Damaged;
 
-        public WorkerTask WorkerTask
+        public Building(Id<Building> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+            : base(blueprint, faction, footprint)
         {
-            get
-            {
-                if (isCompleted)
-                    throw new Exception("Cannot create a worker task for a completed building.");
-                return new BuildingWorkerTask(this, blueprint);
-            }
-        }
-
-        protected Building(Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint, Faction faction)
-        {
-            if (!footprint.IsValid) throw new ArgumentOutOfRangeException();
-
             Id = id;
-            this.blueprint = blueprint;
-            this.footprint = footprint;
-            Faction = faction;
             Health = 1;
         }
+
+        protected override IEnumerable<IComponent<Building>> InitialiseComponents()
+            => Blueprint.GetComponents();
 
         public void Damage(int damage)
         {
@@ -77,29 +53,27 @@ namespace Bearded.TD.Game.Buildings
 
         protected override void OnAdded()
         {
-            base.OnAdded();
-
             Game.IdAs(this);
 
-            Position = footprint.CenterPosition;
             OccupiedTiles.ForEach(tile =>
             {
                 Game.Geometry.SetBuilding(tile, this);
                 Game.Navigator.AddBackupSink(tile);
             });
+            
+            base.OnAdded();
         }
 
-        public void ResetToComplete()
+        public void SetBuildProgress(double newBuildProgress, int healthAdded)
         {
-            Health = blueprint.MaxHealth;
-            if (!isCompleted)
-                onCompleted();
+            DebugAssert.State.Satisfies(!isCompleted, "Cannot update build progress after building is completed.");
+            buildProgress = newBuildProgress;
+            Health += healthAdded;
         }
 
-        private void onCompleted()
+        public void SetBuildCompleted()
         {
-            blueprint.GetComponents().ForEach(components.Add);
-            components.ForEach(c => c.OnAdded(this));
+            DebugAssert.State.Satisfies(!isCompleted, "Cannot complete building more than once.");
             isCompleted = true;
         }
 
@@ -110,16 +84,17 @@ namespace Bearded.TD.Game.Buildings
                 Game.Geometry.SetBuilding(tile, null);
                 Game.Navigator.RemoveSink(tile);
             });
+
+            base.OnDelete();
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            foreach (var component in components)
-                component.Update(elapsedTime);
+            base.Update(elapsedTime);
 
             if (Health <= 0)
             {
-                this.Sync(KillBuilding.Command, this);
+                this.Sync(KillBuilding.Command);
             }
         }
 
@@ -129,37 +104,12 @@ namespace Bearded.TD.Game.Buildings
             var alpha = isCompleted ? 1 : (float)(buildProgress * 0.9);
             geo.Color = drawColors[SelectionState] * alpha;
 
-            foreach (var tile in footprint.OccupiedTiles)
+            foreach (var tile in Footprint.OccupiedTiles)
                 geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, HexagonSide, true, 6);
-
-            foreach (var component in components)
-                component.Draw(geometries);
             
+            base.Draw(geometries);
+
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange * 0.2f);
-        }
-
-        public bool HasComponentOfType<T>()
-        {
-            return components.OfType<T>().FirstOrDefault() != null;
-        }
-
-        public void ResetSelection()
-        {
-            SelectionState = SelectionState.Default;
-        }
-
-        public void Focus(SelectionManager selectionManager)
-        {
-            if (selectionManager.FocusedObject != this)
-                throw new Exception("Cannot focus an object that is not the currently focused object.");
-            SelectionState = SelectionState.Focused;
-        }
-
-        public void Select(SelectionManager selectionManager)
-        {
-            if (selectionManager.SelectedObject != this)
-                throw new Exception("Cannot select an object that is not the currently selected object.");
-            SelectionState = SelectionState.Selected;
         }
     }
 }

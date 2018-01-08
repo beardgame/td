@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
@@ -9,15 +9,15 @@ namespace Bearded.TD.Game.Generation.Enemies
         private readonly double baseProbability;
         private readonly IEnumerable<IEnemySpawnFactor> spawnFactors;
 
-        public string BlueprintName { get; }
+        public string BlueprintId { get; }
 
-        public EnemySpawnDefinition(string blueprintName, double baseProbability)
-            : this(blueprintName, baseProbability, Enumerable.Empty<IEnemySpawnFactor>()) { }
+        public EnemySpawnDefinition(string blueprintId, double baseProbability)
+            : this(blueprintId, baseProbability, Enumerable.Empty<IEnemySpawnFactor>()) { }
 
         public EnemySpawnDefinition(
-            string blueprintName, double baseProbability, IEnumerable<IEnemySpawnFactor> spawnFactors)
+            string blueprintId, double baseProbability, IEnumerable<IEnemySpawnFactor> spawnFactors)
         {
-            BlueprintName = blueprintName;
+            BlueprintId = blueprintId;
             this.baseProbability = baseProbability;
             this.spawnFactors = spawnFactors;
         }

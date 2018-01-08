@@ -33,9 +33,10 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                var building = new PlayerBuilding(id, blueprint, footprint, faction);
+                var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
-                building.ResetToComplete();
+                building.SetBuildProgress(1, building.Blueprint.MaxHealth - 1);
+                building.SetBuildCompleted();
             }
 
             public ICommandSerializer Serializer => new Serializer(faction, id, blueprint, footprint);
@@ -45,8 +46,9 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<Building> id;
             private Id<Faction> faction;
-            private Id<BuildingBlueprint> blueprint;
-            private Id<Footprint> footprint;
+            private string blueprint;
+            private string footprint;
+            private int footprintIndex;
             private int footprintX;
             private int footprintY;
 
@@ -74,7 +76,7 @@ namespace Bearded.TD.Game.Commands
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
                         game.State.Level,
-                        game.Blueprints.Footprints[footprint],
+                        game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile<TileInfo>(game.State.Level.Tilemap, footprintX, footprintY)));
             }
 
@@ -84,6 +86,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref id);
                 stream.Serialize(ref blueprint);
                 stream.Serialize(ref footprint);
+                stream.Serialize(ref footprintIndex);
                 stream.Serialize(ref footprintX);
                 stream.Serialize(ref footprintY);
             }

@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands
 
             public override void Execute()
             {
-                faction.Workers.RegisterTask(new MiningTask(game.State.Level, tile));
+                faction.Workers.RegisterTask(new MiningTask(game.State.Level, tile, game.State.Geometry));
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(tile, faction);

@@ -1,0 +1,16 @@
+{
+    "id" : "triangle",
+    "name" : "Triangular Turret",
+    "footprint" : "triangle",
+    "health" : 300,
+    "cost" : 75,
+    "components" : [
+        {
+            "id" : "turret",
+            "onPlaceholder" :  true,
+            "onGhost": true,
+            "parameters" : {
+            }
+        }
+    ]
+}

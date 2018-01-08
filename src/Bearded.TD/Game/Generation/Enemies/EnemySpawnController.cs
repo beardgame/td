@@ -7,6 +7,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
@@ -93,7 +94,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             var result = Array.BinarySearch(probabilities, t);
 
             var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-            return game.Blueprints.Units[definition.BlueprintName];
+            return game.Blueprints.Units[definition.BlueprintId];
         }
 
         private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)

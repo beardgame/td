@@ -19,14 +19,13 @@ namespace Bearded.TD.UI.Input
         {
             this.faction = faction;
             this.blueprint = blueprint;
-            TileSelection = TileSelection.FromFootprints(blueprint.Footprints);
+            TileSelection = TileSelection.FromFootprints(blueprint.FootprintGroup);
         }
 
         protected override void OnStart(ICursorHandler cursor)
         {
-            ghost = new BuildingGhost(blueprint);
+            ghost = new BuildingGhost(blueprint, faction, cursor.CurrentFootprint);
             Game.State.Add(ghost);
-            ghost.SetFootprint(cursor.CurrentFootprint);
         }
 
         public override void Update(UpdateEventArgs args, ICursorHandler cursor)

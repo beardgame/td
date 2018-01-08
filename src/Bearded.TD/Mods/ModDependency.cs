@@ -1,5 +1,4 @@
-﻿
-namespace Bearded.TD.Mods
+﻿namespace Bearded.TD.Mods
 {
     sealed class ModDependency
     {

@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Resources
 
             public override void Update(TimeSpan elapsedTime)
             {
-                if ((worker.Position - task.Position).LengthSquared <= worker.WorkRadiusSquared)
+                if (!task.Finished && (worker.Position - task.Position).LengthSquared <= worker.WorkRadiusSquared)
                 {
                     task.Progress(elapsedTime, worker.Faction.Resources, worker.WorkingSpeed);
                 }

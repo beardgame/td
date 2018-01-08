@@ -1,61 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingGhost : GameObject, IPositionableGameObject
+    class BuildingGhost : BuildingBase<BuildingGhost>
     {
-        private PositionedFootprint footprint;
-
-        private readonly List<IComponent<BuildingGhost>> components = new List<IComponent<BuildingGhost>>();
-
-        public Position2 Position => footprint.CenterPosition;
-
-        public BuildingGhost(BuildingBlueprint blueprint)
+        public BuildingGhost(BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+            : base(blueprint, faction, footprint)
         {
-            components.AddRange(blueprint.ComponentFactories.Select(f => f.CreateForGhost()).NotNull());
         }
 
-        protected override void OnAdded()
-        {
-            components.ForEach(c => c.OnAdded(this));
-        }
+        public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
 
-        public void SetFootprint(PositionedFootprint footprint)
-        {
-            this.footprint = footprint;
-        }
-
-        public override void Update(TimeSpan elapsedTime)
-        {
-            foreach (var component in components)
-            {
-                component.Update(elapsedTime);
-            }
-        }
+        protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
+            => Blueprint.ComponentFactories.Select(f => f.CreateForGhost()).NotNull();
 
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
 
-            foreach (var tile in footprint.OccupiedTiles)
+            foreach (var tile in Footprint.OccupiedTiles)
             {
-                if (!tile.IsValid) continue;
-
-                geo.Color = (tile.Info.IsPassable ? Color.Green : Color.Red) * 0.5f;
+                geo.Color = (tile.IsValid && tile.Info.IsPassable && tile.Info.PlacedBuilding == null ? Color.Green : Color.Red) * 0.5f;
                 geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
             }
-
-            foreach (var component in components)
-            {
-                component.Draw(geometries);
-            }
+            
+            base.Draw(geometries);
         }
     }
 }

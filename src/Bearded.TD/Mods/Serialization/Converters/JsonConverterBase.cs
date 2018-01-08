@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Serialization.Converters
 {
-    public abstract class JsonConverterBase<T> : JsonConverter
+    abstract class JsonConverterBase<T> : JsonConverter
     {
         private static readonly Type nullableType = typeof(T).IsValueType
             ? typeof(Nullable<>).MakeGenericType(typeof(T))

@@ -1,6 +1,5 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Models;
-using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Mods
 {
@@ -9,19 +8,15 @@ namespace Bearded.TD.Mods
         public string Name { get; }
         public string Id { get; }
 
-        public ReadonlyBlueprintCollection<Footprint> Footprints { get; }
-        public ReadonlyNamedBlueprintCollection<ComponentFactory> Components { get; }
-        public ReadonlyNamedBlueprintCollection<BuildingBlueprint> Buildings { get; }
-        public ReadonlyNamedBlueprintCollection<UnitBlueprint> Units { get; }
-
-        public Mod()
+        public Blueprints Blueprints { get; }
+        
+        public Mod(
+            ReadonlyBlueprintCollection<FootprintGroup> footprints,
+            ReadonlyBlueprintCollection<ComponentFactory> components,
+            ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
+            ReadonlyBlueprintCollection<UnitBlueprint> units)
         {
-            
-        }
-
-        public Mod(ReadonlyNamedBlueprintCollection<UnitBlueprint> units)
-        {
-            Units = units;
+            Blueprints = new Blueprints(footprints, components, buildings, units);
         }
     }
 }

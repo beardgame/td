@@ -3,10 +3,13 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
-using Bearded.TD.Utilities.Input;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading
@@ -19,8 +22,8 @@ namespace Bearded.TD.UI.Model.Loading
         protected Logger Logger { get; }
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
 
-        protected bool HasModsQueuedForLoading => modsForLoading.Count > 0;
-        protected bool HaveAllModsFinishedLoading => modsForLoading.All(mod => mod.IsLoaded);
+        private bool hasModsQueuedForLoading => modsForLoading.Count > 0;
+        private bool haveModsFinishedLoading;
 
         protected LoadingManager(
             GameInstance game, IDispatcher dispatcher, NetworkInterface networkInterface, Logger logger)
@@ -33,19 +36,49 @@ namespace Bearded.TD.UI.Model.Loading
 
         public virtual void Update(UpdateEventArgs args)
         {
+            // Network handling.
             foreach (var msg in Network.GetMessages())
+            {
                 if (msg.MessageType == NetIncomingMessageType.Data)
+                {
                     Game.DataMessageHandler.HandleIncomingMessage(msg);
+                }
+            }
+
+            // Mod loading.
+            if (!hasModsQueuedForLoading)
+            {
+                DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
+                Game.ContentManager.Mods.ForEach(loadMod);
+            }
+            if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
+            {
+                gatherModBlueprints();
+            }
         }
 
-        protected void LoadMod(ModMetadata modMetadata)
+        private void loadMod(ModMetadata modMetadata)
         {
             var modForLoading = modMetadata.PrepareForLoading();
-            modForLoading.StartLoading();
+            var context = new ModLoadingContext(Logger);
+            modForLoading.StartLoading(context);
             modsForLoading.Add(modForLoading);
         }
 
-        public void IntegrateUI(InputManager inputManager)
+        private void gatherModBlueprints()
+        {
+            Game.SetBlueprints(Blueprints.Merge(
+                modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod())
+                    .Prepend(DebugMod.Create())
+                    .Select(mod => mod.Blueprints)));
+
+            Game.RequestDispatcher.Dispatch(
+                ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
+
+            haveModsFinishedLoading = true;
+        }
+
+        public void IntegrateUI()
         {
             var camera = new GameCamera();
 

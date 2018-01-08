@@ -1,14 +1,11 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    class UnitBlueprint : IIdable<UnitBlueprint>, INamed
+    sealed class UnitBlueprint : IBlueprint
     {
-        public Id<UnitBlueprint> Id { get; }
+        public string Id { get; }
         public string Name { get; }
         public int Health { get; }
         public int Damage { get; }
@@ -18,7 +15,7 @@ namespace Bearded.TD.Mods.Models
         public Color Color { get; }
 
         public UnitBlueprint(
-            Id<UnitBlueprint> id,
+            string id,
             string name,
             int health,
             int damage,

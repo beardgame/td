@@ -5,6 +5,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -14,7 +15,8 @@ namespace Bearded.TD.Game
 {
     class GameState
     {
-        public GameObject ObjectBeingAdded { get; private set; }
+        private readonly Stack<GameObject> objectsBeingAdded = new Stack<GameObject>();
+        public GameObject ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
 
         private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
         private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
@@ -59,9 +61,10 @@ namespace Bearded.TD.Game
                 throw new Exception("Sad!");
 
             gameObjects.Add(obj);
-            ObjectBeingAdded = obj;
+            objectsBeingAdded.Push(obj);
             obj.Add(this);
-            ObjectBeingAdded = null;
+            var sameObj = objectsBeingAdded.Pop();
+            DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
         }
 
@@ -81,8 +84,7 @@ namespace Bearded.TD.Game
         public T Get<T>()
             where T : class
         {
-            object obj;
-            singletons.TryGetValue(typeof(T), out obj);
+            singletons.TryGetValue(typeof(T), out var obj);
             return (T)obj;
         }
 
@@ -117,8 +119,7 @@ namespace Bearded.TD.Game
         private DeletableObjectList<T> getList<T>()
             where T : class, IDeletable
         {
-            object list;
-            if (lists.TryGetValue(typeof(T), out list))
+            if (lists.TryGetValue(typeof(T), out var list))
                 return (DeletableObjectList<T>)list;
 
             var l = new DeletableObjectList<T>();
@@ -130,8 +131,7 @@ namespace Bearded.TD.Game
         private IdDictionary<T> getDictionary<T>()
             where T : class, IIdable<T>
         {
-            object dict;
-            if (dictionaries.TryGetValue(typeof(T), out dict))
+            if (dictionaries.TryGetValue(typeof(T), out var dict))
                 return (IdDictionary<T>)dict;
 
             var d = new IdDictionary<T>();
@@ -149,11 +149,6 @@ namespace Bearded.TD.Game
             if (RootFaction != null)
                 throw new Exception("Can only have one root faction. All other factions need parents.");
             RootFaction = faction;
-        }
-
-        public void RemoveFaction(Faction faction)
-        {
-            factions.Remove(faction);
         }
 
         public void Advance(TimeSpan elapsedTime)

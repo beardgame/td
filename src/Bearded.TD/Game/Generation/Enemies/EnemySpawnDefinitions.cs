@@ -8,10 +8,10 @@ namespace Bearded.TD.Game.Generation.Enemies
         {
             return new []
             {
-                new EnemySpawnDefinition("debug", 8),
-                new EnemySpawnDefinition("fast", 1),
-                new EnemySpawnDefinition("strong", 1),
-                new EnemySpawnDefinition("tank", .125),
+                new EnemySpawnDefinition("debug0", 8),
+                new EnemySpawnDefinition("fast0", 1),
+                new EnemySpawnDefinition("strong0", 1),
+                new EnemySpawnDefinition("tank0", .125),
             };
         }
     }

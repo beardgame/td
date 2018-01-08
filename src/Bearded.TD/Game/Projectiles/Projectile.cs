@@ -4,7 +4,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;

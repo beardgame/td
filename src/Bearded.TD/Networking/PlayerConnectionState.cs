@@ -6,7 +6,7 @@
         Connecting = 1,
         Waiting = 2,
         Ready = 3,
-        DownloadingMods = 4,
+        LoadingMods = 4,
         AwaitingLoadingData = 5,
         ProcessingLoadingData = 6,
         FinishedLoading = 7,

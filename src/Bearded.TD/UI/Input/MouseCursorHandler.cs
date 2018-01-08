@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.World;
-using Bearded.TD.Tiles;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
