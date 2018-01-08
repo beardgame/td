@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Bearded.Utilities;
@@ -9,15 +11,16 @@ namespace Bearded.TD.MasterServer
 {
     class MasterServer
     {
-        private readonly object lobbyIdLock = new object();
-
 		private const string applicationName = "Bearded.TD.Master";
 		private const int masterServerPort = 24293;
+        private const long staleLobbyAgeSeconds = 30;
+        private const long secondsBetweenLobbyPrunes = 5;
 
         private readonly Logger logger;
         private readonly NetPeer peer;
 
         private readonly Dictionary<long, Lobby> lobbiesById = new Dictionary<long, Lobby>();
+        private long lastLobbyPrune;
 
         public MasterServer(Logger logger)
         {
@@ -38,6 +41,11 @@ namespace Bearded.TD.MasterServer
                 while (peer.ReadMessage(out var msg))
                 {
                     handleIncomingMessage(msg);
+                }
+
+                if (DateTimeOffset.Now.ToUnixTimeSeconds() - lastLobbyPrune >= secondsBetweenLobbyPrunes)
+                {
+                    pruneLobbies();
                 }
 
                 Thread.Sleep(100);
@@ -138,6 +146,17 @@ namespace Bearded.TD.MasterServer
             {
                 logger.Error.Log($"Peer requested to connect to lobby with unknown ID: {request.LobbyId}");
             }
+        }
+
+        private void pruneLobbies()
+        {
+            var lobbiesToDelete = lobbiesById.Values.Where(lobby => lobby.AgeInSeconds >= staleLobbyAgeSeconds).ToList();
+            foreach (var lobby in lobbiesToDelete)
+            {
+                logger.Debug.Log($"Deleting lobby {lobby.LobbyProto.Id} due to staleness.");
+                lobbiesById.Remove(lobby.LobbyProto.Id);
+            }
+            lastLobbyPrune = DateTimeOffset.Now.ToUnixTimeSeconds();
         }
     }
 }
