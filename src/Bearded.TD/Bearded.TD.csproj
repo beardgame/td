@@ -377,7 +377,6 @@
     </Content>
     <Compile Include="Networking\MasterServer\MasterServer.cs" />
     <Compile Include="Networking\MasterServer\MasterServerException.cs" />
-    <Compile Include="Networking\ClientInfo.cs" />
     <Compile Include="Networking\MasterServer\ServerMasterServer.cs" />
     <Compile Include="Networking\MasterServer\ClientMasterServer.cs" />
   </ItemGroup>
@@ -480,7 +479,6 @@
     <Folder Include="Game\UI\Components\" />
     <Folder Include="Game\UI\model\" />
     <Folder Include="Game\UI\screenlayers\" />
-    <Folder Include="Networking\MasterServer\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
