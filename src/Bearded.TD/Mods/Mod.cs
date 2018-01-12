@@ -12,11 +12,10 @@ namespace Bearded.TD.Mods
         
         public Mod(
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
-            ReadonlyBlueprintCollection<ComponentFactory> components,
             ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<UnitBlueprint> units)
         {
-            Blueprints = new Blueprints(footprints, components, buildings, units);
+            Blueprints = new Blueprints(footprints, buildings, units);
         }
     }
 }

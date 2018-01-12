@@ -56,7 +56,6 @@ namespace Bearded.TD.Mods
 
             return new Mod(
                 footprints,
-                componentFactories,
                 buildings, 
                 enemies);
         }

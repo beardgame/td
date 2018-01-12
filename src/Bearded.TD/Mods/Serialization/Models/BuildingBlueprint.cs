@@ -25,7 +25,14 @@ namespace Bearded.TD.Mods.Serialization.Models
                 footprints.Resolve(Footprint),
                 Health,
                 Cost,
-                Enumerable.Empty<ComponentFactory>()
+                makeComponentFactories()
+            );
+        }
+
+        private IEnumerable<IBuildingComponentFactory> makeComponentFactories()
+        {
+            return Components.Select(
+                c => ComponentFactories.Buildings[c.Id](c)
             );
         }
     }
