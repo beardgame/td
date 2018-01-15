@@ -4,12 +4,12 @@ using amulware.Graphics;
 
 namespace Bearded.TD.UI.Components
 {
-    class InjectedTextBox<T> : TextBox<T>
+    class InjectedListTextBox<T> : ListTextBox<T>
     {
         private readonly Func<IReadOnlyList<T>> itemProvider;
         private readonly Func<T, (string, Color)> itemTransformer;
 
-        public InjectedTextBox(Bounds bounds, Func<IReadOnlyList<T>> itemProvider, Func<T, (string, Color)> itemTransformer)
+        public InjectedListTextBox(Bounds bounds, Func<IReadOnlyList<T>> itemProvider, Func<T, (string, Color)> itemTransformer)
             : base(bounds)
         {
             this.itemProvider = itemProvider;

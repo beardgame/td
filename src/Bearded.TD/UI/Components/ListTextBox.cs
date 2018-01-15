@@ -5,9 +5,9 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Components
 {
-    abstract class TextBox<T> : UIComponent
+    abstract class ListTextBox<T> : UIComponent
     {
-        protected TextBox(Bounds bounds)
+        protected ListTextBox(Bounds bounds)
             : base(bounds)
         {
         }

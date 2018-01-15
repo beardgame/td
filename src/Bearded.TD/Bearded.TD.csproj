@@ -312,7 +312,7 @@
     <Compile Include="UI\Components\Button.cs" />
     <Compile Include="UI\Components\game\ChatComponent.cs" />
     <Compile Include="UI\Components\CompositeComponent.cs" />
-    <Compile Include="UI\Components\ConsoleTextBox.cs" />
+    <Compile Include="UI\Components\ConsoleListTextBox.cs" />
     <Compile Include="Screens\IScreenLayer.cs" />
     <Compile Include="Screens\ScreenLayer.cs" />
     <Compile Include="Screens\ScreenLayerCollection.cs" />
@@ -325,9 +325,9 @@
     <Compile Include="UI\Components\FocusableUIComponent.cs" />
     <Compile Include="UI\Components\FocusContainer.cs" />
     <Compile Include="UI\Components\IFocusable.cs" />
-    <Compile Include="UI\Components\InjectedTextBox.cs" />
+    <Compile Include="UI\Components\InjectedListTextBox.cs" />
     <Compile Include="UI\Components\Menu.cs" />
-    <Compile Include="UI\Components\TextBox.cs" />
+    <Compile Include="UI\Components\ListTextBox.cs" />
     <Compile Include="UI\Components\UIComponent.cs" />
     <Compile Include="UI\FixedOffsetDimension.cs" />
     <Compile Include="UI\AnchoredFixedSizeDimension.cs" />

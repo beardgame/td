@@ -5,7 +5,7 @@ using Bearded.Utilities.IO;
 
 namespace Bearded.TD.UI.Components
 {
-    class ConsoleTextBox : TextBox<Logger.Entry>
+    class ConsoleListTextBox : ListTextBox<Logger.Entry>
     {
         private readonly List<Logger.Entry> entries = new List<Logger.Entry>(); 
         private readonly Logger logger;
@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Components
         private static Logger.Severity lowestVisibleSeverity() => Logger.Severity.Info;
 #endif
 
-        public ConsoleTextBox(Bounds bounds, Logger logger)
+        public ConsoleListTextBox(Bounds bounds, Logger logger)
             : base(bounds)
         {
             this.logger = logger;
