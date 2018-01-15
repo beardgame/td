@@ -63,6 +63,9 @@ namespace Bearded.TD.Screens
                 () => tryManualConnect(textInput.Text),
                 "join manually",
                 24));
+            AddComponent(new TextBox(
+                Bounds.AnchoredBox(Screen, TopLeft, Size(300, 24), OffsetFrom(TopLeft, 10, 10)),
+                () => (statusText, statusColor)));
 
             textInput.Focus();
             AddComponent(textInput);
@@ -208,18 +211,6 @@ namespace Bearded.TD.Screens
         private void clearStatus()
         {
             statusText = null;
-        }
-
-        public override void Draw()
-        {
-            base.Draw();
-
-            if (statusText != null)
-			{
-				var txtGeo = Geometries.ConsoleFont;
-                txtGeo.Color = statusColor;
-                txtGeo.DrawString(new Vector2(Screen.Left, Screen.Top) + 10 * Vector2.One, statusText);
-            }
         }
     }
 }

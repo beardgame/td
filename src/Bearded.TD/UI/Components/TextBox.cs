@@ -23,6 +23,9 @@ namespace Bearded.TD.UI.Components
         public override void Draw(GeometryManager geometries)
         {
             (var text, var color) = textProvider();
+
+            if (text == null) return;
+
             var geo = geometries.ConsoleFont;
 
             geo.SizeCoefficient = Vector2.One;
