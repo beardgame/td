@@ -10,8 +10,6 @@ namespace Bearded.TD.Screens
 {
     abstract class UIScreenLayer : ScreenLayer
     {
-        private readonly bool flipY = true;
-        
         private Matrix4 viewMatrix;
         public override Matrix4 ViewMatrix => viewMatrix;
         private Matrix4 viewProjectionInverse;
@@ -67,7 +65,7 @@ namespace Bearded.TD.Screens
             viewMatrix = Matrix4.LookAt(
                 eye,
                 originCenter,
-                Vector3.UnitY * (flipY ? -1 : 1));
+                -Vector3.UnitY);
             viewProjectionInverse = Matrix4.Mult(ProjectionMatrix, ViewMatrix).Inverted();
             Screen.OnResize(ViewportSize);
         }
@@ -80,9 +78,7 @@ namespace Bearded.TD.Screens
             // Transform to world space of this screen.
             var transformedWorld = new Vector2(
                 worldPos.X * .5f + .5f,
-                worldPos.Y * .5f + .5f);
-            if (flipY)
-                transformedWorld.Y = 1 - transformedWorld.Y;
+                .5f - worldPos.Y * .5f);
             transformedWorld.X *= ViewportSize.ScaledWidth;
             transformedWorld.Y *= ViewportSize.ScaledHeight;
 
