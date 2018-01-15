@@ -16,7 +16,7 @@ namespace Bearded.TD.UI.Components
 
             foreach (var factory in itemFactories)
             {
-                addMenuItem(factory(new Bounds(Bounds.X, new AnchoredFixedSizeDimension(Bounds.Y, BoundsAnchor.Start, buttonHeight, y))));
+                addMenuItem(factory(new Bounds(Bounds.X, new AnchoredFixedSizeDimension(Bounds.Y, BoundsConstants.Start, buttonHeight, y))));
                 y += buttonHeight + spaceBetweenButtons;
             }
         }

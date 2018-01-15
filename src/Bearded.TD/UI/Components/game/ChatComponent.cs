@@ -36,7 +36,7 @@ namespace Bearded.TD.UI.Components
         public override void Draw(GeometryManager geometries)
         {
             geometries.ConsoleBackground.Color = Color.Black;
-            geometries.ConsoleBackground.DrawRectangle(Bounds.XStart, Bounds.YStart, Bounds.Width, Bounds.Height);
+            geometries.ConsoleBackground.DrawRectangle(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
             base.Draw(geometries);
         }
     }

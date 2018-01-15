@@ -6,7 +6,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Input;
 using Bearded.TD.Utilities.Input;
-using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -19,7 +19,7 @@ namespace Bearded.TD.Screens
         {
             this.game = game;
             AddComponent(new ActionBar(
-                Bounds.AnchoredBox(Screen, 0, .5f, new Vector2(120, 320)),
+                Bounds.AnchoredBox(Screen, MiddleLeft, Size(120, 320)),
                 Constants.Game.UI.ActionBarSize,
                 getPages(),
                 inputManager.Actions.Mouse.RightButton));

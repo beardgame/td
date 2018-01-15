@@ -13,6 +13,7 @@ using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -46,19 +47,19 @@ namespace Bearded.TD.Screens
             networkInterface = new ClientNetworkInterface(logger);
 
             AddComponent(new Button(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 50), new Vector2(10, -10)),
+                Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 50), OffsetFrom(BottomLeft, 10, 10)),
                 goToMenu,
                 "back to menu",
                 32));
             AddComponent(new Button(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 50), new Vector2(240, -10)),
+                Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 50), OffsetFrom(BottomLeft, 240, 10)),
                 refreshLobbies,
                 "refresh lobby list",
                 32));
             textInput = new TextInput(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 32), new Vector2(10, -90)));
+                Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 32), OffsetFrom(BottomLeft, 10, 90)));
             AddComponent(new Button(
-                Bounds.AnchoredBox(Screen, 0, 1, new Vector2(220, 32), new Vector2(240, -90)),
+                Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 32), OffsetFrom(BottomLeft, 240, 90)),
                 () => tryManualConnect(textInput.Text),
                 "join manually",
                 24));
@@ -217,7 +218,7 @@ namespace Bearded.TD.Screens
 			{
 				var txtGeo = Geometries.ConsoleFont;
                 txtGeo.Color = statusColor;
-                txtGeo.DrawString(new Vector2(Screen.XStart, Screen.YStart) + 10 * Vector2.One, statusText);
+                txtGeo.DrawString(new Vector2(Screen.Left, Screen.Top) + 10 * Vector2.One, statusText);
             }
         }
     }

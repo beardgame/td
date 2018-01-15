@@ -20,7 +20,7 @@ namespace Bearded.TD.UI.Components
             if (!IsFocused) return;
             var bgGeo = geometries.ConsoleBackground;
             bgGeo.Color = Color.Black * .7f;
-            bgGeo.DrawRectangle(Bounds.Start(), Bounds.Size());
+            bgGeo.DrawRectangle(Bounds.TopLeft(), Bounds.Size());
 
             drawText(geometries, game.Controller.DebugParameters);
         }
@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Components
             textGeo.SizeCoefficient = Vector2.One;
             textGeo.Height = Constants.UI.FontSize;
 
-            var start = Bounds.Start() + Constants.UI.BoxPadding * Vector2.One;
+            var start = Bounds.TopLeft() + Constants.UI.BoxPadding * Vector2.One;
             var i = 0;
 
             textGeo.DrawString(

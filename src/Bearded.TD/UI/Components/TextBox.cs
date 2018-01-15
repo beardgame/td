@@ -22,14 +22,14 @@ namespace Bearded.TD.UI.Components
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, 1);
             geometries.ConsoleFont.Height = Constants.UI.FontSize;
 
-            var y = Bounds.YEnd - Constants.UI.LineHeight;
+            var y = Bounds.Bottom - Constants.UI.LineHeight;
             var i = entries.Count;
 
             while (y >= -Constants.UI.LineHeight && i > 0)
             {
                 (var text, var color) = Format(entries[--i]);
                 geometries.ConsoleFont.Color = color;
-                geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, y), text);
+                geometries.ConsoleFont.DrawString(new Vector2(Bounds.Left, y), text);
                 y -= Constants.UI.LineHeight;
             }
         }

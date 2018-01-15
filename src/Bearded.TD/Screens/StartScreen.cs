@@ -7,7 +7,7 @@ using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.IO;
-using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -25,7 +25,7 @@ namespace Bearded.TD.Screens
             this.contentManager = contentManager;
 
             AddComponent(new Menu(
-                Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(220, 200), -25 * Vector2.One),
+                Bounds.AnchoredBox(Screen, BottomRight, Size(220, 200), OffsetFrom(BottomRight, 25, 25)),
                 new Func<Bounds, FocusableUIComponent> []
                 {
                     bounds => new Button(bounds, startServerLobby, "Start lobby", 48, .5f),

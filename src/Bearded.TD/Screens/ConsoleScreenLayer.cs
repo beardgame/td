@@ -195,7 +195,7 @@ namespace Bearded.TD.Screens
             if (!isConsoleEnabled) return;
 
             Geometries.ConsoleBackground.Color = Color.Black * 0.7f;
-            Geometries.ConsoleBackground.DrawRectangle(bounds.XStart, bounds.YStart, bounds.Width, bounds.Height);
+            Geometries.ConsoleBackground.DrawRectangle(bounds.Left, bounds.Top, bounds.Width, bounds.Height);
 
             base.Draw();
         }

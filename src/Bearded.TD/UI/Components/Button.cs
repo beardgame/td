@@ -35,7 +35,7 @@ namespace Bearded.TD.UI.Components
             var primitivesGeo = geometries.Primitives;
 
             primitivesGeo.Color = Color.HotPink * (IsFocused ? .2f : .05f);
-            primitivesGeo.DrawRectangle(Bounds.XStart, Bounds.YStart, Bounds.Width, Bounds.Height);
+            primitivesGeo.DrawRectangle(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
 
 
             var fontGeo = geometries.UIFont;
@@ -44,7 +44,7 @@ namespace Bearded.TD.UI.Components
             fontGeo.Height = fontSize;
 
             var pos = new Vector2(
-                Bounds.XStart + Constants.UI.BoxPadding + textAlign * (Bounds.Width - 2 * Constants.UI.BoxPadding),
+                Bounds.Left + Constants.UI.BoxPadding + textAlign * (Bounds.Width - 2 * Constants.UI.BoxPadding),
                 Bounds.CenterY());
 
             fontGeo.DrawString(pos, text, textAlign, .5f);

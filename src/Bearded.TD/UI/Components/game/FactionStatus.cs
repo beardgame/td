@@ -25,12 +25,12 @@ namespace Bearded.TD.UI.Components
             var txtGeo = geometries.ConsoleFont;
 
             bgGeo.Color = Color.Black * .7f;
-            bgGeo.DrawRectangle(Bounds.Start(), Bounds.Size());
+            bgGeo.DrawRectangle(Bounds.TopLeft(), Bounds.Size());
 
             txtGeo.Height = fontSize;
             txtGeo.SizeCoefficient = Vector2.One;
 
-            var textStartPos = Bounds.Start() + Vector2.One * padding;
+            var textStartPos = Bounds.TopLeft() + Vector2.One * padding;
             var lineOffset = lineHeight * Vector2.UnitY;
             var i = 0;
             Vector2 TextPos() => textStartPos + i++ * lineOffset;
