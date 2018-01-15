@@ -11,7 +11,7 @@ namespace Bearded.TD.Screens
         private readonly GameInstance game;
 
         public GameOverScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, GameInstance game)
-            : base(parent, geometries, .5f, .5f, true)
+            : base(parent, geometries)
         {
             this.game = game;
         }
