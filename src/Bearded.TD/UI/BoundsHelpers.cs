@@ -1,5 +1,4 @@
-﻿using System.Net;
-using OpenTK;
+﻿using OpenTK;
 
 namespace Bearded.TD.UI
 {
