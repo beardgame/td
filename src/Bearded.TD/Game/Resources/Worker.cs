@@ -1,9 +1,12 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Resources
@@ -18,9 +21,10 @@ namespace Bearded.TD.Game.Resources
         public Squared<Unit> WorkRadiusSquared = Constants.Game.Worker.WorkRadiusSquared;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
+        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? Game.Level.GetTile(Position2.Zero);
 
         private WorkerState currentState;
-        private Position2 goalPosition;
+        private IEnumerable<Tile<TileInfo>> taskTiles;
 
         public Worker(WorkerManager manager, Faction faction)
         {
@@ -49,17 +53,17 @@ namespace Bearded.TD.Game.Resources
             if (currentState != null)
             {
                 currentState.StateChanged -= setState;
-                currentState.GoalPositionChanged -= setGoalPosition;
+                currentState.TaskTilesChanged -= setTaskTiles;
             }
             currentState = newState;
             currentState.StateChanged += setState;
-            currentState.GoalPositionChanged += setGoalPosition;
+            currentState.TaskTilesChanged += setTaskTiles;
             currentState.Start();
         }
 
-        private void setGoalPosition(Position2 goalPos)
+        private void setTaskTiles(IEnumerable<Tile<TileInfo>> newTaskTiles)
         {
-            goalPosition = goalPos;
+            taskTiles = newTaskTiles;
         }
 
         protected override void OnDelete()
@@ -86,12 +90,13 @@ namespace Bearded.TD.Game.Resources
 
         public Direction GetNextDirection()
         {
-            if (currentState == null) return Direction.Unknown;
+            if (currentState == null || taskTiles.IsNullOrEmpty() || CurrentTile.NeighboursToTiles(taskTiles))
+            {
+                return Direction.Unknown;
+            }
 
-            var goalTile = Game.Level.GetTile(goalPosition);
-            if (tileWalker.CurrentTile == goalTile) return Direction.Unknown;
-
-            var diff = goalPosition - Position;
+            var goalTile = taskTiles.MinBy(tile => tile.DistanceTo(CurrentTile));
+            var diff = Game.Level.GetPosition(goalTile) - Position;
             return diff.Direction.Hexagonal();
         }
     }

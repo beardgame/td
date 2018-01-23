@@ -218,6 +218,7 @@
     <Compile Include="Mods\ModMetadata.cs" />
     <Compile Include="Screens\DebugCoordinatePointerLayer.cs" />
     <Compile Include="Tiles\Level.cs" />
+    <Compile Include="Tiles\TileExtensions.cs" />
     <Compile Include="UI\Components\TextBox.cs" />
     <Compile Include="UI\Input\MiningInteractionHandler.cs" />
     <Compile Include="UI\Model\SelectionManager.cs" />
