@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Commands
     static class SpawnUnit
     {
         public static ICommand Command(
-                GameState game, Tile<TileInfo> tile, UnitBlueprint blueprint, Id<GameUnit> unitId)
+                GameState game, Tile<TileInfo> tile, UnitBlueprint blueprint, Id<EnemyUnit> unitId)
             => new Implementation(game, tile, blueprint, unitId);
 
         private class Implementation : ICommand
@@ -19,9 +19,9 @@ namespace Bearded.TD.Game.Commands
             private readonly GameState game;
             private readonly Tile<TileInfo> tile;
             private readonly UnitBlueprint blueprint;
-            private readonly Id<GameUnit> unitId;
+            private readonly Id<EnemyUnit> unitId;
 
-            public Implementation(GameState game, Tile<TileInfo> tile, UnitBlueprint blueprint, Id<GameUnit> unitId)
+            public Implementation(GameState game, Tile<TileInfo> tile, UnitBlueprint blueprint, Id<EnemyUnit> unitId)
             {
                 this.game = game;
                 this.tile = tile;
@@ -39,14 +39,14 @@ namespace Bearded.TD.Game.Commands
             private string blueprint;
             private int x;
             private int y;
-            private Id<GameUnit> unitId;
+            private Id<EnemyUnit> unitId;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
             {
             }
 
-            public Serializer(UnitBlueprint blueprint, Tile<TileInfo> tile, Id<GameUnit> unitId)
+            public Serializer(UnitBlueprint blueprint, Tile<TileInfo> tile, Id<EnemyUnit> unitId)
             {
                 this.blueprint = blueprint.Id;
                 x = tile.X;

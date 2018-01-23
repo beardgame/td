@@ -8,14 +8,14 @@ namespace Bearded.TD.Game.Commands
 {
     static class KillUnit
     {
-        public static ICommand Command(GameUnit unit, Faction faction) => new Implementation(unit, faction);
+        public static ICommand Command(EnemyUnit unit, Faction faction) => new Implementation(unit, faction);
 
         private class Implementation : ICommand
         {
-            private readonly GameUnit unit;
+            private readonly EnemyUnit unit;
             private readonly Faction killingBlowFaction;
 
-            public Implementation(GameUnit unit, Faction killingBlowFaction)
+            public Implementation(EnemyUnit unit, Faction killingBlowFaction)
             {
                 this.unit = unit;
                 this.killingBlowFaction = killingBlowFaction;
@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer
         {
-            private Id<GameUnit> unit;
+            private Id<EnemyUnit> unit;
             private Id<Faction> killingBlowFaction;
 
             // ReSharper disable once UnusedMember.Local
@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(GameUnit unit, Faction killingBlowFaction)
+            public Serializer(EnemyUnit unit, Faction killingBlowFaction)
             {
                 this.unit = unit.Id;
                 this.killingBlowFaction = killingBlowFaction?.Id ?? Id<Faction>.Invalid;

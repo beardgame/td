@@ -1,28 +1,56 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
+using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Units
 {
-    class EnemyUnit : GameUnit
+    class EnemyUnit : GameObject, IIdable<EnemyUnit>, IPositionable, ISyncable<EnemyUnitState>, ITileMoverOwner
     {
+        public Id<EnemyUnit> Id { get; }
+        
+        private readonly UnitBlueprint blueprint;
+        private TileWalker tileWalker;
+
+        public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
+        public Tile<TileInfo> CurrentTile { get; private set; }
+        public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
+
+        private int health;
         private Instant nextAttack;
 
-        public EnemyUnit(Id<GameUnit> unitId, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
-            : base(unitId, blueprint, currentTile)
-        { }
+        public EnemyUnit(Id<EnemyUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
+        {
+            if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
+
+            Id = id;
+            this.blueprint = blueprint;
+            CurrentTile = currentTile;
+            health = blueprint.Health;
+        }
 
         protected override void OnAdded()
         {
             base.OnAdded();
 
-            nextAttack = Game.Time + Blueprint.TimeBetweenAttacks;
+            Game.IdAs(this);
+            Game.Meta.Synchronizer.RegisterSyncable(this);
+
+            tileWalker = new TileWalker(this, Game.Level, blueprint.Speed);
+            tileWalker.Teleport(Game.Level.GetPosition(CurrentTile), CurrentTile);
+
+            nextAttack = Game.Time + blueprint.TimeBetweenAttacks;
         }
 
         protected override void OnDelete()
@@ -33,14 +61,13 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            base.Update(elapsedTime);
-            
+            tileWalker.Update(elapsedTime);
             tryDealDamage();
         }
 
         private void tryDealDamage()
         {
-            if (IsMoving) return;
+            if (tileWalker.IsMoving) return;
 
             while (nextAttack <= Game.Time)
             {
@@ -49,26 +76,26 @@ namespace Bearded.TD.Game.Units
 
                 if (target == null) return;
                 
-                target.Damage(Blueprint.Damage);
-                nextAttack = Game.Time + Blueprint.TimeBetweenAttacks;
+                target.Damage(blueprint.Damage);
+                nextAttack = Game.Time + blueprint.TimeBetweenAttacks;
             }
         }
 
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Blueprint.Color;
-            var size = (Mathf.Atan(.005f * (Blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi;
+            geo.Color = blueprint.Color;
+            var size = (Mathf.Atan(.005f * (blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi;
             geo.DrawRectangle(Position.NumericValue - Vector2.One * size * .5f, Vector2.One * size);
 
-            var p = (Health / (float)Blueprint.Health).Clamped(0, 1);
+            var p = (health / (float)blueprint.Health).Clamped(0, 1);
             geo.Color = Color.DarkGray;
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
             geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
         }
 
-        public override Direction GetNextDirection()
+        public Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
             return !CurrentTile.Neighbour(desiredDirection).Info.IsPassable
@@ -76,18 +103,45 @@ namespace Bearded.TD.Game.Units
                 : desiredDirection;
         }
 
-        protected override void OnTileChange(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
+        public void UpdateTile(Tile<TileInfo> newTile)
         {
-            base.OnTileChange(oldTile, newTile);
-            if (oldTile.IsValid)
-                oldTile.Info.RemoveEnemy(this);
-            if (newTile.IsValid)
-                newTile.Info.AddEnemy(this);
+            if (CurrentTile.IsValid)
+                CurrentTile.Info.RemoveEnemy(this);
+            CurrentTile = newTile;
+            if (CurrentTile.IsValid)
+                CurrentTile.Info.AddEnemy(this);
         }
 
-        protected override void OnKill(Faction killingBlowFaction)
+        public void Damage(int damage, Building damageSource)
         {
-            killingBlowFaction?.Resources.ProvideOneTimeResource(Blueprint.Value);
+            health -= damage;
+            if (health <= 0)
+                this.Sync(KillUnit.Command, this, damageSource.Faction);
+        }
+
+        public void Kill(Faction killingBlowFaction)
+        {
+            killingBlowFaction?.Resources.ProvideOneTimeResource(blueprint.Value);
+            // boom! <-- almost as good as particle explosions
+            Delete();
+        }
+
+        public EnemyUnitState GetCurrentState()
+        {
+            return new EnemyUnitState(
+                Position.X.NumericValue,
+                Position.Y.NumericValue,
+                tileWalker.GoalTile.X,
+                tileWalker.GoalTile.Y,
+                health);
+        }
+
+        public void SyncFrom(EnemyUnitState state)
+        {
+            tileWalker.Teleport(
+                new Position2(state.X, state.Y),
+                new Tile<TileInfo>(Game.Level.Tilemap, state.GoalTileX, state.GoalTileY));
+            health = state.Health;
         }
     }
 }

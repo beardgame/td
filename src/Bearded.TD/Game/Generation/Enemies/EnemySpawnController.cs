@@ -197,7 +197,7 @@ namespace Bearded.TD.Game.Generation.Enemies
                     game.State,
                     tile,
                     blueprint,
-                    game.Meta.Ids.GetNext<GameUnit>()));
+                    game.Meta.Ids.GetNext<EnemyUnit>()));
                 enemiesSpawned++;
             }
         }

@@ -5,7 +5,7 @@
 namespace Bearded.TD.Game.Units
 {
     [StructLayout(LayoutKind.Sequential)]
-    struct GameUnitState
+    struct EnemyUnitState
     {
         private readonly float x;
         private readonly float y;
@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Units
         public int GoalTileY => goalTileY;
         public int Health => health;
 
-        public GameUnitState(float x, float y, int goalTileX, int goalTileY, int health)
+        public EnemyUnitState(float x, float y, int goalTileX, int goalTileY, int health)
         {
             this.x = x;
             this.y = y;

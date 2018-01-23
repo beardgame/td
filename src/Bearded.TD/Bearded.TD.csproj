@@ -248,10 +248,9 @@
     <Compile Include="Screens\game\GameUI.cs" />
     <Compile Include="Screens\game\StatusScreenLayer.cs" />
     <Compile Include="Game\Units\EnemyUnit.cs" />
-    <Compile Include="Game\Units\GameUnitState.cs" />
+    <Compile Include="Game\Units\EnemyUnitState.cs" />
     <Compile Include="Game\Synchronization\ISyncable.cs" />
     <Compile Include="Mods\Models\UnitBlueprint.cs" />
-    <Compile Include="Game\Units\GameUnit.cs" />
     <Compile Include="Game\Units\UnitSource.cs" />
     <Compile Include="Game\Units\UnitWarning.cs" />
     <Compile Include="Game\World\LevelGeometry.cs" />
