@@ -6,20 +6,20 @@ namespace Bearded.TD.Game.World
 {
     sealed class TileWalker
     {
-        private readonly ITileMoverOwner owner;
+        private readonly ITileWalkerOwner owner;
         private readonly Level level;
         private readonly Speed movementSpeed;
 
         public Position2 Position { get; private set; }
-        private Tile<TileInfo> currentTile;
-        private Position2 currentTilePosition => level.GetPosition(currentTile);
+        public Tile<TileInfo> CurrentTile { get; private set; }
+        private Position2 currentTilePosition => level.GetPosition(CurrentTile);
         private Tile<TileInfo> goalTile;
         private Position2 goalPosition => level.GetPosition(goalTile);
 
         public Tile<TileInfo> GoalTile => goalTile;
         public bool IsMoving { get; private set; }
 
-        public TileWalker(ITileMoverOwner owner, Level level, Speed movementSpeed)
+        public TileWalker(ITileWalkerOwner owner, Level level, Speed movementSpeed)
         {
             this.owner = owner;
             this.level = level;
@@ -53,14 +53,14 @@ namespace Bearded.TD.Game.World
                 }
                 Position = goalPosition;
                 movementLeft -= distanceToGoal;
-                if (currentTile != goalTile)
+                if (CurrentTile != goalTile)
                 {
                     setCurrentTile(goalTile);
                 }
                 goalTile = goalTile.Neighbour(owner.GetNextDirection());
 
                 // We did not receive a new goal, so unit is standing still.
-                if (goalTile != currentTile) continue;
+                if (goalTile != CurrentTile) continue;
                 IsMoving = false;
                 break;
             }
@@ -71,22 +71,23 @@ namespace Bearded.TD.Game.World
             if ((Position - currentTilePosition).LengthSquared <= HexagonInnerRadiusSquared) return;
 
             var newTile = level.GetTile(Position);
-            if (newTile != currentTile)
+            if (newTile != CurrentTile)
             {
                 setCurrentTile(newTile);
             }
         }
 
-        private void setCurrentTile(Tile<TileInfo> tile)
+        private void setCurrentTile(Tile<TileInfo> newTile)
         {
-            currentTile = tile;
-            owner.UpdateTile(goalTile);
+            var oldTile = CurrentTile;
+            CurrentTile = newTile;
+            owner.OnTileChanged(oldTile, newTile);
         }
     }
 
-    interface ITileMoverOwner
+    interface ITileWalkerOwner
     {
-        void UpdateTile(Tile<TileInfo> newTile);
+        void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile);
         Direction GetNextDirection();
     }
 }

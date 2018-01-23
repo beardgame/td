@@ -55,7 +55,7 @@ namespace Bearded.TD
                 public static readonly Acceleration Acceleration = 10.UnitsPerSecondSquared();
                 public const float Friction = .1f;
 
-                public static readonly Squared<Unit> WorkerWorkRadiusSquared = World.HexagonOuterRadiusSquared;
+                public static readonly Squared<Unit> WorkRadiusSquared = World.HexagonOuterRadiusSquared;
                 public const double WorkerSpeed = 15;
                 
                 public const double TotalMiningProgressRequired = 4 * WorkerSpeed;

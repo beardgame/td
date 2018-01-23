@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Resources
             {
                 if (!task.Finished && (worker.Position - task.Position).LengthSquared <= worker.WorkRadiusSquared)
                 {
-                    task.Progress(elapsedTime, worker.Faction.Resources, worker.WorkingSpeed);
+                    task.Progress(elapsedTime, worker.Faction.Resources, worker.WorkerSpeed);
                 }
                 if (task.Finished)
                 {

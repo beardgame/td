@@ -16,15 +16,16 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Units
 {
-    class EnemyUnit : GameObject, IIdable<EnemyUnit>, IPositionable, ISyncable<EnemyUnitState>, ITileMoverOwner
+    class EnemyUnit : GameObject, IIdable<EnemyUnit>, IPositionable, ISyncable<EnemyUnitState>, ITileWalkerOwner
     {
         public Id<EnemyUnit> Id { get; }
         
         private readonly UnitBlueprint blueprint;
+        private readonly Tile<TileInfo> startTile;
         private TileWalker tileWalker;
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
-        public Tile<TileInfo> CurrentTile { get; private set; }
+        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
         private int health;
@@ -36,7 +37,7 @@ namespace Bearded.TD.Game.Units
 
             Id = id;
             this.blueprint = blueprint;
-            CurrentTile = currentTile;
+            startTile = currentTile;
             health = blueprint.Health;
         }
 
@@ -48,7 +49,7 @@ namespace Bearded.TD.Game.Units
             Game.Meta.Synchronizer.RegisterSyncable(this);
 
             tileWalker = new TileWalker(this, Game.Level, blueprint.Speed);
-            tileWalker.Teleport(Game.Level.GetPosition(CurrentTile), CurrentTile);
+            tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
 
             nextAttack = Game.Time + blueprint.TimeBetweenAttacks;
         }
@@ -103,13 +104,12 @@ namespace Bearded.TD.Game.Units
                 : desiredDirection;
         }
 
-        public void UpdateTile(Tile<TileInfo> newTile)
+        public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
         {
-            if (CurrentTile.IsValid)
-                CurrentTile.Info.RemoveEnemy(this);
-            CurrentTile = newTile;
-            if (CurrentTile.IsValid)
-                CurrentTile.Info.AddEnemy(this);
+            if (oldTile.IsValid)
+                oldTile.Info.RemoveEnemy(this);
+            if (newTile.IsValid)
+                newTile.Info.AddEnemy(this);
         }
 
         public void Damage(int damage, Building damageSource)
