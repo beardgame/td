@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.MasterServer;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
@@ -18,6 +17,7 @@ namespace Bearded.TD.Networking
         public ServerMasterServer Master { get; }
 
         public int PeerCount => connectedPeers.Count;
+        public long UniqueIdentifier => server.UniqueIdentifier;
 
         public ServerNetworkInterface(Logger logger) : base(logger)
         {

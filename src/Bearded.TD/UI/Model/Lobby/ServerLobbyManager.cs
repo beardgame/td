@@ -64,6 +64,7 @@ namespace Bearded.TD.UI.Model.Lobby
             networkInterface.Master.RegisterLobby(
                 new Proto.Lobby
                 {
+                    Id = networkInterface.UniqueIdentifier,
                     Name = $"{Game.Me.Name}'s game",
                     MaxNumPlayers = 4,
                     CurrentNumPlayers = 1,
