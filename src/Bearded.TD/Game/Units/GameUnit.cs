@@ -15,20 +15,20 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {
-    abstract class GameUnit : GameObject, IIdable<GameUnit>, ISyncable<GameUnitState>
+    abstract class GameUnit : GameObject, IIdable<GameUnit>, ISyncable<GameUnitState>, ITileMoverOwner
     {
         public Id<GameUnit> Id { get; }
         protected UnitBlueprint Blueprint { get; }
 
-        public Position2 Position { get; private set; }
+        public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         protected int Health { get; private set; }
         public Tile<TileInfo> CurrentTile { get; private set; }
-        private Position2 currentTilePosition => Game.Level.GetPosition(CurrentTile);
-        private Tile<TileInfo> goalTile;
-        private Position2 goalPosition => Game.Level.GetPosition(goalTile);
-        protected bool IsMoving { get; private set; }
+
+        private TileWalker tileWalker;
 
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
+
+        protected bool IsMoving => tileWalker.IsMoving;
 
         protected GameUnit(Id<GameUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
@@ -37,8 +37,12 @@ namespace Bearded.TD.Game.Units
             Id = id;
             Blueprint = blueprint;
             CurrentTile = currentTile;
-            goalTile = currentTile;
             Health = blueprint.Health;
+        }
+
+        public override void Update(TimeSpan elapsedTime)
+        {
+            tileWalker.Update(elapsedTime);
         }
 
         protected override void OnAdded()
@@ -47,54 +51,12 @@ namespace Bearded.TD.Game.Units
 
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
-
-            Position = currentTilePosition;
-            setCurrentTile(goalTile);
+            
+            tileWalker = new TileWalker(this, Game.Level, Blueprint.Speed);
+            tileWalker.Teleport(Game.Level.GetPosition(CurrentTile), CurrentTile);
         }
-
-        public override void Update(TimeSpan elapsedTime)
-        {
-            updateMovement(elapsedTime);
-            updateCurrentTileIfNeeded();
-        }
-
-        private void updateMovement(TimeSpan elapsedTime)
-        {
-            IsMoving = true;
-            var movementLeft = elapsedTime * Blueprint.Speed;
-            while (movementLeft > Unit.Zero)
-            {
-                var distanceToGoal = (goalPosition - Position).Length;
-                if (distanceToGoal > movementLeft)
-                {
-                    Position += movementLeft * ((goalPosition - Position) / distanceToGoal);
-                    break;
-                }
-                Position = goalPosition;
-                movementLeft -= distanceToGoal;
-                if (CurrentTile != goalTile)
-                    setCurrentTile(goalTile);
-                goalTile = goalTile.Neighbour(GetNextDirection());
-
-                // We did not receive a new goal, so unit is standing still.
-                if (goalTile != CurrentTile) continue;
-                IsMoving = false;
-                break;
-            }
-        }
-
-        private void updateCurrentTileIfNeeded()
-        {
-            if ((Position - currentTilePosition).LengthSquared <= HexagonInnerRadiusSquared) return;
-
-            var newTile = Game.Level.GetTile(Position);
-            if (newTile != CurrentTile)
-            {
-                setCurrentTile(newTile);
-            }
-        }
-
-        private void setCurrentTile(Tile<TileInfo> newTile)
+        
+        public void UpdateTile(Tile<TileInfo> newTile)
         {
             var oldTile = CurrentTile;
             CurrentTile = newTile;
@@ -116,7 +78,7 @@ namespace Bearded.TD.Game.Units
             Delete();
         }
 
-        protected abstract Direction GetNextDirection();
+        public abstract Direction GetNextDirection();
 
         protected virtual void OnTileChange(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
         { }
@@ -129,14 +91,20 @@ namespace Bearded.TD.Game.Units
 
         public GameUnitState GetCurrentState()
         {
-            return new GameUnitState(Position.X.NumericValue, Position.Y.NumericValue, Health);
+            return new GameUnitState(
+                Position.X.NumericValue,
+                Position.Y.NumericValue,
+                tileWalker.GoalTile.X,
+                tileWalker.GoalTile.Y,
+                Health);
         }
 
         public void SyncFrom(GameUnitState state)
         {
-            Position = new Position2(state.X, state.Y);
+            tileWalker.Teleport(
+                new Position2(state.X, state.Y),
+                new Tile<TileInfo>(Game.Level.Tilemap, state.GoalTileX, state.GoalTileY));
             Health = state.Health;
-            updateCurrentTileIfNeeded();
         }
     }
 }

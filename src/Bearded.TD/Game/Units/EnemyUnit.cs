@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Units
         public override void Update(TimeSpan elapsedTime)
         {
             base.Update(elapsedTime);
-
+            
             tryDealDamage();
         }
 
@@ -68,7 +68,7 @@ namespace Bearded.TD.Game.Units
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
         }
 
-        protected override Direction GetNextDirection()
+        public override Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
             return !CurrentTile.Neighbour(desiredDirection).Info.IsPassable
