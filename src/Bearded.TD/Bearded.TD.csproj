@@ -108,6 +108,7 @@
     <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
     <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
     <Compile Include="Game\Commands\gameplay\StartBuildingConstruction.cs" />
+    <Compile Include="Game\Components\ComponentFactories.cs" />
     <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
@@ -365,6 +366,7 @@
     <Compile Include="Utilities\Collections\ReadonlyIdDictionary.cs" />
     <Compile Include="Utilities\SpaceTimeExtensions.cs" />
     <Compile Include="Utilities\TypeExtensions.cs" />
+    <Compile Include="Utilities\ValueTupleExtensions.cs" />
     <Compile Include="Utilities\XY.cs" />
     <Content Include="assets\shaders\deferred\pointlight.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

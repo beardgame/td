@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Models;
 using Newtonsoft.Json;
@@ -13,12 +14,7 @@ namespace Bearded.TD.Mods.Serialization.Converters
     {
         public static BuildingComponentConverter Make()
         {
-            return new BuildingComponentConverter(new Dictionary<string, Type>
-            {
-                { "workerHub", typeof(WorkerHubParameters) },
-                { "incomeOverTime", typeof(IncomeOverTimeParameters) },
-                { "turret", typeof(TurretParameters) },
-            });
+            return new BuildingComponentConverter(ComponentFactories.ParameterTypesForComponentsById);
         }
     }
 
@@ -26,12 +22,12 @@ namespace Bearded.TD.Mods.Serialization.Converters
     {
         private readonly Dictionary<string, Type> componentTypes;
 
-        public BuildingComponentConverter(Dictionary<string, Type> componentParameters)
+        public BuildingComponentConverter(IDictionary<string, Type> componentParameterTypes)
         {
             Type GenericComponent(Type parameter)
                 => typeof(BuildingComponent<>).MakeGenericType(parameter);
 
-            componentTypes = componentParameters
+            componentTypes = componentParameterTypes
                 .ToDictionary(t => t.Key, t => GenericComponent(t.Value));
         }
 
