@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
@@ -14,6 +15,8 @@ using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
 using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
+using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
+using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Mods
@@ -48,12 +51,13 @@ namespace Bearded.TD.Mods
 
                 var footprints = loadFootprints();
                 var buildings = loadBuildings(footprints);
+                var units = loadUnits();
 
                 return new Mod(
                     footprints,
                     empty<ComponentFactory>(),
                     buildings,
-                    empty<UnitBlueprint>()
+                    units
                     );
             }
 
@@ -69,6 +73,9 @@ namespace Bearded.TD.Mods
                     )
                 );
 
+            private ReadonlyBlueprintCollection<UnitBlueprint> loadUnits()
+                => loadBlueprints<UnitBlueprint, UnitBlueprintJson>("defs/units");
+
             private static ReadonlyBlueprintCollection<T> empty<T>()
                 where T : IBlueprint
                 => new ReadonlyBlueprintCollection<T>(Enumerable.Empty<T>());
@@ -77,7 +84,10 @@ namespace Bearded.TD.Mods
             {
                 serializer = new JsonSerializer();
                 serializer.Converters.Add(new StepConverter());
-                serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => new Unit(v)));
+                serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => v.U()));
+                serializer.Converters.Add(new SpaceTime1Converter<Speed>(v => v.UnitsPerSecond()));
+                serializer.Converters.Add(new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()));
+                serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(BuildingComponentConverterFactory.Make());
             }
 
