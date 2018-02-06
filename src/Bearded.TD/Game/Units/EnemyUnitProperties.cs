@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Mods.Models;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Units
@@ -24,6 +25,11 @@ namespace Bearded.TD.Game.Units
                 TimeBetweenAttacks = blueprint.TimeBetweenAttacks,
                 Speed = blueprint.Speed,
             };
+        }
+
+        public static EnemyUnitProperties FromState(EnemyUnitState state)
+        {
+            return new EnemyUnitProperties(state.Damage, state.TimeBetweenAttacks.S(), state.Speed.UnitsPerSecond());
         }
 
         public sealed class Builder

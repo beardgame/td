@@ -135,7 +135,10 @@ namespace Bearded.TD.Game.Units
                 Position.Y.NumericValue,
                 tileWalker.GoalTile.X,
                 tileWalker.GoalTile.Y,
-                health);
+                health,
+                properties.Damage,
+                properties.TimeBetweenAttacks.NumericValue,
+                properties.Speed.NumericValue);
         }
 
         public void SyncFrom(EnemyUnitState state)
@@ -143,6 +146,7 @@ namespace Bearded.TD.Game.Units
             tileWalker.Teleport(
                 new Position2(state.X, state.Y),
                 new Tile<TileInfo>(Game.Level.Tilemap, state.GoalTileX, state.GoalTileY));
+            properties = EnemyUnitProperties.FromState(state);
             health = state.Health;
         }
     }
