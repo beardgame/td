@@ -5,12 +5,12 @@
         public IDimension X { get; }
         public IDimension Y { get; }
 
-        public float XStart => X.Min;
-        public float XEnd => X.Max;
+        public float Left => X.Min;
+        public float Right => X.Max;
         public float Width => X.Max - X.Min;
 
-        public float YStart => Y.Min;
-        public float YEnd => Y.Max;
+        public float Top => Y.Min;
+        public float Bottom => Y.Max;
         public float Height => Y.Max - Y.Min;
 
         public Bounds(IDimension x, IDimension y)

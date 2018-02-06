@@ -83,15 +83,19 @@ namespace Bearded.TD.UI.Components
             geometries.ConsoleFont.Height = Constants.UI.FontSize;
             geometries.ConsoleFont.Color = Color.White;
 
-            var height = Bounds.YStart + .5f * Bounds.Height;
-            geometries.ConsoleFont.DrawString(new Vector2(Bounds.XStart, height), text, 0, .5f);
+            var height = Bounds.Top + .5f * Bounds.Height;
+            geometries.ConsoleFont.DrawString(new Vector2(Bounds.Left, height), text, 0, .5f);
+
+            geometries.ConsoleBackground.Color = IsFocused ? Color.HotPink : Color.WhiteSmoke;
+            geometries.ConsoleBackground.LineWidth = 1;
+            geometries.ConsoleBackground.DrawLine(new Vector2(Bounds.Left, Bounds.Bottom), new Vector2(Bounds.Right, Bounds.Bottom));
 
             if (!IsFocused)
             {
                 return;
             }
 
-            var cursorXOffset = Bounds.XStart + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
+            var cursorXOffset = Bounds.Left + geometries.ConsoleFont.StringWidth(text.Substring(0, cursorPosition));
             geometries.ConsoleFont.DrawString(new Vector2(cursorXOffset, height), cursorString, .5f, .5f);
         }
     }

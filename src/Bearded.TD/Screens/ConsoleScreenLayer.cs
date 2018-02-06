@@ -34,7 +34,7 @@ namespace Bearded.TD.Screens
             bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
             consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding));
             AddComponent(
-                new ConsoleTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
+                new ConsoleListTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
             AddComponent(consoleInput);
             consoleInput.Submitted += execute;
         }
@@ -195,7 +195,7 @@ namespace Bearded.TD.Screens
             if (!isConsoleEnabled) return;
 
             Geometries.ConsoleBackground.Color = Color.Black * 0.7f;
-            Geometries.ConsoleBackground.DrawRectangle(bounds.XStart, bounds.YStart, bounds.Width, bounds.Height);
+            Geometries.ConsoleBackground.DrawRectangle(bounds.Left, bounds.Top, bounds.Width, bounds.Height);
 
             base.Draw();
         }

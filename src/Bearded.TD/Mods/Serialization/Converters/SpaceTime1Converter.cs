@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -17,7 +16,7 @@ namespace Bearded.TD.Mods.Serialization.Converters
         protected override T ReadJson(JsonReader reader, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
-                return convert((float)reader.Value);
+                return convert(Convert.ToSingle(reader.Value));
 
             throw new InvalidDataException($"Expected number value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
         }

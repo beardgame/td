@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+package bearded.td;
+
+option csharp_namespace = "Bearded.TD.Proto";
+
+message GameInfo {
+    // Assembly version of the game running.
+    // Always set.
+    string version = 1;
+}

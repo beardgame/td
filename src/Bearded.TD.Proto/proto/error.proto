@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+package bearded.td;
+
+option csharp_namespace = "Bearded.TD.Proto";
+
+enum ErrorType {
+    UNKNOWN = 0;
+    SERVER_ERROR = 1;
+    MALFORMED_REQUEST = 2;
+    INVALID_GAME_VERSION = 3;
+}
+
+message Error {
+    ErrorType error_type = 1;
+    string error_message = 2;
+}

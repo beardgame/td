@@ -6,7 +6,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Input;
 using Bearded.TD.Utilities.Input;
-using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -19,7 +19,7 @@ namespace Bearded.TD.Screens
         {
             this.game = game;
             AddComponent(new ActionBar(
-                Bounds.AnchoredBox(Screen, 0, .5f, new Vector2(120, 320)),
+                Bounds.AnchoredBox(Screen, MiddleLeft, Size(120, 320)),
                 Constants.Game.UI.ActionBarSize,
                 getPages(),
                 inputManager.Actions.Mouse.RightButton));
@@ -46,10 +46,10 @@ namespace Bearded.TD.Screens
             pages.Add(debugPage);
 
             var enemyPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
-            enemyPage[0] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "debug0"), "Default enemy");
-            enemyPage[1] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "fast0"), "Fast enemy");
-            enemyPage[2] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "strong0"), "Strong enemy");
-            enemyPage[3] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "tank0"), "Tank enemy");
+            enemyPage[0] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "debug"), "Default enemy");
+            enemyPage[1] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "fast"), "Fast enemy");
+            enemyPage[2] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "strong"), "Strong enemy");
+            enemyPage[3] = contentFor(new DebugSpawnEnemyInteractionHandler(game, "tank"), "Tank enemy");
             pages.Add(enemyPage);
 #endif
 

@@ -1,6 +1,8 @@
-﻿using Bearded.TD.Game.World;
+﻿using System.Collections.Generic;
+using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.Worker;
 
@@ -8,7 +10,7 @@ namespace Bearded.TD.Game.Resources
 {
     class MiningTask : WorkerTask
     {
-        public override Position2 Position => level.GetPosition(tile);
+        public override IEnumerable<Tile<TileInfo>> Tiles => tile.Yield();
         public override bool Finished => miningProgress >= TotalMiningProgressRequired;
 
         private readonly Level level;

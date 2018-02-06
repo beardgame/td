@@ -8,6 +8,7 @@ using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -28,8 +29,8 @@ namespace Bearded.TD.Screens
 
             AddComponent(new ChatComponent(new Bounds(
                 new ScalingDimension(Screen.X, .3f, .7f), new ScalingDimension(Screen.Y)), lobbyManager.Game));
-            AddComponent(new Button(Bounds.AnchoredBox(
-                Screen, BoundsAnchor.Start, BoundsAnchor.End, new Vector2(220, 50), new Vector2(10, -10)),
+            AddComponent(new Button(
+                Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 50), OffsetFrom(BottomLeft, 10, 10)),
                 lobbyManager.ToggleReadyState, "Toggle ready", 36));
         }
 

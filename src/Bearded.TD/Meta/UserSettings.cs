@@ -162,6 +162,7 @@ namespace Bearded.TD.Meta
         {
             public string Username = "";
             public string SavedNetworkAddress = "";
+            public string MasterServerAddress = "localhost";
 
             public bool ShowTraceMessages = true;
         }

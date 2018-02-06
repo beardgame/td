@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Input
                         Game.State,
                         tile,
                         Game.Blueprints.Units[enemyBlueprintName],
-                        Game.Ids.GetNext<GameUnit>()));
+                        Game.Ids.GetNext<EnemyUnit>()));
         }
     }
 }

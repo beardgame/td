@@ -1,0 +1,38 @@
+﻿syntax = "proto3";
+package bearded.td;
+
+option csharp_namespace = "Bearded.TD.Proto";
+
+import 'game.proto';
+import 'lobby.proto';
+
+message MasterServerMessage {
+    // Game info of the requester.
+    // Should always be set.
+    GameInfo game_info = 1;
+
+    oneof request {
+        RegisterLobbyRequest register_lobby = 2;
+        ListLobbiesRequest list_lobbies = 3;
+        IntroduceToLobbyRequest introduce_to_lobby = 4;
+    }
+}
+
+message RegisterLobbyRequest {
+    // Info of the lobby to register.
+    Lobby lobby = 1;
+
+    bytes address = 2;
+    int32 port = 3;
+}
+
+message ListLobbiesRequest {}
+
+message IntroduceToLobbyRequest {
+    // Identifier of the lobby to be introduced to.
+    int64 lobby_id = 1;
+    string token = 2;
+
+    bytes address = 3;
+    int32 port = 4;
+}

@@ -2,7 +2,7 @@
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
-using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -12,7 +12,7 @@ namespace Bearded.TD.Screens
             : base(parent, geometries)
         {
             AddComponent(new FactionStatus(
-                Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.Start, new Vector2(160, 100)),
+                Bounds.AnchoredBox(Screen, TopRight, Size(160, 100)),
                 game.Me.Faction));
         }
     }

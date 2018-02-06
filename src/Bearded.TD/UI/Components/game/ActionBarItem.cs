@@ -36,14 +36,14 @@ namespace Bearded.TD.UI.Components
         public override void Draw(GeometryManager geometries)
         {
             geometries.Primitives.Color = IsFocused ? focusedBgColor : bgColor;
-            geometries.Primitives.DrawRectangle(Bounds.Start() + bgPadding, Bounds.Size() - 2 * bgPadding);
+            geometries.Primitives.DrawRectangle(Bounds.TopLeft() + bgPadding, Bounds.Size() - 2 * bgPadding);
 
             if (content == null) return;
 
             geometries.ConsoleFont.Color = Color.White;
             geometries.ConsoleFont.Height = Constants.UI.FontSize;
             geometries.ConsoleFont.SizeCoefficient = Vector2.One;
-            var stringPos = new Vector2(Bounds.XStart + bgPadding.X + Constants.UI.BoxPadding, Bounds.CenterY());
+            var stringPos = new Vector2(Bounds.Left + bgPadding.X + Constants.UI.BoxPadding, Bounds.CenterY());
             geometries.ConsoleFont.DrawString(stringPos, content.Description, 0, .5f);
         }
 

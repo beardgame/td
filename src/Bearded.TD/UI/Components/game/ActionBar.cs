@@ -3,6 +3,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.UI.Components
 {
@@ -34,7 +35,7 @@ namespace Bearded.TD.UI.Components
             for (var i = 0; i < actionBarItems.Length; i++)
             {
                 actionBarItems[i] =
-                        new ActionBarItem(Bounds.AnchoredBox(Bounds, 0, 0, size, i * size.Y * Vector2.UnitY));
+                        new ActionBarItem(Bounds.AnchoredBox(Bounds, TopLeft, size, Offset(0, i * size.Y)));
                 actionBarItems[i].Focused += onActionBarFocus;
                 AddComponent(actionBarItems[i]);
             }
@@ -45,10 +46,10 @@ namespace Bearded.TD.UI.Components
             var size = new Vector2(Bounds.Width, Bounds.Height / actionBarItems.Length);
 
             AddComponent(new Button(
-                Bounds.AnchoredBox(Bounds, 0, 0, size, -size.Y * Vector2.UnitY),
+                Bounds.AnchoredBox(Bounds, TopLeft, size, OffsetFrom(TopLeft, 0, -size.Y)),
                 () => updatePage(currentPage - 1), "Previous"));
             AddComponent(new Button(
-                Bounds.AnchoredBox(Bounds, 0, 1, size, size.Y * Vector2.UnitY),
+                Bounds.AnchoredBox(Bounds, BottomLeft, size, OffsetFrom(BottomLeft, 0, -size.Y)),
                 () => updatePage(currentPage + 1), "Next"));
         }
 

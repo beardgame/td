@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Networking.Serialization;
+using System.Net;
+using Bearded.TD.Networking.MasterServer;
+using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
@@ -8,12 +10,27 @@ namespace Bearded.TD.Networking
     {
         private readonly NetClient client;
 
-        public ClientNetworkInterface(Logger logger, string host, ClientInfo clientInfo) : base(logger)
+        public ClientMasterServer Master { get; }
+
+        public ClientNetworkInterface(Logger logger) : base(logger)
         {
-            var config = new NetPeerConfiguration(Constants.Network.ApplicationName);
-            client = new NetClient(config);
-            client.Start();
+			var config = new NetPeerConfiguration(Constants.Network.ApplicationName);
+            config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
+            config.EnableMessageType(NetIncomingMessageType.NatIntroductionSuccess);
+			client = new NetClient(config);
+			client.Start();
+
+			Master = new ClientMasterServer(client);
+        }
+
+        public void Connect(string host, ClientInfo clientInfo)
+        {
             client.Connect(host, Constants.Network.DefaultPort, createHailMessage(clientInfo));
+        }
+
+        public void Connect(IPEndPoint endpoint, ClientInfo clientInfo)
+        {
+            client.Connect(endpoint, createHailMessage(clientInfo));
         }
 
         public override NetOutgoingMessage CreateMessage()

@@ -1,24 +1,30 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
+using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Resources
 {
-    class Worker : GameObject
+    class Worker : GameObject, ITileWalkerOwner
     {
         private readonly WorkerManager manager;
-        
-        public Position2 Position { get; private set; }
-        private Position2 goalPosition;
-        private Velocity2 velocity = Velocity2.Zero;
+        private TileWalker tileWalker;
 
         public Faction Faction { get; }
-        public double WorkingSpeed => Constants.Game.Worker.WorkerSpeed;
-        public Squared<Unit> WorkRadiusSquared => Constants.Game.Worker.WorkerWorkRadiusSquared;
+        public double WorkerSpeed => Constants.Game.Worker.WorkerSpeed;
+        public Squared<Unit> WorkRadiusSquared = Constants.Game.Worker.WorkRadiusSquared;
+
+        public Position2 Position => tileWalker?.Position ?? Position2.Zero;
+        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? Game.Level.GetTile(Position2.Zero);
 
         private WorkerState currentState;
+        private IEnumerable<Tile<TileInfo>> taskTiles;
 
         public Worker(WorkerManager manager, Faction faction)
         {
@@ -29,6 +35,9 @@ namespace Bearded.TD.Game.Resources
         protected override void OnAdded()
         {
             base.OnAdded();
+
+            tileWalker = new TileWalker(this, Game.Level);
+            tileWalker.Teleport(Position2.Zero, Game.Level.GetTile(Position2.Zero));
 
             manager.RegisterWorker(this);
             setState(WorkerState.Idle(manager, this));
@@ -44,17 +53,17 @@ namespace Bearded.TD.Game.Resources
             if (currentState != null)
             {
                 currentState.StateChanged -= setState;
-                currentState.GoalPositionChanged -= setGoalPosition;
+                currentState.TaskTilesChanged -= setTaskTiles;
             }
             currentState = newState;
             currentState.StateChanged += setState;
-            currentState.GoalPositionChanged += setGoalPosition;
+            currentState.TaskTilesChanged += setTaskTiles;
             currentState.Start();
         }
 
-        private void setGoalPosition(Position2 goalPos)
+        private void setTaskTiles(IEnumerable<Tile<TileInfo>> newTaskTiles)
         {
-            goalPosition = goalPos;
+            taskTiles = newTaskTiles;
         }
 
         protected override void OnDelete()
@@ -67,24 +76,7 @@ namespace Bearded.TD.Game.Resources
         public override void Update(TimeSpan elapsedTime)
         {
             currentState.Update(elapsedTime);
-            updatePosition(elapsedTime);
-        }
-
-        private void updatePosition(TimeSpan elapsedTime)
-        {
-            var diff = goalPosition - Position;
-
-            if (diff.LengthSquared > WorkRadiusSquared)
-            {
-                velocity += diff.Direction * Constants.Game.Worker.Acceleration * elapsedTime;
-            }
-            else if (velocity.LengthSquared >= Squared<Speed>.FromValue(.1f))
-            {
-                velocity -= diff.Direction * Constants.Game.Worker.Acceleration * elapsedTime;
-            }
-            velocity *= Constants.Game.Worker.Friction.Powed((float) elapsedTime.NumericValue);
-
-            Position += velocity * elapsedTime;
+            tileWalker.Update(elapsedTime, 3.UnitsPerSecond());
         }
 
         public override void Draw(GeometryManager geometries)
@@ -92,6 +84,20 @@ namespace Bearded.TD.Game.Resources
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.DeepPink;
             geo.DrawCircle(Position.NumericValue, .3f * Constants.Game.World.HexagonDiameter);
+        }
+
+        public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile) { }
+
+        public Direction GetNextDirection()
+        {
+            if (currentState == null || taskTiles.IsNullOrEmpty() || CurrentTile.NeighboursToTiles(taskTiles))
+            {
+                return Direction.Unknown;
+            }
+
+            var goalTile = taskTiles.MinBy(tile => tile.DistanceTo(CurrentTile));
+            var diff = Game.Level.GetPosition(goalTile) - Position;
+            return diff.Direction.Hexagonal();
         }
     }
 }

@@ -7,8 +7,8 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
-using OpenTK;
 using OpenTK.Input;
+using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
@@ -54,7 +54,7 @@ namespace Bearded.TD.Screens
 
         private FocusableUIComponent[] createComponents()
         {
-            var bounds = Bounds.AnchoredBox(Screen, BoundsAnchor.End, BoundsAnchor.End, new Vector2(240, 300));
+            var bounds = Bounds.AnchoredBox(Screen, BottomRight, Size(240, 300));
             
             return new FocusableUIComponent[]
             {

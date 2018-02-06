@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -18,14 +21,13 @@ namespace Bearded.TD.Game.Buildings
         private int healthGiven = 1;
         private bool finished;
 
-        public override Position2 Position { get; }
+        public override IEnumerable<Tile<TileInfo>> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
         public override bool Finished => finished;
 
         public BuildingWorkerTask(BuildingPlaceholder placeholder)
         {
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
-            Position = placeholder.Position;
         }
 
         public void SetBuilding(Building building)

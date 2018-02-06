@@ -75,7 +75,7 @@ namespace Bearded.TD.Game.Units
 
         private void spawnEnemy(UnitBlueprint blueprint)
         {
-            this.Sync(SpawnUnit.Command, tile, blueprint, Game.Meta.Ids.GetNext<GameUnit>());
+            this.Sync(SpawnUnit.Command, tile, blueprint, Game.Meta.Ids.GetNext<EnemyUnit>());
         }
     }
 }

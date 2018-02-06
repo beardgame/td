@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Components
 
             textInput = new TextInput(
                 new Bounds(new ScalingDimension(bounds.X), new FixedSizeDimension(bounds.Y, Constants.UI.FontSize, 1, 1)));
-            AddComponent(new InjectedTextBox<ChatMessage>(
+            AddComponent(new InjectedListTextBox<ChatMessage>(
                 Bounds.Within(bounds, 0, 0, Constants.UI.FontSize, 0),
                 () => game.ChatLog.Messages, msg => (msg.GetDisplayString(), textColor)));
             AddComponent(textInput);
@@ -36,7 +36,7 @@ namespace Bearded.TD.UI.Components
         public override void Draw(GeometryManager geometries)
         {
             geometries.ConsoleBackground.Color = Color.Black;
-            geometries.ConsoleBackground.DrawRectangle(Bounds.XStart, Bounds.YStart, Bounds.Width, Bounds.Height);
+            geometries.ConsoleBackground.DrawRectangle(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
             base.Draw(geometries);
         }
     }

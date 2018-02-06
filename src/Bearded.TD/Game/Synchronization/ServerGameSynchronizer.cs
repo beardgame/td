@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Synchronization
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
 
-            synchronizers.Add(typeof(GameUnit), new Synchronizer<GameUnit>(SyncUnits.Command));
+            synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncUnits.Command));
         }
 
         public void RegisterSyncable<T>(T syncable)
