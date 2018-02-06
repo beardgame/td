@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
@@ -17,17 +18,21 @@ namespace Bearded.TD.Game.Components
         // TODO: Put this info into attributes
 
         // ReSharper disable once MemberInitializerValueIgnored
-        private static readonly Type[] knownComponentOwners =
+        private static Type[] knownComponentOwners =
         {
             typeof(Building),
             typeof(BuildingGhost),
             typeof(BuildingPlaceholder),
         };
 
-        private static readonly Dictionary<string, Type> knownComponents = new Dictionary<string, Type>
+        private static Dictionary<string, Type> knownComponents = new Dictionary<string, Type>
         {
+            { "sink", typeof(EnemySink) },
+            { "gameOverOnDestroy", typeof(GameOverOnDestroy<>) },
             { "turret", typeof(Turret) },
+            { "workerHub", typeof(WorkerHub<>) },
             { "tileVisibility", typeof(TileVisibility<>) },
+            { "incomeOverTime", typeof(IncomeOverTime<>) },
         };
 
         #endregion
@@ -35,28 +40,18 @@ namespace Bearded.TD.Game.Components
         #region Public interface
 
         public static Type ParameterTypeForComponent(string id) => parametersForComponentIds[id];
-        public static IDictionary<string, Type> ParameterTypesForComponentsById { get; }
+        public static IDictionary<string, Type> ParameterTypesForComponentsById { get; private set; }
 
-        public static IComponentFactory<TOwner> ComponentFactory<TOwner, TParameters>(string id, TParameters parameters)
+        public static IComponentFactory<TOwner> CreateComponentFactory<TOwner>(IComponent parameters)
+            => tryMakeComponentFactory<TOwner>(parameters);
+
+        public static BuildingComponentFactory CreateBuildingComponentFactory(IBuildingComponent parameters)
         {
-            var factoryFactories = componentFactoryFactoriesForComponentIds[id];
-
-            var typedFactoryFactory = (ComponentFactoryFactory<TOwner, TParameters>)factoryFactories[typeof(TOwner)];
-
-            return typedFactoryFactory(parameters);
-        }
-
-        public static IBuildingComponentFactory CreateBuildingComponentFactory(string id, object parameters)
-        {
-            var factoryFactories = componentFactoryFactoriesForComponentIds[id];
-
-            factoryFactories.TryGetValue(typeof(Building), out var forBuilding);
-            factoryFactories.TryGetValue(typeof(BuildingGhost), out var forGhost);
-            factoryFactories.TryGetValue(typeof(BuildingPlaceholder), out var forPlaceholder);
-
-            // TODO: precompile these after registering for faster return
-
-            return new BuildingComponentFactory<>(parameters);
+            var forBuilding = tryMakeComponentFactory<Building>(parameters);
+            var forGhost = tryMakeComponentFactory<BuildingGhost>(parameters);
+            var forPlaceholder = tryMakeComponentFactory<BuildingPlaceholder>(parameters);
+            
+            return new BuildingComponentFactory(parameters, forBuilding, forGhost, forPlaceholder);
         }
 
         #endregion
@@ -71,15 +66,20 @@ namespace Bearded.TD.Game.Components
 
         #region Implementation
 
+        #region Initialisation
+
         private delegate ComponentFactory<TOwner, TParameters> ComponentFactoryFactory<TOwner, TParameters>(TParameters parameters);
 
-        static ComponentFactories()
+        public static void Initialize()
         {
+            if (knownComponents == null)
+                throw new InvalidOperationException("Component factories can only be initialised once.");
+
             knownComponents.ForEach(register);
             // just cleaning up some stuff we won't need again
             knownComponents = null;
             knownComponentOwners = null;
-            
+
             ParameterTypesForComponentsById = new ReadOnlyDictionary<string, Type>(parametersForComponentIds);
         }
         
@@ -130,7 +130,7 @@ namespace Bearded.TD.Game.Components
         {
             var factoryFactory = makeFactoryFactory(component, owner, parameters);
 
-            parametersForComponentIds.Add(id, parameters);
+            parametersForComponentIds[id] = parameters; // will write multiple times for multi-use components ¯\_(ツ)_/¯
             if (!componentFactoryFactoriesForComponentIds.TryGetValue(id, out var factoryFactoriesForId))
             {
                 factoryFactoriesForId = new Dictionary<Type, object>();
@@ -140,14 +140,20 @@ namespace Bearded.TD.Game.Components
             factoryFactoriesForId.Add(owner, factoryFactory);
         }
 
-        private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(ComponentFactories).GetMethod(nameof(makeFactoryFactory));
+        private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(ComponentFactories)
+            .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.Static | BindingFlags.NonPublic);
+
+        private static readonly Type emptyConstructorParameterType = typeof(Bearded.Utilities.Void);
 
         private static object makeFactoryFactory(Type component, Type owner, Type parameters)
         {
             var typedMaker = makeFactoryFactoryMethodInfo.MakeGenericMethod(owner, parameters);
-
+            
             var parameter = Expression.Parameter(parameters);
-            var constructorBody = Expression.New(component.GetConstructors(BindingFlags.Public)[0], parameter);
+            
+            var constructorBody = parameters == emptyConstructorParameterType
+                ? Expression.New(constructorOf(component))
+                : Expression.New(constructorOf(component), parameter);
             var constructor = Expression.Lambda(constructorBody, parameter);
             var compiledConstructor = constructor.Compile();
 
@@ -155,24 +161,65 @@ namespace Bearded.TD.Game.Components
             return typedMaker.Invoke(null, new object[] {compiledConstructor});
         }
 
-        private static object makeFactoryFactory<TOwner, TParameters>(Func<TParameters, IComponent<TOwner>> constructor)
+        private static object makeFactoryFactoryGeneric<TOwner, TParameters>(Func<TParameters, IComponent<TOwner>> constructor)
         {
             return (ComponentFactoryFactory<TOwner, TParameters>)(p => new ComponentFactory<TOwner, TParameters>(p, constructor));
         }
         
         private static Type constructorParameterTypeOf(Type componentType)
         {
-            var constructors = componentType.GetConstructors(BindingFlags.Public);
-
-            DebugAssert.State.Satisfies(constructors.Length == 1, "Components should have exactly one public constructor.");
-
-            var constructor = constructors[0];
+            var constructor = constructorOf(componentType);
             var constructorParameters = constructor.GetParameters();
 
-            DebugAssert.State.Satisfies(constructorParameters.Length == 1, "Component constructor should have exactly one parameter.");
+            DebugAssert.State.Satisfies(constructorParameters.Length <= 1, "Component constructor should have exactly zero or one parameter.");
 
-            return constructorParameters[0].ParameterType;
+            return constructorParameters.Length == 0
+                ? emptyConstructorParameterType
+                : constructorParameters[0].ParameterType;
         }
+
+        private static ConstructorInfo constructorOf(Type type)
+        {
+            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+
+            DebugAssert.State.Satisfies(constructors.Length == 1, "Components should have exactly one public constructor.");
+            
+            return constructors[0];
+        }
+
+
+        #endregion
+
+        #region Fetching
+
+        private static readonly MethodInfo tryMakeComponentFactoryMethodInfo = typeof(ComponentFactories)
+            .GetMethod(nameof(tryMakeComponentFactoryGeneric), BindingFlags.Static | BindingFlags.NonPublic);
+
+        private static IComponentFactory<TOwner> tryMakeComponentFactory<TOwner>(IComponent parameters)
+        {
+            var id = parameters.Id;
+            var parameterData = parameters.Parameters;
+            var parameterType = ParameterTypeForComponent(id);
+
+            DebugAssert.State.Satisfies(parameterData.GetType() == parameterType);
+
+            var tryMakeFactory = tryMakeComponentFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
+
+            return (IComponentFactory<TOwner>)tryMakeFactory.Invoke(null, new[] { id, parameterData });
+        }
+
+        private static IComponentFactory<TOwner> tryMakeComponentFactoryGeneric<TOwner, TParameters>(string id, TParameters parameters)
+        {
+            var factoryFactories = componentFactoryFactoriesForComponentIds[id];
+
+            factoryFactories.TryGetValue(typeof(TOwner), out var factoryFactory);
+
+            var typedFactoryFactory = (ComponentFactoryFactory<TOwner, TParameters>)factoryFactory;
+
+            return typedFactoryFactory?.Invoke(parameters);
+        }
+
+        #endregion
 
         #endregion
     }

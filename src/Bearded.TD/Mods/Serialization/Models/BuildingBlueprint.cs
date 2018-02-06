@@ -13,9 +13,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         public int Health { get; set; }
         public int Cost { get; set; }
         public List<IBuildingComponent> Components { get; set; }
-
-        // how to component?
-
+        
         public Mods.Models.BuildingBlueprint ToGameModel(
             DependencyResolver<Mods.Models.FootprintGroup> footprints)
         {
@@ -25,14 +23,7 @@ namespace Bearded.TD.Mods.Serialization.Models
                 footprints.Resolve(Footprint),
                 Health,
                 Cost,
-                makeComponentFactories()
-            );
-        }
-
-        private IEnumerable<IBuildingComponentFactory> makeComponentFactories()
-        {
-            return Components.Select(
-                c => ComponentFactories.Buildings[c.Id](c)
+                Components?.Select(ComponentFactories.CreateBuildingComponentFactory)
             );
         }
     }

@@ -4,29 +4,27 @@ using Bearded.TD.Mods.Serialization.Models;
 
 namespace Bearded.TD.Game.Components
 {
-    class BuildingComponentFactory<TComponentParameters> : IBuildingComponentFactory
+    class BuildingComponentFactory
     {
-        private readonly BuildingComponent<TComponentParameters> parameters;
-        private readonly ComponentFactory<Building, TComponentParameters> buildingFactory;
-        private readonly ComponentFactory<BuildingGhost, TComponentParameters> ghostFactory;
-        private readonly ComponentFactory<BuildingPlaceholder, TComponentParameters> placeholderFactory;
+        private readonly IComponentFactory<Building> buildingFactory;
+        private readonly IComponentFactory<BuildingGhost> ghostFactory;
+        private readonly IComponentFactory<BuildingPlaceholder> placeholderFactory;
 
-        public BuildingComponentFactory(BuildingComponent<TComponentParameters> parameters,
-            ComponentFactory<Building, TComponentParameters> buildingFactory,
-            ComponentFactory<BuildingGhost, TComponentParameters> ghostFactory,
-            ComponentFactory<BuildingPlaceholder, TComponentParameters> placeholderFactory)
+        public BuildingComponentFactory(IBuildingComponent parameters,
+            IComponentFactory<Building> buildingFactory,
+            IComponentFactory<BuildingGhost> ghostFactory,
+            IComponentFactory<BuildingPlaceholder> placeholderFactory)
         {
-            this.parameters = parameters;
-            this.buildingFactory = buildingFactory;
-            this.ghostFactory = ghostFactory;
-            this.placeholderFactory = placeholderFactory;
+            this.buildingFactory = parameters.OnBuilding ? buildingFactory : null;
+            this.ghostFactory = parameters.OnGhost ? ghostFactory : null;
+            this.placeholderFactory = parameters.OnPlaceholder ? placeholderFactory : null;
         }
 
-    }
+        public IComponent<Building> TryCreateForBuilding() => buildingFactory?.Create();
 
-    interface IBuildingComponentFactory
-    {
-        // create for ghost? yay nay
+        public IComponent<BuildingGhost> TryCreateForGhost() => ghostFactory?.Create();
+
+        public IComponent<BuildingPlaceholder> TryCreateForPlaceholder() => placeholderFactory?.Create();
     }
 
     class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>

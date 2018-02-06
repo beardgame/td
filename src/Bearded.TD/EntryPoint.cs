@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Bearded.TD.Game.Components;
 using Bearded.Utilities.IO;
 using OpenTK;
 
@@ -20,6 +21,9 @@ namespace Bearded.TD
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
                 var logger = new Logger {MirrorToConsole = false};
+
+                logger.Debug.Log("Creating component factories");
+                ComponentFactories.Initialize();
                 
                 logger.Info.Log("");
                 logger.Info.Log("Creating game");

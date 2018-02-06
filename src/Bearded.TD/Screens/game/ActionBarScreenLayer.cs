@@ -34,7 +34,7 @@ namespace Bearded.TD.Screens
 
             var buildingPage = new ActionBarItem.Content[Constants.Game.UI.ActionBarSize];
             buildingPage[0] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["wall"]), "Wall");
-            buildingPage[1] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["triangle0"]), "Triangle");
+            buildingPage[1] = contentFor(new BuildingInteractionHandler(game, faction, blueprints.Buildings["triangle"]), "Triangle");
             buildingPage[9] = contentFor(new MiningInteractionHandler(game, faction), "Mine tile");
             pages.Add(buildingPage);
 

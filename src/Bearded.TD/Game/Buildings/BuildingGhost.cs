@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -20,7 +18,7 @@ namespace Bearded.TD.Game.Buildings
         public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
-            => Blueprint.ComponentFactories.Select(f => f.CreateForGhost()).NotNull();
+            => Blueprint.GetComponentsForGhost();
 
         public override void Draw(GeometryManager geometries)
         {

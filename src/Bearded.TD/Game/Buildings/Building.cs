@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Buildings
         }
 
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
-            => Blueprint.GetComponents();
+            => Blueprint.GetComponentsForBuilding();
 
         public void Damage(int damage)
         {

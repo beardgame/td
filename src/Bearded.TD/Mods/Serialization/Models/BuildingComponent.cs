@@ -7,5 +7,7 @@
         public bool OnPlaceholder { get; set; }
         public bool OnGhost { get; set; }
         public TParameters Parameters { get; set; }
+
+        object IComponent.Parameters => Parameters;
     }
 }

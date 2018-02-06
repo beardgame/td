@@ -5,7 +5,7 @@
         public static class Mods
         {
             public const string DefaultModId = "default";
-            public const string BaseBuildingId = "base0";
+            public const string BaseBuildingId = "base";
         }
     }
 }
