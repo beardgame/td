@@ -1,8 +1,10 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Game.Units.StatusEffects;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
@@ -28,9 +30,11 @@ namespace Bearded.TD.Game.Units
         public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
+        private bool propertiesDirty;
         private EnemyUnitProperties properties;
         private int health;
         private Instant nextAttack;
+        private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
 
         public EnemyUnit(Id<EnemyUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
@@ -64,8 +68,32 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
+            updateStatusEffects(elapsedTime);
+            if (propertiesDirty)
+            {
+                refreshProperties();
+            }
             tileWalker.Update(elapsedTime, properties.Speed);
             tryDealDamage();
+        }
+
+        private void updateStatusEffects(TimeSpan elapsedTime)
+        {
+            statusEffects.ForEach(effect => effect.Update(elapsedTime));
+            var oldSize = statusEffects.Count;
+            statusEffects.RemoveAll(effect => effect.HasEnded);
+            if (statusEffects.Count < oldSize)
+            {
+                propertiesDirty = true;
+            }
+        }
+
+        private void refreshProperties()
+        {
+            var builder = EnemyUnitProperties.BuilderFromBlueprint(blueprint);
+            statusEffects.ForEach(effect => effect.Effect.Apply(builder));
+            properties = builder.Build();
+            propertiesDirty = false;
         }
 
         private void tryDealDamage()
@@ -112,6 +140,12 @@ namespace Bearded.TD.Game.Units
                 oldTile.Info.RemoveEnemy(this);
             if (newTile.IsValid)
                 newTile.Info.AddEnemy(this);
+        }
+
+        public void ApplyStatusEffect(IStatusEffectSource statusEffect)
+        {
+            statusEffects.Add(statusEffect);
+            propertiesDirty = true;
         }
 
         public void Damage(int damage, Building damageSource)
