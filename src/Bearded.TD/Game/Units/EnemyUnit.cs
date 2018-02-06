@@ -28,6 +28,7 @@ namespace Bearded.TD.Game.Units
         public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
+        private EnemyUnitProperties properties;
         private int health;
         private Instant nextAttack;
 
@@ -37,6 +38,7 @@ namespace Bearded.TD.Game.Units
 
             Id = id;
             this.blueprint = blueprint;
+            properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
             health = blueprint.Health;
         }
@@ -48,10 +50,10 @@ namespace Bearded.TD.Game.Units
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
 
-            tileWalker = new TileWalker(this, Game.Level, blueprint.Speed);
+            tileWalker = new TileWalker(this, Game.Level, properties.Speed);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
 
-            nextAttack = Game.Time + blueprint.TimeBetweenAttacks;
+            nextAttack = Game.Time + properties.TimeBetweenAttacks;
         }
 
         protected override void OnDelete()
@@ -77,8 +79,8 @@ namespace Bearded.TD.Game.Units
 
                 if (target == null) return;
                 
-                target.Damage(blueprint.Damage);
-                nextAttack = Game.Time + blueprint.TimeBetweenAttacks;
+                target.Damage(properties.Damage);
+                nextAttack = Game.Time + properties.TimeBetweenAttacks;
             }
         }
 
