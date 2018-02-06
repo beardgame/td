@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Resources
         {
             base.OnAdded();
 
-            tileWalker = new TileWalker(this, Game.Level, 3.UnitsPerSecond());
+            tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Position2.Zero, Game.Level.GetTile(Position2.Zero));
 
             manager.RegisterWorker(this);
@@ -76,7 +76,7 @@ namespace Bearded.TD.Game.Resources
         public override void Update(TimeSpan elapsedTime)
         {
             currentState.Update(elapsedTime);
-            tileWalker.Update(elapsedTime);
+            tileWalker.Update(elapsedTime, 3.UnitsPerSecond());
         }
 
         public override void Draw(GeometryManager geometries)

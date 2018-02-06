@@ -8,7 +8,6 @@ namespace Bearded.TD.Game.World
     {
         private readonly ITileWalkerOwner owner;
         private readonly Level level;
-        private readonly Speed movementSpeed;
 
         public Position2 Position { get; private set; }
         public Tile<TileInfo> CurrentTile { get; private set; }
@@ -19,16 +18,15 @@ namespace Bearded.TD.Game.World
         public Tile<TileInfo> GoalTile => goalTile;
         public bool IsMoving { get; private set; }
 
-        public TileWalker(ITileWalkerOwner owner, Level level, Speed movementSpeed)
+        public TileWalker(ITileWalkerOwner owner, Level level)
         {
             this.owner = owner;
             this.level = level;
-            this.movementSpeed = movementSpeed;
         }
 
-        public void Update(TimeSpan elapsedTime)
+        public void Update(TimeSpan elapsedTime, Speed currentSpeed)
         {
-            updateMovement(elapsedTime);
+            updateMovement(elapsedTime, currentSpeed);
             updateCurrentTileIfNeeded();
         }
 
@@ -39,10 +37,10 @@ namespace Bearded.TD.Game.World
             updateCurrentTileIfNeeded();
         }
 
-        private void updateMovement(TimeSpan elapsedTime)
+        private void updateMovement(TimeSpan elapsedTime, Speed currentSpeed)
         {
             IsMoving = true;
-            var movementLeft = elapsedTime * movementSpeed;
+            var movementLeft = elapsedTime * currentSpeed;
             while (movementLeft > Unit.Zero)
             {
                 var distanceToGoal = (goalPosition - Position).Length;

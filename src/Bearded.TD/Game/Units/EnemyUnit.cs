@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Units
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
 
-            tileWalker = new TileWalker(this, Game.Level, properties.Speed);
+            tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
 
             nextAttack = Game.Time + properties.TimeBetweenAttacks;
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            tileWalker.Update(elapsedTime);
+            tileWalker.Update(elapsedTime, properties.Speed);
             tryDealDamage();
         }
 
