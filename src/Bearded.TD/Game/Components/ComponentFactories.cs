@@ -42,9 +42,11 @@ namespace Bearded.TD.Game.Components
 
         #region Private permanent storage
 
-        private static readonly Dictionary<string /* id */, Type /* parameter */> parametersForComponentIds = new Dictionary<string, Type>();
+        private static readonly Dictionary<string /* id */, Type /* parameter */> parametersForComponentIds
+            = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly Dictionary<string /* id */, Dictionary<Type /* owner */, object /* factoryFactory */>>
-            componentFactoryFactoriesForComponentIds = new Dictionary<string, Dictionary<Type, object>>();
+            componentFactoryFactoriesForComponentIds = new Dictionary<string, Dictionary<Type, object>>(
+                StringComparer.OrdinalIgnoreCase);
 
         #endregion
 
