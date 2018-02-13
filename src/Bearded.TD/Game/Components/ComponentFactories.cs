@@ -66,20 +66,21 @@ namespace Bearded.TD.Game.Components
             var knownComponents = Assembly.GetExecutingAssembly().GetTypes()
                 .Select(t => (type: t, attribute: t.GetCustomAttribute<ComponentAttribute>(false)))
                 .Where(t => t.attribute != null)
-                .ToDictionary(t => t.attribute.Id, t => t.type);
+                .Select(t => (t.attribute.Id, t.type))
+                .ToList();
 
             var componentOwners = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetCustomAttribute<ComponentOwnerAttribute>() != null)
                 .ToList();
             
-            foreach (var c in knownComponents)
-                register(c, componentOwners);
+            foreach (var component in knownComponents)
+                register(component, componentOwners);
 
             ParameterTypesForComponentsById = new ReadOnlyDictionary<string, Type>(parametersForComponentIds);
         }
         
-        private static void register(KeyValuePair<string, Type> idAndComponent, List<Type> componentOwners)
-            => register(idAndComponent.Key, idAndComponent.Value, componentOwners);
+        private static void register((string id, Type type) component, List<Type> componentOwners)
+            => register(component.id, component.type, componentOwners);
 
         private static void register(string id, Type componentType, List<Type> componentOwners)
         {
