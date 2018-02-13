@@ -4,6 +4,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
+    [Component("gameOverOnDestroy")]
     class GameOverOnDestroy<T> : Component<T>
         where T : GameObject, IDamageable
     {

@@ -14,6 +14,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
+    [Component("turret")]
     class Turret : Component<Building, TurretParameters>
     {
         private Instant nextTileInRangeRecalculationTime;

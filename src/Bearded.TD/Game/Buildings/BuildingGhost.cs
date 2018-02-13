@@ -8,6 +8,7 @@ using Bearded.TD.Rendering;
 
 namespace Bearded.TD.Game.Buildings
 {
+    [ComponentOwner]
     class BuildingGhost : BuildingBase<BuildingGhost>
     {
         public BuildingGhost(BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)

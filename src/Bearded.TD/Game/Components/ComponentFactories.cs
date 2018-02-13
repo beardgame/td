@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -17,23 +17,7 @@ namespace Bearded.TD.Game.Components
 
         // TODO: Put this info into attributes
 
-        // ReSharper disable once MemberInitializerValueIgnored
-        private static Type[] knownComponentOwners =
-        {
-            typeof(Building),
-            typeof(BuildingGhost),
-            typeof(BuildingPlaceholder),
-        };
-
-        private static Dictionary<string, Type> knownComponents = new Dictionary<string, Type>
-        {
-            { "sink", typeof(EnemySink) },
-            { "gameOverOnDestroy", typeof(GameOverOnDestroy<>) },
-            { "turret", typeof(Turret) },
-            { "workerHub", typeof(WorkerHub<>) },
-            { "tileVisibility", typeof(TileVisibility<>) },
-            { "incomeOverTime", typeof(IncomeOverTime<>) },
-        };
+        private static bool initialised;
 
         #endregion
 
@@ -72,21 +56,30 @@ namespace Bearded.TD.Game.Components
 
         public static void Initialize()
         {
-            if (knownComponents == null)
+            if (initialised)
                 throw new InvalidOperationException("Component factories can only be initialised once.");
 
-            knownComponents.ForEach(register);
-            // just cleaning up some stuff we won't need again
-            knownComponents = null;
-            knownComponentOwners = null;
+            initialised = true;
+
+            var knownComponents = Assembly.GetExecutingAssembly().GetTypes()
+                .Select(t => (type: t, attribute: t.GetCustomAttribute<ComponentAttribute>(false)))
+                .Where(t => t.attribute != null)
+                .ToDictionary(t => t.attribute.Id, t => t.type);
+
+            var componentOwners = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetCustomAttribute<ComponentOwnerAttribute>() != null)
+                .ToList();
+            
+            foreach (var c in knownComponents)
+                register(c, componentOwners);
 
             ParameterTypesForComponentsById = new ReadOnlyDictionary<string, Type>(parametersForComponentIds);
         }
         
-        private static void register(KeyValuePair<string, Type> idAndComponent)
-            => register(idAndComponent.Key, idAndComponent.Value);
+        private static void register(KeyValuePair<string, Type> idAndComponent, List<Type> componentOwners)
+            => register(idAndComponent.Key, idAndComponent.Value, componentOwners);
 
-        private static void register(string id, Type componentType)
+        private static void register(string id, Type componentType, List<Type> componentOwners)
         {
             var parameterType = constructorParameterTypeOf(componentType);
 
@@ -95,7 +88,7 @@ namespace Bearded.TD.Game.Components
                 : tryRegisterComponent;
 
             var registeredComponent = false;
-            foreach (var owner in knownComponentOwners)
+            foreach (var owner in componentOwners)
                 registeredComponent = tryRegister(id, componentType, owner, parameterType) || registeredComponent;
 
             if (!registeredComponent)

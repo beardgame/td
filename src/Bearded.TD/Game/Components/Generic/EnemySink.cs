@@ -5,6 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
+    [Component("sink")]
     class EnemySink : Component<Building>
     {
         protected override void Initialise()

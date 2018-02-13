@@ -10,6 +10,7 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Buildings
 {
+    [ComponentOwner]
     class BuildingPlaceholder : PlacedBuildingBase<BuildingPlaceholder>, IIdable<BuildingPlaceholder>
     {
         public Id<BuildingPlaceholder> Id { get; }

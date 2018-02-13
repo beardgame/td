@@ -123,7 +123,9 @@
     <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
     <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
     <Compile Include="Game\Commands\gameplay\StartBuildingConstruction.cs" />
+    <Compile Include="Game\Components\ComponentAttribute.cs" />
     <Compile Include="Game\Components\ComponentFactories.cs" />
+    <Compile Include="Game\Components\ComponentOwner.cs" />
     <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />

@@ -6,6 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
+    [Component("tileVisibility")]
     class TileVisibility<T> : Component<T, TileVisibilityParameters>
         where T : GameObject, IPositionable
     {
