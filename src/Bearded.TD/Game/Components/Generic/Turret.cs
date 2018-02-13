@@ -43,6 +43,11 @@ namespace Bearded.TD.Game.Components.Generic
                 return;
             }
 
+            updateForCompletedBuilding();
+        }
+
+        private void updateForCompletedBuilding()
+        {
             var time = Owner.Game.Time;
             while (nextPossibleShootTime <= time)
             {
