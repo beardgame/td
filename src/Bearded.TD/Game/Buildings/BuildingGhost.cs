@@ -5,6 +5,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI.Model;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -17,6 +18,8 @@ namespace Bearded.TD.Game.Buildings
         }
 
         public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
+
+        public override SelectionState SelectionState => SelectionState.Selected;
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
             => Blueprint.GetComponentsForGhost();

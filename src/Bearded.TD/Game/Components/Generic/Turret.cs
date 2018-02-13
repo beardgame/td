@@ -15,32 +15,34 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("turret")]
-    class Turret : Component<Building, TurretParameters>
+    class Turret<T> : Component<T, TurretParameters>
+        where T : BuildingBase<T>
     {
         private Instant nextTileInRangeRecalculationTime;
         private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;
         private EnemyUnit target;
-
-        private Position2 laserTargetPoint;
-        private Instant laserTargetEndTime;
+        private Building ownerAsBuilding;
 
         public Turret(TurretParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
-            var level = Owner.Game.Level;
-            var position = Owner.Position;
-            var tile = level.GetTile(position);
-
-            var rangeRadius = (int)(Parameters.Range.NumericValue / Constants.Game.World.HexagonWidth) + 1;
-            var rangeSquared = Parameters.Range.Squared;
-
+            ownerAsBuilding = Owner as Building;
             nextPossibleShootTime = Owner.Game.Time;
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
+            if (ownerAsBuilding == null)
+                return;
+
+            if (!ownerAsBuilding.IsCompleted)
+            {
+                nextPossibleShootTime = Owner.Game.Time;
+                return;
+            }
+
             var time = Owner.Game.Time;
             while (nextPossibleShootTime <= time)
             {
@@ -65,13 +67,18 @@ namespace Bearded.TD.Game.Components.Generic
             if (nextTileInRangeRecalculationTime > Owner.Game.Time)
                 return;
 
+            recalculateTilesInRange();
+        }
+
+        private void recalculateTilesInRange()
+        {
             var rangeSquared = Parameters.Range.Squared;
 
             tilesInRange = new LevelVisibilityChecker<TileInfo>()
                 .EnumerateVisibleTiles(Owner.Game.Level, Owner.Position, Parameters.Range,
-                                       t => !t.IsValid || t.Info.TileType == TileInfo.Type.Wall)
+                    t => !t.IsValid || t.Info.TileType == TileInfo.Type.Wall)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                       (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
+                            (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .ToList();
 
@@ -99,13 +106,10 @@ namespace Bearded.TD.Game.Components.Generic
                 (target.Position - Owner.Position).Direction,
                 20.U() / 1.S(),
                 Parameters.Damage,
-                Owner
+                ownerAsBuilding
                 );
             
             Owner.Game.Add(p);
-
-            laserTargetPoint = target.Position;
-            laserTargetEndTime = Owner.Game.Time + new TimeSpan(0.1);
         }
 
         private void tryFindTarget()
@@ -117,18 +121,20 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Draw(GeometryManager geometries)
         {
-            if (Owner.SelectionState != SelectionState.Default)
+            if (Owner.SelectionState == SelectionState.Default)
+                return;
+            
+            recalculateTilesInRange();
+
+            var geo = geometries.ConsoleBackground;
+
+            geo.Color = Color.Green * (Owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
+
+            var level = Owner.Game.Level;
+
+            foreach (var tile in tilesInRange)
             {
-                var geo = geometries.ConsoleBackground;
-
-                geo.Color = Color.Green * (Owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
-
-                var level = Owner.Game.Level;
-
-                foreach (var tile in tilesInRange)
-                {
-                    geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
-                }
+                geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
             }
         }
     }

@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Buildings
         public Id<Building> Id { get; }
         
         public int Health { get; private set; }
-        private bool isCompleted;
+        public bool IsCompleted { get; private set; }
         private double buildProgress;
 
         public event VoidEventHandler Damaged;
@@ -67,15 +67,15 @@ namespace Bearded.TD.Game.Buildings
 
         public void SetBuildProgress(double newBuildProgress, int healthAdded)
         {
-            DebugAssert.State.Satisfies(!isCompleted, "Cannot update build progress after building is completed.");
+            DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             buildProgress = newBuildProgress;
             Health += healthAdded;
         }
 
         public void SetBuildCompleted()
         {
-            DebugAssert.State.Satisfies(!isCompleted, "Cannot complete building more than once.");
-            isCompleted = true;
+            DebugAssert.State.Satisfies(!IsCompleted, "Cannot complete building more than once.");
+            IsCompleted = true;
         }
 
         protected override void OnDelete()
@@ -102,7 +102,7 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            var alpha = isCompleted ? 1 : (float)(buildProgress * 0.9);
+            var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
             geo.Color = drawColors[SelectionState] * alpha;
 
             foreach (var tile in Footprint.OccupiedTiles)

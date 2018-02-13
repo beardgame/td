@@ -5,6 +5,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -16,6 +17,8 @@ namespace Bearded.TD.Game.Buildings
     {
         private PositionedFootprint footprint;
         private readonly List<IComponent<T>> components = new List<IComponent<T>>();
+
+        public abstract SelectionState SelectionState { get; }
 
         public BuildingBlueprint Blueprint { get; }
 

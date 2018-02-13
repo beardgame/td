@@ -11,8 +11,9 @@ namespace Bearded.TD.Game.Buildings
     abstract class PlacedBuildingBase<T> : BuildingBase<T>, IPlacedBuilding
         where T : PlacedBuildingBase<T>
     {
-        public SelectionState SelectionState { get; private set; }
-        
+        private SelectionState selectionState;
+        public override SelectionState SelectionState => selectionState;
+
         protected PlacedBuildingBase(
             BuildingBlueprint blueprint,
             Faction faction,
@@ -27,21 +28,21 @@ namespace Bearded.TD.Game.Buildings
 
         public void ResetSelection()
         {
-            SelectionState = SelectionState.Default;
+            selectionState = SelectionState.Default;
         }
 
         public void Focus(SelectionManager selectionManager)
         {
             if (selectionManager.FocusedObject != this)
                 throw new Exception("Cannot focus an object that is not the currently focused object.");
-            SelectionState = SelectionState.Focused;
+            selectionState = SelectionState.Focused;
         }
 
         public void Select(SelectionManager selectionManager)
         {
             if (selectionManager.SelectedObject != this)
                 throw new Exception("Cannot select an object that is not the currently selected object.");
-            SelectionState = SelectionState.Selected;
+            selectionState = SelectionState.Selected;
         }
         
         protected override void OnAdded()
