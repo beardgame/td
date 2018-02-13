@@ -7,20 +7,11 @@ using System.Reflection;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Components
 {
     static class ComponentFactories
     {
-        #region Configurable initialisation
-
-        // TODO: Put this info into attributes
-
-        private static bool initialised;
-
-        #endregion
-
         #region Public interface
 
         public static Type ParameterTypeForComponent(string id) => parametersForComponentIds[id];
@@ -41,6 +32,8 @@ namespace Bearded.TD.Game.Components
         #endregion
 
         #region Private permanent storage
+
+        private static bool initialised;
 
         private static readonly Dictionary<string /* id */, Type /* parameter */> parametersForComponentIds
             = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
