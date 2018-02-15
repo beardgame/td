@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Resources
 
         public MiningTask(Level level, Tile<TileInfo> tile, LevelGeometry geometry)
         {
-            DebugAssert.Argument.Satisfies(tile.Info.TileType == TileInfo.Type.Wall);
+            DebugAssert.Argument.Satisfies(tile.Info.IsMineable);
 
             this.level = level;
             this.tile = tile;

@@ -3,7 +3,6 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.World;
 
 namespace Bearded.TD.UI.Input
 {
@@ -22,7 +21,7 @@ namespace Bearded.TD.UI.Input
             if (!currentTile.IsValid)
                 return;
             if (cursor.Click.Hit)
-                foreach (var tile in currentTile.OccupiedTiles.Where(t => t.Info.TileType == TileInfo.Type.Wall))
+                foreach (var tile in currentTile.OccupiedTiles.Where(t => t.Info.IsMineable))
                     Game.RequestDispatcher.Dispatch(MineTile.Request(Game, faction, tile));
         }
     }

@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Projectiles
 
             foreach (var tile in tiles)
             {
-                if (!tile.IsValid || tile.Info.TileType == TileInfo.Type.Wall)
+                if (!tile.IsValid || !tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 {
                     Delete();
                     return;

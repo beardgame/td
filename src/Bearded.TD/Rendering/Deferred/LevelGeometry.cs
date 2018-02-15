@@ -53,7 +53,7 @@ namespace Bearded.TD.Rendering.Deferred
             var upBottomLeftV = (upPosition + new Vector2(-upCorners.sideX, -upCorners.sideY)).WithZ(upZ);
             var upBottomV = (upPosition + new Vector2(0, -upCorners.topY)).WithZ(upZ);
 
-            if (upRightTileInfo.TileType != TileType.Unknown)
+            if (upRightTileInfo.HasKnownType)
             {
                 addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
             }
@@ -61,7 +61,7 @@ namespace Bearded.TD.Rendering.Deferred
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
             var downTopLeftV = (downPosition + new Vector2(-downCorners.sideX, downCorners.sideY)).WithZ(downZ);
 
-            if (downRightTileInfo.TileType != TileType.Unknown)
+            if (downRightTileInfo.HasKnownType)
             {
                 addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
             }
@@ -69,17 +69,17 @@ namespace Bearded.TD.Rendering.Deferred
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
             var rightBottomLeftV = (rightPosition + new Vector2(-rightCorners.sideX, -rightCorners.sideY)).WithZ(rightZ);
 
-            if (rightTileInfo.TileType != TileType.Unknown)
+            if (rightTileInfo.HasKnownType)
             {
                 addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
             }
 
-            if (rightTileInfo.TileType != TileType.Unknown && upRightTileInfo.TileType != TileType.Unknown)
+            if (rightTileInfo.HasKnownType && upRightTileInfo.HasKnownType)
             {
                 addTriangle(topRightV, upBottomV, rightTopLeftV, c);
             }
             
-            if (rightTileInfo.TileType != TileType.Unknown && downRightTileInfo.TileType != TileType.Unknown)
+            if (rightTileInfo.HasKnownType && downRightTileInfo.HasKnownType)
             {
                 addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
             }

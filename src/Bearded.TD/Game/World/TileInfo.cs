@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.World
 {
@@ -28,6 +27,7 @@ namespace Bearded.TD.Game.World
             Unit = 1 << 1,
             Flying = 1 << 2,
             Worker = 1 << 3,
+            Projectile = 1 << 4,
 
             All = 0xff,
         }
@@ -50,6 +50,7 @@ namespace Bearded.TD.Game.World
 
         public Directions ValidDirections { get; }
         public Directions OpenDirectionsForUnits { get; private set; }
+        private Type tileType;
 
         private IPlacedBuilding placedBuilding;
         public IPlacedBuilding PlacedBuilding
@@ -75,7 +76,6 @@ namespace Bearded.TD.Game.World
 
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }
-        public Type TileType { get; private set; }
 
         public TileDrawInfo DrawInfo { get; private set; }
 
@@ -86,8 +86,14 @@ namespace Bearded.TD.Game.World
         {
             ValidDirections = validDirections;
             OpenDirectionsForUnits = validDirections;
-            TileType = tileType;
+            this.tileType = tileType;
             Enemies = enemies.AsReadOnly();
+            updatePassability();
+        }
+
+        public void SetTileType(Type newType)
+        {
+            tileType = newType;
             updatePassability();
         }
 
@@ -99,12 +105,6 @@ namespace Bearded.TD.Game.World
         public void OpenForUnitsTo(Direction direction)
         {
             OpenDirectionsForUnits = OpenDirectionsForUnits.And(direction).Intersect(ValidDirections);
-        }
-
-        public void SetTileType(Type tileType)
-        {
-            TileType = tileType;
-            updatePassability();
         }
 
         public void BlockForBuilding()
@@ -127,12 +127,16 @@ namespace Bearded.TD.Game.World
             enemies.Remove(enemy);
         }
 
+        public bool IsMineable => tileType == Type.Wall;
+
+        public bool HasKnownType => tileType != Type.Unknown;
+
         public bool IsPassableFor(PassabilityLayer passabilityLayer)
             => (passabilityLayer & blockedFor) == PassabilityLayer.None;
 
         private void updatePassability()
         {
-            blockedFor = blockedLayersByType[TileType];
+            blockedFor = blockedLayersByType[tileType];
 
             if (FinishedBuilding != null)
             {
@@ -145,6 +149,6 @@ namespace Bearded.TD.Game.World
             }
         }
 
-        public override string ToString() => $"{TileType}";
+        public override string ToString() => $"{tileType}";
     }
 }

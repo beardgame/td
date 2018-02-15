@@ -81,7 +81,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             tilesInRange = new LevelVisibilityChecker<TileInfo>()
                 .EnumerateVisibleTiles(Owner.Game.Level, Owner.Position, Parameters.Range,
-                    t => !t.IsValid || t.Info.TileType == TileInfo.Type.Wall)
+                    t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                             (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)

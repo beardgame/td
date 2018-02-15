@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             var tiles = new LevelVisibilityChecker<TileInfo>()
                 .EnumerateVisibleTiles(level, Owner.Position, Parameters.Range,
-                    tile => tile.Info.TileType == TileInfo.Type.Wall);
+                    tile => tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile));
 
             var radiusSquared = Parameters.Range.Squared;
 
