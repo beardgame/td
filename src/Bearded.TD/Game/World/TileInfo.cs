@@ -110,6 +110,7 @@ namespace Bearded.TD.Game.World
         public void BlockForBuilding()
         {
             blockedForBuilding = true;
+            updatePassability();
         }
 
         public void SetDrawInfo(TileDrawInfo info)

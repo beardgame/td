@@ -123,6 +123,7 @@
     <Compile Include="Game\Buildings\PlacedBuildingBase.cs" />
     <Compile Include="Game\Commands\gameplay\FinishBuildingConstruction.cs" />
     <Compile Include="Game\Commands\gameplay\StartBuildingConstruction.cs" />
+    <Compile Include="Game\Commands\loading\BlockTilesForBuilding.cs" />
     <Compile Include="Game\Components\ComponentAttribute.cs" />
     <Compile Include="Game\Components\ComponentFactories.cs" />
     <Compile Include="Game\Components\ComponentOwner.cs" />

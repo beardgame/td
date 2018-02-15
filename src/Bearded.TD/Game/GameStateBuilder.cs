@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -37,6 +38,10 @@ namespace Bearded.TD.Game
             var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
 
             yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
+            yield return BlockTilesForBuilding.Command(
+                    game,
+                    game.State.Level.Tilemap.SpiralCenteredAt(
+                            new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0), 3).ToList());
         }
 
         private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileInfo.Type> types)
