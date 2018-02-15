@@ -12,7 +12,7 @@ namespace Bearded.TD.UI.Input
             var currentTile = cursor.CurrentFootprint;
             if (!currentTile.IsValid)
                 return;
-            var building = currentTile.RootTile.Info.Building;
+            var building = currentTile.RootTile.Info.PlacedBuilding;
             var clicked = cursor.Click.Hit;
             if (building == null)
             {

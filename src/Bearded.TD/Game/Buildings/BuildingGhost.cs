@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Buildings
 
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                geo.Color = (tile.IsValid && tile.Info.IsPassable && tile.Info.PlacedBuilding == null ? Color.Green : Color.Red) * 0.5f;
+                geo.Color = (tile.IsValid && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building) ? Color.Green : Color.Red) * 0.5f;
                 geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
             }
             

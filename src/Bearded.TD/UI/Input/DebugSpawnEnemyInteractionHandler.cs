@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.UI.Input
@@ -21,7 +22,7 @@ namespace Bearded.TD.UI.Input
         {
             if (cursor.Click.Hit)
                 cursor.CurrentFootprint.OccupiedTiles
-                    .Where(t => t.IsValid && t.Info.IsPassable)
+                    .Where(t => t.IsValid && t.Info.IsPassableFor(TileInfo.PassabilityLayer.Unit))
                     .ForEach(tile => Game.State.Meta.Dispatcher.RunOnlyOnServer(
                         SpawnUnit.Command,
                         Game.State,

@@ -103,7 +103,7 @@ namespace Bearded.TD.Game.Units
             while (nextAttack <= Game.Time)
             {
                 var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-                var target = CurrentTile.Neighbour(desiredDirection).Info.Building;
+                var target = CurrentTile.Neighbour(desiredDirection).Info.FinishedBuilding;
 
                 if (target == null) return;
                 
@@ -129,7 +129,7 @@ namespace Bearded.TD.Game.Units
         public Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-            return !CurrentTile.Neighbour(desiredDirection).Info.IsPassable
+            return !CurrentTile.Neighbour(desiredDirection).Info.IsPassableFor(TileInfo.PassabilityLayer.Unit)
                 ? Direction.Unknown
                 : desiredDirection;
         }

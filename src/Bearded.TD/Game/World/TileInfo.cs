@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.World
 {
     class TileInfo
     {
-        public static TileInfo Dummy { get; } = new TileInfo(Directions.None, Type.Unknown);
+        public static TileInfo Dummy { get; }
 
         public enum Type : byte
         {
@@ -18,50 +20,101 @@ namespace Bearded.TD.Game.World
             Crevice = 3,
         }
 
+        [Flags]
+        public enum PassabilityLayer : byte
+        {
+            None = 0,
+            Building = 1 << 0,
+            Unit = 1 << 1,
+            Flying = 1 << 2,
+            Worker = 1 << 3,
+
+            All = 0xff,
+        }
+
+        private static readonly IDictionary<Type, PassabilityLayer> blockedLayersByType;
+
+        // Use static constructor, because order of initialization of static members matters.
+        static TileInfo()
+        {
+            blockedLayersByType = new Dictionary<Type, PassabilityLayer>
+            {
+                { Type.Unknown, PassabilityLayer.None },
+                { Type.Floor, PassabilityLayer.None },
+                { Type.Wall, PassabilityLayer.All },
+                { Type.Crevice, ~PassabilityLayer.Flying },
+            };
+
+            Dummy = new TileInfo(Directions.None, Type.Unknown);
+        }
+
         public Directions ValidDirections { get; }
+        public Directions OpenDirectionsForUnits { get; private set; }
 
-        public Directions OpenDirections { get; private set; }
-        public bool IsPassable => Building == null && TileType == Type.Floor;
+        private IPlacedBuilding placedBuilding;
+        public IPlacedBuilding PlacedBuilding
+        {
+            get => placedBuilding;
+            set
+            {
+                placedBuilding = value;
+                updatePassability();
+            }
+        }
 
-        public IPlacedBuilding PlacedBuilding { get; set; }
-        public Building Building { get; private set; }
+        private Building finishedBuilding;
+        public Building FinishedBuilding
+        {
+            get => finishedBuilding;
+            set
+            {
+                finishedBuilding = value;
+                updatePassability();
+            }
+        }
+
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }
         public Type TileType { get; private set; }
 
         public TileDrawInfo DrawInfo { get; private set; }
 
+        private bool blockedForBuilding;
+        private PassabilityLayer blockedFor;
+
         public TileInfo(Directions validDirections, Type tileType)
         {
             ValidDirections = validDirections;
-            OpenDirections = validDirections;
+            OpenDirectionsForUnits = validDirections;
             TileType = tileType;
             Enemies = enemies.AsReadOnly();
+            updatePassability();
         }
 
-        public void CloseTo(Direction direction)
+        public void CloseForUnitsTo(Direction direction)
         {
-            OpenDirections = OpenDirections.Except(direction);
+            OpenDirectionsForUnits = OpenDirectionsForUnits.Except(direction);
         }
 
-        public void OpenTo(Direction direction)
+        public void OpenForUnitsTo(Direction direction)
         {
-            OpenDirections = OpenDirections.And(direction).Intersect(ValidDirections);
+            OpenDirectionsForUnits = OpenDirectionsForUnits.And(direction).Intersect(ValidDirections);
         }
 
         public void SetTileType(Type tileType)
         {
             TileType = tileType;
+            updatePassability();
+        }
+
+        public void BlockForBuilding()
+        {
+            blockedForBuilding = true;
         }
 
         public void SetDrawInfo(TileDrawInfo info)
         {
             DrawInfo = info;
-        }
-
-        public void SetBuilding(Building building)
-        {
-            Building = building;
         }
 
         public void AddEnemy(EnemyUnit enemy)
@@ -74,7 +127,24 @@ namespace Bearded.TD.Game.World
             enemies.Remove(enemy);
         }
 
-        public override string ToString()
-            => $"{TileType}";
+        public bool IsPassableFor(PassabilityLayer passabilityLayer)
+            => (passabilityLayer & blockedFor) == PassabilityLayer.None;
+
+        private void updatePassability()
+        {
+            blockedFor = blockedLayersByType[TileType];
+
+            if (FinishedBuilding != null)
+            {
+                blockedFor |= ~PassabilityLayer.Worker;
+            }
+
+            if (PlacedBuilding != null || blockedForBuilding)
+            {
+                blockedFor |= PassabilityLayer.Building;
+            }
+        }
+
+        public override string ToString() => $"{TileType}";
     }
 }

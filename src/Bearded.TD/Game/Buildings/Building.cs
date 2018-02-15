@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Buildings
                 Game.Geometry.SetBuilding(tile, this);
                 Game.Navigator.AddBackupSink(tile);
             });
-            
+
             base.OnAdded();
         }
 

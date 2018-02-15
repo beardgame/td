@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.World
@@ -36,21 +37,21 @@ namespace Bearded.TD.Game.World
         public void SetBuilding(Tile<TileInfo> tile, Building building)
         {
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
-            tile.Info.SetBuilding(building);
+            tile.Info.FinishedBuilding = building;
             updatePassability(tile);
         }
 
         private void updatePassability(Tile<TileInfo> tile)
         {
-            var isPassable = tile.Info.IsPassable;
+            var isPassable = tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Unit);
 
             foreach (var dir in tile.Info.ValidDirections.Enumerate())
             {
                 var neighbour = tile.Neighbour(dir);
                 if (isPassable)
-                    neighbour.Info.OpenTo(dir.Opposite());
+                    neighbour.Info.OpenForUnitsTo(dir.Opposite());
                 else
-                    neighbour.Info.CloseTo(dir.Opposite());
+                    neighbour.Info.CloseForUnitsTo(dir.Opposite());
             }
 
             TilePassabilityChanged?.Invoke(tile);

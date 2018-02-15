@@ -89,7 +89,7 @@ namespace Bearded.TD.Game.Navigation
 
                 var gameTile = new Tile<TileInfo>(tilemap, xy.X, xy.Y);
 
-                foreach (var direction in gameTile.Info.OpenDirections.Enumerate())
+                foreach (var direction in gameTile.Info.OpenDirectionsForUnits.Enumerate())
                 {
                     var neighbour = tile.Neighbour(direction);
                     var neighbourInfo = neighbour.Info;
@@ -115,7 +115,7 @@ namespace Bearded.TD.Game.Navigation
         public void AddBackupSink(Tile<TileInfo> tile)
         {
             updateTile(tile.X, tile.Y, BackupSink);
-            foreach (var direction in tile.Info.OpenDirections.Enumerate())
+            foreach (var direction in tile.Info.OpenDirectionsForUnits.Enumerate())
             {
                 var neighbour = tile.Neighbour(direction);
                 touchTile(neighbour.X, neighbour.Y);
