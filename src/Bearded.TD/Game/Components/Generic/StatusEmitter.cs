@@ -146,7 +146,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             public void Update(TimeSpan elapsedTime)
             {
-                HasEnded = rangeChecker(Unit.CurrentTile);
+                HasEnded = !rangeChecker(Unit.CurrentTile);
             }
 
             public void EndImmediately()

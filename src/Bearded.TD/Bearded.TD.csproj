@@ -71,6 +71,9 @@
     <None Include="assets\mods\default\defs\buildings\base.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="assets\mods\default\defs\buildings\slowEmitter.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="assets\mods\default\defs\buildings\triangleTurret.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

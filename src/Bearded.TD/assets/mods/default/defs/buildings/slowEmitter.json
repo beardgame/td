@@ -1,0 +1,15 @@
+{
+    "id" : "slowEmitter",
+    "name" : "Slow Emitter",
+    "footprint" : "triangle",
+    "health" : 300,
+    "cost" : 95,
+    "components" : [
+        {
+            "id" : "statusEmitter",
+            "parameters" : {
+                "range" : 3
+            }
+        }
+    ]
+}

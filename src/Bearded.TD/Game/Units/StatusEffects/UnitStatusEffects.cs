@@ -4,13 +4,13 @@ namespace Bearded.TD.Game.Units.StatusEffects
 {
     static class UnitStatusEffects
     {
-        public static IUnitStatusEffect Slow = new SimpleStatusEffectSingleton(properties =>
+        public static readonly IUnitStatusEffect Slow = new SimpleStatusEffectSingleton(properties =>
         {
-            properties.Speed *= .9f;
+            properties.Speed *= .3f;
             properties.TimeBetweenAttacks *= 1.11;
         });
 
-        public static IUnitStatusEffect Weakened = new SimpleStatusEffectSingleton(properties => properties.Damage /= 2);
+        public static readonly IUnitStatusEffect Weakened = new SimpleStatusEffectSingleton(properties => properties.Damage /= 2);
         
         private class SimpleStatusEffectSingleton : IUnitStatusEffect
         {

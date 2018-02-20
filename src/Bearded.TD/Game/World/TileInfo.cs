@@ -141,7 +141,7 @@ namespace Bearded.TD.Game.World
 
             if (FinishedBuilding != null)
             {
-                blockedFor |= ~PassabilityLayer.Worker;
+                blockedFor |= ~(PassabilityLayer.Worker | PassabilityLayer.Projectile);
             }
 
             if (PlacedBuilding != null || blockedForBuilding)
