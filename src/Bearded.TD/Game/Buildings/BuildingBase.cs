@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
@@ -25,7 +24,7 @@ namespace Bearded.TD.Game.Buildings
 
         public BuildingBlueprint Blueprint { get; }
 
-        public PositionedFootprint Footprint
+        protected PositionedFootprint Footprint
         {
             get => footprint;
             private set
@@ -54,8 +53,8 @@ namespace Bearded.TD.Game.Buildings
             Components = components.AsReadOnly();
         }
 
-        protected virtual void ChangeFootprint(PositionedFootprint footprint)
-            => Footprint = footprint;
+        protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
+            => Footprint = newFootprint;
 
         protected override void OnAdded()
         {
