@@ -127,6 +127,7 @@
     <Compile Include="Game\Components\ComponentAttribute.cs" />
     <Compile Include="Game\Components\ComponentFactories.cs" />
     <Compile Include="Game\Components\ComponentOwner.cs" />
+    <Compile Include="Game\Components\Generic\StatusEmitter.cs" />
     <Compile Include="Game\interfaces\IDamageable.cs" />
     <Compile Include="Game\interfaces\IFactioned.cs" />
     <Compile Include="Game\Components\IComponent.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="Game\World\TileSelection.cs" />
     <Compile Include="Mods\Mod.cs" />
     <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
+    <Compile Include="Mods\Models\components\StatusEmitterParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
     <Compile Include="Mods\Models\components\TurretParameters.cs" />
     <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
