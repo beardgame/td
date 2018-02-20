@@ -44,14 +44,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-
-            foreach (var tile in Footprint.OccupiedTiles)
-            {
-                geo.Color = Color.Cyan * 0.25f;
-                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
-            }
-
+            DrawTiles(geometries, Color.Cyan * 0.25f);
             base.Draw(geometries);
         }
     }

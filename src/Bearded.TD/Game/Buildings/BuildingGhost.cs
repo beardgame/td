@@ -26,12 +26,10 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                geo.Color = (tile.IsValid && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building) ? Color.Green : Color.Red) * 0.5f;
-                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+                var color = (tile.IsValid && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building) ? Color.Green : Color.Red) * 0.5f;
+                DrawTile(geometries, color, tile);
             }
             
             base.Draw(geometries);

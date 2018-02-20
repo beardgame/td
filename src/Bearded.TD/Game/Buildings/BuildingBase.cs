@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
@@ -8,6 +10,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
@@ -78,6 +81,30 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var component in Components)
                 component.Draw(geometries);
+        }
+
+        protected void DrawTiles(GeometryManager geometries, Color color)
+        {
+            foreach (var tile in Footprint.OccupiedTiles)
+            {
+                DrawTile(geometries, color, tile);
+            }
+        }
+
+        protected void DrawTile(GeometryManager geometries, Color color, Tile<TileInfo> tile)
+        {
+            var geo = geometries.ConsoleBackground;
+            geo.Color = color;
+            geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+        }
+
+        protected void DrawBuildingName(GeometryManager geometries, Color color)
+        {
+            var geo = geometries.ConsoleFont;
+            geo.Color = color;
+            geo.Height = .2f;
+            geo.SizeCoefficient = new Vector2(1, -1);
+            geo.DrawString(Position.NumericValue, Blueprint.Name, .5f, .5f);
         }
     }
 }

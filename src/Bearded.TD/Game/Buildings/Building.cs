@@ -12,7 +12,6 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
@@ -101,13 +100,9 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
             var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
-            geo.Color = drawColors[SelectionState] * alpha;
-
-            foreach (var tile in Footprint.OccupiedTiles)
-                geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, HexagonSide, true, 6);
-            
+            DrawTiles(geometries, drawColors[SelectionState] * alpha);
+            DrawBuildingName(geometries, Color.Black);
             base.Draw(geometries);
 
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange * 0.2f);
