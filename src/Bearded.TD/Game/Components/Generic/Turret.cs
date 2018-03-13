@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (ownerAsBuilding == null)
+            if (typeof(T) != typeof(Building))
                 return;
 
             if (!ownerAsBuilding.IsCompleted)
