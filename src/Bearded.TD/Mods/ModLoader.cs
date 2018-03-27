@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
