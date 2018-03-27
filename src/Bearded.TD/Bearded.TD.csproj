@@ -141,6 +141,7 @@
     <Compile Include="Game\Units\StatusEffects\IUnitStatusEffect.cs" />
     <Compile Include="Game\Units\StatusEffects\IStatusEffectSource.cs" />
     <Compile Include="Game\Units\StatusEffects\UnitStatusEffects.cs" />
+    <Compile Include="Game\Weapons\Weapon.cs" />
     <Compile Include="Game\World\Footprint.cs" />
     <Compile Include="Game\World\TileWalker.cs" />
     <Compile Include="Meta\GlobalCommands.cs" />
