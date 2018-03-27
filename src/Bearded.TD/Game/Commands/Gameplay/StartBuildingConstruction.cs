@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Commands
                 placeholder.StartBuild(buildingId);
             }
 
-            public ICommandSerializer Serializer => new CommandSerializer();
+            public ICommandSerializer Serializer => new CommandSerializer(buildingId, placeholder);
         }
 
         private class CommandSerializer : ICommandSerializer
