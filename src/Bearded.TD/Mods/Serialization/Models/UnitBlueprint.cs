@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Bearded.TD.Mods.Serialization.Models
 {

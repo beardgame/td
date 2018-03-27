@@ -1,34 +1,30 @@
-﻿using Bearded.TD.Utilities;
-using Bearded.Utilities.SpaceTime;
-using Newtonsoft.Json;
+﻿using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class WeaponParameters
+    sealed class WeaponParameters : IBlueprint
     {
-        public TimeSpan ShootInterval { get; } = new TimeSpan(0.15);
-        public TimeSpan IdleInterval { get; } = new TimeSpan(0.3);
-        public TimeSpan ReCalculateTilesInRangeInterval { get; } = 1.S();
+        public string Id { get; }
+        public TimeSpan ShootInterval { get; }
+        public TimeSpan IdleInterval { get; }
+        public TimeSpan ReCalculateTilesInRangeInterval { get; }
+        public Unit Range { get; }
+        public int Damage { get; }
 
-        public Unit Range { get; } = 5.U();
-        public int Damage { get; } = 10;
-
-        public WeaponParameters()
+        public WeaponParameters(
+                string id,
+                TimeSpan shootInterval,
+                TimeSpan idleInterval,
+                TimeSpan reCalculateTilesInRangeInterval,
+                Unit range,
+                int damage)
         {
-            
-        }
-
-        [JsonConstructor]
-        public WeaponParameters(TimeSpan? shootInterval, TimeSpan? idleInterval,
-            TimeSpan? reCalculateTilesInRangeInterval,
-            Unit? range, int? damage)
-        {
-            ShootInterval = shootInterval ?? ShootInterval;
-            IdleInterval = idleInterval ?? IdleInterval;
-            ReCalculateTilesInRangeInterval = reCalculateTilesInRangeInterval ?? ReCalculateTilesInRangeInterval;
-
-            Range = range ?? Range;
-            Damage = damage ?? Damage;
+            Id = id;
+            ShootInterval = shootInterval;
+            IdleInterval = idleInterval;
+            ReCalculateTilesInRangeInterval = reCalculateTilesInRangeInterval;
+            Range = range;
+            Damage = damage;
         }
     }
 }

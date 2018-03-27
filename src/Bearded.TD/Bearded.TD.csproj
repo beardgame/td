@@ -92,6 +92,9 @@
     <None Include="assets\mods\default\defs\units\tank.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="assets\mods\default\defs\weapons\testWeapon.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="assets\mods\default\mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -223,6 +226,7 @@
     <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
     <Compile Include="Mods\Models\components\StatusEmitterParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
+    <Compile Include="Mods\Models\components\TurretParameters.cs" />
     <Compile Include="Mods\Models\components\WeaponParameters.cs" />
     <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
@@ -233,6 +237,7 @@
     <Compile Include="Mods\ModLoadingContext.cs" />
     <Compile Include="Mods\ModSorter.cs" />
     <Compile Include="Mods\Serialization\Converters\BuildingComponentConverter.cs" />
+    <Compile Include="Mods\Serialization\Converters\DependencyConverter.cs" />
     <Compile Include="Mods\Serialization\Converters\SpaceTime1Converter.cs" />
     <Compile Include="Mods\Serialization\Models\BuildingBlueprint.cs" />
     <Compile Include="Mods\Serialization\Models\BuildingComponent.cs" />
@@ -242,6 +247,7 @@
     <Compile Include="Mods\Serialization\Models\meta\ModDependency.cs" />
     <Compile Include="Mods\ModMetadata.cs" />
     <Compile Include="Mods\Serialization\Models\UnitBlueprint.cs" />
+    <Compile Include="Mods\Serialization\Models\WeaponBlueprint.cs" />
     <Compile Include="Screens\DebugCoordinatePointerLayer.cs" />
     <Compile Include="Tiles\Level.cs" />
     <Compile Include="Tiles\TileExtensions.cs" />

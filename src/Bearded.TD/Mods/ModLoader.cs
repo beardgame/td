@@ -16,6 +16,8 @@ using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
 using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
 using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
+using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponParameters;
+using WeaponBlueprintJson = Bearded.TD.Mods.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Mods
@@ -48,6 +50,10 @@ namespace Bearded.TD.Mods
             {
                 configureSerializer();
 
+                var weapons = loadWeapons();
+
+                configureSerializerDependency(weapons, m => m.Blueprints.Weapons);
+
                 var footprints = loadFootprints();
                 var buildings = loadBuildings(footprints);
                 var units = loadUnits();
@@ -55,7 +61,8 @@ namespace Bearded.TD.Mods
                 return new Mod(
                     footprints,
                     buildings,
-                    units
+                    units,
+                    weapons
                     );
             }
 
@@ -74,6 +81,9 @@ namespace Bearded.TD.Mods
             private ReadonlyBlueprintCollection<UnitBlueprint> loadUnits()
                 => loadBlueprints<UnitBlueprint, UnitBlueprintJson>("defs/units");
 
+            private ReadonlyBlueprintCollection<WeaponBlueprint> loadWeapons()
+                => loadBlueprints<WeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
+
             private static ReadonlyBlueprintCollection<T> empty<T>()
                 where T : IBlueprint
                 => new ReadonlyBlueprintCollection<T>(Enumerable.Empty<T>());
@@ -87,6 +97,16 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()));
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(BuildingComponentConverterFactory.Make());
+            }
+
+            private void configureSerializerDependency<TBlueprint>(
+                    ReadonlyBlueprintCollection<TBlueprint> blueprints,
+                    Func<Mod, ReadonlyBlueprintCollection<TBlueprint>> blueprintSelector)
+                    where TBlueprint : IBlueprint
+            {
+                var dependencyResolver =
+                        new DependencyResolver<TBlueprint>(meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
+                serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
             }
 
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints

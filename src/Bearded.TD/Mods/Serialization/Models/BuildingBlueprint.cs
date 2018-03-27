@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Components;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
