@@ -15,7 +15,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("turret")]
-    class Turret<T> : Component<T, TurretParameters>
+    class Turret<T> : Component<T, WeaponParameters>
         where T : BuildingBase<T>
     {
         private Instant nextTileInRangeRecalculationTime;
@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Components.Generic
         private EnemyUnit target;
         private Building ownerAsBuilding;
 
-        public Turret(TurretParameters parameters) : base(parameters) { }
+        public Turret(WeaponParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {

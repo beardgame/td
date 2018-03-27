@@ -223,7 +223,7 @@
     <Compile Include="Mods\Models\components\IncomeOverTimeParameters.cs" />
     <Compile Include="Mods\Models\components\StatusEmitterParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
-    <Compile Include="Mods\Models\components\TurretParameters.cs" />
+    <Compile Include="Mods\Models\components\WeaponParameters.cs" />
     <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
     <Compile Include="Mods\ModForLoading.cs" />
