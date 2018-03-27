@@ -18,7 +18,7 @@ namespace Bearded.TD.Mods
 
             var enemies = new ReadonlyBlueprintCollection<UnitBlueprint>(Enumerable.Empty<UnitBlueprint>());
 
-            var weapons = new ReadonlyBlueprintCollection<WeaponParameters>(Enumerable.Empty<WeaponParameters>());
+            var weapons = new ReadonlyBlueprintCollection<WeaponBlueprint>(Enumerable.Empty<WeaponBlueprint>());
 
             return new Mod(
                 footprints,

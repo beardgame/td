@@ -92,7 +92,7 @@
     <None Include="assets\mods\default\defs\units\tank.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="assets\mods\default\defs\weapons\testWeapon.json">
+    <None Include="assets\mods\default\defs\weapons\triangleWeapon.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="assets\mods\default\mod.json">
@@ -228,7 +228,7 @@
     <Compile Include="Mods\Models\components\StatusEmitterParameters.cs" />
     <Compile Include="Mods\Models\components\TileVisibilityParameters.cs" />
     <Compile Include="Mods\Models\components\TurretParameters.cs" />
-    <Compile Include="Mods\Models\components\WeaponParameters.cs" />
+    <Compile Include="Mods\Models\components\WeaponBlueprint.cs" />
     <Compile Include="Mods\Models\components\WorkerHubParameters.cs" />
     <Compile Include="Mods\Models\IBlueprint.cs" />
     <Compile Include="Mods\ModForLoading.cs" />

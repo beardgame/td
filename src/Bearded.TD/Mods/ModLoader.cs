@@ -16,7 +16,7 @@ using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
 using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
 using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
-using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponParameters;
+using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponBlueprint;
 using WeaponBlueprintJson = Bearded.TD.Mods.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
 

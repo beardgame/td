@@ -9,18 +9,18 @@ namespace Bearded.TD.Mods
         public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
         public ReadonlyBlueprintCollection<BuildingBlueprint> Buildings { get; }
         public ReadonlyBlueprintCollection<UnitBlueprint> Units { get; }
-        public ReadonlyBlueprintCollection<WeaponParameters> Weapons { get; }
+        public ReadonlyBlueprintCollection<WeaponBlueprint> Weapons { get; }
 
         public Blueprints(
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<UnitBlueprint> units,
-            ReadonlyBlueprintCollection<WeaponParameters> weapons)
+            ReadonlyBlueprintCollection<WeaponBlueprint> weapons)
         {
             Footprints = footprints;
             Buildings = buildings;
             Units = units;
-            Weapons = Weapons;
+            Weapons = weapons;
         }
 
         public static Blueprints Merge(IEnumerable<Blueprints> blueprints)
@@ -33,7 +33,7 @@ namespace Bearded.TD.Mods
                     blueprintsList.SelectMany(blueprint => blueprint.Buildings.All)),
                 new ReadonlyBlueprintCollection<UnitBlueprint>(
                     blueprintsList.SelectMany(blueprint => blueprint.Units.All)),
-                new ReadonlyBlueprintCollection<WeaponParameters>(
+                new ReadonlyBlueprintCollection<WeaponBlueprint>(
                     blueprintsList.SelectMany(blueprint => blueprint.Weapons.All)));
         }
     }

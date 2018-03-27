@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Weapons
     class Weapon<T>
         where T : BuildingBase<T>
     {
-        private readonly WeaponParameters parameters;
+        private readonly WeaponBlueprint blueprint;
         private readonly Turret<T> turret;
         private readonly Building ownerAsBuilding;
 
@@ -29,9 +29,9 @@ namespace Bearded.TD.Game.Weapons
         private List<Tile<TileInfo>> tilesInRange;
         private EnemyUnit target;
 
-        public Weapon(WeaponParameters parameters, Turret<T> turret)
+        public Weapon(WeaponBlueprint blueprint, Turret<T> turret)
         {
-            this.parameters = parameters;
+            this.blueprint = blueprint;
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
             nextPossibleShootTime = turret.Owner.Game.Time;
@@ -62,13 +62,13 @@ namespace Bearded.TD.Game.Weapons
                 if (target == null)
                 {
                     while (nextPossibleShootTime <= time)
-                        nextPossibleShootTime += parameters.IdleInterval;
+                        nextPossibleShootTime += blueprint.IdleInterval;
                     break;
                 }
 
                 shootTarget();
 
-                nextPossibleShootTime += parameters.ShootInterval;
+                nextPossibleShootTime += blueprint.ShootInterval;
             }
         }
 
@@ -82,21 +82,21 @@ namespace Bearded.TD.Game.Weapons
 
         private void recalculateTilesInRange()
         {
-            var rangeSquared = parameters.Range.Squared;
+            var rangeSquared = blueprint.Range.Squared;
 
             var owner = turret.Owner;
             var game = owner.Game;
             var level = game.Level;
 
             tilesInRange = new LevelVisibilityChecker<TileInfo>()
-                .EnumerateVisibleTiles(level, owner.Position, parameters.Range,
+                .EnumerateVisibleTiles(level, owner.Position, blueprint.Range,
                     t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                             (level.GetPosition(t.tile) - owner.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .ToList();
 
-            nextTileInRangeRecalculationTime = game.Time + parameters.ReCalculateTilesInRangeInterval;
+            nextTileInRangeRecalculationTime = game.Time + blueprint.ReCalculateTilesInRangeInterval;
         }
 
         private void ensureTargetingState()
@@ -119,7 +119,7 @@ namespace Bearded.TD.Game.Weapons
                 ownerAsBuilding.Position,
                 (target.Position - ownerAsBuilding.Position).Direction,
                 20.U() / 1.S(),
-                parameters.Damage,
+                blueprint.Damage,
                 ownerAsBuilding
             );
 

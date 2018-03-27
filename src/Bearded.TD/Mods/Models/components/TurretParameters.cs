@@ -4,10 +4,10 @@ namespace Bearded.TD.Mods.Models
 {
     sealed class TurretParameters
     {
-        public WeaponParameters Weapon { get; }
+        public WeaponBlueprint Weapon { get; }
 
         [JsonConstructor]
-        public TurretParameters(WeaponParameters weapon)
+        public TurretParameters(WeaponBlueprint weapon)
         {
             Weapon = weapon;
         }

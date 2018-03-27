@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Weapons;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         protected override void Initialise()
         {
-            weapon = new Weapon<T>(Parameters.Weapon);
+            weapon = new Weapon<T>(Parameters.Weapon, this);
         }
 
         public override void Update(TimeSpan elapsedTime)

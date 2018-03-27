@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class WeaponParameters : IBlueprint
+    sealed class WeaponBlueprint : IBlueprint
     {
         public string Id { get; }
         public TimeSpan ShootInterval { get; }
@@ -11,7 +11,7 @@ namespace Bearded.TD.Mods.Models
         public Unit Range { get; }
         public int Damage { get; }
 
-        public WeaponParameters(
+        public WeaponBlueprint(
                 string id,
                 TimeSpan shootInterval,
                 TimeSpan idleInterval,

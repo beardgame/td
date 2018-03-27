@@ -7,10 +7,10 @@
     "components" : [
         {
             "id" : "turret",
-            "weapon" : "testWeapon",
             "onPlaceholder" :  true,
             "onGhost": true,
             "parameters" : {
+                "weapon" : "triangleWeapon"
             }
         }
     ]

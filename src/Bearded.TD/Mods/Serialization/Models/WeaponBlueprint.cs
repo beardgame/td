@@ -1,12 +1,11 @@
-﻿using Bearded.TD.Mods.Models;
-using Bearded.TD.Utilities;
+﻿using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
-    class WeaponBlueprint : IConvertsTo<WeaponParameters, Void>
+    class WeaponBlueprint : IConvertsTo<Mods.Models.WeaponBlueprint, Void>
     {
         public string Id { get; set; }
         public TimeSpan ShootInterval { get; set; } = new TimeSpan(0.15);
@@ -15,9 +14,9 @@ namespace Bearded.TD.Mods.Serialization.Models
         public Unit Range { get; set; } = 5.U();
         public int Damage { get; set; } = 10;
 
-        public WeaponParameters ToGameModel(Void _)
+        public Mods.Models.WeaponBlueprint ToGameModel(Void _)
         {
-            return new WeaponParameters(
+            return new Mods.Models.WeaponBlueprint(
                     Id, ShootInterval, IdleInterval, ReCalculateTilesInRangeInterval, Range, Damage);
         }
     }
