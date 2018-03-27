@@ -115,12 +115,17 @@ namespace Bearded.TD.UI.Model.Lobby
             {
                 case NetConnectionStatus.Connected:
                     networkInterface.GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
-                    // For now we manually send this event to just the one player, but we should make an interface for this.
-                    var outMsg = networkInterface.CreateMessage();
-                    var serializer = AddPlayer.Command(Game, Game.Me).Serializer;
-                    outMsg.Write(Serializers.Instance.CommandId(serializer));
-                    serializer.Serialize(new NetBufferWriter(outMsg));
-                    networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
+                    foreach (var p in Game.Players)
+                    {
+                        if (p == networkInterface.GetSender(msg)) continue;
+
+                        // For now we manually send this event to just the one player, but we should make an interface for this.
+                        var outMsg = networkInterface.CreateMessage();
+                        var serializer = AddPlayer.Command(Game, p).Serializer;
+                        outMsg.Write(Serializers.Instance.CommandId(serializer));
+                        serializer.Serialize(new NetBufferWriter(outMsg));
+                        networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
+                    }
                     break;
                 case NetConnectionStatus.Disconnected:
                     Game.RemovePlayer(networkInterface.GetSender(msg));
