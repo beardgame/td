@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Units.StatusEffects
     {
         public static readonly IUnitStatusEffect Slow = new SimpleStatusEffectSingleton(properties =>
         {
-            properties.Speed *= .3f;
+            properties.Speed *= .9f;
             properties.TimeBetweenAttacks *= 1.11;
         });
 
