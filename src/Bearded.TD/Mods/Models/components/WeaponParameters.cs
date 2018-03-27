@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class TurretParameters
+    sealed class WeaponParameters
     {
         public TimeSpan ShootInterval { get; } = new TimeSpan(0.15);
         public TimeSpan IdleInterval { get; } = new TimeSpan(0.3);
@@ -13,13 +13,13 @@ namespace Bearded.TD.Mods.Models
         public Unit Range { get; } = 5.U();
         public int Damage { get; } = 10;
 
-        public TurretParameters()
+        public WeaponParameters()
         {
             
         }
 
         [JsonConstructor]
-        public TurretParameters(TimeSpan? shootInterval, TimeSpan? idleInterval,
+        public WeaponParameters(TimeSpan? shootInterval, TimeSpan? idleInterval,
             TimeSpan? reCalculateTilesInRangeInterval,
             Unit? range, int? damage)
         {
