@@ -1,17 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
     <TargetFramework>net462</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>../../bin/Bearded.TD.MasterServer/Debug/</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>../../bin/Bearded.TD.MasterServer/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Bearded.Utilities" Version="0.2.0.112-develop" />
     <PackageReference Include="Google.Protobuf" Version="3.4.1" />
     <PackageReference Include="OpenTK" Version="2.0.0" targetFramework="net45" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <None Include="*.config" />

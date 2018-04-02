@@ -1,5 +1,5 @@
 ﻿using System;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 
 namespace Bearded.TD.MasterServer
 {
