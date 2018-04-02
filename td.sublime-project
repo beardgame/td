@@ -1,13 +1,22 @@
 {
-    "folders":
-    [
-        {
-            "path": "src/Bearded.TD",
-            "folder_exclude_patterns": ["obj"],
-        }
-    ],
-    "settings":
-    {
-        "tab_size": 4
-    },
+	"folders":
+	[
+		{
+			"folder_exclude_patterns":
+			[
+				"obj"
+			],
+			"path": "src/Bearded.TD"
+		},
+		{
+			"path": "src/Bearded.TD.MasterServer"
+		},
+		{
+			"path": "src/Bearded.TD.Proto"
+		}
+	],
+	"settings":
+	{
+		"tab_size": 4
+	}
 }

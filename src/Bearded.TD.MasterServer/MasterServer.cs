@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Google.Protobuf;
 using Lidgren.Network;
 
