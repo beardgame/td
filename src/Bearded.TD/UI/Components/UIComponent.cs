@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities.Input;
 
 namespace Bearded.TD.UI.Components
 {
