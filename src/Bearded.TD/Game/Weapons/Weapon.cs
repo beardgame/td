@@ -2,7 +2,6 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Projectiles;
@@ -17,7 +16,6 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Weapons
 {
-    [ComponentOwner]
     class Weapon<T> : IPositionable, IFactioned
         where T : BuildingBase<T>
     {
