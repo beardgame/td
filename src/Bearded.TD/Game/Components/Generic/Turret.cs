@@ -7,10 +7,12 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("turret")]
-    class Turret<T> : Component<T, TurretParameters>
+    class Turret<T> : Component<T, TurretParameters>, IPositionable
         where T : BuildingBase<T>
     {
         private Weapon<T> weapon;
+
+        public Position2 Position => Owner.Position + Parameters.Offset;
 
         public Turret(TurretParameters parameters) : base(parameters) { }
 

@@ -4,6 +4,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
@@ -17,7 +18,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Weapons
 {
     [ComponentOwner]
-    class Weapon<T>
+    class Weapon<T> : IPositionable, IFactioned
         where T : BuildingBase<T>
     {
         private readonly WeaponBlueprint blueprint;
@@ -28,6 +29,9 @@ namespace Bearded.TD.Game.Weapons
         private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;
         private EnemyUnit target;
+
+        public Position2 Position => turret.Position;
+        public Faction Faction => turret.Owner.Faction;
 
         public Weapon(WeaponBlueprint blueprint, Turret<T> turret)
         {
