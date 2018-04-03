@@ -145,11 +145,17 @@ namespace Bearded.TD.Mods
                         var jsonModel = serializer.Deserialize<TJsonModel>(reader);
                         var gameModel = jsonModel.ToGameModel(resolvers);
 
+                        if (Path.GetFileNameWithoutExtension(file.FullName) != gameModel.Id)
+                        {
+                            context.Logger.Warning.Log(
+                                    $"Loaded blueprint {meta.Id}.{gameModel.Id} with mismatching filename {file.Name}");
+                        }
+
                         blueprints.Add(gameModel);
                     }
                     catch (Exception e)
                     {
-                        context.Logger.Warning.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
+                        context.Logger.Error.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
                     }
                 }
 
