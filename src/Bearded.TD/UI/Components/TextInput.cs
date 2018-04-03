@@ -34,6 +34,11 @@ namespace Bearded.TD.UI.Components
 
         public override void HandleInput(InputContext input)
         {
+            if (input.State.Mouse.Click.Hit && Bounds.Contains(input.MousePosition))
+            {
+                Focus();
+            }
+            input.CaptureMouseInBounds(Bounds);
             if (!IsFocused)
             {
                 return;
