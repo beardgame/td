@@ -34,6 +34,19 @@ namespace Bearded.TD.Game.Buildings
         {
             DebugAssert.State.Satisfies(this.building == null, "Can only set building once.");
             this.building = building;
+            building.Completing += onBuildingCompleting;
+        }
+
+        private void onBuildingCompleting()
+        {
+            // Building is going to be set to be completed. We may not have finished due to network lag.
+            // Make sure to apply remaining progress before it is no longer possible.
+            // Note that we can assume building is set, because the StartBuildingConstruction command has been called.
+
+            var healthRemaining = blueprint.MaxHealth - healthGiven;
+            building.SetBuildProgress(1, healthRemaining);
+            building.Completing -= onBuildingCompleting;
+            finished = true;
         }
 
         public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
@@ -69,6 +82,10 @@ namespace Bearded.TD.Game.Buildings
 
         private void updateBuildingToMatch()
         {
+            // Building was set to completed, probably because of command from server.
+            // We want to keep consuming resources though to make sure the resources stay in sync.
+            if (building.IsCompleted) return;
+
             var buildProgress = resourcesConsumed / blueprint.ResourceCost;
             DebugAssert.State.Satisfies(buildProgress <= 1);
             var expectedHealthGiven = Mathf.CeilToInt(buildProgress * blueprint.MaxHealth);

@@ -32,6 +32,7 @@ namespace Bearded.TD.Game.Buildings
         public bool IsCompleted { get; private set; }
         private double buildProgress;
 
+        public event VoidEventHandler Completing;
         public event VoidEventHandler Damaged;
 
         public Building(Id<Building> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
@@ -74,6 +75,7 @@ namespace Bearded.TD.Game.Buildings
         public void SetBuildCompleted()
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot complete building more than once.");
+            Completing?.Invoke();
             IsCompleted = true;
         }
 
