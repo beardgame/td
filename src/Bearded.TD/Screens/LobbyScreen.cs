@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Networking;
@@ -6,6 +7,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
 using static Bearded.TD.UI.BoundsConstants;
@@ -51,9 +53,9 @@ namespace Bearded.TD.Screens
             txtGeo.Height = 48;
             txtGeo.DrawString(new Vector2(16, 16), "Press [shift+enter] to start");
             txtGeo.DrawString(new Vector2(16, 80), $"Player count: {lobbyManager.Game.Players.Count}");
-            for (var i = 0; i < lobbyManager.Game.Players.Count; i++)
+
+            foreach ((var p, var i) in lobbyManager.Game.SortedPlayers.Indexed())
             {
-                var p = lobbyManager.Game.Players[i];
                 txtGeo.Color = p.ConnectionState == PlayerConnectionState.Ready ? Color.Lime : Color.Gold;
                 txtGeo.DrawString(new Vector2(16, 144 + i * 64), p.Name);
             }

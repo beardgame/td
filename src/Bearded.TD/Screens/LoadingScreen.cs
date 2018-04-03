@@ -4,6 +4,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Model.Loading;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Input;
 using OpenTK;
 
@@ -41,9 +42,9 @@ namespace Bearded.TD.Screens
             txtGeo.SizeCoefficient = Vector2.One;
             txtGeo.Height = 48;
             txtGeo.DrawString(new Vector2(16, 16), "Loading...");
-            for (var i = 0; i < loadingManager.Game.Players.Count; i++)
+
+            foreach ((var p, var i) in loadingManager.Game.SortedPlayers.Indexed())
             {
-                var p = loadingManager.Game.Players[i];
                 txtGeo.Color = p.ConnectionState == PlayerConnectionState.FinishedLoading ? Color.Lime : Color.Gold;
                 txtGeo.DrawString(new Vector2(16, 144 + i * 64), p.Name);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
@@ -30,6 +31,15 @@ namespace Bearded.TD.Game
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
+        public ReadOnlyCollection<Player> SortedPlayers
+        {
+            get
+            {
+                var sortedPlayers = Players.ToList();
+                sortedPlayers.Sort((p1, p2) => p1.Id.Value.CompareTo(p2.Id.Value));
+                return sortedPlayers.AsReadOnly();
+            }
+        }
 
         public Blueprints Blueprints { get; private set; }
 
