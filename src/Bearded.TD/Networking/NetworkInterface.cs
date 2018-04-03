@@ -28,6 +28,24 @@ namespace Bearded.TD.Networking
                     Logger.Debug.Log("Network debug: {0}", message.ReadString());
                     continue;
                 }
+                if (message.MessageType == NetIncomingMessageType.WarningMessage)
+                {
+                    Logger.Warning.Log("Network warning: {0}", message.ReadString());
+                    continue;
+                }
+                if (message.MessageType == NetIncomingMessageType.ErrorMessage)
+                {
+                    Logger.Error.Log("Network error: {0}", message.ReadString());
+                    continue;
+                }
+                if (message.MessageType == NetIncomingMessageType.ConnectionLatencyUpdated)
+                {
+                    Logger.Trace.Log(
+                            "Network latency from {0}: {1}",
+                            message.SenderEndPoint.Address.ToString(),
+                            message.ReadSingle());
+                    continue;
+                }
                 if (message.MessageType == NetIncomingMessageType.StatusChanged)
                 {
                     Logger.Debug.Log("Network status changed: {0}", message.SenderConnection.Status);

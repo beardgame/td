@@ -85,5 +85,10 @@ namespace Bearded.TD.Networking
             connectionToPlayer.Remove(conn);
             playerToConnection.Remove(player);
         }
+
+        public float GetPlayerPing(Player player)
+        {
+            return playerToConnection[player].AverageRoundtripTime;
+        }
     }
 }
