@@ -1,0 +1,13 @@
+{
+    "id" : "mine",
+    "name" : "Small Mine",
+    "footprint" : "triangle",
+    "health" : 200,
+    "cost" : 250,
+    "components" : [
+        {
+            "id" : "incomeOverTime",
+            "parameters" : { "incomePerSecond" : 2.5 }
+        }
+    ]
+}
