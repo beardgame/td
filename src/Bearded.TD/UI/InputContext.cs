@@ -1,8 +1,8 @@
 ﻿using System;
-using Bearded.TD.UI;
+using Bearded.TD.Utilities.Input;
 using OpenTK;
 
-namespace Bearded.TD.Utilities.Input
+namespace Bearded.TD.UI
 {
     class InputContext
     {
