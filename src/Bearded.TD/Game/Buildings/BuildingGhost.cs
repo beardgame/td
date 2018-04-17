@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
@@ -20,6 +21,10 @@ namespace Bearded.TD.Game.Buildings
         public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
 
         public override SelectionState SelectionState => SelectionState.Selected;
+
+        public override void ResetSelection() => throw new InvalidOperationException();
+        public override void Focus(SelectionManager selectionManager) => throw new InvalidOperationException();
+        public override void Select(SelectionManager selectionManager) => throw new InvalidOperationException();
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
             => Blueprint.GetComponentsForGhost();

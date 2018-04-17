@@ -26,19 +26,19 @@ namespace Bearded.TD.Game.Buildings
         protected override void ChangeFootprint(PositionedFootprint footprint)
             => throw new InvalidOperationException("Cannot change footprint of placed building.");
 
-        public void ResetSelection()
+        public override void ResetSelection()
         {
             selectionState = SelectionState.Default;
         }
 
-        public void Focus(SelectionManager selectionManager)
+        public override void Focus(SelectionManager selectionManager)
         {
             if (selectionManager.FocusedObject != this)
                 throw new Exception("Cannot focus an object that is not the currently focused object.");
             selectionState = SelectionState.Focused;
         }
 
-        public void Select(SelectionManager selectionManager)
+        public override void Select(SelectionManager selectionManager)
         {
             if (selectionManager.SelectedObject != this)
                 throw new Exception("Cannot select an object that is not the currently selected object.");

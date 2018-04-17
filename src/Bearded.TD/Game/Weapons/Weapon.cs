@@ -2,6 +2,7 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Projectiles;
@@ -16,11 +17,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Weapons
 {
-    class Weapon<T> : IPositionable, IFactioned
-        where T : BuildingBase<T>
+    [ComponentOwner]
+    class Weapon : IPositionable, IFactioned
     {
         private readonly WeaponBlueprint blueprint;
-        private readonly Turret<T> turret;
+        private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
 
         private Instant nextTileInRangeRecalculationTime;
@@ -29,9 +30,9 @@ namespace Bearded.TD.Game.Weapons
         private EnemyUnit target;
 
         public Position2 Position => turret.Position;
-        public Faction Faction => turret.Owner.Faction;
+        public Faction Faction => turret.OwnerFaction;
 
-        public Weapon(WeaponBlueprint blueprint, Turret<T> turret)
+        public Weapon(WeaponBlueprint blueprint, ITurret turret)
         {
             this.blueprint = blueprint;
             this.turret = turret;
@@ -41,7 +42,7 @@ namespace Bearded.TD.Game.Weapons
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (typeof(T) != typeof(Building))
+            if (ownerAsBuilding == null)
                 return;
 
             if (!ownerAsBuilding.IsCompleted)
@@ -91,10 +92,10 @@ namespace Bearded.TD.Game.Weapons
             var level = game.Level;
 
             tilesInRange = new LevelVisibilityChecker<TileInfo>()
-                .EnumerateVisibleTiles(level, owner.Position, blueprint.Range,
+                .EnumerateVisibleTiles(level, turret.Position, blueprint.Range,
                     t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                            (level.GetPosition(t.tile) - owner.Position).LengthSquared < rangeSquared)
+                            (level.GetPosition(t.tile) - turret.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .ToList();
 
@@ -137,7 +138,9 @@ namespace Bearded.TD.Game.Weapons
 
         public void Draw(GeometryManager geometries)
         {
-            var owner = turret.Owner;
+            var owner = turret.Owner as ISelectable;
+            if (owner == null)
+                return;
 
             if (owner.SelectionState == SelectionState.Default)
                 return;
@@ -148,7 +151,7 @@ namespace Bearded.TD.Game.Weapons
 
             geo.Color = Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
 
-            var level = owner.Game.Level;
+            var level = turret.Owner.Game.Level;
 
             foreach (var tile in tilesInRange)
             {

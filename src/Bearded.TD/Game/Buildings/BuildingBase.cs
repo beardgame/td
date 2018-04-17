@@ -14,7 +14,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IPositionable, IFactioned
+    abstract class BuildingBase<T> : GameObject, IPositionable, IFactioned, ISelectable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
@@ -52,6 +52,10 @@ namespace Bearded.TD.Game.Buildings
 
             Components = components.AsReadOnly();
         }
+        
+        public abstract void ResetSelection();
+        public abstract void Focus(SelectionManager selectionManager);
+        public abstract void Select(SelectionManager selectionManager);
 
         protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
             => Footprint = newFootprint;
