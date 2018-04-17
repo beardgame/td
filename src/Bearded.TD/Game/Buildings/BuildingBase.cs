@@ -7,7 +7,6 @@ using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.UI.Model;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,7 +17,7 @@ namespace Bearded.TD.Game.Buildings
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
-        private readonly List<IComponent<T>> components = new List<IComponent<T>>();
+        private readonly ComponentCollection<T> components = new ComponentCollection<T>();
 
         public abstract SelectionState SelectionState { get; }
 
@@ -39,8 +38,6 @@ namespace Bearded.TD.Game.Buildings
         
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => Footprint.OccupiedTiles;
 
-        protected IReadOnlyCollection<IComponent<T>> Components { get; }
-
         protected BuildingBase(
             BuildingBlueprint blueprint,
             Faction faction,
@@ -49,8 +46,6 @@ namespace Bearded.TD.Game.Buildings
             Blueprint = blueprint;
             Faction = faction;
             Footprint = footprint;
-
-            Components = components.AsReadOnly();
         }
         
         public abstract void ResetSelection();
@@ -64,26 +59,18 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnAdded();
 
-            InitialiseComponents().ForEach(addComponent);
+            components.Add((T)this, InitialiseComponents());
         }
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
-
-        private void addComponent(IComponent<T> component)
-        {
-            components.Add(component);
-            component.OnAdded((T)this);
-        }
-
+        
         public override void Update(TimeSpan elapsedTime)
         {
-            foreach (var component in components)
-                component.Update(elapsedTime);
+            components.Update(elapsedTime);
         }
 
         public override void Draw(GeometryManager geometries)
         {
-            foreach (var component in Components)
-                component.Draw(geometries);
+            components.Draw(geometries);
         }
 
         protected void DrawTiles(GeometryManager geometries, Color color)

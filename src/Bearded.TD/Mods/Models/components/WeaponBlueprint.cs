@@ -17,7 +17,8 @@ namespace Bearded.TD.Mods.Models
 
         private readonly IReadOnlyList<IComponentFactory<Weapon>> componentFactories;
 
-        public IEnumerable<IComponentFactory<Weapon>> Components => componentFactories;
+        public IEnumerable<IComponent<Weapon>> GetComponents()
+            => componentFactories.Select(f => f.Create());
 
         public WeaponBlueprint(
                 string id,
