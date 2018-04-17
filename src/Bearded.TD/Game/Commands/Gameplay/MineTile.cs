@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
@@ -58,7 +57,7 @@ namespace Bearded.TD.Game.Commands
                 this.faction = faction.Id;
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game, Player player)
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
                 return new Implementation(
                     game, game.State.FactionFor(faction), new Tile<TileInfo>(game.State.Level.Tilemap, tileX, tileY));

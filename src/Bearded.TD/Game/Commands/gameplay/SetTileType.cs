@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game.Players;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -56,7 +55,7 @@ namespace Bearded.TD.Game.Commands
                 hexScale = drawInfo.HexScale;
             }
             
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game, Player player) =>
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game) =>
                 new Implementation(
                     game.State,
                     new Tile<TileInfo>(game.State.Level.Tilemap, x, y),

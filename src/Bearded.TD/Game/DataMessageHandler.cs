@@ -32,7 +32,7 @@ namespace Bearded.TD.Game
             if (Serializers<GameInstance>.Instance.IsRequestSerializer(typeId))
             {
                 game.RequestDispatcher.Dispatch(
-                    Serializers<GameInstance>.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game, networkInterface.GetSender(msg)));
+                    Serializers<GameInstance>.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game));
                 return;
             }
 

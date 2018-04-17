@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game, Player sender)
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
                 => new Implementation(game, game.PlayerFor(player), message);
 
             public override void Serialize(INetBufferStream stream)

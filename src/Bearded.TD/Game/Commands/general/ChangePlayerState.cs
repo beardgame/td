@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Commands
                 this.state = (byte) state;
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game, Player sender)
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
                 return new Implementation(game.PlayerFor(player), (PlayerConnectionState) state);
             }

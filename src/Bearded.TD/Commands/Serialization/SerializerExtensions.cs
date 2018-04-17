@@ -1,29 +1,27 @@
-﻿using Bearded.TD.Game;
-using Bearded.TD.Game.Players;
-using Bearded.TD.Networking.Serialization;
+﻿using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands.Serialization
 {
     static class SerializerExtensions
     {
-        public static IRequest<GameInstance> Read(this IRequestSerializer<GameInstance> me, NetBufferReader stream, GameInstance game, Player sender)
+        public static IRequest<TObject> Read<TObject>(this IRequestSerializer<TObject> me, NetBufferReader stream, TObject context)
         {
             me.Serialize(stream);
-            return me.GetRequest(game, sender);
+            return me.GetRequest(context);
         }
 
-        public static ISerializableCommand<GameInstance> Read(this ICommandSerializer<GameInstance> me, NetBufferReader stream, GameInstance game)
+        public static ISerializableCommand<TObject> Read<TObject>(this ICommandSerializer<TObject> me, NetBufferReader stream, TObject context)
         {
             me.Serialize(stream);
-            return me.GetCommand(game);
+            return me.GetCommand(context);
         }
 
-        public static void Write(this IRequest<GameInstance> me, NetBufferWriter stream)
+        public static void Write<TObject>(this IRequest<TObject> me, NetBufferWriter stream)
         {
             me.Serializer.Serialize(stream);
         }
 
-        public static void Write(this ISerializableCommand<GameInstance> me, NetBufferWriter stream)
+        public static void Write<TObject>(this ISerializableCommand<TObject> me, NetBufferWriter stream)
         {
             me.Serializer.Serialize(stream);
         }

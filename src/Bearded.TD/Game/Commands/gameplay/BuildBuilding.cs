@@ -2,7 +2,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Players;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking.Serialization;
@@ -75,7 +74,7 @@ namespace Bearded.TD.Game.Commands
                 footprintY = footprint.RootTile.Y;
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game, Player sender)
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
                 return new Implementation(
                     game,
