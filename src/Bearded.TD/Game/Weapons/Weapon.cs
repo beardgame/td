@@ -24,6 +24,8 @@ namespace Bearded.TD.Game.Weapons
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
 
+        private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
+
         private Instant nextTileInRangeRecalculationTime;
         private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;
@@ -38,10 +40,14 @@ namespace Bearded.TD.Game.Weapons
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
             nextPossibleShootTime = turret.Owner.Game.Time;
+
+            components.Add(this, blueprint.GetComponents());
         }
 
         public void Update(TimeSpan elapsedTime)
         {
+            components.Update(elapsedTime);
+
             if (ownerAsBuilding == null)
                 return;
 
@@ -138,6 +144,8 @@ namespace Bearded.TD.Game.Weapons
 
         public void Draw(GeometryManager geometries)
         {
+            components.Draw(geometries);
+
             var owner = turret.Owner as ISelectable;
             if (owner == null)
                 return;
