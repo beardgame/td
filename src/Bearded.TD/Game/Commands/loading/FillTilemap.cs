@@ -11,10 +11,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class FillTilemap
     {
-        public static ICommand Command(GameInstance game, Tilemap<TileInfo.Type> types, Tilemap<TileDrawInfo> drawInfos)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tilemap<TileInfo.Type> types, Tilemap<TileDrawInfo> drawInfos)
             => new Implementation(game, types.Select(t => t.Info).ToList(), drawInfos.Select(t => t.Info).ToList());
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Tilemap<TileInfo> tilemap;
             private readonly IList<TileInfo.Type> types;
@@ -43,10 +43,10 @@ namespace Bearded.TD.Game.Commands
                 }
             }
 
-            public ICommandSerializer Serializer => new Serializer(types, drawInfos);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(types, drawInfos);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private TileInfo.Type[] types;
             private Unit[] drawHeights;
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, types, Enumerable.Range(0, types.Length)
                     .Select(i => new TileDrawInfo(drawHeights[i], drawSizeFactors[i])).ToList()
                     );

@@ -9,8 +9,8 @@ namespace Bearded.TD.Game
     interface IGameContext
     {
         Logger Logger { get; }
-        IDispatcher Dispatcher { get; }
-        IRequestDispatcher RequestDispatcher { get; }
+        IDispatcher<GameInstance> Dispatcher { get; }
+        IRequestDispatcher<GameInstance> RequestDispatcher { get; }
         IGameSynchronizer GameSynchronizer { get; }
         Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         Func<GameInstance, IGameController> GameSimulatorFactory { get; }
@@ -19,8 +19,8 @@ namespace Bearded.TD.Game
     sealed class ServerGameContext : IGameContext
     {
         public Logger Logger { get; }
-        public IDispatcher Dispatcher { get; }
-        public IRequestDispatcher RequestDispatcher { get; }
+        public IDispatcher<GameInstance> Dispatcher { get; }
+        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
@@ -29,9 +29,9 @@ namespace Bearded.TD.Game
         {
             Logger = logger;
 
-            var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
-            RequestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
-            Dispatcher = new ServerDispatcher(commandDispatcher);
+            var commandDispatcher = new ServerCommandDispatcher<GameInstance>(new DefaultCommandExecutor(), network);
+            RequestDispatcher = new ServerRequestDispatcher<GameInstance>(commandDispatcher, logger);
+            Dispatcher = new ServerDispatcher<GameInstance>(commandDispatcher);
             GameSynchronizer = new ServerGameSynchronizer(network, commandDispatcher, logger);
 
             DataMessageHandlerFactory = game => new ServerDataMessageHandler(game, network, logger);
@@ -42,8 +42,8 @@ namespace Bearded.TD.Game
     sealed class ClientGameContext : IGameContext
     {
         public Logger Logger { get; }
-        public IDispatcher Dispatcher { get; }
-        public IRequestDispatcher RequestDispatcher { get; }
+        public IDispatcher<GameInstance> Dispatcher { get; }
+        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, IDataMessageHandler> DataMessageHandlerFactory { get; }
         public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
@@ -52,8 +52,8 @@ namespace Bearded.TD.Game
         {
             Logger = logger;
 
-            RequestDispatcher = new ClientRequestDispatcher(network, logger);
-            Dispatcher = new ClientDispatcher();
+            RequestDispatcher = new ClientRequestDispatcher<GameInstance>(network, logger);
+            Dispatcher = new ClientDispatcher<GameInstance>();
             GameSynchronizer = new ClientGameSynchronizer();
             
             DataMessageHandlerFactory = game => new ClientDataMessageHandler(game, logger);

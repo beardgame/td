@@ -5,10 +5,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class GameOver
     {
-        public static ICommand Command(GameState game)
+        public static ISerializableCommand<GameInstance> Command(GameState game)
             => new Implementation(game);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameState game;
 
@@ -19,14 +19,14 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute() => game.Meta.DoGameOver();
 
-            public ICommandSerializer Serializer => new Serializer();
+            public ICommandSerializer<GameInstance> Serializer => new Serializer();
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             public Serializer() { }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game.State);
 
             public void Serialize(INetBufferStream stream) { }

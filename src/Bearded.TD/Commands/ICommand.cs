@@ -1,12 +1,7 @@
-﻿using Bearded.TD.Networking.Serialization;
-
-namespace Bearded.TD.Commands
+﻿namespace Bearded.TD.Commands
 {
     interface ICommand
     {
         void Execute();
-
-        ICommandSerializer Serializer { get; }
     }
-
 }

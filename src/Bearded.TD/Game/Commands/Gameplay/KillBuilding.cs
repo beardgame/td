@@ -7,9 +7,9 @@ namespace Bearded.TD.Game.Commands
 {
     static class KillBuilding
     {
-        public static ICommand Command(Building building) => new Implementation(building);
+        public static ISerializableCommand<GameInstance> Command(Building building) => new Implementation(building);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Building building;
 
@@ -19,10 +19,10 @@ namespace Bearded.TD.Game.Commands
             }
 
             public void Execute() => building.Delete();
-            public ICommandSerializer Serializer => new Serializer(building);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(building);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> building;
 
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands
                 this.building = building.Id;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
             {
                 return new Implementation(game.State.Find(building));
             }

@@ -10,10 +10,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class BlockTilesForBuilding
     {
-        public static ICommand Command(GameInstance game, IList<Tile<TileInfo>> tiles)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, IList<Tile<TileInfo>> tiles)
             => new Implementation(game, tiles);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IList<Tile<TileInfo>> tiles;
@@ -31,10 +31,10 @@ namespace Bearded.TD.Game.Commands
                 tiles.ForEach(t => t.Info.BlockForBuilding());
             }
 
-            public ICommandSerializer Serializer => new Serializer(tiles);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(tiles);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private (int x, int y)[] tiles;
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Commands
                 this.tiles = tiles.Select(tile => (tile.X, tile.Y)).ToArray();
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(
                         game,
                         tiles.Select(coords => new Tile<TileInfo>(game.State.Level.Tilemap, coords.x, coords.y)).ToList());

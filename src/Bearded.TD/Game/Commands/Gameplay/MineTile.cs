@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class MineTile
     {
-        public static IRequest Request(GameInstance game, Faction faction, Tile<TileInfo> tile)
+        public static IRequest<GameInstance> Request(GameInstance game, Faction faction, Tile<TileInfo> tile)
             => new Implementation(game, faction, tile);
 
         private class Implementation : UnifiedRequestCommand

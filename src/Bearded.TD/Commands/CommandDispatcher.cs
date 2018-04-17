@@ -3,12 +3,12 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Commands
 {
-    interface ICommandDispatcher
+    interface ICommandDispatcher<TObject>
     {
-        void Dispatch(ICommand command);
+        void Dispatch(ISerializableCommand<TObject> command);
     }
 
-    class ClientCommandDispatcher : ICommandDispatcher
+    class ClientCommandDispatcher<TObject> : ICommandDispatcher<TObject>
     {
         private readonly ICommandExecutor executor;
 
@@ -17,13 +17,13 @@ namespace Bearded.TD.Commands
             this.executor = executor;
         }
 
-        public void Dispatch(ICommand command)
+        public void Dispatch(ISerializableCommand<TObject> command)
         {
             executor.Execute(command);
         }
     }
 
-    class ServerCommandDispatcher : ICommandDispatcher
+    class ServerCommandDispatcher<TObject> : ICommandDispatcher<TObject>
     {
         private readonly ICommandExecutor executor;
         private readonly ServerNetworkInterface network;
@@ -34,7 +34,7 @@ namespace Bearded.TD.Commands
             this.network = network;
         }
 
-        public void Dispatch(ICommand command)
+        public void Dispatch(ISerializableCommand<TObject> command)
         {
             if (command == null)
                 return;
@@ -44,7 +44,7 @@ namespace Bearded.TD.Commands
             executor.Execute(command);
         }
 
-        private void sendToAllPlayers(ICommand command)
+        private void sendToAllPlayers(ISerializableCommand<TObject> command)
         {
             if (network.PeerCount == 0)
                 return;
@@ -52,7 +52,7 @@ namespace Bearded.TD.Commands
             var message = network.CreateMessage();
 
             var serializer = command.Serializer;
-            var serializers = Serializers.Instance;
+            var serializers = Serializers<TObject>.Instance;
             var id = serializers.CommandId(command.Serializer);
 
             message.Write(id);

@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.Commands;
+﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -8,10 +7,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class FinishBuildingConstruction
     {
-        public static ICommand Command(Building building)
+        public static ISerializableCommand<GameInstance> Command(Building building)
             => new Implementation(building);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Building building;
 
@@ -25,10 +24,10 @@ namespace Bearded.TD.Game.Commands
                 building.SetBuildCompleted();
             }
 
-            public ICommandSerializer Serializer => new Serializer(building);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(building);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> building;
 
@@ -40,7 +39,7 @@ namespace Bearded.TD.Game.Commands
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game.State.Find(building));
 
             public void Serialize(INetBufferStream stream)

@@ -11,10 +11,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class PlopBuilding
     {
-        public static ICommand Command(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
             => new Implementation(game, faction, id, blueprint, footprint);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Faction faction;
@@ -39,10 +39,10 @@ namespace Bearded.TD.Game.Commands
                 building.SetBuildCompleted();
             }
 
-            public ICommandSerializer Serializer => new Serializer(faction, id, blueprint, footprint);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(faction, id, blueprint, footprint);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> id;
             private Id<Faction> faction;
@@ -67,7 +67,7 @@ namespace Bearded.TD.Game.Commands
                 footprintY = footprint.RootTile.Y;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
             {
                 return new Implementation(
                     game,

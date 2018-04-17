@@ -1,7 +1,4 @@
 ﻿namespace Bearded.TD.Commands
 {
-    class ClientDispatcher : BaseClientDispatcher
-    {
-
-    }
+    class ClientDispatcher<TObject> : BaseClientDispatcher<TObject> { }
 }

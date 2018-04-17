@@ -4,26 +4,26 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands
 {
-    abstract class UnifiedRequestCommandSerializer : IRequestSerializer, ICommandSerializer
+    abstract class UnifiedRequestCommandSerializer : IRequestSerializer<GameInstance>, ICommandSerializer<GameInstance>
     {
-        public IRequest GetRequest(GameInstance game, Player player) => GetSerialized(game, player);
-        public ICommand GetCommand(GameInstance game) => GetSerialized(game, game.Me);
+        public IRequest<GameInstance> GetRequest(GameInstance game, Player player) => GetSerialized(game, player);
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => GetSerialized(game, game.Me);
 
         protected abstract UnifiedRequestCommand GetSerialized(GameInstance game, Player player);
         public abstract void Serialize(INetBufferStream stream);
     }
 
-    abstract class UnifiedRequestCommand : IRequest, ICommand
+    abstract class UnifiedRequestCommand : IRequest<GameInstance>, ISerializableCommand<GameInstance>
     {
         public abstract bool CheckPreconditions();
-        public virtual ICommand ToCommand() => this;
+        public virtual ISerializableCommand<GameInstance> ToCommand() => this;
 
         public abstract void Execute();
 
         protected abstract UnifiedRequestCommandSerializer GetSerializer();
 
-        IRequestSerializer IRequest.Serializer => GetSerializer();
-        ICommandSerializer ICommand.Serializer => GetSerializer();
+        IRequestSerializer<GameInstance> IRequest<GameInstance>.Serializer => GetSerializer();
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => GetSerializer();
     }
 
     abstract class UnifiedDebugRequestCommand : UnifiedRequestCommand

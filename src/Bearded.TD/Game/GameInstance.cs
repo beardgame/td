@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game
     {
         public ContentManager ContentManager { get; }
         public Player Me { get; }
-        public IRequestDispatcher RequestDispatcher { get; }
+        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
         public IDataMessageHandler DataMessageHandler { get; }
         public IGameController Controller { get; }
         public GameMeta Meta { get; }

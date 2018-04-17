@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class BuildBuilding
     {
-        public static IRequest Request(GameInstance game, Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
+        public static IRequest<GameInstance> Request(GameInstance game, Faction faction, BuildingBlueprint blueprint, PositionedFootprint footprint)
             => new Implementation(game, faction, Id<BuildingPlaceholder>.Invalid, blueprint, footprint);
         
         private class Implementation : UnifiedRequestCommand
@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Commands
                         && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building))
                         && blueprint.FootprintGroup == footprint.Footprint;
 
-            public override ICommand ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);
+            public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);
 
             public override void Execute()
             {

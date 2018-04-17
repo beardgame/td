@@ -2,12 +2,12 @@
 
 namespace Bearded.TD.Commands
 {
-    interface IRequest
+    interface IRequest<TObject>
     {
         bool CheckPreconditions();
 
-        ICommand ToCommand();
+        ISerializableCommand<TObject> ToCommand();
 
-        IRequestSerializer Serializer { get; }
+        IRequestSerializer<TObject> Serializer { get; }
     }
 }

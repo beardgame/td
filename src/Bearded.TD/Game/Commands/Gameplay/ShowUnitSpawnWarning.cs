@@ -9,10 +9,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class ShowUnitSpawnWarning
     {
-        public static ICommand Command(GameInstance game, Tile<TileInfo> tile, Instant until)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tile<TileInfo> tile, Instant until)
             => new Implementation(game, tile, until);
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Tile<TileInfo> tile;
@@ -30,10 +30,10 @@ namespace Bearded.TD.Game.Commands
                 game.State.Add(new UnitWarning(tile, until));
             }
 
-            public ICommandSerializer Serializer => new Serializer(tile, until);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(tile, until);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private int tileX;
             private int tileY;
@@ -51,7 +51,7 @@ namespace Bearded.TD.Game.Commands
                 this.until = until.NumericValue;
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, new Tile<TileInfo>(game.State.Level.Tilemap, tileX, tileY), new Instant(until));
 
             public void Serialize(INetBufferStream stream)

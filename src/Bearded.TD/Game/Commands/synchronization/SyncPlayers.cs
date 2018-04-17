@@ -9,10 +9,10 @@ namespace Bearded.TD.Game.Commands
 {
     static class SyncPlayers
     {
-        public static ICommand Command(GameInstance game)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game)
             => new Implementation(game.Players.Select(p => (p, p.GetCurrentState())).ToList());
 
-        private class Implementation : ICommand
+        private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly IList<(Player, PlayerState)> players;
 
@@ -29,10 +29,10 @@ namespace Bearded.TD.Game.Commands
                 }
             }
 
-            public ICommandSerializer Serializer => new Serializer(players);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(players);
         }
 
-        private class Serializer : ICommandSerializer
+        private class Serializer : ICommandSerializer<GameInstance>
         {
             private (Id<Player> id, PlayerState state)[] players;
 
@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Commands
                 this.players = players.Select(tuple => (tuple.player.Id, tuple.state)).ToArray();
             }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(players.Select(tuple => (game.PlayerFor(tuple.id), tuple.state)).ToList());
 
             public void Serialize(INetBufferStream stream)

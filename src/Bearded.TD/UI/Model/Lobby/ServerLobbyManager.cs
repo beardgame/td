@@ -122,7 +122,7 @@ namespace Bearded.TD.UI.Model.Lobby
                         // For now we manually send this event to just the one player, but we should make an interface for this.
                         var outMsg = networkInterface.CreateMessage();
                         var serializer = AddPlayer.Command(Game, p).Serializer;
-                        outMsg.Write(Serializers.Instance.CommandId(serializer));
+                        outMsg.Write(Serializers<GameInstance>.Instance.CommandId(serializer));
                         serializer.Serialize(new NetBufferWriter(outMsg));
                         networkInterface.SendMessageToPlayer(networkInterface.GetSender(msg), outMsg, NetworkChannel.Chat);
                     }

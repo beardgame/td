@@ -7,11 +7,11 @@ namespace Bearded.TD.Game.Commands
 {
     static class StartBuildingConstruction
     {
-        public static ICommand Command(BuildingPlaceholder placeholder)
+        public static ISerializableCommand<GameInstance> Command(BuildingPlaceholder placeholder)
             => new CommandImplementation(
                 placeholder.Game.Meta.Ids.GetNext<Building>(), placeholder);
 
-        private class CommandImplementation : ICommand
+        private class CommandImplementation : ISerializableCommand<GameInstance>
         {
             private readonly Id<Building> buildingId;
             private readonly BuildingPlaceholder placeholder;
@@ -29,10 +29,10 @@ namespace Bearded.TD.Game.Commands
                 placeholder.StartBuild(buildingId);
             }
 
-            public ICommandSerializer Serializer => new CommandSerializer(buildingId, placeholder);
+            public ICommandSerializer<GameInstance> Serializer => new CommandSerializer(buildingId, placeholder);
         }
 
-        private class CommandSerializer : ICommandSerializer
+        private class CommandSerializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> buildingId;
             private Id<BuildingPlaceholder> placeholder;
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Commands
             // ReSharper disable once UnusedMember.Local
             public CommandSerializer() { }
 
-            public ICommand GetCommand(GameInstance game)
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new CommandImplementation(buildingId, game.State.Find(placeholder));
 
             public void Serialize(INetBufferStream stream)

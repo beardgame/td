@@ -28,10 +28,10 @@ namespace Bearded.TD.Networking
         {
             var typeId = msg.ReadInt32();
             // We only accept requests. We should not be receiving commands on the server.
-            if (Serializers.Instance.IsRequestSerializer(typeId))
+            if (Serializers<GameInstance>.Instance.IsRequestSerializer(typeId))
             {
                 game.RequestDispatcher.Dispatch(
-                    Serializers.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game, networkInterface.GetSender(msg)));
+                    Serializers<GameInstance>.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game, networkInterface.GetSender(msg)));
                 return;
             }
 
@@ -43,23 +43,23 @@ namespace Bearded.TD.Networking
     {
         private readonly GameInstance game;
         private readonly Logger logger;
-        private readonly ICommandDispatcher commandDispatcher;
+        private readonly ICommandDispatcher<GameInstance> commandDispatcher;
 
         public ClientDataMessageHandler(GameInstance game, Logger logger)
         {
             this.game = game;
             this.logger = logger;
-            commandDispatcher = new ClientCommandDispatcher(new DefaultCommandExecutor());
+            commandDispatcher = new ClientCommandDispatcher<GameInstance>(new DefaultCommandExecutor());
         }
 
         public void HandleIncomingMessage(NetIncomingMessage msg)
         {
             var typeId = msg.ReadInt32();
             // We only accept commands. We should not be receiving requests on the client.
-            if (Serializers.Instance.IsCommandSerializer(typeId))
+            if (Serializers<GameInstance>.Instance.IsCommandSerializer(typeId))
             {
                 commandDispatcher.Dispatch(
-                    Serializers.Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), game));
+                    Serializers<GameInstance>.Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), game));
                 return;
             }
 
