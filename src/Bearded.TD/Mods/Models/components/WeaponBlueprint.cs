@@ -1,4 +1,8 @@
-﻿using Bearded.Utilities.SpaceTime;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Weapons;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
@@ -11,13 +15,18 @@ namespace Bearded.TD.Mods.Models
         public Unit Range { get; }
         public int Damage { get; }
 
+        private readonly IReadOnlyList<IComponentFactory<Weapon>> componentFactories;
+
+        public IEnumerable<IComponentFactory<Weapon>> Components => componentFactories;
+
         public WeaponBlueprint(
                 string id,
                 TimeSpan shootInterval,
                 TimeSpan idleInterval,
                 TimeSpan reCalculateTilesInRangeInterval,
                 Unit range,
-                int damage)
+                int damage,
+                IEnumerable<IComponentFactory<Weapon>> componentFactories)
         {
             Id = id;
             ShootInterval = shootInterval;
@@ -25,6 +34,9 @@ namespace Bearded.TD.Mods.Models
             ReCalculateTilesInRangeInterval = reCalculateTilesInRangeInterval;
             Range = range;
             Damage = damage;
+
+            this.componentFactories = (componentFactories?.ToList() ?? new List<IComponentFactory<Weapon>>())
+                    .AsReadOnly();
         }
     }
 }
