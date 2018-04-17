@@ -81,12 +81,12 @@ namespace Bearded.TD.Tiles
         private IEnumerable<Tile<TTileInfo>> spiralTiles(int centerX, int centerY, int radius)
             => spiral(centerX, centerY, radius).Select(xy => new Tile<TTileInfo>(this, xy.X, xy.Y));
 
-        private IEnumerable<XY> spiral(int centerX, int centerY, int radius)
+        private IEnumerable<Vector2i> spiral(int centerX, int centerY, int radius)
         {
             var x = 0;
             var y = 0;
 
-            yield return new XY(centerX, centerY);
+            yield return new Vector2i(centerX, centerY);
 
             // for each circle
             for (var r = 0; r < radius; r++)
@@ -101,7 +101,7 @@ namespace Bearded.TD.Tiles
                     // for each tile
                     for (var t = 0; t <= r; t++)
                     {
-                        yield return new XY(centerX + x, centerY + y);
+                        yield return new Vector2i(centerX + x, centerY + y);
 
                         x += step.X;
                         y += step.Y;
