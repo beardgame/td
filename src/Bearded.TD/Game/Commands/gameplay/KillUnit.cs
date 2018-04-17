@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Commands;
+using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Networking.Serialization;

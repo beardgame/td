@@ -1,10 +1,11 @@
 ﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
+using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
-namespace Bearded.TD.Networking
+namespace Bearded.TD.Game
 {
     interface IDataMessageHandler
     {

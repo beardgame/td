@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Commands;
+using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;

@@ -1,8 +1,8 @@
-﻿using Bearded.TD.Commands;
-using Bearded.TD.Game;
+﻿using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Networking.Serialization
+namespace Bearded.TD.Commands.Serialization
 {
     static class SerializerExtensions
     {

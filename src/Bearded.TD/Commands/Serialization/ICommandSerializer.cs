@@ -1,6 +1,6 @@
-﻿using Bearded.TD.Commands;
+﻿using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Networking.Serialization
+namespace Bearded.TD.Commands.Serialization
 {
     interface ICommandSerializer<TObject>
     {
