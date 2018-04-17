@@ -74,7 +74,7 @@ namespace Bearded.TD.Tiles
         }
 
         public override bool Equals(object obj)
-            => !ReferenceEquals(null, obj) && (obj is Tile<TTileInfo> && Equals((Tile<TTileInfo>) obj));
+            => obj is Tile<TTileInfo> tile && Equals(tile);
 
         public bool Equals(Tile<TTileInfo> other)
             => tilemap == other.tilemap && X == other.X && Y == other.Y;
@@ -85,6 +85,11 @@ namespace Bearded.TD.Tiles
         public static bool operator !=(Tile<TTileInfo> t1, Tile<TTileInfo> t2) => !(t1 == t2);
 
         public override string ToString()
-            => $"{X},{Y}:{(IsValid?(Info?.ToString()??"null"):"invalid")}";
+            => $"{X},{Y}:{ToInfoString()}";
+
+        public string ToInfoString()
+            => IsValid
+                ? Info?.ToString() ?? "null"
+                :"invalid";
     }
 }
