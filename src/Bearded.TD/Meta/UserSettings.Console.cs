@@ -24,6 +24,7 @@ namespace Bearded.TD.Meta
         private static IEnumerable<string> getFieldsOf(Type type)
         {
             return type.GetFields()
+                .Where(f => f.FieldType != typeof(UserSettings))
                 .SelectMany(field =>
                 {
                     var fieldName = field.Name.ToLower();

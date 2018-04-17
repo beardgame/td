@@ -1,4 +1,5 @@
 ﻿using Bearded.Utilities;
+using Newtonsoft.Json;
 
 namespace Bearded.TD.Meta
 {
@@ -15,6 +16,14 @@ namespace Bearded.TD.Meta
             initialiseCommandParameters();
         }
 
+        public UserSettings()
+        {
+            Dump = this;
+        }
+
+        [JsonIgnore]
+        public UserSettings Dump;
+        
         public MiscSettings Misc = new MiscSettings();
         public UISettings UI = new UISettings();
         public GraphicsSettings Graphics = new GraphicsSettings();
