@@ -32,7 +32,7 @@ namespace Bearded.TD.Game
             var commandDispatcher = new ServerCommandDispatcher(new DefaultCommandExecutor(), network);
             RequestDispatcher = new ServerRequestDispatcher(commandDispatcher, logger);
             Dispatcher = new ServerDispatcher(commandDispatcher);
-            GameSynchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
+            GameSynchronizer = new ServerGameSynchronizer(network, commandDispatcher, logger);
 
             DataMessageHandlerFactory = game => new ServerDataMessageHandler(game, network, logger);
             GameSimulatorFactory = game => new GameController(game);

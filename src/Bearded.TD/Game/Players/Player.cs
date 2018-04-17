@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Players
         public string Name { get; }
         public Faction Faction { get; private set; }
         public PlayerConnectionState ConnectionState { get; set; }
-        public float LastKnownPing { get; private set; } = -1;
+        public int LastKnownPing { get; set; } = -1;
 
         public Color Color => Faction.Color;
 

@@ -14,6 +14,9 @@ namespace Bearded.TD.Screens
             AddComponent(new FactionStatus(
                 Bounds.AnchoredBox(Screen, TopRight, Size(160, 100)),
                 game.Me.Faction));
+            AddComponent(new PlayerStatus(
+                Bounds.AnchoredBox(Screen, BottomRight, Size(160, 100)),
+                game));
         }
     }
 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
@@ -17,13 +17,15 @@ namespace Bearded.TD.Game.Synchronization
         private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5); 
 
         private readonly Dictionary<Type, object> synchronizers = new Dictionary<Type, object>();
-        private readonly LinkedList<Func<ICommand>> syncCommands = new LinkedList<Func<ICommand>>();
+        private readonly ServerNetworkInterface networkInterface;
         private readonly ICommandDispatcher commandDispatcher;
         private readonly Logger logger;
         private Instant nextSync = Instant.Zero;
 
-        public ServerGameSynchronizer(ICommandDispatcher commandDispatcher, Logger logger)
+        public ServerGameSynchronizer(
+                ServerNetworkInterface networkInterface, ICommandDispatcher commandDispatcher, Logger logger)
         {
+            this.networkInterface = networkInterface;
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
 
@@ -36,20 +38,25 @@ namespace Bearded.TD.Game.Synchronization
             getSynchronizer<T>().Register(syncable);
         }
 
-        public void RegisterSyncCommand(Func<ICommand> syncCommand)
+        public void Synchronize(GameInstance game)
         {
-            syncCommands.AddLast(syncCommand);
-        }
-
-        public void Synchronize(Instant currentTimestamp)
-        {
-            if (currentTimestamp >= nextSync)
+            if (game.State.Time >= nextSync)
             {
                 logger.Trace.Log("Starting sync round");
+
                 foreach (var (_, synchronizer) in synchronizers)
-                    ((ISynchronizer) synchronizer).SendBatch(commandDispatcher);
-                syncCommands.ForEach(cmd => commandDispatcher.Dispatch(cmd()));
-                nextSync = currentTimestamp + timeBetweenSyncs;
+                {
+                    ((ISynchronizer)synchronizer).SendBatch(commandDispatcher);
+                }
+
+                foreach (var p in game.Players)
+                {
+                    p.LastKnownPing = p == game.Me ? 0 : networkInterface.GetPlayerPing(p);
+                }
+
+                commandDispatcher.Dispatch(SyncPlayers.Command(game));
+
+                nextSync = game.State.Time + timeBetweenSyncs;
             }
         }
 

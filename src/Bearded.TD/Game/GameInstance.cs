@@ -68,7 +68,6 @@ namespace Bearded.TD.Game
             AddPlayer(me);
 
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
-            Meta.Synchronizer.RegisterSyncCommand(() => SyncPlayers.Command(this));
         }
 
         public void AddPlayer(Player player)

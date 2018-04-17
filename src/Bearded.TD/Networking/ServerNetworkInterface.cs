@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.MasterServer;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 
@@ -86,9 +87,9 @@ namespace Bearded.TD.Networking
             playerToConnection.Remove(player);
         }
 
-        public float GetPlayerPing(Player player)
+        public int GetPlayerPing(Player player)
         {
-            return playerToConnection[player].AverageRoundtripTime;
+            return Mathf.RoundToInt(playerToConnection[player].AverageRoundtripTime * 1000);
         }
     }
 }

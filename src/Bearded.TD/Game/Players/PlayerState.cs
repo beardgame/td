@@ -6,11 +6,11 @@ namespace Bearded.TD.Game.Players
     struct PlayerState
     {
         public byte ConnectionState { get; }
-        public float LastKnownPing { get; }
+        public int LastKnownPing { get; }
 
         public PlayerState(
                 byte connectionState,
-                float lastKnownPing)
+                int lastKnownPing)
         {
             ConnectionState = connectionState;
             LastKnownPing = lastKnownPing;
