@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.World
                 { Type.Unknown, PassabilityLayer.None },
                 { Type.Floor, PassabilityLayer.None },
                 { Type.Wall, PassabilityLayer.All },
-                { Type.Crevice, ~PassabilityLayer.Flying },
+                { Type.Crevice, ~(PassabilityLayer.Flying | PassabilityLayer.Projectile) },
             };
 
             Dummy = new TileInfo(Directions.None, Type.Unknown);
