@@ -9,26 +9,23 @@ using Newtonsoft.Json.Linq;
 
 namespace Bearded.TD.Mods.Serialization.Converters
 {
-    static class BuildingComponentConverterFactory
+    static class ComponentConverterFactory
     {
-        public static BuildingComponentConverter<IBuildingComponent> Make()
-        {
-            return new BuildingComponentConverter<IBuildingComponent>(
-                typeof(BuildingComponent<>), ComponentFactories.ParameterTypesForComponentsById);
-        }
+        public static ComponentConverter<IBuildingComponent> ForBuildingComponents()
+            => new ComponentConverter<IBuildingComponent>(typeof(BuildingComponent<>));
+
+        public static ComponentConverter<IComponent> ForBaseComponent()
+            => new ComponentConverter<IComponent>(typeof(Models.Component<>));
     }
 
-    sealed class BuildingComponentConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
+    sealed class ComponentConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
     {
         private readonly Dictionary<string, Type> componentTypes;
 
-        public BuildingComponentConverter(Type genericComponentType, IDictionary<string, Type> componentParameterTypes)
+        public ComponentConverter(Type genericComponentType)
         {
-            Type GenericComponent(Type parameter)
-                => genericComponentType.MakeGenericType(parameter);
-
-            componentTypes = componentParameterTypes
-                .ToDictionary(t => t.Key, t => GenericComponent(t.Value));
+            componentTypes = ComponentFactories.ParameterTypesForComponentsById
+                .ToDictionary(t => t.Key, t => genericComponentType.MakeGenericType(t.Value));
         }
 
         protected override TComponentInterface ReadJson(JsonReader reader, JsonSerializer serializer)

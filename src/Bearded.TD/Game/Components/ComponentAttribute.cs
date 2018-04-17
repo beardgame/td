@@ -2,6 +2,7 @@
 
 namespace Bearded.TD.Game.Components
 {
+    [AttributeUsage(AttributeTargets.Class)]
     class ComponentAttribute : Attribute
     {
         public string Id { get; }

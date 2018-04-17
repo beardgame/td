@@ -37,10 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
-    <None
-        Include="assets\**\*"
-        Link="assets\%(RecursiveDir)%(Filename)%(Extension)"
-        CopyToOutputDirectory="PreserveNewest" />
+    <None Include="assets\**\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj" />
