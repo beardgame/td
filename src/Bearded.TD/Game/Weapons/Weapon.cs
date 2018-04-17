@@ -46,8 +46,6 @@ namespace Bearded.TD.Game.Weapons
 
         public void Update(TimeSpan elapsedTime)
         {
-            components.Update(elapsedTime);
-
             if (ownerAsBuilding == null)
                 return;
 
@@ -57,10 +55,10 @@ namespace Bearded.TD.Game.Weapons
                 return;
             }
 
-            updateForCompletedBuilding();
+            updateForCompletedBuilding(elapsedTime);
         }
 
-        private void updateForCompletedBuilding()
+        private void updateForCompletedBuilding(TimeSpan elapsedTime)
         {
             var time = ownerAsBuilding.Game.Time;
             while (nextPossibleShootTime <= time)
@@ -79,6 +77,8 @@ namespace Bearded.TD.Game.Weapons
 
                 nextPossibleShootTime += blueprint.ShootInterval;
             }
+
+            components.Update(elapsedTime);
         }
 
         private void ensureTilesInRangeList()
