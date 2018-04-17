@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Tiles
 {
@@ -56,14 +55,14 @@ namespace Bearded.TD.Tiles
 
         public TTileInfo this[int x, int y]
         {
-            get { return tiles[x + Radius, y + Radius]; }
-            set { tiles[x + Radius, y + Radius] = value; }
+            get => tiles[x + Radius, y + Radius];
+            set => tiles[x + Radius, y + Radius] = value;
         }
 
         public TTileInfo this[Tile<TTileInfo> tile]
         {
-            get { return this[tile.X, tile.Y]; }
-            set { this[tile.X, tile.Y] = value; }
+            get => this[tile.X, tile.Y];
+            set => this[tile.X, tile.Y] = value;
         }
 
         public bool IsValidTile(int x, int y) =>
@@ -81,12 +80,12 @@ namespace Bearded.TD.Tiles
         private IEnumerable<Tile<TTileInfo>> spiralTiles(int centerX, int centerY, int radius)
             => spiral(centerX, centerY, radius).Select(xy => new Tile<TTileInfo>(this, xy.X, xy.Y));
 
-        private IEnumerable<Vector2i> spiral(int centerX, int centerY, int radius)
+        private IEnumerable<(int X, int Y)> spiral(int centerX, int centerY, int radius)
         {
             var x = 0;
             var y = 0;
 
-            yield return new Vector2i(centerX, centerY);
+            yield return (centerX, centerY);
 
             // for each circle
             for (var r = 0; r < radius; r++)
@@ -101,7 +100,7 @@ namespace Bearded.TD.Tiles
                     // for each tile
                     for (var t = 0; t <= r; t++)
                     {
-                        yield return new Vector2i(centerX + x, centerY + y);
+                        yield return (centerX + x, centerY + y);
 
                         x += step.X;
                         y += step.Y;
@@ -125,7 +124,7 @@ namespace Bearded.TD.Tiles
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     }
 }
