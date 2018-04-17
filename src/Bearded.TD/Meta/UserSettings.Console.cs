@@ -74,8 +74,9 @@ namespace Bearded.TD.Meta
             }
 
             var json = JsonConvert.SerializeObject(currentObject, Formatting.Indented);
+            var jsonLines = json.Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var line in json.Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in jsonLines)
             {
                 logger.Info.Log(line);
             }
