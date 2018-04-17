@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
@@ -53,7 +54,7 @@ namespace Bearded.TD.Game
                 GameStatusChanged?.Invoke(status);
             }
         }
-        public event GenericEventHandler<GameStatus> GameStatusChanged; 
+        public event GenericEventHandler<GameStatus> GameStatusChanged;  
 
         public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)
         {
@@ -67,6 +68,7 @@ namespace Bearded.TD.Game
             AddPlayer(me);
 
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
+            Meta.Synchronizer.RegisterSyncCommand(() => SyncPlayers.Command(this));
         }
 
         public void AddPlayer(Player player)
