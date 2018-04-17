@@ -96,7 +96,8 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(new SpaceTime1Converter<Speed>(v => v.UnitsPerSecond()));
                 serializer.Converters.Add(new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()));
                 serializer.Converters.Add(Converters.ColorContainerConverter);
-                serializer.Converters.Add(BuildingComponentConverterFactory.Make());
+                serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
+                serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
             }
 
             private void configureSerializerDependency<TBlueprint>(

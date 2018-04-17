@@ -1,3 +1,5 @@
 {
-    "id": "triangleWeapon"
+    "id": "triangleWeapon",
+    "components" : [
+    ]
 }
