@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
-using Bearded.TD.Networking;
 using Bearded.TD.UI.Input;
 using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities.Collections;
@@ -17,7 +17,6 @@ namespace Bearded.TD.Game
         public ContentManager ContentManager { get; }
         public Player Me { get; }
         public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
-        public IDataMessageHandler DataMessageHandler { get; }
         public IGameController Controller { get; }
         public GameMeta Meta { get; }
         
@@ -54,11 +53,13 @@ namespace Bearded.TD.Game
             }
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged;  
+        
+        private readonly PlayerManager playerManager;
 
         public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)
         {
             RequestDispatcher = context.RequestDispatcher;
-            DataMessageHandler = context.DataMessageHandlerFactory(this);
+            context.DataMessageHandlerInitializer(this);
             Controller = context.GameSimulatorFactory(this);
             ContentManager = contentManager;
             Me = me;
@@ -66,6 +67,7 @@ namespace Bearded.TD.Game
 
             AddPlayer(me);
 
+            playerManager = context.PlayerManagerFactory(this);
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
         }
 
@@ -80,6 +82,11 @@ namespace Bearded.TD.Game
         }
 
         public Player PlayerFor(Id<Player> id) => players[id];
+
+        public void UpdatePlayers(UpdateEventArgs args)
+        {
+            playerManager?.Update(args);
+        }
 
         public void SetBlueprints(Blueprints blueprints)
         {

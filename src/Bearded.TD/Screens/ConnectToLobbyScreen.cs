@@ -12,12 +12,11 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
-using OpenTK;
 using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens
 {
-    class ConnectToLobbyScreen : UIScreenLayer
+    class ConnectToLobbyScreen : UIScreenLayer, INetworkMessageHandler
     {
         private const string defaultPlayerName = "a client";
 
@@ -44,7 +43,9 @@ namespace Bearded.TD.Screens
             this.logger = logger;
             this.inputManager = inputManager;
             this.contentManager = contentManager;
-            networkInterface = new ClientNetworkInterface(logger);
+            networkInterface = new ClientNetworkInterface();
+            networkInterface.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
+            networkInterface.RegisterMessageHandler(this);
 
             AddComponent(new Button(
                 Bounds.AnchoredBox(Screen, BottomLeft, Size(220, 50), OffsetFrom(BottomLeft, 10, 10)),
@@ -84,24 +85,30 @@ namespace Bearded.TD.Screens
         public override void Update(UpdateEventArgs args)
         {
             base.Update(args);
+            networkInterface.ConsumeMessages();
+        }
 
-            foreach (var msg in networkInterface.GetMessages())
+        public bool Accepts(NetIncomingMessage message)
+            => !Destroyed &&
+                    (message.MessageType == NetIncomingMessageType.StatusChanged
+                            || message.MessageType == NetIncomingMessageType.UnconnectedData
+                            || message.MessageType == NetIncomingMessageType.NatIntroductionSuccess);
+
+        public void Handle(NetIncomingMessage message)
+        {
+            switch (message.MessageType)
             {
-                switch (msg.MessageType)
-                {
-                    case NetIncomingMessageType.StatusChanged:
-                        handleStatusChange(msg);
-                        break;
-                    case NetIncomingMessageType.UnconnectedData:
-                        // Data coming from an unconnected source. Must be master server.
-                        handleIncomingLobby(Proto.Lobby.Parser.ParseFrom(msg.ReadBytes(msg.LengthBytes)));
-                        break;
-                    case NetIncomingMessageType.NatIntroductionSuccess:
-                        // NAT introduction success. Means we successfully connected with lobby.
-                        networkInterface.Connect(msg.SenderEndPoint, new ClientInfo(playerName));
-                        break;
-                }
-                if (Destroyed) return;
+                case NetIncomingMessageType.StatusChanged:
+                    handleStatusChange(message);
+                    break;
+                case NetIncomingMessageType.UnconnectedData:
+                    // Data coming from an unconnected source. Must be master server.
+                    handleIncomingLobby(Proto.Lobby.Parser.ParseFrom(message.ReadBytes(message.LengthBytes)));
+                    break;
+                case NetIncomingMessageType.NatIntroductionSuccess:
+                    // NAT introduction success. Means we successfully connected with lobby.
+                    networkInterface.Connect(message.SenderEndPoint, new ClientInfo(playerName));
+                    break;
             }
         }
 
@@ -176,6 +183,7 @@ namespace Bearded.TD.Screens
         private void goToMenu()
         {
             Parent.AddScreenLayerOnTopOf(this, new StartScreen(Parent, Geometries, logger, inputManager, contentManager));
+            networkInterface.Shutdown();
             Destroy();
         }
 
@@ -187,6 +195,7 @@ namespace Bearded.TD.Screens
 
         private void goToLobby(NetIncomingMessage msg)
         {
+            networkInterface.UnregisterMessageHandler(this);
             UserSettings.Instance.Misc.SavedNetworkAddress = textInput.Text;
             UserSettings.Save(logger);
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);

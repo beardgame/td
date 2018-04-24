@@ -7,25 +7,26 @@ using Lidgren.Network;
 
 namespace Bearded.TD.Game
 {
-    interface IDataMessageHandler
+    abstract class DataMessageHandler : INetworkMessageHandler
     {
-        void HandleIncomingMessage(NetIncomingMessage msg);
+        public bool Accepts(NetIncomingMessage message)
+            => message.MessageType == NetIncomingMessageType.Data;
+
+        public abstract void Handle(NetIncomingMessage message);
     }
 
-    class ServerDataMessageHandler : IDataMessageHandler
+    class ServerDataMessageHandler : DataMessageHandler
     {
         private readonly GameInstance game;
-        private readonly ServerNetworkInterface networkInterface;
         private readonly Logger logger;
 
-        public ServerDataMessageHandler(GameInstance game, ServerNetworkInterface networkInterface, Logger logger)
+        public ServerDataMessageHandler(GameInstance game, Logger logger)
         {
             this.game = game;
-            this.networkInterface = networkInterface;
             this.logger = logger;
         }
 
-        public void HandleIncomingMessage(NetIncomingMessage msg)
+        public override void Handle(NetIncomingMessage msg)
         {
             var typeId = msg.ReadInt32();
             // We only accept requests. We should not be receiving commands on the server.
@@ -40,7 +41,7 @@ namespace Bearded.TD.Game
         }
     }
 
-    class ClientDataMessageHandler : IDataMessageHandler
+    class ClientDataMessageHandler : DataMessageHandler
     {
         private readonly GameInstance game;
         private readonly Logger logger;
@@ -53,7 +54,7 @@ namespace Bearded.TD.Game
             commandDispatcher = new ClientCommandDispatcher<GameInstance>(new DefaultCommandExecutor());
         }
 
-        public void HandleIncomingMessage(NetIncomingMessage msg)
+        public override void Handle(NetIncomingMessage msg)
         {
             var typeId = msg.ReadInt32();
             // We only accept commands. We should not be receiving requests on the client.

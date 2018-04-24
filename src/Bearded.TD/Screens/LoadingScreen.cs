@@ -1,7 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Networking;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Model.Loading;
 using Bearded.TD.Utilities.Collections;

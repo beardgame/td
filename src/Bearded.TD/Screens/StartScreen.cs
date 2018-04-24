@@ -41,10 +41,12 @@ namespace Bearded.TD.Screens
 
         private void startServerLobby()
         {
+            var network = new ServerNetworkInterface();
+            network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(
                 Parent,
                 Geometries,
-                new ServerLobbyManager(new ServerNetworkInterface(logger), logger, contentManager),
+                new ServerLobbyManager(network, logger, contentManager),
                 inputManager));
             Destroy();
         }

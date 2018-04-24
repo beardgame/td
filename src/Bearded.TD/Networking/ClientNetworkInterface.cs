@@ -1,7 +1,6 @@
 using System.Net;
 using Bearded.TD.Networking.MasterServer;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities.IO;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking
@@ -12,7 +11,7 @@ namespace Bearded.TD.Networking
 
         public ClientMasterServer Master { get; }
 
-        public ClientNetworkInterface(Logger logger) : base(logger)
+        public ClientNetworkInterface()
         {
 			var config = new NetPeerConfiguration(Constants.Network.ApplicationName);
             config.EnableMessageType(NetIncomingMessageType.UnconnectedData);

@@ -4,12 +4,12 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
-using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading
 {
@@ -36,13 +36,8 @@ namespace Bearded.TD.UI.Model.Loading
         public virtual void Update(UpdateEventArgs args)
         {
             // Network handling.
-            foreach (var msg in Network.GetMessages())
-            {
-                if (msg.MessageType == NetIncomingMessageType.Data)
-                {
-                    Game.DataMessageHandler.HandleIncomingMessage(msg);
-                }
-            }
+            Network.ConsumeMessages();
+            Game.UpdatePlayers(args);
 
             // Mod loading.
             if (!hasModsQueuedForLoading)

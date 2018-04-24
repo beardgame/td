@@ -1,13 +1,12 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Players
 {
-    sealed class Player : IIdable<Player>, ISyncable<PlayerState>
+    sealed class Player : IIdable<Player>
     {
         public Id<Player> Id { get; }
         public string Name { get; }
