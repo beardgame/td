@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Components.Generic
     [Component("beamEmitter")]
     sealed class BeamEmitter : WeaponCycleHandler<BeamEmitterParameters>
     {
-        private bool drawBeam = false;
+        private bool drawBeam;
         private Position2 endPoint;
 
         public BeamEmitter(BeamEmitterParameters parameters)
