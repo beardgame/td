@@ -9,32 +9,22 @@ namespace Bearded.TD.Mods.Models
     sealed class WeaponBlueprint : IBlueprint
     {
         public string Id { get; }
-        public TimeSpan ShootInterval { get; }
-        public TimeSpan IdleInterval { get; }
-        public TimeSpan ReCalculateTilesInRangeInterval { get; }
         public Unit Range { get; }
-        public int Damage { get; }
+        public TimeSpan ReCalculateTilesInRangeInterval { get; }
+        public TimeSpan NoTargetIdleInterval { get; }
 
         private readonly IReadOnlyList<IComponentFactory<Weapon>> componentFactories;
 
         public IEnumerable<IComponent<Weapon>> GetComponents()
             => componentFactories.Select(f => f.Create());
 
-        public WeaponBlueprint(
-                string id,
-                TimeSpan shootInterval,
-                TimeSpan idleInterval,
-                TimeSpan reCalculateTilesInRangeInterval,
-                Unit range,
-                int damage,
-                IEnumerable<IComponentFactory<Weapon>> componentFactories)
+        public WeaponBlueprint(string id, Unit range, TimeSpan reCalculateTilesInRangeInterval,
+            TimeSpan noTargetIdleInterval, IEnumerable<IComponentFactory<Weapon>> componentFactories)
         {
             Id = id;
-            ShootInterval = shootInterval;
-            IdleInterval = idleInterval;
             ReCalculateTilesInRangeInterval = reCalculateTilesInRangeInterval;
             Range = range;
-            Damage = damage;
+            NoTargetIdleInterval = noTargetIdleInterval;
 
             this.componentFactories = (componentFactories?.ToList() ?? new List<IComponentFactory<Weapon>>())
                     .AsReadOnly();

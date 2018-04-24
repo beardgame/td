@@ -53,6 +53,9 @@ namespace Bearded.TD.Mods
                 configureSerializer();
 
                 var projectiles = loadProjectiles();
+
+                configureSerializerDependency(projectiles, m => m.Blueprints.Projectiles);
+
                 var weapons = loadWeapons();
 
                 configureSerializerDependency(weapons, m => m.Blueprints.Weapons);
@@ -107,8 +110,8 @@ namespace Bearded.TD.Mods
                     Func<Mod, ReadonlyBlueprintCollection<TBlueprint>> blueprintSelector)
                     where TBlueprint : IBlueprint
             {
-                var dependencyResolver =
-                        new DependencyResolver<TBlueprint>(meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
+                var dependencyResolver = new DependencyResolver<TBlueprint>(
+                    meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
                 serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
             }
 

@@ -1,5 +1,12 @@
 {
     "id": "triangleWeapon",
     "components" : [
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "boringProjectile",
+                "muzzleVelocity" : 20
+            }
+        }
     ]
 }

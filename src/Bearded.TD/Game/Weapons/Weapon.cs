@@ -5,14 +5,13 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.UI.Model;
-using Bearded.TD.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Weapons
@@ -27,10 +26,14 @@ namespace Bearded.TD.Game.Weapons
         private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
 
         private Instant nextTileInRangeRecalculationTime;
-        private Instant nextPossibleShootTime;
         private List<Tile<TileInfo>> tilesInRange;
         private EnemyUnit target;
+        private Instant endOfIdleTime;
 
+        public Direction2 AimDirection { get; private set; }
+        public bool ShootingThisFrame { get; private set; }
+
+        public GameObject Owner => turret.Owner;
         public Position2 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
 
@@ -39,51 +42,48 @@ namespace Bearded.TD.Game.Weapons
             this.blueprint = blueprint;
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
-            nextPossibleShootTime = turret.Owner.Game.Time;
 
             components.Add(this, blueprint.GetComponents());
         }
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (ownerAsBuilding == null)
+            if (ownerAsBuilding == null || !ownerAsBuilding.IsCompleted)
                 return;
 
-            if (!ownerAsBuilding.IsCompleted)
-            {
-                nextPossibleShootTime = ownerAsBuilding.Game.Time;
-                return;
-            }
-
-            updateForCompletedBuilding(elapsedTime);
-        }
-
-        private void updateForCompletedBuilding(TimeSpan elapsedTime)
-        {
-            var time = ownerAsBuilding.Game.Time;
-            while (nextPossibleShootTime <= time)
-            {
-                ensureTilesInRangeList();
-                ensureTargetingState();
-
-                if (target == null)
-                {
-                    while (nextPossibleShootTime <= time)
-                        nextPossibleShootTime += blueprint.IdleInterval;
-                    break;
-                }
-
-                shootTarget();
-
-                nextPossibleShootTime += blueprint.ShootInterval;
-            }
+            tryShootingAtTarget();
 
             components.Update(elapsedTime);
         }
 
+        private void tryShootingAtTarget()
+        {
+            ShootingThisFrame = false;
+            
+            if (endOfIdleTime > Owner.Game.Time)
+                return;
+
+            ensureTilesInRangeList();
+            ensureTargetingState();
+
+            if (target == null)
+            {
+                goIdle();
+                return;
+            }
+
+            AimDirection = (target.Position - Position).Direction;
+            ShootingThisFrame = true;
+        }
+
+        private void goIdle()
+        {
+            endOfIdleTime = Owner.Game.Time + blueprint.NoTargetIdleInterval;
+        }
+
         private void ensureTilesInRangeList()
         {
-            if (nextTileInRangeRecalculationTime > ownerAsBuilding.Game.Time)
+            if (nextTileInRangeRecalculationTime > Owner.Game.Time)
                 return;
 
             recalculateTilesInRange();
@@ -120,19 +120,6 @@ namespace Bearded.TD.Game.Weapons
                 return;
 
             tryFindTarget();
-        }
-
-        private void shootTarget()
-        {
-            var p = new Projectile(
-                ownerAsBuilding.Position,
-                (target.Position - ownerAsBuilding.Position).Direction,
-                20.U() / 1.S(),
-                blueprint.Damage,
-                ownerAsBuilding
-            );
-
-            ownerAsBuilding.Game.Add(p);
         }
 
         private void tryFindTarget()
