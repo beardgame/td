@@ -26,6 +26,7 @@ namespace Bearded.TD
             }
 
             public static readonly string UserSettingsFile = SettingsDirectory + "/usersettings.json";
+            public static readonly string LogFile = SettingsDirectory + "/debug.log";
         }
     }
 }

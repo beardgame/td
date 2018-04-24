@@ -15,16 +15,26 @@ namespace Bearded.TD
             var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Directory.SetCurrentDirectory(exeDir);
 
-            using (Toolkit.Init(new ToolkitOptions() {Backend = PlatformBackend.PreferNative}))
+            using (Toolkit.Init(new ToolkitOptions {Backend = PlatformBackend.PreferNative}))
+            using (var writer = new StreamWriter(Constants.Paths.LogFile, false) {AutoFlush = true})
             {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
                 var logger = new Logger {MirrorToConsole = false};
 
+                #if DEBUG
+                // ReSharper disable once AccessToDisposedClosure
+                logger.Logged += entry =>
+                {
+                    if (entry.Severity == Logger.Severity.Trace) return;
+                    writer.WriteLine(entry.Text);
+                };
+                #endif
+
                 logger.Debug.Log("Creating component factories");
                 ComponentFactories.Initialize();
-                
+
                 logger.Info.Log("");
                 logger.Info.Log("Creating game");
                 var game = new TheGame(logger);
