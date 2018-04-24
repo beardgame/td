@@ -1,0 +1,7 @@
+{
+    "id" : "boringProjectile",
+    "speed" : 20,
+    "damage" : 10,
+    "color" : "Yellow",
+    "components" : []
+}
