@@ -13,9 +13,10 @@ namespace Bearded.TD.Mods
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<UnitBlueprint> units,
-            ReadonlyBlueprintCollection<WeaponBlueprint> weapons)
+            ReadonlyBlueprintCollection<WeaponBlueprint> weapons,
+            ReadonlyBlueprintCollection<ProjectileBlueprint> projectiles)
         {
-            Blueprints = new Blueprints(footprints, buildings, units, weapons);
+            Blueprints = new Blueprints(footprints, buildings, units, weapons, projectiles);
         }
     }
 }

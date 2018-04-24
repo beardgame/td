@@ -9,7 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
-    class WeaponBlueprint : IConvertsTo<Mods.Models.WeaponBlueprint, Void>
+    sealed class WeaponBlueprint : IConvertsTo<Mods.Models.WeaponBlueprint, Void>
     {
         public string Id { get; set; }
         public TimeSpan ShootInterval { get; set; } = new TimeSpan(0.15);

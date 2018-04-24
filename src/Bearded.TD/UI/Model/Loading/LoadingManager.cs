@@ -9,7 +9,6 @@ using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 using Lidgren.Network;
 
 namespace Bearded.TD.UI.Model.Loading
@@ -69,7 +68,6 @@ namespace Bearded.TD.UI.Model.Loading
         {
             Game.SetBlueprints(Blueprints.Merge(
                 modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod())
-                    .Prepend(DebugMod.Create())
                     .Select(mod => mod.Blueprints)));
 
             Game.RequestDispatcher.Dispatch(

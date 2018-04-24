@@ -14,6 +14,8 @@ using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
 using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
+using ProjectileBlueprint = Bearded.TD.Mods.Models.ProjectileBlueprint;
+using ProjectileBlueprintJson = Bearded.TD.Mods.Serialization.Models.ProjectileBlueprint;
 using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
 using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
 using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponBlueprint;
@@ -50,6 +52,7 @@ namespace Bearded.TD.Mods
             {
                 configureSerializer();
 
+                var projectiles = loadProjectiles();
                 var weapons = loadWeapons();
 
                 configureSerializerDependency(weapons, m => m.Blueprints.Weapons);
@@ -59,15 +62,12 @@ namespace Bearded.TD.Mods
                 var units = loadUnits();
 
                 return new Mod(
-                    footprints,
-                    buildings,
-                    units,
-                    weapons
-                    );
+                        footprints,
+                        buildings,
+                        units,
+                        weapons,
+                        projectiles);
             }
-
-            private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
-                => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
 
             private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints)
                 => loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, DependencyResolver<FootprintGroup>>(
@@ -78,15 +78,17 @@ namespace Bearded.TD.Mods
                     )
                 );
 
+            private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
+                => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
+
+            private ReadonlyBlueprintCollection<ProjectileBlueprint> loadProjectiles()
+                => loadBlueprints<ProjectileBlueprint, ProjectileBlueprintJson>("defs/projectiles");
+
             private ReadonlyBlueprintCollection<UnitBlueprint> loadUnits()
                 => loadBlueprints<UnitBlueprint, UnitBlueprintJson>("defs/units");
 
             private ReadonlyBlueprintCollection<WeaponBlueprint> loadWeapons()
                 => loadBlueprints<WeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
-
-            private static ReadonlyBlueprintCollection<T> empty<T>()
-                where T : IBlueprint
-                => new ReadonlyBlueprintCollection<T>(Enumerable.Empty<T>());
 
             private void configureSerializer()
             {
