@@ -17,15 +17,12 @@ namespace Bearded.TD.Game.Synchronization
         private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5); 
 
         private readonly Dictionary<Type, object> synchronizers = new Dictionary<Type, object>();
-        private readonly ServerNetworkInterface networkInterface;
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         private readonly Logger logger;
         private Instant nextSync = Instant.Zero;
 
-        public ServerGameSynchronizer(
-                ServerNetworkInterface networkInterface, ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
+        public ServerGameSynchronizer(ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
         {
-            this.networkInterface = networkInterface;
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
 
@@ -48,13 +45,6 @@ namespace Bearded.TD.Game.Synchronization
                 {
                     ((ISynchronizer)synchronizer).SendBatch(commandDispatcher);
                 }
-
-                foreach (var p in game.Players)
-                {
-                    p.LastKnownPing = p == game.Me ? 0 : networkInterface.GetPlayerPing(p);
-                }
-
-                commandDispatcher.Dispatch(SyncPlayers.Command(game));
 
                 nextSync = game.State.Time + timeBetweenSyncs;
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Bearded.TD.Networking.MasterServer
 {
     class MasterServerException : Exception

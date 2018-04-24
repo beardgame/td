@@ -29,9 +29,8 @@ namespace Bearded.TD.Game
 
             game.Controller.Update(elapsedTime);
 
-            foreach (var msg in networkInterface.GetMessages())
-                if (msg.MessageType == NetIncomingMessageType.Data)
-                    game.DataMessageHandler.HandleIncomingMessage(msg);
+            networkInterface.ConsumeMessages();
+            game.UpdatePlayers(args);
 
             if (game.State.Meta.GameOver) return;
             

@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Networking
+﻿namespace Bearded.TD.Game.Players
 {
     public enum PlayerConnectionState : byte
     {

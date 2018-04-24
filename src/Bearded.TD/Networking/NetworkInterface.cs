@@ -1,57 +1,53 @@
 ﻿using System.Collections.Generic;
-using Bearded.Utilities.IO;
+using System.Linq;
 using Lidgren.Network;
 
 namespace Bearded.TD.Networking
 {
     abstract class NetworkInterface
     {
-        protected Logger Logger { get; }
-
-        protected NetworkInterface(Logger logger)
-        {
-            Logger = logger;
-        }
+        private readonly List<INetworkMessageHandler> messageHandlers = new List<INetworkMessageHandler>();
+        
+        private readonly List<NetConnection> connectedPeers = new List<NetConnection>();
+        public int PeerCount => connectedPeers.Count;
 
         public abstract NetOutgoingMessage CreateMessage();
         public abstract void Shutdown();
 
-        public IEnumerable<NetIncomingMessage> GetMessages()
+        public void RegisterMessageHandler(INetworkMessageHandler messageHandler)
+        {
+            messageHandlers.Add(messageHandler);
+        }
+
+        public void UnregisterMessageHandler(INetworkMessageHandler messageHandler)
+        {
+            messageHandlers.Remove(messageHandler);
+        }
+
+        public void ConsumeMessages()
         {
             NetIncomingMessage message;
             while ((message = GetNextMessage()) != null)
             {
-                Logger.Trace.Log($"Incoming message: {message.MessageType} (length: {message.Data.Length})");
-
-                if (message.MessageType == NetIncomingMessageType.DebugMessage)
-                {
-                    Logger.Debug.Log("Network debug: {0}", message.ReadString());
-                    continue;
-                }
-                if (message.MessageType == NetIncomingMessageType.WarningMessage)
-                {
-                    Logger.Warning.Log("Network warning: {0}", message.ReadString());
-                    continue;
-                }
-                if (message.MessageType == NetIncomingMessageType.ErrorMessage)
-                {
-                    Logger.Error.Log("Network error: {0}", message.ReadString());
-                    continue;
-                }
-                if (message.MessageType == NetIncomingMessageType.ConnectionLatencyUpdated)
-                {
-                    Logger.Trace.Log(
-                            "Network latency from {0}: {1}",
-                            message.SenderEndPoint.Address.ToString(),
-                            message.ReadSingle());
-                    continue;
-                }
                 if (message.MessageType == NetIncomingMessageType.StatusChanged)
                 {
-                    Logger.Debug.Log("Network status changed: {0}", message.SenderConnection.Status);
+                    switch (message.SenderConnection.Status)
+                    {
+                        case NetConnectionStatus.Connected:
+                            connectedPeers.Add(message.SenderConnection);
+                            break;
+                        case NetConnectionStatus.Disconnected:
+                            connectedPeers.Remove(message.SenderConnection);
+                            break;
+                    }
                 }
 
-                yield return message;
+                var acceptedHandlers = messageHandlers.Where(handler => handler.Accepts(message)).ToList();
+
+                foreach (var handler in acceptedHandlers)
+                {
+                    handler.Handle(message);
+                }
             }
         }
 
