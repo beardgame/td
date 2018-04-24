@@ -77,7 +77,7 @@ namespace Bearded.TD.Tiles
             => obj is Tile<TTileInfo> tile && Equals(tile);
 
         public bool Equals(Tile<TTileInfo> other)
-            => tilemap == other.tilemap && X == other.X && Y == other.Y;
+            => X == other.X && Y == other.Y && tilemap == other.tilemap;
 
         public override int GetHashCode() => (X * 397) ^ Y;
 

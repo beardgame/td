@@ -7,8 +7,8 @@ namespace Bearded.TD.Game.Components
     {
         TOwner Owner { get; }
 
-        void Draw(GeometryManager geometries);
         void OnAdded(TOwner owner);
         void Update(TimeSpan elapsedTime);
+        void Draw(GeometryManager geometries);
     }
 }
