@@ -1,0 +1,12 @@
+{
+    "id": "beamWeapon",
+    "components" : [
+        {
+            "id" : "beamEmitter",
+            "parameters" : {
+                "color" : "cyan",
+                "damagePerSecond" : 50
+            }
+        }
+    ]
+}

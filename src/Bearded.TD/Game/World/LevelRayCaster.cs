@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.Linq;
-using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.World
 {
@@ -26,7 +25,10 @@ namespace Bearded.TD.Game.World
         private Tile<TTileInfo> tile;
 
         private bool reachedFinalTile => nextCenterIntersection > 1 && nextLeftIntersection > 1 && nextRightIntersection > 1;
-        
+
+        public float CurrentRayFactor => currentRayFactor;
+        public Position2 CurrentPoint(Ray ray) => ray.Start + ray.Direction * currentRayFactor;
+
         public IEnumerable<Tile<TTileInfo>> EnumerateTiles(Level<TTileInfo> level, Ray ray)
         {
             var startTile = level.GetTile(ray.Start);
@@ -51,39 +53,6 @@ namespace Bearded.TD.Game.World
                     yield break;
                 }
             }
-        }
-
-        public (Tile<TTileInfo>, Position2) GetEndOfRay(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
-        {
-            checkPreconditions(level, ray, startTile);
-
-            initialise(level, ray, startTile);
-
-            if (reachedFinalTile)
-            {
-                return (startTile, ray.Start + ray.Direction);
-            }
-
-            while (true)
-            {
-                goToNextTile();
-
-                if (reachedFinalTile)
-                {
-                    break;
-                }
-            }
-
-            return (tile, ray.Start + ray.Direction);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void checkPreconditions(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
-        {
-#if DEBUG
-            if (level.GetTile(ray.Start) != startTile)
-                throw new ArgumentException("Ray must start on given start tile.");
-#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

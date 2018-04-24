@@ -1,83 +1,54 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
-using Bearded.TD.Game.Weapons;
 using Bearded.TD.Mods.Models;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("projectileEmitter")]
-    sealed class ProjectileEmitter : IComponent<Weapon>
+    sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitterParameters>
     {
-        private readonly ProjectileEmitterParameters parameters;
-        public Weapon Weapon { get; private set; }
-
         private Instant nextPossibleShootTime;
         private bool wasShootingLastFrame;
 
-        private GameState game => Weapon.Owner.Game;
-        Weapon IComponent<Weapon>.Owner => Weapon;
-
         public ProjectileEmitter(ProjectileEmitterParameters parameters)
+            : base(parameters)
         {
-            this.parameters = parameters;
-        }
-        
-        public void OnAdded(Weapon owner)
-        {
-            Weapon = owner;
         }
 
-        public void Update(TimeSpan elapsedTime)
-        {
-            if (Weapon.ShootingThisFrame)
-            {
-                updateShooting();
-            }
-            else
-            {
-                updateIdle();
-            }
-        }
-
-        private void updateIdle()
+        protected override void UpdateIdle(TimeSpan elapsedTime)
         {
             wasShootingLastFrame = false;
         }
 
-        private void updateShooting()
+        protected override void UpdateShooting(TimeSpan elapsedTime)
         {
-            var currentTime = game.Time;
+            var currentTime = Game.Time;
             while (nextPossibleShootTime < currentTime)
             {
                 emitProjectile();
 
                 if (!wasShootingLastFrame)
                 {
-                    nextPossibleShootTime = currentTime + parameters.ShootInterval;
+                    nextPossibleShootTime = currentTime + Parameters.ShootInterval;
                     break;
                 }
 
-                nextPossibleShootTime += parameters.ShootInterval;
+                nextPossibleShootTime += Parameters.ShootInterval;
             }
             wasShootingLastFrame = true;
         }
 
         private void emitProjectile()
         {
-            game.Add(
+            Game.Add(
                 new Projectile(
-                    parameters.Projectile,
+                    Parameters.Projectile,
                     Weapon.Position, Weapon.AimDirection,
-                    parameters.MuzzleVelocity,
+                    Parameters.MuzzleVelocity,
                     Weapon.Owner as Building
                 )
             );
-        }
-        
-        public void Draw(GeometryManager geometries)
-        {
         }
     }
 }

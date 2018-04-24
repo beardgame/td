@@ -65,8 +65,7 @@ namespace Bearded.TD.Game.Projectiles
 
                 foreach (var enemy in enemies)
                 {
-                    if (enemy.CollisionCircle
-                        .TryHit(ray, out var f, out _, out _)
+                    if (enemy.CollisionCircle.TryHit(ray, out var f, out _, out _)
                         && f < closestHit.Factor)
                     {
                         closestHit = (enemy, f);
@@ -91,7 +90,7 @@ namespace Bearded.TD.Game.Projectiles
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.Yellow;
+            geo.Color = blueprint.Color;
             
             geo.DrawRectangle(Position.NumericValue, Vector2.One * 0.1f);
 
