@@ -39,13 +39,13 @@ namespace Bearded.TD.Game.Components.Generic
                 Weapon.AimDirection * Parameters.Range
             );
 
-            var rayCaster = new LevelRayCaster<TileInfo>();
-
-            foreach (var tile in rayCaster.EnumerateTiles(Game.Level, ray))
+            Game.Level.Cast(ray, out var rayCaster);
+            
+            while (rayCaster.MoveNext(out var tile))
             {
                 if (!tile.IsValid || !tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 {
-                    endPoint = rayCaster.CurrentPoint(ray);
+                    endPoint = ray.PointAt(rayCaster.CurrentRayFactor);
                     return;
                 }
 

@@ -48,10 +48,8 @@ namespace Bearded.TD.Game.Projectiles
         {
             var step = Velocity * elapsedTime;
             var ray = new Ray(Position, step);
-
-            var tiles = new LevelRayCaster<TileInfo>().EnumerateTiles(Game.Level, ray);
-
-            foreach (var tile in tiles)
+            
+            foreach (var tile in Game.Level.Cast(ray))
             {
                 if (!tile.IsValid || !tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 {
