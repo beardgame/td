@@ -6,24 +6,27 @@ using Bearded.TD.Game.Components;
 namespace Bearded.TD.Mods.Serialization.Models
 {
     sealed class BuildingBlueprint
-        : IConvertsTo<Mods.Models.BuildingBlueprint, DependencyResolver<Mods.Models.FootprintGroup>>
+        : IConvertsTo<Mods.Models.BuildingBlueprint,
+                (DependencyResolver<Mods.Models.FootprintGroup> footprints, UpgradeTagResolver tags)>
     {
         public string Id { get; set; }
         public string Name { get; set; }
         public string Footprint { get; set; }
         public int Health { get; set; }
         public int Cost { get; set; }
+        public List<string> Tags { get; set; }
         public List<IBuildingComponent> Components { get; set; }
         
         public Mods.Models.BuildingBlueprint ToGameModel(
-            DependencyResolver<Mods.Models.FootprintGroup> footprints)
+            (DependencyResolver<Mods.Models.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
         {
             return new Mods.Models.BuildingBlueprint(
                 Id,
                 Name,
-                footprints.Resolve(Footprint),
+                dependencies.footprints.Resolve(Footprint),
                 Health,
                 Cost,
+                Tags?.Select(dependencies.tags.Resolve),
                 Components?.Select(ComponentFactories.CreateBuildingComponentFactory)
             );
         }
