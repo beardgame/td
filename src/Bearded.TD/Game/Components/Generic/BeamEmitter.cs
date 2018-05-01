@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using System;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models.components;
@@ -6,6 +7,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.Generic
 {
@@ -39,44 +41,31 @@ namespace Bearded.TD.Game.Components.Generic
                 Weapon.AimDirection * Parameters.Range
             );
 
-            Game.Level.Cast(ray, out var rayCaster);
-            
-            while (rayCaster.MoveNext(out var tile))
+            var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(ray);
+
+            endPoint = point;
+
+            switch (result)
             {
-                if (!tile.IsValid || !tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
-                {
-                    endPoint = ray.PointAt(rayCaster.CurrentRayFactor);
-                    return;
-                }
-
-                var enemies = tile.Info.Enemies;
-
-                (EnemyUnit Unit, float Factor, Position2 point) closestHit =
-                    (null, float.PositiveInfinity, new Position2());
-
-                foreach (var enemy in enemies)
-                {
-                    if (enemy.CollisionCircle.TryHit(ray, out var f, out var point, out _)
-                        && f < closestHit.Factor)
-                    {
-                        closestHit = (enemy, f, point);
-                    }
-                }
-
-                if (closestHit.Unit != null)
-                {
-                    closestHit.Unit.Damage(
-                        StaticRandom.Discretise(
-                            (float) (Parameters.DamagePerSecond * elapsedTime.NumericValue)
-                        ),
-                        Weapon.Owner as Building
-                    );
-                    endPoint = closestHit.point;
-                    return;
-                }
+                case RayCastResult.HitNothing:
+                case RayCastResult.HitLevel:
+                    break;
+                case RayCastResult.HitEnemy:
+                    damageEnemy(enemy, elapsedTime);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
 
-            endPoint = ray.Start + ray.Direction;
+        private void damageEnemy(EnemyUnit enemy, TimeSpan elapsedTime)
+        {
+            enemy.Damage(
+                StaticRandom.Discretise(
+                    (float) (Parameters.DamagePerSecond * elapsedTime.NumericValue)
+                ),
+                Weapon.Owner as Building
+            );
         }
 
         public override void Draw(GeometryManager geometries)

@@ -1,7 +1,6 @@
-﻿using amulware.Graphics;
+﻿using System;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
@@ -10,6 +9,7 @@ using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Projectiles
 {
@@ -48,37 +48,26 @@ namespace Bearded.TD.Game.Projectiles
         {
             var step = Velocity * elapsedTime;
             var ray = new Ray(Position, step);
+
+            var (result, _, _, enemy) = Game.Level.CastRayAgainstEnemies(ray);
             
-            foreach (var tile in Game.Level.Cast(ray))
+            switch (result)
             {
-                if (!tile.IsValid || !tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
-                {
+                case RayCastResult.HitNothing:
+                    break;
+                case RayCastResult.HitLevel:
                     Delete();
-                    return;
-                }
-
-                var enemies = tile.Info.Enemies;
-
-                (EnemyUnit Unit, float Factor) closestHit = (null, float.PositiveInfinity);
-
-                foreach (var enemy in enemies)
-                {
-                    if (enemy.CollisionCircle.TryHit(ray, out var f, out _, out _)
-                        && f < closestHit.Factor)
-                    {
-                        closestHit = (enemy, f);
-                    }
-                }
-
-                if (closestHit.Unit != null)
-                {
-                    closestHit.Unit.Damage(blueprint.Damage, damageSource);
+                    break;
+                case RayCastResult.HitEnemy:
+                    enemy.Damage(blueprint.Damage, damageSource);
                     Delete();
-                    return;
-                }
-
-                CurrentTile = tile;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
+            if (Deleted)
+                return;
 
             Position += step;
 
