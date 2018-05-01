@@ -12,5 +12,11 @@ namespace Bearded.TD.Utilities.Geometry
             Start = start;
             Direction = direction;
         }
+
+        public Position2 PointAtEnd
+            => Start + Direction;
+
+        public Position2 PointAt(float rayFactor)
+            => Start + Direction * rayFactor;
     }
 }
