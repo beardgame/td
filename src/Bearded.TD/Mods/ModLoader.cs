@@ -50,6 +50,8 @@ namespace Bearded.TD.Mods
 
             private async Task<Mod> load()
             {
+                var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
+
                 configureSerializer();
 
                 var projectiles = loadProjectiles();
@@ -61,25 +63,28 @@ namespace Bearded.TD.Mods
                 configureSerializerDependency(weapons, m => m.Blueprints.Weapons);
 
                 var footprints = loadFootprints();
-                var buildings = loadBuildings(footprints);
+                var buildings = loadBuildings(footprints, tags);
                 var units = loadUnits();
 
                 return new Mod(
-                        footprints,
-                        buildings,
-                        units,
-                        weapons,
-                        projectiles);
+                    footprints,
+                    buildings,
+                    units,
+                    weapons,
+                    projectiles,
+                    tags.GetForCurrentMod());
             }
 
-            private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints)
-                => loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, DependencyResolver<FootprintGroup>>(
+            private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
+                => loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, (DependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
                 "defs/buildings",
-                new DependencyResolver<FootprintGroup>(
-                    meta, footprints, Enumerable.Empty<Mod>(),
-                    m => m.Blueprints.Footprints
-                    )
-                );
+                (
+                    new DependencyResolver<FootprintGroup>(
+                        meta, footprints, Enumerable.Empty<Mod>(),
+                        m => m.Blueprints.Footprints
+                        ),
+                    tagResolver
+                ));
 
             private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
                 => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");

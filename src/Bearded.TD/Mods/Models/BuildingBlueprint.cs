@@ -14,10 +14,11 @@ namespace Bearded.TD.Mods.Models
         public int MaxHealth { get; }
         public int ResourceCost { get; }
 
+        public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
         public BuildingBlueprint(string id, string name, FootprintGroup footprintGroup, int maxHealth,
-            int resourceCost, IEnumerable<BuildingComponentFactory> componentFactories)
+            int resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;
@@ -25,6 +26,7 @@ namespace Bearded.TD.Mods.Models
             MaxHealth = maxHealth;
             ResourceCost = resourceCost;
 
+            Tags = (tags?.ToList() ?? new List<UpgradeTag>()).AsReadOnly();
             this.componentFactories = (componentFactories?.ToList() ?? new List<BuildingComponentFactory>())
                 .AsReadOnly();
         }
