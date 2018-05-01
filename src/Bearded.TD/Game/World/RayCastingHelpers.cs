@@ -34,6 +34,7 @@ namespace Bearded.TD.Game.World
                 var enemies = tile.Info.Enemies;
                 
                 var closestHit = default((EnemyUnit unit, float factor, Position2 point));
+                closestHit.factor = float.PositiveInfinity;
                    
                 foreach (var enemy in enemies)
                 {
