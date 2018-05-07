@@ -6,13 +6,16 @@
 			[
 				"obj"
 			],
-			"path": "src/Bearded.TD"
+			"path": "src\\Bearded.TD"
 		},
 		{
-			"path": "src/Bearded.TD.MasterServer"
+			"path": "src\\Bearded.TD.MasterServer"
 		},
 		{
-			"path": "src/Bearded.TD.Proto"
+			"path": "src\\Bearded.TD.Proto"
+		},
+		{
+			"path": "src\\Bearded.UI"
 		}
 	],
 	"settings":
