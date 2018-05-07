@@ -3,6 +3,92 @@ using Bearded.UI.EventArgs;
 
 namespace Bearded.UI.Controls
 {
+    static class Test
+    {
+        static void test()
+        {
+            _ = new CompositeControl
+            {
+                new Control()
+                    .Anchor(a => a
+                        .Left(margin: 10, width: 100)
+                        .Top(margin: 10, width: 20)
+                    ),
+                new CompositeControl
+                {
+                    new Control(),
+                    new Control(),
+                },
+            };
+            
+        }
+
+        public static T Anchor<T>(this T control, Func<AnchorTemplate, AnchorTemplate> build)
+            where T : Control
+        {
+            build(new AnchorTemplate(control)).ApplyTo(control);
+
+            return control;
+        }
+
+        public struct AnchorTemplate
+        {
+            private Anchors horizontalAnchors;
+            private Anchors verticalAnchors;
+
+            public AnchorTemplate(Control control)
+            {
+                horizontalAnchors = control.HorizontalAnchors;
+                verticalAnchors = control.VerticalAnchors;
+            }
+
+            public AnchorTemplate Left(double relativePercentage = 0, double margin = 0, double? width = null)
+            {
+                horizontalAnchors = updateStart(horizontalAnchors, relativePercentage, margin, width);
+                return this;
+            }
+
+            public AnchorTemplate Right(double relativePercentage = 0, double margin = 0, double? width = null)
+            {
+                horizontalAnchors = updateEnd(horizontalAnchors, relativePercentage, margin, width);
+                return this;
+            }
+
+            public AnchorTemplate Top(double relativePercentage = 0, double margin = 0, double? width = null)
+            {
+                verticalAnchors = updateStart(verticalAnchors, relativePercentage, margin, width);
+                return this;
+            }
+
+            public AnchorTemplate Bottom(double relativePercentage = 0, double margin = 0, double? width = null)
+            {
+                verticalAnchors = updateEnd(verticalAnchors, relativePercentage, margin, width);
+                return this;
+            }
+
+            private static Anchors updateStart(Anchors anchors, double percentage, double margin, double? width)
+                => new Anchors(
+                    new Anchor(percentage, margin),
+                    width.HasValue
+                        ? new Anchor(percentage, margin + width.Value)
+                        : anchors.End
+                    );
+
+            private static Anchors updateEnd(Anchors anchors, double percentage, double margin, double? width)
+                => new Anchors(
+                    width.HasValue
+                        ? new Anchor(percentage, -(margin + width.Value))
+                        : anchors.Start,
+                    new Anchor(percentage, -margin)
+                    );
+            
+            public void ApplyTo(Control control)
+            {
+                control.SetAnchors(horizontalAnchors.H, verticalAnchors.V);
+            }
+        }
+    }
+
     public class Control
     {
         public IControlParent Parent { get; private set; }
@@ -10,15 +96,23 @@ namespace Bearded.UI.Controls
         private Frame frame;
         private bool frameNeedsUpdate = true;
 
-        private HorizontalAnchors horizontalAnchors;
-        private VerticalAnchors verticalAnchors;
+        public HorizontalAnchors HorizontalAnchors { get; private set; }
+        public VerticalAnchors VerticalAnchors { get; private set; }
 
         public Frame Frame => getFrame();
 
+        public Control()
+        {
+            SetAnchors(
+                new Anchors(new Anchor(0, 0), new Anchor(1, 0)).H,
+                new Anchors(new Anchor(0, 0), new Anchor(1, 0)).V
+                );
+        }
+
         public void SetAnchors(HorizontalAnchors horizontal, VerticalAnchors vertical)
         {
-            horizontalAnchors = horizontal;
-            verticalAnchors = vertical;
+            HorizontalAnchors = horizontal;
+            VerticalAnchors = vertical;
 
             SetFrameNeedsUpdateIfNeeded();
         }
@@ -51,8 +145,8 @@ namespace Bearded.UI.Controls
             var parentFrame = Parent.Frame;
 
             frame = new Frame(
-                ((Anchors) horizontalAnchors).CalculateIntervalWithin(parentFrame.X),
-                ((Anchors) verticalAnchors).CalculateIntervalWithin(parentFrame.Y));
+                ((Anchors) HorizontalAnchors).CalculateIntervalWithin(parentFrame.X),
+                ((Anchors) VerticalAnchors).CalculateIntervalWithin(parentFrame.Y));
 
             frameNeedsUpdate = false;
         }
