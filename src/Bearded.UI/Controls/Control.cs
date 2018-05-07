@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.UI.EventArgs;
 
 namespace Bearded.UI.Controls
 {
@@ -79,5 +80,14 @@ namespace Bearded.UI.Controls
         public virtual void Render()
         {
         }
+
+        public virtual void PreviewMouseMoved(MouseEventArgs eventArgs) { }
+        public virtual void MouseMoved(MouseEventArgs eventArgs) { }
+        public virtual void PreviewMouseExited(MouseEventArgs eventArgs) { }
+        public virtual void MouseExited(MouseEventArgs eventArgs) { }
+        public virtual void PreviewMouseButtonHit(MouseButtonEventArgs eventArgs) { }
+        public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
+        public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
+        public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
     }
 }
