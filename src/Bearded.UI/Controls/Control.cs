@@ -13,6 +13,27 @@ namespace Bearded.UI.Controls
         private VerticalAnchors verticalAnchors;
 
         public Frame Frame => getFrame();
+
+        public void SetAnchors(HorizontalAnchors horizontal, VerticalAnchors vertical)
+        {
+            horizontalAnchors = horizontal;
+            verticalAnchors = vertical;
+
+            SetFrameNeedsUpdateIfNeeded();
+        }
+
+        public void SetFrameNeedsUpdateIfNeeded()
+        {
+            if (frameNeedsUpdate)
+                return;
+
+            SetFrameNeedsUpdate();
+        }
+
+        public virtual void SetFrameNeedsUpdate()
+        {
+            frameNeedsUpdate = true;
+        }
         
         private Frame getFrame()
         {
@@ -34,30 +55,11 @@ namespace Bearded.UI.Controls
 
             frameNeedsUpdate = false;
         }
-
-
-        public void SetAnchors(HorizontalAnchors horizontal, VerticalAnchors vertical)
-        {
-            horizontalAnchors = horizontal;
-            verticalAnchors = vertical;
-
-            if (frameNeedsUpdate)
-                return;
-
-            SetFrameNeedsUpdate();
-        }
-
-        public virtual void SetFrameNeedsUpdate()
-        {
-            frameNeedsUpdate = true;
-        }
-
-
+        
         public void AddToParent(IControlParent parent) => parent.Add(this);
 
         public void RemoveFromParent() => Parent.Remove(this);
-
-
+        
         internal void AddTo(IControlParent parent)
         {
             if (Parent != null)
@@ -73,9 +75,7 @@ namespace Bearded.UI.Controls
 
             Parent = null;
         }
-
-
-
+        
         public virtual void Render()
         {
         }

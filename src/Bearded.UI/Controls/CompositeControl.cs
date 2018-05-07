@@ -33,7 +33,7 @@ namespace Bearded.UI.Controls
 
             foreach (var child in children)
             {
-                child.SetFrameNeedsUpdate();
+                child.SetFrameNeedsUpdateIfNeeded();
             }
         }
 
