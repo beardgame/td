@@ -14,7 +14,6 @@ namespace Bearded.UI.Controls
 
         public Frame Frame => getFrame();
         
-
         private Frame getFrame()
         {
             if (frameNeedsUpdate)
@@ -29,7 +28,9 @@ namespace Bearded.UI.Controls
         {
             var parentFrame = Parent.Frame;
 
-            // frame = math(parentFrame)
+            frame = new Frame(
+                ((Anchors) horizontalAnchors).CalculateIntervalWithin(parentFrame.X),
+                ((Anchors) verticalAnchors).CalculateIntervalWithin(parentFrame.Y));
 
             frameNeedsUpdate = false;
         }

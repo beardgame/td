@@ -2,7 +2,7 @@
 {
     public struct HorizontalAnchors
     {
-        private Anchors anchors;
+        private readonly Anchors anchors;
 
         public Anchor Left => anchors.Start;
         public Anchor Right => anchors.End;

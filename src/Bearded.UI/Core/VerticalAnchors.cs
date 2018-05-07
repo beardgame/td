@@ -2,7 +2,7 @@
 {
     public struct VerticalAnchors
     {
-        private Anchors anchors;
+        private readonly Anchors anchors;
 
         public Anchor Top => anchors.Start;
         public Anchor Bottom => anchors.End;

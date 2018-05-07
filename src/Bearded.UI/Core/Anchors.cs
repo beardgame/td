@@ -2,14 +2,17 @@ namespace Bearded.UI
 {
     public struct Anchors
     {
-        public readonly Anchor Start;
-        public readonly Anchor End;
+        public Anchor Start { get; }
+        public Anchor End { get; }
 
         public Anchors(Anchor start, Anchor end)
         {
             Start = start;
             End = end;
         }
+
+        public Interval CalculateIntervalWithin(Interval parent)
+            => Interval.FromStartAndEnd(Start.CalculatePointWithin(parent), End.CalculatePointWithin(parent));
 
         public HorizontalAnchors H => new HorizontalAnchors(this);
         public VerticalAnchors V => new VerticalAnchors(this);

@@ -4,13 +4,16 @@ namespace Bearded.UI
 {
     public struct Frame
     {
-        public readonly Vector2d TopLeft;
-        public readonly Vector2d Size;
+        public Interval X { get; }
+        public Interval Y { get; }
 
-        public Frame(Vector2d topLeft, Vector2d size)
+        public Vector2d TopLeft => new Vector2d(X.Start, Y.Start);
+        public Vector2d Size => new Vector2d(X.Size, Y.Size);
+        
+        public Frame(Interval x, Interval y)
         {
-            TopLeft = topLeft;
-            Size = size;
+            X = x;
+            Y = y;
         }
     }
 }
