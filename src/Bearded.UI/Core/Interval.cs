@@ -3,16 +3,16 @@
     public struct Interval
     {
         public double Start { get; }
-        public double End { get; }
-        public double Size => End - Start;
+        public double Size { get; }
+        public double End => Start + Size;
 
-        private Interval(double start, double end)
+        private Interval(double start, double size)
         {
             Start = start;
-            End = end;
+            Size = size;
         }
 
-        public static Interval FromStartAndEnd(double start, double end) => new Interval(start, end);
-        public static Interval FromStartAndSize(double start, double size) => new Interval(start, start + size);
+        public static Interval FromStartAndEnd(double start, double end) => new Interval(start, end - start);
+        public static Interval FromStartAndSize(double start, double size) => new Interval(start, size);
     }
 }
