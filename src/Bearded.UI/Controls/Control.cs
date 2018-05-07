@@ -52,9 +52,9 @@ namespace Bearded.UI.Controls
         }
 
 
-        public void AddToParent(IControlParent parent) => parent.AddChild(this);
+        public void AddToParent(IControlParent parent) => parent.Add(this);
 
-        public void RemoveFromParent() => Parent.RemoveChild(this);
+        public void RemoveFromParent() => Parent.Remove(this);
 
 
         internal void AddTo(IControlParent parent)
