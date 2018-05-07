@@ -8,6 +8,8 @@ namespace Bearded.UI.Events
     {
         private readonly RootControl root;
 
+        private EventPropagationPath previousPropagationPath;
+
         internal MouseEventManager(RootControl root)
         {
             this.root = root;
@@ -16,12 +18,22 @@ namespace Bearded.UI.Events
         internal void Update(Vector2d mousePosition)
         {
             var path = EventRouter.FindPropagationPath(root, control => control.Frame.ContainsPoint(mousePosition));
-            if (path.IsEmpty) return;
 
             path.PropagateEvent(
                 new MouseEventArgs(mousePosition),
                 (c, e) => c.PreviewMouseMoved(e),
                 (c, e) => c.MouseMoved(e));
+
+            if (previousPropagationPath != null)
+            {
+                var (removedFromPath, _) = EventPropagationPath.CalculateDeviation(previousPropagationPath, path);
+                removedFromPath.PropagateEvent(
+                    new MouseEventArgs(mousePosition),
+                    (c, e) => c.PreviewMouseExited(e),
+                    (c, e) => c.MouseExited(e));
+            }
+
+            previousPropagationPath = path;
         }
     }
 }
