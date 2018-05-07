@@ -16,10 +16,9 @@ namespace Bearded.UI.Events
         internal void Update(Vector2d mousePosition)
         {
             var path = EventRouter.FindPropagationPath(root, control => control.Frame.ContainsPoint(mousePosition));
-            if (path.Count == 0) return;
+            if (path.IsEmpty) return;
 
-            EventRouter.PropagateEvent(
-                path,
+            path.PropagateEvent(
                 new MouseEventArgs(mousePosition),
                 (c, e) => c.PreviewMouseMoved(e),
                 (c, e) => c.MouseMoved(e));
