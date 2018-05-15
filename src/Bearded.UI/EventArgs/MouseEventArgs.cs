@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 
-namespace Bearded.UI.EventArgs {
+namespace Bearded.UI.EventArgs
+{
     public class MouseEventArgs : RoutedEventArgs
     {
         public Vector2d MousePosition { get; }
