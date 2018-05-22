@@ -11,8 +11,6 @@ namespace Bearded.TD.MasterServer
 {
     class MasterServer
     {
-		private const string applicationName = "Bearded.TD.Master";
-		private const int masterServerPort = 24293;
         private const long staleLobbyAgeSeconds = 30;
         private const long secondsBetweenLobbyPrunes = 5;
 
@@ -22,12 +20,12 @@ namespace Bearded.TD.MasterServer
         private readonly Dictionary<long, Lobby> lobbiesById = new Dictionary<long, Lobby>();
         private long lastLobbyPrune;
 
-        public MasterServer(Logger logger)
+        public MasterServer(CommandLineOptions options, Logger logger)
         {
             this.logger = logger;
-            var config = new NetPeerConfiguration(applicationName)
+            var config = new NetPeerConfiguration(options.ApplicationName)
 			{
-				Port = masterServerPort
+				Port = options.Port
 			};
             config.EnableMessageType(NetIncomingMessageType.UnconnectedData);
             peer = new NetPeer(config);

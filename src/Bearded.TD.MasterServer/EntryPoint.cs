@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.Utilities.IO;
+using CommandLine;
 
 namespace Bearded.TD.MasterServer
 {
@@ -7,7 +8,12 @@ namespace Bearded.TD.MasterServer
     {
         public static void Main(string[] args)
         {
-            var server = new MasterServer(new Logger());
+            Parser.Default.ParseArguments<CommandLineOptions>(args).WithParsed(runServer);
+        }
+
+        private static void runServer(CommandLineOptions options)
+        {
+            var server = new MasterServer(options, new Logger());
 
             server.Run();
 
