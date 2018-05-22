@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Bearded.TD.Utilities.Input.Actions
 {
-    static class DeferredAction
+    public static class DeferredAction
     {
         public static IAction From(Func<IAction> actionSelector) => new LambdaAction(actionSelector);
 

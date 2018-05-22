@@ -125,32 +125,32 @@ namespace Bearded.TD.Utilities.Input.Actions
 
             public static float HitValue
             {
-                get { return hitValue; }
-                set { hitValue = value.Clamped(0.1f, 0.9f); }
+                get => hitValue;
+                set => hitValue = value.Clamped(0.1f, 0.9f);
             }
 
             public static float ReleaseValue
             {
-                get { return releaseValue; }
-                set { releaseValue = value.Clamped(0.1f, 0.9f); }
+                get => releaseValue;
+                set => releaseValue = value.Clamped(0.1f, 0.9f);
             }
 
             public static float AnalogDeadZone
             {
-                get { return analogDeadZone; }
-                set { analogDeadZone = value.Clamped(0, 0.9f); }
+                get => analogDeadZone;
+                set => analogDeadZone = value.Clamped(0, 0.9f);
             }
 
             public static float AnalogMaxValue
             {
-                get { return analogMaxValue; }
-                set { analogMaxValue = value.Clamped(0.1f, 1); }
+                get => analogMaxValue;
+                set => analogMaxValue = value.Clamped(0.1f, 1);
             }
 
             public static float AnalogPower
             {
-                get { return analogPower; }
-                set { analogPower = System.Math.Max(0.01f, value); }
+                get => analogPower;
+                set => analogPower = Math.Max(0.01f, value);
             }
 
             internal static float AnalogDeadToMaxRange => AnalogMaxValue - AnalogDeadZone;

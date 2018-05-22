@@ -26,21 +26,37 @@ namespace Bearded.TD.Utilities.Input
             }
 
             public GamepadActions WithId(int id) => new GamepadActions(manager, id);
+            
+            public IAction FromString(string value)
+                => TryParse(value, out var action)
+                    ? action
+                    : throw new FormatException($"Gamepad button '{value}' invalid.");
 
-            public IAction FromString(string name)
+            public bool TryParse(string value, out IAction action)
+                => TryParseLowerTrimmedString(value.ToLowerInvariant().Trim(), out action);
+            
+            internal bool TryParseLowerTrimmedString(string value, out IAction action)
             {
-                var lower = name.ToLowerInvariant().Trim();
-                if (!lower.StartsWith("gamepad"))
-                    return null;
-                var split = lower.Substring(7).Split(':');
-                if (split.Length != 2)
-                    throw new ArgumentException("Gamepad button name must have exactly one ':'.", nameof(name));
-                if (!int.TryParse(split[0].Trim(), out int id))
-                    throw new ArgumentException("Gamepad button name must include gamepad id.", nameof(name));
-                if (id < 0)
-                    throw new ArgumentException("Gamepad id must not be negative.", nameof(name));
+                action = null;
 
-                return WithId(id).FromButtonName(split[1].Trim());
+                if (!value.StartsWith("gamepad"))
+                    return false;
+
+                var split = value.Substring(7).Split(':');
+
+                if (split.Length != 2)
+                    return false;
+
+                var idString = split[0].Trim();
+
+                if (!int.TryParse(idString, out var id))
+                    return false;
+                if (id < 0)
+                    return false;
+
+                var buttonName = split[1].Trim();
+
+                return WithId(id).TryParseButtonName(buttonName, out action);
             }
         }
 
@@ -55,27 +71,33 @@ namespace Bearded.TD.Utilities.Input
                 padId = id;
             }
 
-            public IAction FromButtonName(string name)
+            public GamepadButtonActions Buttons => new GamepadButtonActions(manager, padId);
+            public GamepadAxisActions Axes => new GamepadAxisActions(manager, padId);
+
+            public bool IsConnected
+                => padId >= 0 && padId < manager.GamePads.Count
+                   && manager.GamePads[padId].State.Current.IsConnected;
+
+            public IEnumerable<IAction> All => Buttons.All.Concat<IAction>(Axes.All);
+
+            public IAction FromButtonName(string value)
+                => TryParseButtonName(value, out var action)
+                    ? action
+                    : throw new FormatException($"Gamepad button '{value}' unknown.");
+
+            public bool TryParseButtonName(string value, out IAction action)
             {
                 if (!IsConnected)
                 {
                     // this may not be the best solution
                     // but it prevents crashing and things from being overridden, if a gamepad is not connected
-                    return new DummyAction(name);
+                    action = new DummyAction(value);
+                    return true;
                 }
 
-                return Buttons.FromName(name)
-                    ?? Axes.FromName(name)
-                    ?? throw new ArgumentException("Gamepad button name unknown.", nameof(name));
+                return Buttons.TryParseLowerTrimmedString(value, out action)
+                    || Axes.TryParseLowerTrimmedString(value, out action);
             }
-
-            public bool IsConnected => padId >= 0 && padId < manager.GamePads.Count
-                                       && manager.GamePads[padId].State.Current.IsConnected;
-
-            public GamepadButtonActions Buttons => new GamepadButtonActions(manager, padId);
-            public GamepadAxisActions Axes => new GamepadAxisActions(manager, padId);
-
-            public IEnumerable<IAction> All => Buttons.All.Cast<IAction>().Concat(Axes.All);
         }
 
         public struct GamepadButtonActions
@@ -88,14 +110,6 @@ namespace Bearded.TD.Utilities.Input
                 manager = inputManager;
                 padId = id;
             }
-
-            private IAction button(string name)
-                => new GamePadButtonAction(manager, padId, name, selectors[name]);
-
-            public IAction FromName(string name)
-                => selectors.TryGetValue(name, out var selector)
-                    ? new GamePadButtonAction(manager, padId, name, selector)
-                    : null;
 
             public IAction A => button("a");
             public IAction B => button("b");
@@ -116,7 +130,7 @@ namespace Bearded.TD.Utilities.Input
             public IAction DpadUp => button("dpadup");
             public IAction DpadDown => button("dpaddown");
 
-            public IEnumerable<GamePadButtonAction> All
+            public IEnumerable<IAction> All
             {
                 get
                 {
@@ -127,6 +141,28 @@ namespace Bearded.TD.Utilities.Input
                     );
                 }
             }
+
+            public IAction FromName(string buttonName)
+                => TryParse(buttonName, out var action)
+                    ? action
+                    : throw new FormatException($"Gamepad button '{buttonName}' unknown.");
+
+            public bool TryParse(string buttonName, out IAction action)
+                => TryParseLowerTrimmedString(buttonName.ToLowerInvariant().Trim(), out action);
+
+            internal bool TryParseLowerTrimmedString(string buttonName, out IAction action)
+            {
+                action = null;
+
+                if (!selectors.TryGetValue(buttonName, out var selector))
+                    return false;
+
+                action = new GamePadButtonAction(manager, padId, buttonName, selector);
+                return true;
+            }
+
+            private IAction button(string name)
+                => new GamePadButtonAction(manager, padId, name, selectors[name]);
 
             private static readonly Dictionary<string, ButtonSelector> selectors =
                 new Dictionary<string, ButtonSelector>
@@ -163,14 +199,6 @@ namespace Bearded.TD.Utilities.Input
                 padId = id;
             }
 
-            private IAction axis(string name)
-                => new GamePadAxisAction(manager, padId, name, selectors[name]);
-
-            public IAction FromName(string name)
-                => selectors.TryGetValue(name, out var selector)
-                    ? new GamePadAxisAction(manager, padId, name, selector)
-                    : null;
-
             public IAction XPositive => axis("+x");
             public IAction XNegative => axis("-x");
 
@@ -186,7 +214,7 @@ namespace Bearded.TD.Utilities.Input
             public IAction TriggerLeft => axis("triggerleft");
             public IAction TriggerRight => axis("triggerright");
 
-            public IEnumerable<GamePadAxisAction> All
+            public IEnumerable<IAction> All
             {
                 get
                 {
@@ -197,6 +225,28 @@ namespace Bearded.TD.Utilities.Input
                     );
                 }
             }
+
+            public IAction FromName(string axisName)
+                => TryParse(axisName, out var action)
+                    ? action
+                    : throw new FormatException($"Gamepad axis '{axisName}' unknown.");
+
+            public bool TryParse(string axisName, out IAction action)
+                => TryParseLowerTrimmedString(axisName.ToLowerInvariant().Trim(), out action);
+
+            internal bool TryParseLowerTrimmedString(string axisName, out IAction action)
+            {
+                action = null;
+
+                if (!selectors.TryGetValue(axisName, out var selector))
+                    return false;
+
+                action = new GamePadAxisAction(manager, padId, axisName, selector);
+                return true;
+            }
+
+            private IAction axis(string name)
+                => new GamePadAxisAction(manager, padId, name, selectors[name]);
 
             private static readonly Dictionary<string, AxisSelector> selectors =
                 new Dictionary<string, AxisSelector>

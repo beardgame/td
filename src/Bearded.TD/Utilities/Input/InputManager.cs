@@ -5,7 +5,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.Utilities.Input
 {
-    partial class InputManager
+    public sealed partial class InputManager
     {
         private readonly MouseDevice mouse;
 
@@ -20,10 +20,10 @@ namespace Bearded.TD.Utilities.Input
         {
             this.mouse = mouse;
 
-            this.GamePads = Enumerable.Range(0, int.MaxValue - 1)
-                    .TakeWhile(i => GamePad.GetState(i).IsConnected)
-                    .Select(GamePadStateManager.ForId)
-                    .ToList().AsReadOnly();
+            GamePads = Enumerable.Range(0, int.MaxValue - 1)
+                .TakeWhile(i => GamePad.GetState(i).IsConnected)
+                .Select(GamePadStateManager.ForId)
+                .ToList().AsReadOnly();
         }
 
         public void ProcessEventsAsync()
@@ -62,19 +62,11 @@ namespace Bearded.TD.Utilities.Input
             windowWasActiveLastUpdate = windowIsActive;
         }
 
-        public bool IsKeyPressed(Key k) => keyboardState.Current.IsKeyDown(k);
-        public bool IsKeyHit(Key k) => IsKeyPressed(k) && keyboardState.Previous.IsKeyUp(k);
-        public bool IsKeyReleased(Key k) => !IsKeyPressed(k) && keyboardState.Previous.IsKeyDown(k);
-
         public Vector2 MousePosition => new Vector2(mouse.X, mouse.Y);
         public bool MouseMoved => mouseState.Current.X != mouseState.Previous.X
-                               || mouseState.Current.Y != mouseState.Previous.Y;
+                                  || mouseState.Current.Y != mouseState.Previous.Y;
         public int DeltaScroll => mouseState.Current.ScrollWheelValue - mouseState.Previous.ScrollWheelValue;
         public float DeltaScrollF => mouseState.Current.WheelPrecise - mouseState.Previous.WheelPrecise;
-
-        public bool IsMouseButtonPressed(MouseButton button) => mouseState.Current[button];
-        public bool IsMouseButtonHit(MouseButton button) => mouseState.Current[button] && !mouseState.Previous[button];
-        public bool IsMouseButtonReleased(MouseButton button) => !mouseState.Current[button] && mouseState.Previous[button];
 
         public bool LeftMousePressed => IsMouseButtonPressed(MouseButton.Left);
         public bool LeftMouseHit => IsMouseButtonHit(MouseButton.Left);
@@ -88,6 +80,14 @@ namespace Bearded.TD.Utilities.Input
         public bool MiddleMouseHit => IsMouseButtonHit(MouseButton.Middle);
         public bool MiddleMouseReleased => IsMouseButtonReleased(MouseButton.Middle);
 
+        public bool IsMouseButtonPressed(MouseButton button) => mouseState.Current[button];
+        public bool IsMouseButtonHit(MouseButton button) => mouseState.Current[button] && !mouseState.Previous[button];
+        public bool IsMouseButtonReleased(MouseButton button) => !mouseState.Current[button] && mouseState.Previous[button];
+
+        public bool IsKeyPressed(Key k) => keyboardState.Current.IsKeyDown(k);
+        public bool IsKeyHit(Key k) => IsKeyPressed(k) && keyboardState.Previous.IsKeyUp(k);
+        public bool IsKeyReleased(Key k) => !IsKeyPressed(k) && keyboardState.Previous.IsKeyDown(k);
+        
         public bool IsMouseInRectangle(System.Drawing.Rectangle rect) => rect.Contains(mouseState.Current.X, mouseState.Current.Y);
     }
 }

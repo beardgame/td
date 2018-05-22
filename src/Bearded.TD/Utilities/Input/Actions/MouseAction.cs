@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Utilities.Input.Actions
 {
-    class MouseButtonAction : DigitalAction
+    sealed class MouseButtonAction : DigitalAction
     {
         private readonly InputManager inputManager;
         private readonly MouseButton button;

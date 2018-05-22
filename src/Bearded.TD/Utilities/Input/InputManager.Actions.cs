@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Bearded.TD.Utilities.Input
+﻿namespace Bearded.TD.Utilities.Input
 {
     partial class InputManager
     {
@@ -10,21 +7,34 @@ namespace Bearded.TD.Utilities.Input
         public partial struct ActionConstructor
         {
             private readonly InputManager manager;
-            public ActionConstructor(InputManager inputManager) { manager = inputManager; }
-
-            public IAction None => InputAction.Unbound;
-
-            public IAction FromString(string value)
-                => value.ToLowerInvariant().Trim() == "unbound"
-                    ? InputAction.Unbound
-                    : Keyboard.FromString(value) ?? Gamepad.FromString(value);
-
-            public IEnumerable<IAction> GetAllAvailable()
+            
+            public ActionConstructor(InputManager inputManager)
             {
-                var pad = Gamepad;
-                return Keyboard.All.Concat(manager.GamePads.SelectMany((_, i) => pad.WithId(i).All));
+                manager = inputManager;
             }
 
+            public IAction None => InputAction.None;
+            
+            public IAction FromString(string value)
+                => fromLowerCaseTrimmedString(value.ToLowerInvariant().Trim());
+
+            private IAction fromLowerCaseTrimmedString(string value)
+            {
+                switch (value)
+                {
+                    case "none":
+                    case "unbound":
+                        return None;
+                    default:
+                    {
+                        if (Keyboard.TryParseLowerTrimmedString(value, out var action)
+                            || Gamepad.TryParseLowerTrimmedString(value, out action))
+                            return action;
+
+                        return None;
+                    }
+                }
+            }
         }
     }
 }
