@@ -10,15 +10,15 @@ namespace Bearded.UI.Controls
         {
             _ = new CompositeControl
             {
-                new Control()
+                new SimpleControl()
                     .Anchor(a => a
                         .Left(margin: 10, width: 100)
                         .Top(margin: 10, width: 20)
                     ),
                 new CompositeControl
                 {
-                    new Control(),
-                    new Control(),
+                    new SimpleControl(),
+                    new SimpleControl(),
                 },
             };
             
