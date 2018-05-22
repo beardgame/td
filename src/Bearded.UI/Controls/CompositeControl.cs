@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Bearded.UI.Rendering;
 
 namespace Bearded.UI.Controls
 {
@@ -37,15 +38,17 @@ namespace Bearded.UI.Controls
             }
         }
 
-        public override void Render()
+        public override void Render(IRendererRouter r)
         {
-            base.Render();
+            base.Render(r);
 
             foreach (var child in children)
             {
-                child.Render();
+                child.Render(r);
             }
         }
+
+        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
         public IEnumerator<Control> GetEnumerator() => children.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

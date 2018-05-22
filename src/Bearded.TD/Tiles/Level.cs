@@ -30,7 +30,7 @@ namespace Bearded.TD.Tiles
             var isBottomLeftConer = -xRemainder > yRemainder;
 
             tx += isBottomRightCorner ? 1 : 0;
-            ty += isBottomRightCorner | isBottomLeftConer ? -1 : 0;
+            ty += isBottomRightCorner || isBottomLeftConer ? -1 : 0;
 
             return new Tile<TTileInfo>(Tilemap, tx, ty);
         }
