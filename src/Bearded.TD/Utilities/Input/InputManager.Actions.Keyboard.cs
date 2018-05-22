@@ -21,31 +21,43 @@ namespace Bearded.TD.Utilities.Input
             {
                 manager = inputManager;
             }
-
-            public IAction FromKey(Key key) => new KeyboardAction(manager, key);
-
-            public IAction FromString(string name)
-            {
-                var lower = name.ToLowerInvariant().Trim();
-                if (!lower.StartsWith("keyboard:"))
-                    return null;
-
-                var keyName = name.Substring(9).Trim();
-
-                var key = (Key) Enum.Parse(typeof(Key), keyName, true);
-
-                return key == Key.Unknown
-                    ? throw new ArgumentException("Keyboard key name unknown.", nameof(name))
-                    : new KeyboardAction(manager, key);
-            }
-
+            
             public IEnumerable<IAction> All
             {
                 get
                 {
-                    var inputManager = this.manager;
-                    return ((Key[]) Enum.GetValues(typeof(Key))).Select(k => new KeyboardAction(inputManager, k));
+                    var m = manager;
+                    return ((Key[])Enum.GetValues(typeof(Key))).Select(k => new KeyboardAction(m, k));
                 }
+            }
+
+            public IAction FromKey(Key key) => new KeyboardAction(manager, key);
+
+            public IAction FromString(string value)
+                => TryParse(value, out var action)
+                    ? action
+                    : throw new FormatException($"Keyboard key '{value}' invalid.");
+
+            public bool TryParse(string value, out IAction action)
+                => TryParseLowerTrimmedString(value.ToLowerInvariant().Trim(), out action);
+
+            internal bool TryParseLowerTrimmedString(string value, out IAction action)
+            {
+                action = null;
+
+                if (!value.StartsWith("keyboard:"))
+                    return false;
+
+                var keyName = value.Substring(9).Trim();
+                
+                if (!Enum.TryParse(keyName, false, out Key key))
+                    return false;
+
+                if (key == Key.Unknown)
+                    return false;
+
+                action = new KeyboardAction(manager, key);
+                return true;
             }
         }
     }

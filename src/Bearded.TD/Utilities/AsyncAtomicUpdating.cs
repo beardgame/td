@@ -1,23 +1,32 @@
-﻿using Bearded.Utilities;
-
-namespace Bearded.TD.Utilities
+﻿namespace Bearded.TD.Utilities
 {
-    class AsyncAtomicUpdating<T>
+    public class AsyncAtomicUpdating<T>
         where T : struct
     {
+        private readonly object mutex = new object();
+
         public T Current { get; private set; }
         public T Previous { get; private set; }
-        private Box<T> lastRecorded = new Box<T>(default(T));
+        private T lastRecorded;
 
         public void SetLastKnownState(T state)
         {
-            lastRecorded = Do.Box(state);
+            lock (mutex)
+            {
+                lastRecorded = state;
+            }
         }
 
-        public void Update() => UpdateTo(lastRecorded.Value);
+        public void Update()
+        {
+            lock (mutex)
+            {
+                UpdateTo(lastRecorded);
+            }
+        }
 
         public void UpdateToDefault() => UpdateTo(default(T));
-
+        
         public void UpdateTo(T state)
         {
             Previous = Current;

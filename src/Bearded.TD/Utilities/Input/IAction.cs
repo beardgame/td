@@ -2,7 +2,7 @@ using System;
 
 namespace Bearded.TD.Utilities.Input
 {
-    interface IAction : IEquatable<IAction>
+    public interface IAction : IEquatable<IAction>
     {
         bool Hit { get; }
         bool Active { get; }

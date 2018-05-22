@@ -7,17 +7,20 @@ using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Utilities.Input
 {
-    static class InputAction
+    public static class InputAction
     {
         public static bool IsSameAs(this IAction me, IAction other)
             => other != null && (ReferenceEquals(me, other) || me.ToString() == other.ToString());
 
-        public static IAction Unbound { get; } = new DummyAction("unbound");
+        public static IAction None { get; } = new DummyAction("unbound");
 
-        public static IAction AnyOf(params IAction[] actions) => InputAction.AnyOf((IEnumerable<IAction>)actions);
+        public static IAction AnyOf(params IAction[] actions) => AnyOf((IEnumerable<IAction>)actions);
 
         public static IAction AnyOf(IEnumerable<IAction> actions)
         {
+            if (actions == null)
+                throw new ArgumentNullException(nameof(actions));
+
             var actionList = new List<IAction>();
             foreach (var action in actions)
             {
@@ -41,7 +44,7 @@ namespace Bearded.TD.Utilities.Input
             switch (actionList.Count)
             {
                 case 0:
-                    return InputAction.Unbound;
+                    return None;
                 case 1:
                     return actionList[0];
                 case 2:
@@ -49,6 +52,16 @@ namespace Bearded.TD.Utilities.Input
                 default:
                     return new AnyAction(actionList);
             }
+        }
+
+        public static IAction Or(this IAction me, IAction other)
+        {
+            if (me == null)
+                throw new ArgumentNullException(nameof(me));
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            return new OrAction(me, other);
         }
 
         public static IAction Or(this IAction me, params IAction[] others) => me.Or((IEnumerable<IAction>)others);
@@ -60,7 +73,7 @@ namespace Bearded.TD.Utilities.Input
             if (others == null)
                 throw new ArgumentNullException(nameof(others));
 
-            return InputAction.AnyOf(Extensions.Append(others, me));
+            return AnyOf(others.Prepend(me));
         }
 
         private abstract class BinaryAction : IAction

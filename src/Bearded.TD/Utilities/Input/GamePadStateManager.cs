@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Utilities.Input
 {
-    class GamePadStateManager
+    public class GamePadStateManager
     {
         public int Id { get; }
 
@@ -15,7 +15,7 @@ namespace Bearded.TD.Utilities.Input
             Id = id;
         }
 
-        public void ProcessEventsAsync() => State.SetLastKnownState(GamePad.GetState(this.Id));
+        public void ProcessEventsAsync() => State.SetLastKnownState(GamePad.GetState(Id));
 
         public void Update(bool windowIsActive)
         {
