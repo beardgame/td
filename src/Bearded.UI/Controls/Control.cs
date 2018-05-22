@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.UI.EventArgs;
+using Bearded.UI.Rendering;
 
 namespace Bearded.UI.Controls
 {
@@ -89,7 +90,7 @@ namespace Bearded.UI.Controls
         }
     }
 
-    public class Control
+    public abstract class Control
     {
         public IControlParent Parent { get; private set; }
 
@@ -171,9 +172,12 @@ namespace Bearded.UI.Controls
             Parent = null;
         }
         
-        public virtual void Render()
+        public virtual void Render(IRendererRouter r)
         {
+            RenderStronglyTyped(r);
         }
+  
+        protected abstract void RenderStronglyTyped(IRendererRouter r);
 
         public virtual void PreviewMouseMoved(MouseEventArgs eventArgs) { }
         public virtual void MouseMoved(MouseEventArgs eventArgs) { }
