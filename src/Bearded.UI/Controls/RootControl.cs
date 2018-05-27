@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using OpenTK;
 
 namespace Bearded.UI.Controls
 {
@@ -6,18 +7,26 @@ namespace Bearded.UI.Controls
     {
         private readonly CompositeControl controls = new CompositeControl();
 
+        private Frame viewportFrame;
         public Frame Frame { get; private set; }
 
-        public RootControl(Frame frame)
+        public RootControl()
         {
-            Frame = frame;
             controls.AddTo(this);
         }
 
-        public void SetFrame(Frame frame)
+        public void SetViewport(int width, int height, float uiScale)
         {
-            Frame = frame;
+            viewportFrame = new Frame(Interval.FromStartAndSize(0, width), Interval.FromStartAndSize(0, height));
+            Frame = new Frame(Interval.FromStartAndSize(0, width / uiScale), Interval.FromStartAndSize(0, height / uiScale));
             controls.SetFrameNeedsUpdate();
+        }
+
+        public Vector2d TransformViewportPosToFramePos(Vector2d viewportPos)
+        {
+            return new Vector2d(
+                Frame.Size.X * viewportPos.X / viewportFrame.Size.X,
+                Frame.Size.Y * viewportPos.Y / viewportFrame.Size.Y);
         }
         
         public ReadOnlyCollection<Control> Children => controls.Children;
