@@ -7,6 +7,7 @@ using OpenTK;
 
 namespace Bearded.TD.Screens
 {
+    // TODO: when splitting this, have the ui side of this implement RenderLayerCompositeControl
     class GameWorldScreenLayer : ScreenLayer
     {
         private readonly GameInstance game;
