@@ -6,13 +6,19 @@ namespace Bearded.UI.Controls
 {
     public class RootControl : IControlParent
     {
-        private readonly CompositeControl controls = new CompositeControl();
+        private readonly CompositeControl controls;
 
         private Frame viewportFrame;
         public Frame Frame { get; private set; }
 
         public RootControl()
+            : this(new CompositeControl())
         {
+        }
+
+        public RootControl(CompositeControl rootCompositeControl)
+        {
+            controls = rootCompositeControl;
             controls.AddTo(this);
         }
 
