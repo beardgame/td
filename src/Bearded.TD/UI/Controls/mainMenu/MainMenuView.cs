@@ -1,7 +1,7 @@
 ﻿using Bearded.UI.Controls;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.ViewModel
+namespace Bearded.TD.UI.Controls
 {
     sealed class MainMenuView
     {

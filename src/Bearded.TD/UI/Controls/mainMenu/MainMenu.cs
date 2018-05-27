@@ -1,10 +1,10 @@
 ﻿using System;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
-using Bearded.TD.UI.ViewModel;
+using Bearded.TD.UI.Model;
 using Bearded.Utilities.IO;
 
-namespace Bearded.TD.UI.Model
+namespace Bearded.TD.UI.Controls
 {
     sealed class MainMenu : UIModel
     {
