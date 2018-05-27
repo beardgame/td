@@ -2,21 +2,11 @@
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class LobbyView
+    sealed class LobbyView : CompositeControl
     {
-        public Control Control { get; }
-
-        public LobbyView()
+        public LobbyView(Lobby lobby)
         {
-            Control = new CompositeControl()
-            {
-                
-            };
-        }
-
-        public void SetLobbies()
-        {
-
+            
         }
     }
 }

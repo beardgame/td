@@ -10,6 +10,7 @@ using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
+using Bearded.UI.Navigation;
 using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
@@ -46,7 +47,11 @@ namespace Bearded.TD
             UserSettings.Load(logger);
             UserSettings.Save(logger);
 
+            var dependencyResolver = new DependencyResolver();
+            dependencyResolver.Add(logger);
+
             contentManager = new ContentManager();
+            dependencyResolver.Add(contentManager);
 
             renderContext = new RenderContext();
 
@@ -59,10 +64,10 @@ namespace Bearded.TD
 
             rootControl = new RootControl();
             eventManager = new EventManager(rootControl, inputManager);
-            
-            var mainMenu = new MainMenu(logger, contentManager);
-            var mainMenuView = new MainMenuView(mainMenu);
-            rootControl.Add(mainMenuView);
+            var uiFactories = UILibrary.CreateFactories();
+            var navigationController =
+                new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
+            navigationController.GoTo<MainMenu>();
 
             screenManager = new ScreenManager(inputManager);
             

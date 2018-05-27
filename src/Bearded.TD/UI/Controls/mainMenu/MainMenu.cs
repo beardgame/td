@@ -1,27 +1,29 @@
 ﻿using System;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
+using Bearded.UI.Navigation;
 using Bearded.Utilities.IO;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class MainMenu
+    sealed class MainMenu : NavigationNode<Void>
     {
-        private readonly Logger logger;
-        private readonly ContentManager contentManager;
+        private Logger logger;
+        private ContentManager contentManager;
 
-        public MainMenu(Logger logger, ContentManager contentManager)
+        protected override void Initialize(DependencyResolver dependencies, Void _)
         {
-            this.logger = logger;
-            this.contentManager = contentManager;
+            logger = dependencies.Resolve<Logger>();
+            contentManager = dependencies.Resolve<ContentManager>();
         }
 
         public void OnHostGameButtonClicked()
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            logger.Info.Log("Click!");
             // Create lobby screen
+            Navigation.GoTo<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager));
         }
 
         public void OnJoinGameButtonClicked()
