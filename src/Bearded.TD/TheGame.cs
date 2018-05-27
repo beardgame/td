@@ -5,6 +5,7 @@ using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.UI;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
@@ -29,6 +30,7 @@ namespace Bearded.TD
         private EventManager eventManager;
 
         private ContentManager contentManager;
+        private CachedRendererRouter rendererRouter;
 
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
@@ -47,6 +49,11 @@ namespace Bearded.TD
             contentManager = new ContentManager();
 
             renderContext = new RenderContext();
+
+            rendererRouter = new CachedRendererRouter(
+                new (Type, object)[] {
+                    (typeof(Control), new BoxRenderer(renderContext.Surfaces.ConsoleBackground)),
+                });
 
             inputManager = new InputManager(Mouse);
 
@@ -99,7 +106,7 @@ namespace Bearded.TD
         {
             renderContext.Compositor.PrepareForFrame();
             screenManager.Render(renderContext);
-            rootControl.Render(new CachedRendererRouter(Enumerable.Empty<(Type type, object renderer)>()));
+            rootControl.Render(rendererRouter);
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
