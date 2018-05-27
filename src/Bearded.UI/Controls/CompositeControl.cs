@@ -22,12 +22,11 @@ namespace Bearded.UI.Controls
             children.Add(child);
         }
 
-        public void AddAll(params Control[] children)
+        public void AddOnTopOf(Control reference, Control child)
         {
-            foreach (var child in children)
-            {
-                Add(child);
-            }
+            child.AddTo(this);
+            var i = children.IndexOf(reference);
+            children.Insert(i, child);
         }
 
         public void Remove(Control child)

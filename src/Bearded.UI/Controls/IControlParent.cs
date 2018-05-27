@@ -7,6 +7,7 @@ namespace Bearded.UI.Controls
         Frame Frame { get; }
         ReadOnlyCollection<Control> Children { get; }
         void Add(Control child);
+        void AddOnTopOf(Control reference, Control child);
         void Remove(Control child);
     }
 }

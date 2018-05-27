@@ -12,6 +12,7 @@ namespace Bearded.UI.Navigation
         private readonly DependencyResolver dependencyResolver;
         private readonly IDictionary<Type, object> modelFactories;
         private readonly IDictionary<Type, object> viewFactories;
+        private readonly IDictionary<object, Control> viewsByModel = new Dictionary<object, Control>();
 
         public event VoidEventHandler Exited;
 
@@ -32,6 +33,21 @@ namespace Bearded.UI.Navigation
             Exited?.Invoke();
         }
 
+        public void Replace<TModel>(object toReplace)
+            where TModel : NavigationNode<Void>
+        {
+            Replace<TModel, Void>(default(Void), toReplace);
+        }
+
+        public void Replace<TModel, TParameters>(TParameters parameters, object toReplace)
+            where TModel : NavigationNode<TParameters>
+        {
+            var viewToReplace = viewsByModel[toReplace];
+            var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            root.AddOnTopOf(viewToReplace, view);
+            root.Remove(viewToReplace);
+        }
+
         public void GoTo<TModel>()
             where TModel : NavigationNode<Void>
         {
@@ -41,10 +57,19 @@ namespace Bearded.UI.Navigation
         public void GoTo<TModel, TParameters>(TParameters parameters)
             where TModel : NavigationNode<TParameters>
         {
+            var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            root.Add(view);
+        }
+
+        private (TModel model, Control view) instantiateModelAndView<TModel, TParameters>(TParameters parameters)
+            where TModel : NavigationNode<TParameters>
+        {
             var model = findModelFactory<TModel>()();
             model.Initialize(createNavigationContext(parameters));
             var view = findViewFactory<TModel>()(model);
-            root.Add(view);
+            viewsByModel.Add(model, view);
+
+            return (model, view);
         }
 
         private Func<T> findModelFactory<T>()

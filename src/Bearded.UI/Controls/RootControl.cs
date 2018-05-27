@@ -43,6 +43,7 @@ namespace Bearded.UI.Controls
         
         public ReadOnlyCollection<Control> Children => controls.Children;
         public void Add(Control child) => controls.Add(child);
+        public void AddOnTopOf(Control reference, Control child) => controls.AddOnTopOf(reference, child);
         public void Remove(Control child) => controls.Remove(child);
     }
 }

@@ -21,10 +21,10 @@ namespace Bearded.TD.UI.Controls
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            Navigation.GoTo<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager));
+            Navigation.Replace<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager), this);
         }
 
-        public void OnJoinGameButtonClicked() => Navigation.GoTo<LobbyList>();
+        public void OnJoinGameButtonClicked() => Navigation.Replace<LobbyList>(this);
 
         public void OnQuitGameButtonClicked() => Navigation.Exit();
     }
