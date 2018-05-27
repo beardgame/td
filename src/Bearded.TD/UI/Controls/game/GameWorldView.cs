@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
@@ -27,25 +28,41 @@ namespace Bearded.TD.UI.Controls
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
             var state = model.Game.State;
-
-            state.Level.Draw(geometries);
             
+            state.Level.Draw(geometries);
+            drawAmbientLight(state);
+            drawGameObjects(state);
+            drawDebug(state);
+        }
+
+        private void drawAmbientLight(GameState state)
+        {
             var radius = state.Level.Tilemap.Radius;
 
-            geometries.PointLight.Draw(new Vector3(-radius * 2, radius * 2, radius), radius * 10, Color.White * 0.15f);
+            geometries.PointLight.Draw(
+                new Vector3(-radius * 2, radius * 2, radius),
+                radius * 10, Color.White * 0.15f
+                );
+        }
 
+        private void drawGameObjects(GameState state)
+        {
             foreach (var obj in state.GameObjects)
             {
                 obj.Draw(geometries);
             }
+        }
 
+        private void drawDebug(GameState state)
+        {
             var debugPathfinding = UserSettings.Instance.Debug.Pathfinding;
             if (debugPathfinding > 0)
             {
                 state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
             }
         }
-        
+
+
         public override void FrameRecalculated()
         {
             // todo: figure this out, maybe fetch viewport from somewhere else instead
