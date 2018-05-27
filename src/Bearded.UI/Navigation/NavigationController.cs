@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.UI.Navigation
@@ -12,6 +13,8 @@ namespace Bearded.UI.Navigation
         private readonly IDictionary<Type, object> modelFactories;
         private readonly IDictionary<Type, object> viewFactories;
 
+        public event VoidEventHandler Exited;
+
         public NavigationController(
             RootControl root,
             DependencyResolver dependencyResolver,
@@ -22,6 +25,11 @@ namespace Bearded.UI.Navigation
             this.dependencyResolver = dependencyResolver;
             this.modelFactories = modelFactories;
             this.viewFactories = viewFactories;
+        }
+
+        public void Exit()
+        {
+            Exited?.Invoke();
         }
 
         public void GoTo<TModel>()

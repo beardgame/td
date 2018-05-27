@@ -68,6 +68,7 @@ namespace Bearded.TD
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
             navigationController.GoTo<MainMenu>();
+            navigationController.Exited += Close;
 
             screenManager = new ScreenManager(inputManager);
             

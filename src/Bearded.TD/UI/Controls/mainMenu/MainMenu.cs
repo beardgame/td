@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.Mods;
+﻿using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.UI.Navigation;
 using Bearded.Utilities.IO;
@@ -25,11 +24,8 @@ namespace Bearded.TD.UI.Controls
             Navigation.GoTo<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager));
         }
 
-        public void OnJoinGameButtonClicked()
-        {
-            Navigation.GoTo<LobbyList>();
-        }
+        public void OnJoinGameButtonClicked() => Navigation.GoTo<LobbyList>();
 
-        public void OnQuitGameButtonClicked() => throw new Exception("Goodbye");
+        public void OnQuitGameButtonClicked() => Navigation.Exit();
     }
 }
