@@ -5,7 +5,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Input;
-using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 using static Bearded.TD.UI.BoundsConstants;
 
 namespace Bearded.TD.Screens

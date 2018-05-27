@@ -9,7 +9,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.Utilities.Collections;
-using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 using static Bearded.TD.UI.BoundsConstants;

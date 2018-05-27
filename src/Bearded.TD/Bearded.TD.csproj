@@ -29,7 +29,7 @@
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.112-develop" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.121-develop" />
     <PackageReference Include="Google.Protobuf" Version="3.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="OpenTK" Version="2.0.0" targetFramework="net45" />
@@ -43,6 +43,7 @@
     <ProjectReference Include="..\..\libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj" />
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
+    <ProjectReference Include="..\Bearded.UI\Bearded.UI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">

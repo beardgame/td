@@ -5,7 +5,7 @@ using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 
 namespace Bearded.UI.Controls
 {
-    public class Button : Control
+    public class Button : CompositeControl
     {
         public event VoidEventHandler Clicked;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Utilities.Input.Actions;
+using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -40,8 +40,8 @@ namespace Bearded.TD.Utilities.Input
 
             public MouseInputState(InputManager inputManager)
             {
-                click = new MouseButtonAction(inputManager, MouseButton.Left);
-                drag = new MouseButtonAction(inputManager, MouseButton.Right);
+                click = inputManager.Actions.Mouse.LeftButton;
+                drag = inputManager.Actions.Mouse.RightButton;
 
                 Position = inputManager.MousePosition;
                 DeltaScroll = inputManager.DeltaScrollF;
@@ -61,12 +61,12 @@ namespace Bearded.TD.Utilities.Input
 
             public ActionState GetKeyState(Key key)
             {
-                return GetState(new KeyboardAction(inputManager, key));
+                return GetState(inputManager.Actions.Keyboard.FromKey(key));
             }
 
             public ActionState GetAnyKeyState(params Key[] keys)
             {
-                return GetState(InputAction.AnyOf(keys.Select(key => new KeyboardAction(inputManager, key))));
+                return GetState(InputAction.AnyOf(keys.Select(key => inputManager.Actions.Keyboard.FromKey(key))));
             }
 
             public IReadOnlyList<char> PressedCharacters => IsCaptured ? new List<char>() : pressedCharacters;

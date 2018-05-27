@@ -5,7 +5,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
 using Bearded.TD.UI.Model.Lobby;
-using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using static Bearded.TD.UI.BoundsConstants;
 

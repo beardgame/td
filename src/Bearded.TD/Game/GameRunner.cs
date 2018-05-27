@@ -3,7 +3,6 @@ using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
-using Lidgren.Network;
 
 namespace Bearded.TD.Game
 {

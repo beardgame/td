@@ -6,7 +6,9 @@ using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
-using Bearded.TD.Utilities.Input;
+using Bearded.UI.Controls;
+using Bearded.UI.Events;
+using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Graphics;
@@ -21,6 +23,8 @@ namespace Bearded.TD
         private InputManager inputManager;
         private RenderContext renderContext;
         private ScreenManager screenManager;
+        private RootControl rootControl;
+        private EventManager eventManager;
 
         private ContentManager contentManager;
 
@@ -44,6 +48,9 @@ namespace Bearded.TD
 
             inputManager = new InputManager(Mouse);
 
+            rootControl = new RootControl();
+            eventManager = new EventManager(rootControl, inputManager);
+
             screenManager = new ScreenManager(inputManager);
             
             screenManager.AddScreenLayerOnTop(new StartScreen(screenManager, renderContext.Geometries, logger, inputManager, contentManager));
@@ -64,6 +71,7 @@ namespace Bearded.TD
             var viewportSize = new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale);
             screenManager.OnResize(viewportSize);
             renderContext.OnResize(viewportSize);
+            rootControl.SetViewport(Width, Height, UserSettings.Instance.UI.UIScale);
             base.OnResize(e);
         }
 
