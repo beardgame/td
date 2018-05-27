@@ -1,5 +1,5 @@
 ﻿using Bearded.UI.Controls;
-using OpenTK;
+using Bearded.Utilities.Input;
 
 namespace Bearded.UI.Events
 {
@@ -7,14 +7,14 @@ namespace Bearded.UI.Events
     {
         private readonly MouseEventManager mouseEvents;
 
-        public EventManager(RootControl root)
+        public EventManager(RootControl root, InputManager inputManager)
         {
-            mouseEvents = new MouseEventManager(root);
+            mouseEvents = new MouseEventManager(root, inputManager);
         }
 
         public void Update()
         {
-            mouseEvents.Update(Vector2d.Zero);
+            mouseEvents.Update();
         }
     }
 }
