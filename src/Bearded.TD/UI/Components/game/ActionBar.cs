@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
-using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 using OpenTK;
 using static Bearded.TD.UI.BoundsConstants;
 

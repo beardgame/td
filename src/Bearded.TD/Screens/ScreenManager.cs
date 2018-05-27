@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 
 namespace Bearded.TD.Screens
 {
@@ -26,8 +27,7 @@ namespace Bearded.TD.Screens
 
         private void handleInput(UpdateEventArgs args)
         {
-            char c;
-            while (pressedCharacterQueue.TryDequeue(out c))
+            while (pressedCharacterQueue.TryDequeue(out var c))
                 pressedCharacterList.Add(c);
 
             var inputState = new InputState(pressedCharacterInterface, inputManager);

@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Game;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.Input;
 
 namespace Bearded.TD.Screens
 {

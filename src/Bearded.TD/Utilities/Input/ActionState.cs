@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Utilities.Input
+﻿using Bearded.Utilities.Input;
+
+namespace Bearded.TD.Utilities.Input
 {
     struct ActionState
     {
