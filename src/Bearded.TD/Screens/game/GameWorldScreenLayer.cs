@@ -49,8 +49,7 @@ namespace Bearded.TD.Screens
             {
                 obj.Draw(geometries);
             }
-
-
+            
             var debugPathfinding = UserSettings.Instance.Debug.Pathfinding;
             if (debugPathfinding > 0)
             {
