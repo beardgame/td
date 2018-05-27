@@ -22,6 +22,14 @@ namespace Bearded.UI.Controls
             children.Add(child);
         }
 
+        public void AddAll(params Control[] children)
+        {
+            foreach (var child in children)
+            {
+                Add(child);
+            }
+        }
+
         public void Remove(Control child)
         {
             child.RemoveFrom(this);

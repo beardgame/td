@@ -11,5 +11,12 @@ namespace Bearded.UI.Controls
 
             return control;
         }
+
+        public static T Subscribe<T>(this T control, Action<T> subscribe)
+            where T : Control
+        {
+            subscribe(control);
+            return control;
+        }
     }
 }

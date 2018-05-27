@@ -1,12 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
 using Bearded.TD.Screens;
+using Bearded.TD.UI.Model;
+using Bearded.TD.UI.ViewModel;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
@@ -59,7 +60,10 @@ namespace Bearded.TD
 
             rootControl = new RootControl();
             eventManager = new EventManager(rootControl, inputManager);
-            rootControl.Add(new SimpleControl().Anchor(a => a.Left(margin: 10, width: 100).Top(margin: 10, height: 32)));
+
+            var mainMenuView = new MainMenuView();
+            rootControl.Add(mainMenuView.Control);
+            var mainMenu = new MainMenu(mainMenuView, logger, contentManager);
 
             screenManager = new ScreenManager(inputManager);
             
