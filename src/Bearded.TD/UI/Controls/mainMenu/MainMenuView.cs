@@ -3,18 +3,15 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class MainMenuView
+    sealed class MainMenuView : CompositeControl
     {
-        public Control Control { get; }
-
         public event VoidEventHandler HostGameClicked;
         public event VoidEventHandler JoinGameClicked;
         public event VoidEventHandler QuitGameClicked;
 
         public MainMenuView()
         {
-            Control = new CompositeControl()
-            {
+            Add(
                 new CompositeControl() // ButtonGroup
                 {
                     new LabeledButton<string>("Host game")
@@ -27,7 +24,7 @@ namespace Bearded.TD.UI.Controls
                         .Anchor(a => a.Top(margin: 100, height: 50))
                         .Subscribe(b => b.Clicked += onQuitGameButtonClicked)
                 }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 200))
-            };
+            );
         }
 
         private void onHostGameButtonClicked() => HostGameClicked?.Invoke();

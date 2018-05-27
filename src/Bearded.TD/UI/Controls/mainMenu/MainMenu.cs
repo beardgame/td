@@ -13,7 +13,7 @@ namespace Bearded.TD.UI.Controls
         private readonly ContentManager contentManager;
 
         public MainMenu(MainMenuView view, Logger logger, ContentManager contentManager)
-            : base(view.Control)
+            : base(view)
         {
             this.view = view;
             this.logger = logger;
