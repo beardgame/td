@@ -48,13 +48,13 @@ namespace Bearded.UI.Navigation
             root.Remove(viewToReplace);
         }
 
-        public void GoTo<TModel>()
+        public void Push<TModel>()
             where TModel : NavigationNode<Void>
         {
-            GoTo<TModel, Void>(default(Void));
+            Push<TModel, Void>(default(Void));
         }
 
-        public void GoTo<TModel, TParameters>(TParameters parameters)
+        public void Push<TModel, TParameters>(TParameters parameters)
             where TModel : NavigationNode<TParameters>
         {
             var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
