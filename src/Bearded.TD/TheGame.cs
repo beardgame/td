@@ -59,10 +59,10 @@ namespace Bearded.TD
 
             rootControl = new RootControl();
             eventManager = new EventManager(rootControl, inputManager);
-
-            var mainMenuView = new MainMenuView();
+            
+            var mainMenu = new MainMenu(logger, contentManager);
+            var mainMenuView = new MainMenuView(mainMenu);
             rootControl.Add(mainMenuView);
-            var mainMenu = new MainMenu(mainMenuView, logger, contentManager);
 
             screenManager = new ScreenManager(inputManager);
             
