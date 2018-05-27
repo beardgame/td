@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Bearded.UI.Rendering;
 using OpenTK;
 
 namespace Bearded.UI.Controls
@@ -27,6 +28,11 @@ namespace Bearded.UI.Controls
             return new Vector2d(
                 Frame.Size.X * viewportPos.X / viewportFrame.Size.X,
                 Frame.Size.Y * viewportPos.Y / viewportFrame.Size.Y);
+        }
+
+        public void Render(IRendererRouter r)
+        {
+            controls.Render(r);
         }
         
         public ReadOnlyCollection<Control> Children => controls.Children;

@@ -30,28 +30,28 @@
         public AnchorTemplate Right(double margin = 0, double? width = null, double relativePercentage = 0)
             => updateEnd(ref horizontalAnchors, relativePercentage, margin, width);
 
-        public AnchorTemplate Top(double margin = 0, double? width = null, double relativePercentage = 0)
-            => updateStart(ref verticalAnchors, relativePercentage, margin, width);
+        public AnchorTemplate Top(double margin = 0, double? height = null, double relativePercentage = 0)
+            => updateStart(ref verticalAnchors, relativePercentage, margin, height);
 
-        public AnchorTemplate Bottom(double margin = 0, double? width = null, double relativePercentage = 0)
-            => updateEnd(ref verticalAnchors, relativePercentage, margin, width);
+        public AnchorTemplate Bottom(double margin = 0, double? height = null, double relativePercentage = 0)
+            => updateEnd(ref verticalAnchors, relativePercentage, margin, height);
 
-        private AnchorTemplate updateStart(ref Anchors anchors, double percentage, double margin, double? width)
+        private AnchorTemplate updateStart(ref Anchors anchors, double percentage, double margin, double? size)
         {
             anchors = new Anchors(
                 new Anchor(percentage, margin),
-                width.HasValue
-                    ? new Anchor(percentage, margin + width.Value)
+                size.HasValue
+                    ? new Anchor(percentage, margin + size.Value)
                     : anchors.End
             );
             return this;
         }
 
-        private AnchorTemplate updateEnd(ref Anchors anchors, double percentage, double margin, double? width)
+        private AnchorTemplate updateEnd(ref Anchors anchors, double percentage, double margin, double? size)
         {
             anchors = new Anchors(
-                width.HasValue
-                    ? new Anchor(percentage, -(margin + width.Value))
+                size.HasValue
+                    ? new Anchor(percentage, -(margin + size.Value))
                     : anchors.Start,
                 new Anchor(percentage, -margin)
             );

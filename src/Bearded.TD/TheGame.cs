@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
@@ -8,6 +9,7 @@ using Bearded.TD.Screens;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
+using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using OpenTK;
@@ -50,6 +52,7 @@ namespace Bearded.TD
 
             rootControl = new RootControl();
             eventManager = new EventManager(rootControl, inputManager);
+            rootControl.Add(new SimpleControl().Anchor(a => a.Left(margin: 10, width: 100).Top(margin: 10, height: 32)));
 
             screenManager = new ScreenManager(inputManager);
             
@@ -96,6 +99,7 @@ namespace Bearded.TD
         {
             renderContext.Compositor.PrepareForFrame();
             screenManager.Render(renderContext);
+            rootControl.Render(new CachedRendererRouter(Enumerable.Empty<(Type type, object renderer)>()));
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();

@@ -2,7 +2,7 @@
 
 namespace Bearded.UI.Controls
 {
-    static class Extensions
+    public static class Extensions
     {
         public static T Anchor<T>(this T control, Func<AnchorTemplate, AnchorTemplate> build)
             where T : Control
