@@ -27,13 +27,13 @@
         public AnchorTemplate Left(double margin = 0, double? width = null, double relativePercentage = 0)
             => updateStart(ref horizontalAnchors, relativePercentage, margin, width);
 
-        public AnchorTemplate Right(double margin = 0, double? width = null, double relativePercentage = 0)
+        public AnchorTemplate Right(double margin = 0, double? width = null, double relativePercentage = 1)
             => updateEnd(ref horizontalAnchors, relativePercentage, margin, width);
 
         public AnchorTemplate Top(double margin = 0, double? height = null, double relativePercentage = 0)
             => updateStart(ref verticalAnchors, relativePercentage, margin, height);
 
-        public AnchorTemplate Bottom(double margin = 0, double? height = null, double relativePercentage = 0)
+        public AnchorTemplate Bottom(double margin = 0, double? height = null, double relativePercentage = 1)
             => updateEnd(ref verticalAnchors, relativePercentage, margin, height);
 
         private AnchorTemplate updateStart(ref Anchors anchors, double percentage, double margin, double? size)

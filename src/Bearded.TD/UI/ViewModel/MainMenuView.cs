@@ -18,15 +18,15 @@ namespace Bearded.TD.UI.ViewModel
                 new CompositeControl() // ButtonGroup
                 {
                     new LabeledButton<string>("Host game")
-                        .Anchor(a => AnchorTemplate.Default)
+                        .Anchor(a => a.Top(margin: 0, height: 50))
                         .Subscribe(b => b.Clicked += onHostGameButtonClicked),
                     new LabeledButton<string>("Join game")
-                        .Anchor(a => AnchorTemplate.Default)
+                        .Anchor(a => a.Top(margin: 50, height: 50))
                         .Subscribe(b => b.Clicked += onJoinGameButtonClicked),
                     new LabeledButton<string>("Exit")
-                        .Anchor(a => AnchorTemplate.Default)
+                        .Anchor(a => a.Top(margin: 100, height: 50))
                         .Subscribe(b => b.Clicked += onQuitGameButtonClicked)
-                }.Anchor(a => a.Right(margin: 10, width: 200).Bottom(margin: 10, height: 500))
+                }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 200))
             };
         }
 

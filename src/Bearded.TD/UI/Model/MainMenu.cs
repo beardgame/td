@@ -1,8 +1,6 @@
 ﻿using System;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
-using Bearded.TD.Screens;
-using Bearded.TD.UI.Model.Lobby;
 using Bearded.TD.UI.ViewModel;
 using Bearded.Utilities.IO;
 
