@@ -1,12 +1,19 @@
 ﻿using Bearded.UI.Controls;
-using Bearded.UI.EventArgs;
 using Bearded.Utilities.Input;
 using OpenTK;
+using OpenTK.Input;
+using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
+using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.UI.Events
 {
     sealed class MouseEventManager
     {
+        private static readonly MouseButton[] mouseButtons =
+        {
+            MouseButton.Left, MouseButton.Middle, MouseButton.Right
+        };
+
         private readonly RootControl root;
         private readonly InputManager inputManager;
 
@@ -38,6 +45,18 @@ namespace Bearded.UI.Events
                     new MouseEventArgs(mousePosition),
                     (c, e) => c.PreviewMouseExited(e),
                     (c, e) => c.MouseExited(e));
+            }
+            
+            // Mouse clicks
+            foreach (var btn in mouseButtons)
+            {
+                if (inputManager.Actions.Mouse.FromButton(btn).Hit)
+                {
+                    path.PropagateEvent(
+                        new MouseButtonEventArgs(mousePosition, btn),
+                        (c, e) => c.PreviewMouseButtonHit(e),
+                        (c, e) => c.MouseButtonHit(e));
+                }
             }
 
             previousPropagationPath = path;
