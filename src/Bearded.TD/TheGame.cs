@@ -64,7 +64,7 @@ namespace Bearded.TD
 
             rootControl = new RootControl();
             eventManager = new EventManager(rootControl, inputManager);
-            var uiFactories = UILibrary.CreateFactories();
+            var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
             navigationController.GoTo<MainMenu>();

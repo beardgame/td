@@ -22,13 +22,12 @@ namespace Bearded.TD.UI.Controls
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            // Create lobby screen
             Navigation.GoTo<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager));
         }
 
         public void OnJoinGameButtonClicked()
         {
-            // Create connect to lobby screen
+            Navigation.GoTo<LobbyList>();
         }
 
         public void OnQuitGameButtonClicked() => throw new Exception("Goodbye");
