@@ -20,7 +20,7 @@ namespace Bearded.UI.Events
 
         internal void Update()
         {
-            var mousePosition = (Vector2d) inputManager.MousePosition;
+            var mousePosition = root.TransformViewportPosToFramePos((Vector2d) inputManager.MousePosition);
 
             var path = EventRouter.FindPropagationPath(root, control => control.Frame.ContainsPoint(mousePosition));
 
