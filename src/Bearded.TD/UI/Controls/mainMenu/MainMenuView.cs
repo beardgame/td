@@ -5,10 +5,6 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class MainMenuView : CompositeControl
     {
-        public event VoidEventHandler HostGameClicked;
-        public event VoidEventHandler JoinGameClicked;
-        public event VoidEventHandler QuitGameClicked;
-
         public MainMenuView(MainMenu model)
         {
             Add(
