@@ -6,7 +6,7 @@ using Bearded.TD.Networking;
 using Bearded.TD.UI.Model.Loading;
 using Bearded.Utilities.IO;
 
-namespace Bearded.TD.UI.Model.Lobby
+namespace Bearded.TD.UI.Controls
 {
     class ClientLobbyManager : LobbyManager
     {

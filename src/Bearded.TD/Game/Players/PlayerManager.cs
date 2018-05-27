@@ -6,7 +6,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.UI.Model.Lobby;
+using Bearded.TD.UI.Controls;
 using Lidgren.Network;
 
 namespace Bearded.TD.Game.Players

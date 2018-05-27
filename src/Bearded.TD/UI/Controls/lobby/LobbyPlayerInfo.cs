@@ -3,7 +3,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
 
-namespace Bearded.TD.UI.Model.Lobby
+namespace Bearded.TD.UI.Controls
 {
     struct LobbyPlayerInfo
     {

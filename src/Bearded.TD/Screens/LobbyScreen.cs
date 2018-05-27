@@ -5,7 +5,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Components;
-using Bearded.TD.UI.Model.Lobby;
+using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Input;
 using OpenTK;

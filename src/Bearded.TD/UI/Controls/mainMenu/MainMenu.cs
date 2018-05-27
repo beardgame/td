@@ -28,6 +28,7 @@ namespace Bearded.TD.UI.Controls
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
+            logger.Info.Log("Click!");
             // Create lobby screen
             Destroy();
         }
