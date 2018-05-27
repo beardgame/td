@@ -35,7 +35,7 @@ namespace Bearded.UI.Events
                 i++;
             }
 
-            if (i > path.Count)
+            if (i >= path.Count)
             {
                 i = path.Count - 1;
             }

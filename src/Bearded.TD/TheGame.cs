@@ -102,6 +102,7 @@ namespace Bearded.TD
                 Close();
             }
 
+            eventManager.Update();
             screenManager.Update(e);
         }
 
