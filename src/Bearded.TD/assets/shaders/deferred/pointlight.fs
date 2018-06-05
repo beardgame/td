@@ -3,6 +3,12 @@
 uniform sampler2D normalBuffer;
 uniform sampler2D depthBuffer;
 
+// inject all of these
+uniform vec3 farPlaneBaseCorner;
+uniform vec3 farPlaneUnitX;
+uniform vec3 farPlaneUnitY;
+uniform vec3 cameraPosition;
+
 in vec2 fragmentUV;
 in vec2 fragmentXY;
 in vec3 lightPosition;
@@ -16,6 +22,17 @@ void main()
     vec3 normal = texture(normalBuffer, fragmentUV).xyz;
     normal = normal * 2 - 1;
     float fragmentZ = texture(depthBuffer, fragmentUV).x;
+
+    // can any of this be done in the VS?
+    // interpolation along the diagonal
+    vec3 pointOnFarPlane = farPlaneBaseCorner
+        + farPlaneUnitX * fragmentUV.x
+        + farPlaneUnitY * fragmentUV.y;
+
+    // float depth = texture(depthBuffer, fragmentUV).x; // 0-1 in frustrum
+
+    // vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
+    // vec3 fragmentPosition = fragmentPositionRelativeToCamera + cameraPosition;
 
     vec3 fragmentPosition = vec3(fragmentXY, fragmentZ);
 

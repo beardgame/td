@@ -3,6 +3,9 @@
 uniform mat4 projection;
 uniform mat4 view;
 
+// inject this
+uniform float farPlaneDistance;
+
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec2 vertexUV;
@@ -15,9 +18,14 @@ out float fragmentDepth;
 
 void main()
 {
-    gl_Position = projection * view * vec4(vertexPosition, 1.0);
+	vec4 viewPosition = view * vec4(vertexPosition, 1.0);
+	vec4 position = projection * viewPosition;
+    gl_Position = position;
     fragmentNormal = vertexNormal;
     fragmentUV = vertexUV;
     fragmentColor = vertexColor;
-    fragmentDepth = vertexPosition.z;
+
+    // check if this is actually in 0-1 space between camera and far plane
+    float depth = -viewPosition.z / farPlaneDistance;
+    fragmentDepth = depth;
 }
