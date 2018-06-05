@@ -2,35 +2,17 @@
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.UI;
-using Bearded.Utilities;
 using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameWorldView : RenderLayerCompositeControl
+    class GameWorldView : DefaultProjectionRenderLayerView
     {
-        private const float fovy = Mathf.PiOver2;
-        private const float zNear = .1f;
-        private const float zFar = 1024f;
-
         private readonly GameWorld model;
         private readonly GeometryManager geometries;
-
-        private ViewportSize viewportSize;
-
+        
         public override Matrix4 ViewMatrix => model.Game.Camera.ViewMatrix;
-        public override Matrix4 ProjectionMatrix
-        {
-            get
-            {
-                var yMax = zNear * Mathf.Tan(.5f * fovy);
-                var yMin = -yMax;
-                var xMax = yMax * viewportSize.AspectRatio;
-                var xMin = yMin * viewportSize.AspectRatio;
-                return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
-            }
-        }
+        
         public override RenderOptions RenderOptions => RenderOptions.Game;
 
         public GameWorldView(GameWorld model, FrameCompositor compositor, GeometryManager geometryManager)
@@ -56,9 +38,8 @@ namespace Bearded.TD.UI.Controls
 
         private void updateViewport()
         {
-            var frame = Frame;
-            viewportSize = new ViewportSize((int) frame.Size.X, (int) frame.Size.Y);
-            model.Game.Camera.OnViewportSizeChanged(viewportSize);
+            UpdateViewport();
+            model.Game.Camera.OnViewportSizeChanged(ViewportSize);
         }
 
         private void drawAmbientLight(GameState state)
