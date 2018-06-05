@@ -6,6 +6,7 @@ using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
 using Bearded.TD.Screens;
+using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
@@ -28,6 +29,7 @@ namespace Bearded.TD
         private RenderContext renderContext;
         private ScreenManager screenManager;
         private RootControl rootControl;
+        private UIUpdater uiUpdater;
         private EventManager eventManager;
 
         private ContentManager contentManager;
@@ -63,6 +65,8 @@ namespace Bearded.TD
             inputManager = new InputManager(Mouse);
 
             rootControl = new RootControl();
+            uiUpdater = new UIUpdater();
+            dependencyResolver.Add(uiUpdater);
             eventManager = new EventManager(rootControl, inputManager);
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
@@ -109,6 +113,7 @@ namespace Bearded.TD
             }
 
             eventManager.Update();
+            uiUpdater.Update(e);
             screenManager.Update(e);
         }
 

@@ -12,7 +12,7 @@ namespace Bearded.UI.Navigation
         private readonly DependencyResolver dependencyResolver;
         private readonly IDictionary<Type, object> modelFactories;
         private readonly IDictionary<Type, object> viewFactories;
-        private readonly IDictionary<object, Control> viewsByModel = new Dictionary<object, Control>();
+        private readonly IDictionary<INavigationNode, Control> viewsByModel = new Dictionary<INavigationNode, Control>();
 
         public event VoidEventHandler Exited;
 
@@ -33,15 +33,16 @@ namespace Bearded.UI.Navigation
             Exited?.Invoke();
         }
 
-        public void Replace<TModel>(object toReplace)
+        public void Replace<TModel>(INavigationNode toReplace)
             where TModel : NavigationNode<Void>
         {
             Replace<TModel, Void>(default(Void), toReplace);
         }
 
-        public void Replace<TModel, TParameters>(TParameters parameters, object toReplace)
+        public void Replace<TModel, TParameters>(TParameters parameters, INavigationNode toReplace)
             where TModel : NavigationNode<TParameters>
         {
+            toReplace.Terminate();
             var viewToReplace = viewsByModel[toReplace];
             var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
             root.AddOnTopOf(viewToReplace, view);

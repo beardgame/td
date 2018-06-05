@@ -1,6 +1,11 @@
 ﻿namespace Bearded.UI.Navigation
 {
-    public abstract class NavigationNode<T>
+    public interface INavigationNode
+    {
+        void Terminate();
+    }
+
+    public abstract class NavigationNode<T> : INavigationNode
     {
         protected NavigationController Navigation { get; private set; }
 
@@ -11,5 +16,7 @@
         }
 
         protected abstract void Initialize(DependencyResolver dependencies, T parameters);
+
+        public virtual void Terminate() { }
     }
 }
