@@ -16,21 +16,18 @@ namespace Bearded.TD.UI.Model.Loading
     abstract class LoadingManager
     {
         public GameInstance Game { get; }
-        protected IDispatcher<GameInstance> Dispatcher { get; }
         public NetworkInterface Network { get; }
-        protected Logger Logger { get; }
+        protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
+        protected Logger Logger => Game.Meta.Logger;
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
 
         private bool hasModsQueuedForLoading => modsForLoading.Count > 0;
         private bool haveModsFinishedLoading;
 
-        protected LoadingManager(
-            GameInstance game, IDispatcher<GameInstance> dispatcher, NetworkInterface networkInterface, Logger logger)
+        protected LoadingManager(GameInstance game, NetworkInterface networkInterface)
         {
             Game = game;
-            Dispatcher = dispatcher;
             Network = networkInterface;
-            Logger = logger;
         }
 
         public virtual void Update(UpdateEventArgs args)

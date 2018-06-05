@@ -3,37 +3,22 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Meta;
-using Bearded.TD.Mods;
+using Bearded.TD.Networking;
 using Bearded.TD.UI.Model.Loading;
-using Bearded.Utilities;
-using Bearded.Utilities.IO;
 
 namespace Bearded.TD.UI.Controls
 {
     abstract class LobbyManager
     {
+
         public GameInstance Game { get; }
-        protected Logger Logger { get; }
-        protected IDispatcher<GameInstance> Dispatcher { get; }
+        protected NetworkInterface Network { get; }
+        protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
 
-        protected LobbyManager(IGameContext gameContext, ContentManager contentManager)
+        protected LobbyManager(GameInstance game, NetworkInterface network)
         {
-            var ids = new IdManager();
-            var player = new Player(ids.GetNext<Player>(), getPlayerName())
-            {
-                ConnectionState = PlayerConnectionState.Waiting
-            };
-            Game = new GameInstance(gameContext, contentManager, player, ids);
-            Logger = gameContext.Logger;
-            Dispatcher = gameContext.Dispatcher;
-        }
-
-        protected LobbyManager(Player player, IGameContext gameContext, ContentManager contentManager)
-        {
-            Game = new GameInstance(gameContext, contentManager, player, null);
-            Logger = gameContext.Logger;
-            Dispatcher = gameContext.Dispatcher;
+            Game = game;
+            Network = network;
         }
 
         public void ToggleReadyState()
@@ -46,12 +31,14 @@ namespace Bearded.TD.UI.Controls
             Game.RequestDispatcher.Dispatch(ChangePlayerState.Request(Game.Me, connectionState));
         }
 
-        public abstract void Update(UpdateEventArgs args);
-        public abstract LoadingManager GetLoadingManager();
+        public void Close() => Network.Shutdown();
 
-        private static string getPlayerName()
+        public virtual void Update(UpdateEventArgs args)
         {
-            return UserSettings.Instance.Misc.Username?.Length > 0 ? UserSettings.Instance.Misc.Username : "the host";
+            Network.ConsumeMessages();
+            Game.UpdatePlayers(args);
         }
+
+        public abstract LoadingManager GetLoadingManager();
     }
 }

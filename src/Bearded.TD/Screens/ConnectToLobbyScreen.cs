@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
@@ -199,8 +200,10 @@ namespace Bearded.TD.Screens
             UserSettings.Instance.Misc.SavedNetworkAddress = textInput.Text;
             UserSettings.Save(logger);
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
+            var game = new GameInstance(new ClientGameContext(networkInterface, logger), contentManager,
+                new Player(info.Id, playerName), null);
             var lobbyManager =
-                new ClientLobbyManager(networkInterface, new Player(info.Id, playerName), logger, contentManager);
+                new ClientLobbyManager(game, networkInterface);
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(Parent, Geometries, lobbyManager, inputManager));
             Destroy();
         }

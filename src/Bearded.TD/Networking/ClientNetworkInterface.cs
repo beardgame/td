@@ -11,6 +11,8 @@ namespace Bearded.TD.Networking
 
         public ClientMasterServer Master { get; }
 
+        public override long UniqueIdentifier => client.UniqueIdentifier;
+
         public ClientNetworkInterface()
         {
 			var config = new NetPeerConfiguration(Constants.Network.ApplicationName);

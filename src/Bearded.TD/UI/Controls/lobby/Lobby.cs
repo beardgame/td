@@ -16,5 +16,16 @@ namespace Bearded.TD.UI.Controls
         {
             lobbyManager.Update(args);
         }
+
+        public void OnToggleReadyButtonClicked()
+        {
+            lobbyManager.ToggleReadyState();
+        }
+
+        public void OnBackToMenuButtonClicked()
+        {
+            lobbyManager.Close();
+            Navigation.Replace<MainMenu>(this);
+        }
     }
 }

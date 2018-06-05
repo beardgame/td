@@ -9,7 +9,7 @@ namespace Bearded.TD.Networking
 
         public ServerMasterServer Master { get; }
 
-        public long UniqueIdentifier => server.UniqueIdentifier;
+        public override long UniqueIdentifier => server.UniqueIdentifier;
 
         public ServerNetworkInterface()
         {
