@@ -14,12 +14,12 @@ namespace Bearded.TD.UI.Controls
         private const float zNear = .1f;
         private const float zFar = 1024f;
 
-        private readonly GameWorld model;
+        private readonly GameInstance game;
         private readonly GeometryManager geometries;
 
         private ViewportSize viewportSize;
 
-        public override Matrix4 ViewMatrix => model.Game.Camera.ViewMatrix;
+        public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
         public override Matrix4 ProjectionMatrix
         {
             get
@@ -33,10 +33,10 @@ namespace Bearded.TD.UI.Controls
         }
         public override RenderOptions RenderOptions => RenderOptions.Game;
 
-        public GameWorldView(GameWorld model, FrameCompositor compositor, GeometryManager geometryManager)
+        public GameWorldView(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
             : base(compositor)
         {
-            this.model = model;
+            this.game = game;
             geometries = geometryManager;
         }
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.UI.Controls
 
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
-            var state = model.Game.State;
+            var state = game.State;
             
             state.Level.Draw(geometries);
             drawAmbientLight(state);
@@ -58,7 +58,7 @@ namespace Bearded.TD.UI.Controls
         {
             var frame = Frame;
             viewportSize = new ViewportSize((int) frame.Size.X, (int) frame.Size.Y);
-            model.Game.Camera.OnViewportSizeChanged(viewportSize);
+            game.Camera.OnViewportSizeChanged(viewportSize);
         }
 
         private void drawAmbientLight(GameState state)

@@ -7,7 +7,7 @@ using Bearded.Utilities.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameWorld : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>
+    class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;

@@ -38,7 +38,7 @@ namespace Bearded.TD.UI.Controls
         private void startGame()
         {
             loadingManager.IntegrateUI();
-            Navigation.Replace<GameWorld, (GameInstance, GameRunner)>(
+            Navigation.Replace<GameUI, (GameInstance, GameRunner)>(
                 (loadingManager.Game, new GameRunner(loadingManager.Game, loadingManager.Network)), this);
         }
     }
