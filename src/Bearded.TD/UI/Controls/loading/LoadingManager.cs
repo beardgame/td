@@ -11,7 +11,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
 
-namespace Bearded.TD.UI.Model.Loading
+namespace Bearded.TD.UI.Controls
 {
     abstract class LoadingManager
     {

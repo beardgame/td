@@ -4,7 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 
-namespace Bearded.TD.UI.Model.Loading
+namespace Bearded.TD.UI.Controls
 {
     class ClientLoadingManager : LoadingManager
     {

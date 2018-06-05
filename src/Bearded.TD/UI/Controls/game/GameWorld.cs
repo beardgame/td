@@ -5,13 +5,16 @@ using Bearded.UI.Navigation;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameWorld : NavigationNode<(GameInstance game, GameRunner runner)>
+    class GameWorld : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;
 
-        protected override void Initialize(DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
+        protected override void Initialize(
+            DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
         {
+            base.Initialize(dependencies, parameters);
+            
             Game = parameters.game;
             runner = parameters.runner;
         }
@@ -23,7 +26,7 @@ namespace Bearded.TD.UI.Controls
             runner.HandleInput(args, inputState);
         }
 
-        public void Update(UpdateEventArgs args)
+        public override void Update(UpdateEventArgs args)
         {
             runner.Update(args);
         }

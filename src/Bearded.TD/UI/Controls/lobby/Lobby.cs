@@ -12,6 +12,7 @@ namespace Bearded.TD.UI.Controls
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
         {
             base.Initialize(dependencies, lobbyManager);
+
             this.lobbyManager = lobbyManager;
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
         }
@@ -19,6 +20,7 @@ namespace Bearded.TD.UI.Controls
         public override void Terminate()
         {
             base.Terminate();
+
             lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
         }
 
@@ -41,12 +43,7 @@ namespace Bearded.TD.UI.Controls
         private void onGameStatusChanged(GameStatus gameStatus)
         {
             if (gameStatus != GameStatus.Loading) throw new Exception("Unexpected game status change.");
-            beginLoading();
-        }
-
-        private void beginLoading()
-        {
-            // TODO: go to lobby screen
+            Navigation.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
         }
     }
 }

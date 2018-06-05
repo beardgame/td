@@ -9,7 +9,7 @@ using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.Model.Loading
+namespace Bearded.TD.UI.Controls
 {
     class ServerLoadingManager : LoadingManager
     {

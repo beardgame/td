@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Game;
 using Bearded.TD.Networking;
-using Bearded.TD.UI.Model.Loading;
 
 namespace Bearded.TD.UI.Controls
 {

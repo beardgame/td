@@ -7,7 +7,6 @@ using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.MasterServer;
-using Bearded.TD.UI.Model.Loading;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
