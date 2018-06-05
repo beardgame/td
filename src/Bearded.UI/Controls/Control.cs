@@ -56,8 +56,6 @@ namespace Bearded.UI.Controls
                 ((Anchors) VerticalAnchors).CalculateIntervalWithin(parentFrame.Y));
 
             frameNeedsUpdate = false;
-
-            FrameRecalculated();
         }
 
         public void RemoveFromParent() => Parent.Remove(this);
@@ -93,7 +91,5 @@ namespace Bearded.UI.Controls
         public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
         public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
         public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
-
-        public virtual void FrameRecalculated() { }
     }
 }
