@@ -15,6 +15,14 @@ namespace Bearded.UI.Navigation
 
         public static (ModelFactoryAccumulator models, ViewFactoryAccumulator views) Add<T, TParams>(
             this (ModelFactoryAccumulator models, ViewFactoryAccumulator views) accumulators,
+            Func<T, Control> createView)
+            where T : NavigationNode<TParams>, new()
+        {
+            return accumulators.Add<T, TParams>(() => new T(), createView);
+        }
+
+        public static (ModelFactoryAccumulator models, ViewFactoryAccumulator views) Add<T, TParams>(
+            this (ModelFactoryAccumulator models, ViewFactoryAccumulator views) accumulators,
             Func<T> createNode,
             Func<T, Control> createView)
             where T : NavigationNode<TParams>
@@ -30,7 +38,7 @@ namespace Bearded.UI.Navigation
             return (accumulators.models.Add<T, TParams>(createNode), accumulators.views);
         }
 
-        public static (ModelFactoryAccumulator models, ViewFactoryAccumulator views) Add<T, TParams>(
+        public static (ModelFactoryAccumulator models, ViewFactoryAccumulator views) AddView<T, TParams>(
             this (ModelFactoryAccumulator models, ViewFactoryAccumulator views) accumulators,
             Func<T, Control> createView)
             where T : NavigationNode<TParams>

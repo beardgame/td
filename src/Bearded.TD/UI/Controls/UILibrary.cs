@@ -14,11 +14,10 @@ namespace Bearded.TD.UI.Controls
             // Please keep alphabetically sorted.
             return NavigationFactories.ForBoth()
                 .Add<GameWorld, (GameInstance, GameRunner)>(
-                    () => new GameWorld(),
                     m => new GameWorldView(m, renderContext.Compositor, renderContext.Geometries))
-                .Add<Lobby, LobbyManager>(() => new Lobby(), m => new LobbyView(m))
-                .Add<LobbyList, Void>(() => new LobbyList(), m => new LobbyListView(m))
-                .Add<MainMenu, Void>(() => new MainMenu(), m => new MainMenuView(m))
+                .Add<Lobby, LobbyManager>(m => new LobbyView(m))
+                .Add<LobbyList, Void>(m => new LobbyListView(m))
+                .Add<MainMenu, Void>(m => new MainMenuView(m))
                 .ToDictionaries();
         }
     }
