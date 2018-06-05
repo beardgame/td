@@ -65,9 +65,11 @@ namespace Bearded.TD
             inputManager = new InputManager(Mouse);
             dependencyResolver.Add(inputManager);
 
-            rootControl = new RootControl();
+            rootControl = new RootControl(new TDRootControl(renderContext.Compositor));
+
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
+
             eventManager = new EventManager(rootControl, inputManager);
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =

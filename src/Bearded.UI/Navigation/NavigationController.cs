@@ -8,7 +8,7 @@ namespace Bearded.UI.Navigation
 {
     public sealed class NavigationController
     {
-        private readonly RootControl root;
+        private readonly IControlParent root;
         private readonly DependencyResolver dependencyResolver;
         private readonly IDictionary<Type, object> modelFactories;
         private readonly IDictionary<Type, object> viewFactories;
@@ -17,7 +17,7 @@ namespace Bearded.UI.Navigation
         public event VoidEventHandler Exited;
 
         public NavigationController(
-            RootControl root,
+            IControlParent root,
             DependencyResolver dependencyResolver,
             IDictionary<Type, object> modelFactories,
             IDictionary<Type, object> viewFactories)
