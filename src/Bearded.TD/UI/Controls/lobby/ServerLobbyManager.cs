@@ -3,9 +3,12 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
+using Bearded.TD.Networking.MasterServer;
 using Bearded.TD.UI.Model.Loading;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.UI.Controls
@@ -14,13 +17,13 @@ namespace Bearded.TD.UI.Controls
     {
         private const float heartbeatTimeSeconds = 10;
 
-        private readonly ServerNetworkInterface networkInterface;
+        private readonly ServerMasterServer masterServer;
         private float secondsUntilNextHeartbeat;
 
-        public ServerLobbyManager(ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)
-            : base(new ServerGameContext(networkInterface, logger), contentManager)
+        private ServerLobbyManager(GameInstance game, ServerNetworkInterface networkInterface)
+            : base(game, networkInterface)
         {
-            this.networkInterface = networkInterface;
+            masterServer = networkInterface.Master;
 
             // First heartbeat automatically registers lobby.
             doHeartbeat();
@@ -28,9 +31,8 @@ namespace Bearded.TD.UI.Controls
 
         public override void Update(UpdateEventArgs args)
         {
-            networkInterface.ConsumeMessages();
-            Game.UpdatePlayers(args);
-
+            base.Update(args);
+            
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
             {
                 Dispatcher.RunOnlyOnServer(
@@ -46,10 +48,10 @@ namespace Bearded.TD.UI.Controls
 
         private void doHeartbeat()
         {
-            networkInterface.Master.RegisterLobby(
+            masterServer.RegisterLobby(
                 new Proto.Lobby
                 {
-                    Id = networkInterface.UniqueIdentifier,
+                    Id = Network.UniqueIdentifier,
                     Name = $"{Game.Me.Name}'s game",
                     MaxNumPlayers = 4,
                     CurrentNumPlayers = 1,
@@ -58,11 +60,18 @@ namespace Bearded.TD.UI.Controls
             secondsUntilNextHeartbeat = heartbeatTimeSeconds;
         }
 
-        
+        public override LoadingManager GetLoadingManager() =>  new ServerLoadingManager(Game, Network);
 
-        public override LoadingManager GetLoadingManager()
+        public static ServerLobbyManager Create(
+            ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)
         {
-            return new ServerLoadingManager(Game, Dispatcher, networkInterface, Logger);
+            var ids = new IdManager();
+            var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)
+            {
+                ConnectionState = PlayerConnectionState.Waiting
+            };
+
+            return new ServerLobbyManager(new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids), networkInterface);
         }
     }
 }

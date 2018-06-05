@@ -10,6 +10,7 @@ namespace Bearded.TD.Networking
         
         private readonly List<NetConnection> connectedPeers = new List<NetConnection>();
         public int PeerCount => connectedPeers.Count;
+        public abstract long UniqueIdentifier { get; }
 
         public abstract NetOutgoingMessage CreateMessage();
         public abstract void Shutdown();

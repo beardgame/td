@@ -46,7 +46,7 @@ namespace Bearded.TD.Screens
             Parent.AddScreenLayerOnTopOf(this, new LobbyScreen(
                 Parent,
                 Geometries,
-                new ServerLobbyManager(network, logger, contentManager),
+                ServerLobbyManager.Create(network, logger, contentManager),
                 inputManager));
             Destroy();
         }

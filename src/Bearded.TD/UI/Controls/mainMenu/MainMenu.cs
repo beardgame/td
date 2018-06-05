@@ -21,7 +21,7 @@ namespace Bearded.TD.UI.Controls
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            Navigation.Replace<Lobby, LobbyManager>(new ServerLobbyManager(network, logger, contentManager), this);
+            Navigation.Replace<Lobby, LobbyManager>(ServerLobbyManager.Create(network, logger, contentManager), this);
         }
 
         public void OnJoinGameButtonClicked() => Navigation.Replace<LobbyList>(this);

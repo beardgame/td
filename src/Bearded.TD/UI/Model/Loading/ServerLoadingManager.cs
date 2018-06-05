@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Commands;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
@@ -9,17 +8,13 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
-using Bearded.Utilities.IO;
 
 namespace Bearded.TD.UI.Model.Loading
 {
     class ServerLoadingManager : LoadingManager
     {
-        public ServerLoadingManager(
-            GameInstance game, IDispatcher<GameInstance> dispatcher, NetworkInterface networkInterface, Logger logger)
-            : base(game, dispatcher, networkInterface, logger)
-        {
-        }
+        public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface)
+            : base(game, networkInterface) {}
 
         public override void Update(UpdateEventArgs args)
         {
