@@ -36,6 +36,7 @@ namespace Bearded.TD.Game
 
         public GameCamera()
         {
+            viewportSize = new ViewportSize(1280, 720);
             resetCameraPosition();
         }
 

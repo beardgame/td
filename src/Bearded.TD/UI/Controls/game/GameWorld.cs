@@ -1,7 +1,9 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Navigation;
+using Bearded.Utilities.Input;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -9,6 +11,7 @@ namespace Bearded.TD.UI.Controls
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;
+        private InputManager inputManager;
 
         protected override void Initialize(
             DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
@@ -17,17 +20,15 @@ namespace Bearded.TD.UI.Controls
             
             Game = parameters.game;
             runner = parameters.runner;
-        }
-        
-        // todo: hook up these methods below
 
-        public void HandleInput(UpdateEventArgs args, InputState inputState)
-        {
-            runner.HandleInput(args, inputState);
+            inputManager = dependencies.Resolve<InputManager>();
         }
 
         public override void Update(UpdateEventArgs args)
         {
+            var inputState = new InputState(new List<char>(), inputManager);
+            
+            runner.HandleInput(args, inputState);
             runner.Update(args);
         }
     }
