@@ -8,17 +8,16 @@ namespace Bearded.TD.UI.Controls
 {
     class GameWorldView : DefaultProjectionRenderLayerView
     {
-        private readonly GameWorld model;
+        private readonly GameInstance game;
         private readonly GeometryManager geometries;
-        
-        public override Matrix4 ViewMatrix => model.Game.Camera.ViewMatrix;
-        
+
+        public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
         public override RenderOptions RenderOptions => RenderOptions.Game;
 
-        public GameWorldView(GameWorld model, FrameCompositor compositor, GeometryManager geometryManager)
+        public GameWorldView(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
             : base(compositor)
         {
-            this.model = model;
+            this.game = game;
             geometries = geometryManager;
         }
 
@@ -28,7 +27,7 @@ namespace Bearded.TD.UI.Controls
 
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
-            var state = model.Game.State;
+            var state = game.State;
             
             state.Level.Draw(geometries);
             drawAmbientLight(state);
@@ -39,7 +38,7 @@ namespace Bearded.TD.UI.Controls
         private void updateViewport()
         {
             UpdateViewport();
-            model.Game.Camera.OnViewportSizeChanged(ViewportSize);
+            game.Camera.OnViewportSizeChanged(ViewportSize);
         }
 
         private void drawAmbientLight(GameState state)

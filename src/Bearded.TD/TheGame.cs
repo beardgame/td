@@ -63,6 +63,7 @@ namespace Bearded.TD
                 });
 
             inputManager = new InputManager(Mouse);
+            dependencyResolver.Add(inputManager);
 
             rootControl = new RootControl();
             uiUpdater = new UIUpdater();
