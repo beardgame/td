@@ -2,11 +2,11 @@
 {
     sealed class CommandParameters
     {
-        public string[] Args { get; private set; }
+        public string[] Args { get; }
 
         public CommandParameters(string[] args)
         {
-            this.Args = args;
+            Args = args;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Navigation
 
             directions = new Tilemap<Directions>(tilemap.Radius);
             foreach (var tile in directions)
-                directions[tile] = None;
+                directions[tile] = none;
         }
 
         public void Initialise(LevelGeometry geometry)
@@ -110,11 +110,11 @@ namespace Bearded.TD.Game.Navigation
 
         public void AddSink(Tile<TileInfo> tile)
         {
-            updateTile(tile.X, tile.Y, Sink);
+            updateTile(tile.X, tile.Y, sink);
         }
         public void AddBackupSink(Tile<TileInfo> tile)
         {
-            updateTile(tile.X, tile.Y, BackupSink);
+            updateTile(tile.X, tile.Y, backupSink);
             foreach (var direction in tile.Info.OpenDirectionsForUnits.Enumerate())
             {
                 var neighbour = tile.Neighbour(direction);
@@ -223,9 +223,9 @@ namespace Bearded.TD.Game.Navigation
         
         private const int backupSinkDistance = 100_000_000;
         
-        private static Directions None => new Directions(int.MaxValue, Direction.Unknown);
-        private static Directions Sink => new Directions(0, Direction.Unknown);
-        private static Directions BackupSink => new Directions(backupSinkDistance, Direction.Unknown);
+        private static Directions none => new Directions(int.MaxValue, Direction.Unknown);
+        private static Directions sink => new Directions(0, Direction.Unknown);
+        private static Directions backupSink => new Directions(backupSinkDistance, Direction.Unknown);
 
         private struct Directions
         {

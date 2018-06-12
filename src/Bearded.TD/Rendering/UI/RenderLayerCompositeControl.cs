@@ -58,9 +58,9 @@ namespace Bearded.TD.Rendering.UI
             skipNextRender = true;
         }
 
-        abstract public Matrix4 ViewMatrix { get; }
-        abstract public Matrix4 ProjectionMatrix { get; }
-        abstract public RenderOptions RenderOptions { get; }
+        public abstract Matrix4 ViewMatrix { get; }
+        public abstract Matrix4 ProjectionMatrix { get; }
+        public abstract RenderOptions RenderOptions { get; }
 
         public virtual void Draw()
         {

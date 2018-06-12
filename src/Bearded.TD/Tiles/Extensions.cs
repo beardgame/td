@@ -50,6 +50,7 @@ namespace Bearded.TD.Tiles
                 )
                 .ToArray();
 
+        // ReSharper disable once InconsistentNaming
         private static readonly Direction2[] direction2s =
             Enumerable.Range(0, 7)
                 .Select(i =>

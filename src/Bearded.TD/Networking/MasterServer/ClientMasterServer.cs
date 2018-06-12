@@ -21,7 +21,7 @@ namespace Bearded.TD.Networking.MasterServer
 			{
                 LobbyId = lobbyId,
                 Token = "can i haz td lobby pls",
-				Address = ByteString.CopyFrom(NetUtility.GetMyAddress(out var mask).GetAddressBytes()),
+				Address = ByteString.CopyFrom(NetUtility.GetMyAddress(out _).GetAddressBytes()),
 				Port = Constants.Network.DefaultPort
 			};
 			var protoMsg = CreateMessage();

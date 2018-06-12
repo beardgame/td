@@ -5,13 +5,15 @@ namespace Bearded.TD.Mods
 {
     sealed class Mod
     {
-        public string Name { get; }
         public string Id { get; }
+        public string Name { get; }
 
         public Blueprints Blueprints { get; }
         public IDictionary<string, UpgradeTag> Tags { get; }
         
         public Mod(
+            string id,
+            string name,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<UnitBlueprint> units,
@@ -19,6 +21,8 @@ namespace Bearded.TD.Mods
             ReadonlyBlueprintCollection<ProjectileBlueprint> projectiles,
             IDictionary<string, UpgradeTag> tags)
         {
+            Id = id;
+            Name = name;
             Blueprints = new Blueprints(footprints, buildings, units, weapons, projectiles);
             Tags = tags;
         }
