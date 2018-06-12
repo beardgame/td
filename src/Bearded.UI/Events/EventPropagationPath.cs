@@ -12,7 +12,7 @@ namespace Bearded.UI.Events
 
         private readonly IList<Control> path;
 
-        private bool isEmpty => path.Count == 0;
+        public bool IsEmpty => path.Count == 0;
 
         public EventPropagationPath(IList<Control> path)
         {
@@ -24,7 +24,7 @@ namespace Bearded.UI.Events
             EventRouter.RoutedEvent<T> previewEvent,
             EventRouter.RoutedEvent<T> bubbleEvent) where T : RoutedEventArgs
         {
-            if (isEmpty) return;
+            if (IsEmpty) return;
 
             var i = 0;
 
@@ -55,8 +55,8 @@ namespace Bearded.UI.Events
             EventPropagationPath oldPath,
             EventPropagationPath newPath)
         {
-            if (oldPath.isEmpty) return (Empty, newPath);
-            if (newPath.isEmpty) return (oldPath, Empty);
+            if (oldPath.IsEmpty) return (Empty, newPath);
+            if (newPath.IsEmpty) return (oldPath, Empty);
 
             var shortestPathLength = Math.Min(oldPath.path.Count, newPath.path.Count);
 

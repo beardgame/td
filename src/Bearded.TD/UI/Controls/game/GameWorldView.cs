@@ -2,6 +2,7 @@
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.UI.EventArgs;
 using OpenTK;
 
 namespace Bearded.TD.UI.Controls
@@ -66,6 +67,18 @@ namespace Bearded.TD.UI.Controls
             {
                 state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
             }
+        }
+
+        public override void MouseMoved(MouseEventArgs eventArgs)
+        {
+            base.MouseMoved(eventArgs);
+            game.PlayerInput.IsMouseFocused = true;
+        }
+
+        public override void MouseExited(MouseEventArgs eventArgs)
+        {
+            base.MouseExited(eventArgs);
+            game.PlayerInput.IsMouseFocused = false;
         }
     }
 }

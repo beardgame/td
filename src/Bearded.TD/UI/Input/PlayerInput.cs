@@ -11,6 +11,8 @@ namespace Bearded.TD.UI.Input
         private ICursorHandler cursor;
         private InteractionHandler interactionHandler;
 
+        public bool IsMouseFocused { get; set; }
+
         public PlayerInput(GameInstance game)
         {
             this.game = game;
@@ -22,6 +24,9 @@ namespace Bearded.TD.UI.Input
 
         public void HandleInput(UpdateEventArgs args, InputState input)
         {
+            // This is a hack until we get rid of the old UI stuff.
+            if (!IsMouseFocused) input.Mouse.Capture();
+
             cursor.Update(args, input);
             interactionHandler.Update(args, cursor);
         }

@@ -5,8 +5,12 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameUIView : CompositeControl
     {
+        private readonly GameUI gameUI;
+
         public GameUIView(GameUI gameUI, FrameCompositor compositor, GeometryManager geometryManager)
         {
+            this.gameUI = gameUI;
+
             Add(new ActionBarView(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
