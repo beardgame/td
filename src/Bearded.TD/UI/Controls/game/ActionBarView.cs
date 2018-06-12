@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.UI.Controls;
+﻿using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls

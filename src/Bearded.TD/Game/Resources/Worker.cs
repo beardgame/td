@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;

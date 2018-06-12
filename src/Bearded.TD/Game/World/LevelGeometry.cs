@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.World
