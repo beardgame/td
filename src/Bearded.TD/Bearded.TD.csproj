@@ -57,7 +57,4 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\Model\Loading\" />
-  </ItemGroup>
 </Project>

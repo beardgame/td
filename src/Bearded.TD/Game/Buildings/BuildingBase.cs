@@ -2,11 +2,11 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
-using Bearded.TD.UI.Model;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;

@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Components
 
             while (y >= -Constants.UI.LineHeight && i > 0)
             {
-                (var text, var color) = Format(entries[--i]);
+                var (text, color) = Format(entries[--i]);
                 geometries.ConsoleFont.Color = color;
                 geometries.ConsoleFont.DrawString(new Vector2(Bounds.Left, y), text);
                 y -= Constants.UI.LineHeight;
