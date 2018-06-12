@@ -3,6 +3,11 @@
 uniform mat4 projection;
 uniform mat4 view;
 
+// inject these
+uniform vec3 farPlaneBaseCorner;
+uniform vec3 farPlaneUnitX;
+uniform vec3 farPlaneUnitY;
+
 in vec3 vertexPosition;
 in vec3 vertexLightPosition;
 in float vertexLightRadiusSquared;
@@ -13,6 +18,7 @@ out vec2 fragmentXY;
 out vec3 lightPosition;
 out float lightRadiusSquared;
 out vec3 lightColor;
+out vec3 pointOnFarPlane;
 
 void main()
 {
@@ -20,6 +26,12 @@ void main()
     gl_Position = p;
 
     fragmentUV = (p.xy / p.w + 1) * 0.5;
+
+    // can any of this be done in the VS?
+    // interpolation along the diagonal
+    pointOnFarPlane = farPlaneBaseCorner
+        + farPlaneUnitX * fragmentUV.x
+        + farPlaneUnitY * fragmentUV.y;
 
     fragmentXY = vertexPosition.xy;
     lightPosition = vertexLightPosition;

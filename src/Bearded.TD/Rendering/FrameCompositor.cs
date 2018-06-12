@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Meta;
 using OpenTK.Graphics.OpenGL;
 
@@ -6,6 +7,7 @@ namespace Bearded.TD.Rendering
 {
     class FrameCompositor
     {
+        private DateTime nextShaderReloadTime = DateTime.UtcNow;
         private readonly SurfaceManager surfaces;
         private readonly DeferredRenderer deferredRenderer;
         private ViewportSize viewPort;
@@ -24,6 +26,8 @@ namespace Bearded.TD.Rendering
 
         public void PrepareForFrame()
         {
+            reloadShadersIfNeeded();
+
             GL.Viewport(0, 0, viewPort.Width, viewPort.Height);
 
             var argb = Color.DarkSlateGray * 0.5f;
@@ -35,6 +39,19 @@ namespace Bearded.TD.Rendering
 
             GL.Enable(EnableCap.Blend);
             SurfaceBlendSetting.PremultipliedAlpha.Set(null);
+        }
+
+        private void reloadShadersIfNeeded()
+        {
+            var now = DateTime.UtcNow;
+
+            if (nextShaderReloadTime > now)
+                return;
+
+            nextShaderReloadTime = now + TimeSpan.FromSeconds(1);
+            
+            // TODO: debug why this doesn't work and print something to the console every time shaders are reloaded or fail to
+            surfaces.Shaders.TryReloadAll();
         }
 
         public void RenderLayer(IRenderLayer layer)
