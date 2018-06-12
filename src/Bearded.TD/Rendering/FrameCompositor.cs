@@ -1,6 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Meta;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
@@ -78,6 +79,35 @@ namespace Bearded.TD.Rendering
         private void setUniformsFrom(IDeferredRenderLayer deferredRenderLayer)
         {
             surfaces.FarPlaneDistance.Float = deferredRenderLayer.FarPlaneDistance;
+
+            setFarPlaneParameters(deferredRenderLayer);
+        }
+
+        private void setFarPlaneParameters(IDeferredRenderLayer deferredRenderLayer)
+        {
+            var projection = deferredRenderLayer.ProjectionMatrix;
+            var view = deferredRenderLayer.ViewMatrix;
+
+            var cameraTranslation = view.ExtractTranslation();
+            var viewWithoutTranslation = view.ClearTranslation();
+
+            var projectionView = viewWithoutTranslation * projection;
+            var projectionViewInverted = projectionView.Inverted();
+
+            // check if multiplication by the inverted view matrix is working correctly
+            var baseCorner = new Vector4(-1, -1, 1, 1) * projectionViewInverted;
+            baseCorner = baseCorner / baseCorner.W;
+
+            var xCorner = new Vector4(1, -1, 1, 1) * projectionViewInverted;
+            xCorner = xCorner / xCorner.W;
+
+            var yCorner = new Vector4(-1, 1, 1, 1) * projectionViewInverted;
+            yCorner = yCorner / yCorner.W;
+
+            surfaces.FarPlaneBaseCorner.Vector = baseCorner.Xyz;
+            surfaces.FarPlaneUnitX.Vector = xCorner.Xyz - baseCorner.Xyz;
+            surfaces.FarPlaneUnitY.Vector = yCorner.Xyz - baseCorner.Xyz;
+            surfaces.CameraPosition.Vector = cameraTranslation;
         }
 
         private void renderWithOptions(RenderOptions options)

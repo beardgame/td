@@ -3,7 +3,6 @@
 uniform mat4 projection;
 uniform mat4 view;
 
-// inject these
 uniform vec3 farPlaneBaseCorner;
 uniform vec3 farPlaneUnitX;
 uniform vec3 farPlaneUnitY;
@@ -27,8 +26,8 @@ void main()
 
     fragmentUV = (p.xy / p.w + 1) * 0.5;
 
-    // can any of this be done in the VS?
-    // interpolation along the diagonal
+    // interpolation along the diagonal might be broken?
+    // probably only for weird geometry
     pointOnFarPlane = farPlaneBaseCorner
         + farPlaneUnitX * fragmentUV.x
         + farPlaneUnitY * fragmentUV.y;

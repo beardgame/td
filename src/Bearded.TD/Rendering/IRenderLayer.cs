@@ -10,7 +10,7 @@ namespace Bearded.TD.Rendering
         void Draw();
     }
 
-    interface IDeferredRenderLayer
+    interface IDeferredRenderLayer : IRenderLayer
     {
         float FarPlaneDistance { get; }
     }

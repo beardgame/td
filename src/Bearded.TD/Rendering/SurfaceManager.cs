@@ -14,6 +14,11 @@ namespace Bearded.TD.Rendering
         public Matrix4Uniform ProjectionMatrix { get; } = new Matrix4Uniform("projection");
         public FloatUniform FarPlaneDistance { get; } = new FloatUniform("farPlaneDistance");
 
+        public Vector3Uniform FarPlaneBaseCorner { get; } = new Vector3Uniform("farPlaneBaseCorner");
+        public Vector3Uniform FarPlaneUnitX { get; } = new Vector3Uniform("farPlaneUnitX");
+        public Vector3Uniform FarPlaneUnitY { get; } = new Vector3Uniform("farPlaneUnitY");
+        public Vector3Uniform CameraPosition { get; } = new Vector3Uniform("cameraPosition");
+
         public IndexedSurface<PrimitiveVertexData> Primitives { get; }
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
         public IndexedSurface<UVColorVertexData> ConsoleFontSurface { get; }
@@ -71,7 +76,8 @@ namespace Bearded.TD.Rendering
             
             PointLights = new IndexedSurface<PointLightVertex>()
                 .WithShader(Shaders["deferred/pointlight"])
-                .AndSettings(ViewMatrix, ProjectionMatrix);
+                .AndSettings(ViewMatrix, ProjectionMatrix,
+                    FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
 
             GameSurfaces = new GameSurfaceManager(Shaders, ViewMatrix, ProjectionMatrix);
         }
