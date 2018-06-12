@@ -79,12 +79,7 @@ namespace Bearded.TD
             navigationController.Exited += Close;
 
             screenManager = new ScreenManager(inputManager);
-            
-            screenManager.AddScreenLayerOnTop(new StartScreen(screenManager, renderContext.Geometries, logger, inputManager, contentManager));
             screenManager.AddScreenLayerOnTop(new ConsoleScreenLayer(screenManager, renderContext.Geometries, logger));
-#if DEBUG
-            screenManager.AddScreenLayerOnTop(new DebugCoordinatePointerLayer(screenManager, renderContext.Geometries));
-#endif
 
             KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
 
