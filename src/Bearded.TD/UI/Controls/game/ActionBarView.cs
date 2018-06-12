@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class ActionBarView : CompositeControl
     {
-        private const float buttonHeightPercentage = 1f / ActionBar.NumActions;
+        private const float buttonHeightPercentage = 1f / Constants.Game.UI.ActionBarSize;
         
         private readonly ActionBar model;
         private readonly Button[] buttons;
@@ -14,8 +14,8 @@ namespace Bearded.TD.UI.Controls
         public ActionBarView(ActionBar model)
         {
             this.model = model;
-            buttons = new Button[ActionBar.NumActions];
-            for (var i = 0; i < ActionBar.NumActions; i++)
+            buttons = new Button[Constants.Game.UI.ActionBarSize];
+            for (var i = 0; i < buttons.Length; i++)
             {
                 var i1 = i;
                 buttons[i] = new Button { new Label("") { FontSize = 16 } }
