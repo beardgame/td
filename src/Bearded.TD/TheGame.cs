@@ -59,6 +59,7 @@ namespace Bearded.TD
 
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[] {
+                    (typeof(Label), new LabelRenderer(renderContext.Surfaces.ConsoleFontSurface, renderContext.Surfaces.ConsoleFont)),
                     (typeof(Control), new BoxRenderer(renderContext.Surfaces.ConsoleBackground)),
                 });
 
