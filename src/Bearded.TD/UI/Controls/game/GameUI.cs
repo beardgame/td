@@ -13,6 +13,13 @@ namespace Bearded.TD.UI.Controls
         private GameRunner runner;
         private InputManager inputManager;
 
+        public ActionBar ActionBar { get; }
+        
+        public GameUI()
+        {
+            ActionBar = new ActionBar();
+        }
+
         protected override void Initialize(
             DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
         {
@@ -22,6 +29,8 @@ namespace Bearded.TD.UI.Controls
             runner = parameters.runner;
 
             inputManager = dependencies.Resolve<InputManager>();
+
+            ActionBar.Initialize(Game);
         }
 
         public override void Update(UpdateEventArgs args)

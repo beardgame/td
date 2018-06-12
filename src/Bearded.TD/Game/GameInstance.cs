@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
@@ -52,7 +53,7 @@ namespace Bearded.TD.Game
                 GameStatusChanged?.Invoke(status);
             }
         }
-        public event GenericEventHandler<GameStatus> GameStatusChanged;  
+        public event GenericEventHandler<GameStatus> GameStatusChanged;
         
         private readonly PlayerManager playerManager;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Bearded.UI.Controls
 {
@@ -17,6 +18,11 @@ namespace Bearded.UI.Controls
         {
             subscribe(control);
             return control;
+        }
+
+        public static T FirstChildOfType<T>(this IControlParent parent)
+        {
+            return parent.Children.OfType<T>().FirstOrDefault();
         }
     }
 }

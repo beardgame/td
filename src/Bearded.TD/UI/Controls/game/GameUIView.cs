@@ -7,6 +7,10 @@ namespace Bearded.TD.UI.Controls
     {
         public GameUIView(GameUI gameUI, FrameCompositor compositor, GeometryManager geometryManager)
         {
+            Add(new ActionBarView(gameUI.ActionBar)
+                .Anchor(a => a
+                    .Left(width: 160)
+                    .Top(margin: -200, height: 400, relativePercentage: .5)));
             Add(new GameWorldView(gameUI.Game, compositor, geometryManager));
         }
     }

@@ -26,6 +26,10 @@ namespace Bearded.TD.Game.Commands
             {
                 var tilemap = new Tilemap<TileInfo>(radius, tile => new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Unknown));
                 var state = new GameState(game.Meta, new Level(tilemap));
+                foreach (var blueprint in game.Blueprints.Buildings.All)
+                {
+                    state.Technology.UnlockBlueprint(blueprint);
+                }
                 game.InitialiseState(state);
             }
 

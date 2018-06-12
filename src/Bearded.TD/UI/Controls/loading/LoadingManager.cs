@@ -46,10 +46,6 @@ namespace Bearded.TD.UI.Controls
             if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
             {
                 gatherModBlueprints();
-                foreach (var blueprint in Game.Blueprints.Buildings.All)
-                {
-                    Game.State.Technology.UnlockBlueprint(blueprint);
-                }
             }
         }
 

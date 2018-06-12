@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using System;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
@@ -8,20 +9,24 @@ namespace Bearded.TD.UI.Controls
         private const float buttonHeightPercentage = 1f / ActionBar.NumActions;
         
         private readonly ActionBar model;
-        private readonly LabeledButton<string>[] buttons;
+        private readonly Button[] buttons;
 
         public ActionBarView(ActionBar model)
         {
             this.model = model;
-            buttons = new LabeledButton<string>[ActionBar.NumActions];
+            buttons = new Button[ActionBar.NumActions];
             for (var i = 0; i < ActionBar.NumActions; i++)
             {
                 var i1 = i;
-                buttons[i] = new LabeledButton<string>("")
-                    .Anchor(a => a.Top(i1 * buttonHeightPercentage).Bottom((i1 + 1) * buttonHeightPercentage))
-                    .Subscribe(b => model.OnActionClicked(i1));
+                buttons[i] = new Button { new Label("") { FontSize = 16 } }
+                    .Anchor(a => a
+                        .Top(relativePercentage: i1 * buttonHeightPercentage)
+                        .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
+                    .Subscribe(b => b.Clicked += () => model.OnActionClicked(i1));
                 Add(buttons[i]);
             }
+
+            model.ActionsChanged += updateButtonLabels;
             updateButtonLabels();
         }
         
@@ -32,7 +37,7 @@ namespace Bearded.TD.UI.Controls
             for (var i = 0; i < buttons.Length; i++)
             {
                 var label = model.ActionLabelForIndex(i);
-                buttons[i].Label = label ?? "";
+                buttons[i].FirstChildOfType<Label>().Text = label ?? "";
                 buttons[i].Enabled = label != null;
             }
         }
