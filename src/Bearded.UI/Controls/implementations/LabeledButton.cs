@@ -2,7 +2,7 @@
 {
     public class LabeledButton<T> : Button
     {
-        public T Label { get; }
+        public T Label { get; set; }
 
         public LabeledButton(T label)
         {
