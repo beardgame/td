@@ -2,10 +2,16 @@
 
 namespace Bearded.TD.Rendering
 {
-    interface IRenderLayer {
+    interface IRenderLayer
+    {
         Matrix4 ViewMatrix { get; }
         Matrix4 ProjectionMatrix { get; }
         RenderOptions RenderOptions { get; }
         void Draw();
+    }
+
+    interface IDeferredRenderLayer
+    {
+        float FarPlaneDistance { get; }
     }
 }

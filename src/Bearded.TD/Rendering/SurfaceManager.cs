@@ -12,6 +12,7 @@ namespace Bearded.TD.Rendering
 
         public Matrix4Uniform ViewMatrix { get; } = new Matrix4Uniform("view");
         public Matrix4Uniform ProjectionMatrix { get; } = new Matrix4Uniform("projection");
+        public FloatUniform FarPlaneDistance { get; } = new FloatUniform("farPlaneDistance");
 
         public IndexedSurface<PrimitiveVertexData> Primitives { get; }
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
@@ -66,7 +67,7 @@ namespace Bearded.TD.Rendering
 
             LevelSurface = new IndexedSurface<LevelVertex>()
                 .WithShader(Shaders["deferred/gLevel"])
-                .AndSettings(ViewMatrix, ProjectionMatrix);
+                .AndSettings(ViewMatrix, ProjectionMatrix, FarPlaneDistance);
             
             PointLights = new IndexedSurface<PointLightVertex>()
                 .WithShader(Shaders["deferred/pointlight"])

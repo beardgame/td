@@ -3,7 +3,6 @@
 uniform mat4 projection;
 uniform mat4 view;
 
-// inject this
 uniform float farPlaneDistance;
 
 in vec3 vertexPosition;
@@ -26,6 +25,7 @@ void main()
     fragmentColor = vertexColor;
 
     // check if this is actually in 0-1 space between camera and far plane
+    // it probably is not because we don't take near distance into account properly
     float depth = -viewPosition.z / farPlaneDistance;
     fragmentDepth = depth;
 }

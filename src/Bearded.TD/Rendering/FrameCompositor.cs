@@ -63,13 +63,21 @@ namespace Bearded.TD.Rendering
         private void prepareForRendering(IRenderLayer layer)
         {
             layer.Draw();
-            setMatricesFrom(layer);
+            setUniformsFrom(layer);
         }
 
-        private void setMatricesFrom(IRenderLayer layer)
+        private void setUniformsFrom(IRenderLayer layer)
         {
             surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
             surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
+
+            if (layer is IDeferredRenderLayer deferredLayer)
+                setUniformsFrom(deferredLayer);
+        }
+
+        private void setUniformsFrom(IDeferredRenderLayer deferredRenderLayer)
+        {
+            surfaces.FarPlaneDistance.Float = deferredRenderLayer.FarPlaneDistance;
         }
 
         private void renderWithOptions(RenderOptions options)

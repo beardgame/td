@@ -1,18 +1,41 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.Utilities;
 using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameWorldView : DefaultProjectionRenderLayerView
+    class GameWorldView : DefaultProjectionRenderLayerView, IDeferredRenderLayer
     {
         private readonly GameInstance game;
         private readonly GeometryManager geometries;
 
         public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
         public override RenderOptions RenderOptions => RenderOptions.Game;
+
+        private const float fovy = Mathf.PiOver2;
+        private const float lowestZToRender = -10;
+        private const float highestZToRender = 5;
+
+        public override Matrix4 ProjectionMatrix
+        {
+            get
+            {
+                var zNear = Math.Max(game.Camera.Distance - highestZToRender, 0.1f);
+                var zFar = FarPlaneDistance;
+
+                var yMax = zNear * Mathf.Tan(.5f * fovy);
+                var yMin = -yMax;
+                var xMax = yMax * ViewportSize.AspectRatio;
+                var xMin = yMin * ViewportSize.AspectRatio;
+                return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
+            }
+        }
+
+        public float FarPlaneDistance => game.Camera.Distance - lowestZToRender;
 
         public GameWorldView(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
             : base(compositor)
