@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
 
-        public bool IsLoading { get; private set; } = true;
+        private bool isLoading = true;
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
@@ -47,18 +47,22 @@ namespace Bearded.TD.Game
 
         public void FinishLoading()
         {
-            if (!IsLoading)
+            if (!isLoading)
+            {
                 throw new Exception("Can only finish loading game state once.");
+            }
 
             Geometry.Initialise();
             Navigator.Initialise(Geometry);
-            IsLoading = false;
+            isLoading = false;
         }
 
         public void Add(GameObject obj)
         {
             if (obj.Game != null)
+            {
                 throw new Exception("Sad!");
+            }
 
             gameObjects.Add(obj);
             objectsBeingAdded.Push(obj);
@@ -92,7 +96,9 @@ namespace Bearded.TD.Game
             where T : class, IDeletable
         {
             if (obj != ObjectBeingAdded)
+            {
                 throw new Exception("Sad!");
+            }
 
             getList<T>().Add(obj);
         }
@@ -120,7 +126,9 @@ namespace Bearded.TD.Game
             where T : class, IDeletable
         {
             if (lists.TryGetValue(typeof(T), out var list))
+            {
                 return (DeletableObjectList<T>)list;
+            }
 
             var l = new DeletableObjectList<T>();
             lists.Add(typeof(T), l);
@@ -147,14 +155,19 @@ namespace Bearded.TD.Game
             if (faction.Parent != null) return;
 
             if (RootFaction != null)
+            {
                 throw new Exception("Can only have one root faction. All other factions need parents.");
+            }
+
             RootFaction = faction;
         }
 
         public void Advance(TimeSpan elapsedTime)
         {
-            if (IsLoading)
+            if (isLoading)
+            {
                 throw new Exception("Must finish loading before advancing game state.");
+            }
 
             Time += elapsedTime;
 
