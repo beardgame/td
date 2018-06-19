@@ -3,10 +3,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Mods;
 using Bearded.TD.UI.Input;
-using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
@@ -52,7 +52,7 @@ namespace Bearded.TD.Game
                 GameStatusChanged?.Invoke(status);
             }
         }
-        public event GenericEventHandler<GameStatus> GameStatusChanged;  
+        public event GenericEventHandler<GameStatus> GameStatusChanged;
         
         private readonly PlayerManager playerManager;
 

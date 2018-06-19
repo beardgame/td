@@ -12,7 +12,7 @@ namespace Bearded.TD.Networking.MasterServer
 			var request = new Proto.RegisterLobbyRequest
 			{
 				Lobby = lobbyInfo,
-				Address = ByteString.CopyFrom(NetUtility.GetMyAddress(out var mask).GetAddressBytes()),
+				Address = ByteString.CopyFrom(NetUtility.GetMyAddress(out _).GetAddressBytes()),
 				Port = Constants.Network.DefaultPort
 			};
 			var protoMsg = CreateMessage();

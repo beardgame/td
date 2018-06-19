@@ -1,6 +1,4 @@
-﻿using Bearded.TD.Game;
-
-namespace Bearded.TD.UI.Model
+﻿namespace Bearded.TD.Game.Meta
 {
     class SelectionManager
     {

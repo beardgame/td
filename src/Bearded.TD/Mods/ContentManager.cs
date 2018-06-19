@@ -4,7 +4,7 @@ namespace Bearded.TD.Mods
 {
     sealed class ContentManager
     {
-        public ReadOnlyCollection<ModMetadata> Mods { get; set; }
+        public ReadOnlyCollection<ModMetadata> Mods { get; }
 
         public ContentManager()
         {

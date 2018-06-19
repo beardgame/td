@@ -1,7 +1,6 @@
 ﻿using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 

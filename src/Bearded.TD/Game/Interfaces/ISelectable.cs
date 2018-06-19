@@ -1,4 +1,4 @@
-﻿using Bearded.TD.UI.Model;
+﻿using Bearded.TD.Game.Meta;
 
 namespace Bearded.TD.Game
 {

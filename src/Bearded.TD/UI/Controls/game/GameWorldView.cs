@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
-using Bearded.Utilities.SpaceTime;
 using OpenTK;
-using OpenTK.Input;
+using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -93,6 +90,18 @@ namespace Bearded.TD.UI.Controls
             {
                 state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
             }
+        }
+
+        public override void MouseMoved(MouseEventArgs eventArgs)
+        {
+            base.MouseMoved(eventArgs);
+            game.PlayerInput.IsMouseFocused = true;
+        }
+
+        public override void MouseExited(MouseEventArgs eventArgs)
+        {
+            base.MouseExited(eventArgs);
+            game.PlayerInput.IsMouseFocused = false;
         }
     }
 }

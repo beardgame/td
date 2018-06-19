@@ -67,6 +67,8 @@ namespace Bearded.TD.Mods
                 var units = loadUnits();
 
                 return new Mod(
+                    meta.Id,
+                    meta.Name,
                     footprints,
                     buildings,
                     units,

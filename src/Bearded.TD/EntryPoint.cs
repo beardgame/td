@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace Bearded.TD
         public static void Main(string[] args)
         {
             var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            Directory.SetCurrentDirectory(exeDir);
+            Directory.SetCurrentDirectory(exeDir ?? throw new InvalidOperationException());
 
             using (Toolkit.Init(new ToolkitOptions {Backend = PlatformBackend.PreferNative}))
             using (var writer = new StreamWriter(Constants.Paths.LogFile, false) {AutoFlush = true})

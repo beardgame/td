@@ -87,7 +87,7 @@ namespace Bearded.TD.Meta
         private static void setSetting(Logger logger, CommandParameters p)
         {
             var splitSettingName = p.Args[0].Split('.');
-            (var jsonBefore, var jsonAfter) = buildJson(splitSettingName, 0);
+            var (jsonBefore, jsonAfter) = buildJson(splitSettingName, 0);
             var json = jsonBefore + p.Args[1] + jsonAfter;
             try
             {
@@ -105,7 +105,7 @@ namespace Bearded.TD.Meta
         private static (string, string) buildJson(string[] parts, int i)
         {
             if (i >= parts.Length) return ("", "");
-            (var before, var after) = buildJson(parts, i + 1);
+            var (before, after) = buildJson(parts, i + 1);
             return ($"{{ \"{parts[i]}\": {before}", $"{after} }}");
         }
     }

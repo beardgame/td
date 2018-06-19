@@ -1,8 +1,8 @@
 ﻿using System;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
-using Bearded.TD.UI.Model;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 

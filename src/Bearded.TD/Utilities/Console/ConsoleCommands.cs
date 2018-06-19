@@ -53,25 +53,25 @@ namespace Bearded.TD.Utilities.Console
 
         public static bool TryRun(string command, Logger logger, CommandParameters parameters)
         {
-            Command c;
-            if (!dictionary.TryGetValue(command, out c)) return false;
+            if (!dictionary.TryGetValue(command, out var c)) return false;
             c.Run(logger, parameters);
             return true;
         }
 
         public static PrefixTrie ParameterPrefixesFor(string command)
         {
-            Command c;
-            if (!dictionary.TryGetValue(command, out c))
+            if (!dictionary.TryGetValue(command, out var c))
                 return null;
 
             if (c.Attribute.ParameterCompletion == null)
                 return null;
 
-            PrefixTrie prefixes;
-            return parameterCompletion.TryGetValue(c.Attribute.ParameterCompletion, out prefixes)
-                ? prefixes
-                : null;
+            lock (parameterCompletion)
+            {
+                return parameterCompletion.TryGetValue(c.Attribute.ParameterCompletion, out var prefixes)
+                    ? prefixes
+                    : null;
+            }
         }
 
         public static void AddParameterCompletion(string parameterId, IEnumerable<string> prefixes)

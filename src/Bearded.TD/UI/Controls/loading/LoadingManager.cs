@@ -42,6 +42,7 @@ namespace Bearded.TD.UI.Controls
                 DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
                 Game.ContentManager.Mods.ForEach(loadMod);
             }
+            
             if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
             {
                 gatherModBlueprints();

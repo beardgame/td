@@ -9,10 +9,12 @@ namespace Bearded.UI.Controls
     {
         public event VoidEventHandler Clicked;
 
+        public bool Enabled { get; set; } = true;
+
         public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
         {
             base.MouseButtonHit(eventArgs);
-            if (eventArgs.MouseButton == MouseButton.Left)
+            if (eventArgs.MouseButton == MouseButton.Left && Enabled)
             {
                 Clicked?.Invoke();
             }
