@@ -9,12 +9,17 @@ namespace Bearded.UI.Controls
     {
         public event VoidEventHandler Clicked;
 
-        public bool Enabled { get; set; } = true;
+        public bool IsEnabled { get; set; } = true;
+
+        public Button()
+        {
+            CanBeFocused = true;
+        }
 
         public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
         {
             base.MouseButtonHit(eventArgs);
-            if (eventArgs.MouseButton == MouseButton.Left && Enabled)
+            if (eventArgs.MouseButton == MouseButton.Left && IsEnabled)
             {
                 Clicked?.Invoke();
             }

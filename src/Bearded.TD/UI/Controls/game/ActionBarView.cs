@@ -37,7 +37,7 @@ namespace Bearded.TD.UI.Controls
             {
                 var label = model.ActionLabelForIndex(i);
                 buttons[i].FirstChildOfType<Label>().Text = label ?? "";
-                buttons[i].Enabled = label != null;
+                buttons[i].IsEnabled = label != null;
             }
         }
     }

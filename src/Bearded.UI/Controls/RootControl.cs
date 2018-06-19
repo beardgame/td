@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Bearded.UI.Rendering;
 using OpenTK;
 
@@ -7,6 +8,8 @@ namespace Bearded.UI.Controls
     public class RootControl : IControlParent
     {
         private readonly CompositeControl controls;
+
+        private readonly FocusManager focusManager = new FocusManager();
 
         private Frame viewportFrame;
         public Frame Frame { get; private set; }
@@ -45,5 +48,15 @@ namespace Bearded.UI.Controls
         public void Add(Control child) => controls.Add(child);
         public void AddOnTopOf(Control reference, Control child) => controls.AddOnTopOf(reference, child);
         public void Remove(Control child) => controls.Remove(child);
+
+        public bool FocusDescendant(Control control)
+        {
+            if (!control.IsDescendantOf(this))
+                throw new InvalidOperationException("Can only focus descendant.");
+            
+            focusManager.Focus(control);
+
+            return true;
+        }
     }
 }

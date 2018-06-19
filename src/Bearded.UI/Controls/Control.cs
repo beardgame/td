@@ -15,6 +15,38 @@ namespace Bearded.UI.Controls
         public VerticalAnchors VerticalAnchors { get; private set; } = Anchors.Default.V;
 
         public Frame Frame => getFrame();
+
+        public bool IsFocused { get; private set; }
+        public bool CanBeFocused { get; protected set; }
+
+        public void Focus()
+        {
+            if (!TryFocus())
+                throw new InvalidOperationException("Could not focus control.");
+        }
+
+        public void Unfocus()
+        {
+            if (IsFocused)
+                LostFocus();
+
+            IsFocused = false;
+        }
+
+        public virtual bool TryFocus()
+        {
+            if (!CanBeFocused)
+                return false;
+            if (IsFocused)
+                return true;
+
+            IsFocused = Parent.FocusDescendant(this);
+
+            if (IsFocused)
+                Focused();
+
+            return IsFocused;
+        }
       
         public void SetAnchors(HorizontalAnchors horizontal, VerticalAnchors vertical)
         {
@@ -91,5 +123,8 @@ namespace Bearded.UI.Controls
         public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
         public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
         public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
+
+        public virtual void Focused() { }
+        public virtual void LostFocus() { }
     }
 }

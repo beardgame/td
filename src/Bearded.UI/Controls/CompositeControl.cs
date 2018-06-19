@@ -35,6 +35,8 @@ namespace Bearded.UI.Controls
             children.Remove(child);
         }
 
+        public bool FocusDescendant(Control control) => Parent.FocusDescendant(control);
+
         public override void SetFrameNeedsUpdate()
         {
             base.SetFrameNeedsUpdate();

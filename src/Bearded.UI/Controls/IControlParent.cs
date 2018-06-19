@@ -9,5 +9,6 @@ namespace Bearded.UI.Controls
         void Add(Control child);
         void AddOnTopOf(Control reference, Control child);
         void Remove(Control child);
+        bool FocusDescendant(Control control);
     }
 }
