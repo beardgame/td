@@ -18,7 +18,7 @@ namespace Bearded.TD.UI.Controls
                     new Button {new Label("Exit")}
                         .Anchor(a => a.Top(margin: 100, height: 50))
                         .Subscribe(b => b.Clicked += model.OnQuitGameButtonClicked)
-                }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 200))
+                }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 150))
             );
         }
     }

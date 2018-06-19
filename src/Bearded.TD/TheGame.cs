@@ -108,7 +108,6 @@ namespace Bearded.TD
         protected override void OnUpdate(UpdateEventArgs e)
         {
             inputManager.Update(Focused);
-            Console.WriteLine(inputManager.MousePosition);
 
             if (inputManager.IsKeyPressed(Key.AltLeft) && inputManager.IsKeyHit(Key.F4))
             {
