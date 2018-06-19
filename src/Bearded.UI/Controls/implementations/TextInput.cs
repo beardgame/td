@@ -87,12 +87,12 @@ namespace Bearded.UI.Controls
         
         public void MoveCursorToEnd()
         {
-            CursorPosition = text.Length;
+            cursorPosition = text.Length;
         }
 
         public void MoveCursorToBeginning()
         {
-            CursorPosition = 0;
+            cursorPosition = 0;
         }
 
         public void RemoveCharacterBeforeCursorIfPossible()
