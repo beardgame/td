@@ -67,6 +67,9 @@ namespace Bearded.UI.Controls
                 case BackSpace:
                     RemoveCharacterBeforeCursorIfPossible();
                     break;
+                case Delete:
+                    RemoveCharacterAfterCursorIfPossible();
+                    break;
                 case Home:
                     MoveCursorToBeginning();
                     break;
@@ -103,6 +106,16 @@ namespace Bearded.UI.Controls
             cursorPosition--;
             text = text.Remove(cursorPosition, 1);
             
+            onTextChanged();
+        }
+
+        public void RemoveCharacterAfterCursorIfPossible()
+        {
+            if (cursorPosition == text.Length)
+                return;
+            
+            text = text.Remove(cursorPosition, 1);
+
             onTextChanged();
         }
 
