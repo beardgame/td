@@ -18,6 +18,7 @@ using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD
 {
@@ -57,10 +58,12 @@ namespace Bearded.TD
 
             renderContext = new RenderContext();
 
+            var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[] {
-                    (typeof(Label), new LabelRenderer(renderContext.Surfaces.ConsoleFontSurface, renderContext.Surfaces.ConsoleFont)),
-                    (typeof(Control), new BoxRenderer(renderContext.Surfaces.ConsoleBackground)),
+                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)), 
+                    (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground)),
                 });
 
             inputManager = new InputManager(Mouse);
