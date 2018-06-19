@@ -129,7 +129,6 @@ namespace Bearded.UI.Controls
 
         private int clampedCursorPosition(int candidate) => candidate.Clamped(0, text.Length);
 
-
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
 }
