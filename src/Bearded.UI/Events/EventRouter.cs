@@ -28,5 +28,25 @@ namespace Bearded.UI.Events
 
             return new EventPropagationPath(path.AsReadOnly());
         }
+
+        public static EventPropagationPath FindPropagationPath(IControlParent root, Control leaf)
+        {
+            var parent = leaf.Parent;
+            var path = new List<Control>{ leaf };
+
+            while (parent != root)
+            {
+                if (!(parent is Control parentAsControl))
+                {
+                    throw new InvalidOperationException("Tried creating path between unconnected controls.");
+                }
+                path.Add(parentAsControl);
+                
+                parent = parentAsControl.Parent;
+            }
+
+            path.Reverse();
+            return new EventPropagationPath(path.AsReadOnly());
+        }
     }
 }
