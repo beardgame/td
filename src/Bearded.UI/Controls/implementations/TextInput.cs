@@ -1,6 +1,8 @@
 ﻿using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
+using static OpenTK.Input.Key;
+using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 
 namespace Bearded.UI.Controls
 {
@@ -40,21 +42,68 @@ namespace Bearded.UI.Controls
             CanBeFocused = true;
         }
 
-        private void ensureValidCursorPosition()
+        public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
         {
-            cursorPosition = clampedCursorPosition(cursorPosition);
+            eventArgs.Handled = TryFocus();
         }
 
-        private int clampedCursorPosition(int candidate) => candidate.Clamped(0, text.Length);
-
-        private void onTextChanged()
+        public override void KeyHit(KeyEventArgs eventArgs)
         {
-            TextChanged?.Invoke();
+            eventArgs.Handled = tryHandleKeyHit(eventArgs);
         }
 
+        private bool tryHandleKeyHit(KeyEventArgs eventArgs)
+        {
+            switch (eventArgs.Key)
+            {
+                case Left:
+                    cursorPosition--;
+                    ensureValidCursorPosition();
+                    break;
+                case Right:
+                    cursorPosition++;
+                    ensureValidCursorPosition();
+                    break;
+                case BackSpace:
+                    RemoveCharacterBeforeCursorIfPossible();
+                    break;
+                case Home:
+                    MoveCursorToBeginning();
+                    break;
+                case End:
+                    MoveCursorToEnd();
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
+
+        public override void CharacterTyped(CharEventArgs eventArgs)
+        {
+            InsertTextAtCursor(eventArgs.Character.ToString());
+            eventArgs.Handled = true;
+        }
+        
         public void MoveCursorToEnd()
         {
             CursorPosition = text.Length;
+        }
+
+        public void MoveCursorToBeginning()
+        {
+            CursorPosition = 0;
+        }
+
+        public void RemoveCharacterBeforeCursorIfPossible()
+        {
+            if (cursorPosition == 0)
+                return;
+
+            cursorPosition--;
+            text = text.Remove(cursorPosition, 1);
+            
+            onTextChanged();
         }
 
         public void InsertTextAtCursor(string textToInsert)
@@ -63,19 +112,23 @@ namespace Bearded.UI.Controls
                 return;
 
             text = text.Insert(cursorPosition, textToInsert);
-
             cursorPosition += textToInsert.Length;
+
+            onTextChanged();
         }
 
-        public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
+        private void onTextChanged()
         {
-            eventArgs.Handled = TryFocus();
+            TextChanged?.Invoke();
         }
 
-        public override void KeyHit(KeyEventArgs eventArgs)
+        private void ensureValidCursorPosition()
         {
-            base.KeyHit(eventArgs);
+            cursorPosition = clampedCursorPosition(cursorPosition);
         }
+
+        private int clampedCursorPosition(int candidate) => candidate.Clamped(0, text.Length);
+
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
