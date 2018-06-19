@@ -9,7 +9,7 @@ namespace Bearded.UI.Controls
     {
         private readonly CompositeControl controls;
 
-        private readonly FocusManager focusManager = new FocusManager();
+        public FocusManager FocusManager { get; }
 
         private Frame viewportFrame;
         public Frame Frame { get; private set; }
@@ -23,6 +23,8 @@ namespace Bearded.UI.Controls
         {
             controls = rootCompositeControl;
             controls.AddTo(this);
+
+            FocusManager = new FocusManager();
         }
 
         public void SetViewport(int width, int height, float uiScale)
@@ -54,7 +56,7 @@ namespace Bearded.UI.Controls
             if (!control.IsDescendantOf(this))
                 throw new InvalidOperationException("Can only focus descendant.");
             
-            focusManager.Focus(control);
+            FocusManager.Focus(control);
 
             return true;
         }

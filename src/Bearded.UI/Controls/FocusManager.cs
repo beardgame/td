@@ -1,9 +1,18 @@
 ﻿namespace Bearded.UI.Controls
 {
-    internal class FocusManager
+    public class FocusManager
     {
         private Control currentFocus;
-        
+
+        public Control FocusedControl
+        {
+            get
+            {
+                if (currentFocus == null) return null;
+                return !currentFocus.IsFocused ? null : currentFocus;
+            }
+        }
+
         public void Focus(Control control)
         {
             ensureNoFocus();

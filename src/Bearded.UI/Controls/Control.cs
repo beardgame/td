@@ -128,6 +128,8 @@ namespace Bearded.UI.Controls
         public virtual void KeyHit(KeyEventArgs eventArgs) { }
         public virtual void PreviewKeyReleased(KeyEventArgs eventArgs) { }
         public virtual void KeyReleased(KeyEventArgs eventArgs) { }
+        public virtual void PreviewCharacterTyped(CharEventArgs eventArgs) { }
+        public virtual void CharacterTyped(CharEventArgs eventArgs) { }
 
         public virtual void Focused() { }
         public virtual void LostFocus() { }
