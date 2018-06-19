@@ -25,15 +25,6 @@ void main()
     vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
     vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;
 
-
-    //float x = (fragmentPosition.z + 5) / 6;
-    //outRGB = vec4(x, x, x, 1);
-    //return;
-
-
-
-    //vec3 fragmentPosition = vec3(fragmentXY, fragmentZ);
-
     vec3 vectorToLight = lightPosition - fragmentPosition;
     float distanceToLightSquared = dot(vectorToLight, vectorToLight);
 

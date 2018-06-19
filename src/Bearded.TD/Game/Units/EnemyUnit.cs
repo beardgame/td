@@ -124,6 +124,12 @@ namespace Bearded.TD.Game.Units
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
             geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
+
+            geometries.PointLight.Draw(
+                Position.NumericValue.WithZ(0.5f),
+                1.5f,
+                blueprint.Color
+                );
         }
 
         public Direction GetNextDirection()

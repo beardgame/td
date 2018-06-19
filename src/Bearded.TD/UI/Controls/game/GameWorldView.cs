@@ -93,32 +93,6 @@ namespace Bearded.TD.UI.Controls
             {
                 state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
             }
-
-            var lights = 10;
-            var radius = 10;
-            foreach (var i in Enumerable.Range(0, lights))
-            {
-                var direction = Direction2.FromRadians(Mathf.TwoPi * i / lights);
-                var point = direction * radius.U();
-
-                var lightRadius = 2 + 3.0f * i / lights;
-
-                geometries.PointLight.Draw(
-                    point.NumericValue.WithZ(0.5f),
-                    lightRadius, Color.White * 0.5f
-                );
-            }
-
-            var cursor = game.Camera.TransformScreenToWorldPos(
-                new Vector2(
-                    Mouse.GetState().X,
-                    Mouse.GetState().Y)
-            );
-
-            geometries.PointLight.Draw(
-                cursor.WithZ(0.5f),
-                3, Color.Pink
-            );
         }
     }
 }
