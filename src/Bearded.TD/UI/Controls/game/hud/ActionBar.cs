@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Game;
+using Bearded.TD.Game.Input;
 using Bearded.TD.Mods.Models;
-using Bearded.TD.UI.Input;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls

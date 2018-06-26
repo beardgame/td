@@ -32,6 +32,7 @@ namespace Bearded.TD.Networking
             {
                 if (message.MessageType == NetIncomingMessageType.StatusChanged)
                 {
+                    // Don't read the status here, because we don't want to pop the byte before others get to it.
                     switch (message.SenderConnection.Status)
                     {
                         case NetConnectionStatus.Connected:

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 
-namespace Bearded.TD.UI.Input
+namespace Bearded.TD.Game.Input
 {
     class DebugSetTileTypeInteractionHandler : InteractionHandler
     {
