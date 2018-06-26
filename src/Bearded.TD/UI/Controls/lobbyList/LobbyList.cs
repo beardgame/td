@@ -1,5 +1,4 @@
-﻿using System;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
