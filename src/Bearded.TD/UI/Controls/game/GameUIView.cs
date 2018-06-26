@@ -15,6 +15,10 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Left(width: 160)
                     .Top(margin: -200, height: 400, relativePercentage: .5)));
+            Add(new GameStatusUIView(gameUI.GameStatusUI)
+                .Anchor(a => a
+                    .Right(width: 200)
+                    .Top(margin: 0, height: 40)));
             Add(new GameWorldView(gameUI.Game, compositor, geometryManager));
         }
     }
