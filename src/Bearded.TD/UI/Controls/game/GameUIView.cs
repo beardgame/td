@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 40)));
-            Add(new GameWorldView(gameUI.Game, compositor, geometryManager));
+            Add(new GameWorldControl(gameUI.Game, compositor, geometryManager));
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Bearded.TD
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);
 
-            rootControl = new RootControl(new TDRootControl(renderContext.Compositor));
+            rootControl = new RootControl(new DefaultRenderLayerControl(renderContext.Compositor));
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);

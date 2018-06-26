@@ -5,7 +5,7 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    abstract class DefaultProjectionRenderLayerView : RenderLayerCompositeControl
+    abstract class DefaultProjectionRenderLayerControl : RenderLayerCompositeControl
     {
         private const float fovy = Mathf.PiOver2;
         private const float zNear = .1f;
@@ -25,7 +25,7 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        protected DefaultProjectionRenderLayerView(FrameCompositor compositor)
+        protected DefaultProjectionRenderLayerControl(FrameCompositor compositor)
             : base(compositor)
         {
         }

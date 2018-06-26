@@ -9,7 +9,7 @@ using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameWorldView : DefaultProjectionRenderLayerView, IDeferredRenderLayer
+    class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLayer
     {
         private readonly GameInstance game;
         private readonly GeometryManager geometries;
@@ -38,7 +38,7 @@ namespace Bearded.TD.UI.Controls
 
         public float FarPlaneDistance => game.Camera.Distance - lowestZToRender;
 
-        public GameWorldView(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
+        public GameWorldControl(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
             : base(compositor)
         {
             this.game = game;
