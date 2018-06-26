@@ -136,7 +136,8 @@ namespace Bearded.TD.Game.Players
 
         private void handleStatusChange(NetIncomingMessage msg)
         {
-            switch (msg.SenderConnection.Status)
+            var status = (NetConnectionStatus) msg.ReadByte();
+            switch (status)
             {
                 case NetConnectionStatus.Connected:
                     getSender(msg).ConnectionState = PlayerConnectionState.Waiting;

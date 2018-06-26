@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using Bearded.TD.Meta;
+using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -12,7 +13,7 @@ namespace Bearded.TD.UI.Controls
                     .Left(margin: 20, width: 250))
                 .Subscribe(b => b.Clicked += model.OnBackToMenuButtonClicked));
 
-            var manualTextInput = new TextInput();
+            var manualTextInput = new TextInput { Text = UserSettings.Instance.Misc.SavedNetworkAddress };
 
             Add(new CompositeControl
             {

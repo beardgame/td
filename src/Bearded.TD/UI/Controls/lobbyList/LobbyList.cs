@@ -1,16 +1,18 @@
-﻿using Bearded.TD.Game;
+﻿using System;
+using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.UI.Navigation;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class LobbyList : NavigationNode<Void>, INetworkMessageHandler
+    sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
     {
         private Logger logger;
         private ContentManager contentManager;
@@ -18,6 +20,8 @@ namespace Bearded.TD.UI.Controls
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
+            base.Initialize(dependencies, parameters);
+
             logger = dependencies.Resolve<Logger>();
             contentManager = dependencies.Resolve<ContentManager>();
 
@@ -31,6 +35,11 @@ namespace Bearded.TD.UI.Controls
             base.Terminate();
 
             networkInterface.UnregisterMessageHandler(this);
+        }
+
+        public override void Update(UpdateEventArgs args)
+        {
+            networkInterface.ConsumeMessages();
         }
 
         public bool Accepts(NetIncomingMessage message)
@@ -63,7 +72,7 @@ namespace Bearded.TD.UI.Controls
 
         private void handleStatusChange(NetIncomingMessage msg)
         {
-            var status = (NetConnectionStatus) msg.ReadByte(); // Read status byte.	
+            var status = (NetConnectionStatus) msg.ReadByte(); // Read status byte.
             switch (status)
             {
                 case NetConnectionStatus.Connected:
