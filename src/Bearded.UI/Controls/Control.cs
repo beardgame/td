@@ -16,6 +16,27 @@ namespace Bearded.UI.Controls
 
         public Frame Frame => getFrame();
 
+        private bool isVisible = true;
+        public bool IsVisible
+        {
+            get => isVisible;
+            set
+            {
+                if (isVisible == value) return;
+                isVisible = value;
+
+                if (isVisible)
+                {
+                    MadeVisible();
+                }
+                else
+                {
+                    MadeInvisible();
+                    if (IsFocused) Unfocus();
+                }
+            }
+        }
+
         public bool IsFocused { get; private set; }
         public bool CanBeFocused { get; protected set; }
 
@@ -35,7 +56,7 @@ namespace Bearded.UI.Controls
 
         public virtual bool TryFocus()
         {
-            if (!CanBeFocused)
+            if (!CanBeFocused || !IsVisible)
                 return false;
             if (IsFocused)
                 return true;
@@ -133,5 +154,7 @@ namespace Bearded.UI.Controls
 
         public virtual void Focused() { }
         public virtual void LostFocus() { }
+        public virtual void MadeVisible() { } // Not called on initialization
+        public virtual void MadeInvisible() { }
     }
 }

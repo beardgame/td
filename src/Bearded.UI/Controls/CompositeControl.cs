@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Bearded.UI.Rendering;
 
 namespace Bearded.UI.Controls
@@ -51,7 +52,7 @@ namespace Bearded.UI.Controls
         {
             base.Render(r);
 
-            foreach (var child in children)
+            foreach (var child in children.Where(c => c.IsVisible))
             {
                 child.Render(r);
             }
