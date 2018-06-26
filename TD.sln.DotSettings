@@ -119,7 +119,7 @@ namespace $NAMESPACE$&#xD;
 {&#xD;
     sealed class $CLASS$ : CompositeControl&#xD;
     {&#xD;
-        public ActionBar()&#xD;
+        public $CLASS$()&#xD;
         {&#xD;
 &#xD;
         }&#xD;
