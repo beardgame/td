@@ -37,7 +37,7 @@ namespace Bearded.TD.UI.Controls
             base.Draw();
         }
 
-        protected void UpdateViewport()
+        protected virtual void UpdateViewport()
         {
             var frame = Frame;
             ViewportSize = new ViewportSize((int)frame.Size.X, (int)frame.Size.Y);

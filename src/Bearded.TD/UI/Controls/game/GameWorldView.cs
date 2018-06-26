@@ -47,7 +47,7 @@ namespace Bearded.TD.UI.Controls
 
         public override void Draw()
         {
-            updateViewport();
+            UpdateViewport();
 
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
@@ -59,9 +59,9 @@ namespace Bearded.TD.UI.Controls
             drawDebug(state);
         }
 
-        private void updateViewport()
+        protected override void UpdateViewport()
         {
-            UpdateViewport();
+            base.UpdateViewport();
             game.Camera.OnViewportSizeChanged(ViewportSize);
         }
 
