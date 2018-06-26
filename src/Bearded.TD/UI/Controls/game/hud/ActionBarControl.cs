@@ -3,14 +3,14 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class ActionBarView : CompositeControl
+    sealed class ActionBarControl : CompositeControl
     {
         private const float buttonHeightPercentage = 1f / Constants.Game.UI.ActionBarSize;
         
         private readonly ActionBar model;
         private readonly Button[] buttons;
 
-        public ActionBarView(ActionBar model)
+        public ActionBarControl(ActionBar model)
         {
             this.model = model;
             buttons = new Button[Constants.Game.UI.ActionBarSize];

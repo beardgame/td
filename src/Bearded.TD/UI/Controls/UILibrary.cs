@@ -14,11 +14,11 @@ namespace Bearded.TD.UI.Controls
             // Please keep alphabetically sorted.
             return NavigationFactories.ForBoth()
                 .Add<GameUI, (GameInstance, GameRunner)>(
-                    m => new GameUIView(m, renderContext.Compositor, renderContext.Geometries))
-                .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenView(m))
-                .Add<Lobby, LobbyManager>(m => new LobbyView(m))
-                .Add<LobbyList, Void>(m => new LobbyListView(m))
-                .Add<MainMenu, Void>(m => new MainMenuView(m))
+                    m => new GameUIControl(m, renderContext.Compositor, renderContext.Geometries))
+                .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))
+                .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
+                .Add<LobbyList, Void>(m => new LobbyListControl(m))
+                .Add<MainMenu, Void>(m => new MainMenuControl(m))
                 .ToDictionaries();
         }
     }

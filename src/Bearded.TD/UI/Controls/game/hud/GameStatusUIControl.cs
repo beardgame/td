@@ -4,12 +4,12 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class GameStatusUIView : CompositeControl
+    sealed class GameStatusUIControl : CompositeControl
     {
         private readonly GameStatusUI model;
         private readonly Label resourcesLabel;
 
-        public GameStatusUIView(GameStatusUI model)
+        public GameStatusUIControl(GameStatusUI model)
         {
             this.model = model;
 
