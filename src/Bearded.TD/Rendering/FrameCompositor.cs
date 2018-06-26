@@ -12,7 +12,7 @@ namespace Bearded.TD.Rendering
         private DateTime nextShaderReloadTime = DateTime.UtcNow;
         private readonly SurfaceManager surfaces;
         private readonly DeferredRenderer deferredRenderer;
-        private ViewportSize viewPort;
+        public ViewportSize ViewPort { get; private set; }
 
         public FrameCompositor(SurfaceManager surfaces)
         {
@@ -22,7 +22,7 @@ namespace Bearded.TD.Rendering
 
         public void SetViewportSize(ViewportSize viewPort)
         {
-            this.viewPort = viewPort;
+            ViewPort = viewPort;
             deferredRenderer.OnResize(viewPort);
         }
 
@@ -30,7 +30,7 @@ namespace Bearded.TD.Rendering
         {
             reloadShadersIfNeeded();
 
-            GL.Viewport(0, 0, viewPort.Width, viewPort.Height);
+            GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
 
             var argb = Color.DarkSlateGray * 0.5f;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
@@ -125,9 +125,16 @@ namespace Bearded.TD.Rendering
 
         private void setViewportFrom(RenderOptions options)
         {
-            var ((x, y), (w, h)) = options.OverrideViewport ?? ((0, 0), (viewPort.Width, viewPort.Height));
-
-            GL.Viewport(x, y, w, h);
+            if (options.OverrideViewport.HasValue)
+            {
+                var ((x, y), (w, h)) = options.OverrideViewport.Value;
+                GL.Enable(EnableCap.ScissorTest);
+                GL.Scissor(x, y, w, h);
+            }
+            else
+            {
+                GL.Disable(EnableCap.ScissorTest);
+            }
         }
 
         private void renderDeferred()

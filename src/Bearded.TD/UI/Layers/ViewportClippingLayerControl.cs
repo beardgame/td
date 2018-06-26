@@ -11,7 +11,11 @@ namespace Bearded.TD.UI.Layers
             var topLeft = frame.TopLeft;
             var size = frame.Size;
 
-            return (((int)topLeft.X, (int)topLeft.Y), ((int)size.X, (int)size.Y));
+            var (x, y, w, h) = ((int)topLeft.X, (int)topLeft.Y, (int)size.X, (int)size.Y);
+
+            var openGly = ViewportSize.Height - (y + h);
+
+            return ((x, openGly), (w, h));
         }
     }
 }

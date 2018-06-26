@@ -4,6 +4,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using OpenTK;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
@@ -47,8 +48,6 @@ namespace Bearded.TD.UI.Controls
 
         public override void Draw()
         {
-            UpdateViewport();
-
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
             var state = game.State;
@@ -59,9 +58,9 @@ namespace Bearded.TD.UI.Controls
             drawDebug(state);
         }
 
-        protected override void UpdateViewport()
+        public override void UpdateViewport(ViewportSize viewport)
         {
-            base.UpdateViewport();
+            base.UpdateViewport(viewport);
             game.Camera.OnViewportSizeChanged(ViewportSize);
         }
 

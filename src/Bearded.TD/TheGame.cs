@@ -9,6 +9,7 @@ using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;

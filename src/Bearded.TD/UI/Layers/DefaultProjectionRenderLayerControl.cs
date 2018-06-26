@@ -9,8 +9,6 @@ namespace Bearded.TD.UI.Layers
         private const float zNear = .1f;
         private const float zFar = 1024f;
 
-        protected ViewportSize ViewportSize { get; private set; }
-        
         public override Matrix4 ProjectionMatrix
         {
             get
@@ -21,19 +19,6 @@ namespace Bearded.TD.UI.Layers
                 var xMin = yMin * ViewportSize.AspectRatio;
                 return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
             }
-        }
-
-        public override void Draw()
-        {
-            UpdateViewport();
-            
-            base.Draw();
-        }
-
-        protected virtual void UpdateViewport()
-        {
-            var frame = Frame;
-            ViewportSize = new ViewportSize((int)frame.Size.X, (int)frame.Size.Y);
         }
     }
 }

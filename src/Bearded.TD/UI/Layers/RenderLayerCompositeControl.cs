@@ -55,6 +55,13 @@ namespace Bearded.TD.UI.Layers
         public abstract Matrix4 ProjectionMatrix { get; }
         public abstract RenderOptions RenderOptions { get; }
 
+        protected ViewportSize ViewportSize { get; private set; }
+
+        public virtual void UpdateViewport(ViewportSize viewport)
+        {
+            ViewportSize = viewport;
+        }
+
         public virtual void Draw()
         {
             base.Render(renderRouter);

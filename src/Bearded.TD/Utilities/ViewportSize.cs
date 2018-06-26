@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bearded.TD.UI.Layers
+namespace Bearded.TD.Utilities
 {
     public struct ViewportSize : IEquatable<ViewportSize>
     {

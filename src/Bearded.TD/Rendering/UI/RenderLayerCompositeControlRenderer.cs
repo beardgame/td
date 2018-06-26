@@ -14,6 +14,7 @@ namespace Bearded.TD.Rendering.UI
 
         public void Render(RenderLayerCompositeControl control)
         {
+            control.UpdateViewport(compositor.ViewPort);
             compositor.RenderLayer(control);
         }
     }
