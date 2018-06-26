@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Rendering;
+﻿using Bearded.TD.UI.Layers;
 
 namespace Bearded.TD.UI
 {

@@ -2,19 +2,12 @@
 using Bearded.UI.Rendering;
 using OpenTK;
 
-namespace Bearded.TD.Rendering.UI
+namespace Bearded.TD.UI.Layers
 {
     abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
     {
-        private readonly FrameCompositor compositor;
-
         private IRendererRouter renderRouter;
         private bool skipNextRender;
-
-        public RenderLayerCompositeControl(FrameCompositor compositor)
-        {
-            this.compositor = compositor;
-        }
 
         public override void Render(IRendererRouter router)
         {
@@ -32,7 +25,7 @@ namespace Bearded.TD.Rendering.UI
             renderDescendendRenderLayerControls(router, this);
 
             renderRouter = router;
-            compositor.RenderLayer(this);
+            router.Render(this);
             renderRouter = null;
         }
 

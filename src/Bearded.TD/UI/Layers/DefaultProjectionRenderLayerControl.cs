@@ -1,9 +1,8 @@
-﻿using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.UI;
+﻿using Bearded.TD.UI.Controls;
 using Bearded.Utilities;
 using OpenTK;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Layers
 {
     abstract class DefaultProjectionRenderLayerControl : RenderLayerCompositeControl
     {
@@ -23,11 +22,6 @@ namespace Bearded.TD.UI.Controls
                 var xMin = yMin * ViewportSize.AspectRatio;
                 return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
             }
-        }
-
-        protected DefaultProjectionRenderLayerControl(FrameCompositor compositor)
-            : base(compositor)
-        {
         }
 
         public override void Draw()

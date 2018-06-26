@@ -1,16 +1,11 @@
 ﻿using Bearded.TD.Rendering;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Layers
 {
     class ViewportClippingLayerControl : DefaultRenderLayerControl
     {
         public override RenderOptions RenderOptions => new RenderOptions(false, getViewportFromFrame());
-
-        public ViewportClippingLayerControl(FrameCompositor compositor)
-            : base(compositor)
-        {
-        }
-
+        
         private ((int, int), (int, int)) getViewportFromFrame()
         {
             var frame = Frame;
