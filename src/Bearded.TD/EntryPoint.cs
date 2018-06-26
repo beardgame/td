@@ -17,21 +17,22 @@ namespace Bearded.TD
             Directory.SetCurrentDirectory(exeDir ?? throw new InvalidOperationException());
 
             using (Toolkit.Init(new ToolkitOptions {Backend = PlatformBackend.PreferNative}))
-            using (var writer = new StreamWriter(Constants.Paths.LogFile, false) {AutoFlush = true})
+            using (var writer = new StreamWriter(new FileStream(Constants.Paths.LogFile, FileMode.Create,
+                FileAccess.ReadWrite, FileShare.ReadWrite)) {AutoFlush = true})
             {
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
                 var logger = new Logger {MirrorToConsole = false};
 
-                #if DEBUG
+#if DEBUG
                 // ReSharper disable once AccessToDisposedClosure
                 logger.Logged += entry =>
                 {
                     if (entry.Severity == Logger.Severity.Trace) return;
                     writer.WriteLine(entry.Text);
                 };
-                #endif
+#endif
 
                 logger.Debug.Log("Creating component factories");
                 ComponentFactories.Initialize();
