@@ -1,5 +1,4 @@
-﻿using Bearded.TD.UI.Controls;
-using Bearded.Utilities;
+﻿using Bearded.Utilities;
 using OpenTK;
 
 namespace Bearded.TD.UI.Layers

@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Rendering;
-using OpenTK;
+﻿using OpenTK;
 
 namespace Bearded.TD.UI.Layers
 {

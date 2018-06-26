@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Rendering;
-
+﻿
 namespace Bearded.TD.UI.Layers
 {
     class ViewportClippingLayerControl : DefaultRenderLayerControl
