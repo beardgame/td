@@ -7,7 +7,7 @@ namespace Bearded.TD.UI.Controls
     {
         private readonly GameUI gameUI;
 
-        public GameUIControl(GameUI gameUI, FrameCompositor compositor, GeometryManager geometryManager)
+        public GameUIControl(GameUI gameUI, GeometryManager geometryManager)
         {
             this.gameUI = gameUI;
 
@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 40)));
-            Add(new GameWorldControl(gameUI.Game, compositor, geometryManager));
+            Add(new GameWorldControl(gameUI.Game, geometryManager));
         }
     }
 }

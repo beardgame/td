@@ -8,6 +8,7 @@ using Bearded.TD.Rendering.UI;
 using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
@@ -61,6 +62,7 @@ namespace Bearded.TD
             var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[] {
+                    (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                     (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)), 
                     (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground)),
@@ -69,7 +71,7 @@ namespace Bearded.TD
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);
 
-            rootControl = new RootControl(new DefaultRenderLayerControl(renderContext.Compositor));
+            rootControl = new RootControl(new DefaultRenderLayerControl());
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);

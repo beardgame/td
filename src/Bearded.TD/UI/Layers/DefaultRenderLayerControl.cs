@@ -1,7 +1,6 @@
-﻿using Bearded.TD.Rendering;
-using OpenTK;
+﻿using OpenTK;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Layers
 {
     class DefaultRenderLayerControl : DefaultProjectionRenderLayerControl
     {
@@ -22,7 +21,5 @@ namespace Bearded.TD.UI.Controls
         }
 
         public override RenderOptions RenderOptions { get; } = RenderOptions.Default;
-
-        public DefaultRenderLayerControl(FrameCompositor compositor) : base(compositor) { }
     }
 }

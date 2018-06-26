@@ -2,6 +2,7 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Meta;
+using Bearded.TD.UI.Layers;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering

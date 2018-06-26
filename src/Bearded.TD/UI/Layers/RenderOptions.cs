@@ -1,5 +1,5 @@
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.UI.Layers
 {
     struct RenderOptions
     {

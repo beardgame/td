@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI.Layers;
 using Bearded.Utilities;
 using OpenTK;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
@@ -38,8 +39,7 @@ namespace Bearded.TD.UI.Controls
 
         public float FarPlaneDistance => game.Camera.Distance - lowestZToRender;
 
-        public GameWorldControl(GameInstance game, FrameCompositor compositor, GeometryManager geometryManager)
-            : base(compositor)
+        public GameWorldControl(GameInstance game, GeometryManager geometryManager)
         {
             this.game = game;
             geometries = geometryManager;

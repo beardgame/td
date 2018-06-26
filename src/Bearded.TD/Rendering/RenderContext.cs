@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Rendering
+﻿using Bearded.TD.UI.Layers;
+
+namespace Bearded.TD.Rendering
 {
     class RenderContext
     {

@@ -14,7 +14,7 @@ namespace Bearded.TD.UI.Controls
             // Please keep alphabetically sorted.
             return NavigationFactories.ForBoth()
                 .Add<GameUI, (GameInstance, GameRunner)>(
-                    m => new GameUIControl(m, renderContext.Compositor, renderContext.Geometries))
+                    m => new GameUIControl(m, renderContext.Geometries))
                 .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))
                 .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
                 .Add<LobbyList, Void>(m => new LobbyListControl(m))
