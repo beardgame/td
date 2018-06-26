@@ -2,9 +2,9 @@
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class LobbyView : CompositeControl
+    sealed class LobbyControl : CompositeControl
     {
-        public LobbyView(Lobby model)
+        public LobbyControl(Lobby model)
         {
             Add(
                 new CompositeControl() // ButtonGroup

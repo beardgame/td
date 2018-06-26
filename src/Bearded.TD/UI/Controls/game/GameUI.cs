@@ -14,10 +14,12 @@ namespace Bearded.TD.UI.Controls
         private InputManager inputManager;
 
         public ActionBar ActionBar { get; }
+        public GameStatusUI GameStatusUI { get; }
         
         public GameUI()
         {
             ActionBar = new ActionBar();
+            GameStatusUI = new GameStatusUI();
         }
 
         protected override void Initialize(
@@ -31,6 +33,7 @@ namespace Bearded.TD.UI.Controls
             inputManager = dependencies.Resolve<InputManager>();
 
             ActionBar.Initialize(Game);
+            GameStatusUI.Initialize(Game);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -39,6 +42,8 @@ namespace Bearded.TD.UI.Controls
             
             runner.HandleInput(args, inputState);
             runner.Update(args);
+
+            GameStatusUI.Update();
         }
     }
 }

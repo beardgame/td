@@ -2,9 +2,9 @@
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class MainMenuView : CompositeControl
+    sealed class MainMenuControl : CompositeControl
     {
-        public MainMenuView(MainMenu model)
+        public MainMenuControl(MainMenu model)
         {
             Add(
                 new CompositeControl() // ButtonGroup
