@@ -1,8 +1,7 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game;
 using Bearded.TD.Utilities.Input;
 
-namespace Bearded.TD.UI.Input
+namespace Bearded.TD.Game.Input
 {
     class PlayerInput
     {

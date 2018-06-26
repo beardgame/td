@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities;
 using OpenTK;
 using OpenTK.Input;
 
-namespace Bearded.TD.UI.Input
+namespace Bearded.TD.Game.Input
 {
     class MouseCameraController
     {

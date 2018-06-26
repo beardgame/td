@@ -2,7 +2,7 @@
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Input;
 
-namespace Bearded.TD.UI.Input
+namespace Bearded.TD.Game.Input
 {
     interface ICursorHandler
     {

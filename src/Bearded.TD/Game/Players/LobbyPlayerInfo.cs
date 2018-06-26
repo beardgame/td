@@ -1,9 +1,8 @@
-﻿using Bearded.TD.Game.Players;
-using Bearded.TD.Networking.Serialization;
+﻿using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.Game.Players
 {
     struct LobbyPlayerInfo
     {

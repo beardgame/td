@@ -1,8 +1,7 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 
-namespace Bearded.TD.UI.Input
+namespace Bearded.TD.Game.Input
 {
     abstract class InteractionHandler
     {
