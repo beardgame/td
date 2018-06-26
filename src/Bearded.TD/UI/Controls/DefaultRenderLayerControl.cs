@@ -3,7 +3,7 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class TDRootControl : DefaultProjectionRenderLayerView
+    sealed class DefaultRenderLayerControl : DefaultProjectionRenderLayerControl
     {
         public override Matrix4 ViewMatrix
         {
@@ -23,6 +23,6 @@ namespace Bearded.TD.UI.Controls
 
         public override RenderOptions RenderOptions { get; } = RenderOptions.Default;
 
-        public TDRootControl(FrameCompositor compositor) : base(compositor) { }
+        public DefaultRenderLayerControl(FrameCompositor compositor) : base(compositor) { }
     }
 }
