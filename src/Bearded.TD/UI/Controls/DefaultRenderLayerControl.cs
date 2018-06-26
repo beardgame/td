@@ -3,7 +3,7 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class DefaultRenderLayerControl : DefaultProjectionRenderLayerControl
+    class DefaultRenderLayerControl : DefaultProjectionRenderLayerControl
     {
         public override Matrix4 ViewMatrix
         {

@@ -112,6 +112,8 @@ namespace Bearded.TD.Rendering
 
         private void renderWithOptions(RenderOptions options)
         {
+            setViewportFrom(options);
+
             if (options.RenderDeferred)
             {
                 renderDeferred();
@@ -119,7 +121,14 @@ namespace Bearded.TD.Rendering
 
             renderConsoleSurfaces();
         }
-        
+
+        private void setViewportFrom(RenderOptions options)
+        {
+            var ((x, y), (w, h)) = options.OverrideViewport ?? ((0, 0), (viewPort.Width, viewPort.Height));
+
+            GL.Viewport(x, y, w, h);
+        }
+
         private void renderDeferred()
         {
             deferredRenderer.Render();
