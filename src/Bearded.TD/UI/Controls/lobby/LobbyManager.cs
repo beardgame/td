@@ -9,7 +9,6 @@ namespace Bearded.TD.UI.Controls
 {
     abstract class LobbyManager
     {
-
         public GameInstance Game { get; }
         protected NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
