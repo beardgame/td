@@ -15,7 +15,8 @@ namespace Bearded.TD.UI
         public override void KeyHit(KeyEventArgs eventArgs)
         {
             base.KeyHit(eventArgs);
-            shortcuts.KeyHit(eventArgs);
+
+            if (!eventArgs.Handled) shortcuts.KeyHit(eventArgs);
         }
     }
 }

@@ -74,7 +74,6 @@ namespace Bearded.TD
 
             rootControl = new RootControl(new TDRootControl(shortcuts));
 
-
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
 
@@ -82,9 +81,11 @@ namespace Bearded.TD
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
-            navigationController.Push<DebugConsole>();
+            var debugConsole = navigationController.Push<DebugConsole>();
             navigationController.Push<MainMenu>();
             navigationController.Exited += Close;
+
+            shortcuts.RegisterShortcut(Key.Tilde, debugConsole.Toggle);
 
             UserSettings.SettingsChanged += () => OnResize(null);
 

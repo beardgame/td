@@ -19,6 +19,29 @@ namespace Bearded.TD.UI.Controls
             Add(commandInput);
             Add(new SimpleControl()
                 .Anchor(a => a.Bottom(margin: 20)));
+
+            debug.Enabled += onDebugEnabled;
+            debug.Disabled += onDebugDisabled;
+            if (debug.IsEnabled)
+            {
+                onDebugEnabled();
+            }
+            else
+            {
+                onDebugDisabled();
+            }
+        }
+
+        private void onDebugEnabled()
+        {
+            commandInput.Focus();
+            IsVisible = true;
+        }
+
+        private void onDebugDisabled()
+        {
+            commandInput.Unfocus();
+            IsVisible = false;
         }
 
         public override void KeyHit(KeyEventArgs eventArgs)

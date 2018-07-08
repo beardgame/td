@@ -20,6 +20,7 @@ namespace Bearded.TD.UI
             if (shortcuts.TryGetValue(eventArgs.Key, out var action))
             {
                 action();
+                eventArgs.Handled = true;
             }
         }
     }

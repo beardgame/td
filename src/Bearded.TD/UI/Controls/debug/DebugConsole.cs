@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Void = Bearded.Utilities.Void;
 
@@ -15,27 +16,41 @@ namespace Bearded.TD.UI.Controls
         private readonly List<string> commandHistory = new List<string>();
         private int commandHistoryIndex = -1;
 
-        private bool isEnabled;
         private Logger logger;
+        
+        public bool IsEnabled { get; private set; }
+
+        public VoidEventHandler Enabled;
+        public VoidEventHandler Disabled;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             logger = dependencies.Resolve<Logger>();
+            IsEnabled = false;
         }
 
         public void Enable()
         {
-            isEnabled = true;
+            IsEnabled = true;
+            Enabled?.Invoke();
         }
 
         public void Disable()
         {
-            isEnabled = false;
+            IsEnabled = false;
+            Disabled?.Invoke();
         }
 
         public void Toggle()
         {
-            isEnabled = !isEnabled;
+            if (IsEnabled)
+            {
+                Disable();
+            }
+            else
+            {
+                Enable();
+            }
         }
 
         public void OnCommandExecuted(string command)
