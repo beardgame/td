@@ -20,10 +20,10 @@ namespace Bearded.TD.UI.Controls
 
             Add(new Button { new Label("Close") }
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Left(margin: 4).Right(relativePercentage: .5, margin: 2))
-                .Subscribe(btn => buildingStatus.OnCloseClicked()));
+                .Subscribe(btn => btn.Clicked += buildingStatus.OnCloseClicked));
             Add(new Button { new Label("Delete") }
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Right(margin: 4).Left(relativePercentage: .5, margin: 2))
-                .Subscribe(btn => buildingStatus.OnDeleteBuildingClicked()));
+                .Subscribe(btn => btn.Clicked += buildingStatus.OnDeleteBuildingClicked));
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

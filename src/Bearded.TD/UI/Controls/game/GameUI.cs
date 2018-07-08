@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
+using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities.Input;
 
@@ -15,6 +18,8 @@ namespace Bearded.TD.UI.Controls
 
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
+
+        public NavigationController EntityStatusNavigation;
         
         public GameUI()
         {
@@ -34,6 +39,9 @@ namespace Bearded.TD.UI.Controls
 
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
+
+            Game.SelectionManager.ObjectSelected += onObjectSelected;
+            Game.SelectionManager.ObjectDeselected += onObjectDeselected;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -44,6 +52,40 @@ namespace Bearded.TD.UI.Controls
             runner.Update(args);
 
             GameStatusUI.Update();
+        }
+
+        public void SetEntityStatusContainer(IControlParent controlParent)
+        {
+            DebugAssert.State.Satisfies(EntityStatusNavigation == null, "Can only initialize entity status UI once.");
+
+            var dependencies = new DependencyResolver();
+            dependencies.Add(Game);
+
+            var nodes = NavigationFactories.ForBoth()
+                .Add<BuildingStatusUI, IPlacedBuilding>(m => new BuildingStatusUIControl(m))
+                .ToDictionaries();
+
+            EntityStatusNavigation = new NavigationController(
+                controlParent,
+                dependencies,
+                nodes.models,
+                nodes.views);
+            EntityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
+        }
+
+        private void onObjectSelected(ISelectable selectedObject)
+        {
+            switch (selectedObject)
+            {
+                case IPlacedBuilding building:
+                    EntityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
+                    break;
+            }
+        }
+
+        private void onObjectDeselected(ISelectable t)
+        {
+            EntityStatusNavigation.Exit();
         }
     }
 }

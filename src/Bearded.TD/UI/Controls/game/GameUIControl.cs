@@ -19,6 +19,11 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 40)));
+            Add(new CompositeControl()
+                .Anchor(a => a
+                    .Right(width: 200)
+                    .Bottom(height: 320))
+                .Subscribe(gameUI.SetEntityStatusContainer));
             Add(new GameWorldControl(gameUI.Game, geometryManager));
         }
     }
