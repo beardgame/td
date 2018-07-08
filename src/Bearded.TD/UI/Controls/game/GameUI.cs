@@ -85,7 +85,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onObjectDeselected(ISelectable t)
         {
-            EntityStatusNavigation.Exit();
+            EntityStatusNavigation.CloseAll();
         }
     }
 }

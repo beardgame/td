@@ -33,6 +33,12 @@ namespace Bearded.UI.Navigation
             Exited?.Invoke();
         }
 
+        public void CloseAll()
+        {
+            while (root.Children.Count > 0)
+                root.Remove(root.Children[0]);
+        }
+
         public void ReplaceAll<TModel>()
             where TModel : NavigationNode<Void>
         {
@@ -42,8 +48,7 @@ namespace Bearded.UI.Navigation
         public void ReplaceAll<TModel, TParameters>(TParameters parameters)
             where TModel : NavigationNode<TParameters>
         {
-            while (root.Children.Count > 0)
-                root.Remove(root.Children[0]);
+            CloseAll();
             Push<TModel, TParameters>(parameters);
         }
 
