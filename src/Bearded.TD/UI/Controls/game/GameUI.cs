@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Controls
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
 
-        public NavigationController EntityStatusNavigation;
+        private NavigationController entityStatusNavigation;
         
         public GameUI()
         {
@@ -56,7 +56,7 @@ namespace Bearded.TD.UI.Controls
 
         public void SetEntityStatusContainer(IControlParent controlParent)
         {
-            DebugAssert.State.Satisfies(EntityStatusNavigation == null, "Can only initialize entity status UI once.");
+            DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
 
             var dependencies = new DependencyResolver();
             dependencies.Add(Game);
@@ -65,12 +65,12 @@ namespace Bearded.TD.UI.Controls
                 .Add<BuildingStatusUI, IPlacedBuilding>(m => new BuildingStatusUIControl(m))
                 .ToDictionaries();
 
-            EntityStatusNavigation = new NavigationController(
+            entityStatusNavigation = new NavigationController(
                 controlParent,
                 dependencies,
                 nodes.models,
                 nodes.views);
-            EntityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
+            entityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
         }
 
         private void onObjectSelected(ISelectable selectedObject)
@@ -78,14 +78,14 @@ namespace Bearded.TD.UI.Controls
             switch (selectedObject)
             {
                 case IPlacedBuilding building:
-                    EntityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
+                    entityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
                     break;
             }
         }
 
         private void onObjectDeselected(ISelectable t)
         {
-            EntityStatusNavigation.CloseAll();
+            entityStatusNavigation.CloseAll();
         }
     }
 }
