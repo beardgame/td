@@ -30,9 +30,11 @@ namespace Bearded.TD.Utilities.Input
         public class MouseInputState : CapturableInputState
         {
             private readonly IAction click;
+            private readonly IAction cancel;
             private readonly IAction drag;
 
             public ActionState Click => GetState(click);
+            public ActionState Cancel => GetState(cancel);
             public ActionState Drag => GetState(drag);
 
             public Vector2 Position { get; }
@@ -41,6 +43,7 @@ namespace Bearded.TD.Utilities.Input
             public MouseInputState(InputManager inputManager)
             {
                 click = inputManager.Actions.Mouse.LeftButton;
+                cancel = inputManager.Actions.Mouse.RightButton;
                 drag = inputManager.Actions.Mouse.RightButton;
 
                 Position = inputManager.MousePosition;

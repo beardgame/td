@@ -33,6 +33,8 @@ namespace Bearded.TD.Game.Input
             ghost.SetFootprint(footprint);
             if (cursor.Click.Hit)
                 Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
+            else if (cursor.Cancel.Hit)
+                Game.PlayerInput.ResetInteractionHandler();
         }
 
         protected override void OnEnd(ICursorHandler cursor)
