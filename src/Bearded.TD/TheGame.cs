@@ -80,7 +80,7 @@ namespace Bearded.TD
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
-            var debugConsole = navigationController.Push<DebugConsole>();
+            var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
             navigationController.Push<MainMenu>();
             navigationController.Exited += Close;
 

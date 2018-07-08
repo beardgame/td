@@ -45,6 +45,7 @@ namespace Bearded.UI.Navigation
             toReplace.Terminate();
             var viewToReplace = viewsByModel[toReplace];
             var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            new AnchorTemplate(viewToReplace).ApplyTo(view);
             root.AddOnTopOf(viewToReplace, view);
             root.Remove(viewToReplace);
         }
@@ -55,10 +56,23 @@ namespace Bearded.UI.Navigation
             return Push<TModel, Void>(default(Void));
         }
 
+        public TModel Push<TModel>(Func<AnchorTemplate, AnchorTemplate> build)
+            where TModel : NavigationNode<Void>
+        {
+            return Push<TModel, Void>(default(Void), build);
+        }
+
         public TModel Push<TModel, TParameters>(TParameters parameters)
             where TModel : NavigationNode<TParameters>
         {
+            return Push<TModel, TParameters>(parameters, a => a);
+        }
+
+        public TModel Push<TModel, TParameters>(TParameters parameters, Func<AnchorTemplate, AnchorTemplate> build)
+            where TModel : NavigationNode<TParameters>
+        {
             var (model, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            view.Anchor(build);
             root.Add(view);
             return model;
         }
