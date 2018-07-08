@@ -132,6 +132,7 @@ namespace Bearded.UI.Controls
 
         public void Clear()
         {
+            MoveCursorToBeginning();
             Text = "";
         }
 

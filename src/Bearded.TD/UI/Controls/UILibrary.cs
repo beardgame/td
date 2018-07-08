@@ -13,6 +13,7 @@ namespace Bearded.TD.UI.Controls
         {
             // Please keep alphabetically sorted.
             return NavigationFactories.ForBoth()
+                .Add<DebugConsole, Void>(m => new DebugConsoleControl(m))
                 .Add<GameUI, (GameInstance, GameRunner)>(
                     m => new GameUIControl(m, renderContext.Geometries))
                 .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))

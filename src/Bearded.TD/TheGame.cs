@@ -5,7 +5,6 @@ using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
-using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
@@ -30,7 +29,6 @@ namespace Bearded.TD
 
         private InputManager inputManager;
         private RenderContext renderContext;
-        private ScreenManager screenManager;
         private RootControl rootControl;
         private UIUpdater uiUpdater;
         private EventManager eventManager;
@@ -76,6 +74,7 @@ namespace Bearded.TD
 
             rootControl = new RootControl(new TDRootControl(shortcuts));
 
+
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
 
@@ -83,13 +82,9 @@ namespace Bearded.TD
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
+            navigationController.Push<DebugConsole>();
             navigationController.Push<MainMenu>();
             navigationController.Exited += Close;
-
-            screenManager = new ScreenManager(inputManager);
-            screenManager.AddScreenLayerOnTop(new ConsoleScreenLayer(screenManager, renderContext.Geometries, logger));
-
-            KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
 
             UserSettings.SettingsChanged += () => OnResize(null);
 
@@ -99,7 +94,6 @@ namespace Bearded.TD
         protected override void OnResize(EventArgs e)
         {
             var viewportSize = new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale);
-            screenManager.OnResize(viewportSize);
             renderContext.OnResize(viewportSize);
             rootControl.SetViewport(Width, Height, UserSettings.Instance.UI.UIScale);
             base.OnResize(e);
@@ -121,13 +115,11 @@ namespace Bearded.TD
 
             eventManager.Update();
             uiUpdater.Update(e);
-            screenManager.Update(e);
         }
 
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
-            screenManager.Render(renderContext);
             rootControl.Render(rendererRouter);
             renderContext.Compositor.FinalizeFrame();
 
