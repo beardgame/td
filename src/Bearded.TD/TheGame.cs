@@ -72,7 +72,9 @@ namespace Bearded.TD
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);
 
-            rootControl = new RootControl(new DefaultRenderLayerControl());
+            var shortcuts = new ShortcutManager();
+
+            rootControl = new RootControl(new TDRootControl(shortcuts));
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
