@@ -70,14 +70,13 @@ namespace Bearded.TD
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);
 
-            var shortcuts = new ShortcutManager();
-
-            rootControl = new RootControl(new TDRootControl(shortcuts));
+            rootControl = new RootControl(new DefaultRenderLayerControl());
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
-
-            eventManager = new EventManager(rootControl, inputManager);
+            
+            var shortcuts = new ShortcutManager();
+            eventManager = new EventManager(rootControl, inputManager, shortcuts);
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);

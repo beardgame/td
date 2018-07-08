@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.UI.EventArgs;
+using Bearded.UI.Events;
 using OpenTK.Input;
 
 namespace Bearded.TD.UI
 {
-    sealed class ShortcutManager
+    sealed class ShortcutManager : IKeyboardEventsCapturer
     {
         private readonly Dictionary<Key, Action> shortcuts = new Dictionary<Key, Action>();
 
@@ -23,5 +24,7 @@ namespace Bearded.TD.UI
                 eventArgs.Handled = true;
             }
         }
+
+        public void KeyReleased(KeyEventArgs eventArgs) { }
     }
 }
