@@ -38,7 +38,8 @@ namespace Bearded.UI.Events
             {
                 if (!(parent is Control parentAsControl))
                 {
-                    throw new InvalidOperationException("Tried creating path between unconnected controls.");
+                    // Tried creating path between unconnected controls.
+                    return EventPropagationPath.Empty;
                 }
                 path.Add(parentAsControl);
                 
