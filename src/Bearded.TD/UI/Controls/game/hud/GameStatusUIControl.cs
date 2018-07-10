@@ -13,6 +13,8 @@ namespace Bearded.TD.UI.Controls
         {
             this.model = model;
 
+            Add(new BackgroundBox());
+
             Add(new Label("Resources:")
                 {
                     FontSize = 16,

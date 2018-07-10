@@ -16,6 +16,8 @@ namespace Bearded.TD.UI.Controls
             commandInput = new AutoCompletingTextInput(debug.AutoCompleteCommand) { FontSize = 16 }
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
 
+            Add(new BackgroundBox());
+
             Add(commandInput);
             Add(new SimpleControl()
                 .Anchor(a => a.Bottom(margin: 20)));

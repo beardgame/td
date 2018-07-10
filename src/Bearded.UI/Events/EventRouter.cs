@@ -17,7 +17,7 @@ namespace Bearded.UI.Events
 
             while (parent != null)
             {
-                var child = parent.Children.FirstOrDefault(childSelector.Invoke);
+                var child = parent.Children.Reverse().FirstOrDefault(childSelector.Invoke);
                 if (child != null)
                 {
                     path.Add(child);

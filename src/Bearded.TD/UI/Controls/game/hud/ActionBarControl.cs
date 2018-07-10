@@ -13,6 +13,9 @@ namespace Bearded.TD.UI.Controls
         public ActionBarControl(ActionBar model)
         {
             this.model = model;
+
+            Add(new BackgroundBox());
+
             buttons = new Button[Constants.Game.UI.ActionBarSize];
             for (var i = 0; i < buttons.Length; i++)
             {

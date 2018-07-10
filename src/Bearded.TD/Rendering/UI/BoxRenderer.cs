@@ -6,7 +6,7 @@ using static amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class BoxRenderer : IRenderer<Control>
+    sealed class BoxRenderer : IRenderer<Control>
     {
         private readonly PrimitiveGeometry geometry;
 
