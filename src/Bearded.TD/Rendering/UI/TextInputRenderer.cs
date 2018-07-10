@@ -2,6 +2,7 @@
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
+using static amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -14,11 +15,11 @@ namespace Bearded.TD.Rendering.UI
 
         public TextInputRenderer(IndexedSurface<PrimitiveVertexData> primitives, IndexedSurface<UVColorVertexData> fontSurface, Font font)
         {
-            boxRenderer = new BoxRenderer(primitives);
+            boxRenderer = new BoxRenderer(primitives, White);
 
             geometry = new FontGeometry(fontSurface, font)
             {
-                Color = Color.White,
+                Color = White,
             };
         }
 

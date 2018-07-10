@@ -88,6 +88,8 @@ namespace Bearded.UI.Controls
                 ((Anchors) VerticalAnchors).CalculateIntervalWithin(parentFrame.Y));
 
             frameNeedsUpdate = false;
+
+            FrameChanged();
         }
 
         public void RemoveFromParent() => Parent.Remove(this);
@@ -133,5 +135,7 @@ namespace Bearded.UI.Controls
 
         public virtual void Focused() { }
         public virtual void LostFocus() { }
+
+        protected virtual void FrameChanged() { }
     }
 }

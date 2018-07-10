@@ -20,6 +20,39 @@ namespace Bearded.TD.UI.Controls
                         .Subscribe(b => b.Clicked += model.OnQuitGameButtonClicked)
                 }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 150))
             );
+
+            var source = new ListItemSource(25);
+            var list = new ListControl(source)
+                .Anchor(a => a.Bottom(300).Left(0, 100).Top(50));
+            source.List = list;
+
+            Add(list);
+        }
+
+        class ListItemSource : IListItemSource
+        {
+            public ListItemSource(int i)
+            {
+                ItemCount = i;
+            }
+            
+            public int ItemCount { get; }
+            public ListControl List { get; set; }
+
+            public double HeightOfItemAt(int index)
+            {
+                return 23;
+            }
+
+            public Control CreateItemControlFor(int index)
+            {
+                return new Button { new Label(index.ToString()) }
+                    .Subscribe(c => c.Clicked += List.ScrollToBottom);
+            }
+
+            public void DestroyItemControlAt(int index, Control control)
+            {
+            }
         }
     }
 }

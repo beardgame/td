@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.UI.Rendering;
@@ -33,6 +34,16 @@ namespace Bearded.UI.Controls
         {
             child.RemoveFrom(this);
             children.Remove(child);
+        }
+
+        public void RemoveAllChildren()
+        {
+            while (children.Count > 0)
+            {
+                var lastIndex = children.Count - 1;
+                children[lastIndex].RemoveFrom(this);
+                children.RemoveAt(lastIndex);
+            }
         }
 
         public bool FocusDescendant(Control control) => Parent.FocusDescendant(control);

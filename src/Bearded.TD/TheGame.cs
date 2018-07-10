@@ -66,7 +66,8 @@ namespace Bearded.TD
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                     (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)), 
                     (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
-                    (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground)),
+                    (typeof(Button), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
+                    (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground, Color.Fuchsia)),
                 });
 
             inputManager = new InputManager(this);

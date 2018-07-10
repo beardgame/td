@@ -2,7 +2,6 @@
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
-using static amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -10,11 +9,11 @@ namespace Bearded.TD.Rendering.UI
     {
         private readonly PrimitiveGeometry geometry;
 
-        public BoxRenderer(IndexedSurface<PrimitiveVertexData> surface)
+        public BoxRenderer(IndexedSurface<PrimitiveVertexData> surface, Color color)
         {
             geometry = new PrimitiveGeometry(surface)
             {
-                Color = White,
+                Color = color,
                 LineWidth = 1
             };
         }
