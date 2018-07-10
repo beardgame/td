@@ -156,12 +156,12 @@ namespace Bearded.UI.Controls
         public virtual void PreviewCharacterTyped(CharEventArgs eventArgs) { }
         public virtual void CharacterTyped(CharEventArgs eventArgs) { }
 
-        public virtual void Focused() { }
-        public virtual void LostFocus() { }
+        protected virtual void Focused() { }
+        protected virtual void LostFocus() { }
 
         protected virtual void FrameChanged() { }
 
-        public virtual void MadeVisible() { } // Not called on initialization
-        public virtual void MadeInvisible() { }
+        protected virtual void MadeVisible() { } // Not called on initialization
+        protected virtual void MadeInvisible() { }
     }
 }
