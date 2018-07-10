@@ -52,12 +52,20 @@ namespace Bearded.UI.Events
             // Mouse clicks
             foreach (var btn in mouseButtons)
             {
-                if (inputManager.Actions.Mouse.FromButton(btn).Hit)
+                var action = inputManager.Actions.Mouse.FromButton(btn);
+                if (action.Hit)
                 {
                     path.PropagateEvent(
                         new MouseButtonEventArgs(mousePosition, btn),
                         (c, e) => c.PreviewMouseButtonHit(e),
                         (c, e) => c.MouseButtonHit(e));
+                }
+                if (action.Released)
+                {
+                    path.PropagateEvent(
+                        new MouseButtonEventArgs(mousePosition, btn),
+                        (c, e) => c.PreviewMouseButtonReleased(e),
+                        (c, e) => c.MouseButtonReleased(e));
                 }
             }
 
