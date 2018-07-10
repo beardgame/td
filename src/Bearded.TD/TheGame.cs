@@ -60,9 +60,11 @@ namespace Bearded.TD
 
             var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(
-                new (Type, object)[] {
+                new (Type, object)[]
+                {
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)), 
+                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground)),
                 });

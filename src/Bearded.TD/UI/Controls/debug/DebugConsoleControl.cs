@@ -13,7 +13,7 @@ namespace Bearded.TD.UI.Controls
         public DebugConsoleControl(DebugConsole debug)
         {
             this.debug = debug;
-            commandInput = new TextInput { FontSize = 16 }
+            commandInput = new AutoCompletingTextInput(debug.AutoCompleteCommand) { FontSize = 16 }
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
 
             Add(commandInput);
@@ -60,10 +60,6 @@ namespace Bearded.TD.UI.Controls
                 case Key.Enter:
                     debug.OnCommandExecuted(commandInput.Text);
                     commandInput.Clear();
-                    break;
-                case Key.Tab:
-                    commandInput.Text = debug.AutoCompleteCommand(commandInput.Text);
-                    commandInput.MoveCursorToEnd();
                     break;
                 case Key.Up:
                     commandInput.Text = debug.GetPreviousCommandInHistory(commandInput.Text);
