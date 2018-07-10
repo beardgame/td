@@ -27,8 +27,9 @@ namespace Bearded.TD.Game.Buildings
         };
 
         public Id<Building> Id { get; }
-        
-        public int Health { get; private set; }
+
+        private int health;
+        public override int Health => health;
         public bool IsCompleted { get; private set; }
         private double buildProgress;
 
@@ -39,7 +40,7 @@ namespace Bearded.TD.Game.Buildings
             : base(blueprint, faction, footprint)
         {
             Id = id;
-            Health = 1;
+            health = 1;
         }
 
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
@@ -48,7 +49,7 @@ namespace Bearded.TD.Game.Buildings
         public void Damage(int damage)
         {
             if (!UserSettings.Instance.Debug.InvulnerableBuildings)
-                Health -= damage;
+                health -= damage;
             Damaged?.Invoke();
         }
 
@@ -69,7 +70,7 @@ namespace Bearded.TD.Game.Buildings
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             buildProgress = newBuildProgress;
-            Health += healthAdded;
+            health += healthAdded;
         }
 
         public void SetBuildCompleted()

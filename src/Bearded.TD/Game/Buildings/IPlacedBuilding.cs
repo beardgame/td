@@ -7,5 +7,6 @@ namespace Bearded.TD.Game.Buildings
     {
         BuildingBlueprint Blueprint { get; }
         Faction Faction { get; }
+        int Health { get; }
     }
 }
