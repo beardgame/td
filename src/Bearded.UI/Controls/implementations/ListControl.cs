@@ -7,6 +7,10 @@ using Bearded.Utilities;
 
 namespace Bearded.UI.Controls
 {
+    // TODO: extract scroll controls
+    // TODO: make scoll bar
+    // TODO: allow insert/removal/update of ranges
+
     public interface IListItemSource
     {
         int ItemCount { get; }
@@ -144,6 +148,10 @@ namespace Bearded.UI.Controls
                 clearChildren();
 
             calculateTotalHeight();
+
+            if (currentlyStuckToBottom)
+                ScrollOffset = totalContentHeight;
+
             validateScrollPosition();
             addCellsDownwards();
         }
