@@ -14,6 +14,7 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(b => b.Clicked += model.OnBackToMenuButtonClicked));
 
             var manualTextInput = new TextInput { Text = UserSettings.Instance.Misc.SavedNetworkAddress };
+            manualTextInput.MoveCursorToEnd();
 
             Add(new CompositeControl
             {
