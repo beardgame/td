@@ -1,5 +1,7 @@
 ﻿using Bearded.Utilities;
 using Newtonsoft.Json;
+// ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable ConvertToConstant.Global
 
 namespace Bearded.TD.Meta
 {
@@ -16,12 +18,14 @@ namespace Bearded.TD.Meta
             initialiseCommandParameters();
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings()
         {
             Dump = this;
         }
 
         [JsonIgnore]
+        // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings Dump;
         
         public MiscSettings Misc = new MiscSettings();

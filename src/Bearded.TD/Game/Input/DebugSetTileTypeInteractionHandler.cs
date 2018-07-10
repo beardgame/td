@@ -23,6 +23,8 @@ namespace Bearded.TD.Game.Input
                 cursor.CurrentFootprint.OccupiedTiles
                     .Where(t => t.IsValid)
                     .ForEach(setTile);
+            else if (cursor.Cancel.Hit)
+                Game.PlayerInput.ResetInteractionHandler();
         }
         
         private void setTile(Tile<TileInfo> tile) => Game.Request(SetTileType.Request, tile, tileType, TileDrawInfo.For(tileType));

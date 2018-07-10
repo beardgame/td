@@ -6,7 +6,7 @@ using static amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class TextInputRenderer : IRenderer<TextInput>
+    sealed class TextInputRenderer : IRenderer<TextInput>
     {
         private const string cursorString = "|";
 

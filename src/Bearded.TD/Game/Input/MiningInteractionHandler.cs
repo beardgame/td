@@ -22,6 +22,8 @@ namespace Bearded.TD.Game.Input
             if (cursor.Click.Hit)
                 foreach (var tile in currentTile.OccupiedTiles.Where(t => t.Info.IsMineable))
                     Game.RequestDispatcher.Dispatch(MineTile.Request(Game, faction, tile));
+            else if (cursor.Cancel.Hit)
+                Game.PlayerInput.ResetInteractionHandler();
         }
     }
 }

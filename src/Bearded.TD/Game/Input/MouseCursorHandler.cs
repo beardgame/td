@@ -15,6 +15,7 @@ namespace Bearded.TD.Game.Input
         private Position2 mousePosition;
 
         public ActionState Click { get; private set; }
+        public ActionState Cancel { get; private set; }
         public PositionedFootprint CurrentFootprint { get; private set; }
 
         public MouseCursorHandler(GameCamera camera, Level level)
@@ -30,6 +31,7 @@ namespace Bearded.TD.Game.Input
             cameraController.HandleInput(args, input);
             mousePosition = new Position2(camera.TransformScreenToWorldPos(input.Mouse.Position));
             Click = input.Mouse.Click;
+            Cancel = input.Mouse.Cancel;
             updateFootprint();
         }
 

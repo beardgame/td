@@ -91,6 +91,7 @@ namespace Bearded.TD.Game.Buildings
             var expectedHealthGiven = Mathf.CeilToInt(buildProgress * blueprint.MaxHealth);
             var newHealthGiven = expectedHealthGiven - healthGiven;
             building.SetBuildProgress(buildProgress, newHealthGiven);
+            healthGiven = expectedHealthGiven;
         }
     }
 }

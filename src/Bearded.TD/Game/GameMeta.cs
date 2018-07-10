@@ -12,6 +12,7 @@ namespace Bearded.TD.Game
         public IdManager Ids { get; }
         public Logger Logger { get; }
         public bool GameOver { get; private set; }
+        public GameEvents Events { get; } = new GameEvents();
 
         public GameMeta(Logger logger, IDispatcher<GameInstance> dispatcher, IGameSynchronizer synchronizer, IdManager ids)
         {

@@ -1,91 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using amulware.Graphics;
-using Bearded.TD.Rendering;
-using Bearded.TD.UI;
-using Bearded.TD.UI.Components;
 using Bearded.TD.Utilities.Console;
+using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using OpenTK.Input;
+using Void = Bearded.Utilities.Void;
 
-namespace Bearded.TD.Screens
+namespace Bearded.TD.UI.Controls
 {
-    class ConsoleScreenLayer : UIScreenLayer
+    sealed class DebugConsole : NavigationNode<Void>
     {
-        private const float consoleHeight = 320;
-        private const float inputBoxHeight = 20;
-        private const float padding = 6;
-
-        private readonly Logger logger;
-        private bool isConsoleEnabled;
-
-        private readonly Bounds bounds;
-        private readonly TextInput consoleInput;
+        private static readonly char[] space = {' '};
 
         private readonly List<string> commandHistory = new List<string>();
         private int commandHistoryIndex = -1;
 
-        public ConsoleScreenLayer(ScreenLayerCollection parent, GeometryManager geometries, Logger logger)
-            : base(parent, geometries)
-        {
-            this.logger = logger;
+        private Logger logger;
+        
+        public bool IsEnabled { get; private set; }
 
-            bounds = new Bounds(new ScalingDimension(Screen.X), new FixedSizeDimension(Screen.Y, consoleHeight));
-            consoleInput = new TextInput(Bounds.Within(bounds, consoleHeight - inputBoxHeight, padding, 0, padding));
-            AddComponent(
-                new ConsoleListTextBox(Bounds.Within(bounds, padding, padding, padding + inputBoxHeight, padding), logger));
-            AddComponent(consoleInput);
-            consoleInput.Submitted += execute;
+        public VoidEventHandler Enabled;
+        public VoidEventHandler Disabled;
+
+        protected override void Initialize(DependencyResolver dependencies, Void parameters)
+        {
+            logger = dependencies.Resolve<Logger>();
+            IsEnabled = false;
         }
 
-        protected override bool DoHandleInput(InputContext input)
+        public void Enable()
         {
-            if (input.State.ForKey(Key.Tilde).Hit)
-            {
-                isConsoleEnabled = !isConsoleEnabled;
-                if (isConsoleEnabled)
-                    consoleInput.Focus();
-                else
-                    consoleInput.Unfocus();
-            }
-
-            if (!isConsoleEnabled) return true;
-
-            base.DoHandleInput(input);
-            
-            if (input.State.ForKey(Key.Tab).Hit)
-                consoleInput.Text = autoComplete(consoleInput.Text);
-            if (input.State.ForKey(Key.Up).Hit && commandHistory.Count > 0 && commandHistoryIndex != 0)
-            {
-                if (commandHistoryIndex == -1)
-                    setCommandHistoryIndex(commandHistory.Count - 1);
-                else
-                    setCommandHistoryIndex(commandHistoryIndex - 1);
-            }
-            if (input.State.ForKey(Key.Down).Hit && commandHistoryIndex != -1)
-                setCommandHistoryIndex(commandHistoryIndex + 1);
-
-            return false;
+            IsEnabled = true;
+            Enabled?.Invoke();
         }
 
-        private void execute(string command)
+        public void Disable()
+        {
+            IsEnabled = false;
+            Disabled?.Invoke();
+        }
+
+        public void Toggle()
+        {
+            if (IsEnabled)
+            {
+                Disable();
+            }
+            else
+            {
+                Enable();
+            }
+        }
+
+        public void OnCommandExecuted(string command)
         {
             addToHistory(command);
-
+            
             logger.Info.Log("> {0}", command);
 
-            var split = command.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length == 0)
-                return;
+            var split = command.Split(space, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length == 0) return;
             var args = split.Skip(1).ToArray();
 
             if (!ConsoleCommands.TryRun(split[0], logger, new CommandParameters(args)))
             {
                 logger.Error.Log("Command not found.");
             }
-
-            consoleInput.Text = "";
         }
 
         private void addToHistory(string command)
@@ -99,22 +80,40 @@ namespace Bearded.TD.Screens
                 commandHistory.RemoveRange(0, 100);
         }
 
-        private void setCommandHistoryIndex(int i)
+        public string GetPreviousCommandInHistory(string currentCommand)
         {
+            if (commandHistory.Count == 0 || commandHistoryIndex == 0) return currentCommand;
+            
             if (commandHistoryIndex == -1)
-                commandHistory.Add(consoleInput.Text);
-                
-            commandHistoryIndex = i;
-            consoleInput.Text = commandHistory[i];
+            {
+                commandHistory.Add(currentCommand);
+                commandHistoryIndex = commandHistory.Count - 2;
+            }
+            else
+            {
+                commandHistoryIndex--;
+            }
 
-            if (commandHistoryIndex == commandHistory.Count - 1)
+            return commandHistory[commandHistoryIndex];
+        }
+
+        public string GetNextCommandInHistory(string currentCommand)
+        {
+            if (commandHistoryIndex == -1) return currentCommand;
+
+            commandHistoryIndex++;
+            var cmd = commandHistory[commandHistoryIndex];
+
+            if (commandHistoryIndex == commandHistoryIndex - 1)
             {
                 commandHistory.RemoveAt(commandHistoryIndex);
                 commandHistoryIndex = -1;
             }
+
+            return cmd;
         }
 
-        private string autoComplete(string incompleteCommand)
+        public string AutoCompleteCommand(string incompleteCommand)
         {
             var trimmed = incompleteCommand.TrimStart();
 
@@ -132,10 +131,9 @@ namespace Bearded.TD.Screens
             if (ConsoleCommands.Prefixes.Contains(extended))
             {
                 var extendedWithSpace = extended + " ";
-                if (trimmed != extended)
-                    return extendedWithSpace;
-                else
-                    return autoCompleteParameters(extendedWithSpace);
+                return trimmed != extended
+                    ? extendedWithSpace
+                    : autoCompleteParameters(extendedWithSpace);
             }
 
             if (extended == trimmed)
@@ -148,14 +146,14 @@ namespace Bearded.TD.Screens
             return extended;
         }
 
-        private static readonly char[] space = {' '};
-
         private string autoCompleteParameters(string incompleteCommand)
         {
             var splitBySpace = incompleteCommand.Split(space, StringSplitOptions.RemoveEmptyEntries);
 
             if (splitBySpace.Length == 0 || splitBySpace.Length > 2)
+            {
                 return incompleteCommand;
+            }
 
             var command = splitBySpace[0];
             var parameterPrefixes = ConsoleCommands.ParameterPrefixesFor(command);
@@ -178,26 +176,20 @@ namespace Bearded.TD.Screens
             }
 
             if (parameterPrefixes.Contains(extended))
+            {
                 return $"{command} {extended} ";
+            }
 
             if (extended != parameter)
+            {
                 return $"{command} {extended}";
-            
+            }
+
             var availableParameters = parameterPrefixes.AllKeys(extended);
             logger.Info.Log($"> {command} {extended}");
             foreach (var p in availableParameters) logger.Info.Log(p);
 
             return $"{command} {extended}";
-        }
-
-        public override void Draw()
-        {
-            if (!isConsoleEnabled) return;
-
-            Geometries.ConsoleBackground.Color = Color.Black * 0.7f;
-            Geometries.ConsoleBackground.DrawRectangle(bounds.Left, bounds.Top, bounds.Width, bounds.Height);
-
-            base.Draw();
         }
     }
 }

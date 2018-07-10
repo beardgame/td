@@ -8,10 +8,17 @@ namespace Bearded.UI.Events
         private readonly MouseEventManager mouseEvents;
         private readonly KeyboardEventManager keyboardEvents;
 
-        public EventManager(RootControl root, InputManager inputManager)
+        public EventManager(
+            RootControl root,
+            InputManager inputManager) : this(root, inputManager, null) { }
+
+        public EventManager(
+            RootControl root,
+            InputManager inputManager,
+            IKeyboardEventsCapturer keyboardEventsCapturer)
         {
             mouseEvents = new MouseEventManager(root, inputManager);
-            keyboardEvents = new KeyboardEventManager(root, inputManager);
+            keyboardEvents = new KeyboardEventManager(root, inputManager, keyboardEventsCapturer);
         }
 
         public void Update()

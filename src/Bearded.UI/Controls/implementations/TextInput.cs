@@ -130,6 +130,12 @@ namespace Bearded.UI.Controls
             onTextChanged();
         }
 
+        public void Clear()
+        {
+            MoveCursorToBeginning();
+            Text = "";
+        }
+
         private void onTextChanged()
         {
             TextChanged?.Invoke();

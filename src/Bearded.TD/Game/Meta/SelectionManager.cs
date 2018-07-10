@@ -1,7 +1,12 @@
-﻿namespace Bearded.TD.Game.Meta
+﻿using Bearded.Utilities;
+
+namespace Bearded.TD.Game.Meta
 {
     class SelectionManager
     {
+        public event GenericEventHandler<ISelectable> ObjectSelected;
+        public event GenericEventHandler<ISelectable> ObjectDeselected; 
+
         public ISelectable FocusedObject { get; private set; }
         public ISelectable SelectedObject { get; private set; }
 
@@ -12,6 +17,7 @@
             ResetSelection();
             SelectedObject = obj;
             obj?.Select(this);
+            ObjectSelected?.Invoke(obj);
         }
 
         public void FocusObject(ISelectable obj)
@@ -26,7 +32,13 @@
         public void ResetSelection()
         {
             ResetFocus();
-            SelectedObject?.ResetSelection();
+
+            if (SelectedObject != null)
+            {
+                SelectedObject.ResetSelection();
+                ObjectDeselected?.Invoke(SelectedObject);
+            }
+
             SelectedObject = null;
         }
 

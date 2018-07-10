@@ -17,7 +17,7 @@ namespace Bearded.UI.Events
 
             while (parent != null)
             {
-                var child = parent.Children.FirstOrDefault(childSelector.Invoke);
+                var child = parent.Children.Reverse().FirstOrDefault(childSelector.Invoke);
                 if (child != null)
                 {
                     path.Add(child);
@@ -38,7 +38,8 @@ namespace Bearded.UI.Events
             {
                 if (!(parent is Control parentAsControl))
                 {
-                    throw new InvalidOperationException("Tried creating path between unconnected controls.");
+                    // Tried creating path between unconnected controls.
+                    return EventPropagationPath.Empty;
                 }
                 path.Add(parentAsControl);
                 

@@ -15,6 +15,7 @@ namespace Bearded.TD.Game.Buildings
     {
         public Id<BuildingPlaceholder> Id { get; }
         private readonly BuildingWorkerTask workerTask;
+        public override int Health => 0;
 
         public BuildingPlaceholder(Id<BuildingPlaceholder> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
@@ -40,6 +41,7 @@ namespace Bearded.TD.Game.Buildings
             var building = new Building(buildingId, Blueprint, Faction, Footprint);
             Game.Add(building);
             workerTask.SetBuilding(building);
+            Game.Meta.Events.StartBuildingConstruction(this, building);
         }
 
         public override void Draw(GeometryManager geometries)

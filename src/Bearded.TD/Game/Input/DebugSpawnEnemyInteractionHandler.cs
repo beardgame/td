@@ -28,6 +28,8 @@ namespace Bearded.TD.Game.Input
                         tile,
                         Game.Blueprints.Units[enemyBlueprintName],
                         Game.Ids.GetNext<EnemyUnit>()));
+            else if (cursor.Cancel.Hit)
+                Game.PlayerInput.ResetInteractionHandler();
         }
     }
 }

@@ -60,7 +60,7 @@ namespace Bearded.TD.UI.Controls
             foreach (var (p, i) in Game.Players.Indexed())
             {
                 var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, factionColor);
+                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, p.Name, factionColor);
                 Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
                 Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, p, playerFaction);
             }

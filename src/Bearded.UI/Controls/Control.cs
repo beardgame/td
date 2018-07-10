@@ -16,6 +16,27 @@ namespace Bearded.UI.Controls
 
         public Frame Frame => getFrame();
 
+        private bool isVisible = true;
+        public bool IsVisible
+        {
+            get => isVisible;
+            set
+            {
+                if (isVisible == value) return;
+                isVisible = value;
+
+                if (isVisible)
+                {
+                    MadeVisible();
+                }
+                else
+                {
+                    MadeInvisible();
+                    if (IsFocused) Unfocus();
+                }
+            }
+        }
+
         public bool IsFocused { get; private set; }
         public bool CanBeFocused { get; protected set; }
 
@@ -35,7 +56,7 @@ namespace Bearded.UI.Controls
 
         public virtual bool TryFocus()
         {
-            if (!CanBeFocused)
+            if (!CanBeFocused || !IsVisible)
                 return false;
             if (IsFocused)
                 return true;
@@ -125,6 +146,8 @@ namespace Bearded.UI.Controls
         public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
         public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
         public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
+        public virtual void PreviewMouseScrolled(MouseScrollEventArgs eventArgs) { }
+        public virtual void MouseScrolled(MouseScrollEventArgs eventArgs) { }
 
         public virtual void PreviewKeyHit(KeyEventArgs eventArgs) { }
         public virtual void KeyHit(KeyEventArgs eventArgs) { }
@@ -137,5 +160,8 @@ namespace Bearded.UI.Controls
         public virtual void LostFocus() { }
 
         protected virtual void FrameChanged() { }
+
+        public virtual void MadeVisible() { } // Not called on initialization
+        public virtual void MadeInvisible() { }
     }
 }

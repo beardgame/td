@@ -43,7 +43,10 @@ namespace Bearded.UI.Controls
 
         public void Render(IRendererRouter r)
         {
-            controls.Render(r);
+            if (controls.IsVisible)
+            {
+                controls.Render(r);
+            }
         }
         
         public ReadOnlyCollection<Control> Children => controls.Children;

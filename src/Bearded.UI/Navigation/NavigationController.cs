@@ -33,6 +33,25 @@ namespace Bearded.UI.Navigation
             Exited?.Invoke();
         }
 
+        public void CloseAll()
+        {
+            while (root.Children.Count > 0)
+                root.Remove(root.Children[0]);
+        }
+
+        public void ReplaceAll<TModel>()
+            where TModel : NavigationNode<Void>
+        {
+            ReplaceAll<TModel, Void>(default(Void));
+        }
+
+        public void ReplaceAll<TModel, TParameters>(TParameters parameters)
+            where TModel : NavigationNode<TParameters>
+        {
+            CloseAll();
+            Push<TModel, TParameters>(parameters);
+        }
+
         public void Replace<TModel>(INavigationNode toReplace)
             where TModel : NavigationNode<Void>
         {
@@ -45,21 +64,36 @@ namespace Bearded.UI.Navigation
             toReplace.Terminate();
             var viewToReplace = viewsByModel[toReplace];
             var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            new AnchorTemplate(viewToReplace).ApplyTo(view);
             root.AddOnTopOf(viewToReplace, view);
             root.Remove(viewToReplace);
         }
 
-        public void Push<TModel>()
+        public TModel Push<TModel>()
             where TModel : NavigationNode<Void>
         {
-            Push<TModel, Void>(default(Void));
+            return Push<TModel, Void>(default(Void));
         }
 
-        public void Push<TModel, TParameters>(TParameters parameters)
+        public TModel Push<TModel>(Func<AnchorTemplate, AnchorTemplate> build)
+            where TModel : NavigationNode<Void>
+        {
+            return Push<TModel, Void>(default(Void), build);
+        }
+
+        public TModel Push<TModel, TParameters>(TParameters parameters)
             where TModel : NavigationNode<TParameters>
         {
-            var (_, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            return Push<TModel, TParameters>(parameters, a => a);
+        }
+
+        public TModel Push<TModel, TParameters>(TParameters parameters, Func<AnchorTemplate, AnchorTemplate> build)
+            where TModel : NavigationNode<TParameters>
+        {
+            var (model, view) = instantiateModelAndView<TModel, TParameters>(parameters);
+            view.Anchor(build);
             root.Add(view);
+            return model;
         }
 
         private (TModel model, Control view) instantiateModelAndView<TModel, TParameters>(TParameters parameters)

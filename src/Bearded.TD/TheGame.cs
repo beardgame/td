@@ -5,7 +5,6 @@ using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
-using Bearded.TD.Screens;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
@@ -30,7 +29,6 @@ namespace Bearded.TD
 
         private InputManager inputManager;
         private RenderContext renderContext;
-        private ScreenManager screenManager;
         private RootControl rootControl;
         private UIUpdater uiUpdater;
         private EventManager eventManager;
@@ -62,11 +60,14 @@ namespace Bearded.TD
 
             var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(
-                new (Type, object)[] {
+                new (Type, object)[]
+                {
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)), 
+                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Button), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
+                    (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
                     (typeof(Control), new BoxRenderer(surfaces.ConsoleBackground, Color.Fuchsia)),
                 });
 
@@ -77,18 +78,17 @@ namespace Bearded.TD
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
-
-            eventManager = new EventManager(rootControl, inputManager);
+            
+            var shortcuts = new ShortcutManager();
+            eventManager = new EventManager(rootControl, inputManager, shortcuts);
             var uiFactories = UILibrary.CreateFactories(renderContext);
             var navigationController =
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
+            var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
             navigationController.Push<MainMenu>();
             navigationController.Exited += Close;
 
-            screenManager = new ScreenManager(inputManager);
-            screenManager.AddScreenLayerOnTop(new ConsoleScreenLayer(screenManager, renderContext.Geometries, logger));
-
-            KeyPress += (sender, args) => screenManager.RegisterPressedCharacter(args.KeyChar);
+            shortcuts.RegisterShortcut(Key.Tilde, debugConsole.Toggle);
 
             UserSettings.SettingsChanged += () => OnResize(null);
 
@@ -98,7 +98,6 @@ namespace Bearded.TD
         protected override void OnResize(EventArgs e)
         {
             var viewportSize = new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale);
-            screenManager.OnResize(viewportSize);
             renderContext.OnResize(viewportSize);
             rootControl.SetViewport(Width, Height, UserSettings.Instance.UI.UIScale);
             base.OnResize(e);
@@ -120,13 +119,11 @@ namespace Bearded.TD
 
             eventManager.Update();
             uiUpdater.Update(e);
-            screenManager.Update(e);
         }
 
         protected override void OnRender(UpdateEventArgs e)
         {
             renderContext.Compositor.PrepareForFrame();
-            screenManager.Render(renderContext);
             rootControl.Render(rendererRouter);
             renderContext.Compositor.FinalizeFrame();
 
