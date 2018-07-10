@@ -1,4 +1,5 @@
 ﻿using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
@@ -58,6 +59,15 @@ namespace Bearded.UI.Events
                         (c, e) => c.PreviewMouseButtonHit(e),
                         (c, e) => c.MouseButtonHit(e));
                 }
+            }
+
+            // Mouse scroll
+            if (inputManager.DeltaScrollF > 0)
+            {
+                path.PropagateEvent(
+                    new MouseScrollEventArgs(mousePosition, inputManager.DeltaScroll, inputManager.DeltaScrollF),
+                    (c, e) => c.PreviewMouseScrolled(e),
+                    (c, e) => c.MouseScrolled(e));
             }
 
             previousPropagationPath = path;

@@ -144,6 +144,8 @@ namespace Bearded.UI.Controls
         public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
         public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
         public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
+        public virtual void PreviewMouseScrolled(MouseScrollEventArgs eventArgs) { }
+        public virtual void MouseScrolled(MouseScrollEventArgs eventArgs) { }
 
         public virtual void PreviewKeyHit(KeyEventArgs eventArgs) { }
         public virtual void KeyHit(KeyEventArgs eventArgs) { }
