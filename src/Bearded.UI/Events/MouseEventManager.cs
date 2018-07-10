@@ -70,7 +70,8 @@ namespace Bearded.UI.Events
             }
 
             // Mouse scroll
-            if (inputManager.DeltaScrollF > 0)
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (inputManager.DeltaScrollF != 0)
             {
                 path.PropagateEvent(
                     new MouseScrollEventArgs(mousePosition, inputManager.DeltaScroll, inputManager.DeltaScrollF),

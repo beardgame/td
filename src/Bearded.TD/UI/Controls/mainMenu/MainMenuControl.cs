@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using Bearded.TD.UI.Layers;
+using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -22,7 +23,7 @@ namespace Bearded.TD.UI.Controls
             );
 
             var source = new ListItemSource(25);
-            var list = new ListControl(source)
+            var list = new ListControl(source, new ViewportClippingLayerControl())
                 .Anchor(a => a.Bottom(300).Left(0, 100).Top(50));
             source.List = list;
 
@@ -41,7 +42,7 @@ namespace Bearded.TD.UI.Controls
 
             public double HeightOfItemAt(int index)
             {
-                return 23;
+                return 23 + index * 3;
             }
 
             public Control CreateItemControlFor(int index)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 
@@ -42,6 +43,7 @@ namespace Bearded.UI.Controls
 
                 contentTopLimit = value;
 
+                validateScrollPosition();
                 updateContentContainerAnchors();
             }
         }
@@ -59,17 +61,34 @@ namespace Bearded.UI.Controls
             calculateTotalHeight();
         }
 
+        public override void MouseScrolled(MouseScrollEventArgs eventArgs)
+        {
+            var delta = eventArgs.DeltaScrollF * 30;
+            var offsetBefore = ScrollOffset;
+
+            ScrollOffset = offsetBefore + delta;
+
+            var offsetAfter = ScrollOffset;
+
+            if (offsetAfter > offsetBefore)
+            {
+                onScrollDown();
+            }
+            else if (offsetAfter < offsetBefore)
+            {
+                onScrollUp();
+            }
+        }
+
         public void ScrollToTop()
         {
             ScrollOffset = 0;
-            validateScrollPosition();
             onScrollUp();
         }
 
         public void ScrollToBottom()
         {
             ScrollOffset = totalContentHeight;
-            validateScrollPosition();
             onScrollDown();
         }
 
