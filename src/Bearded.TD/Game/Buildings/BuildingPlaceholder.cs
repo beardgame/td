@@ -41,6 +41,7 @@ namespace Bearded.TD.Game.Buildings
             var building = new Building(buildingId, Blueprint, Faction, Footprint);
             Game.Add(building);
             workerTask.SetBuilding(building);
+            Game.Meta.Events.StartBuildingConstruction(this, building);
         }
 
         public override void Draw(GeometryManager geometries)

@@ -1,4 +1,6 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Meta;
 
 namespace Bearded.TD.Game.Input
 {
@@ -29,9 +31,26 @@ namespace Bearded.TD.Game.Input
             }
         }
 
+        protected override void OnStart(ICursorHandler cursor)
+        {
+            base.OnStart(cursor);
+            Game.State.Meta.Events.BuildingConstructionStarted += onBuildingConstructionStarted;
+
+        }
+
         protected override void OnEnd(ICursorHandler cursor)
         {
+            base.OnEnd(cursor);
             Game.SelectionManager.ResetSelection();
+            Game.State.Meta.Events.BuildingConstructionStarted -= onBuildingConstructionStarted;
+        }
+
+        private void onBuildingConstructionStarted(BuildingPlaceholder placeholder, Building building)
+        {
+            if (placeholder.SelectionState == SelectionState.Selected)
+            {
+                Game.SelectionManager.SelectObject(building);
+            }
         }
     }
 }
