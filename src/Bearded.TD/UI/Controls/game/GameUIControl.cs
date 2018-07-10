@@ -19,11 +19,13 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 40)));
-            Add(new CompositeControl()
+            Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)
                     .Bottom(height: 320))
-                .Subscribe(gameUI.SetEntityStatusContainer));
+                .Subscribe(gameUI.SetEntityStatusContainer)
+                .Subscribe(container => gameUI.EntityStatusClosed += () => container.IsVisible = false)
+                .Subscribe(container => gameUI.EntityStatusOpened += _ => container.IsVisible = true));
             Add(new GameWorldControl(gameUI.Game, geometryManager));
         }
     }

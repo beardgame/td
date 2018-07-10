@@ -6,6 +6,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using Bearded.Utilities.Input;
 
 namespace Bearded.TD.UI.Controls
@@ -18,6 +19,9 @@ namespace Bearded.TD.UI.Controls
 
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
+        
+        public event GenericEventHandler<ISelectable> EntityStatusOpened;
+        public event VoidEventHandler EntityStatusClosed; 
 
         private NavigationController entityStatusNavigation;
         
@@ -80,12 +84,17 @@ namespace Bearded.TD.UI.Controls
                 case IPlacedBuilding building:
                     entityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
                     break;
+                default:
+                    return;
             }
+
+            EntityStatusOpened?.Invoke(selectedObject);
         }
 
         private void onObjectDeselected(ISelectable t)
         {
             entityStatusNavigation.CloseAll();
+            EntityStatusClosed?.Invoke();
         }
     }
 }
