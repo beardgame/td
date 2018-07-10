@@ -9,7 +9,7 @@ namespace Bearded.TD.UI.Controls
         {
             Add(new Label(buildingStatus.Building.Blueprint.Name) { FontSize = 24 }
                 .Anchor(a => a.Top(margin: 4, height: 24).Left(margin: 4).Right(margin: 4)));
-            Add(new Label($"Owned by {buildingStatus.Building.Faction.Color.ToString()}") { FontSize = 16 }
+            Add(new Label($"Owned by {buildingStatus.Building.Faction.Name ?? "nobody"}") { FontSize = 16 }
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
             Add(new DynamicLabel(() => $"Hitpoints: {0} / {buildingStatus.Building.Blueprint.MaxHealth}") { FontSize = 16 }
                 .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));

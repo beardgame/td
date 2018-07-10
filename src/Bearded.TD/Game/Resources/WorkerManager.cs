@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Resources
 {
-    class WorkerManager
+    sealed class WorkerManager
     {
         private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
         private readonly Queue<WorkerTask> tasks = new Queue<WorkerTask>();
