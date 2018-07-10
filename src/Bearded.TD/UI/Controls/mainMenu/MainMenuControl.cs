@@ -1,4 +1,5 @@
-﻿using Bearded.TD.UI.Layers;
+﻿using System;
+using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
@@ -32,6 +33,9 @@ namespace Bearded.TD.UI.Controls
 
         class ListItemSource : IListItemSource
         {
+            private int height = 23;
+            private string name;
+
             public ListItemSource(int i)
             {
                 ItemCount = i;
@@ -42,13 +46,22 @@ namespace Bearded.TD.UI.Controls
 
             public double HeightOfItemAt(int index)
             {
-                return 23 + index * 3;
+                return height + index * 3;
             }
 
             public Control CreateItemControlFor(int index)
             {
-                return new Button { new Label(index.ToString()) }
-                    .Subscribe(c => c.Clicked += List.ScrollToBottom);
+                return new Button { new Label(name + index.ToString()) }
+                    .Subscribe(c => c.Clicked += reload);
+            }
+
+            private void reload()
+            {
+                var random = new Random().Next(30);
+                name = random.ToString() + " ";
+                height = random;
+
+                List.Reload();
             }
 
             public void DestroyItemControlAt(int index, Control control)
