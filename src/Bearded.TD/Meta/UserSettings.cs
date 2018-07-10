@@ -1,6 +1,7 @@
 ﻿using Bearded.Utilities;
 using Newtonsoft.Json;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable ConvertToConstant.Global
 
 namespace Bearded.TD.Meta
 {
