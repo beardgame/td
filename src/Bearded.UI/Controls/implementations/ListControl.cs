@@ -131,6 +131,9 @@ namespace Bearded.UI.Controls
         
         public void OnAppendItems(int addedCount)
         {
+            if (needsReload)
+                return;
+
             var oldCount = itemCount;
             itemCount = itemSource.ItemCount;
 
