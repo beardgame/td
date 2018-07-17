@@ -11,6 +11,7 @@ namespace Bearded.UI.Controls
     // TODO: extract scroll controls
     // TODO: make scoll bar
     // TODO: allow insert/removal/update of ranges
+    // TODO: refactor all control operations to only happen on frame updates to prevent crashes when calling methods early
 
     public interface IListItemSource
     {
@@ -33,6 +34,8 @@ namespace Bearded.UI.Controls
         private readonly LinkedList<(Control Control, int Index, double Offset, double Height)> cells
             = new LinkedList<(Control, int, double, double)>();
         private double totalContentHeight;
+
+        private int itemCount;
 
         public bool StickToBottom { get; set; } = true;
         public bool CurrentlyStuckToBottom { get; private set; }
@@ -125,6 +128,45 @@ namespace Bearded.UI.Controls
             addCellsDownwards();
             removeCellsDownwards();
         }
+        
+        public void OnAppendItems(int addedCount)
+        {
+            var oldCount = itemCount;
+            itemCount = itemSource.ItemCount;
+
+            if (itemCount != oldCount + addedCount)
+                throw new ArgumentException("Added count must equal the difference between previous and current ItemCount.", nameof(addedCount));
+
+            var heightOfNewItems = Enumerable.Range(oldCount, addedCount).Sum(i => itemSource.HeightOfItemAt(i));
+
+            totalContentHeight += heightOfNewItems;
+
+            if (CurrentlyStuckToBottom)
+                ScrollOffset = totalContentHeight;
+
+            addCellsDownwards();
+            removeCellsDownwards();
+        }
+
+        public void OnInsertedRange(int index, int count)
+        {
+            throw new NotImplementedException();
+            // sum height of added items
+            // update total height
+            // if stuck to bottom, scroll
+            // see if cells need to be inserted (yuk)
+            // else add cells down/up
+        }
+
+        public void OnRemovingRange(int index, int count)
+        {
+            throw new NotImplementedException();
+            // sum height of removing items
+            // if any visible
+            //  remove them
+            //  update all following (index, offset)
+            // add down/up (with offset, yuk)
+        }
 
         private void onRemoveHead(int i)
         {
@@ -133,14 +175,6 @@ namespace Bearded.UI.Controls
             // validate scroll position
 
             // add cells downwards (order?)
-            // remove cells downwards
-        }
-
-        private void onAddTail(int i)
-        {
-            // update total height
-            // if stuck to bottom, scroll
-            // add cells downwards
             // remove cells downwards
         }
 
@@ -170,6 +204,8 @@ namespace Bearded.UI.Controls
         
         public void Reload()
         {
+            itemCount = itemSource.ItemCount;
+
             ensureNoCells();
 
             calculateTotalHeight();

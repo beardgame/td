@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 
@@ -45,7 +46,7 @@ namespace Bearded.TD.UI.Controls
                 ItemCount = i;
             }
             
-            public int ItemCount { get; }
+            public int ItemCount { get; private set; }
             public ListControl List { get; set; }
 
             public double HeightOfItemAt(int index)
@@ -55,12 +56,18 @@ namespace Bearded.TD.UI.Controls
 
             public Control CreateItemControlFor(int index)
             {
-                return new Button { new Label(name + index.ToString()) }
-                    .Subscribe(c => c.Clicked += reload);
+                return new Button { new Label(name + index) }
+                    .Subscribe(c => c.Clicked += clicked);
             }
 
-            private void reload()
+            private void clicked()
             {
+                ItemCount += 1;
+                
+                List.OnAppendItems(1);
+
+                return;
+
                 var random = new Random().Next(30);
                 name = random + " ";
                 height = random;
