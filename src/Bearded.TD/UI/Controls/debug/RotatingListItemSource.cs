@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class RotatingListItemSource : IListItemSource
+    sealed class RotatingListItemSource<T> : IListItemSource
     {
         private readonly ListControl list;
-        private readonly int capacity;
+        private readonly Func<T, Control> controlFactory;
         private readonly double itemHeight;
-        private readonly List<Control> controls;
+        private readonly T[] items;
         private int listStart;
         private int listEnd;
 
         public int ItemCount { get; private set; }
 
-        public RotatingListItemSource(
-            ListControl list, IEnumerable<Control> initialControls, int capacity, double itemHeight)
+        public RotatingListItemSource(ListControl list,
+            IEnumerable<T> initialControls,
+            Func<T, Control> controlFactory,
+            double itemHeight,
+            int capacity)
         {
             if (capacity < 2)
             {
@@ -24,34 +28,29 @@ namespace Bearded.TD.UI.Controls
             }
 
             this.list = list;
-            this.capacity = capacity;
+            this.controlFactory = controlFactory;
             this.itemHeight = itemHeight;
-            controls = new List<Control>(capacity);
-            controls.AddRange(initialControls);
-            listEnd = controls.Count;
-            ItemCount = controls.Count;
+            items = new T[capacity];
+
+            var initialControlsList = initialControls.ToList();
+            initialControlsList.CopyTo(items, 0);
+            listEnd = initialControlsList.Count;
+            ItemCount = initialControlsList.Count;
         }
 
-        public void Push(Control control)
+        public void Push(T item)
         {
             var pruned = false;
-            if (ItemCount == capacity)
+            if (ItemCount == items.Length)
             {
                 // Prune first half of list
                 ItemCount /= 2;
-                listStart = (listStart + (capacity - ItemCount)) % capacity;
+                listStart = (listStart + (items.Length - ItemCount)) % items.Length;
                 pruned = true;
             }
 
-            if (listEnd < controls.Count)
-            {
-                controls[listEnd] = control;
-            }
-            else
-            {
-                controls.Add(control);
-            }
-            listEnd = (listEnd + 1) % capacity;
+            items[listEnd] = item;
+            listEnd = (listEnd + 1) % items.Length;
             ItemCount++;
 
             if (pruned)
@@ -64,11 +63,11 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private int realIndex(int index) => (listStart + index) % capacity;
+        private int realIndex(int index) => (listStart + index) % items.Length;
 
         public double HeightOfItemAt(int index) => itemHeight;
 
-        public Control CreateItemControlFor(int index) => controls[realIndex(index)];
+        public Control CreateItemControlFor(int index) => controlFactory(items[realIndex(index)]);
 
         public void DestroyItemControlAt(int index, Control control) { }
     }

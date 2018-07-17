@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
@@ -26,7 +25,7 @@ namespace Bearded.TD.UI.Controls
             };
 
         private readonly DebugConsole debug;
-        private readonly RotatingListItemSource listItemSource;
+        private readonly RotatingListItemSource<Logger.Entry> listItemSource;
         private readonly TextInput commandInput;
 
         public DebugConsoleControl(DebugConsole debug)
@@ -36,8 +35,8 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
             var logBox = new ListControl(startStuckToBottom: true)
                 .Anchor(a => a.Bottom(margin: 20));
-            listItemSource = new RotatingListItemSource(
-                logBox, debug.GetLastLogEntries(logHistoryLength / 2).Select(getControlForEntry), logHistoryLength, 20);
+            listItemSource = new RotatingListItemSource<Logger.Entry>(
+                logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry, 20, logHistoryLength);
             logBox.ItemSource = listItemSource;
 
             Add(new BackgroundBox());
@@ -72,7 +71,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onDebugLogEntryAdded(Logger.Entry entry)
         {
-            listItemSource.Push(getControlForEntry(entry));
+            listItemSource.Push(entry);
         }
 
         private static Control getControlForEntry(Logger.Entry entry)
