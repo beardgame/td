@@ -22,11 +22,20 @@ namespace Bearded.TD.UI.Controls
 
         public VoidEventHandler Enabled;
         public VoidEventHandler Disabled;
+        public GenericEventHandler<Logger.Entry> LogEntryAdded;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             logger = dependencies.Resolve<Logger>();
             IsEnabled = false;
+
+            logger.Logged += fireLoggerEntryEvent;
+        }
+
+        public override void Terminate()
+        {
+            base.Terminate();
+            logger.Logged -= fireLoggerEntryEvent;
         }
 
         public void Enable()
@@ -53,11 +62,36 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
+        private void printInfo(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Info, message);
+        }
+
+        private void printWarning(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Warning, message);
+        }
+
+        private void printError(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Error, message);
+        }
+
+        private void fireLoggerEntryEvent(Logger.Severity severity, string message)
+        {
+            fireLoggerEntryEvent(new Logger.Entry(message, severity));
+        }
+
+        private void fireLoggerEntryEvent(Logger.Entry loggerEntry)
+        {
+            LogEntryAdded?.Invoke(loggerEntry);
+        }
+
         public void OnCommandExecuted(string command)
         {
             addToHistory(command);
             
-            logger.Info.Log("> {0}", command);
+            printInfo($"> {command}");
 
             var split = command.Split(space, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length == 0) return;
@@ -65,7 +99,7 @@ namespace Bearded.TD.UI.Controls
 
             if (!ConsoleCommands.TryRun(split[0], logger, new CommandParameters(args)))
             {
-                logger.Error.Log("Command not found.");
+                printError("Command not found.");
             }
         }
 
@@ -123,8 +157,8 @@ namespace Bearded.TD.UI.Controls
 
             if (extended == null)
             {
-                logger.Info.Log($"> {trimmed}");
-                logger.Warning.Log("No commands found.");
+                printInfo($"> {trimmed}");
+                printWarning("No commands found.");
                 return trimmed;
             }
 
@@ -139,8 +173,8 @@ namespace Bearded.TD.UI.Controls
             if (extended == trimmed)
             {
                 var availableCommands = ConsoleCommands.Prefixes.AllKeys(extended);
-                logger.Info.Log("> {0}", trimmed);
-                foreach (var command in availableCommands) logger.Info.Log(command);
+                printInfo($"> {trimmed}");
+                foreach (var command in availableCommands) printInfo(command);
             }
 
             return extended;
@@ -160,8 +194,8 @@ namespace Bearded.TD.UI.Controls
 
             if (parameterPrefixes == null)
             {
-                logger.Info.Log($"> {incompleteCommand}");
-                logger.Warning.Log("No parameters for command known.");
+                printInfo($"> {incompleteCommand}");
+                printWarning("No parameters for command known.");
                 return incompleteCommand;
             }
 
@@ -170,8 +204,8 @@ namespace Bearded.TD.UI.Controls
 
             if (extended == null)
             {
-                logger.Info.Log($"> {incompleteCommand}");
-                logger.Warning.Log("No matching parameters found.");
+                printInfo($"> {incompleteCommand}");
+                printWarning("No matching parameters found.");
                 return incompleteCommand;
             }
 
@@ -186,8 +220,8 @@ namespace Bearded.TD.UI.Controls
             }
 
             var availableParameters = parameterPrefixes.AllKeys(extended);
-            logger.Info.Log($"> {command} {extended}");
-            foreach (var p in availableParameters) logger.Info.Log(p);
+            printInfo($"> {command} {extended}");
+            foreach (var p in availableParameters) printInfo(p);
 
             return $"{command} {extended}";
         }

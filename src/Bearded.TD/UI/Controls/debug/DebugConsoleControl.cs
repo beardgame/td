@@ -9,6 +9,7 @@ namespace Bearded.TD.UI.Controls
     {
         private readonly DebugConsole debug;
         private readonly TextInput commandInput;
+        private readonly RotatingListItemSource listItemSource;
 
         public DebugConsoleControl(DebugConsole debug)
         {
@@ -19,7 +20,7 @@ namespace Bearded.TD.UI.Controls
             Add(new BackgroundBox());
 
             Add(commandInput);
-            Add(new SimpleControl()
+            Add(new ListControl(listItemSource)
                 .Anchor(a => a.Bottom(margin: 20)));
 
             debug.Enabled += onDebugEnabled;
