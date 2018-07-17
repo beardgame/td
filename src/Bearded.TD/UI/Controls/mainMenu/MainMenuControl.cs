@@ -24,7 +24,10 @@ namespace Bearded.TD.UI.Controls
             );
 
             var source = new ListItemSource(50);
-            var list = new ListControl(source, new ViewportClippingLayerControl(), true)
+            var list = new ListControl(new ViewportClippingLayerControl(), true)
+                {
+                    ItemSource = source
+                }
                 .Anchor(a => a.Bottom(300).Left(0, 100).Top(50));
 
             source.List = list;

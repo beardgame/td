@@ -7,7 +7,6 @@ using Bearded.Utilities;
 
 namespace Bearded.UI.Controls
 {
-    // TODO: make itemSource property mutable
     // TODO: fix scrolloffset - validateScolloffset recursion
     // TODO: fix not sticking to bottom when shortening frame
     // TODO: extract scroll controls
@@ -25,12 +24,13 @@ namespace Bearded.UI.Controls
 
     public class ListControl : CompositeControl
     {
-        private readonly IListItemSource itemSource;
         private readonly CompositeControl listContainer;
         private readonly CompositeControl contentContainer;
 
-        private bool firstFrameChange = true;
-        
+        private bool needsReload = true;
+
+        private IListItemSource itemSource;
+
         private readonly LinkedList<(Control Control, int Index, double Offset, double Height)> cells
             = new LinkedList<(Control, int, double, double)>();
         private double totalContentHeight;
@@ -57,9 +57,19 @@ namespace Bearded.UI.Controls
             }
         }
 
-        public ListControl(IListItemSource itemSource, CompositeControl listContainer = null, bool startStuckToToBottom = false)
+        public IListItemSource ItemSource
         {
-            this.itemSource = itemSource;
+            get => itemSource;
+            set
+            {
+                itemSource = value ?? throw new ArgumentNullException();
+                needsReload = true;
+                SetFrameNeedsUpdateIfNeeded();
+            }
+        }
+
+        public ListControl(CompositeControl listContainer = null, bool startStuckToToBottom = false)
+        {
             this.listContainer = listContainer ?? new CompositeControl();
             currentlyStuckToBottom = startStuckToToBottom;
 
@@ -71,6 +81,9 @@ namespace Bearded.UI.Controls
 
         public override void MouseScrolled(MouseScrollEventArgs eventArgs)
         {
+            if (itemSource == null)
+                return;
+
             var delta = eventArgs.DeltaScrollF * 30;
             var offsetBefore = ScrollOffset;
 
@@ -86,6 +99,8 @@ namespace Bearded.UI.Controls
             {
                 onScrollUp();
             }
+
+            eventArgs.Handled = true;
         }
 
         public void ScrollToTop()
@@ -140,10 +155,13 @@ namespace Bearded.UI.Controls
         {
             base.FrameChanged();
 
-            if (firstFrameChange)
+            if (itemSource == null)
+                return;
+
+            if (needsReload)
             {
                 Reload();
-                firstFrameChange = false;
+                needsReload = false;
             }
             else
             {
@@ -156,8 +174,7 @@ namespace Bearded.UI.Controls
         
         public void Reload()
         {
-            if (contentContainer.Children.Count > 0)
-                clearChildren();
+            ensureNoCells();
 
             calculateTotalHeight();
 
@@ -331,6 +348,12 @@ namespace Bearded.UI.Controls
         private double bottomOf((Control Control, int Index, double Offset, double Height) cell)
         {
             return cell.Offset + cell.Height;
+        }
+
+        private void ensureNoCells()
+        {
+            if (contentContainer.Children.Count > 0)
+                clearChildren();
         }
 
         private void clearChildren()
