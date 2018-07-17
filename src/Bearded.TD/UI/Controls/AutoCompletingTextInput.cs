@@ -24,7 +24,7 @@ namespace Bearded.TD.UI.Controls
 
         public override void KeyHit(KeyEventArgs eventArgs)
         {
-            if (eventArgs.Key == Key.Tab)
+            if (eventArgs.Key == Key.Tab && Text != AutoCompletionText)
             {
                 Text = AutoCompletionText;
                 MoveCursorToEnd();

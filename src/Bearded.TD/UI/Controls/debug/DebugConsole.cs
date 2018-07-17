@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
@@ -22,11 +23,26 @@ namespace Bearded.TD.UI.Controls
 
         public VoidEventHandler Enabled;
         public VoidEventHandler Disabled;
+        public GenericEventHandler<Logger.Entry> LogEntryAdded;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             logger = dependencies.Resolve<Logger>();
             IsEnabled = false;
+
+            logger.Logged += fireLoggerEntryEvent;
+        }
+
+        public IEnumerable<Logger.Entry> GetLastLogEntries(int maxNumOfEntries)
+        {
+            var entries = logger.GetSafeRecentEntries();
+            return entries.Count <= maxNumOfEntries ? entries : entries.Skip(entries.Count - maxNumOfEntries);
+        }
+
+        public override void Terminate()
+        {
+            base.Terminate();
+            logger.Logged -= fireLoggerEntryEvent;
         }
 
         public void Enable()
@@ -53,11 +69,36 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
+        private void printInfo(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Info, message);
+        }
+
+        private void printWarning(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Warning, message);
+        }
+
+        private void printError(string message)
+        {
+            fireLoggerEntryEvent(Logger.Severity.Error, message);
+        }
+
+        private void fireLoggerEntryEvent(Logger.Severity severity, string message)
+        {
+            fireLoggerEntryEvent(new Logger.Entry(message, severity));
+        }
+
+        private void fireLoggerEntryEvent(Logger.Entry loggerEntry)
+        {
+            LogEntryAdded?.Invoke(loggerEntry);
+        }
+
         public void OnCommandExecuted(string command)
         {
             addToHistory(command);
             
-            logger.Info.Log("> {0}", command);
+            printInfo($"> {command}");
 
             var split = command.Split(space, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length == 0) return;
@@ -65,7 +106,7 @@ namespace Bearded.TD.UI.Controls
 
             if (!ConsoleCommands.TryRun(split[0], logger, new CommandParameters(args)))
             {
-                logger.Error.Log("Command not found.");
+                printError("Command not found.");
             }
         }
 
@@ -113,18 +154,21 @@ namespace Bearded.TD.UI.Controls
             return cmd;
         }
 
-        public string AutoCompleteCommand(string incompleteCommand)
+        public string AutoCompleteCommand(string incompleteCommand, bool printAlternatives)
         {
             var trimmed = incompleteCommand.TrimStart();
 
-            if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand);
+            if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand, printAlternatives);
             
             var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
 
             if (extended == null)
             {
-                logger.Info.Log($"> {trimmed}");
-                logger.Warning.Log("No commands found.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {trimmed}");
+                    printWarning("No commands found.");
+                }
                 return trimmed;
             }
 
@@ -133,20 +177,20 @@ namespace Bearded.TD.UI.Controls
                 var extendedWithSpace = extended + " ";
                 return trimmed != extended
                     ? extendedWithSpace
-                    : autoCompleteParameters(extendedWithSpace);
+                    : autoCompleteParameters(extendedWithSpace, printAlternatives);
             }
 
-            if (extended == trimmed)
+            if (extended == trimmed && printAlternatives)
             {
                 var availableCommands = ConsoleCommands.Prefixes.AllKeys(extended);
-                logger.Info.Log("> {0}", trimmed);
-                foreach (var command in availableCommands) logger.Info.Log(command);
+                printInfo($"> {trimmed}");
+                foreach (var command in availableCommands) printInfo(command);
             }
 
             return extended;
         }
 
-        private string autoCompleteParameters(string incompleteCommand)
+        private string autoCompleteParameters(string incompleteCommand, bool printAlternatives)
         {
             var splitBySpace = incompleteCommand.Split(space, StringSplitOptions.RemoveEmptyEntries);
 
@@ -160,8 +204,11 @@ namespace Bearded.TD.UI.Controls
 
             if (parameterPrefixes == null)
             {
-                logger.Info.Log($"> {incompleteCommand}");
-                logger.Warning.Log("No parameters for command known.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {incompleteCommand}");
+                    printWarning("No parameters for command known.");
+                }
                 return incompleteCommand;
             }
 
@@ -170,8 +217,11 @@ namespace Bearded.TD.UI.Controls
 
             if (extended == null)
             {
-                logger.Info.Log($"> {incompleteCommand}");
-                logger.Warning.Log("No matching parameters found.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {incompleteCommand}");
+                    printWarning("No matching parameters found.");
+                }
                 return incompleteCommand;
             }
 
@@ -185,9 +235,12 @@ namespace Bearded.TD.UI.Controls
                 return $"{command} {extended}";
             }
 
-            var availableParameters = parameterPrefixes.AllKeys(extended);
-            logger.Info.Log($"> {command} {extended}");
-            foreach (var p in availableParameters) logger.Info.Log(p);
+            if (printAlternatives)
+            {
+                var availableParameters = parameterPrefixes.AllKeys(extended);
+                printInfo($"> {command} {extended}");
+                foreach (var p in availableParameters) printInfo(p);
+            }
 
             return $"{command} {extended}";
         }
