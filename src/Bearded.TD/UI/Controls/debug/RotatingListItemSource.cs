@@ -34,11 +34,13 @@ namespace Bearded.TD.UI.Controls
 
         public void Push(Control control)
         {
+            var pruned = false;
             if (ItemCount == capacity)
             {
                 // Prune first half of list
                 ItemCount /= 2;
                 listStart = (listStart + (capacity - ItemCount)) % capacity;
+                pruned = true;
             }
 
             if (listEnd < controls.Count)
@@ -52,7 +54,14 @@ namespace Bearded.TD.UI.Controls
             listEnd = (listEnd + 1) % capacity;
             ItemCount++;
 
-            list.Reload();
+            if (pruned)
+            {
+                list.Reload();
+            }
+            else
+            {
+                list.OnAppendItems(1);
+            }
         }
 
         private int realIndex(int index) => (listStart + index) % capacity;
