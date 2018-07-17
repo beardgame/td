@@ -8,7 +8,6 @@ using Bearded.Utilities;
 namespace Bearded.UI.Controls
 {
     // TODO: fix scrolloffset - validateScolloffset recursion
-    // TODO: fix not sticking to bottom when shortening frame
     // TODO: extract scroll controls
     // TODO: make scoll bar
     // TODO: allow insert/removal/update of ranges
