@@ -118,18 +118,12 @@ namespace Bearded.UI.Controls
         {
             addCellsUpwards();
             removeCellsUpwards();
-
-            //! handle case where scrolling with no overlap
-            // can probably just do this in the 'addCells' method by skipping smartly if new cell would be invisible
         }
 
         private void onScrollDown()
         {
             addCellsDownwards();
             removeCellsDownwards();
-
-            //! handle case where scrolling with no overlap
-            // can probably just do this in the 'addCells' method by skipping smartly if new cell would be invisible
         }
 
         private void onRemoveHead(int i)
