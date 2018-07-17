@@ -86,7 +86,7 @@ namespace Bearded.UI.Controls
             if (itemSource == null)
                 return;
 
-            var delta = eventArgs.DeltaScrollF * 30;
+            var delta = eventArgs.DeltaScrollF * -30;
             var offsetBefore = ScrollOffset;
 
             ScrollOffset = offsetBefore + delta;
