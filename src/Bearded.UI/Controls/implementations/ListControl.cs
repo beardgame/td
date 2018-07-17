@@ -67,10 +67,10 @@ namespace Bearded.UI.Controls
             }
         }
 
-        public ListControl(CompositeControl listContainer = null, bool startStuckToToBottom = false)
+        public ListControl(CompositeControl listContainer = null, bool startStuckToBottom = false)
         {
             this.listContainer = listContainer ?? new CompositeControl();
-            CurrentlyStuckToBottom = startStuckToToBottom;
+            CurrentlyStuckToBottom = startStuckToBottom;
 
             Add(this.listContainer);
 
