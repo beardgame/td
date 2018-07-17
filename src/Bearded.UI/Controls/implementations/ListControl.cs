@@ -7,6 +7,8 @@ using Bearded.Utilities;
 
 namespace Bearded.UI.Controls
 {
+    // TODO: fix scrolloffset - validateScolloffset recursion
+    // TODO: fix not sticking to bottom when shortening frame
     // TODO: extract scroll controls
     // TODO: make scoll bar
     // TODO: allow insert/removal/update of ranges
@@ -22,12 +24,15 @@ namespace Bearded.UI.Controls
 
     public class ListControl : CompositeControl
     {
-        private readonly IListItemSource itemSource;
         private readonly CompositeControl listContainer;
         private readonly CompositeControl contentContainer;
 
-        private int firstCellIndex;
-        private readonly LinkedList<(Control Control, double Offset, double Height)> cells = new LinkedList<(Control, double, double)>();
+        private bool needsReload = true;
+
+        private IListItemSource itemSource;
+
+        private readonly LinkedList<(Control Control, int Index, double Offset, double Height)> cells
+            = new LinkedList<(Control, int, double, double)>();
         private double totalContentHeight;
 
         public bool StickToBottom { get; set; } = true;
@@ -52,21 +57,33 @@ namespace Bearded.UI.Controls
             }
         }
 
-        public ListControl(IListItemSource itemSource, CompositeControl listContainer = null)
+        public IListItemSource ItemSource
         {
-            this.itemSource = itemSource;
+            get => itemSource;
+            set
+            {
+                itemSource = value ?? throw new ArgumentNullException();
+                needsReload = true;
+                SetFrameNeedsUpdateIfNeeded();
+            }
+        }
+
+        public ListControl(CompositeControl listContainer = null, bool startStuckToToBottom = false)
+        {
             this.listContainer = listContainer ?? new CompositeControl();
+            currentlyStuckToBottom = startStuckToToBottom;
 
             Add(this.listContainer);
 
             contentContainer = new CompositeControl();
             this.listContainer.Add(contentContainer);
-
-            calculateTotalHeight();
         }
 
         public override void MouseScrolled(MouseScrollEventArgs eventArgs)
         {
+            if (itemSource == null)
+                return;
+
             var delta = eventArgs.DeltaScrollF * 30;
             var offsetBefore = ScrollOffset;
 
@@ -82,6 +99,8 @@ namespace Bearded.UI.Controls
             {
                 onScrollUp();
             }
+
+            eventArgs.Handled = true;
         }
 
         public void ScrollToTop()
@@ -136,16 +155,26 @@ namespace Bearded.UI.Controls
         {
             base.FrameChanged();
 
-            validateScrollPosition();
-            addCellsDownwards();
-            removeCellsUpwards();
-            addCellsUpwards();
+            if (itemSource == null)
+                return;
+
+            if (needsReload)
+            {
+                Reload();
+                needsReload = false;
+            }
+            else
+            {
+                validateScrollPosition();
+                addCellsDownwards();
+                removeCellsUpwards();
+                addCellsUpwards();
+            }
         }
         
         public void Reload()
         {
-            if (contentContainer.Children.Count > 0)
-                clearChildren();
+            ensureNoCells();
 
             calculateTotalHeight();
 
@@ -153,7 +182,11 @@ namespace Bearded.UI.Controls
                 ScrollOffset = totalContentHeight;
 
             validateScrollPosition();
-            addCellsDownwards();
+
+            if (currentlyStuckToBottom)
+                addCellsUpwards();
+            else
+                addCellsDownwards();
         }
 
         private void calculateTotalHeight()
@@ -194,8 +227,6 @@ namespace Bearded.UI.Controls
 
         private void removeCellsUpwards()
         {
-            var lastIndexInList = firstCellIndex + cells.Count;
-
             while (cells.Count > 0)
             {
                 var lastCell = cells.Last.Value;
@@ -203,12 +234,10 @@ namespace Bearded.UI.Controls
                 if (lastCell.Offset < contentBottomLimit)
                     break;
                 
-                itemSource.DestroyItemControlAt(lastIndexInList, lastCell.Control);
+                itemSource.DestroyItemControlAt(lastCell.Index, lastCell.Control);
 
                 contentContainer.Remove(lastCell.Control);
                 cells.RemoveLast();
-
-                lastIndexInList--;
             }
         }
 
@@ -221,90 +250,91 @@ namespace Bearded.UI.Controls
                 if (bottomOf(firstCell) > contentTopLimit)
                     break;
 
-                itemSource.DestroyItemControlAt(firstCellIndex, firstCell.Control);
+                itemSource.DestroyItemControlAt(firstCell.Index, firstCell.Control);
 
                 contentContainer.Remove(firstCell.Control);
                 cells.RemoveFirst();
-
-                firstCellIndex++;
             }
         }
 
         private void addCellsUpwards()
         {
-            var firstCellTop = cells.Count == 0 ? 0 : cells.First.Value.Offset;
+            var firstCell = cells.Count == 0
+                ? (null, itemSource.ItemCount, totalContentHeight, 0)
+                : cells.First.Value;
 
-            while (firstCellIndex > 0)
+            while (firstCell.Index > 0)
             {
-                if (firstCellTop < contentTopLimit)
+                if (firstCell.Offset < contentTopLimit)
                     break;
 
-                firstCellIndex--;
-
-                var cell = addCellAbove(firstCellIndex, firstCellTop);
-
-                firstCellTop = cell.Offset;
+                firstCell = addCellAbove(firstCell.Index - 1, firstCell.Offset);
             }
         }
 
         private void addCellsDownwards()
         {
-            var nextIndexAfterLastCell = firstCellIndex + cells.Count;
+            var lastCell = cells.Count == 0
+                ? (null, -1, 0, 0)
+                : cells.Last.Value;
 
-            var previousCellBottom = cells.Count == 0
-                ? 0
-                : bottomOf(cells.Last.Value);
-            
-            while (nextIndexAfterLastCell < itemSource.ItemCount)
+            while (lastCell.Index + 1 < itemSource.ItemCount)
             {
-                if (previousCellBottom > contentBottomLimit)
+                var lastCellBottom = bottomOf(lastCell);
+
+                if (lastCellBottom > contentBottomLimit)
                     break;
 
-                var cell = addCellBelow(nextIndexAfterLastCell, previousCellBottom);
-
-                previousCellBottom = bottomOf(cell);
-                nextIndexAfterLastCell++;
+                lastCell = addCellBelow(lastCell.Index + 1, lastCellBottom);
             }
         }
 
-        private (Control Control, double Offset, double Height)
+        private (Control Control, int Index, double Offset, double Height)
             addCellBelow(int index, double top)
         {
             var height = itemSource.HeightOfItemAt(index);
             var bottom = top + height;
 
-            var cell = createCell(index, bottom, top, height);
+            var cell = createCellIfVisible(index, bottom, top, height);
 
-            cells.AddLast(cell);
+            if (cell.Control != null)
+                cells.AddLast(cell);
 
             return cell;
         }
 
-        private (Control Control, double Offset, double Height)
+        private (Control Control, int Index, double Offset, double Height)
             addCellAbove(int index, double bottom)
         {
             var height = itemSource.HeightOfItemAt(index);
             var top = bottom - height;
 
-            var cell = createCell(index, bottom, top, height);
+            var cell = createCellIfVisible(index, bottom, top, height);
 
-            cells.AddFirst(cell);
+            if (cell.Control != null)
+                cells.AddFirst(cell);
 
             return cell;
         }
 
-        private (Control Control, double Offset, double Height)
-            createCell(int index, double bottom, double top, double height)
+        private (Control Control, int Index, double Offset, double Height)
+            createCellIfVisible(int index, double bottom, double top, double height)
+        {
+            var isVisible = bottom >= contentTopLimit && top <= contentBottomLimit;
+            
+            return isVisible
+                ? (createCellControl(index, top, bottom), index, top, height)
+                : (null, index, top, height);
+        }
+
+        private Control createCellControl(int index, double top, double bottom)
         {
             var control = itemSource.CreateItemControlFor(index);
 
             anchorCell(control, top, bottom);
             contentContainer.Add(control);
 
-            var cell = (control, top, height);
-
-
-            return cell;
+            return control;
         }
 
         private static void anchorCell(Control control, double cellTop, double cellBottom)
@@ -315,20 +345,25 @@ namespace Bearded.UI.Controls
             );
         }
 
-        private double bottomOf((Control Control, double Offset, double Height) cell)
+        private double bottomOf((Control Control, int Index, double Offset, double Height) cell)
         {
             return cell.Offset + cell.Height;
         }
 
+        private void ensureNoCells()
+        {
+            if (contentContainer.Children.Count > 0)
+                clearChildren();
+        }
+
         private void clearChildren()
         {
-            foreach (var (control, index) in cells.Select((cell, i) => (cell.Control, firstCellIndex + i)))
+            foreach (var (control, index, _, _) in cells)
             {
                 itemSource.DestroyItemControlAt(index, control);
             }
             contentContainer.RemoveAllChildren();
             cells.Clear();
-            firstCellIndex = 0;
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
