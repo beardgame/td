@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
@@ -30,6 +31,12 @@ namespace Bearded.TD.UI.Controls
             IsEnabled = false;
 
             logger.Logged += fireLoggerEntryEvent;
+        }
+
+        public IEnumerable<Logger.Entry> GetLastLogEntries(int maxNumOfEntries)
+        {
+            var entries = logger.GetSafeRecentEntries();
+            return entries.Count <= maxNumOfEntries ? entries : entries.Skip(entries.Count - maxNumOfEntries);
         }
 
         public override void Terminate()
@@ -147,18 +154,21 @@ namespace Bearded.TD.UI.Controls
             return cmd;
         }
 
-        public string AutoCompleteCommand(string incompleteCommand)
+        public string AutoCompleteCommand(string incompleteCommand, bool printAlternatives)
         {
             var trimmed = incompleteCommand.TrimStart();
 
-            if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand);
+            if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand, printAlternatives);
             
             var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
 
             if (extended == null)
             {
-                printInfo($"> {trimmed}");
-                printWarning("No commands found.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {trimmed}");
+                    printWarning("No commands found.");
+                }
                 return trimmed;
             }
 
@@ -167,10 +177,10 @@ namespace Bearded.TD.UI.Controls
                 var extendedWithSpace = extended + " ";
                 return trimmed != extended
                     ? extendedWithSpace
-                    : autoCompleteParameters(extendedWithSpace);
+                    : autoCompleteParameters(extendedWithSpace, printAlternatives);
             }
 
-            if (extended == trimmed)
+            if (extended == trimmed && printAlternatives)
             {
                 var availableCommands = ConsoleCommands.Prefixes.AllKeys(extended);
                 printInfo($"> {trimmed}");
@@ -180,7 +190,7 @@ namespace Bearded.TD.UI.Controls
             return extended;
         }
 
-        private string autoCompleteParameters(string incompleteCommand)
+        private string autoCompleteParameters(string incompleteCommand, bool printAlternatives)
         {
             var splitBySpace = incompleteCommand.Split(space, StringSplitOptions.RemoveEmptyEntries);
 
@@ -194,8 +204,11 @@ namespace Bearded.TD.UI.Controls
 
             if (parameterPrefixes == null)
             {
-                printInfo($"> {incompleteCommand}");
-                printWarning("No parameters for command known.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {incompleteCommand}");
+                    printWarning("No parameters for command known.");
+                }
                 return incompleteCommand;
             }
 
@@ -204,8 +217,11 @@ namespace Bearded.TD.UI.Controls
 
             if (extended == null)
             {
-                printInfo($"> {incompleteCommand}");
-                printWarning("No matching parameters found.");
+                if (printAlternatives)
+                {
+                    printInfo($"> {incompleteCommand}");
+                    printWarning("No matching parameters found.");
+                }
                 return incompleteCommand;
             }
 
@@ -219,9 +235,12 @@ namespace Bearded.TD.UI.Controls
                 return $"{command} {extended}";
             }
 
-            var availableParameters = parameterPrefixes.AllKeys(extended);
-            printInfo($"> {command} {extended}");
-            foreach (var p in availableParameters) printInfo(p);
+            if (printAlternatives)
+            {
+                var availableParameters = parameterPrefixes.AllKeys(extended);
+                printInfo($"> {command} {extended}");
+                foreach (var p in availableParameters) printInfo(p);
+            }
 
             return $"{command} {extended}";
         }
