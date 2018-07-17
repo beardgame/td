@@ -35,7 +35,7 @@ namespace Bearded.UI.Controls
         private double totalContentHeight;
 
         public bool StickToBottom { get; set; } = true;
-        private bool currentlyStuckToBottom;
+        public bool CurrentlyStuckToBottom { get; private set; }
 
         private double contentTopLimit;
         private double contentBottomLimit;
@@ -70,7 +70,7 @@ namespace Bearded.UI.Controls
         public ListControl(CompositeControl listContainer = null, bool startStuckToToBottom = false)
         {
             this.listContainer = listContainer ?? new CompositeControl();
-            currentlyStuckToBottom = startStuckToToBottom;
+            CurrentlyStuckToBottom = startStuckToToBottom;
 
             Add(this.listContainer);
 
@@ -164,7 +164,7 @@ namespace Bearded.UI.Controls
             }
             else
             {
-                if (currentlyStuckToBottom)
+                if (CurrentlyStuckToBottom)
                     ScrollOffset = totalContentHeight;
 
                 validateScrollPosition();
@@ -180,12 +180,12 @@ namespace Bearded.UI.Controls
 
             calculateTotalHeight();
 
-            if (currentlyStuckToBottom)
+            if (CurrentlyStuckToBottom)
                 ScrollOffset = totalContentHeight;
 
             validateScrollPosition();
 
-            if (currentlyStuckToBottom)
+            if (CurrentlyStuckToBottom)
                 addCellsUpwards();
             else
                 addCellsDownwards();
@@ -214,7 +214,7 @@ namespace Bearded.UI.Controls
             ScrollOffset = ScrollOffset.Clamped(minimum, maximum);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            currentlyStuckToBottom = StickToBottom && ScrollOffset == maximum;
+            CurrentlyStuckToBottom = StickToBottom && ScrollOffset == maximum;
 
             updateContentLimits();
         }
