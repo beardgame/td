@@ -15,8 +15,9 @@ namespace Bearded.TD.UI.Controls
         private int listEnd;
 
         public int ItemCount { get; private set; }
-
-        public RotatingListItemSource(ListControl list,
+        
+        public RotatingListItemSource(
+            ListControl list,
             IEnumerable<T> initialControls,
             Func<T, Control> controlFactory,
             double itemHeight,
