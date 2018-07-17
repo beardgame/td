@@ -23,9 +23,10 @@ namespace Bearded.TD.UI.Controls
                 }.Anchor(a => a.Right(margin: 20, width: 250).Bottom(margin: 20, height: 150))
             );
 
-            var source = new ListItemSource(25);
-            var list = new ListControl(source, new ViewportClippingLayerControl())
+            var source = new ListItemSource(50);
+            var list = new ListControl(source, new ViewportClippingLayerControl(), true)
                 .Anchor(a => a.Bottom(300).Left(0, 100).Top(50));
+
             source.List = list;
 
             Add(list);
@@ -46,7 +47,7 @@ namespace Bearded.TD.UI.Controls
 
             public double HeightOfItemAt(int index)
             {
-                return height + index * 3;
+                return height + index * 2;
             }
 
             public Control CreateItemControlFor(int index)
@@ -58,7 +59,7 @@ namespace Bearded.TD.UI.Controls
             private void reload()
             {
                 var random = new Random().Next(30);
-                name = random.ToString() + " ";
+                name = random + " ";
                 height = random;
 
                 List.Reload();
