@@ -10,7 +10,8 @@ namespace Bearded.TD.UI.Controls
         public GameUIControl(GameUI gameUI, GeometryManager geometryManager)
         {
             this.gameUI = gameUI;
-
+            
+            Add(new GameWorldControl(gameUI.Game, geometryManager));
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
@@ -26,7 +27,6 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(gameUI.SetEntityStatusContainer)
                 .Subscribe(container => gameUI.EntityStatusClosed += () => container.IsVisible = false)
                 .Subscribe(container => gameUI.EntityStatusOpened += _ => container.IsVisible = true));
-            Add(new GameWorldControl(gameUI.Game, geometryManager));
         }
     }
 }
