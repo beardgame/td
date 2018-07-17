@@ -224,7 +224,7 @@ namespace Bearded.UI.Controls
         private void calculateTotalHeight()
         {
             totalContentHeight = Enumerable
-                .Range(0, itemSource.ItemCount)
+                .Range(0, itemCount)
                 .Sum(i => itemSource.HeightOfItemAt(i));
         }
 
@@ -292,7 +292,7 @@ namespace Bearded.UI.Controls
         private void addCellsUpwards()
         {
             var firstCell = cells.Count == 0
-                ? (null, itemSource.ItemCount, totalContentHeight, 0)
+                ? (null, itemCount, totalContentHeight, 0)
                 : cells.First.Value;
 
             while (firstCell.Index > 0)
@@ -310,7 +310,7 @@ namespace Bearded.UI.Controls
                 ? (null, -1, 0, 0)
                 : cells.Last.Value;
 
-            while (lastCell.Index + 1 < itemSource.ItemCount)
+            while (lastCell.Index + 1 < itemCount)
             {
                 var lastCellBottom = bottomOf(lastCell);
 
