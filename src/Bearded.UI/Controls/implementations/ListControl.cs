@@ -165,6 +165,9 @@ namespace Bearded.UI.Controls
             }
             else
             {
+                if (currentlyStuckToBottom)
+                    ScrollOffset = totalContentHeight;
+
                 validateScrollPosition();
                 addCellsDownwards();
                 removeCellsUpwards();
