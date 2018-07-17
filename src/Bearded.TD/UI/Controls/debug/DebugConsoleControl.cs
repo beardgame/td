@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Controls
             this.debug = debug;
             commandInput = new AutoCompletingTextInput(str => debug.AutoCompleteCommand(str, false)) { FontSize = 16 }
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
-            var logBox = new ListControl(startStuckToToBottom: true)
+            var logBox = new ListControl(startStuckToBottom: true)
                 .Anchor(a => a.Bottom(margin: 20));
             listItemSource = new RotatingListItemSource(
                 logBox, debug.GetLastLogEntries(logHistoryLength / 2).Select(getControlForEntry), logHistoryLength, 20);
