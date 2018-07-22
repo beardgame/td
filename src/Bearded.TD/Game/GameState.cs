@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -30,6 +31,7 @@ namespace Bearded.TD.Game
         public Level Level { get; }
         public LevelGeometry Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
+        public TechnologyManager Technology { get; }
 
         private bool isLoading = true;
 
@@ -43,6 +45,7 @@ namespace Bearded.TD.Game
             Level = level;
             Geometry = new LevelGeometry(level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(Geometry);
+            Technology = new TechnologyManager();
         }
 
         public void FinishLoading()

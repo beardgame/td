@@ -1,10 +1,8 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -28,11 +26,10 @@ namespace Bearded.TD.Game.Commands
             {
                 var tilemap = new Tilemap<TileInfo>(radius, tile => new TileInfo(tile.NeigbourDirectionsFlags, TileInfo.Type.Unknown));
                 var state = new GameState(game.Meta, new Level(tilemap));
-
-                var tech = new TechnologyManager();
-                game.Blueprints.Buildings.All.ForEach(tech.UnlockBlueprint);
-                //state.RegisterSingleton(tech);
-
+                foreach (var blueprint in game.Blueprints.Buildings.All)
+                {
+                    state.Technology.UnlockBlueprint(blueprint);
+                }
                 game.InitialiseState(state);
             }
 
