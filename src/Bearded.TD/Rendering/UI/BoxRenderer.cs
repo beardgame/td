@@ -5,7 +5,7 @@ using OpenTK;
 
 namespace Bearded.TD.Rendering.UI
 {
-    sealed class BoxRenderer : IRenderer<Control>
+    class BoxRenderer : IRenderer<Control>
     {
         private readonly PrimitiveGeometry geometry;
 
@@ -18,7 +18,7 @@ namespace Bearded.TD.Rendering.UI
             };
         }
         
-        public void Render(Control control)
+        public virtual void Render(Control control)
         {
             var frame = control.Frame;
 
