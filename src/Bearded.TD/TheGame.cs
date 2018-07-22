@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
@@ -16,6 +17,7 @@ using Bearded.UI.Navigation;
 using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Threading;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
@@ -26,6 +28,7 @@ namespace Bearded.TD
     class TheGame : Program
     {
         private readonly Logger logger;
+        private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
 
         private InputManager inputManager;
         private RenderContext renderContext;
@@ -35,7 +38,7 @@ namespace Bearded.TD
 
         private ContentManager contentManager;
         private CachedRendererRouter rendererRouter;
-
+        
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
              GameWindowFlags.Default, DisplayDevice.Default,
@@ -53,7 +56,7 @@ namespace Bearded.TD
             var dependencyResolver = new DependencyResolver();
             dependencyResolver.Add(logger);
 
-            contentManager = new ContentManager();
+            contentManager = new ContentManager(glActionQueue);
             dependencyResolver.Add(contentManager);
 
             renderContext = new RenderContext();
@@ -123,11 +126,24 @@ namespace Bearded.TD
 
         protected override void OnRender(UpdateEventArgs e)
         {
+            tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(16));
+
             renderContext.Compositor.PrepareForFrame();
             rootControl.Render(rendererRouter);
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
+        }
+
+        private void tryRunQueuedGlActionsFor(TimeSpan timeLimit)
+        {
+            var timer = Stopwatch.StartNew();
+
+            while (glActionQueue.TryExecuteOne())
+            {
+                if (timer.Elapsed > timeLimit)
+                    break;
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

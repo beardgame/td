@@ -16,6 +16,8 @@ using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
 using ProjectileBlueprint = Bearded.TD.Mods.Models.ProjectileBlueprint;
 using ProjectileBlueprintJson = Bearded.TD.Mods.Serialization.Models.ProjectileBlueprint;
+using SpriteSet = Bearded.TD.Mods.Models.SpriteSet;
+using SpriteSetJson = Bearded.TD.Mods.Serialization.Models.SpriteSet;
 using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
 using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
 using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponBlueprint;
@@ -54,6 +56,8 @@ namespace Bearded.TD.Mods
 
                 configureSerializer();
 
+                var sprites = loadSprites();
+
                 var projectiles = loadProjectiles();
 
                 configureSerializerDependency(projectiles, m => m.Blueprints.Projectiles);
@@ -75,6 +79,19 @@ namespace Bearded.TD.Mods
                     weapons,
                     projectiles,
                     tags.GetForCurrentMod());
+            }
+
+            private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
+            {
+                var spriteSetFiles = jsonFilesIn("gfx/sprites");
+                var spriteSets = loadSpriteSets(spriteSetFiles);
+                return new ReadonlyBlueprintCollection<SpriteSet>(spriteSets);
+            }
+
+            private IEnumerable<SpriteSet> loadSpriteSets(IEnumerable<FileInfo> spriteSetFiles)
+            {
+                var loader = new SpriteSetLoader(context, meta, serializer);
+                return spriteSetFiles.Select(loader.TryLoad).Where(s => s != null);
             }
 
             private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
@@ -180,6 +197,42 @@ namespace Bearded.TD.Mods
                     .GetDirectories(path, SearchOption.TopDirectoryOnly)
                     .SingleOrDefault()
                     ?.GetFiles("*.json", SearchOption.AllDirectories);
+        }
+    }
+
+    internal class SpriteSetLoader
+    {
+        private readonly ModLoadingContext context;
+        private readonly ModMetadata meta;
+        private readonly JsonSerializer serializer;
+
+        public SpriteSetLoader(ModLoadingContext context, ModMetadata meta, JsonSerializer serializer)
+        {
+            this.context = context;
+            this.meta = meta;
+            this.serializer = serializer;
+        }
+
+        public SpriteSet TryLoad(FileInfo file)
+        {
+            try
+            {
+                var text = file.OpenText();
+                var reader = new JsonTextReader(text);
+                var jsonModel = serializer.Deserialize<SpriteSetJson>(reader);
+                
+                // TODO: load png files/inject png file loader into ToGameModel
+
+                var gameModel = jsonModel.ToGameModel(default(Void));
+
+                return gameModel;
+            }
+            catch (Exception e)
+            {
+                context.Logger.Error?.Log($"Error loading '{meta.Id}/gfx/sprites/../{file.Name}': {e.Message}");
+
+                return null;
+            }
         }
     }
 }
