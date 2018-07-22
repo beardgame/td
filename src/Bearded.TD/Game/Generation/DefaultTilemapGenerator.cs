@@ -28,31 +28,31 @@ namespace Bearded.TD.Game.Generation
 
         public Tilemap<TileInfo.Type> Generate(int radius)
         {
-            logger.Debug.Log($"Started generating map with radius {radius}");
+            logger.Debug?.Log($"Started generating map with radius {radius}");
             var timer = Stopwatch.StartNew();
             var tilemap = new Tilemap<TileInfo.Type>(radius);
             var gen = new Generator(tilemap, logger);
-            logger.Trace.Log("Filling tilemap");
+            logger.Trace?.Log("Filling tilemap");
             gen.FillAll();
             gen.ClearCenter(tilemap.Radius - 1, 0.1);
-            logger.Trace.Log("Clearing tilemap center and corners");
+            logger.Trace?.Log("Clearing tilemap center and corners");
             gen.ClearCenter(3);
             gen.ClearCenter(4, 0.3);
             gen.ClearCenter(6, 0.1);
             gen.ClearCorners(1);
             gen.ClearCorners(2, 0.5);
             gen.ClearCorners(3, 0.2);
-            logger.Trace.Log("Generating random intersections");
+            logger.Trace?.Log("Generating random intersections");
             gen.GenerateRandomIntersections();
-            logger.Trace.Log("Connecting random intersections");
+            logger.Trace?.Log("Connecting random intersections");
             gen.ConnectAllIntersections();
             gen.ConnectRandomIntersections(0.2);
             gen.ConnectCornersToGraph();
-            logger.Trace.Log("Digging tunnels");
+            logger.Trace?.Log("Digging tunnels");
             gen.ClearTunnels();
             gen.DigDeep(30);
 
-            logger.Debug.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
+            logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
             return tilemap;
         }
@@ -183,7 +183,7 @@ namespace Bearded.TD.Game.Generation
                     .FirstOrDefault(v => v.HasValue);
                 if (connectTo == null)
                 {
-                    logger.Debug.Log("Could not find possible non-intersecting arc. Selecting closest.");
+                    logger.Debug?.Log("Could not find possible non-intersecting arc. Selecting closest.");
                     connectTo = verticesByDistance.First();
                 }
                 addTunnel(vertex, connectTo.Value);
@@ -215,7 +215,7 @@ namespace Bearded.TD.Game.Generation
 
             public void ClearCorner(Direction direction, int radius, double fraction = 1)
                 => spray(spiral(corner(direction), radius), open, fraction);
-            
+
             public void DigDeep(int count = 10)
             {
                 for (int i = 0; i < count; i++)

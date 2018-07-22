@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Synchronization
 {
     class ServerGameSynchronizer : IGameSynchronizer
     {
-        private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5); 
+        private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5);
 
         private readonly Dictionary<Type, object> synchronizers = new Dictionary<Type, object>();
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Synchronization
         {
             if (game.State.Time >= nextSync)
             {
-                logger.Trace.Log("Starting sync round");
+                logger.Trace?.Log("Starting sync round");
 
                 foreach (var (_, synchronizer) in synchronizers)
                 {

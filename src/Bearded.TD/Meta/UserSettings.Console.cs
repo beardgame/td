@@ -49,7 +49,7 @@ namespace Bearded.TD.Meta
                     setSetting(logger, p);
                     break;
                 default:
-                    logger.Warning.Log("Usage: \"setting <setting_name> [<setting_value>]\"");
+                    logger.Warning?.Log("Usage: \"setting <setting_name> [<setting_value>]\"");
                     break;
             }
         }
@@ -67,7 +67,7 @@ namespace Bearded.TD.Meta
 
                 if (field == null)
                 {
-                    logger.Warning.Log($"Could not find setting path part '{name}'");
+                    logger.Warning?.Log($"Could not find setting path part '{name}'");
                     return;
                 }
 
@@ -80,7 +80,7 @@ namespace Bearded.TD.Meta
 
             foreach (var line in jsonLines)
             {
-                logger.Info.Log(line);
+                logger.Info?.Log(line);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Bearded.TD.Meta
             }
             catch (JsonReaderException e)
             {
-                logger.Warning.Log($"Encountered error parsing setting: {e.Message}");
+                logger.Warning?.Log($"Encountered error parsing setting: {e.Message}");
                 return;
             }
             Save(logger);

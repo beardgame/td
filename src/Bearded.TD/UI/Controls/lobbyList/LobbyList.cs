@@ -54,11 +54,11 @@ namespace Bearded.TD.UI.Controls
                     handleStatusChange(message);
                     break;
                 case NetIncomingMessageType.UnconnectedData:
-                    // Data coming from an unconnected source. Must be master server.	
+                    // Data coming from an unconnected source. Must be master server.
                     handleIncomingLobby(Proto.Lobby.Parser.ParseFrom(message.ReadBytes(message.LengthBytes)));
                     break;
                 case NetIncomingMessageType.NatIntroductionSuccess:
-                    // NAT introduction success. Means we successfully connected with lobby.	
+                    // NAT introduction success. Means we successfully connected with lobby.
                     networkInterface.Connect(message.SenderEndPoint, new ClientInfo(playerName));
                     break;
             }
@@ -79,7 +79,7 @@ namespace Bearded.TD.UI.Controls
                     return;
                 case NetConnectionStatus.Disconnected:
                     var rejectionReason = msg.ReadString();
-                    logger.Info.Log(string.IsNullOrEmpty(rejectionReason)
+                    logger.Info?.Log(string.IsNullOrEmpty(rejectionReason)
                         ? "Disconnected"
                         : $"Disconnected with reason: {rejectionReason}");
                     networkInterface.Shutdown();
