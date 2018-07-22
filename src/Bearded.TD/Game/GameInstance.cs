@@ -19,7 +19,7 @@ namespace Bearded.TD.Game
         public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
         public IGameController Controller { get; }
         public GameMeta Meta { get; }
-        
+
         public ChatLog ChatLog { get; } = new ChatLog();
         public IdManager Ids { get; }
 
@@ -53,7 +53,7 @@ namespace Bearded.TD.Game
             }
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged;
-        
+
         private readonly PlayerManager playerManager;
 
         public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)

@@ -1,22 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Weapons;
+using Bearded.TD.Game.World;
 
-namespace Bearded.TD.Mods
+namespace Bearded.TD.Game
 {
     sealed class Blueprints
     {
         public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
-        public ReadonlyBlueprintCollection<BuildingBlueprint> Buildings { get; }
-        public ReadonlyBlueprintCollection<UnitBlueprint> Units { get; }
-        public ReadonlyBlueprintCollection<WeaponBlueprint> Weapons { get; }
-        public ReadonlyBlueprintCollection<ProjectileBlueprint> Projectiles { get; }
+        public ReadonlyBlueprintCollection<IBuildingBlueprint> Buildings { get; }
+        public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
+        public ReadonlyBlueprintCollection<IWeaponBlueprint> Weapons { get; }
+        public ReadonlyBlueprintCollection<IProjectileBlueprint> Projectiles { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<FootprintGroup> footprints,
-                ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
-                ReadonlyBlueprintCollection<UnitBlueprint> units,
-                ReadonlyBlueprintCollection<WeaponBlueprint> weapons,
-                ReadonlyBlueprintCollection<ProjectileBlueprint> projectiles)
+                ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
+                ReadonlyBlueprintCollection<IUnitBlueprint> units,
+                ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
+                ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles)
         {
             Footprints = footprints;
             Buildings = buildings;
@@ -31,13 +35,13 @@ namespace Bearded.TD.Mods
             return new Blueprints(
                 new ReadonlyBlueprintCollection<FootprintGroup>(
                         blueprintsList.SelectMany(blueprint => blueprint.Footprints.All)),
-                new ReadonlyBlueprintCollection<BuildingBlueprint>(
+                new ReadonlyBlueprintCollection<IBuildingBlueprint>(
                         blueprintsList.SelectMany(blueprint => blueprint.Buildings.All)),
-                new ReadonlyBlueprintCollection<UnitBlueprint>(
+                new ReadonlyBlueprintCollection<IUnitBlueprint>(
                         blueprintsList.SelectMany(blueprint => blueprint.Units.All)),
-                new ReadonlyBlueprintCollection<WeaponBlueprint>(
+                new ReadonlyBlueprintCollection<IWeaponBlueprint>(
                         blueprintsList.SelectMany(blueprint => blueprint.Weapons.All)),
-                new ReadonlyBlueprintCollection<ProjectileBlueprint>(
+                new ReadonlyBlueprintCollection<IProjectileBlueprint>(
                         blueprintsList.SelectMany(blueprint => blueprint.Projectiles.All)));
         }
     }

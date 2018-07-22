@@ -1,4 +1,4 @@
-﻿namespace Bearded.TD.Mods.Models
+﻿namespace Bearded.TD.Game
 {
     interface IBlueprint
     {

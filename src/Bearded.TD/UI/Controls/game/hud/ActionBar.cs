@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Input;
-using Bearded.TD.Mods.Models;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
@@ -18,7 +18,7 @@ namespace Bearded.TD.UI.Controls
 
         public event VoidEventHandler ActionsChanged;
 
-        private readonly BuildingBlueprint[] blueprints = new BuildingBlueprint[Constants.Game.UI.ActionBarSize];
+        private readonly IBuildingBlueprint[] blueprints = new IBuildingBlueprint[Constants.Game.UI.ActionBarSize];
         private GameInstance game;
 
         public void Initialize(GameInstance game)

@@ -3,7 +3,6 @@ using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Buildings
         private readonly BuildingWorkerTask workerTask;
         public override int Health => 0;
 
-        public BuildingPlaceholder(Id<BuildingPlaceholder> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+        public BuildingPlaceholder(Id<BuildingPlaceholder> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
         {
             Id = id;

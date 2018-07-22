@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Commands
 
                 var tech = new TechnologyManager();
                 game.Blueprints.Buildings.All.ForEach(tech.UnlockBlueprint);
-                state.RegisterSingleton(tech);
+                //state.RegisterSingleton(tech);
 
                 game.InitialiseState(state);
             }

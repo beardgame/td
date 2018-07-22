@@ -1,5 +1,11 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Weapons;
+using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Mods
 {
@@ -15,10 +21,10 @@ namespace Bearded.TD.Mods
             string id,
             string name,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
-            ReadonlyBlueprintCollection<BuildingBlueprint> buildings,
-            ReadonlyBlueprintCollection<UnitBlueprint> units,
-            ReadonlyBlueprintCollection<WeaponBlueprint> weapons,
-            ReadonlyBlueprintCollection<ProjectileBlueprint> projectiles,
+            ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
+            ReadonlyBlueprintCollection<IUnitBlueprint> units,
+            ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
+            ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             IDictionary<string, UpgradeTag> tags)
         {
             Id = id;

@@ -1,9 +1,10 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Units;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class UnitBlueprint : IBlueprint
+    sealed class UnitBlueprint : IUnitBlueprint
     {
         public string Id { get; }
         public string Name { get; }

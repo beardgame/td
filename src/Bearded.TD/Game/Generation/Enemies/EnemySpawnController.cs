@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -83,7 +82,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             buildWave(numSpawnPoints, blueprint, numEnemies, numSpawnPoints * waveDuration / numEnemies);
         }
 
-        private UnitBlueprint selectBlueprint()
+        private IUnitBlueprint selectBlueprint()
         {
             var probabilities = new double[enemies.Count + 1];
             foreach (var (enemy, i) in enemies.Indexed())
@@ -97,7 +96,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             return game.Blueprints.Units[definition.BlueprintId];
         }
 
-        private void buildWave(int numSpawnPoints, UnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
+        private void buildWave(int numSpawnPoints, IUnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
         {
             foreach (var (tile, i) in selectSpawnLocations(numSpawnPoints).Indexed())
             {
@@ -131,7 +130,7 @@ namespace Bearded.TD.Game.Generation.Enemies
         private class EnemyWave
         {
             private readonly GameInstance game;
-            private readonly UnitBlueprint blueprint;
+            private readonly IUnitBlueprint blueprint;
             private readonly Instant start;
             private readonly int size;
             private readonly TimeSpan timeBetweenSpawns;
@@ -144,7 +143,7 @@ namespace Bearded.TD.Game.Generation.Enemies
 
             public EnemyWave(
                 GameInstance game,
-                UnitBlueprint blueprint,
+                IUnitBlueprint blueprint,
                 Instant start,
                 int size,
                 TimeSpan timeBetweenSpawns,

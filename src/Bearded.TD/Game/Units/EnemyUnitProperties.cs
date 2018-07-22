@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Mods.Models;
-using Bearded.TD.Utilities;
+﻿using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Units
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Units
             Speed = speed;
         }
 
-        public static Builder BuilderFromBlueprint(UnitBlueprint blueprint)
+        public static Builder BuilderFromBlueprint(IUnitBlueprint blueprint)
         {
             return new Builder()
             {

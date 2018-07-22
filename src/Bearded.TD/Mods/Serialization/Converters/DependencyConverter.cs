@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Serialization.Converters

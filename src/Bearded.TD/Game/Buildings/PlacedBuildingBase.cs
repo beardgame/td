@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Buildings
         public abstract int Health { get; }
 
         protected PlacedBuildingBase(
-            BuildingBlueprint blueprint,
+            IBuildingBlueprint blueprint,
             Faction faction,
             PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
