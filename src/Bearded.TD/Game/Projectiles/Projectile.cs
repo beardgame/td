@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
@@ -16,7 +15,7 @@ namespace Bearded.TD.Game.Projectiles
     [ComponentOwner]
     class Projectile : GameObject
     {
-        private readonly ProjectileBlueprint blueprint;
+        private readonly IProjectileBlueprint blueprint;
         private readonly Building damageSource;
         private readonly ComponentCollection<Projectile> components = new ComponentCollection<Projectile>();
 
@@ -24,7 +23,7 @@ namespace Bearded.TD.Game.Projectiles
         public Velocity2 Velocity { get; private set; }
         public Tile<TileInfo> CurrentTile { get; private set; }
         
-        public Projectile(ProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
+        public Projectile(IProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
         {
             this.blueprint = blueprint;
             this.damageSource = damageSource;
@@ -32,7 +31,7 @@ namespace Bearded.TD.Game.Projectiles
             Velocity = velocity;
         }
 
-        public Projectile(ProjectileBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
+        public Projectile(IProjectileBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
             : this(blueprint, position, direction * speed, damageSource)
         {
         }

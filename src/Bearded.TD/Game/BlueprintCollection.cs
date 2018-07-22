@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Bearded.TD.Mods.Models;
 
-namespace Bearded.TD.Mods
+namespace Bearded.TD.Game
 {
     interface IBlueprintCollection<out T> where T : IBlueprint
     {

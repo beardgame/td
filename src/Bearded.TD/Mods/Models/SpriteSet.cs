@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Mods.Models
+﻿using Bearded.TD.Game;
+
+namespace Bearded.TD.Mods.Models
 {
     enum SpriteDrawGroup
     {

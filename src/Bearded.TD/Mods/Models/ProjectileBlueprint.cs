@@ -6,7 +6,7 @@ using Bearded.TD.Game.Projectiles;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class ProjectileBlueprint : IBlueprint
+    sealed class ProjectileBlueprint : IProjectileBlueprint
     {
         public string Id { get; }
         public int Damage { get; }

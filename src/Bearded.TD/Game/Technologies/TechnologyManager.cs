@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Technologies
 {
     sealed class TechnologyManager
     {
-        private readonly HashSet<BuildingBlueprint> unlockedBuildings = new HashSet<BuildingBlueprint>();
+        private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
 
-        public IEnumerable<BuildingBlueprint> UnlockedBuildings => unlockedBuildings.ToList();
+        public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.ToList();
 
-        public event GenericEventHandler<BuildingBlueprint> BuildingUnlocked;
+        public event GenericEventHandler<IBuildingBlueprint> BuildingUnlocked;
 
-        public void UnlockBlueprint(BuildingBlueprint blueprint)
+        public void UnlockBlueprint(IBuildingBlueprint blueprint)
         {
             // This should probably be "unlock technology" or something like that, but we don't have the concept of
             // technology yet.

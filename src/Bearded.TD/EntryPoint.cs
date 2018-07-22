@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using Bearded.TD.Game.Components;
+using Bearded.TD.Mods.Serialization.Models;
 using Bearded.Utilities.IO;
 using OpenTK;
 

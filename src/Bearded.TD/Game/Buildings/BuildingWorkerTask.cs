@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -12,7 +11,7 @@ namespace Bearded.TD.Game.Buildings
 {
     class BuildingWorkerTask : WorkerTask, IResourceConsumer
     {
-        private readonly BuildingBlueprint blueprint;
+        private readonly IBuildingBlueprint blueprint;
 
         private BuildingPlaceholder placeholder;
         private Building building;

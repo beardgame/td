@@ -5,7 +5,6 @@ using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 
 namespace Bearded.TD.Game.Buildings
@@ -15,7 +14,7 @@ namespace Bearded.TD.Game.Buildings
     {
         private const string selectionIsImmutable = "Selection state of building ghost cannot be changed.";
 
-        public BuildingGhost(BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+        public BuildingGhost(IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
         {
         }

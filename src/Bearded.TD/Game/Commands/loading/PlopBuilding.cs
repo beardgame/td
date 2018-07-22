@@ -3,7 +3,6 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -12,7 +11,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class PlopBuilding
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
             => new Implementation(game, faction, id, blueprint, footprint);
 
         private class Implementation : ISerializableCommand<GameInstance>
@@ -20,10 +19,10 @@ namespace Bearded.TD.Game.Commands
             private readonly GameInstance game;
             private readonly Faction faction;
             private readonly Id<Building> id;
-            private readonly BuildingBlueprint blueprint;
+            private readonly IBuildingBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameInstance game, Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameInstance game, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.game = game;
                 this.faction = faction;
@@ -58,7 +57,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Faction faction, Id<Building> id, BuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Serializer(Faction faction, Id<Building> id, IBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.id = id;
                 this.faction = faction.Id;

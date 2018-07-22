@@ -7,7 +7,7 @@ namespace Bearded.TD.Mods.Serialization.Models
 {
     sealed class BuildingBlueprint
         : IConvertsTo<Mods.Models.BuildingBlueprint,
-                (DependencyResolver<Mods.Models.FootprintGroup> footprints, UpgradeTagResolver tags)>
+                (DependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags)>
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -18,7 +18,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         public List<IBuildingComponent> Components { get; set; }
         
         public Mods.Models.BuildingBlueprint ToGameModel(
-            (DependencyResolver<Mods.Models.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
+            (DependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
         {
             return new Mods.Models.BuildingBlueprint(
                 Id,

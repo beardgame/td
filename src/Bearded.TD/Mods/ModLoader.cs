@@ -4,23 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Weapons;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
-using BuildingBlueprint = Bearded.TD.Mods.Models.BuildingBlueprint;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
-using FootprintGroup = Bearded.TD.Mods.Models.FootprintGroup;
+using FootprintGroup = Bearded.TD.Game.World.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Mods.Serialization.Models.FootprintGroup;
-using ProjectileBlueprint = Bearded.TD.Mods.Models.ProjectileBlueprint;
 using ProjectileBlueprintJson = Bearded.TD.Mods.Serialization.Models.ProjectileBlueprint;
 using SpriteSet = Bearded.TD.Mods.Models.SpriteSet;
-using SpriteSetJson = Bearded.TD.Mods.Serialization.Models.SpriteSet;
 using UnitBlueprint = Bearded.TD.Mods.Models.UnitBlueprint;
 using UnitBlueprintJson = Bearded.TD.Mods.Serialization.Models.UnitBlueprint;
-using WeaponBlueprint = Bearded.TD.Mods.Models.WeaponBlueprint;
 using WeaponBlueprintJson = Bearded.TD.Mods.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
 
@@ -80,7 +80,7 @@ namespace Bearded.TD.Mods
                     projectiles,
                     tags.GetForCurrentMod());
             }
-
+            
             private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
             {
                 var spriteSetFiles = jsonFilesIn("gfx/sprites");
@@ -93,9 +93,9 @@ namespace Bearded.TD.Mods
                 var loader = new SpriteSetLoader(context, meta, serializer);
                 return spriteSetFiles.Select(loader.TryLoad).Where(s => s != null);
             }
-
-            private ReadonlyBlueprintCollection<BuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
-                => loadBlueprints<BuildingBlueprint, BuildingBlueprintJson, (DependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
+            
+            private ReadonlyBlueprintCollection<IBuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
+                => loadBlueprints<IBuildingBlueprint, BuildingBlueprintJson, (DependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
                 "defs/buildings",
                 (
                     new DependencyResolver<FootprintGroup>(
@@ -108,14 +108,14 @@ namespace Bearded.TD.Mods
             private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
                 => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
 
-            private ReadonlyBlueprintCollection<ProjectileBlueprint> loadProjectiles()
-                => loadBlueprints<ProjectileBlueprint, ProjectileBlueprintJson>("defs/projectiles");
+            private ReadonlyBlueprintCollection<IProjectileBlueprint> loadProjectiles()
+                => loadBlueprints<IProjectileBlueprint, ProjectileBlueprintJson>("defs/projectiles");
 
-            private ReadonlyBlueprintCollection<UnitBlueprint> loadUnits()
-                => loadBlueprints<UnitBlueprint, UnitBlueprintJson>("defs/units");
+            private ReadonlyBlueprintCollection<IUnitBlueprint> loadUnits()
+                => loadBlueprints<IUnitBlueprint, UnitBlueprintJson>("defs/units");
 
-            private ReadonlyBlueprintCollection<WeaponBlueprint> loadWeapons()
-                => loadBlueprints<WeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
+            private ReadonlyBlueprintCollection<IWeaponBlueprint> loadWeapons()
+                => loadBlueprints<IWeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
 
             private void configureSerializer()
             {
@@ -197,42 +197,6 @@ namespace Bearded.TD.Mods
                     .GetDirectories(path, SearchOption.TopDirectoryOnly)
                     .SingleOrDefault()
                     ?.GetFiles("*.json", SearchOption.AllDirectories);
-        }
-    }
-
-    internal class SpriteSetLoader
-    {
-        private readonly ModLoadingContext context;
-        private readonly ModMetadata meta;
-        private readonly JsonSerializer serializer;
-
-        public SpriteSetLoader(ModLoadingContext context, ModMetadata meta, JsonSerializer serializer)
-        {
-            this.context = context;
-            this.meta = meta;
-            this.serializer = serializer;
-        }
-
-        public SpriteSet TryLoad(FileInfo file)
-        {
-            try
-            {
-                var text = file.OpenText();
-                var reader = new JsonTextReader(text);
-                var jsonModel = serializer.Deserialize<SpriteSetJson>(reader);
-                
-                // TODO: load png files/inject png file loader into ToGameModel
-
-                var gameModel = jsonModel.ToGameModel(default(Void));
-
-                return gameModel;
-            }
-            catch (Exception e)
-            {
-                context.Logger.Error?.Log($"Error loading '{meta.Id}/gfx/sprites/../{file.Name}': {e.Message}");
-
-                return null;
-            }
         }
     }
 }

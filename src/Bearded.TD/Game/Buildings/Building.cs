@@ -6,7 +6,6 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -36,7 +35,7 @@ namespace Bearded.TD.Game.Buildings
         public event VoidEventHandler Completing;
         public event VoidEventHandler Damaged;
 
-        public Building(Id<Building> id, BuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+        public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
         {
             Id = id;

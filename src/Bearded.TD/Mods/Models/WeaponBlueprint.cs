@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class WeaponBlueprint : IBlueprint
+    sealed class WeaponBlueprint : IWeaponBlueprint
     {
         public string Id { get; }
         public Unit Range { get; }

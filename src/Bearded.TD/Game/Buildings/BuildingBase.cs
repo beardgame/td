@@ -4,7 +4,6 @@ using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -21,7 +20,7 @@ namespace Bearded.TD.Game.Buildings
 
         public abstract SelectionState SelectionState { get; }
 
-        public BuildingBlueprint Blueprint { get; }
+        public IBuildingBlueprint Blueprint { get; }
 
         protected PositionedFootprint Footprint
         {
@@ -39,7 +38,7 @@ namespace Bearded.TD.Game.Buildings
         public IEnumerable<Tile<TileInfo>> OccupiedTiles => Footprint.OccupiedTiles;
 
         protected BuildingBase(
-            BuildingBlueprint blueprint,
+            IBuildingBlueprint blueprint,
             Faction faction,
             PositionedFootprint footprint)
         {

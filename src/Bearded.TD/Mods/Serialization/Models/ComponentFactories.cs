@@ -5,10 +5,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Mods.Serialization.Models;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Game.Components
+namespace Bearded.TD.Mods.Serialization.Models
 {
     static class ComponentFactories
     {
@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Components
             var forBuilding = tryMakeComponentFactory<Building>(parameters);
             var forGhost = tryMakeComponentFactory<BuildingGhost>(parameters);
             var forPlaceholder = tryMakeComponentFactory<BuildingPlaceholder>(parameters);
-            
+
             return new BuildingComponentFactory(parameters, forBuilding, forGhost, forPlaceholder);
         }
 
@@ -57,13 +57,13 @@ namespace Bearded.TD.Game.Components
             initialised = true;
 
             var knownComponents = Assembly.GetExecutingAssembly().GetTypes()
-                .Select(t => (type: t, attribute: t.GetCustomAttribute<ComponentAttribute>(false)))
+                .Select(t => (type: t, attribute: CustomAttributeExtensions.GetCustomAttribute<ComponentAttribute>((MemberInfo) t, false)))
                 .Where(t => t.attribute != null)
                 .Select(t => (t.attribute.Id, t.type))
                 .ToList();
 
             var componentOwners = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => t.GetCustomAttribute<ComponentOwnerAttribute>() != null)
+                .Where(t => CustomAttributeExtensions.GetCustomAttribute<ComponentOwnerAttribute>((MemberInfo) t) != null)
                 .ToList();
             
             foreach (var component in knownComponents)

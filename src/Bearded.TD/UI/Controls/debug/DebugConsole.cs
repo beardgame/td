@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Utilities.Collections;
+using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
@@ -91,6 +91,11 @@ namespace Bearded.TD.UI.Controls
 
         private void fireLoggerEntryEvent(Logger.Entry loggerEntry)
         {
+            if (loggerEntry.Severity == Logger.Severity.Trace && !UserSettings.Instance.Misc.ShowTraceMessages)
+            {
+                return;
+            }
+
             LogEntryAdded?.Invoke(loggerEntry);
         }
 

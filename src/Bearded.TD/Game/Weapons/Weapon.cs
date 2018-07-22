@@ -8,7 +8,6 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Geometry;
@@ -19,7 +18,7 @@ namespace Bearded.TD.Game.Weapons
     [ComponentOwner]
     class Weapon : IPositionable, IFactioned
     {
-        private readonly WeaponBlueprint blueprint;
+        private readonly IWeaponBlueprint blueprint;
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
 
@@ -37,7 +36,7 @@ namespace Bearded.TD.Game.Weapons
         public Position2 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
 
-        public Weapon(WeaponBlueprint blueprint, ITurret turret)
+        public Weapon(IWeaponBlueprint blueprint, ITurret turret)
         {
             this.blueprint = blueprint;
             this.turret = turret;

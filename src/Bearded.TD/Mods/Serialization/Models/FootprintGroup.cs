@@ -7,14 +7,14 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Mods.Serialization.Models
 {
-    sealed class FootprintGroup : IConvertsTo<Mods.Models.FootprintGroup, Void>
+    sealed class FootprintGroup : IConvertsTo<Game.World.FootprintGroup, Void>
     {
         public string Id { get; set; }
         public List<List<Step>> Footprints { get; set; }
 
-        public Mods.Models.FootprintGroup ToGameModel(Void _)
+        public Game.World.FootprintGroup ToGameModel(Void _)
         {
-            return new Mods.Models.FootprintGroup(Id,
+            return new Game.World.FootprintGroup(Id,
                 Footprints.Select(steps => new Footprint(steps))
                 );
         }

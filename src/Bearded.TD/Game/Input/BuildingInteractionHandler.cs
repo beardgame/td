@@ -3,18 +3,17 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Game.Input
 {
     class BuildingInteractionHandler : InteractionHandler
     {
         private readonly Faction faction;
-        private readonly BuildingBlueprint blueprint;
+        private readonly IBuildingBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
         private BuildingGhost ghost;
 
-        public BuildingInteractionHandler(GameInstance game, Faction faction, BuildingBlueprint blueprint) : base(game)
+        public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
         {
             this.faction = faction;
             this.blueprint = blueprint;

@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Game.Technologies;
 
 namespace Bearded.TD.Mods
 {

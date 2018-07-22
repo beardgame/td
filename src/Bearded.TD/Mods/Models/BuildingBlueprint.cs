@@ -2,11 +2,13 @@
 using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.World;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Mods.Models
 {
-    sealed class BuildingBlueprint : IBlueprint
+    sealed class BuildingBlueprint : IBuildingBlueprint
     {
         public string Id { get; }
         public string Name { get; }

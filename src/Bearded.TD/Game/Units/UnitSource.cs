@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -20,7 +19,7 @@ namespace Bearded.TD.Game.Units
 
         private readonly Tile<TileInfo> tile;
 
-        private readonly LinkedList<Tuple<Instant, UnitBlueprint>> spawnQueue = new LinkedList<Tuple<Instant, UnitBlueprint>>();
+        private readonly LinkedList<Tuple<Instant, IUnitBlueprint>> spawnQueue = new LinkedList<Tuple<Instant, IUnitBlueprint>>();
 
         public bool HasEnemiesQueued => spawnQueue.Count > 0;
 
@@ -60,7 +59,7 @@ namespace Bearded.TD.Game.Units
             geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
         }
 
-        public void QueueEnemies(UnitBlueprint blueprint, int num)
+        public void QueueEnemies(IUnitBlueprint blueprint, int num)
         {
             var spawnTime = Game.Time + queueingDelay;
             if (spawnQueue.Count > 0 && spawnQueue.Last.Value.Item1 + timeBetweenSpawns > spawnTime)
@@ -68,12 +67,12 @@ namespace Bearded.TD.Game.Units
 
             for (var i = 0; i < num; i++)
             {
-                spawnQueue.AddLast(new Tuple<Instant, UnitBlueprint>(spawnTime, blueprint));
+                spawnQueue.AddLast(new Tuple<Instant, IUnitBlueprint>(spawnTime, blueprint));
                 spawnTime += timeBetweenSpawns;
             }
         }
 
-        private void spawnEnemy(UnitBlueprint blueprint)
+        private void spawnEnemy(IUnitBlueprint blueprint)
         {
             this.Sync(SpawnUnit.Command, tile, blueprint, Game.Meta.Ids.GetNext<EnemyUnit>());
         }

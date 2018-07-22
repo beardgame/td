@@ -6,7 +6,6 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Units.StatusEffects;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
@@ -22,7 +21,7 @@ namespace Bearded.TD.Game.Units
     {
         public Id<EnemyUnit> Id { get; }
         
-        private readonly UnitBlueprint blueprint;
+        private readonly IUnitBlueprint blueprint;
         private readonly Tile<TileInfo> startTile;
         private TileWalker tileWalker;
 
@@ -36,7 +35,7 @@ namespace Bearded.TD.Game.Units
         private Instant nextAttack;
         private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
 
-        public EnemyUnit(Id<EnemyUnit> id, UnitBlueprint blueprint, Tile<TileInfo> currentTile)
+        public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile<TileInfo> currentTile)
         {
             if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
 
