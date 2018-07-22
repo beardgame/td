@@ -34,17 +34,17 @@ namespace Bearded.TD
                 };
 #endif
 
-                logger.Debug.Log("Creating component factories");
+                logger.Debug?.Log("Creating component factories");
                 ComponentFactories.Initialize();
 
-                logger.Info.Log("");
-                logger.Info.Log("Creating game");
+                logger.Info?.Log("");
+                logger.Info?.Log("Creating game");
                 var game = new TheGame(logger);
 
-                logger.Info.Log("Running game");
+                logger.Info?.Log("Running game");
                 game.Run(60);
 
-                logger.Info.Log("Safely exited game");
+                logger.Info?.Log("Safely exited game");
             }
         }
     }

@@ -39,7 +39,7 @@ namespace Bearded.TD.Mods
             catch (Exception e)
             {
                 exception = e;
-                context.Logger.Error.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
+                context.Logger.Error?.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
             }
             finally
             {
@@ -51,7 +51,7 @@ namespace Bearded.TD.Mods
         {
             if (!IsDone)
                 throw new InvalidOperationException("Must finish loading mod.");
-            
+
             if (exception != null)
                 throw new Exception($"Something went wrong loading mod '{modMetadata.Id}'", exception);
 

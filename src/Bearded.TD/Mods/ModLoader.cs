@@ -160,7 +160,7 @@ namespace Bearded.TD.Mods
 
                         if (Path.GetFileNameWithoutExtension(file.FullName) != gameModel.Id)
                         {
-                            context.Logger.Warning.Log(
+                            context.Logger.Warning?.Log(
                                     $"Loaded blueprint {meta.Id}.{gameModel.Id} with mismatching filename {file.Name}");
                         }
 
@@ -168,7 +168,7 @@ namespace Bearded.TD.Mods
                     }
                     catch (Exception e)
                     {
-                        context.Logger.Error.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
+                        context.Logger.Error?.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
                     }
                 }
 

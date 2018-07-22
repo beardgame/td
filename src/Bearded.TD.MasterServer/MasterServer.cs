@@ -61,16 +61,16 @@ namespace Bearded.TD.MasterServer
 					break;
 
 				case NetIncomingMessageType.VerboseDebugMessage:
-                    logger.Trace.Log(msg.ReadString());
+                    logger.Trace?.Log(msg.ReadString());
                     break;
 				case NetIncomingMessageType.DebugMessage:
-                    logger.Debug.Log(msg.ReadString());
+                    logger.Debug?.Log(msg.ReadString());
                     break;
                 case NetIncomingMessageType.WarningMessage:
-					logger.Warning.Log(msg.ReadString());
+					logger.Warning?.Log(msg.ReadString());
 					break;
 				case NetIncomingMessageType.ErrorMessage:
-					logger.Error.Log(msg.ReadString());
+					logger.Error?.Log(msg.ReadString());
 					break;
             }
         }
@@ -80,7 +80,7 @@ namespace Bearded.TD.MasterServer
             switch (request.RequestCase)
             {
                 case Proto.MasterServerMessage.RequestOneofCase.None:
-                    logger.Warning.Log("Received incoming message without request case.");
+                    logger.Warning?.Log("Received incoming message without request case.");
                     break;
                 case Proto.MasterServerMessage.RequestOneofCase.RegisterLobby:
                     registerLobby(request.RegisterLobby, endpoint);
@@ -98,12 +98,12 @@ namespace Bearded.TD.MasterServer
         {
             if (lobbiesById.ContainsKey(request.Lobby.Id))
             {
-                logger.Debug.Log($"Received heartbeat for lobby {request.Lobby.Id}.");
+                logger.Debug?.Log($"Received heartbeat for lobby {request.Lobby.Id}.");
                 lobbiesById[request.Lobby.Id].Heartbeat();
                 return;
             }
 
-            logger.Debug.Log($"Registered new lobby {request.Lobby.Id}.");
+            logger.Debug?.Log($"Registered new lobby {request.Lobby.Id}.");
 
             var lobby = new Lobby(
                 request.Lobby,
@@ -116,10 +116,10 @@ namespace Bearded.TD.MasterServer
 
         private void listLobbies(Proto.ListLobbiesRequest request, IPEndPoint endpoint)
         {
-            logger.Debug.Log("Received a request for lobby list.");
+            logger.Debug?.Log("Received a request for lobby list.");
             foreach (var lobby in lobbiesById.Values)
             {
-                logger.Trace.Log($"Sending lobby {lobby.LobbyProto.Id}");
+                logger.Trace?.Log($"Sending lobby {lobby.LobbyProto.Id}");
                 var msg = peer.CreateMessage();
                 msg.Write(lobby.LobbyProto.ToByteArray());
                 peer.SendUnconnectedMessage(msg, endpoint);
@@ -130,7 +130,7 @@ namespace Bearded.TD.MasterServer
         {
             if (lobbiesById.TryGetValue(request.LobbyId, out var lobby))
             {
-                logger.Debug.Log($"Introducing endpoint with lobby {lobby.LobbyProto.Id}.");
+                logger.Debug?.Log($"Introducing endpoint with lobby {lobby.LobbyProto.Id}.");
                 var clientInternal = new IPEndPoint(new IPAddress(request.Address.ToByteArray()), request.Port);
 				peer.Introduce(
                     lobby.InternalEndPoint,
@@ -142,7 +142,7 @@ namespace Bearded.TD.MasterServer
             }
             else
             {
-                logger.Error.Log($"Peer requested to connect to lobby with unknown ID: {request.LobbyId}");
+                logger.Error?.Log($"Peer requested to connect to lobby with unknown ID: {request.LobbyId}");
             }
         }
 
@@ -151,7 +151,7 @@ namespace Bearded.TD.MasterServer
             var lobbiesToDelete = lobbiesById.Values.Where(lobby => lobby.AgeInSeconds >= staleLobbyAgeSeconds).ToList();
             foreach (var lobby in lobbiesToDelete)
             {
-                logger.Debug.Log($"Deleting lobby {lobby.LobbyProto.Id} due to staleness.");
+                logger.Debug?.Log($"Deleting lobby {lobby.LobbyProto.Id} due to staleness.");
                 lobbiesById.Remove(lobby.LobbyProto.Id);
             }
             lastLobbyPrune = DateTimeOffset.Now.ToUnixTimeSeconds();

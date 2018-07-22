@@ -37,7 +37,7 @@ namespace Bearded.TD.Game
                 return;
             }
 
-            logger.Error.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
+            logger.Error?.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
         }
     }
 
@@ -65,7 +65,7 @@ namespace Bearded.TD.Game
                 return;
             }
 
-            logger.Error.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
+            logger.Error?.Log($"We received a data message with type {typeId}, which is not a valid request ID.");
         }
     }
 }

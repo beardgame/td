@@ -15,15 +15,15 @@ namespace Bearded.TD.Utilities.Console
         {
             if (p.Args.Length > 0)
             {
-                logger.Warning.Log("Sorry, I can't tell you anything about specific commands yet. :(");
+                logger.Warning?.Log("Sorry, I can't tell you anything about specific commands yet. :(");
                 return;
             }
 
             var allCommands = dictionary.Keys;
-            logger.Info.Log("Available commands:");
+            logger.Info?.Log("Available commands:");
             foreach (var command in allCommands)
             {
-                logger.Info.Log(command);
+                logger.Info?.Log(command);
             }
         }
 

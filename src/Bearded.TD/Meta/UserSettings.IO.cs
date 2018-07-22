@@ -22,7 +22,7 @@ namespace Bearded.TD.Meta
 
         public static void Load(Logger logger)
         {
-            logger.Trace.Log($"Attempting to load settings from settings file: {Constants.Paths.UserSettingsFile}");
+            logger.Trace?.Log($"Attempting to load settings from settings file: {Constants.Paths.UserSettingsFile}");
 
             try
             {
@@ -31,19 +31,19 @@ namespace Bearded.TD.Meta
                     Instance = serializer.Deserialize<UserSettings>(new JsonTextReader(reader));
                     SettingsChanged?.Invoke();
                 }
-                logger.Trace.Log("Finished loading user settings.");
+                logger.Trace?.Log("Finished loading user settings.");
             }
             catch (Exception e)
             {
-                logger.Warning.Log($"Could not load user settings: {e.Message}");
-                logger.Info.Log("Loading default settings.");
+                logger.Warning?.Log($"Could not load user settings: {e.Message}");
+                logger.Info?.Log("Loading default settings.");
                 Instance = getDefaultInstance();
             }
         }
 
         public static bool Save(Logger logger)
         {
-            logger.Trace.Log($"Attempting to save settings to settings file: {Constants.Paths.UserSettingsFile}");
+            logger.Trace?.Log($"Attempting to save settings to settings file: {Constants.Paths.UserSettingsFile}");
 
             try
             {
@@ -60,12 +60,12 @@ namespace Bearded.TD.Meta
                     // ReSharper restore AssignNullToNotNullAttribute
                     File.WriteAllText(fileName, writer.ToString());
                 }
-                logger.Trace.Log("Finished saving user settings.");
+                logger.Trace?.Log("Finished saving user settings.");
                 return true;
             }
             catch (Exception e)
             {
-                logger.Warning.Log($"Could not save user settings: {e.Message}");
+                logger.Warning?.Log($"Could not save user settings: {e.Message}");
             }
             return false;
         }
