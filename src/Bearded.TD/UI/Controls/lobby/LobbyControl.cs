@@ -21,9 +21,9 @@ namespace Bearded.TD.UI.Controls
             var list = new ListControl {ItemSource = new PlayerListItemSource(model)}
                 .Anchor(a => a
                     .Left(relativePercentage: .5)
-                    .Right(margin: 8)
-                    .Top(margin: 8)
-                    .Bottom(margin: 8));
+                    .Right(margin: 20)
+                    .Top(margin: 20)
+                    .Bottom(margin: 20));
             Add(list);
             model.PlayersChanged += list.Reload;
         }
