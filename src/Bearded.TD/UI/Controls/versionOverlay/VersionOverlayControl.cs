@@ -8,14 +8,12 @@ namespace Bearded.TD.UI.Controls
     {
         public VersionOverlayControl(VersionOverlay versionOverlay)
         {
-            Add(new Label()
+            Add(new Label
             {
                 Text = versionOverlay.VersionCodeString,
                 FontSize = 14,
                 TextAnchor = Vector2d.One,
-            }.Anchor(a => a
-                .Bottom(margin: 4, height: 14)
-                .Right(margin: 4, width: 200)));
+            });
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
