@@ -27,9 +27,10 @@ namespace Bearded.TD.Mods
                 var reader = new JsonTextReader(text);
                 var jsonModel = serializer.Deserialize<Serialization.Models.SpriteSet>(reader);
                 
-                // TODO: load png files/inject png file loader into ToGameModel
+                var packedSpriteSet = new SpriteSetPacker()
+                    .LoadPackedSpriteSet(file.Directory, context);
 
-                var gameModel = jsonModel.ToGameModel(default(Void));
+                var gameModel = jsonModel.ToGameModel(packedSpriteSet);
 
                 return gameModel;
             }

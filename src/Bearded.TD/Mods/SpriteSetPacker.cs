@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
+using Bearded.TD.Mods.Models;
 using Bearded.Utilities.Algorithms;
 
 namespace Bearded.TD.Mods

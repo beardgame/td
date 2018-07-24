@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 
-namespace Bearded.TD.Mods
+namespace Bearded.TD.Mods.Models
 {
     sealed class PackedSpriteSet
     {
