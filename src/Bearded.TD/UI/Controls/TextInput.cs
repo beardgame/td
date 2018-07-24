@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     class TextInput : Bearded.UI.Controls.TextInput
     {
-        private static readonly HashSet<char> allowedChars = new HashSet<char> { ' ', '-', '_', '.', '+', '"' };
+        private static readonly HashSet<char> allowedChars = new HashSet<char> { ' ', '-', '_', '.', '+', '"', ':' };
 
         public double FontSize { get; set; } = 24;
 
