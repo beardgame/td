@@ -101,8 +101,7 @@ namespace Bearded.TD.Mods
 
             private Texture getTexture(ModLoadingContext modLoadingContext)
             {
-                // TODO: copy data
-                return modLoadingContext.GlActions.RunAndReturn(() => new Texture(width, height));
+                return modLoadingContext.GlActions.RunAndReturn(() => new Texture(data, width, height));
             }
         }
     }
