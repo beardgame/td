@@ -20,6 +20,7 @@ namespace Bearded.TD.Rendering.UI
         public void Render(Label label)
         {
             geometry.Height = (float)label.FontSize;
+            geometry.Color = label.Color;
 
             var textAnchor = label.TextAnchor;
             var frame = label.Frame;
