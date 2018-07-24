@@ -5,7 +5,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
