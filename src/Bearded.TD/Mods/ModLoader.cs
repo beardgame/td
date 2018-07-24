@@ -193,10 +193,19 @@ namespace Bearded.TD.Mods
             }
 
             private FileInfo[] jsonFilesIn(string path)
-                => meta.Directory
+            {
+                var totalPath = Path.Combine(meta.Directory.FullName, path);
+
+                if (!Directory.Exists(totalPath))
+                    return new FileInfo[0];
+
+                return meta
+                    .Directory
                     .GetDirectories(path, SearchOption.TopDirectoryOnly)
                     .SingleOrDefault()
-                    ?.GetFiles("*.json", SearchOption.AllDirectories);
+                    ?.GetFiles("*.json", SearchOption.AllDirectories)
+                    ?? new FileInfo[0];
+            }
         }
     }
 }
