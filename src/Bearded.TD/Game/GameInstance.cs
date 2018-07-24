@@ -53,6 +53,8 @@ namespace Bearded.TD.Game
             }
         }
         public event GenericEventHandler<GameStatus> GameStatusChanged;
+        public event GenericEventHandler<Player> PlayerAdded;
+        public event GenericEventHandler<Player> PlayerRemoved;
 
         private readonly PlayerManager playerManager;
 
@@ -74,11 +76,13 @@ namespace Bearded.TD.Game
         public void AddPlayer(Player player)
         {
             players.Add(player);
+            PlayerAdded?.Invoke(player);
         }
 
         public void RemovePlayer(Player player)
         {
             players.Remove(player);
+            PlayerRemoved?.Invoke(player);
         }
 
         public Player PlayerFor(Id<Player> id) => players[id];

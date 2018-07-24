@@ -7,6 +7,9 @@ namespace Bearded.TD.UI.Controls
 {
     class Label : Control
     {
+        public static readonly Vector2d TextAnchorLeft = new Vector2d(0, 0.5);
+        public static readonly Vector2d TextAnchorRight = new Vector2d(1, 0.5);
+
         public string Text { get; set; } = "a label";
         public double FontSize { get; set; } = 24;
         public Vector2d TextAnchor { get; set; } = new Vector2d(0.5, 0.5);
