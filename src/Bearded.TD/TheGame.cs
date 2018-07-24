@@ -89,6 +89,7 @@ namespace Bearded.TD
                 new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
             navigationController.Push<MainMenu>();
             var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
+            navigationController.Push<VersionOverlay>();
             navigationController.Exited += Close;
 
             shortcuts.RegisterShortcut(Key.Tilde, debugConsole.Toggle);
