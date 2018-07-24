@@ -70,7 +70,9 @@ namespace Bearded.TD.UI.Controls
                 ConnectionState = PlayerConnectionState.Waiting
             };
 
-            return new ServerLobbyManager(new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids), networkInterface);
+            return new ServerLobbyManager(
+                new GameInstance(
+                    new ServerGameContext(networkInterface, logger), contentManager, p, ids), networkInterface);
         }
     }
 }
