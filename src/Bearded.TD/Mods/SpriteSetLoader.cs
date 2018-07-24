@@ -2,7 +2,6 @@
 using System.IO;
 using Bearded.TD.Mods.Models;
 using Newtonsoft.Json;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Mods
 {

@@ -6,7 +6,8 @@ namespace Bearded.TD.Mods.Models
     {
         Building,
         Unit,
-        Particle
+        Particle,
+        Unknown
     }
 
     class SpriteSet : IBlueprint
