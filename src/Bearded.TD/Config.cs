@@ -5,11 +5,11 @@
         public const string BaseVersionString = "0.1";
 
 #if DEBUG
-        private const string versionPostFix = "-dev";
+        private const string versionSuffix = "-dev";
 #else
-        private const string versionPostFix = "";
+        private const string versionSuffix = "";
 #endif
 
-        public const string VersionString = BaseVersionString + versionPostFix;
+        public const string VersionString = BaseVersionString + versionSuffix;
     }
 }

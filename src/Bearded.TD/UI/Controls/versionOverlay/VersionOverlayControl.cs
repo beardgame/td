@@ -21,4 +21,3 @@ namespace Bearded.TD.UI.Controls
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
 }
-
