@@ -26,6 +26,33 @@ namespace Bearded.TD.UI.Controls
                 .Bottom(margin: 46, height: 24)
                 .Right(margin: 20)
                 .Left(relativePercentage: .5, margin: 20)));
+
+            var list = new ListControl {ItemSource = new LobbyListItemSource(model)}
+                .Anchor(a => a
+                    .Left(relativePercentage: .5)
+                    .Right(margin: 20)
+                    .Top(margin: 20)
+                    .Bottom(margin: 20));
+            Add(list);
+            model.LobbyReceived += lobby => list.OnAppendItems(1);
+        }
+
+        private class LobbyListItemSource : IListItemSource
+        {
+            private readonly LobbyList lobbyList;
+
+            public int ItemCount => lobbyList.Lobbies.Count;
+
+            public LobbyListItemSource(LobbyList lobbyList)
+            {
+                this.lobbyList = lobbyList;
+            }
+
+            public double HeightOfItemAt(int index) => LobbyListRowControl.Height;
+
+            public Control CreateItemControlFor(int index) => new LobbyListRowControl(lobbyList.Lobbies[index]);
+
+            public void DestroyItemControlAt(int index, Control control) { }
         }
     }
 }
