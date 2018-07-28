@@ -50,7 +50,12 @@ namespace Bearded.TD.UI.Controls
 
             public double HeightOfItemAt(int index) => LobbyListRowControl.Height;
 
-            public Control CreateItemControlFor(int index) => new LobbyListRowControl(lobbyList.Lobbies[index]);
+            public Control CreateItemControlFor(int index)
+            {
+                var ctrl = new LobbyListRowControl(lobbyList.Lobbies[index]);
+                ctrl.Clicked += lobby => lobbyList.OnLobbyClicked(lobby.Id);
+                return ctrl;
+            }
 
             public void DestroyItemControlAt(int index, Control control) { }
         }

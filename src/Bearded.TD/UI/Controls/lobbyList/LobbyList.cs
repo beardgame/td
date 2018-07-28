@@ -34,6 +34,8 @@ namespace Bearded.TD.UI.Controls
             networkInterface = new ClientNetworkInterface();
             networkInterface.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
             networkInterface.RegisterMessageHandler(this);
+
+            networkInterface.Master.ListLobbies();
         }
 
         public override void Terminate()
@@ -114,6 +116,11 @@ namespace Bearded.TD.UI.Controls
 
             UserSettings.Instance.Misc.SavedNetworkAddress = host;
             UserSettings.Save(logger);
+        }
+
+        public void OnLobbyClicked(long lobbyId)
+        {
+            networkInterface.Master.ConnectToLobby(lobbyId);
         }
 
         public void OnBackToMenuButtonClicked()
