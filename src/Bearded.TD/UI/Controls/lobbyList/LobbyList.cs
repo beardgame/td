@@ -123,6 +123,13 @@ namespace Bearded.TD.UI.Controls
             networkInterface.Master.ConnectToLobby(lobbyId);
         }
 
+        public void OnRefreshLobbiesButtonClicked()
+        {
+            Lobbies.Clear();
+            LobbiesCleared?.Invoke();
+            networkInterface.Master.ListLobbies();
+        }
+
         public void OnBackToMenuButtonClicked()
         {
             networkInterface.Shutdown();

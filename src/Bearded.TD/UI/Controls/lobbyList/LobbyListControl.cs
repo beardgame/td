@@ -7,6 +7,11 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyListControl(LobbyList model)
         {
+            Add(new Button {new Label("Refresh lobbies")}
+                .Anchor(a => a
+                    .Bottom(margin: 70, height: 50)
+                    .Left(margin: 20, width: 250))
+                .Subscribe(b => b.Clicked += model.OnRefreshLobbiesButtonClicked));
             Add(new Button {new Label("Back to menu")}
                 .Anchor(a => a
                     .Bottom(margin: 20, height: 50)
