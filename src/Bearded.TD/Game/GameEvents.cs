@@ -10,10 +10,16 @@ namespace Bearded.TD.Game
     sealed class GameEvents
     {
         public event GenericEventHandler<BuildingPlaceholder, Building> BuildingConstructionStarted;
+        public event VoidEventHandler GameOverTriggered;
 
         public void StartBuildingConstruction(BuildingPlaceholder placeholder, Building building)
         {
             BuildingConstructionStarted?.Invoke(placeholder, building);
+        }
+
+        public void TriggerGameOver()
+        {
+            GameOverTriggered?.Invoke();
         }
     }
 }

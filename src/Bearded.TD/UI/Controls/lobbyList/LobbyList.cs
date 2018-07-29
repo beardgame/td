@@ -1,10 +1,12 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Lidgren.Network;
 using Void = Bearded.Utilities.Void;
@@ -17,6 +19,11 @@ namespace Bearded.TD.UI.Controls
         private ContentManager contentManager;
         private ClientNetworkInterface networkInterface;
 
+        public IList<Proto.Lobby> Lobbies { get; } = new List<Proto.Lobby>();
+
+        public event VoidEventHandler LobbiesCleared;
+        public event GenericEventHandler<Proto.Lobby> LobbyReceived; 
+
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             base.Initialize(dependencies, parameters);
@@ -27,6 +34,8 @@ namespace Bearded.TD.UI.Controls
             networkInterface = new ClientNetworkInterface();
             networkInterface.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
             networkInterface.RegisterMessageHandler(this);
+
+            networkInterface.Master.ListLobbies();
         }
 
         public override void Terminate()
@@ -66,7 +75,8 @@ namespace Bearded.TD.UI.Controls
 
         private void handleIncomingLobby(Proto.Lobby lobby)
         {
-
+            Lobbies.Add(lobby);
+            LobbyReceived?.Invoke(lobby);
         }
 
         private void handleStatusChange(NetIncomingMessage msg)
@@ -106,6 +116,18 @@ namespace Bearded.TD.UI.Controls
 
             UserSettings.Instance.Misc.SavedNetworkAddress = host;
             UserSettings.Save(logger);
+        }
+
+        public void OnLobbyClicked(long lobbyId)
+        {
+            networkInterface.Master.ConnectToLobby(lobbyId);
+        }
+
+        public void OnRefreshLobbiesButtonClicked()
+        {
+            Lobbies.Clear();
+            LobbiesCleared?.Invoke();
+            networkInterface.Master.ListLobbies();
         }
 
         public void OnBackToMenuButtonClicked()

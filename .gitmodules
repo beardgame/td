@@ -1,9 +1,6 @@
-[submodule "libs/utilities"]
-	path = libs/utilities
-	url = git@github.com:beardgame/utilities.git
 [submodule "libs/awgraphics"]
 	path = libs/awgraphics
-	url = git@github.com:amulware/awgraphics.git
+	url = https://github.com/amulware/awgraphics.git
 [submodule "libs/lidgren"]
 	path = libs/lidgren
-	url = git@github.com:amulware/lidgren-network-gen3.git
+	url = https://github.com/amulware/lidgren-network-gen3.git

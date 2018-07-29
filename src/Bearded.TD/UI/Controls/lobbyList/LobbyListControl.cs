@@ -7,6 +7,11 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyListControl(LobbyList model)
         {
+            Add(new Button {new Label("Refresh lobbies")}
+                .Anchor(a => a
+                    .Bottom(margin: 70, height: 50)
+                    .Left(margin: 20, width: 250))
+                .Subscribe(b => b.Clicked += model.OnRefreshLobbiesButtonClicked));
             Add(new Button {new Label("Back to menu")}
                 .Anchor(a => a
                     .Bottom(margin: 20, height: 50)
@@ -26,6 +31,38 @@ namespace Bearded.TD.UI.Controls
                 .Bottom(margin: 46, height: 24)
                 .Right(margin: 20)
                 .Left(relativePercentage: .5, margin: 20)));
+
+            var list = new ListControl {ItemSource = new LobbyListItemSource(model)}
+                .Anchor(a => a
+                    .Left(relativePercentage: .5)
+                    .Right(margin: 20)
+                    .Top(margin: 20)
+                    .Bottom(margin: 20));
+            Add(list);
+            model.LobbyReceived += lobby => list.OnAppendItems(1);
+        }
+
+        private class LobbyListItemSource : IListItemSource
+        {
+            private readonly LobbyList lobbyList;
+
+            public int ItemCount => lobbyList.Lobbies.Count;
+
+            public LobbyListItemSource(LobbyList lobbyList)
+            {
+                this.lobbyList = lobbyList;
+            }
+
+            public double HeightOfItemAt(int index) => LobbyListRowControl.Height;
+
+            public Control CreateItemControlFor(int index)
+            {
+                var ctrl = new LobbyListRowControl(lobbyList.Lobbies[index]);
+                ctrl.Clicked += lobby => lobbyList.OnLobbyClicked(lobby.Id);
+                return ctrl;
+            }
+
+            public void DestroyItemControlAt(int index, Control control) { }
         }
     }
 }

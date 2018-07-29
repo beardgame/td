@@ -25,6 +25,7 @@ namespace Bearded.TD.Game
         public void DoGameOver()
         {
             GameOver = true;
+            Events.TriggerGameOver();
         }
     }
 }
