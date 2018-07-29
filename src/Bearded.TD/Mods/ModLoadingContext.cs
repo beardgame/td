@@ -1,17 +1,16 @@
 ﻿using Bearded.Utilities.IO;
-using Bearded.Utilities.Threading;
 
 namespace Bearded.TD.Mods
 {
     sealed class ModLoadingContext
     {
         public Logger Logger { get; }
-        public IActionQueue GlActions { get; }
+        public IGraphicsLoader GraphicsLoader { get; }
 
-        public ModLoadingContext(Logger logger, IActionQueue glActions)
+        public ModLoadingContext(Logger logger, IGraphicsLoader graphicsLoader)
         {
             Logger = logger;
-            GlActions = glActions;
+            GraphicsLoader = graphicsLoader;
         }
     }
 }

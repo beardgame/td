@@ -56,10 +56,7 @@ namespace Bearded.TD
             var dependencyResolver = new DependencyResolver();
             dependencyResolver.Add(logger);
 
-            contentManager = new ContentManager(glActionQueue);
-            dependencyResolver.Add(contentManager);
-
-            renderContext = new RenderContext();
+            renderContext = new RenderContext(glActionQueue);
 
             var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(
@@ -73,6 +70,9 @@ namespace Bearded.TD
                     (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
                     (typeof(Control), new FallbackBoxRenderer(surfaces.ConsoleBackground)),
                 });
+
+            contentManager = new ContentManager(renderContext.GraphicsLoader);
+            dependencyResolver.Add(contentManager);
 
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);

@@ -57,8 +57,7 @@ namespace Bearded.TD.Mods
                 configureSerializer();
 
                 var sprites = loadSprites();
-                // TODO: put into mod
-                // TODO: create surfaces (for rendering) and sprite geometries (for resolving in components)\
+                // TODO: create surfaces (for rendering) and sprite geometries (for resolving in components)
                 // TODO: make renderer get and render surfaces from mods
 
                 var projectiles = loadProjectiles();
@@ -76,6 +75,7 @@ namespace Bearded.TD.Mods
                 return new Mod(
                     meta.Id,
                     meta.Name,
+                    sprites,
                     footprints,
                     buildings,
                     units,

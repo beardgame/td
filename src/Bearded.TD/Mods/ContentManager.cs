@@ -1,16 +1,15 @@
 ﻿using System.Collections.ObjectModel;
-using Bearded.Utilities.Threading;
 
 namespace Bearded.TD.Mods
 {
     sealed class ContentManager
     {
-        public IActionQueue GlActions { get; }
+        public IGraphicsLoader GraphicsLoader { get; }
         public ReadOnlyCollection<ModMetadata> Mods { get; }
 
-        public ContentManager(IActionQueue glActions)
+        public ContentManager(IGraphicsLoader graphicsLoader)
         {
-            GlActions = glActions;
+            GraphicsLoader = graphicsLoader;
             Mods = new ModLister().GetAll().AsReadOnly();
         }
     }

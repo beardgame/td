@@ -52,7 +52,7 @@ namespace Bearded.TD.UI.Controls
         private void loadMod(ModMetadata modMetadata)
         {
             var modForLoading = modMetadata.PrepareForLoading();
-            var context = new ModLoadingContext(Logger, Game.ContentManager.GlActions);
+            var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
             modForLoading.StartLoading(context);
             modsForLoading.Add(modForLoading);
         }
