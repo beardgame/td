@@ -1,7 +1,7 @@
 {
-    "id" : "fast",
+    "id" : "fast01",
     "name" : "Fast enemy",
-    "health" : 50,
+    "health" : 40,
     "damage" : 4,
     "timeBetweenAttacks" : 0.5,
     "speed" : 3,

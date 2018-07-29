@@ -1,0 +1,10 @@
+{
+    "id" : "fast02",
+    "name" : "Faster enemy",
+    "health" : 70,
+    "damage" : 4,
+    "timeBetweenAttacks" : 0.4,
+    "speed" : 4,
+    "value" : 7,
+    "color" : "CornflowerBlue"
+}
