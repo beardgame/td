@@ -80,6 +80,7 @@ namespace Bearded.TD.Game.Components.Generic
             {
                 affectedUnits.Remove(effect.Unit);
             }
+            activeStatusEffects.RemoveAll(effect => effect.HasEnded);
         }
 
         private void ensureTilesInRangeUpToDate()
