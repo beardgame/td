@@ -41,5 +41,10 @@ namespace Bearded.TD.Game
 
             game.State.Meta.Synchronizer.Synchronize(game);
         }
+
+        public void Shutdown()
+        {
+            networkInterface.Shutdown();
+        }
     }
 }

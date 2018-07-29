@@ -21,7 +21,8 @@ namespace Bearded.TD.UI.Controls
         public GameStatusUI GameStatusUI { get; }
         
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
-        public event VoidEventHandler EntityStatusClosed; 
+        public event VoidEventHandler EntityStatusClosed;
+        public event VoidEventHandler GameOverTriggered;
 
         private NavigationController entityStatusNavigation;
         
@@ -46,6 +47,7 @@ namespace Bearded.TD.UI.Controls
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
+            Game.Meta.Events.GameOverTriggered += onGameOver;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -95,6 +97,17 @@ namespace Bearded.TD.UI.Controls
         {
             entityStatusNavigation.CloseAll();
             EntityStatusClosed?.Invoke();
+        }
+
+        private void onGameOver()
+        {
+            GameOverTriggered?.Invoke();
+        }
+
+        public void OnReturnToMainMenuButtonClicked()
+        {
+            runner.Shutdown();
+            Navigation.Replace<MainMenu>(this);
         }
     }
 }

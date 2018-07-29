@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Controls
         public GameUIControl(GameUI gameUI, GeometryManager geometryManager)
         {
             this.gameUI = gameUI;
-            
+
             Add(new GameWorldControl(gameUI.Game, geometryManager));
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
@@ -27,6 +27,17 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(gameUI.SetEntityStatusContainer)
                 .Subscribe(container => gameUI.EntityStatusClosed += () => container.IsVisible = false)
                 .Subscribe(container => gameUI.EntityStatusOpened += _ => container.IsVisible = true));
+
+            gameUI.GameOverTriggered += onGameOver;
+        }
+
+        private void onGameOver()
+        {
+            Add(new GameOverControl()
+                .Anchor(a => a
+                    .Top(margin: 0, height: 64)
+                    .Left(relativePercentage: .5, margin: - 120, width: 240))
+                .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked));
         }
     }
 }
