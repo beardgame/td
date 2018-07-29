@@ -6,17 +6,17 @@ namespace Bearded.TD.Mods.Models
     sealed class PackedSpriteSet
     {
         public Texture Texture { get; }
-        private readonly IDictionary<string, UVRectangle> spriteCoordinates;
+        private readonly IDictionary<string, ISprite> sprites;
 
-        public PackedSpriteSet(Texture texture, IDictionary<string, UVRectangle> spriteCoordinates)
+        public PackedSpriteSet(Texture texture, IDictionary<string, ISprite> sprites)
         {
             Texture = texture;
-            this.spriteCoordinates = spriteCoordinates;
+            this.sprites = sprites;
         }
 
-        public UVRectangle GetSpriteCoordinates(string name)
+        public ISprite GetSprite(string name)
         {
-            return spriteCoordinates[name];
+            return sprites[name];
         }
     }
 }

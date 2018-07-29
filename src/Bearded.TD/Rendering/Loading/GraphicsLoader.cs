@@ -31,7 +31,7 @@ namespace Bearded.TD.Rendering.Loading
                 rectangle.Value.Image.Dispose();
             }
 
-            return builder.Build(glActions);
+            return builder.Build(context, glActions);
         }
 
         private static BinPacking.Rectangle<(Bitmap Image, string Name)>

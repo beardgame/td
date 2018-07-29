@@ -50,22 +50,32 @@ namespace Bearded.TD.Rendering.Loading
             private int flatCoordinate(int x, int y)
                 => 4 * (y * width + x);
 
-            public PackedSpriteSet Build(IActionQueue glActions)
+            public PackedSpriteSet Build(RenderContext context, IActionQueue glActions)
             {
-                var texture = glActions.RunAndReturn(createGlEntities);
-                var spriteUVs = createSpriteUVs();
+                var (texture, surface) = glActions.RunAndReturn(() => createGlEntities(context));
+                var sprites = createSprites(surface);
+
+                // todo: register surface?
+
                 return new PackedSpriteSet(
                     texture,
-                    spriteUVs
+                    sprites
                     );
             }
 
-            private Dictionary<string, UVRectangle> createSpriteUVs()
+            private Dictionary<string, ISprite> createSprites(IndexedSurface<UVColorVertexData> surface)
             {
                 return nameToRectangle.ToDictionary(
                     pair => pair.Key,
-                    pair => toUvRectangle(pair.Value)
+                    pair => createSprite(surface, pair.Value)
                 );
+            }
+
+            private ISprite createSprite(IndexedSurface<UVColorVertexData> surface, Rectangle rectangle)
+            {
+                var uv = toUvRectangle(rectangle);
+
+                return new Sprite(surface, uv);
             }
 
             private UVRectangle toUvRectangle(Rectangle rect)
@@ -75,9 +85,18 @@ namespace Bearded.TD.Rendering.Loading
                     (float)rect.Top / width, (float)rect.Bottom / width);
             }
 
-            private Texture createGlEntities()
+            private (Texture, IndexedSurface<UVColorVertexData>) createGlEntities(RenderContext context)
             {
-                return new Texture(data, width, height);
+                var texture = new Texture(data, width, height);
+                var surface = new IndexedSurface<UVColorVertexData>()
+                    .WithShader(context.Surfaces.Shaders["uvcolor"])
+                    .AndSettings(
+                        context.Surfaces.ProjectionMatrix,
+                        context.Surfaces.ViewMatrix,
+                        new TextureUniform("diffuseTexture", texture)
+                        );
+
+                return (texture, surface);
             }
         }
     }

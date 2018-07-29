@@ -57,8 +57,8 @@ namespace Bearded.TD.Mods
                 configureSerializer();
 
                 var sprites = loadSprites();
-                // TODO: create surfaces (for rendering) and sprite geometries (for resolving in components)
                 // TODO: make renderer get and render surfaces from mods
+                // TODO: allow other blueprints to resolve sprite dependencies
 
                 var projectiles = loadProjectiles();
 
