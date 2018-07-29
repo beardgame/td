@@ -1,7 +1,7 @@
 {
     "id" : "strong02",
     "name" : "Stronger enemy",
-    "health" : 400,
+    "health" : 500,
     "damage" : 25,
     "timeBetweenAttacks" : 1.5,
     "speed" : 1.2,
