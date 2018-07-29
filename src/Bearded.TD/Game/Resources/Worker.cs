@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Resources
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.DeepPink;
-            geo.DrawCircle(Position.NumericValue, .3f * Constants.Game.World.HexagonDiameter);
+            geo.DrawCircle(Position.NumericValue, .3f * Constants.Game.World.HexagonDiameter, true, 6);
         }
 
         public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile) { }

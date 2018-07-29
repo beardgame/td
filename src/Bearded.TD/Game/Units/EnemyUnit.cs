@@ -116,7 +116,7 @@ namespace Bearded.TD.Game.Units
             var geo = geometries.ConsoleBackground;
             geo.Color = blueprint.Color;
             var size = (Mathf.Atan(.005f * (blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi;
-            geo.DrawRectangle(Position.NumericValue - Vector2.One * size * .5f, Vector2.One * size);
+            geo.DrawCircle(Position.NumericValue, size, true, 6);
 
             var p = (health / (float)blueprint.Health).Clamped(0, 1);
             geo.Color = Color.DarkGray;
