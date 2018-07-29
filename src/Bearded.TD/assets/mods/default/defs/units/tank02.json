@@ -1,0 +1,10 @@
+{
+    "id" : "tank02",
+    "name" : "A tank vroom vroom",
+    "health" : 2500,
+    "damage" : 100,
+    "timeBetweenAttacks" : 2.2,
+    "speed" : 0.9,
+    "value" : 25,
+    "color" : "SandyBrown"
+}

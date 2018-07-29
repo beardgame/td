@@ -1,0 +1,10 @@
+{
+    "id" : "standard03",
+    "name" : "Standard enemy",
+    "health" : 200,
+    "damage" : 20,
+    "timeBetweenAttacks" : 1.2,
+    "speed" : 1.8,
+    "value" : 7,
+    "color" : "DarkRed"
+}

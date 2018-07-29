@@ -1,0 +1,10 @@
+{
+    "id" : "strong03",
+    "name" : "Strongest enemy",
+    "health" : 700,
+    "damage" : 50,
+    "timeBetweenAttacks" : 2,
+    "speed" : 1.2,
+    "value" : 15,
+    "color" : "Yellow"
+}
