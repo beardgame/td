@@ -7,10 +7,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Units
 {
-    class UnitWarning : GameObject
+    sealed class UnitWarning : GameObject
     {
         private readonly Tile<TileInfo> tile;
         private readonly Instant dieAt;
+        private Instant nextIndicatorSpawn;
 
         public UnitWarning(Tile<TileInfo> tile, Instant dieAt)
         {
@@ -18,10 +19,23 @@ namespace Bearded.TD.Game.Units
             this.dieAt = dieAt;
         }
 
+        protected override void OnAdded()
+        {
+            base.OnAdded();
+            nextIndicatorSpawn = Game.Time;
+        }
+
         public override void Update(TimeSpan elapsedTime)
         {
-           if (Game.Time >= dieAt)
+            if (Game.Time > nextIndicatorSpawn)
+            {
+                Game.Add(new EnemyPathIndicator(tile));
+                nextIndicatorSpawn = Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
+            }
+            if (Game.Time >= dieAt)
+            {
                 Delete();
+            }
         }
 
         public override void Draw(GeometryManager geometries)
