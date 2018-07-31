@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
@@ -10,11 +12,12 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class DebugConsole : NavigationNode<Void>
+    sealed class DebugConsole : UpdateableNavigationNode<Void>
     {
         private static readonly char[] space = {' '};
 
         private readonly List<string> commandHistory = new List<string>();
+        private readonly ConcurrentQueue<Logger.Entry> loggerEntriesAdded = new ConcurrentQueue<Logger.Entry>();
         private int commandHistoryIndex = -1;
 
         private Logger logger;
@@ -27,6 +30,8 @@ namespace Bearded.TD.UI.Controls
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
+            base.Initialize(dependencies, parameters);
+
             logger = dependencies.Resolve<Logger>();
             IsEnabled = false;
 
@@ -43,6 +48,14 @@ namespace Bearded.TD.UI.Controls
         {
             base.Terminate();
             logger.Logged -= fireLoggerEntryEvent;
+        }
+
+        public override void Update(UpdateEventArgs args)
+        {
+            while (loggerEntriesAdded.TryDequeue(out var entry))
+            {
+                LogEntryAdded?.Invoke(entry);
+            }
         }
 
         public void Enable()
@@ -96,7 +109,7 @@ namespace Bearded.TD.UI.Controls
                 return;
             }
 
-            LogEntryAdded?.Invoke(loggerEntry);
+            loggerEntriesAdded.Enqueue(loggerEntry);
         }
 
         public void OnCommandExecuted(string command)
