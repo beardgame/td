@@ -66,6 +66,11 @@ namespace Bearded.TD
                 public static readonly Speed PathIndicatorSpeed = 10.UnitsPerSecond();
                 public static readonly TimeSpan TimeBetweenIndicators = .25.S();
             }
+
+            public static class Navigation
+            {
+                public const int StepsPerFrame = 100;
+            }
         }
     }
 }

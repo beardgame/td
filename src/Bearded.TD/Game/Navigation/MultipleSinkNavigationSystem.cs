@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -42,7 +43,7 @@ namespace Bearded.TD.Game.Navigation
 
         public void Update()
         {
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < Constants.Game.Navigation.StepsPerFrame; i++)
             {
                 if (updateFront.Count == 0)
                     break;
@@ -65,7 +66,7 @@ namespace Bearded.TD.Game.Navigation
                     if (!neighbour.IsValid)
                         continue;
                     var neighbourInfo = neighbour.Info;
-                    if (neighbourInfo.IsInvalid)
+                    if (neighbourInfo.IsInvalid || neighbourInfo.IsSink)
                         continue;
                     if (neighbourInfo.Direction == direction.Opposite())
                     {
@@ -89,6 +90,8 @@ namespace Bearded.TD.Game.Navigation
 
                 var gameTile = new Tile<TileInfo>(tilemap, xy.X, xy.Y);
 
+                var invalidatedAChild = false;
+
                 foreach (var direction in gameTile.Info.OpenDirectionsForUnits.Enumerate())
                 {
                     var neighbour = tile.Neighbour(direction);
@@ -102,8 +105,14 @@ namespace Bearded.TD.Game.Navigation
                         if (neighbourInfo.Direction == direction.Opposite())
                         {
                             invalidateTile(neighbour);
+                            invalidatedAChild = true;
                         }
                     }
+                }
+
+                if (invalidatedAChild)
+                {
+                    touchTile(tile.X, tile.Y);
                 }
             }
         }
@@ -204,6 +213,8 @@ namespace Bearded.TD.Game.Navigation
 
                     geo.Color = (pointsTo.Info.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
                     geo.DrawLine(p, p + d);
+                    geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularRight);
+                    geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularLeft);
                 }
 
                 if (drawWeights && !info.IsInvalid)
@@ -214,6 +225,13 @@ namespace Bearded.TD.Game.Navigation
                     {
                         distance -= backupSinkDistance;
                         font.Color = Color.Red;
+                    }
+
+                    if (!info.IsSink && tile.Neighbours.Any(n =>
+                        n.IsValid && !n.Info.IsInvalid && !n.Info.IsSink &&
+                        Math.Abs(n.Info.Distance - info.Distance) > 1))
+                    {
+                        font.Color = Color.MediumPurple;
                     }
 
                     font.DrawString(p, $"{distance}", 0.5f);
