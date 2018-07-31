@@ -258,7 +258,7 @@ namespace Bearded.TD.Game.Navigation
             public bool Equals(FrontUpdate other) => X == other.X && Y == other.Y;
 
             public override bool Equals(object obj)
-                => !ReferenceEquals(null, obj) && (obj is FrontUpdate && Equals((FrontUpdate) obj));
+                => !(obj is null) && (obj is FrontUpdate update && Equals(update));
 
             public override int GetHashCode() => (X * 397) ^ Y;
 
