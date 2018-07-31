@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 
 namespace Bearded.TD.Mods.Models
@@ -7,6 +8,8 @@ namespace Bearded.TD.Mods.Models
     {
         public Texture Texture { get; }
         private readonly IDictionary<string, ISprite> sprites;
+
+        public IEnumerable<(string Id, ISprite Sprite)> All => sprites.Select(kvp => (kvp.Key, kvp.Value));
 
         public PackedSpriteSet(Texture texture, IDictionary<string, ISprite> sprites)
         {

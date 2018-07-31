@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
@@ -11,13 +10,13 @@ using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Rendering
 {
-    class GameSurfaceManager
+    class ContentSurfaceManager
     {
         private static readonly ReadOnlyCollection<Surface> emptySurfaceList = new List<Surface>().AsReadOnly();
 
         private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
 
-        public GameSurfaceManager(ReadonlyBlueprintCollection<SpriteSet> spriteSets)
+        public ContentSurfaceManager(ReadonlyBlueprintCollection<SpriteSet> spriteSets)
         {
             groupedAndSortedSpriteSets = spriteSets.All
                 .GroupBy(sprites => sprites.DrawGroup)

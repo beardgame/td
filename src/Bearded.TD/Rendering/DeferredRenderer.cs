@@ -1,14 +1,25 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Meta;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using OpenTK.Graphics.OpenGL;
+using static Bearded.TD.Mods.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
 {
     class DeferredRenderer
     {
+        private static readonly SpriteDrawGroup[] worldDrawGroups = { Building, Unit };
+        private static readonly SpriteDrawGroup[] postCompositeGroups = { Particle, Unknown };
+
+        public static readonly ReadOnlyCollection<SpriteDrawGroup> AllDrawGroups =
+            new [] {worldDrawGroups, postCompositeGroups}
+                .SelectMany(group => group)
+                .ToList().AsReadOnly();
+        
         private readonly SurfaceManager surfaces;
         private ViewportSize viewport;
         private bool needsResize;
@@ -64,15 +75,17 @@ namespace Bearded.TD.Rendering
                 .WithShader(surfaces.Shaders["deferred/debug"])
                 .AndSettings(new TextureUniform("bufferTexture", buffer));
 
-        public void Render(RenderTarget target = null)
+        public void Render(ContentSurfaceManager contentSurfaces, RenderTarget target = null)
         {
             resizeIfNeeded();
 
-            renderWorldToGBuffers();
+            renderWorldToGBuffers(contentSurfaces);
 
             renderLightsToAccumBuffer();
 
             compositeTo(target);
+
+            renderPostCompositeDrawGroups(contentSurfaces);
         }
 
         public void RenderDebug(RenderTarget target = null)
@@ -100,7 +113,7 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        private void renderWorldToGBuffers()
+        private void renderWorldToGBuffers(ContentSurfaceManager contentSurfaces)
         {
             renderTo(gTarget, bufferSize);
             
@@ -119,10 +132,7 @@ namespace Bearded.TD.Rendering
             GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.Blend);
 
-            foreach (var surface in surfaces.GameSurfaces.SurfaceList)
-            {
-                surface.Render();
-            }
+            renderDrawGroups(contentSurfaces, worldDrawGroups);
 
             GL.Disable(EnableCap.DepthTest);
         }
@@ -143,6 +153,11 @@ namespace Bearded.TD.Rendering
             compositeSurface.Render();
         }
 
+        private void renderPostCompositeDrawGroups(ContentSurfaceManager contentSurfaces)
+        {
+            renderDrawGroups(contentSurfaces, postCompositeGroups);
+        }
+
         private static void renderTo(RenderTarget target, (int width, int height) viewport)
         {
             GL.Viewport(0, 0, viewport.width, viewport.height);
@@ -155,20 +170,31 @@ namespace Bearded.TD.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
+        private static void renderDrawGroups(ContentSurfaceManager contentSurfaces, SpriteDrawGroup[] drawGroups)
+        {
+            foreach (var drawGroup in drawGroups)
+            {
+                foreach (var surface in contentSurfaces.SurfacesFor(drawGroup))
+                {
+                    surface.Render();
+                }
+            }
+        }
 
-        public void OnResize(ViewportSize viewport)
+
+        public void OnResize(ViewportSize newViewport)
         {
             var bufferSizeFactor = 1 / UserSettings.Instance.Graphics.UpSample;
             
-            var w = (int) (viewport.Width * bufferSizeFactor);
-            var h = (int) (viewport.Height * bufferSizeFactor);
+            var w = (int) (newViewport.Width * bufferSizeFactor);
+            var h = (int) (newViewport.Height * bufferSizeFactor);
 
-            if (viewport == this.viewport && (w, h).Equals(bufferSize))
+            if (newViewport == viewport && (w, h).Equals(bufferSize))
                 return;
 
             bufferSize = (w, h);
 
-            this.viewport = viewport;
+            viewport = newViewport;
             needsResize = true;
         }
 

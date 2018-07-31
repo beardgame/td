@@ -17,7 +17,7 @@ namespace Bearded.TD.UI.Controls
         private readonly GeometryManager geometries;
 
         public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
-        public override RenderOptions RenderOptions => RenderOptions.Game;
+        public override RenderOptions RenderOptions => RenderOptions.Default;
 
         private const float fovy = Mathf.PiOver2;
         private const float lowestZToRender = -10;
@@ -39,11 +39,14 @@ namespace Bearded.TD.UI.Controls
         }
 
         public float FarPlaneDistance => game.Camera.Distance - lowestZToRender;
+        public ContentSurfaceManager DeferredSurfaces { get; }
 
         public GameWorldControl(GameInstance game, GeometryManager geometryManager)
         {
             this.game = game;
             geometries = geometryManager;
+
+            DeferredSurfaces = new ContentSurfaceManager(game.Blueprints.Sprites);
         }
 
         public override void Draw()
