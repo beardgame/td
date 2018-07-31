@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Buildings
 
         public void SetBuilding(Building building)
         {
-            DebugAssert.State.Satisfies(placeholder == null, "Placeholder needs to be set when building is set.");
+            DebugAssert.State.Satisfies(placeholder != null, "Placeholder needs to be set when building is set.");
             DebugAssert.State.Satisfies(this.building == null, "Can only set building once.");
             placeholder = null;
             this.building = building;
