@@ -25,6 +25,7 @@ namespace Bearded.TD.UI.Controls
             };
 
         private readonly DebugConsole debug;
+        private readonly ListControl logBox;
         private readonly RotatingListItemSource<Logger.Entry> listItemSource;
         private readonly TextInput commandInput;
 
@@ -33,7 +34,7 @@ namespace Bearded.TD.UI.Controls
             this.debug = debug;
             commandInput = new AutoCompletingTextInput(str => debug.AutoCompleteCommand(str, false)) { FontSize = 16 }
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
-            var logBox = new ListControl(startStuckToBottom: true)
+            logBox = new ListControl(startStuckToBottom: true)
                 .Anchor(a => a.Bottom(margin: 20));
             listItemSource = new RotatingListItemSource<Logger.Entry>(
                 logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry, 20, logHistoryLength);
@@ -61,6 +62,7 @@ namespace Bearded.TD.UI.Controls
         {
             commandInput.Focus();
             IsVisible = true;
+            logBox.Reload();
         }
 
         private void onDebugDisabled()
