@@ -55,8 +55,6 @@ namespace Bearded.TD.Rendering.Loading
                 var (texture, surface) = glActions.RunAndReturn(() => createGlEntities(context));
                 var sprites = createSprites(surface);
 
-                // todo: register surface?
-
                 return new PackedSpriteSet(
                     texture,
                     sprites

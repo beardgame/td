@@ -60,7 +60,8 @@ namespace Bearded.TD.Rendering
         public void RenderLayer(IRenderLayer layer)
         {
             prepareForRendering(layer);
-            renderWithOptions(layer.RenderOptions);
+            setViewportFrom(layer.RenderOptions);
+            renderSurfaces(layer);
         }
 
         private void prepareForRendering(IRenderLayer layer)
@@ -112,18 +113,6 @@ namespace Bearded.TD.Rendering
             surfaces.CameraPosition.Vector = cameraTranslation;
         }
 
-        private void renderWithOptions(RenderOptions options)
-        {
-            setViewportFrom(options);
-
-            if (options.RenderDeferred)
-            {
-                renderDeferred();
-            }
-
-            renderConsoleSurfaces();
-        }
-
         private void setViewportFrom(RenderOptions options)
         {
             if (options.OverrideViewport.HasValue)
@@ -138,9 +127,19 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        private void renderDeferred()
+        private void renderSurfaces(IRenderLayer layer)
         {
-            deferredRenderer.Render();
+            if (layer is IDeferredRenderLayer deferredLayer)
+            {
+                renderDeferred(deferredLayer.DeferredSurfaces);
+            }
+
+            renderConsoleSurfaces();
+        }
+
+        private void renderDeferred(ContentSurfaceManager contentSurfaces)
+        {
+            deferredRenderer.Render(contentSurfaces);
 
             if (UserSettings.Instance.Debug.Deferred)
                 deferredRenderer.RenderDebug();

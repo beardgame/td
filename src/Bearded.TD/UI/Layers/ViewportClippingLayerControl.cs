@@ -3,7 +3,7 @@ namespace Bearded.TD.UI.Layers
 {
     class ViewportClippingLayerControl : DefaultRenderLayerControl
     {
-        public override RenderOptions RenderOptions => new RenderOptions(false, getViewportFromFrame());
+        public override RenderOptions RenderOptions => new RenderOptions(getViewportFromFrame());
         
         private ((int, int), (int, int)) getViewportFromFrame()
         {

@@ -29,8 +29,6 @@ namespace Bearded.TD.Rendering
         public IndexedSurface<LevelVertex> LevelSurface { get; }
         
         public IndexedSurface<PointLightVertex> PointLights { get; }
-        
-        public GameSurfaceManager GameSurfaces { get; }
 
         public SurfaceManager()
         {
@@ -78,8 +76,6 @@ namespace Bearded.TD.Rendering
                 .WithShader(Shaders["deferred/pointlight"])
                 .AndSettings(ViewMatrix, ProjectionMatrix,
                     FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
-
-            GameSurfaces = new GameSurfaceManager(Shaders, ViewMatrix, ProjectionMatrix);
         }
 
         public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)

@@ -3,16 +3,17 @@ using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Rendering.Loading
 {
-    class Sprite : ISprite
+    class Sprite : ISprite, IHasSurface
     {
-        private IndexedSurface<UVColorVertexData> surface;
-        private UVRectangle uv;
+        private readonly IndexedSurface<UVColorVertexData> surface;
+        private readonly UVRectangle uv;
 
         public Sprite(IndexedSurface<UVColorVertexData> surface, UVRectangle uv)
         {
             this.surface = surface;
             this.uv = uv;
         }
-    }
 
+        Surface IHasSurface.Surface => surface;
+    }
 }

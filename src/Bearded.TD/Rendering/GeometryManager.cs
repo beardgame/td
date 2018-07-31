@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Rendering.Deferred;
 
 namespace Bearded.TD.Rendering
@@ -19,8 +17,6 @@ namespace Bearded.TD.Rendering
         public LevelGeometry Level { get; }
         
         public PointLightGeometry PointLight { get; }
-        
-        public Dictionary<string, Sprite2DGeometry> Sprites { get; }
 
         public GeometryManager(SurfaceManager surfaces)
         {
@@ -32,10 +28,6 @@ namespace Bearded.TD.Rendering
             UIFont = new FontGeometry(surfaces.UIFontSurface, surfaces.UIFont);
             Level = new LevelGeometry(surfaces.LevelSurface);
             PointLight = new PointLightGeometry(surfaces.PointLights);
-            
-            Sprites = surfaces.GameSurfaces.Surfaces.ToDictionary(
-                kvp => kvp.Key, kvp => new Sprite2DGeometry(kvp.Value)
-                );
         }
     }
 }
