@@ -6,7 +6,9 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.World;
+using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
@@ -33,7 +35,7 @@ namespace Bearded.TD.Game
             var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
             yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
 
-            var tilemapTypes = tilemapGenerator.Generate(radius);
+            var tilemapTypes = tilemapGenerator.Generate(radius, UserSettings.Instance.Misc.MapGenSeed ?? StaticRandom.Int());
 
             var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
 

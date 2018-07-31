@@ -26,12 +26,12 @@ namespace Bearded.TD.Game.Generation
             this.logger = logger;
         }
 
-        public Tilemap<TileInfo.Type> Generate(int radius)
+        public Tilemap<TileInfo.Type> Generate(int radius, int seed)
         {
-            logger.Debug?.Log($"Started generating map with radius {radius}");
+            logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
             var tilemap = new Tilemap<TileInfo.Type>(radius);
-            var gen = new Generator(tilemap, logger);
+            var gen = new Generator(tilemap, seed, logger);
             logger.Trace?.Log("Filling tilemap");
             gen.FillAll();
             gen.ClearCenter(tilemap.Radius - 1, 0.1);
@@ -60,14 +60,16 @@ namespace Bearded.TD.Game.Generation
         private class Generator
         {
             private readonly Tilemap<TileInfo.Type> tilemap;
+            private readonly Random random;
             private readonly Logger logger;
             private readonly Level<TileInfo.Type> level;
             private List<Position2> intersections = new List<Position2>();
             private List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
 
-            public Generator(Tilemap<TileInfo.Type> tilemap, Logger logger)
+            public Generator(Tilemap<TileInfo.Type> tilemap, int seed, Logger logger)
             {
                 this.tilemap = tilemap;
+                random = new Random(seed);
                 this.logger = logger;
                 level = new Level<TileInfo.Type>(tilemap);
             }
@@ -92,7 +94,7 @@ namespace Bearded.TD.Game.Generation
                     var variationFactor = (1 - 1 / (distance.NumericValue * 0.2f + 1));
                     var variation = variationFactor * 60;
 
-                    currentDirection += StaticRandom.Float(-variation, variation).Degrees();
+                    currentDirection += random.NextFloat(-variation, variation).Degrees();
                     currentDirection = currentDirection.TurnedTowards(directionToGoal, 0.3f / variationFactor);
 
                     var directionToStep = currentDirection.Hexagonal();
@@ -131,16 +133,16 @@ namespace Bearded.TD.Game.Generation
                 var angleBetweenIntersections = 360.Degrees() / count;
                 var levelRadius = radius * Constants.Game.World.HexagonWidth.U();
 
-                var startAngle = Direction2.FromDegrees(StaticRandom.Float(360));
+                var startAngle = Direction2.FromDegrees(random.NextFloat(360));
 
                 var angleVariance = angleBetweenIntersections.Radians * 0.3f;
 
                 for (var i = 0; i < count; i++)
                 {
                     var angle = startAngle + angleBetweenIntersections * i
-                                + StaticRandom.Float(-angleVariance, angleVariance).Radians();
+                                + random.NextFloat(-angleVariance, angleVariance).Radians();
                     var point = new Position2() + angle.Vector
-                                * (levelRadius * StaticRandom.Float(0.8f, 1));
+                                * (levelRadius * random.NextFloat(0.8f, 1));
                     intersections.Add(point);
                 }
             }
@@ -151,7 +153,7 @@ namespace Bearded.TD.Game.Generation
                 {
                     foreach (var v2 in intersections)
                     {
-                        if (!StaticRandom.Bool(fraction))
+                        if (!random.NextBool(fraction))
                             continue;
 
                         if (isValidArc(v1, v2))
@@ -164,7 +166,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var graph = new List<Position2>();
 
-                var verticesToAdd = intersections.Shuffled();
+                var verticesToAdd = intersections.Shuffled(random);
 
                 graph.Add(verticesToAdd.First());
 
@@ -230,7 +232,7 @@ namespace Bearded.TD.Game.Generation
                         if (closedNeighbours.Count == 0)
                             break;
 
-                        tile = closedNeighbours.RandomElement();
+                        tile = closedNeighbours.RandomElement(random);
                         tiles.Add(tile);
                     }
 
@@ -247,7 +249,7 @@ namespace Bearded.TD.Game.Generation
                 var r = tilemap.Radius;
                 while (true)
                 {
-                    var tile = this.tile(StaticRandom.Int(-r, r), StaticRandom.Int(-r, r));
+                    var tile = this.tile(random.Next(-r, r), random.Next(-r, r));
 
                     if (tile.IsValid)
                         return tile;
@@ -257,7 +259,7 @@ namespace Bearded.TD.Game.Generation
             private void spray(IEnumerable<Tile> area, Action<Tile> action, double fraction)
                 => area.ForEach(t =>
                 {
-                    if (fraction >= 1 || StaticRandom.Bool(fraction)) action(t);
+                    if (fraction >= 1 || random.NextBool(fraction)) action(t);
                 });
 
             private IEnumerable<Tile> corners => Tilemap.Directions.Select(corner);
