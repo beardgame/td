@@ -60,6 +60,7 @@ namespace Bearded.TD.Game.Buildings
             {
                 building.Completing -= onBuildingCompleting;
                 finished = true;
+                return;
             }
 
             var remaining = blueprint.ResourceCost - resourcesConsumed;
