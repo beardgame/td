@@ -35,19 +35,19 @@ namespace Bearded.TD
 
             public static class EnemyGeneration
             {
-                public static readonly TimeSpan TimeBeforeFirstWave = 20.S();
+                public static readonly TimeSpan TimeBeforeFirstWave = 40.S();
                 public static readonly TimeSpan WarningTime = 20.S();
                 public static readonly TimeSpan MinTimeBetweenEnemies = .1.S();
                 public static readonly TimeSpan MaxTimeBetweenEnemies = 2.S();
-                public static readonly TimeSpan MinWaveDuration = 10.S();
-                public static readonly TimeSpan MaxWaveDuration = 30.S();
+                public static readonly TimeSpan MinWaveDuration = 5.S();
+                public static readonly TimeSpan MaxWaveDuration = 15.S();
 
                 public const double InitialMinWaveCost = 12;
                 public const double InitialMaxWaveCost = 16;
                 public const double WaveCostGrowth = 1.007;
 
-                public const double InitialDebitPayoffRate = .8;
-                public const double DebitPayoffGrowth = 1.009;
+                public const double InitialDebitPayoffRate = .6;
+                public const double DebitPayoffGrowth = 1.011;
             }
 
             public static class Worker
