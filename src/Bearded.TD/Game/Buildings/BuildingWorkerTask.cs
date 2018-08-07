@@ -56,6 +56,11 @@ namespace Bearded.TD.Game.Buildings
             {
                 onConstructionStart();
             }
+            if (building?.Deleted ?? false)
+            {
+                building.Completing -= onBuildingCompleting;
+                finished = true;
+            }
 
             var remaining = blueprint.ResourceCost - resourcesConsumed;
             resourceManager.RegisterConsumer(this, ratePerS, remaining);
