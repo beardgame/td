@@ -58,7 +58,7 @@ namespace Bearded.TD
                 public static readonly Squared<Unit> WorkRadiusSquared = World.HexagonOuterRadiusSquared;
                 public const double WorkerSpeed = 15;
                 
-                public const double TotalMiningProgressRequired = 4 * WorkerSpeed;
+                public const double TotalMiningProgressRequired = 6 * WorkerSpeed;
             }
 
             public static class Enemy
