@@ -18,7 +18,7 @@ namespace Bearded.TD.UI.Controls
         {
             Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
 
-            Add(new Button()
+            Add(new Button
             {
                 new Label(lobby.Name)
                 {
@@ -31,7 +31,8 @@ namespace Bearded.TD.UI.Controls
                     Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorRight
                 }.Anchor(a => a
                     .Left(relativePercentage: .5)
-                    .Right(padding))
+                    .Right(padding)),
+                new ButtonBackgroundEffect()
             }.Subscribe(btn => btn.Clicked += () => Clicked?.Invoke(lobby)));
         }
 

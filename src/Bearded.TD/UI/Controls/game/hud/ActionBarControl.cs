@@ -20,7 +20,7 @@ namespace Bearded.TD.UI.Controls
             for (var i = 0; i < buttons.Length; i++)
             {
                 var i1 = i;
-                buttons[i] = new Button { new Label("") { FontSize = 16 } }
+                buttons[i] = Default.Button("", 16)
                     .Anchor(a => a
                         .Top(relativePercentage: i1 * buttonHeightPercentage)
                         .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))

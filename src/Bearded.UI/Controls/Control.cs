@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 
 namespace Bearded.UI.Controls
 {
@@ -121,12 +122,16 @@ namespace Bearded.UI.Controls
                 throw new InvalidOperationException();
 
             Parent = parent;
+
+            OnAddingToParent();
         }
 
         internal void RemoveFrom(IControlParent parent)
         {
             if (parent != Parent)
                 throw new InvalidOperationException();
+
+            OnRemovingFromParent();
 
             Parent = null;
         }
@@ -138,14 +143,33 @@ namespace Bearded.UI.Controls
   
         protected abstract void RenderStronglyTyped(IRendererRouter r);
 
+        public event GenericEventHandler<MouseEventArgs> MouseMove;
+        public event GenericEventHandler<MouseEventArgs> MouseExit;
+        public event GenericEventHandler<MouseButtonEventArgs> MouseButtonDown;
+        public event GenericEventHandler<MouseButtonEventArgs> MouseButtonRelease;
+
         public virtual void PreviewMouseMoved(MouseEventArgs eventArgs) { }
-        public virtual void MouseMoved(MouseEventArgs eventArgs) { }
+        public virtual void MouseMoved(MouseEventArgs eventArgs)
+        {
+            MouseMove?.Invoke(eventArgs);
+        }
         public virtual void PreviewMouseExited(MouseEventArgs eventArgs) { }
-        public virtual void MouseExited(MouseEventArgs eventArgs) { }
+        public virtual void MouseExited(MouseEventArgs eventArgs)
+        {
+            MouseExit?.Invoke(eventArgs);
+        }
         public virtual void PreviewMouseButtonHit(MouseButtonEventArgs eventArgs) { }
-        public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs) { }
+
+        public virtual void MouseButtonHit(MouseButtonEventArgs eventArgs)
+        {
+            MouseButtonDown?.Invoke(eventArgs);
+        }
         public virtual void PreviewMouseButtonReleased(MouseButtonEventArgs eventArgs) { }
-        public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs) { }
+
+        public virtual void MouseButtonReleased(MouseButtonEventArgs eventArgs)
+        {
+            MouseButtonRelease?.Invoke(eventArgs);
+        }
         public virtual void PreviewMouseScrolled(MouseScrollEventArgs eventArgs) { }
         public virtual void MouseScrolled(MouseScrollEventArgs eventArgs) { }
 
@@ -163,5 +187,8 @@ namespace Bearded.UI.Controls
 
         protected virtual void MadeVisible() { } // Not called on initialization
         protected virtual void MadeInvisible() { }
+        
+        protected virtual void OnAddingToParent() { }
+        protected virtual void OnRemovingFromParent() { }
     }
 }

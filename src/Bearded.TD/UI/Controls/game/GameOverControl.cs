@@ -2,6 +2,7 @@
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
+using static Bearded.TD.UI.Controls.Default;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -14,7 +15,7 @@ namespace Bearded.TD.UI.Controls
             Add(new BackgroundBox { Color = .5f * Color.Black });
             Add(new Label { Color = Color.PaleVioletRed, FontSize = 24, Text = "oh dear, u ded" }.Anchor(a => a
                 .Bottom(margin: 32)));
-            Add(new Button { new Label { FontSize = 16, Text = "back to main menu" }}
+            Add(Button("back to main menu", 16)
                 .Anchor(a => a
                     .Bottom(margin: 4, height: 24)
                     .Left(margin: 4)

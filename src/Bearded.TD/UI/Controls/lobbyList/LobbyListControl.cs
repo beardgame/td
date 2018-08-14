@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Meta;
 using Bearded.UI.Controls;
+using static Bearded.TD.UI.Controls.Default;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -7,12 +8,12 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyListControl(LobbyList model)
         {
-            Add(new Button {new Label("Refresh lobbies")}
+            Add(Button("Refresh lobbies")
                 .Anchor(a => a
                     .Bottom(margin: 70, height: 50)
                     .Left(margin: 20, width: 250))
                 .Subscribe(b => b.Clicked += model.OnRefreshLobbiesButtonClicked));
-            Add(new Button {new Label("Back to menu")}
+            Add(Button("Back to menu")
                 .Anchor(a => a
                     .Bottom(margin: 20, height: 50)
                     .Left(margin: 20, width: 250))
@@ -24,7 +25,7 @@ namespace Bearded.TD.UI.Controls
             Add(new CompositeControl
             {
                 manualTextInput.Anchor(a => a.Right(margin: 120)),
-                new Button {new Label("Connect")}
+                Button("Connect")
                     .Anchor(a => a.Right(width: 120))
                     .Subscribe(b => b.Clicked += () => model.OnConnectManualButtonClicked(manualTextInput.Text))
             }.Anchor(a => a
@@ -37,7 +38,8 @@ namespace Bearded.TD.UI.Controls
                     .Left(relativePercentage: .5)
                     .Right(margin: 20)
                     .Top(margin: 20)
-                    .Bottom(margin: 20));
+                    .Bottom(margin: 100));
+
             Add(list);
             model.LobbyReceived += lobby => list.OnAppendItems(1);
         }

@@ -16,9 +16,9 @@ namespace Bearded.UI.Controls
             CanBeFocused = true;
         }
 
-        public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
+        public override void MouseButtonReleased(MouseButtonEventArgs eventArgs)
         {
-            base.MouseButtonHit(eventArgs);
+            base.MouseButtonReleased(eventArgs);
             if (eventArgs.MouseButton == MouseButton.Left && IsEnabled)
             {
                 Clicked?.Invoke();

@@ -22,10 +22,10 @@ namespace Bearded.TD.UI.Controls
             Add(new SimpleControl()
                 .Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
 
-            Add(new Button { new Label("Close") }
+            Add(Default.Button("Close")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Left(margin: 4).Right(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += buildingStatus.OnCloseClicked));
-            Add(new Button { new Label("Delete") }
+            Add(Default.Button("Delete")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Right(margin: 4).Left(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += buildingStatus.OnDeleteBuildingClicked));
         }
