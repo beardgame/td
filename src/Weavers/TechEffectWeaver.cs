@@ -83,21 +83,30 @@ namespace Weavers
 
         private void addTemplateProperty(TypeDefinition type, PropertyDefinition propertyBase)
         {
+            var getMethodBase = ModuleDefinition.ImportReference(propertyBase.GetMethod).Resolve();
+
             var propertyImpl =
                 new PropertyDefinition(propertyBase.Name, PropertyAttributes.None, propertyBase.PropertyType)
                 {
                     GetMethod = new MethodDefinition(
-                        propertyBase.GetMethod.Name,
-                        MethodAttributes.Public | MethodAttributes.SpecialName,
-                        propertyBase.PropertyType)
+                        getMethodBase.Name,
+                        getMethodBase.Attributes | MethodAttributes.ReuseSlot,
+                        getMethodBase.ReturnType)
                 };
 
-            propertyBase.GetMethod.Overrides.Add(propertyImpl.GetMethod);
+            var getMethodImpl = propertyImpl.GetMethod;
+            getMethodImpl.Attributes &= ~(MethodAttributes.NewSlot | MethodAttributes.Abstract);
+            getMethodImpl.Attributes |= MethodAttributes.ReuseSlot;
+            getMethodImpl.SemanticsAttributes = getMethodBase.SemanticsAttributes;
+            getMethodImpl.Body = new MethodBody(getMethodImpl);
 
-            var processor = propertyImpl.GetMethod.Body.GetILProcessor();
+            var processor = getMethodImpl.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldc_I4_0);
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
+            type.Methods.Add(getMethodImpl);
+            
+            getMethodBase.Overrides.Add(getMethodImpl);
         }
 
         private static string getInterfaceBaseName(string interfaceName) =>
