@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Weavers.Tests
 {
-    public sealed class TDWeaverTest
+    public sealed class TechEffectWeaverTest
     {
         private static readonly TestResult testResult;
 
-        static TDWeaverTest()
+        static TechEffectWeaverTest()
         {
-            var weavingTask = new TDWeaver();
+            var weavingTask = new TechEffectWeaver();
             testResult = weavingTask.ExecuteTestRun(Constants.AssemblyToProcess);
         }
 
@@ -21,10 +21,9 @@ namespace Weavers.Tests
         }
 
         [Fact]
-        public void InjectsType()
+        public void InjectsTemplateType()
         {
-            // Should not fail
-            testResult.Assembly.GetType("Weavers.TypeInjectedByTDWeaver");
+            Assert.NotNull(testResult.Assembly.GetType($"{Constants.NameSpace}.TechEffectModifiableTemplate"));
         }
     }
 }

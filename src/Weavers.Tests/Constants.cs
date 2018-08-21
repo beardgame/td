@@ -2,6 +2,7 @@
 {
     static class Constants
     {
-        internal const string AssemblyToProcess = "Weavers.Tests.AssemblyToProcess.dll";
+        internal const string NameSpace = "Weavers.Tests.AssemblyToProcess";
+        internal const string AssemblyToProcess = NameSpace + ".dll";
     }
 }
