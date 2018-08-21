@@ -2,6 +2,8 @@
 using System.Linq;
 using Fody;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using static Weavers.Constants;
 
 namespace Weavers
@@ -16,39 +18,86 @@ namespace Weavers
 
             foreach (var type in allTypes)
             {
-                if (type == null || !type.IsInterface || implementsInterface(type, TechEffects.Interface))
+                if (type == null || !type.IsInterface || !type.ImplementsInterface(TechEffects.Interface))
                 {
                     continue;
                 }
 
-                toAdd.EnqueueAll(injectImplementations(type));
+                toAdd.EnqueueAll(createImplementations(type));
             }
 
             foreach (var type in toAdd) ModuleDefinition.Types.Add(type);
         }
 
-        private IEnumerable<TypeDefinition> injectImplementations(TypeReference interfaceRef)
+        private IEnumerable<TypeDefinition> createImplementations(TypeDefinition interfaceDef)
         {
-            LogInfo($"Weaving implementations for {interfaceRef}.");
+            LogInfo($"Weaving implementations for {interfaceDef}.");
 
-            var interfaceBaseName = getInterfaceBaseName(interfaceRef.Name);
+            var properties = interfaceDef.Properties
+                .Where(p => p.TryGetCustomAttribute(TechEffects.ModifiableAttribute, out _))
+                .ToList();
 
+            yield return createTemplateImplementation(interfaceDef, properties);
+        }
+
+        private TypeDefinition createTemplateImplementation(
+            TypeReference interfaceRef, IReadOnlyCollection<PropertyDefinition> properties)
+        {
             var templateType = new TypeDefinition(
                 interfaceRef.Namespace,
-                interfaceBaseName + TechEffects.TemplateSuffix,
+                getInterfaceBaseName(interfaceRef.Name) + TechEffects.TemplateSuffix,
                 TypeAttributes.Public,
                 TypeSystem.ObjectReference);
             var templateImplementation = new InterfaceImplementation(interfaceRef);
             templateType.Interfaces.Add(templateImplementation);
+            
+            addTemplateConstructor(templateType, properties);
 
-            yield return templateType;
+            foreach (var property in properties)
+            {
+                addTemplateProperty(templateType, property);
+            }
+
+            return templateType;
         }
 
-        private static bool implementsInterface(TypeDefinition type, string interfaceName)
+        private void addTemplateConstructor(TypeDefinition type, IEnumerable<PropertyDefinition> properties)
         {
-            return type.HasInterfaces
-                && type.Interfaces.Any(interfaceImplementation =>
-                    interfaceImplementation.InterfaceType.Name == interfaceName);
+            var method = new MethodDefinition(
+                ".ctor",
+                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                TypeSystem.VoidReference);
+
+            foreach (var property in properties)
+            {
+                method.Parameters.Add(new ParameterDefinition(property.Name.ToCamelCase(), ParameterAttributes.None, property.PropertyType));
+            }
+
+            var objectConstructor = ModuleDefinition.ImportReference(TypeSystem.ObjectDefinition.GetConstructors().First());
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            processor.Emit(OpCodes.Call, objectConstructor);
+            processor.Emit(OpCodes.Ret);
+            type.Methods.Add(method);
+        }
+
+        private void addTemplateProperty(TypeDefinition type, PropertyDefinition propertyBase)
+        {
+            var propertyImpl =
+                new PropertyDefinition(propertyBase.Name, PropertyAttributes.None, propertyBase.PropertyType)
+                {
+                    GetMethod = new MethodDefinition(
+                        propertyBase.GetMethod.Name,
+                        MethodAttributes.Public | MethodAttributes.SpecialName,
+                        propertyBase.PropertyType)
+                };
+
+            propertyBase.GetMethod.Overrides.Add(propertyImpl.GetMethod);
+
+            var processor = propertyImpl.GetMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldc_I4_0);
+            processor.Emit(OpCodes.Ret);
+            type.Properties.Add(propertyImpl);
         }
 
         private static string getInterfaceBaseName(string interfaceName) =>
