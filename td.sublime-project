@@ -16,6 +16,9 @@
 		},
 		{
 			"path": "src\\Bearded.UI"
+		},
+		{
+			"path": "src\\Weavers"
 		}
 	],
 	"settings":
