@@ -3,5 +3,6 @@
     "speed" : 20,
     "damage" : 10,
     "color" : "Yellow",
+    "sprite" : "particle.star",
     "components" : []
 }

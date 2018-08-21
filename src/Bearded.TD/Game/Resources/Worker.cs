@@ -5,6 +5,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
@@ -80,9 +81,10 @@ namespace Bearded.TD.Game.Resources
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-            geo.Color = Color.DeepPink;
-            geo.DrawCircle(Position.NumericValue, .3f * Constants.Game.World.HexagonDiameter, true, 6);
+            var sprites = Game.Meta.Blueprints.Sprites["particle"];
+            var sprite = sprites.Sprites.GetSprite("halo");
+
+            sprite.Draw(Position.NumericValue.WithZ(0), Faction.Color, 0.5f);
         }
 
         public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile) { }

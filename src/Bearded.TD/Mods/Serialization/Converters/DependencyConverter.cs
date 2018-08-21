@@ -1,15 +1,14 @@
 ﻿using System;
 using System.IO;
-using Bearded.TD.Game;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Mods.Serialization.Converters
 {
-    class DependencyConverter<T> : JsonConverterBase<T> where T : IBlueprint
+    class DependencyConverter<T> : JsonConverterBase<T>
     {
-        private readonly DependencyResolver<T> dependencyResolver;
+        private readonly IDependencyResolver<T> dependencyResolver;
 
-        public DependencyConverter(DependencyResolver<T> dependencyResolver)
+        public DependencyConverter(IDependencyResolver<T> dependencyResolver)
         {
             this.dependencyResolver = dependencyResolver;
         }

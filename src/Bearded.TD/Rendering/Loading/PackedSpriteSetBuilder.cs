@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -35,13 +36,17 @@ namespace Bearded.TD.Rendering.Loading
                     ImageLockMode.ReadOnly,
                     PixelFormat.Format32bppArgb);
 
+                var scan0 = bitmapData.Scan0;
+                var stride = bitmapData.Stride;
+
                 for (var i = 0; i < tuple.Image.Height; i++)
                 {
+                    var start = scan0 + stride * i;
                     Marshal.Copy(
-                        bitmapData.Scan0 + bitmapData.Stride,
+                        start,
                         data,
                         flatCoordinate(x, y + i),
-                        bitmapData.Stride);
+                        stride);
                 }
 
                 tuple.Image.UnlockBits(bitmapData);
@@ -52,6 +57,8 @@ namespace Bearded.TD.Rendering.Loading
 
             public PackedSpriteSet Build(RenderContext context, IActionQueue glActions)
             {
+                Texture.PreMultipleArgbArray(data);
+
                 var (texture, surface) = glActions.RunAndReturn(() => createGlEntities(context));
                 var sprites = createSprites(surface);
 
@@ -80,12 +87,13 @@ namespace Bearded.TD.Rendering.Loading
             {
                 return new UVRectangle(
                     (float)rect.Left / width, (float)rect.Right / width,
-                    (float)rect.Top / width, (float)rect.Bottom / width);
+                    (float)rect.Top / height, (float)rect.Bottom / height);
             }
 
             private (Texture, IndexedSurface<UVColorVertexData>) createGlEntities(RenderContext context)
             {
                 var texture = new Texture(data, width, height);
+
                 var surface = new IndexedSurface<UVColorVertexData>()
                     .WithShader(context.Surfaces.Shaders["uvcolor"])
                     .AndSettings(

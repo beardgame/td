@@ -20,13 +20,15 @@ namespace Bearded.TD.Mods
 
             var components = name.Split('.');
             
-            if (components.Length == 1)
-                return new ModAwareId(mod.Id, name);
-
-            if (components.Length == 2)
-                return new ModAwareId(components[0], components[1]);
-
-            throw new InvalidDataException($"Id may not contain more than one . ({name})");
+            switch (components.Length)
+            {
+                case 1:
+                    return new ModAwareId(mod.Id, name);
+                case 2:
+                    return new ModAwareId(components[0], components[1]);
+                default:
+                    throw new InvalidDataException($"Id may not contain more than one . ({name})");
+            }
         }
         
         public override string ToString()

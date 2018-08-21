@@ -100,6 +100,7 @@ namespace Bearded.TD.Game
                 throw new InvalidOperationException("Cannot override the blueprints once set.");
 
             Blueprints = blueprints;
+            Meta.SetBlueprints(blueprints);
         }
 
         public void SetLoading()

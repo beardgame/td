@@ -5,6 +5,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -75,10 +76,7 @@ namespace Bearded.TD.Game.Projectiles
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-            geo.Color = blueprint.Color;
-            
-            geo.DrawRectangle(Position.NumericValue, Vector2.One * 0.1f);
+            blueprint.Sprite.Draw(Position.NumericValue.WithZ(0), blueprint.Color, 0.1f);
 
             components.Draw(geometries);
         }

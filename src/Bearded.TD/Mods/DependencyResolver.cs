@@ -6,7 +6,7 @@ using Bearded.TD.Game;
 
 namespace Bearded.TD.Mods
 {
-    sealed class DependencyResolver<T>
+    sealed class DependencyResolver<T> : IDependencyResolver<T>
         where T : IBlueprint
     {
         private readonly ModMetadata thisMod;

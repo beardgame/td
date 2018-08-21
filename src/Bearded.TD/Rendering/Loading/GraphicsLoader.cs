@@ -27,8 +27,9 @@ namespace Bearded.TD.Rendering.Loading
 
             foreach (var rectangle in packedSprites.Rectangles)
             {
-                builder.CopyBitmap(rectangle.Value, rectangle.X, rectangle.Y);
-                rectangle.Value.Image.Dispose();
+                var bitmap = rectangle.Value;
+                builder.CopyBitmap(bitmap, rectangle.X, rectangle.Y);
+                bitmap.Image.Dispose();
             }
 
             return builder.Build(context, glActions);

@@ -9,6 +9,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Weapons;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
@@ -57,7 +58,8 @@ namespace Bearded.TD.Mods
                 configureSerializer();
 
                 var sprites = loadSprites();
-                // TODO: allow other blueprints to resolve sprite dependencies
+
+                configureSpriteSerializerDependency(sprites);
 
                 var projectiles = loadProjectiles();
 
@@ -129,6 +131,13 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
+            }
+
+            private void configureSpriteSerializerDependency(
+                ReadonlyBlueprintCollection<SpriteSet> spriteSets)
+            {
+                var dependencyResolver = new SpriteResolver(meta, spriteSets, Enumerable.Empty<Mod>());
+                serializer.Converters.Add(new DependencyConverter<ISprite>(dependencyResolver));
             }
 
             private void configureSerializerDependency<TBlueprint>(
