@@ -16,6 +16,15 @@
 		},
 		{
 			"path": "src\\Bearded.UI"
+		},
+		{
+			"path": "src\\Weavers"
+		},
+		{
+			"path": "src\\Weavers.Tests"
+		},
+		{
+			"path": "src\\Weavers.Tests.AssemblyToProcess"
 		}
 	],
 	"settings":
