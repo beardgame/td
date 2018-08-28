@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -8,6 +9,7 @@ using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -31,6 +33,9 @@ namespace Bearded.TD.Game
             yield return CreateGameState.Command(game, radius);
             yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true));
 
+            foreach (var command in setupFactions())
+                yield return command;
+
             var baseBlueprint = game.Blueprints.Buildings[Constants.Mods.BaseBuildingId];
             var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
             yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
@@ -44,6 +49,17 @@ namespace Bearded.TD.Game
                     game,
                     game.State.Level.Tilemap.SpiralCenteredAt(
                             new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0), 3).ToList());
+        }
+
+        private IEnumerable<ISerializableCommand<GameInstance>> setupFactions()
+        {
+            foreach (var (p, i) in game.Players.Indexed())
+            {
+                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
+                var playerFaction = new Faction(game.Ids.GetNext<Faction>(), game.State.RootFaction, false, p.Name, factionColor);
+                yield return AddFaction.Command(game, playerFaction);
+                yield return SetPlayerFaction.Command(p, playerFaction);
+            }
         }
 
         private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileInfo.Type> types)

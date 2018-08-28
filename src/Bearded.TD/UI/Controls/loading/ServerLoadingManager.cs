@@ -2,12 +2,9 @@
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
-using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -23,7 +20,6 @@ namespace Bearded.TD.UI.Controls
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.AwaitingLoadingData))
             {
                 generateGame();
-                setupFactions();
                 Dispatcher.RunOnlyOnServer(AllLoadingDataSent.Command, Game);
             }
 
@@ -52,17 +48,6 @@ namespace Bearded.TD.UI.Controls
             foreach (var command in commands)
             {
                 Dispatcher.RunOnlyOnServer(() => command);
-            }
-        }
-
-        private void setupFactions()
-        {
-            foreach (var (p, i) in Game.Players.Indexed())
-            {
-                var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(Game.Ids.GetNext<Faction>(), Game.State.RootFaction, false, p.Name, factionColor);
-                Dispatcher.RunOnlyOnServer(AddFaction.Command, Game, playerFaction);
-                Dispatcher.RunOnlyOnServer(SetPlayerFaction.Command, p, playerFaction);
             }
         }
     }
