@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
         public IEnumerable<ISerializableCommand<GameInstance>> Generate()
         {
             yield return CreateGameState.Command(game, radius);
-            yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true));
+            yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true, true));
 
             foreach (var command in setupFactions())
                 yield return command;
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game
             foreach (var (p, i) in game.Players.Indexed())
             {
                 var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(game.Ids.GetNext<Faction>(), game.State.RootFaction, false, p.Name, factionColor);
+                var playerFaction = new Faction(game.Ids.GetNext<Faction>(), game.State.RootFaction, false, true, p.Name, factionColor);
                 yield return AddFaction.Command(game, playerFaction);
                 yield return SetPlayerFaction.Command(p, playerFaction);
             }
