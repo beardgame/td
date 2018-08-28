@@ -9,13 +9,11 @@ namespace Bearded.TD.Game.Components.Generic
     class WorkerHub<T> : Component<T, WorkerHubParameters>
         where T : GameObject, IFactioned
     {
-        private const int numWorkers = 2;
-
         public WorkerHub(WorkerHubParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
-            for (var i = 0; i < numWorkers; i++)
+            for (var i = 0; i < Parameters.NumWorkers; i++)
             {
                 Owner.Game.Add(new Worker(Owner.Faction.Workers, Owner.Faction));
             }
