@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Fody;
+using Weavers.TechEffects;
 using Weavers.Tests.AssemblyToProcess;
 using Xunit;
 #pragma warning disable 618 // Disable obsolete warnings
@@ -39,12 +40,12 @@ namespace Weavers.Tests
         public void MakesTemplateTypeRememberValues()
         {
             var template = constructTemplate(42);
-            Assert.Equal(42, template.IntProperty);
+            Assert.Equal(42, template.GetPropertyValue<int>("IntProperty"));
         }
 
-        private static ITechEffectDummy constructTemplate(int intValue)
+        private static object constructTemplate(int intValue)
         {
-            return getTemplateConstructorInfo().Invoke(new object[] {intValue}) as ITechEffectDummy;
+            return getTemplateConstructorInfo().Invoke(new object[] {intValue});
         }
 
         private static ConstructorInfo getTemplateConstructorInfo()
@@ -54,7 +55,7 @@ namespace Weavers.Tests
 
         private static Type getTemplateType()
         {
-            return testResult.Assembly.GetType($"{Constants.NameSpace}.TechEffectModifiableTemplate");
+            return testResult.Assembly.GetType($"{Constants.NameSpace}.TechEffectDummyTemplate");
         }
     }
 }

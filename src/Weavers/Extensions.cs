@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 
@@ -8,17 +9,26 @@ namespace Weavers
     {
         public static void EnqueueAll<T>(this Queue<T> queue, IEnumerable<T> elements)
         {
-            foreach (var elmt in elements) queue.Enqueue(elmt);
+            foreach (var element in elements)
+            {
+                queue.Enqueue(element);
+            }
         }
 
-        public static bool ImplementsInterface(this TypeDefinition type, string interfaceName)
+        public static void AddInterfaceImplementation(this TypeDefinition type, TypeReference interfaceType)
+        {
+            var impl = new InterfaceImplementation(interfaceType);
+            type.Interfaces.Add(impl);
+        }
+
+        public static bool ImplementsInterface(this TypeDefinition type, Type interfaceType)
         {
             return type.HasInterfaces
                 && type.Interfaces.Any(interfaceImplementation =>
-                    interfaceImplementation.InterfaceType.Name == interfaceName);
+                    interfaceImplementation.InterfaceType.FullName == interfaceType.FullName);
         }
 
-        public static bool TryGetCustomAttribute(this PropertyDefinition property, string attributeName, out CustomAttribute attribute)
+        public static bool TryGetCustomAttribute(this PropertyDefinition property, Type attributeType, out CustomAttribute attribute)
         {
             if (!property.HasCustomAttributes)
             {
@@ -26,7 +36,7 @@ namespace Weavers
                 return false;
             }
 
-            attribute = property.CustomAttributes.FirstOrDefault(a => a.Constructor?.DeclaringType?.Name == attributeName);
+            attribute = property.CustomAttributes.FirstOrDefault(a => a.Constructor?.DeclaringType?.FullName == attributeType.FullName);
 
             return attribute != default(CustomAttribute);
         }

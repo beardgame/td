@@ -6,4 +6,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

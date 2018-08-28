@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Bearded.TD.Shared.TechEffects;
 
 namespace Weavers.Tests.AssemblyToProcess
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class ModifiableAttribute : Attribute { }
-
-    public interface ITechEffectModifiable {}
-
     public interface ITechEffectDummy : ITechEffectModifiable
     {
         [Modifiable]
         int IntProperty { get; }
+    }
+
+    public sealed class TechEffectReference : ITechEffectDummy
+    {
+        public int IntProperty { get; }
+
+        public TechEffectReference(int intProperty)
+        {
+            IntProperty = intProperty;
+        }
     }
 }
