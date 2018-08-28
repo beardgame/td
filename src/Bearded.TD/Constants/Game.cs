@@ -64,7 +64,7 @@ namespace Bearded.TD
             public static class Enemy
             {
                 public static readonly Speed PathIndicatorSpeed = 10.UnitsPerSecond();
-                public static readonly TimeSpan TimeBetweenIndicators = .25.S();
+                public static readonly TimeSpan TimeBetweenIndicators = 1.25.S();
             }
 
             public static class Navigation
