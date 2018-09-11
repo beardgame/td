@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Shared.TechEffects;
+using Newtonsoft.Json;
 
 namespace Weavers.Tests.AssemblyToProcess
 {
@@ -12,6 +13,7 @@ namespace Weavers.Tests.AssemblyToProcess
     {
         public int IntProperty { get; }
 
+        [JsonConstructor]
         public TechEffectReference(int intProperty)
         {
             IntProperty = intProperty;

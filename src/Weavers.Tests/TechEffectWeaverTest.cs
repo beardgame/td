@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using Fody;
+using Newtonsoft.Json;
 using Weavers.TechEffects;
-using Weavers.Tests.AssemblyToProcess;
 using Xunit;
 #pragma warning disable 618 // Disable obsolete warnings
 
@@ -34,6 +34,14 @@ namespace Weavers.Tests
         public void MakesTemplateTypeConstructable()
         {
             Assert.NotNull(getTemplateConstructorInfo());
+        }
+
+        [Fact]
+        public void MakesTemplateTypeJsonDeserializable()
+        {
+            const string json = "{ \"intProperty\" : 42 }";
+            var template = JsonConvert.DeserializeObject(json, getTemplateType());
+            Assert.Equal(42, template.GetPropertyValue<int>("IntProperty"));
         }
 
         [Fact]

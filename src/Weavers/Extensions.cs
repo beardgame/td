@@ -21,6 +21,14 @@ namespace Weavers
             type.Interfaces.Add(impl);
         }
 
+        public static void AddCustomAttribute(this MethodDefinition method, Type attributeType,
+            ReferenceFinder referenceFinder)
+        {
+            var jsonAttributeConstructor =
+                referenceFinder.GetMethodReference(attributeType, m => m.IsConstructor);
+            method.CustomAttributes.Add(new CustomAttribute(jsonAttributeConstructor));
+        }
+
         public static bool ImplementsInterface(this TypeDefinition type, Type interfaceType)
         {
             return type.HasInterfaces

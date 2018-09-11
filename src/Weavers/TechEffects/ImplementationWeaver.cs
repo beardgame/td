@@ -2,6 +2,7 @@
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Newtonsoft.Json;
 using TypeSystem = Fody.TypeSystem;
 
 namespace Weavers.TechEffects
@@ -85,6 +86,8 @@ namespace Weavers.TechEffects
                 ".ctor",
                 MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                 typeSystem.VoidReference);
+
+            method.AddCustomAttribute(typeof(JsonConstructorAttribute), referenceFinder);
 
             var propertyFields = new List<FieldDefinition>();
             var fieldsByProperty = new Dictionary<PropertyDefinition, FieldReference>();
