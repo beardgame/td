@@ -10,6 +10,6 @@
         private const string versionSuffix = "";
 #endif
 
-        public const string VersionString = BaseVersionString + versionSuffix;
+        public static string VersionString { get; } = BaseVersionString + versionSuffix;
     }
 }
