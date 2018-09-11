@@ -247,3 +247,8 @@ paket-files/
 .idea/
 *.sln.iml
 *.sublime-workspace
+
+# Cake
+tools/**
+Tools/**
+!tools/packages.config
