@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using FluentAssertions;
 using Fody;
 using Newtonsoft.Json;
 using Weavers.TechEffects;
@@ -21,34 +22,43 @@ namespace Weavers.Tests
         [Fact]
         public void RunsSuccessfully()
         {
-            Assert.Empty(testResult.Errors);
+            testResult.Errors.Should().BeEmpty();
         }
 
         [Fact]
         public void InjectsTemplateType()
         {
-            Assert.NotNull(getTemplateType());
+            getTemplateType().Should().NotBeNull();
+        }
+
+        [Fact]
+        public void MakesTemplateTypeImplementInterface()
+        {
+            getTemplateType().Should().BeAssignableTo(getInterfaceType());
         }
 
         [Fact]
         public void MakesTemplateTypeConstructable()
         {
-            Assert.NotNull(getTemplateConstructorInfo());
-        }
-
-        [Fact]
-        public void MakesTemplateTypeJsonDeserializable()
-        {
-            const string json = "{ \"intProperty\" : 42 }";
-            var template = JsonConvert.DeserializeObject(json, getTemplateType());
-            Assert.Equal(42, template.GetPropertyValue<int>("IntProperty"));
+            getTemplateConstructorInfo().Should().NotBeNull();
         }
 
         [Fact]
         public void MakesTemplateTypeRememberValues()
         {
             var template = constructTemplate(42);
-            Assert.Equal(42, template.GetPropertyValue<int>("IntProperty"));
+
+            template.GetPropertyValue<int>("IntProperty").Should().Be(42);
+        }
+
+        [Fact]
+        public void MakesTemplateTypeJsonDeserializable()
+        {
+            const string json = "{ \"intProperty\" : 42 }";
+
+            var template = JsonConvert.DeserializeObject(json, getTemplateType());
+
+            template.GetPropertyValue<int>("IntProperty").Should().Be(42);
         }
 
         private static object constructTemplate(int intValue)
@@ -59,6 +69,11 @@ namespace Weavers.Tests
         private static ConstructorInfo getTemplateConstructorInfo()
         {
             return getTemplateType().GetConstructor(new[] {typeof(int)});
+        }
+
+        private static Type getInterfaceType()
+        {
+            return testResult.Assembly.GetType($"{Constants.NameSpace}.ITechEffectDummy");
         }
 
         private static Type getTemplateType()
