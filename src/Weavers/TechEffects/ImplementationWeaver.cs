@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Shared.TechEffects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Newtonsoft.Json;
@@ -15,6 +18,7 @@ namespace Weavers.TechEffects
         private readonly ReferenceFinder referenceFinder;
 
         private readonly TypeReference techEffectInterface;
+        private readonly MethodDefinition techEffectTypeDictionaryMethod;
 
         internal ImplementationWeaver(
             ModuleDefinition moduleDefinition,
@@ -28,10 +32,20 @@ namespace Weavers.TechEffects
             this.referenceFinder = referenceFinder;
 
             techEffectInterface = this.referenceFinder.GetTypeReference(Constants.Interface);
+
+            var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(TechEffectModifiableLibrary<>));
+            var techEffectLibrary =
+                this.moduleDefinition.Types.FirstOrDefault(type =>
+                    type?.BaseType != null
+                        && type.BaseType.FullName.StartsWith(techEffectLibraryBase.FullName));
+            techEffectTypeDictionaryMethod = referenceFinder
+                .GetMethodReference(techEffectLibrary, method => method.Name == "GetInterfaceToTemplateMap").Resolve();
         }
 
         public void Execute()
         {
+            preProcessTypeDictionary();
+
             var typesToImplement = moduleDefinition.Types
                 .Where(type =>
                     type != null && type.IsInterface && type.ImplementsInterface(Constants.Interface))
@@ -44,6 +58,37 @@ namespace Weavers.TechEffects
                     moduleDefinition.Types.Add(implementation);
                 }
             }
+
+            postPrecessTypeDictionary();
+        }
+
+        private void preProcessTypeDictionary()
+        {
+            var typeTypeReference = referenceFinder.GetTypeReference<Type>();
+            var dictConstructor = referenceFinder
+                .GetConstructorReference(typeof(Dictionary<Type, Type>))
+                .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
+
+            techEffectTypeDictionaryMethod.Body =
+                new MethodBody(techEffectTypeDictionaryMethod) {InitLocals = true};
+            techEffectTypeDictionaryMethod.Body.Variables.Add(new VariableDefinition(dictConstructor.DeclaringType));
+
+            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Newobj, dictConstructor);
+            processor.Emit(OpCodes.Stloc_0);
+        }
+
+        private void postPrecessTypeDictionary()
+        {
+            var typeTypeReference = referenceFinder.GetTypeReference<Type>();
+            var readOnlyDictConstructor = referenceFinder
+                .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>))
+                .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
+
+            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldloc_0);
+            processor.Emit(OpCodes.Newobj, readOnlyDictConstructor);
+            processor.Emit(OpCodes.Ret);
         }
 
         private IEnumerable<TypeDefinition> createImplementations(TypeDefinition interfaceToImplement)
@@ -77,7 +122,25 @@ namespace Weavers.TechEffects
                 addTemplateProperty(templateType, entry.Key, entry.Value);
             }
 
+            registerJsonConverter(interfaceToImplement, templateType);
+
             return templateType;
+        }
+
+        private void registerJsonConverter(TypeReference interfaceToImplement, TypeDefinition templateType)
+        {
+            var @typeOf = referenceFinder.GetMethodReference<Type>(type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
+
+            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldloc_0);
+
+            processor.Emit(OpCodes.Ldtoken, interfaceToImplement);
+            processor.Emit(OpCodes.Call, @typeOf);
+            processor.Emit(OpCodes.Ldtoken, templateType);
+            processor.Emit(OpCodes.Call, @typeOf);
+
+            var addMethodReference = referenceFinder.GetMethodReference<Dictionary<Type, Type>>(dict => dict.Add(null, null));
+            processor.Emit(OpCodes.Callvirt, addMethodReference);
         }
 
         private Dictionary<PropertyDefinition, FieldReference> addTemplateConstructor(TypeDefinition type, IReadOnlyCollection<PropertyDefinition> properties)
@@ -108,8 +171,7 @@ namespace Weavers.TechEffects
                 fieldsByProperty.Add(property, fieldDef);
             }
 
-            var objectConstructor =
-                referenceFinder.GetMethodReference(typeSystem.ObjectDefinition, m => m.IsConstructor);
+            var objectConstructor = referenceFinder.GetConstructorReference(typeSystem.ObjectDefinition);
             var processor = method.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Call, objectConstructor);

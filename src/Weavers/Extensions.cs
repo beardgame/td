@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 
 namespace Weavers
 {
@@ -47,6 +48,33 @@ namespace Weavers
             attribute = property.CustomAttributes.FirstOrDefault(a => a.Constructor?.DeclaringType?.FullName == attributeType.FullName);
 
             return attribute != default(CustomAttribute);
+        }
+
+        public static MethodReference MakeHostInstanceGeneric(
+            this MethodReference self,
+            params TypeReference[] args)
+        {
+            var reference = new MethodReference(
+                self.Name,
+                self.ReturnType,
+                self.DeclaringType.MakeGenericInstanceType(args))
+            {
+                HasThis = self.HasThis,
+                ExplicitThis = self.ExplicitThis,
+                CallingConvention = self.CallingConvention
+            };
+
+            foreach (var parameter in self.Parameters)
+            {
+                reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
+            }
+
+            foreach (var genericParam in self.GenericParameters)
+            {
+                reference.GenericParameters.Add(new GenericParameter(genericParam.Name, reference));
+            }
+
+            return reference;
         }
 
         public static string ToCamelCase(this string titleCaseName)

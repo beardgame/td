@@ -190,7 +190,7 @@ namespace Bearded.TD.Mods.Serialization.Models
             var parameterData = parameters.Parameters;
             var parameterType = ParameterTypeForComponent(id);
 
-            DebugAssert.State.Satisfies(parameterData.GetType() == parameterType);
+            DebugAssert.State.Satisfies(parameterType.IsInstanceOfType(parameterData));
 
             var tryMakeFactory = tryMakeComponentFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
 

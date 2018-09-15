@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Mods.Serialization.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,7 @@ namespace Bearded.TD.Mods.Serialization.Converters
             => new ComponentConverter<IBuildingComponent>(typeof(BuildingComponent<>));
 
         public static ComponentConverter<IComponent> ForBaseComponent()
-            => new ComponentConverter<IComponent>(typeof(Models.Component<>));
+            => new ComponentConverter<IComponent>(typeof(Component<>));
     }
 
     sealed class ComponentConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>

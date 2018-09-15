@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using Fody;
 using Newtonsoft.Json;
 using Weavers.TechEffects;
+using Weavers.Tests.AssemblyToProcess;
 using Xunit;
 #pragma warning disable 618 // Disable obsolete warnings
 
@@ -61,6 +64,20 @@ namespace Weavers.Tests
             template.GetPropertyValue<int>("IntProperty").Should().Be(42);
         }
 
+        [Fact]
+        public void RegistersTemplateType()
+        {
+            var libraryInstance = getTechEffectLibraryType()?.InvokeMember(
+                nameof(TechEffectModifiableLibrary.Instance),
+                BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy,
+                null, null, null);
+            var dict = getTechEffectLibraryType()
+                .GetMethod(nameof(TechEffectModifiableLibrary.GetInterfaceToTemplateMap))
+                .Invoke(libraryInstance, null) as IDictionary<Type, Type>;
+
+            dict.Should().Contain(getInterfaceType(), getTemplateType());
+        }
+
         private static object constructTemplate(int intValue)
         {
             return getTemplateConstructorInfo().Invoke(new object[] {intValue});
@@ -73,12 +90,17 @@ namespace Weavers.Tests
 
         private static Type getInterfaceType()
         {
-            return testResult.Assembly.GetType($"{Constants.NameSpace}.ITechEffectDummy");
+            return testResult.Assembly.GetType($"{Constants.NameSpace}.{nameof(ITechEffectDummy)}");
         }
 
         private static Type getTemplateType()
         {
             return testResult.Assembly.GetType($"{Constants.NameSpace}.TechEffectDummyTemplate");
+        }
+
+        private static Type getTechEffectLibraryType()
+        {
+            return testResult.Assembly.GetType($"{Constants.NameSpace}.{nameof(TechEffectModifiableLibrary)}");
         }
     }
 }

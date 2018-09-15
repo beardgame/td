@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Mono.Cecil;
 
 namespace Weavers
@@ -11,6 +12,25 @@ namespace Weavers
         internal ReferenceFinder(ModuleDefinition moduleDefinition)
         {
             this.moduleDefinition = moduleDefinition;
+        }
+
+        internal MethodReference GetConstructorReference(Type declaringType)
+        {
+            return GetMethodReference(declaringType, method => method.IsConstructor);
+        }
+
+        internal MethodReference GetConstructorReference(TypeReference typeReference)
+        {
+            return GetMethodReference(typeReference, method => method.IsConstructor);
+        }
+
+        internal MethodReference GetMethodReference<T>(Expression<Action<T>> expression)
+        {
+            if (expression.Body is MethodCallExpression methodCall)
+            {
+                return moduleDefinition.ImportReference(methodCall.Method);
+            }
+            throw new ArgumentException("The expression must be a method call.", nameof(expression));
         }
 
         internal MethodReference GetMethodReference(Type declaringType, Func<MethodDefinition, bool> predicate)
@@ -31,6 +51,8 @@ namespace Weavers
 
             return moduleDefinition.ImportReference(methodDefinition);
         }
+
+        internal TypeReference GetTypeReference<T>() => GetTypeReference(typeof(T));
 
         internal TypeReference GetTypeReference(Type type)
         {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Weapons;
@@ -131,6 +132,8 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
+                foreach (var entry in TechEffectModifiableLibrary.Instance.GetInterfaceToTemplateMap())
+                    serializer.Converters.Add(new TechEffectTemplateConverter(entry.Key, entry.Value));
             }
 
             private void configureSpriteSerializerDependency(
