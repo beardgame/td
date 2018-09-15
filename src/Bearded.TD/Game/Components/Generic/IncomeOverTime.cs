@@ -5,10 +5,10 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("incomeOverTime")]
-    class IncomeOverTime<T> : Component<T, IncomeOverTimeParameters>
+    class IncomeOverTime<T> : Component<T, IIncomeOverTimeParameters>
         where T : IFactioned
     {
-        public IncomeOverTime(IncomeOverTimeParameters parameters) : base(parameters) { }
+        public IncomeOverTime(IIncomeOverTimeParameters parameters) : base(parameters) { }
 
         protected override void Initialise() { }
 

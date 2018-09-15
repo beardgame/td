@@ -7,10 +7,10 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("workerHub")]
-    class WorkerHub<T> : Component<T, WorkerHubParameters>
+    class WorkerHub<T> : Component<T, IWorkerHubParameters>
         where T : GameObject, IFactioned
     {
-        public WorkerHub(WorkerHubParameters parameters) : base(parameters) { }
+        public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
