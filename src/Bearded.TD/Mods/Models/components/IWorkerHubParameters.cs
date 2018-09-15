@@ -4,7 +4,6 @@ namespace Bearded.TD.Mods.Models
 {
     interface IWorkerHubParameters : ITechEffectModifiable
     {
-        [Modifiable]
-        int NumWorkers { get; }
+        [Modifiable] int NumWorkers { get; }
     }
 }

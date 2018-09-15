@@ -5,7 +5,6 @@ namespace Bearded.TD.Mods.Models
 {
     interface ITileVisibilityParameters : ITechEffectModifiable
     {
-        [Modifiable]
-        Unit Range { get; }
+        [Modifiable] Unit Range { get; }
     }
 }

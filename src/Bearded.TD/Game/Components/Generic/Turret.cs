@@ -14,14 +14,14 @@ namespace Bearded.TD.Game.Components.Generic
     }
 
     [Component("turret")]
-    class Turret<T> : Component<T, TurretParameters>, ITurret
+    class Turret<T> : Component<T, ITurretParameters>, ITurret
         where T : BuildingBase<T>
     {
         private Weapon weapon;
 
         public Position2 Position => Owner.Position + Parameters.Offset;
 
-        public Turret(TurretParameters parameters) : base(parameters) { }
+        public Turret(ITurretParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
