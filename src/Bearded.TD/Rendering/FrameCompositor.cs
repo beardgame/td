@@ -33,7 +33,7 @@ namespace Bearded.TD.Rendering
 
             GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
 
-            var argb = Color.DarkSlateGray * 0.5f;
+            var argb = Color.Black;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Disable(EnableCap.DepthTest);

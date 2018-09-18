@@ -157,7 +157,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         private static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
         {
-            var a = (1 - Math.Abs(v.Z * 0.3f)).Clamped(0, 1);
+            var a = (1 - Math.Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
 
             return new LevelVertex(v, n, Vector2.Zero, new Color(c * a, c.A));
         }
