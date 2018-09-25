@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Shared.TechEffects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using Newtonsoft.Json;
 using TypeSystem = Fody.TypeSystem;
 
@@ -122,14 +123,15 @@ namespace Weavers.TechEffects
                 addTemplateProperty(templateType, entry.Key, entry.Value);
             }
 
-            registerJsonConverter(interfaceToImplement, templateType);
+            registerInterfaceImplementation(interfaceToImplement, templateType);
 
             return templateType;
         }
 
-        private void registerJsonConverter(TypeReference interfaceToImplement, TypeDefinition templateType)
+        private void registerInterfaceImplementation(TypeReference interfaceToImplement, TypeReference templateType)
         {
-            var @typeOf = referenceFinder.GetMethodReference<Type>(type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
+            var @typeOf = referenceFinder.GetMethodReference<Type>(
+                type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
 
             var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
@@ -139,27 +141,38 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ldtoken, templateType);
             processor.Emit(OpCodes.Call, @typeOf);
 
-            var addMethodReference = referenceFinder.GetMethodReference<Dictionary<Type, Type>>(dict => dict.Add(null, null));
+            var addMethodReference =
+                referenceFinder.GetMethodReference<Dictionary<Type, Type>>(dict => dict.Add(null, null));
             processor.Emit(OpCodes.Callvirt, addMethodReference);
         }
 
-        private Dictionary<PropertyDefinition, FieldReference> addTemplateConstructor(TypeDefinition type, IReadOnlyCollection<PropertyDefinition> properties)
+        private Dictionary<PropertyDefinition, FieldReference> addTemplateConstructor(
+            TypeDefinition type, IReadOnlyCollection<PropertyDefinition> properties)
         {
+            var nullable = referenceFinder.GetTypeReference(typeof(Nullable<>));
+
             var method = new MethodDefinition(
                 ".ctor",
-                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
+                MethodAttributes.Public | MethodAttributes.SpecialName
+                    | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                 typeSystem.VoidReference);
 
             method.AddCustomAttribute(typeof(JsonConstructorAttribute), referenceFinder);
 
-            var propertyFields = new List<FieldDefinition>();
+            var propertyFields = new List<(FieldDefinition, List<Action<ILProcessor>>)>();
             var fieldsByProperty = new Dictionary<PropertyDefinition, FieldReference>();
 
             foreach (var property in properties)
             {
+                property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute);
+                var attributeParameters = modifiableAttribute.Constructor.Resolve().Parameters;
+
+                var parameterType = attributeParameters.Count == 0
+                    ? property.PropertyType
+                    : nullable.MakeGenericInstanceType(property.PropertyType);
                 method.Parameters.Add(
                     new ParameterDefinition(
-                        property.Name.ToCamelCase(), ParameterAttributes.None, property.PropertyType));
+                        property.Name.ToCamelCase(), ParameterAttributes.None, parameterType));
 
                 var fieldDef = new FieldDefinition(
                     property.Name.ToCamelCase(),
@@ -167,7 +180,38 @@ namespace Weavers.TechEffects
                     property.PropertyType);
 
                 type.Fields.Add(fieldDef);
-                propertyFields.Add(fieldDef);
+
+                var processorCommands = new List<Action<ILProcessor>>();
+                if (attributeParameters.Count > 0)
+                {
+                    var defaultValue = (CustomAttributeArgument) modifiableAttribute.ConstructorArguments[0].Value;
+
+                    processorCommands.Add(p => ILHelpers.EmitLd(p, defaultValue.Type, defaultValue.Value));
+
+                    if (!property.PropertyType.IsPrimitive)
+                    {
+                        var expectedConstructorParamType = (Type) modifiableAttribute.Properties
+                            .FirstOrDefault(p => p.Name == nameof(ModifiableAttribute.DefaultValueType))
+                            .Argument
+                            .Value;
+                        var resolvedType = moduleDefinition.ImportReference(property.PropertyType);
+                        var wrapperConstructor = resolvedType.Resolve().GetConstructors().FirstOrDefault(c =>
+                            c.Parameters.Count == 1 &&
+                            (expectedConstructorParamType == null ||
+                                c.Parameters[0].ParameterType.FullName == expectedConstructorParamType.FullName));
+                        processorCommands.Add(p =>
+                            p.Emit(OpCodes.Newobj, moduleDefinition.ImportReference(wrapperConstructor)));
+                    }
+
+                    var getOrDefault = referenceFinder.GetMethodReference(
+                            nullable,
+                            methodDef => methodDef.Name == nameof(Nullable<int>.GetValueOrDefault) &&
+                                methodDef.HasParameters)
+                        .MakeHostInstanceGeneric(property.PropertyType);
+                    processorCommands.Add(p => p.Emit(OpCodes.Call, getOrDefault));
+                }
+
+                propertyFields.Add((fieldDef, processorCommands));
                 fieldsByProperty.Add(property, fieldDef);
             }
 
@@ -179,8 +223,19 @@ namespace Weavers.TechEffects
             for (var i = 0; i < properties.Count; i++)
             {
                 processor.Emit(OpCodes.Ldarg_0);
-                processor.Emit(OpCodes.Ldarg, i + 1);
-                processor.Emit(OpCodes.Stfld, propertyFields[i]);
+
+                if (propertyFields[i].Item2.Count > 0)
+                {
+                    processor.Emit(OpCodes.Ldarga, i + 1);
+                    foreach (var cmd in propertyFields[i].Item2)
+                        cmd(processor);
+                }
+                else
+                {
+                    processor.Emit(OpCodes.Ldarg, i + 1);
+                }
+
+                processor.Emit(OpCodes.Stfld, propertyFields[i].Item1);
             }
 
             processor.Emit(OpCodes.Ret);
@@ -189,7 +244,8 @@ namespace Weavers.TechEffects
             return fieldsByProperty;
         }
 
-        private void addTemplateProperty(TypeDefinition type, PropertyDefinition propertyBase, FieldReference fieldReference)
+        private void addTemplateProperty(
+            TypeDefinition type, PropertyDefinition propertyBase, FieldReference fieldReference)
         {
             var getMethodBase = moduleDefinition.ImportReference(propertyBase.GetMethod).Resolve();
 

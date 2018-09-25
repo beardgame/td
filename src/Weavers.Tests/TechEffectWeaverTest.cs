@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using Fody;
@@ -47,21 +46,61 @@ namespace Weavers.Tests
         }
 
         [Fact]
-        public void MakesTemplateTypeRememberValues()
+        public void MakesTemplateTypeRememberSimpleValues()
         {
-            var template = constructTemplate(42);
+            var template = constructTemplate(42, null, null);
 
-            template.GetPropertyValue<int>("IntProperty").Should().Be(42);
+            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntProperty)).Should().Be(42);
         }
 
         [Fact]
-        public void MakesTemplateTypeJsonDeserializable()
+        public void MakesTemplateTypeRememberValuesWithDefaultValues()
+        {
+            var template = constructTemplate(0, (int?) 37, null);
+
+            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(37);
+        }
+
+        [Fact]
+        public void MakesTemplateTypeRememberWrappedValues()
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            var template = constructTemplate(0, null, getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 }));
+
+            template
+                .GetPropertyValue<object>(nameof(ITechEffectDummy.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val))
+                .Should().Be(18);
+        }
+
+        [Fact]
+        public void JsonDeserializesSimpleTypes()
         {
             const string json = "{ \"intProperty\" : 42 }";
 
             var template = JsonConvert.DeserializeObject(json, getTemplateType());
 
-            template.GetPropertyValue<int>("IntProperty").Should().Be(42);
+            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntProperty)).Should().Be(42);
+        }
+
+        [Fact]
+        public void JsonDeserializesDefaultsForSimpleTypes()
+        {
+            const string json = "{ \"intProperty\" : 0 }";
+
+            var template = JsonConvert.DeserializeObject(json, getTemplateType());
+
+            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(10);
+        }
+
+        [Fact]
+        public void JsonDeserializesSimpleTypesWithDefault()
+        {
+            const string json = "{ \"intProperty\" : 0, \"intPropertyWithDefault\" : 37 }";
+
+            var template = JsonConvert.DeserializeObject(json, getTemplateType());
+
+            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(37);
         }
 
         [Fact]
@@ -71,6 +110,7 @@ namespace Weavers.Tests
                 nameof(TechEffectModifiableLibrary.Instance),
                 BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy,
                 null, null, null);
+            // ReSharper disable once PossibleNullReferenceException
             var dict = getTechEffectLibraryType()
                 .GetMethod(nameof(TechEffectModifiableLibrary.GetInterfaceToTemplateMap))
                 .Invoke(libraryInstance, null) as IDictionary<Type, Type>;
@@ -78,29 +118,25 @@ namespace Weavers.Tests
             dict.Should().Contain(getInterfaceType(), getTemplateType());
         }
 
-        private static object constructTemplate(int intValue)
+        private static object constructTemplate(params object[] constructorParams)
         {
-            return getTemplateConstructorInfo().Invoke(new object[] {intValue});
+            return getTemplateConstructorInfo().Invoke(constructorParams);
         }
 
         private static ConstructorInfo getTemplateConstructorInfo()
         {
-            return getTemplateType().GetConstructor(new[] {typeof(int)});
+            var cs = getTemplateType().GetConstructors();
+            return cs.Length == 1 ? cs[0] : null;
         }
 
-        private static Type getInterfaceType()
-        {
-            return testResult.Assembly.GetType($"{Constants.NameSpace}.{nameof(ITechEffectDummy)}");
-        }
+        private static Type getInterfaceType() => getAssemblyType(nameof(ITechEffectDummy));
+        private static Type getTemplateType() => getAssemblyType("TechEffectDummyTemplate");
+        private static Type getTechEffectLibraryType() => getAssemblyType(nameof(TechEffectModifiableLibrary));
+        private static Type getWrappedIntType() => getAssemblyType(nameof(WrappedInt));
 
-        private static Type getTemplateType()
+        private static Type getAssemblyType(string name)
         {
-            return testResult.Assembly.GetType($"{Constants.NameSpace}.TechEffectDummyTemplate");
-        }
-
-        private static Type getTechEffectLibraryType()
-        {
-            return testResult.Assembly.GetType($"{Constants.NameSpace}.{nameof(TechEffectModifiableLibrary)}");
+            return testResult.Assembly.GetType($"{Constants.NameSpace}.{name}");
         }
     }
 }
