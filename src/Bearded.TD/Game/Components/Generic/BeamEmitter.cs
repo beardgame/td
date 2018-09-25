@@ -12,12 +12,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("beamEmitter")]
-    sealed class BeamEmitter : WeaponCycleHandler<BeamEmitterParameters>
+    sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>
     {
         private bool drawBeam;
         private Position2 endPoint;
 
-        public BeamEmitter(BeamEmitterParameters parameters)
+        public BeamEmitter(IBeamEmitterParameters parameters)
             : base(parameters)
         {
         }

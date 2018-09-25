@@ -6,12 +6,12 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("projectileEmitter")]
-    sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitterParameters>
+    sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters>
     {
         private Instant nextPossibleShootTime;
         private bool wasShootingLastFrame;
 
-        public ProjectileEmitter(ProjectileEmitterParameters parameters)
+        public ProjectileEmitter(IProjectileEmitterParameters parameters)
             : base(parameters)
         {
         }

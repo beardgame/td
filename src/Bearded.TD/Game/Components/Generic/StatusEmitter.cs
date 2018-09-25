@@ -16,7 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("statusEmitter")]
-    sealed class StatusEmitter<T> : Component<T, StatusEmitterParameters>
+    sealed class StatusEmitter<T> : Component<T, IStatusEmitterParameters>
         where T : GameObject, IPositionable, ISelectable
     {
         private readonly HashSet<EnemyUnit> affectedUnits = new HashSet<EnemyUnit>();
@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Components.Generic
         private Instant nextUnitsInRangeRecalculationTime;
         private List<Tile<TileInfo>> tilesInRange;
 
-        public StatusEmitter(StatusEmitterParameters parameters) : base(parameters)
+        public StatusEmitter(IStatusEmitterParameters parameters) : base(parameters)
         {
             statusEffect = UnitStatusEffects.Slow;
         }
