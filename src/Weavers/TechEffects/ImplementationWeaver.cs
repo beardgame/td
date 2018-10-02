@@ -18,8 +18,8 @@ namespace Weavers.TechEffects
         private readonly ILogger logger;
         private readonly ReferenceFinder referenceFinder;
 
-        private readonly TypeReference techEffectInterface;
-        private readonly MethodDefinition techEffectTypeDictionaryMethod;
+        private readonly TypeReference parametersTemplateInterface;
+        private readonly MethodDefinition parametersTemplateDictionaryMethod;
 
         internal ImplementationWeaver(
             ModuleDefinition moduleDefinition,
@@ -32,14 +32,14 @@ namespace Weavers.TechEffects
             this.logger = logger;
             this.referenceFinder = referenceFinder;
 
-            techEffectInterface = this.referenceFinder.GetTypeReference(Constants.Interface);
+            parametersTemplateInterface = this.referenceFinder.GetTypeReference(Constants.Interface);
 
             var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(ParametersTemplateLibrary<>));
             var techEffectLibrary =
                 this.moduleDefinition.Types.FirstOrDefault(type =>
                     type?.BaseType != null
                         && type.BaseType.FullName.StartsWith(techEffectLibraryBase.FullName));
-            techEffectTypeDictionaryMethod = referenceFinder
+            parametersTemplateDictionaryMethod = referenceFinder
                 .GetMethodReference(techEffectLibrary, method => method.Name == "GetInterfaceToTemplateMap").Resolve();
         }
 
@@ -70,11 +70,11 @@ namespace Weavers.TechEffects
                 .GetConstructorReference(typeof(Dictionary<Type, Type>))
                 .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
 
-            techEffectTypeDictionaryMethod.Body =
-                new MethodBody(techEffectTypeDictionaryMethod) {InitLocals = true};
-            techEffectTypeDictionaryMethod.Body.Variables.Add(new VariableDefinition(dictConstructor.DeclaringType));
+            parametersTemplateDictionaryMethod.Body =
+                new MethodBody(parametersTemplateDictionaryMethod) {InitLocals = true};
+            parametersTemplateDictionaryMethod.Body.Variables.Add(new VariableDefinition(dictConstructor.DeclaringType));
 
-            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Newobj, dictConstructor);
             processor.Emit(OpCodes.Stloc_0);
         }
@@ -86,7 +86,7 @@ namespace Weavers.TechEffects
                 .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>))
                 .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
 
-            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
             processor.Emit(OpCodes.Newobj, readOnlyDictConstructor);
             processor.Emit(OpCodes.Ret);
@@ -112,9 +112,11 @@ namespace Weavers.TechEffects
                 Constants.GetTemplateClassNameForInterface(interfaceToImplement.Name),
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
                 typeSystem.ObjectReference);
+
+            var genericTechEffectInterface = parametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);
             
             templateType.AddInterfaceImplementation(interfaceToImplement);
-            templateType.AddInterfaceImplementation(techEffectInterface);
+            templateType.AddInterfaceImplementation(genericTechEffectInterface);
             
             var fieldsByProperty = addTemplateConstructor(templateType, properties);
 
@@ -133,7 +135,7 @@ namespace Weavers.TechEffects
             var @typeOf = referenceFinder.GetMethodReference<Type>(
                 type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
 
-            var processor = techEffectTypeDictionaryMethod.Body.GetILProcessor();
+            var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
 
             processor.Emit(OpCodes.Ldtoken, interfaceToImplement);

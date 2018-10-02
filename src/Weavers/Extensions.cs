@@ -34,7 +34,7 @@ namespace Weavers
         {
             return type.HasInterfaces
                 && type.Interfaces.Any(interfaceImplementation =>
-                    interfaceImplementation.InterfaceType.FullName == interfaceType.FullName);
+                    interfaceImplementation.InterfaceType.FullName.StartsWith(interfaceType.FullName));
         }
 
         public static bool TryGetCustomAttribute(this PropertyDefinition property, Type attributeType, out CustomAttribute attribute)

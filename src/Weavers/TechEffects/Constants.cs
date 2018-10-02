@@ -5,7 +5,7 @@ namespace Weavers.TechEffects
 {
     static class Constants
     {
-        internal static readonly Type Interface = typeof(IParametersTemplate);
+        internal static readonly Type Interface = typeof(IParametersTemplate<>);
         internal static readonly Type ModifiableAttribute = typeof(ModifiableAttribute);
 
         internal static string GetTemplateClassNameForInterface(string interfaceName)

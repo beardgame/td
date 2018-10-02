@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Weavers.Tests.AssemblyToProcess
 {
-    public interface IDummyParametersTemplate : IParametersTemplate
+    public interface IDummyParametersTemplate : IParametersTemplate<IDummyParametersTemplate>
     {
         [Modifiable]
         int IntProperty { get; }
