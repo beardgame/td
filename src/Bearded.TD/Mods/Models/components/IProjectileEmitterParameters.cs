@@ -8,7 +8,7 @@ namespace Bearded.TD.Mods.Models
         [Modifiable]
         ProjectileBlueprint Projectile { get; }
 
-        [Modifiable(.15)]
+        [Modifiable(.15, Type = ModificationType.Cooldown)]
         TimeSpan ShootInterval { get; }
 
         [Modifiable(10.0)]
