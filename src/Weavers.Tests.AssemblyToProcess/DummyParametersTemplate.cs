@@ -28,6 +28,16 @@ namespace Weavers.Tests.AssemblyToProcess
             IntPropertyWithDefault = intPropertyWithDefault.GetValueOrDefault(10);
             WrappedIntProperty = wrappedInt.GetValueOrDefault(new WrappedInt(10));
         }
+
+        public IDummyParametersTemplate CreateModifiableInstance()
+        {
+            return null;
+        }
+
+        public void ModifyAttribute(ModificationType type)
+        {
+            throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
+        }
     }
 
     public struct WrappedInt

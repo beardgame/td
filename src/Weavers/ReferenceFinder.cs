@@ -38,6 +38,9 @@ namespace Weavers
             return GetMethodReference(GetTypeReference(declaringType), predicate);
         }
 
+        internal MethodReference GetMethodReference(TypeReference typeReference, string name)
+            => GetMethodReference(typeReference, method => method.Name == name);
+
         internal MethodReference GetMethodReference(TypeReference typeReference, Func<MethodDefinition, bool> predicate)
         {
             var typeDefinition = typeReference.Resolve();

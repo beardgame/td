@@ -1,4 +1,8 @@
 ﻿namespace Bearded.TD.Shared.TechEffects
 {
-    public interface IParametersTemplate<T> where T : IParametersTemplate<T> {}
+    public interface IParametersTemplate<out T> where T : IParametersTemplate<T>
+    {
+        T CreateModifiableInstance();
+        void ModifyAttribute(ModificationType type);
+    }
 }

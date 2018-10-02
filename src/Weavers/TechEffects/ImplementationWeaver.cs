@@ -113,10 +113,10 @@ namespace Weavers.TechEffects
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
                 typeSystem.ObjectReference);
 
-            var genericTechEffectInterface = parametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);
+            var genericParameterInterface = parametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);
             
             templateType.AddInterfaceImplementation(interfaceToImplement);
-            templateType.AddInterfaceImplementation(genericTechEffectInterface);
+            templateType.AddInterfaceImplementation(genericParameterInterface);
             
             var fieldsByProperty = addTemplateConstructor(templateType, properties);
 
@@ -125,27 +125,12 @@ namespace Weavers.TechEffects
                 addTemplateProperty(templateType, entry.Key, entry.Value);
             }
 
+            addTemplateModifiableCreationMethod(templateType, genericParameterInterface);
+            addTemplateModifyMethod(templateType, genericParameterInterface);
+
             registerInterfaceImplementation(interfaceToImplement, templateType);
 
             return templateType;
-        }
-
-        private void registerInterfaceImplementation(TypeReference interfaceToImplement, TypeReference templateType)
-        {
-            var @typeOf = referenceFinder.GetMethodReference<Type>(
-                type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
-
-            var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
-            processor.Emit(OpCodes.Ldloc_0);
-
-            processor.Emit(OpCodes.Ldtoken, interfaceToImplement);
-            processor.Emit(OpCodes.Call, @typeOf);
-            processor.Emit(OpCodes.Ldtoken, templateType);
-            processor.Emit(OpCodes.Call, @typeOf);
-
-            var addMethodReference =
-                referenceFinder.GetMethodReference<Dictionary<Type, Type>>(dict => dict.Add(null, null));
-            processor.Emit(OpCodes.Callvirt, addMethodReference);
         }
 
         private Dictionary<PropertyDefinition, FieldReference> addTemplateConstructor(
@@ -271,6 +256,74 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
+        }
+
+        private void addTemplateModifiableCreationMethod(TypeDefinition type, GenericInstanceType genericParameterInterface)
+        {
+            var methodBase =
+                referenceFinder
+                    .GetMethodReference(genericParameterInterface, Constants.CreateModifiableInstanceMethod);
+            methodBase.ReturnType = genericParameterInterface.GenericArguments[0];
+            var method = createMethodDefinitionFromInterfaceMethod(methodBase);
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldnull);
+            processor.Emit(OpCodes.Ret);
+
+            type.Methods.Add(method);
+        }
+
+        private void addTemplateModifyMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        {
+            var exceptionCtor = referenceFinder.GetConstructorReference(typeof(InvalidOperationException));
+
+            var methodBase =
+                referenceFinder.GetMethodReference(genericParameterInterface, Constants.ModifyAttributeMethod);
+            var method = createMethodDefinitionFromInterfaceMethod(methodBase);
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldstr, "Cannot modify attributes on immutable template.");
+            processor.Emit(OpCodes.Newobj, exceptionCtor);
+            processor.Emit(OpCodes.Throw);
+
+            type.Methods.Add(method);
+        }
+
+        private MethodDefinition createMethodDefinitionFromInterfaceMethod(MethodReference methodBase)
+        {
+            var method = new MethodDefinition(
+                methodBase.Name,
+                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
+                | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+                methodBase.ReturnType);
+
+            foreach (var methodBaseParameter in methodBase.Parameters)
+            {
+                method.Parameters.Add(
+                    new ParameterDefinition(
+                        methodBaseParameter.Name, methodBaseParameter.Attributes, methodBaseParameter.ParameterType));
+            }
+
+            method.Body = new MethodBody(method);
+            return method;
+        }
+
+        private void registerInterfaceImplementation(TypeReference interfaceToImplement, TypeReference templateType)
+        {
+            var @typeOf = referenceFinder.GetMethodReference<Type>(
+                type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
+
+            var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldloc_0);
+
+            processor.Emit(OpCodes.Ldtoken, interfaceToImplement);
+            processor.Emit(OpCodes.Call, @typeOf);
+            processor.Emit(OpCodes.Ldtoken, templateType);
+            processor.Emit(OpCodes.Call, @typeOf);
+
+            var addMethodReference =
+                referenceFinder.GetMethodReference<Dictionary<Type, Type>>(dict => dict.Add(null, null));
+            processor.Emit(OpCodes.Callvirt, addMethodReference);
         }
     }
 }
