@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    interface IProjectileEmitterParameters : IParametersTemplate
+    interface IProjectileEmitterParameters : IParametersTemplate<IProjectileEmitterParameters>
     {
         [Modifiable]
         ProjectileBlueprint Projectile { get; }

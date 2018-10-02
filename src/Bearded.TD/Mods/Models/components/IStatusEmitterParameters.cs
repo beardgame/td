@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    interface IStatusEmitterParameters : IParametersTemplate
+    interface IStatusEmitterParameters : IParametersTemplate<IStatusEmitterParameters>
     {
         [Modifiable(5f)]
         Unit Range { get; }

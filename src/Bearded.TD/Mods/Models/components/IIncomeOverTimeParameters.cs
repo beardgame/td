@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Mods.Models
 {
-    interface IIncomeOverTimeParameters : IParametersTemplate
+    interface IIncomeOverTimeParameters : IParametersTemplate<IIncomeOverTimeParameters>
     {
         [Modifiable] float IncomePerSecond { get; }
     }
