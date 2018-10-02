@@ -34,7 +34,7 @@ namespace Weavers.TechEffects
 
             techEffectInterface = this.referenceFinder.GetTypeReference(Constants.Interface);
 
-            var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(TechEffectModifiableLibrary<>));
+            var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(ParametersTemplateLibrary<>));
             var techEffectLibrary =
                 this.moduleDefinition.Types.FirstOrDefault(type =>
                     type?.BaseType != null

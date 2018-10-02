@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Bearded.TD.Shared.TechEffects
 {
-    public interface ITechEffectModifiableLibrary
+    public interface IParametersTemplateLibrary
     {
         IDictionary<Type, Type> GetInterfaceToTemplateMap();
     }
 
-    public class TechEffectModifiableLibrary<T> : ITechEffectModifiableLibrary
-        where T : TechEffectModifiableLibrary<T>, new()
+    public class ParametersTemplateLibrary<T> : IParametersTemplateLibrary
+        where T : ParametersTemplateLibrary<T>, new()
     {
         public static T Instance { get; } = new T();
 

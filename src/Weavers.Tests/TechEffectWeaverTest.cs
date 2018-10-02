@@ -50,7 +50,7 @@ namespace Weavers.Tests
         {
             var template = constructTemplate(42, null, null);
 
-            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntProperty)).Should().Be(42);
+            template.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Weavers.Tests
         {
             var template = constructTemplate(0, (int?) 37, null);
 
-            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(37);
+            template.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(37);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace Weavers.Tests
             var template = constructTemplate(0, null, getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 }));
 
             template
-                .GetPropertyValue<object>(nameof(ITechEffectDummy.WrappedIntProperty))
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
                 .GetPropertyValue<int>(nameof(WrappedInt.Val))
                 .Should().Be(18);
         }
@@ -80,7 +80,7 @@ namespace Weavers.Tests
 
             var template = JsonConvert.DeserializeObject(json, getTemplateType());
 
-            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntProperty)).Should().Be(42);
+            template.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace Weavers.Tests
 
             var template = JsonConvert.DeserializeObject(json, getTemplateType());
 
-            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(10);
+            template.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
 
         [Fact]
@@ -100,19 +100,19 @@ namespace Weavers.Tests
 
             var template = JsonConvert.DeserializeObject(json, getTemplateType());
 
-            template.GetPropertyValue<int>(nameof(ITechEffectDummy.IntPropertyWithDefault)).Should().Be(37);
+            template.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(37);
         }
 
         [Fact]
         public void RegistersTemplateType()
         {
             var libraryInstance = getTechEffectLibraryType()?.InvokeMember(
-                nameof(TechEffectModifiableLibrary.Instance),
+                nameof(ParametersTemplateLibrary.Instance),
                 BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy,
                 null, null, null);
             // ReSharper disable once PossibleNullReferenceException
             var dict = getTechEffectLibraryType()
-                .GetMethod(nameof(TechEffectModifiableLibrary.GetInterfaceToTemplateMap))
+                .GetMethod(nameof(ParametersTemplateLibrary.GetInterfaceToTemplateMap))
                 .Invoke(libraryInstance, null) as IDictionary<Type, Type>;
 
             dict.Should().Contain(getInterfaceType(), getTemplateType());
@@ -129,9 +129,9 @@ namespace Weavers.Tests
             return cs.Length == 1 ? cs[0] : null;
         }
 
-        private static Type getInterfaceType() => getAssemblyType(nameof(ITechEffectDummy));
-        private static Type getTemplateType() => getAssemblyType("TechEffectDummyTemplate");
-        private static Type getTechEffectLibraryType() => getAssemblyType(nameof(TechEffectModifiableLibrary));
+        private static Type getInterfaceType() => getAssemblyType(nameof(IDummyParametersTemplate));
+        private static Type getTemplateType() => getAssemblyType("DummyParametersTemplate");
+        private static Type getTechEffectLibraryType() => getAssemblyType(nameof(ParametersTemplateLibrary));
         private static Type getWrappedIntType() => getAssemblyType(nameof(WrappedInt));
 
         private static Type getAssemblyType(string name)

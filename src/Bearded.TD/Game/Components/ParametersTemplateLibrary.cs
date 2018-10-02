@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Bearded.TD.Shared.TechEffects;
 
-namespace Weavers.Tests.AssemblyToProcess
+namespace Bearded.TD.Game.Components
 {
-    public sealed class TechEffectModifiableLibrary : TechEffectModifiableLibrary<TechEffectModifiableLibrary>
+    sealed class ParametersTemplateLibrary : ParametersTemplateLibrary<ParametersTemplateLibrary>
     {
         public override IDictionary<Type, Type> GetInterfaceToTemplateMap() => throw new InvalidOperationException();
     }

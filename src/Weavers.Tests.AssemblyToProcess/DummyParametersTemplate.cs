@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Weavers.Tests.AssemblyToProcess
 {
-    public interface ITechEffectDummy : ITechEffectModifiable
+    public interface IDummyParametersTemplate : IParametersTemplate
     {
         [Modifiable]
         int IntProperty { get; }
@@ -15,14 +15,14 @@ namespace Weavers.Tests.AssemblyToProcess
         WrappedInt WrappedIntProperty { get; }
     }
 
-    public sealed class TechEffectReference : ITechEffectDummy
+    public sealed class DummyParametersReference : IDummyParametersTemplate
     {
         public int IntProperty { get; }
         public int IntPropertyWithDefault { get; }
         public WrappedInt WrappedIntProperty { get; }
 
         [JsonConstructor]
-        public TechEffectReference(int intProperty, int? intPropertyWithDefault, WrappedInt? wrappedInt)
+        public DummyParametersReference(int intProperty, int? intPropertyWithDefault, WrappedInt? wrappedInt)
         {
             IntProperty = intProperty;
             IntPropertyWithDefault = intPropertyWithDefault.GetValueOrDefault(10);

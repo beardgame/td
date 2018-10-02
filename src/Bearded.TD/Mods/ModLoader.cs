@@ -132,7 +132,7 @@ namespace Bearded.TD.Mods
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
-                foreach (var entry in TechEffectModifiableLibrary.Instance.GetInterfaceToTemplateMap())
+                foreach (var entry in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
                     serializer.Converters.Add(new TechEffectTemplateConverter(entry.Key, entry.Value));
             }
 

@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    interface IBeamEmitterParameters : ITechEffectModifiable
+    interface IBeamEmitterParameters : IParametersTemplate
     {
         [Modifiable(10, Type = ModificationType.DamagePerUnit)]
         int DamagePerSecond { get; }

@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    interface ITurretParameters : ITechEffectModifiable
+    interface ITurretParameters : IParametersTemplate
     {
         [Modifiable] IWeaponBlueprint Weapon { get; }
         [Modifiable] Difference2 Offset { get; }

@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Mods.Models
 {
-    interface ITileVisibilityParameters : ITechEffectModifiable
+    interface ITileVisibilityParameters : IParametersTemplate
     {
         [Modifiable] Unit Range { get; }
     }

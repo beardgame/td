@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Mods.Models
 {
-    interface IWorkerHubParameters : ITechEffectModifiable
+    interface IWorkerHubParameters : IParametersTemplate
     {
         [Modifiable(Type = ModificationType.DroneCount)] int NumWorkers { get; }
     }
