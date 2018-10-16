@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.Shared.TechEffects
 {
-    public enum ModificationType : byte
+    public enum AttributeType : byte
     {
         None = 0,
 

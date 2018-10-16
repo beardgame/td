@@ -5,7 +5,7 @@ namespace Bearded.TD.Shared.TechEffects
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class ModifiableAttribute : Attribute
     {
-        public ModificationType Type { get; set; } = ModificationType.None;
+        public AttributeType Type { get; set; } = AttributeType.None;
         public object DefaultValue { get; }
         public Type DefaultValueType { get; set; }
 

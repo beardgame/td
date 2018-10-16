@@ -34,7 +34,7 @@ namespace Weavers.Tests.AssemblyToProcess
             return null;
         }
 
-        public void ModifyAttribute(ModificationType type)
+        public void ModifyAttribute(AttributeType type)
         {
             throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
         }
