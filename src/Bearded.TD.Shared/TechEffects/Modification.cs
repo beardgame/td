@@ -1,6 +1,6 @@
 ﻿namespace Bearded.TD.Shared.TechEffects
 {
-    struct Modification
+    public struct Modification
     {
         public enum ModificationType : byte
         {

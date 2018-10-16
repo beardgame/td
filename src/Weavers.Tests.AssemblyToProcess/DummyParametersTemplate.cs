@@ -8,10 +8,10 @@ namespace Weavers.Tests.AssemblyToProcess
         [Modifiable]
         int IntProperty { get; }
         
-        [Modifiable(10)]
+        [Modifiable(10, Type = AttributeType.DamagePerUnit)]
         int IntPropertyWithDefault { get; }
         
-        [Modifiable(10)]
+        [Modifiable(10, Type = AttributeType.Cooldown)]
         WrappedInt WrappedIntProperty { get; }
     }
 
@@ -29,15 +29,41 @@ namespace Weavers.Tests.AssemblyToProcess
             WrappedIntProperty = wrappedInt.GetValueOrDefault(new WrappedInt(10));
         }
 
-        public IDummyParametersTemplate CreateModifiableInstance()
-        {
-            return null;
-        }
+        public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(this);
 
         public void ModifyAttribute(AttributeType type)
         {
             throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
         }
+    }
+
+    public sealed class DummyParametersModifiableReference : IDummyParametersTemplate
+    {
+        private readonly IDummyParametersTemplate template;
+
+        private readonly AttributeWithModifications<int> intProperty;
+        private readonly AttributeWithModifications<int> intPropertyWithDefault;
+        private readonly AttributeWithModifications<WrappedInt> wrappedIntProperty;
+
+        public int IntProperty => intProperty.Value;
+        public int IntPropertyWithDefault => intPropertyWithDefault.Value;
+        public WrappedInt WrappedIntProperty => wrappedIntProperty.Value;
+
+        public DummyParametersModifiableReference(IDummyParametersTemplate template)
+        {
+            this.template = template;
+            intProperty = new AttributeWithModifications<int>(template.IntProperty, i => (int) i);
+            intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
+            wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
+        }
+
+        public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
+
+        public void ModifyAttribute(AttributeType type)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 
     public struct WrappedInt
