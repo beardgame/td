@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Bearded.TD.Shared.TechEffects
 {
-    public sealed class AttributeWithModifications<T>
+    public sealed class AttributeWithModifications<T> : IAttributeWithModifications
     {
         private readonly double baseValue;
         private readonly Func<double, T> valueTransformer;

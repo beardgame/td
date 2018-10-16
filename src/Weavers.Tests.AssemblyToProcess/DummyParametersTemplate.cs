@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Shared.TechEffects;
+﻿using System.Collections.Immutable;
+using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
 
 namespace Weavers.Tests.AssemblyToProcess
@@ -49,21 +50,33 @@ namespace Weavers.Tests.AssemblyToProcess
         public int IntPropertyWithDefault => intPropertyWithDefault.Value;
         public WrappedInt WrappedIntProperty => wrappedIntProperty.Value;
 
+        private readonly ImmutableDictionary<AttributeType, ImmutableList<IAttributeWithModifications>> attributesByType;
+
         public DummyParametersModifiableReference(IDummyParametersTemplate template)
         {
             this.template = template;
             intProperty = new AttributeWithModifications<int>(template.IntProperty, i => (int) i);
             intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
             wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
+
+            var dictBuilder = ImmutableDictionary
+                .CreateBuilder<AttributeType, ImmutableList<IAttributeWithModifications>>();
+            dictBuilder.Add(AttributeType.DamagePerUnit, ImmutableList.Create<IAttributeWithModifications>(intPropertyWithDefault));
+            dictBuilder.Add(AttributeType.Cooldown, ImmutableList.Create<IAttributeWithModifications>(wrappedIntProperty));
+            attributesByType = dictBuilder.ToImmutable();
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
 
         public void ModifyAttribute(AttributeType type, Modification modification)
         {
-            throw new System.NotImplementedException();
-        }
+            if (!attributesByType.TryGetValue(type, out var list)) return;
 
+            foreach (var attribute in list)
+            {
+                attribute.AddModification(modification);
+            }
+        }
     }
 
     public struct WrappedInt
