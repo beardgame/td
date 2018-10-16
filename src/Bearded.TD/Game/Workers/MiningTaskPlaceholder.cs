@@ -5,7 +5,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Resources
+namespace Bearded.TD.Game.Workers
 {
     class MiningTaskPlaceholder : GameObject
     {

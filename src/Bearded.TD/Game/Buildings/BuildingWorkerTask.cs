@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;

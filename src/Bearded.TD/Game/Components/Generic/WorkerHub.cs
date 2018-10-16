@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.Workers;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;

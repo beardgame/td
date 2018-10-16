@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.Workers;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 

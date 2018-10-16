@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using amulware.Graphics;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -9,7 +8,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Resources
+namespace Bearded.TD.Game.Workers
 {
     class Worker : GameObject, ITileWalkerOwner
     {

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Resources
+namespace Bearded.TD.Game.Workers
 {
     abstract class WorkerTask
     {

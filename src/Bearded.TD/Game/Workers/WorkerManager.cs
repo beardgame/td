@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Bearded.TD.Game.Resources
+namespace Bearded.TD.Game.Workers
 {
     sealed class WorkerManager
     {

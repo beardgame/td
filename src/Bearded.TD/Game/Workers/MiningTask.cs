@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Constants.Game.Worker;
 
-namespace Bearded.TD.Game.Resources
+namespace Bearded.TD.Game.Workers
 {
     class MiningTask : WorkerTask
     {
         public override IEnumerable<Tile<TileInfo>> Tiles => tile.Yield();
-        public override bool Finished => miningProgress >= TotalMiningProgressRequired;
+        public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
         private readonly Level level;
         private readonly Tile<TileInfo> tile;
@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Resources
             else
             {
                 tile.Info.SetDrawInfo(
-                    new TileDrawInfo(originalTileHeight * (float)(1 - miningProgress / TotalMiningProgressRequired),
+                    new TileDrawInfo(originalTileHeight * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
                     tile.Info.DrawInfo.HexScale));
             }
         }
