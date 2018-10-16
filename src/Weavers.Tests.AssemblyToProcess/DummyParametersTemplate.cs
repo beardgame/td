@@ -31,7 +31,7 @@ namespace Weavers.Tests.AssemblyToProcess
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(this);
 
-        public void ModifyAttribute(AttributeType type)
+        public void ModifyAttribute(AttributeType type, Modification modification)
         {
             throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
         }
@@ -59,7 +59,7 @@ namespace Weavers.Tests.AssemblyToProcess
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
 
-        public void ModifyAttribute(AttributeType type)
+        public void ModifyAttribute(AttributeType type, Modification modification)
         {
             throw new System.NotImplementedException();
         }
