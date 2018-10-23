@@ -78,6 +78,9 @@ namespace Bearded.TD.Game.World
             {
                 var info = tile.Info;
 
+                //var x = ((tile.X + 8*5) / 8 % 2) == ((tile.Y + 8*5) / 8 % 2);
+                //if (x) continue;
+
                 geo.DrawTile(
                     GetPosition(tile).NumericValue,
                     info,

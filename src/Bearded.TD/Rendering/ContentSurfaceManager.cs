@@ -32,6 +32,7 @@ namespace Bearded.TD.Rendering
 
             fillDictionaryForMissingGroups();
         }
+
         private Surface surfaceFromSpriteSet(SpriteSet spriteSet)
         {
             var someSpriteOrNull = spriteSet.Sprites.All.FirstOrDefault();
