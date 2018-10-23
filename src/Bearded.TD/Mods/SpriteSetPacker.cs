@@ -15,7 +15,6 @@ namespace Bearded.TD.Mods
             var bitmaps = files.Select(file => (new Bitmap(file.file.OpenRead()), file.name));
 
             return modLoadingContext.GraphicsLoader.CreateSpriteSet(bitmaps);
-
         }
 
         private static IEnumerable<(string name, FileInfo file)> annotatedPngFilesInRecursive(
