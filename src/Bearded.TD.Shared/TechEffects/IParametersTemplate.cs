@@ -3,6 +3,6 @@
     public interface IParametersTemplate<out T> where T : IParametersTemplate<T>
     {
         T CreateModifiableInstance();
-        void ModifyAttribute(AttributeType type, Modification modification);
+        bool ModifyAttribute(AttributeType type, Modification modification);
     }
 }
