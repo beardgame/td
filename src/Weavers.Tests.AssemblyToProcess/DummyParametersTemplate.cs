@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
 
@@ -38,7 +38,7 @@ namespace Weavers.Tests.AssemblyToProcess
         }
     }
 
-    public sealed class DummyParametersModifiableReference : IDummyParametersTemplate
+    public sealed class DummyParametersModifiableReference : ModifiableBase, IDummyParametersTemplate
     {
         private readonly IDummyParametersTemplate template;
 
@@ -50,35 +50,22 @@ namespace Weavers.Tests.AssemblyToProcess
         public int IntPropertyWithDefault => intPropertyWithDefault.Value;
         public WrappedInt WrappedIntProperty => wrappedIntProperty.Value;
 
-        private readonly ImmutableDictionary<AttributeType, ImmutableList<IAttributeWithModifications>> attributesByType;
-
         public DummyParametersModifiableReference(IDummyParametersTemplate template)
         {
             this.template = template;
+
             intProperty = new AttributeWithModifications<int>(template.IntProperty, i => (int) i);
             intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
             wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
 
-            var dictBuilder = ImmutableDictionary
-                .CreateBuilder<AttributeType, ImmutableList<IAttributeWithModifications>>();
-            dictBuilder.Add(AttributeType.DamagePerUnit, ImmutableList.Create<IAttributeWithModifications>(intPropertyWithDefault));
-            dictBuilder.Add(AttributeType.Cooldown, ImmutableList.Create<IAttributeWithModifications>(wrappedIntProperty));
-            attributesByType = dictBuilder.ToImmutable();
+            InitializeAttributes(new List<KeyValuePair<AttributeType, IAttributeWithModifications>>
+            {
+                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.DamagePerUnit, intPropertyWithDefault),
+                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.Cooldown, wrappedIntProperty)
+            });
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
-
-        public bool ModifyAttribute(AttributeType type, Modification modification)
-        {
-            if (!attributesByType.TryGetValue(type, out var list)) return false;
-
-            foreach (var attribute in list)
-            {
-                attribute.AddModification(modification);
-            }
-
-            return true;
-        }
     }
 
     public struct WrappedInt
