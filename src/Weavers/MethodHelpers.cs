@@ -23,5 +23,26 @@ namespace Weavers
             method.Body = new MethodBody(method);
             return method;
         }
+
+        public static PropertyDefinition CreatePropertyImplementation(
+            ModuleDefinition moduleDefinition, PropertyDefinition propertyBase)
+        {
+            var getMethodBase = moduleDefinition.ImportReference(propertyBase.GetMethod).Resolve();
+
+            var propertyImpl =
+                new PropertyDefinition(propertyBase.Name, PropertyAttributes.None, propertyBase.PropertyType)
+                {
+                    GetMethod = new MethodDefinition(
+                        getMethodBase.Name,
+                        MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
+                        | MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+                        getMethodBase.ReturnType)
+                };
+
+            var getMethodImpl = propertyImpl.GetMethod;
+            getMethodImpl.SemanticsAttributes = getMethodBase.SemanticsAttributes;
+            getMethodImpl.Body = new MethodBody(getMethodImpl);
+            return propertyImpl;
+        }
     }
 }

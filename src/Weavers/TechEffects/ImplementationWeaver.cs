@@ -15,6 +15,7 @@ namespace Weavers.TechEffects
         private readonly ILogger logger;
         private readonly ReferenceFinder referenceFinder;
 
+        private readonly ModifiableImplementationWeaver modifiableWeaver;
         private readonly TemplateImplementationWeaver templateWeaver;
 
         private readonly MethodDefinition parametersTemplateDictionaryMethod;
@@ -29,6 +30,7 @@ namespace Weavers.TechEffects
             this.logger = logger;
             this.referenceFinder = referenceFinder;
 
+            modifiableWeaver = new ModifiableImplementationWeaver(moduleDefinition, typeSystem, logger, referenceFinder);
             templateWeaver = new TemplateImplementationWeaver(moduleDefinition, typeSystem, logger, referenceFinder);
 
             var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(ParametersTemplateLibrary<>));
@@ -51,13 +53,10 @@ namespace Weavers.TechEffects
 
             foreach (var @interface in typesToImplement)
             {
-                foreach (var implementation in createImplementations(@interface))
-                {
-                    moduleDefinition.Types.Add(implementation);
-                }
+                createImplementations(@interface);
             }
 
-            postPrecessTypeDictionary();
+            postProcessTypeDictionary();
         }
 
         private void preProcessTypeDictionary()
@@ -76,7 +75,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Stloc_0);
         }
 
-        private void postPrecessTypeDictionary()
+        private void postProcessTypeDictionary()
         {
             var typeTypeReference = referenceFinder.GetTypeReference<Type>();
             var readOnlyDictConstructor = referenceFinder
@@ -89,7 +88,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ret);
         }
 
-        private IEnumerable<TypeDefinition> createImplementations(TypeDefinition interfaceToImplement)
+        private void createImplementations(TypeDefinition interfaceToImplement)
         {
             logger.LogInfo($"Weaving implementations for {interfaceToImplement}.");
 
@@ -97,15 +96,9 @@ namespace Weavers.TechEffects
                 .Where(p => p.TryGetCustomAttribute(Constants.ModifiableAttribute, out _))
                 .ToList();
 
-            yield return createAndRegisterTemplateImplementation(interfaceToImplement, properties);
-        }
-
-        private TypeDefinition createAndRegisterTemplateImplementation(
-            TypeReference interfaceToImplement, IReadOnlyCollection<PropertyDefinition> properties)
-        {
-            var type = templateWeaver.WeaveImplementation(interfaceToImplement, properties);
-            registerInterfaceImplementation(interfaceToImplement, type);
-            return type;
+            var modifiableType = modifiableWeaver.WeaveImplementation(interfaceToImplement, properties);
+            var templateType = templateWeaver.WeaveImplementation(interfaceToImplement, properties, modifiableType);
+            registerInterfaceImplementation(interfaceToImplement, templateType);
         }
 
         private void registerInterfaceImplementation(TypeReference interfaceToImplement, TypeReference templateType)
