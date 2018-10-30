@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 
@@ -6,13 +7,12 @@ namespace Bearded.TD.Game.World
 {
     class LevelGeometry
     {
-        public delegate void TilePassibilityChangeEventHandler(Tile<TileInfo> tile);
-        public event TilePassibilityChangeEventHandler TilePassabilityChanged;
-
+        private readonly GameEvents events;
         public Tilemap<TileInfo> Tilemap { get; }
 
-        public LevelGeometry(Tilemap<TileInfo> tilemap)
+        public LevelGeometry(GameEvents events, Tilemap<TileInfo> tilemap)
         {
+            this.events = events;
             Tilemap = tilemap;
         }
 
@@ -29,6 +29,8 @@ namespace Bearded.TD.Game.World
 
             tileInfo.SetTileType(type);
             tileInfo.SetDrawInfo(drawInfo);
+
+            events.Send(new TileDrawInfoChanged(tile));
 
             updatePassability(tile);
         }
@@ -53,7 +55,7 @@ namespace Bearded.TD.Game.World
                     neighbour.Info.CloseForUnitsTo(dir.Opposite());
             }
 
-            TilePassabilityChanged?.Invoke(tile);
+            events.Send(new TilePassabilityChanged(tile));
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -9,32 +10,36 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation
 {
-    class MultipleSinkNavigationSystem
+    class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     {
+        private readonly GameEvents events;
         private readonly Queue<FrontUpdate> updateFront = new Queue<FrontUpdate>();
         private readonly HashSet<FrontUpdate> updatesInQueue = new HashSet<FrontUpdate>();
 
         private readonly Tilemap<TileInfo> tilemap;
         private readonly Tilemap<Directions> directions;
 
-        public MultipleSinkNavigationSystem(LevelGeometry geometry)
+        public MultipleSinkNavigationSystem(GameEvents events, Tilemap<TileInfo> tilemap)
         {
-            tilemap = geometry.Tilemap;
+            this.events = events;
+            this.tilemap = tilemap;
 
             directions = new Tilemap<Directions>(tilemap.Radius);
             foreach (var tile in directions)
                 directions[tile] = none;
         }
 
-        public void Initialise(LevelGeometry geometry)
+        public void Initialise()
         {
-            geometry.TilePassabilityChanged += tilePassabilityChanged;
+            events.Subscribe(this);
         }
 
         public Direction GetDirections(Tile<TileInfo> from) => directions[from.X, from.Y].Direction;
-
-        private void tilePassabilityChanged(Tile<TileInfo> tile)
+        
+        public void HandleEvent(TilePassabilityChanged @event)
         {
+            var tile = @event.Tile;
+
             if (directions[tile.X, tile.Y].IsSink)
                 return;
 

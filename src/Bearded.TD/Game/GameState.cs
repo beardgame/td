@@ -43,8 +43,8 @@ namespace Bearded.TD.Game
         {
             Meta = meta;
             Level = level;
-            Geometry = new LevelGeometry(level.Tilemap);
-            Navigator = new MultipleSinkNavigationSystem(Geometry);
+            Geometry = new LevelGeometry(meta.Events, level.Tilemap);
+            Navigator = new MultipleSinkNavigationSystem(meta.Events, level.Tilemap);
             Technology = new TechnologyManager();
         }
 
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game
             }
 
             Geometry.Initialise();
-            Navigator.Initialise(Geometry);
+            Navigator.Initialise();
             isLoading = false;
         }
 
