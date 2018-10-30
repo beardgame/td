@@ -220,6 +220,40 @@ namespace Weavers.TechEffects
             return fieldsByProperty;
         }
 
+        private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceField)
+        {
+            var lambdas = new TypeDefinition(
+                "",
+                outerType.Name + "Lambdas",
+                TypeAttributes.NestedPrivate | TypeAttributes.AutoClass | TypeAttributes.AnsiClass
+                | TypeAttributes.Sealed | TypeAttributes.Serializable | TypeAttributes.BeforeFieldInit,
+                TypeSystem.ObjectReference);
+            outerType.NestedTypes.Add(lambdas);
+
+            instanceField = new FieldDefinition(
+                "Instance",
+                FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
+                lambdas);
+
+            var ctor = MethodHelpers.AddEmptyConstructor(ReferenceFinder, TypeSystem, lambdas);
+            var cctor = new MethodDefinition(
+                ".cctor",
+                MethodAttributes.Private | MethodAttributes.SpecialName
+                | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
+                TypeSystem.VoidReference);
+
+            lambdas.Methods.Add(ctor);
+            lambdas.Methods.Add(cctor);
+
+            var processor = cctor.Body.GetILProcessor();
+
+            processor.Emit(OpCodes.Newobj, ctor);
+            processor.Emit(OpCodes.Stsfld, instanceField);
+            processor.Emit(OpCodes.Ret);
+
+            return lambdas;
+        }
+
         private MethodDefinition createLambdaMethod(TypeDefinition lambdas, string fieldName, TypeReference innerType)
         {
             var targetPrimitive = innerType;
@@ -264,40 +298,6 @@ namespace Weavers.TechEffects
             }
             processor.Emit(OpCodes.Ret);
             return lambdaMethod;
-        }
-
-        private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceField)
-        {
-            var lambdas = new TypeDefinition(
-                "",
-                outerType.Name + "Lambdas",
-                TypeAttributes.NestedPrivate | TypeAttributes.AutoClass | TypeAttributes.AnsiClass
-                | TypeAttributes.Sealed | TypeAttributes.Serializable | TypeAttributes.BeforeFieldInit,
-                TypeSystem.ObjectReference);
-            outerType.NestedTypes.Add(lambdas);
-
-            instanceField = new FieldDefinition(
-                "Instance",
-                FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
-                lambdas);
-
-            var ctor = MethodHelpers.AddEmptyConstructor(ReferenceFinder, TypeSystem, lambdas);
-            var cctor = new MethodDefinition(
-                ".cctor",
-                MethodAttributes.Private | MethodAttributes.SpecialName
-                | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
-                TypeSystem.VoidReference);
-
-            lambdas.Methods.Add(ctor);
-            lambdas.Methods.Add(cctor);
-
-            var processor = cctor.Body.GetILProcessor();
-
-            processor.Emit(OpCodes.Newobj, ctor);
-            processor.Emit(OpCodes.Stsfld, instanceField);
-            processor.Emit(OpCodes.Ret);
-
-            return lambdas;
         }
 
         private void addProperty(
