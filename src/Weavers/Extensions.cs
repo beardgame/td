@@ -81,5 +81,10 @@ namespace Weavers
         {
             return char.ToLowerInvariant(titleCaseName[0]) + titleCaseName.Substring(1);
         }
+
+        public static string ToTitleCase(this string pascalCaseName)
+        {
+            return char.ToUpperInvariant(pascalCaseName[0]) + pascalCaseName.Substring(1);
+        }
     }
 }

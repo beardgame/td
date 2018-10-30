@@ -31,6 +31,23 @@ namespace Weavers
             return moduleDefinition.ImportReference(fieldDefinition);
         }
 
+        internal PropertyReference GetPropertyReference(TypeReference typeReference, string name)
+            => GetPropertyReference(typeReference, field => field.Name == name);
+        
+        internal PropertyReference GetPropertyReference(TypeReference typeReference, Func<PropertyDefinition, bool> predicate)
+        {
+            var typeDefinition = typeReference.Resolve();
+
+            PropertyDefinition propertyDefinition;
+            do
+            {
+                propertyDefinition = typeDefinition.Properties.FirstOrDefault(predicate);
+                typeDefinition = typeDefinition.BaseType?.Resolve();
+            } while (propertyDefinition == null && typeDefinition != null);
+
+            return propertyDefinition;
+        }
+
         internal MethodReference GetConstructorReference(Type declaringType)
         {
             return GetMethodReference(declaringType, method => method.IsConstructor);

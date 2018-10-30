@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
+using TypeSystem = Fody.TypeSystem;
 
 namespace Weavers
 {
@@ -43,6 +44,27 @@ namespace Weavers
             getMethodImpl.SemanticsAttributes = getMethodBase.SemanticsAttributes;
             getMethodImpl.Body = new MethodBody(getMethodImpl);
             return propertyImpl;
+        }
+
+        public static MethodDefinition AddEmptyConstructor(
+            ReferenceFinder referenceFinder, TypeSystem typeSystem, TypeDefinition type)
+        {
+            var method = new MethodDefinition(
+                ".ctor",
+                MethodAttributes.Public | MethodAttributes.SpecialName
+                | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
+                typeSystem.VoidReference);
+
+            var objectConstructor = referenceFinder.GetConstructorReference(typeSystem.ObjectDefinition);
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            processor.Emit(OpCodes.Call, objectConstructor);
+            processor.Emit(OpCodes.Ret);
+
+            type.Methods.Add(method);
+
+            return method;
         }
     }
 }

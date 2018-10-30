@@ -14,6 +14,9 @@ namespace Weavers.TechEffects
         internal static readonly string CreateModifiableInstanceMethod = "CreateModifiableInstance";
         internal static readonly string ModifyAttributeMethod = "ModifyAttribute";
 
+        // Can't nameof this one due to protectedness :(
+        internal static readonly string ModifiableBaseInitializeMethod = "InitializeAttributes";
+
         internal static string GetTemplateClassNameForInterface(string interfaceName)
             => getInterfaceBaseName(interfaceName) + "Template";
         internal static string GetModifiableClassNameForInterface(string interfaceName)
