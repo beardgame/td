@@ -63,12 +63,12 @@ namespace Bearded.TD.Game
         {
             if (listenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
             {
-                listeners = null;
-                return false;
+                listeners = (List<IListener<TEvent>>)listAsObject;
+                return true;
             }
 
-            listeners = (List<IListener<TEvent>>)listAsObject;
-            return true;
+            listeners = null;
+            return false;
         }
     }
 }
