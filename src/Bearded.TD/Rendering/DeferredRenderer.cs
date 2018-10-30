@@ -125,8 +125,8 @@ namespace Bearded.TD.Rendering
 
             GL.ClearColor(0, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            surfaces.LevelSurface.Render();
+            
+            contentSurfaces.LevelGeometry.RenderAll();
             
             GL.DepthMask(false);
             GL.Disable(EnableCap.CullFace);

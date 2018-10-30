@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    class LevelGeometryBatcher
+    class LevelGeometryManager : IListener<TileDrawInfoChanged>
     {
         private const int batchWidth = 8;
 
@@ -19,7 +22,7 @@ namespace Bearded.TD.Rendering.Deferred
         
         // TODO: actually create this on game creation (in GameWorldControl?)
         // TODO: in the future this also needs to know about textures and stuff from mods
-        public LevelGeometryBatcher(GameInstance game, RenderContext context)
+        public LevelGeometryManager(GameInstance game, RenderContext context)
         {
             level = game.State.Level;
             tileMapRadius = level.Tilemap.Radius;
@@ -31,10 +34,18 @@ namespace Bearded.TD.Rendering.Deferred
             batchLookup = new Batch[batchesPerRow * batchesPerRow];
 
             createValidBatches(context);
+
+            game.Meta.Events.Subscribe(this);
         }
 
-        // TODO: call this anytime a tile is changed
-        public void MarkDirty((int X, int Y) tile)
+        public void HandleEvent(TileDrawInfoChanged @event)
+        {
+            var tile = @event.Tile;
+
+            markDirty((tile.X, tile.Y));
+        }
+
+        private void markDirty((int X, int Y) tile)
             => batchLookup[batchIndexFor(tile)].MarkAsDirty();
 
         // TODO: call this from deferred renderer
@@ -89,15 +100,20 @@ namespace Bearded.TD.Rendering.Deferred
 
         class Batch
         {
+            private readonly Level level;
             private readonly (int X, int Y) baseTile;
             private readonly IndexedSurface<LevelVertex> surface;
+            private readonly LevelGeometry geometry;
 
             private bool isDirty = true;
 
             public Batch(RenderContext context, Level level, (int X, int Y) baseTile)
             {
+                this.level = level;
                 this.baseTile = baseTile;
                 surface = createSurface(context);
+                
+                geometry = new LevelGeometry(surface);
             }
 
             private static IndexedSurface<LevelVertex> createSurface(RenderContext context)
@@ -126,6 +142,7 @@ namespace Bearded.TD.Rendering.Deferred
                 {
                     surface.Clear();
                     generateGeometry();
+                    isDirty = false;
                 }
 
                 surface.Render();
@@ -138,11 +155,33 @@ namespace Bearded.TD.Rendering.Deferred
                     {
                         var (tileX, tileY) = (baseTile.X + x, baseTile.Y + y);
 
-                        // TODO: create tile vertices
+                        var tile = new Tile<TileInfo>(level.Tilemap, tileX, tileY);
+
+                        if (!tile.IsValid)
+                            continue;
+                        
+                        geometry.DrawTile(
+                            level.GetPosition(tile).NumericValue,
+                            tile.Info,
+                            tile.NeighbourInfoOrDummy(Direction.Right),
+                            tile.NeighbourInfoOrDummy(Direction.UpRight),
+                            tile.NeighbourInfoOrDummy(Direction.DownRight)
+                        );
                     }
 
-                // TODO: need to move LevelGeometry code here? need to probably find a way to organise that code better
+                // TODO: need to move LevelGeometry code here?
+                // need to probably find a way to organise that code better
+                // consider sharing a single level geometry instance across batches?
+                // (need to inject surface then and pass that around internally, yuck)
             }
+        }
+    }
+
+    static class LevelRenderingExtensions
+    {
+        public static TileInfo NeighbourInfoOrDummy(this Tile<TileInfo> tile, Direction direction)
+        {
+            return tile.Neighbour(direction).ValidOrNull?.Info ?? TileInfo.Dummy;
         }
     }
 }

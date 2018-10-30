@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Rendering;
-using Bearded.TD.Tiles;
+﻿using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -68,27 +67,6 @@ namespace Bearded.TD.Game.World
         public Level(Tilemap<TileInfo> tilemap)
             : base(tilemap)
         {
-        }
-
-        public void Draw(GeometryManager geos)
-        {
-            var geo = geos.Level;
-            
-            foreach (var tile in Tilemap)
-            {
-                var info = tile.Info;
-
-                //var x = ((tile.X + 8*5) / 8 % 2) == ((tile.Y + 8*5) / 8 % 2);
-                //if (x) continue;
-
-                geo.DrawTile(
-                    GetPosition(tile).NumericValue,
-                    info,
-                    tile.Neighbour(Direction.Right).ValidOrNull?.Info ?? TileInfo.Dummy,
-                    tile.Neighbour(Direction.UpRight).ValidOrNull?.Info ?? TileInfo.Dummy,
-                    tile.Neighbour(Direction.DownRight).ValidOrNull?.Info ?? TileInfo.Dummy
-                    );
-            }
         }
     }
 }

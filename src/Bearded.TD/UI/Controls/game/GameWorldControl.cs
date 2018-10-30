@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -41,12 +42,14 @@ namespace Bearded.TD.UI.Controls
         public float FarPlaneDistance => game.Camera.Distance - lowestZToRender;
         public ContentSurfaceManager DeferredSurfaces { get; }
 
-        public GameWorldControl(GameInstance game, GeometryManager geometryManager)
+        public GameWorldControl(GameInstance game, RenderContext renderContext)
         {
             this.game = game;
-            geometries = geometryManager;
+            geometries = renderContext.Geometries;
 
-            DeferredSurfaces = new ContentSurfaceManager(game.Blueprints.Sprites);
+            var levelGeometry = new LevelGeometryManager(game, renderContext);
+
+            DeferredSurfaces = new ContentSurfaceManager(levelGeometry, game.Blueprints.Sprites);
         }
 
         public override void Draw()
@@ -55,7 +58,6 @@ namespace Bearded.TD.UI.Controls
 
             var state = game.State;
             
-            state.Level.Draw(geometries);
             drawAmbientLight(state);
             drawGameObjects(state);
             drawDebug(state);

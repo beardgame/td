@@ -7,11 +7,11 @@ namespace Bearded.TD.UI.Controls
     {
         private readonly GameUI gameUI;
 
-        public GameUIControl(GameUI gameUI, GeometryManager geometryManager)
+        public GameUIControl(GameUI gameUI, RenderContext renderContext)
         {
             this.gameUI = gameUI;
 
-            Add(new GameWorldControl(gameUI.Game, geometryManager));
+            Add(new GameWorldControl(gameUI.Game, renderContext));
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
