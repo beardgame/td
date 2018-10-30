@@ -1,25 +1,74 @@
-﻿using Bearded.TD.Game.Buildings;
-using Bearded.Utilities;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Bearded.TD.Game
 {
-    // We probably want a better solution for this long-term, but there are so many open questions, I've kept it simple
-    // for now.
-    //
-    // ~ Past Tom
+    interface IEvent
+    {
+    }
+
+    interface IListener<in TEvent>
+        where TEvent : IEvent
+    {
+        void HandleEvent(TEvent @event);
+    }
+
     sealed class GameEvents
     {
-        public event GenericEventHandler<BuildingPlaceholder, Building> BuildingConstructionStarted;
-        public event VoidEventHandler GameOverTriggered;
+        private readonly Dictionary<Type, object> listenerLists = new Dictionary<Type, object>();
 
-        public void StartBuildingConstruction(BuildingPlaceholder placeholder, Building building)
+        public void Subscribe<TEvent>(IListener<TEvent> listener)
+            where TEvent : IEvent
         {
-            BuildingConstructionStarted?.Invoke(placeholder, building);
+            getListeners<TEvent>().Add(listener);
         }
 
-        public void TriggerGameOver()
+        public void Unsubscribe<TEvent>(IListener<TEvent> listener)
+            where TEvent : IEvent
         {
-            GameOverTriggered?.Invoke();
+            if (hasListeners<TEvent>(out var listeners))
+                listeners.Remove(listener);
+        }
+
+        public void Send<TEvent>(TEvent @event)
+            where TEvent : IEvent
+        {
+            if (hasListeners<TEvent>(out var listeners))
+                send(@event, listeners);
+        }
+
+        private static void send<TEvent>(TEvent @event, List<IListener<TEvent>> listeners)
+            where TEvent : IEvent
+        {
+            foreach (var listener in listeners)
+            {
+                listener.HandleEvent(@event);
+            }
+        }
+
+        private List<IListener<TEvent>> getListeners<TEvent>()
+            where TEvent : IEvent
+        {
+            if (hasListeners(out List<IListener<TEvent>> listeners))
+                return listeners;
+
+            listeners = new List<IListener<TEvent>>();
+            listenerLists.Add(typeof(TEvent), listeners);
+
+            return listeners;
+        }
+        
+        private bool hasListeners<TEvent>(out List<IListener<TEvent>> listeners)
+            where TEvent : IEvent
+        {
+            if (listenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
+            {
+                listeners = null;
+                return false;
+            }
+
+            listeners = (List<IListener<TEvent>>)listAsObject;
+            return true;
         }
     }
 }

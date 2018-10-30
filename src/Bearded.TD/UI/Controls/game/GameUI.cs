@@ -2,6 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
@@ -11,7 +12,8 @@ using Bearded.Utilities.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>
+    class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+        IListener<GameOverTriggered>
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;
@@ -47,7 +49,7 @@ namespace Bearded.TD.UI.Controls
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
-            Game.Meta.Events.GameOverTriggered += onGameOver;
+            Game.Meta.Events.Subscribe(this);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -99,11 +101,11 @@ namespace Bearded.TD.UI.Controls
             EntityStatusClosed?.Invoke();
         }
 
-        private void onGameOver()
+        public void HandleEvent(GameOverTriggered @event)
         {
             GameOverTriggered?.Invoke();
         }
-
+        
         public void OnReturnToMainMenuButtonClicked()
         {
             runner.Shutdown();

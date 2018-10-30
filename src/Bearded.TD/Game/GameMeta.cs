@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Synchronization;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -39,7 +40,7 @@ namespace Bearded.TD.Game
         public void DoGameOver()
         {
             GameOver = true;
-            Events.TriggerGameOver();
+            Events.Send(new GameOverTriggered());
         }
     }
 }

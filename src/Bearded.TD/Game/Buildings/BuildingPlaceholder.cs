@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -40,7 +41,7 @@ namespace Bearded.TD.Game.Buildings
             var building = new Building(buildingId, Blueprint, Faction, Footprint);
             Game.Add(building);
             workerTask.SetBuilding(building);
-            Game.Meta.Events.StartBuildingConstruction(this, building);
+            Game.Meta.Events.Send(new BuildingConstructionStarted(this, building));
         }
 
         public override void Draw(GeometryManager geometries)

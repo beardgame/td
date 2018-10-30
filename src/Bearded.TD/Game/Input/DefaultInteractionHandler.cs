@@ -1,10 +1,10 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Meta;
 
 namespace Bearded.TD.Game.Input
 {
-    class DefaultInteractionHandler : InteractionHandler
+    class DefaultInteractionHandler : InteractionHandler, IListener<BuildingConstructionStarted>
     {
         public DefaultInteractionHandler(GameInstance game) : base(game) { }
 
@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Input
         protected override void OnStart(ICursorHandler cursor)
         {
             base.OnStart(cursor);
-            Game.State.Meta.Events.BuildingConstructionStarted += onBuildingConstructionStarted;
+            Game.State.Meta.Events.Subscribe(this);
 
         }
 
@@ -42,14 +42,14 @@ namespace Bearded.TD.Game.Input
         {
             base.OnEnd(cursor);
             Game.SelectionManager.ResetSelection();
-            Game.State.Meta.Events.BuildingConstructionStarted -= onBuildingConstructionStarted;
+            Game.State.Meta.Events.Unsubscribe(this);
         }
 
-        private void onBuildingConstructionStarted(BuildingPlaceholder placeholder, Building building)
+        public void HandleEvent(BuildingConstructionStarted @event)
         {
-            if (placeholder.SelectionState == SelectionState.Selected)
+            if (@event.Placeholder.SelectionState == SelectionState.Selected)
             {
-                Game.SelectionManager.SelectObject(building);
+                Game.SelectionManager.SelectObject(@event.Building);
             }
         }
     }
