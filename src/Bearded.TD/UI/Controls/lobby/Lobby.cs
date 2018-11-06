@@ -13,6 +13,8 @@ namespace Bearded.TD.UI.Controls
         private LobbyManager lobbyManager;
         public IList<Player> Players => lobbyManager.Game.Players;
 
+        public int LevelSize { get; private set; } = Constants.Game.World.Radius;
+
         public event VoidEventHandler PlayersChanged;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
@@ -50,10 +52,15 @@ namespace Bearded.TD.UI.Controls
             Navigation.Replace<MainMenu>(this);
         }
 
+        public void OnSetLevelSize(int size)
+        {
+            LevelSize = size;
+        }
+
         private void onGameStatusChanged(GameStatus gameStatus)
         {
             if (gameStatus != GameStatus.Loading) throw new Exception("Unexpected game status change.");
-            Navigation.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
+            Navigation.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(LevelSize), this);
         }
 
         private void onPlayersChanged(Player player)

@@ -7,8 +7,9 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyControl(Lobby model)
         {
+            // main buttons
             Add(
-                new CompositeControl() // ButtonGroup
+                new CompositeControl // ButtonGroup
                 {
                     Button("Toggle ready")
                         .Anchor(a => a.Top(margin: 0, height: 50))
@@ -17,6 +18,20 @@ namespace Bearded.TD.UI.Controls
                         .Anchor(a => a.Top(margin: 50, height: 50))
                         .Subscribe(b => b.Clicked += model.OnBackToMenuButtonClicked),
                 }.Anchor(a => a.Left(margin: 20, width: 250).Bottom(margin: 20, height: 100))
+            );
+
+            // game settings
+            Add(
+                new CompositeControl // ButtonGroup
+                {
+                    new NumericInput(model.LevelSize)
+                    {
+                        MinValue = 10,
+                        MaxValue = 100
+                    }
+                    .Anchor(a => a.Top(margin: 0, height: 50))
+                        .Subscribe(b => b.ValueChanged += model.OnSetLevelSize),
+                }.Anchor(a => a.Left(margin: 20, width: 250).Top(margin: 20, height: 100))
             );
 
             var list = new ListControl {ItemSource = new PlayerListItemSource(model)}

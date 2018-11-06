@@ -10,8 +10,13 @@ namespace Bearded.TD.UI.Controls
 {
     class ServerLoadingManager : LoadingManager
     {
-        public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface)
-            : base(game, networkInterface) {}
+        private readonly int levelSize;
+
+        public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface, int levelSize)
+            : base(game, networkInterface)
+        {
+            this.levelSize = levelSize;
+        }
 
         public override void Update(UpdateEventArgs args)
         {
@@ -38,7 +43,7 @@ namespace Bearded.TD.UI.Controls
 
         private void generateGame()
         {
-            var radius = Constants.Game.World.Radius;
+            var radius = levelSize;
 
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
             var builder = new GameStateBuilder(Game, radius, tilemapGenerator);
