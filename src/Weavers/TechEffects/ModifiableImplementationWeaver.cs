@@ -76,11 +76,12 @@ namespace Weavers.TechEffects
             foreach (var property in properties)
             {
                 property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute);
-                var attributeType = (AttributeType) modifiableAttribute
+
+                var attributeType = (AttributeType) (modifiableAttribute
                     .Properties
-                    .First(arg => arg.Name == nameof(ModifiableAttribute.Type))
+                    .FirstOrDefault(arg => arg.Name == nameof(ModifiableAttribute.Type))
                     .Argument
-                    .Value;
+                    .Value ?? AttributeType.None);
 
                 var fieldType = attributeWithModificationsType.MakeGenericInstanceType(property.PropertyType);
 
@@ -183,8 +184,7 @@ namespace Weavers.TechEffects
                 .GetConstructorReference(typeof(List<>))
                 .MakeHostInstanceGeneric(keyValueType);
             var keyValueListAdd = ReferenceFinder
-                .GetMethodReference<List<string>>(l => l.Add(""))
-                .MakeHostInstanceGeneric(keyValueType);
+                .GetMethodReference<List<string>>(l => l.Add(""));
 
             // create list of key-value pairs of attribute type and attribute where modifiable
             processor.Emit(OpCodes.Newobj, keyValueListCtor);
@@ -220,20 +220,22 @@ namespace Weavers.TechEffects
             return fieldsByProperty;
         }
 
-        private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceField)
+        private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceFieldRef)
         {
             var lambdas = new TypeDefinition(
                 "",
                 outerType.Name + "Lambdas",
                 TypeAttributes.NestedPrivate | TypeAttributes.AutoClass | TypeAttributes.AnsiClass
                 | TypeAttributes.Sealed | TypeAttributes.Serializable | TypeAttributes.BeforeFieldInit,
-                TypeSystem.ObjectReference);
+                TypeSystem.ObjectReference) { DeclaringType = outerType };
             outerType.NestedTypes.Add(lambdas);
 
-            instanceField = new FieldDefinition(
+            var instanceField = new FieldDefinition(
                 "Instance",
                 FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly,
                 lambdas);
+            lambdas.Fields.Add(instanceField);
+            instanceFieldRef = instanceField;
 
             var ctor = MethodHelpers.AddEmptyConstructor(ReferenceFinder, TypeSystem, lambdas);
             var cctor = new MethodDefinition(
@@ -242,7 +244,7 @@ namespace Weavers.TechEffects
                 | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
                 TypeSystem.VoidReference);
 
-            lambdas.Methods.Add(ctor);
+            //lambdas.Methods.Add(ctor);
             lambdas.Methods.Add(cctor);
 
             var processor = cctor.Body.GetILProcessor();
@@ -312,7 +314,7 @@ namespace Weavers.TechEffects
             var processor = getMethodImpl.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Ldfld, fieldReference);
-            processor.Emit(OpCodes.Callvirt, valueProperty.GetMethod);
+            processor.Emit(OpCodes.Callvirt, ModuleDefinition.ImportReference(valueProperty.GetMethod));
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
