@@ -28,11 +28,18 @@ namespace Bearded.TD.Game.World
             var tileInfo = tile.Info;
 
             tileInfo.SetTileType(type);
+            SetDrawInfo(tile, drawInfo);
+
+            updatePassability(tile);
+        }
+
+        public void SetDrawInfo(Tile<TileInfo> tile, TileDrawInfo drawInfo)
+        {
+            var tileInfo = tile.Info;
+
             tileInfo.SetDrawInfo(drawInfo);
 
             events.Send(new TileDrawInfoChanged(tile));
-
-            updatePassability(tile);
         }
 
         public void SetBuilding(Tile<TileInfo> tile, Building building)

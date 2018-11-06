@@ -41,12 +41,21 @@ namespace Bearded.TD.Rendering.Deferred
         {
             var tile = @event.Tile;
 
-            markDirty((tile.X, tile.Y));
+            var (x, y) = (tile.X, tile.Y);
+
+            markDirty((x, y));
+            markDirty((x - 1, y));
+            markDirty((x, y - 1));
+            markDirty((x - 1, y + 1));
+
         }
 
         private void markDirty((int X, int Y) tile)
-            => batchLookup[batchIndexFor(tile)].MarkAsDirty();
-        
+        {
+            var batchIndex = batchIndexFor(tile);
+            batchLookup[batchIndex].MarkAsDirty();
+        }
+
         public void RenderAll()
         {
             foreach (var batch in batches)

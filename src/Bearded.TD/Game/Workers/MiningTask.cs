@@ -39,9 +39,11 @@ namespace Bearded.TD.Game.Workers
             }
             else
             {
-                tile.Info.SetDrawInfo(
-                    new TileDrawInfo(originalTileHeight * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
-                    tile.Info.DrawInfo.HexScale));
+                geometry.SetDrawInfo(tile,
+                    new TileDrawInfo(
+                        originalTileHeight * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
+                        tile.Info.DrawInfo.HexScale)
+                );
             }
         }
     }
