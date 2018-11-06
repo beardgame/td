@@ -123,9 +123,15 @@ namespace Bearded.TD.Game.Generation
             {
                 intersections.Add(level.GetPosition(center));
 
-                generateIntersectionsOnCircle(2, tilemap.Radius * 0.2f);
-                generateIntersectionsOnCircle(3, tilemap.Radius * 0.5f);
-                generateIntersectionsOnCircle(7, tilemap.Radius * 0.8f);
+                var circles = (int)(Math.Sqrt(tilemap.Radius) / 1.4);
+                var radiusStep = tilemap.Radius / (float) (circles + 1);
+
+                for (var circle = 0; circle < circles; circle++)
+                {
+                    var count = circle + 2;
+                    var radius = radiusStep * (circle + 1);
+                    generateIntersectionsOnCircle(count, radius);
+                }
             }
 
             private void generateIntersectionsOnCircle(int count, float radius)
@@ -226,7 +232,10 @@ namespace Bearded.TD.Game.Generation
                     if (tile.Info != Wall)
                         continue;
                     var tiles = new List<Tile> {tile};
-                    while (tiles.Count < 8)
+
+                    var maxCount = random.Next(8, tilemap.Radius / 2);
+
+                    while (tiles.Count < maxCount)
                     {
                         var closedNeighbours = tile.Neighbours.Where(t => t.Info == Wall && !tiles.Contains(t)).ToList();
                         if (closedNeighbours.Count == 0)
