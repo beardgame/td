@@ -13,6 +13,10 @@ namespace Bearded.TD.UI.Controls
         private LobbyManager lobbyManager;
         public IList<Player> Players => lobbyManager.Game.Players;
 
+        // todo: replace by proper game settings type
+        // todo: save last game settings in user settings (server only? optionally?)
+        // todo: sync settings from server to client when changed
+        // todo: make ui on client read-only
         public int LevelSize { get; private set; } = Constants.Game.World.Radius;
 
         public event VoidEventHandler PlayersChanged;
