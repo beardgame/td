@@ -32,11 +32,18 @@ namespace Weavers.TechEffects
                 Constants.GetModifiableClassNameForInterface(interfaceToImplement.Name),
                 baseClassType);
 
-            var fieldsByProperty = addConstructor(modifiableType, interfaceToImplement, properties);
+            var (fieldsByProperty, templateField) = addConstructor(modifiableType, interfaceToImplement, properties);
 
-            foreach (var entry in fieldsByProperty)
+            foreach (var property in properties)
             {
-                addProperty(modifiableType, entry.Key, entry.Value);
+                if (fieldsByProperty.ContainsKey(property))
+                {
+                    addFieldBackedProperty(modifiableType, property, fieldsByProperty[property]);
+                }
+                else
+                {
+                    addTemplateBackedProperty(modifiableType, property, templateField);
+                }
             }
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
@@ -44,8 +51,11 @@ namespace Weavers.TechEffects
             return modifiableType;
         }
         
-        private Dictionary<PropertyDefinition, FieldReference> addConstructor(
-            TypeDefinition type, TypeReference interfaceToImplement, IReadOnlyCollection<PropertyDefinition> properties)
+        private (Dictionary<PropertyDefinition, FieldReference> fieldsByProperty, FieldReference templateField)
+            addConstructor(
+                TypeDefinition type,
+                TypeReference interfaceToImplement,
+                IReadOnlyCollection<PropertyDefinition> properties)
         {
             var lambdas = createLambdasObject(type, out var lambdaInstance);
 
@@ -82,6 +92,11 @@ namespace Weavers.TechEffects
                     .FirstOrDefault(arg => arg.Name == nameof(ModifiableAttribute.Type))
                     .Argument
                     .Value ?? AttributeType.None);
+
+                if (attributeType == AttributeType.None)
+                {
+                    continue;
+                }
 
                 var fieldType = attributeWithModificationsType.MakeGenericInstanceType(property.PropertyType);
 
@@ -217,7 +232,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ret);
             type.Methods.Add(method);
 
-            return fieldsByProperty;
+            return (fieldsByProperty, templateField);
         }
 
         private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceFieldRef)
@@ -302,7 +317,7 @@ namespace Weavers.TechEffects
             return lambdaMethod;
         }
 
-        private void addProperty(
+        private void addFieldBackedProperty(
             TypeDefinition type, PropertyDefinition propertyBase, FieldReference fieldReference)
         {
             var propertyImpl = MethodHelpers.CreatePropertyImplementation(ModuleDefinition, propertyBase);
@@ -315,6 +330,26 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Ldfld, fieldReference);
             processor.Emit(OpCodes.Callvirt, ModuleDefinition.ImportReference(valueProperty.GetMethod));
+            processor.Emit(OpCodes.Ret);
+            type.Properties.Add(propertyImpl);
+            type.Methods.Add(getMethodImpl);
+        }
+
+        private void addTemplateBackedProperty(
+            TypeDefinition type, PropertyDefinition property, FieldReference templateField)
+        {
+            var propertyImpl = MethodHelpers.CreatePropertyImplementation(ModuleDefinition, property);
+            var getMethodImpl = propertyImpl.GetMethod;
+            
+            var templateProperty = ModuleDefinition.ImportReference(templateField.FieldType)
+                .Resolve()
+                .Properties
+                .First(p => p.Name == property.Name);
+
+            var processor = getMethodImpl.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            processor.Emit(OpCodes.Ldfld, templateField);
+            processor.Emit(OpCodes.Callvirt, ModuleDefinition.ImportReference(templateProperty.GetMethod));
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
