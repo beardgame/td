@@ -118,6 +118,24 @@ namespace Weavers.Tests
             dict.Should().Contain(getInterfaceType(), getTemplateType());
         }
 
+        [Fact]
+        public void InjectsModifiableType()
+        {
+            getModifiableType().Should().NotBeNull();
+        }
+
+        [Fact]
+        public void MakesModifiableTypeImplementInterface()
+        {
+            getModifiableType().Should().BeAssignableTo(getInterfaceType());
+        }
+
+        [Fact]
+        public void MakesModifiableTypeConstructable()
+        {
+            getModifiableConstructorInfo().Should().NotBeNull();
+        }
+
         private static object constructTemplate(params object[] constructorParams)
         {
             return getTemplateConstructorInfo().Invoke(constructorParams);
@@ -129,8 +147,15 @@ namespace Weavers.Tests
             return cs.Length == 1 ? cs[0] : null;
         }
 
+        private static ConstructorInfo getModifiableConstructorInfo()
+        {
+            var cs = getModifiableType().GetConstructors();
+            return cs.Length == 1 ? cs[0] : null;
+        }
+
         private static Type getInterfaceType() => getAssemblyType(nameof(IDummyParametersTemplate));
         private static Type getTemplateType() => getAssemblyType("DummyParametersTemplate");
+        private static Type getModifiableType() => getAssemblyType("DummyParametersModifiable");
         private static Type getTechEffectLibraryType() => getAssemblyType(nameof(ParametersTemplateLibrary));
         private static Type getWrappedIntType() => getAssemblyType(nameof(WrappedInt));
 

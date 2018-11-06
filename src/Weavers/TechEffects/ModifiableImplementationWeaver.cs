@@ -47,6 +47,7 @@ namespace Weavers.TechEffects
             }
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
+            addModifyAttributeMethod(interfaceToImplement, modifiableType);
 
             return modifiableType;
         }
@@ -153,7 +154,7 @@ namespace Weavers.TechEffects
                         .Resolve()
                         .Properties[0]
                         .Resolve();
-                    processor.Emit(OpCodes.Call, innerProperty.GetMethod);
+                    processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(innerProperty.GetMethod));
                     typeOnStack = innerProperty.PropertyType;
                 }
 
@@ -358,8 +359,43 @@ namespace Weavers.TechEffects
         private void addCreateModifiableInstanceMethod(TypeDefinition type, GenericInstanceType genericParameterInterface)
         {
             var field = type.Fields.First(f => f.Name == Constants.TemplateFieldName);
-            //var field = ReferenceFinder.GetFieldReference(type, Constants.TemplateFieldName);
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, type, field);
+        }
+
+        private void addModifyAttributeMethod(TypeReference interfaceToImplement, TypeDefinition type)
+        {
+            var baseMethod = ReferenceFinder
+                .GetMethodReference<ModifiableBase>(b =>
+                    b.ModifyAttribute(AttributeType.None, new Modification()))
+                .Resolve();
+
+            var method = new MethodDefinition(
+                baseMethod.Name,
+                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
+                | MethodAttributes.ReuseSlot | MethodAttributes.Virtual,
+                baseMethod.ReturnType);
+            foreach (var p in baseMethod.Parameters)
+            {
+                method.Parameters.Add(new ParameterDefinition(
+                    p.Name, p.Attributes, ModuleDefinition.ImportReference(p.ParameterType)));
+            }
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            for (var i = 1; i <= baseMethod.Parameters.Count; i++)
+            {
+                processor.Emit(OpCodes.Ldarg, i);
+            }
+            processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(baseMethod));
+            processor.Emit(OpCodes.Ret);
+            
+            var interfaceMethod = ReferenceFinder
+                .GetMethodReference(
+                    ModuleDefinition.ImportReference(Constants.Interface),
+                    baseMethod.Name)
+                .MakeHostInstanceGeneric(interfaceToImplement);
+            method.Overrides.Add(ModuleDefinition.ImportReference(interfaceMethod));
+            type.Methods.Add(method);
         }
     }
 }
