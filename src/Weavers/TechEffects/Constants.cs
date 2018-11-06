@@ -7,15 +7,22 @@ namespace Weavers.TechEffects
     {
         internal static readonly Type Interface = typeof(IParametersTemplate<>);
         internal static readonly Type ModifiableAttribute = typeof(ModifiableAttribute);
+        internal static readonly Type ModifiableBase = typeof(ModifiableBase);
+        internal static readonly Type AttributeWithModificationsType = typeof(AttributeWithModifications<>);
 
         // Can't nameof these because they are members of a generic class with annoying limitations :(
         internal static readonly string CreateModifiableInstanceMethod = "CreateModifiableInstance";
         internal static readonly string ModifyAttributeMethod = "ModifyAttribute";
 
+        // Can't nameof this one due to protectedness :(
+        internal static readonly string ModifiableBaseInitializeMethod = "InitializeAttributes";
+
         internal static string GetTemplateClassNameForInterface(string interfaceName)
             => getInterfaceBaseName(interfaceName) + "Template";
-        internal static string GetParameterClassNameForInterface(string interfaceName)
+        internal static string GetModifiableClassNameForInterface(string interfaceName)
             => getInterfaceBaseName(interfaceName) + "Modifiable";
+
+        internal static readonly string TemplateFieldName = "template";
 
         private static string getInterfaceBaseName(string interfaceName)
         {

@@ -10,69 +10,47 @@ using TypeSystem = Fody.TypeSystem;
 
 namespace Weavers.TechEffects
 {
-    sealed class TemplateImplementationWeaver
+    sealed class TemplateImplementationWeaver : BaseImplementationWeaver
     {
-        private readonly ModuleDefinition moduleDefinition;
-        private readonly TypeSystem typeSystem;
-        private readonly ILogger logger;
-        private readonly ReferenceFinder referenceFinder;
-
-        private readonly TypeReference parametersTemplateInterface;
-
         public TemplateImplementationWeaver(
-            ModuleDefinition moduleDefinition,
-            TypeSystem typeSystem,
-            ILogger logger,
-            ReferenceFinder referenceFinder)
-        {
-            this.moduleDefinition = moduleDefinition;
-            this.typeSystem = typeSystem;
-            this.logger = logger;
-            this.referenceFinder = referenceFinder;
-            
-            parametersTemplateInterface = this.referenceFinder.GetTypeReference(Constants.Interface);
-        }
+                ModuleDefinition moduleDefinition, TypeSystem typeSystem, ILogger logger, ReferenceFinder referenceFinder)
+            : base(moduleDefinition, typeSystem, logger, referenceFinder) { }
 
         public TypeDefinition WeaveImplementation(
             TypeReference interfaceToImplement,
-            IReadOnlyCollection<PropertyDefinition> properties)
+            IReadOnlyCollection<PropertyDefinition> properties,
+            TypeReference modifiableType)
         {
-            var templateType = new TypeDefinition(
-                interfaceToImplement.Namespace,
+            var (templateType, genericParameterInterface) = PrepareImplementation(
+                interfaceToImplement,
                 Constants.GetTemplateClassNameForInterface(interfaceToImplement.Name),
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
-                typeSystem.ObjectReference);
-
-            var genericParameterInterface = parametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);
+                TypeSystem.ObjectReference);
             
-            templateType.AddInterfaceImplementation(interfaceToImplement);
-            templateType.AddInterfaceImplementation(genericParameterInterface);
-            
-            var fieldsByProperty = addTemplateConstructor(templateType, properties);
+            var fieldsByProperty = addConstructor(templateType, properties);
 
             foreach (var entry in fieldsByProperty)
             {
-                addTemplateProperty(templateType, entry.Key, entry.Value);
+                addProperty(templateType, entry.Key, entry.Value);
             }
 
-            addTemplateModifiableCreationMethod(templateType, genericParameterInterface);
-            addTemplateModifyMethod(templateType, genericParameterInterface);
+            addCreateModifiableInstanceMethod(templateType, genericParameterInterface, modifiableType);
+            addModifyAttributeMethod(templateType, genericParameterInterface);
 
             return templateType;
         }
 
-        private Dictionary<PropertyDefinition, FieldReference> addTemplateConstructor(
+        private Dictionary<PropertyDefinition, FieldReference> addConstructor(
             TypeDefinition type, IReadOnlyCollection<PropertyDefinition> properties)
         {
-            var nullable = referenceFinder.GetTypeReference(typeof(Nullable<>));
+            var nullable = ReferenceFinder.GetTypeReference(typeof(Nullable<>));
 
             var method = new MethodDefinition(
                 ".ctor",
                 MethodAttributes.Public | MethodAttributes.SpecialName
                 | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
-                typeSystem.VoidReference);
+                TypeSystem.VoidReference);
 
-            method.AddCustomAttribute(typeof(JsonConstructorAttribute), referenceFinder);
+            method.AddCustomAttribute(typeof(JsonConstructorAttribute), ReferenceFinder);
 
             var propertyFields = new List<(FieldDefinition, List<Action<ILProcessor>>)>();
             var fieldsByProperty = new Dictionary<PropertyDefinition, FieldReference>();
@@ -109,16 +87,16 @@ namespace Weavers.TechEffects
                             .FirstOrDefault(p => p.Name == nameof(ModifiableAttribute.DefaultValueType))
                             .Argument
                             .Value;
-                        var resolvedType = moduleDefinition.ImportReference(property.PropertyType);
+                        var resolvedType = ModuleDefinition.ImportReference(property.PropertyType);
                         var wrapperConstructor = resolvedType.Resolve().GetConstructors().FirstOrDefault(c =>
                             c.Parameters.Count == 1 &&
                             (expectedConstructorParamType == null ||
                                 c.Parameters[0].ParameterType.FullName == expectedConstructorParamType.FullName));
                         processorCommands.Add(p =>
-                            p.Emit(OpCodes.Newobj, moduleDefinition.ImportReference(wrapperConstructor)));
+                            p.Emit(OpCodes.Newobj, ModuleDefinition.ImportReference(wrapperConstructor)));
                     }
 
-                    var getOrDefault = referenceFinder.GetMethodReference(
+                    var getOrDefault = ReferenceFinder.GetMethodReference(
                             nullable,
                             methodDef => methodDef.Name == nameof(Nullable<int>.GetValueOrDefault) &&
                                 methodDef.HasParameters)
@@ -130,7 +108,7 @@ namespace Weavers.TechEffects
                 fieldsByProperty.Add(property, fieldDef);
             }
 
-            var objectConstructor = referenceFinder.GetConstructorReference(typeSystem.ObjectDefinition);
+            var objectConstructor = ReferenceFinder.GetConstructorReference(TypeSystem.ObjectDefinition);
             var processor = method.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Call, objectConstructor);
@@ -159,24 +137,11 @@ namespace Weavers.TechEffects
             return fieldsByProperty;
         }
 
-        private void addTemplateProperty(
+        private void addProperty(
             TypeDefinition type, PropertyDefinition propertyBase, FieldReference fieldReference)
         {
-            var getMethodBase = moduleDefinition.ImportReference(propertyBase.GetMethod).Resolve();
-
-            var propertyImpl =
-                new PropertyDefinition(propertyBase.Name, PropertyAttributes.None, propertyBase.PropertyType)
-                {
-                    GetMethod = new MethodDefinition(
-                        getMethodBase.Name,
-                        MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
-                        | MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual,
-                        getMethodBase.ReturnType)
-                };
-
+            var propertyImpl = MethodHelpers.CreatePropertyImplementation(ModuleDefinition, propertyBase);
             var getMethodImpl = propertyImpl.GetMethod;
-            getMethodImpl.SemanticsAttributes = getMethodBase.SemanticsAttributes;
-            getMethodImpl.Body = new MethodBody(getMethodImpl);
 
             var processor = getMethodImpl.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_0);
@@ -186,27 +151,17 @@ namespace Weavers.TechEffects
             type.Methods.Add(getMethodImpl);
         }
 
-        private void addTemplateModifiableCreationMethod(TypeDefinition type, GenericInstanceType genericParameterInterface)
+        private void addCreateModifiableInstanceMethod(TypeDefinition type, GenericInstanceType genericParameterInterface, TypeReference modifiableType)
         {
-            var methodBase =
-                referenceFinder
-                    .GetMethodReference(genericParameterInterface, Constants.CreateModifiableInstanceMethod);
-            methodBase.ReturnType = genericParameterInterface.GenericArguments[0];
-            var method = MethodHelpers.CreateMethodDefinitionFromInterfaceMethod(methodBase);
-
-            var processor = method.Body.GetILProcessor();
-            processor.Emit(OpCodes.Ldnull);
-            processor.Emit(OpCodes.Ret);
-
-            type.Methods.Add(method);
+            ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, modifiableType, null);
         }
 
-        private void addTemplateModifyMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)
         {
-            var exceptionCtor = referenceFinder.GetConstructorReference(typeof(InvalidOperationException));
+            var exceptionCtor = ReferenceFinder.GetConstructorReference(typeof(InvalidOperationException));
 
             var methodBase =
-                referenceFinder.GetMethodReference(genericParameterInterface, Constants.ModifyAttributeMethod);
+                ReferenceFinder.GetMethodReference(genericParameterInterface, Constants.ModifyAttributeMethod);
             var method = MethodHelpers.CreateMethodDefinitionFromInterfaceMethod(methodBase);
 
             var processor = method.Body.GetILProcessor();

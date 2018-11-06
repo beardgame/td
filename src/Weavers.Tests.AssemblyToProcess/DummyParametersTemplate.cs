@@ -42,11 +42,10 @@ namespace Weavers.Tests.AssemblyToProcess
     {
         private readonly IDummyParametersTemplate template;
 
-        private readonly AttributeWithModifications<int> intProperty;
         private readonly AttributeWithModifications<int> intPropertyWithDefault;
         private readonly AttributeWithModifications<WrappedInt> wrappedIntProperty;
 
-        public int IntProperty => intProperty.Value;
+        public int IntProperty => template.IntProperty;
         public int IntPropertyWithDefault => intPropertyWithDefault.Value;
         public WrappedInt WrappedIntProperty => wrappedIntProperty.Value;
 
@@ -54,7 +53,6 @@ namespace Weavers.Tests.AssemblyToProcess
         {
             this.template = template;
 
-            intProperty = new AttributeWithModifications<int>(template.IntProperty, i => (int) i);
             intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
             wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
 
