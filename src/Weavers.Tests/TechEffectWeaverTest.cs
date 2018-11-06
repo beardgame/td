@@ -161,8 +161,11 @@ namespace Weavers.Tests
                     0,
                     null,
                     getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
-
-            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.WrappedIntProperty.Val)).Should().Be(18);
+            
+            modifiable
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val))
+                .Should().Be(18);
         }
         
         [Fact]
@@ -187,8 +190,11 @@ namespace Weavers.Tests
             
             modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.Cooldown,
                 new Modification(Modification.ModificationType.Multiplicative, 1));
-
-            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.WrappedIntProperty.Val)).Should().Be(36);
+            
+            modifiable
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val))
+                .Should().Be(36);
         }
 
         private static object constructTemplate(params object[] constructorParams)
