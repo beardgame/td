@@ -65,6 +65,9 @@ namespace Weavers.TechEffects
                 MethodAttributes.Public | MethodAttributes.SpecialName
                 | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig,
                 TypeSystem.VoidReference);
+            method.Parameters.Add(
+                new ParameterDefinition(
+                    Constants.TemplateFieldName, ParameterAttributes.None, interfaceToImplement));
 
             var templateField = new FieldDefinition(
                 Constants.TemplateFieldName,
@@ -200,7 +203,8 @@ namespace Weavers.TechEffects
                 .GetConstructorReference(typeof(List<>))
                 .MakeHostInstanceGeneric(keyValueType);
             var keyValueListAdd = ReferenceFinder
-                .GetMethodReference<List<string>>(l => l.Add(""));
+                .GetMethodReference<List<KeyValuePair<AttributeType, IAttributeWithModifications>>>(
+                    l => l.Add(new KeyValuePair<AttributeType, IAttributeWithModifications>()));
 
             // create list of key-value pairs of attribute type and attribute where modifiable
             processor.Emit(OpCodes.Newobj, keyValueListCtor);
@@ -330,7 +334,10 @@ namespace Weavers.TechEffects
             var processor = getMethodImpl.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Ldfld, fieldReference);
-            processor.Emit(OpCodes.Callvirt, ModuleDefinition.ImportReference(valueProperty.GetMethod));
+            processor.Emit(
+                OpCodes.Callvirt,
+                ModuleDefinition.ImportReference(
+                    valueProperty.GetMethod.MakeHostInstanceGeneric(propertyBase.PropertyType)));
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);

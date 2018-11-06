@@ -29,6 +29,7 @@ namespace Bearded.TD.Shared.TechEffects
         {
             this.baseValue = baseValue;
             this.valueTransformer = valueTransformer;
+            currentValueDirty = true;
         }
 
         private void recalculateCurrentValue()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Bearded.TD.Shared.TechEffects;
 using FluentAssertions;
 using Fody;
 using Newtonsoft.Json;
@@ -136,9 +137,68 @@ namespace Weavers.Tests
             getModifiableConstructorInfo().Should().NotBeNull();
         }
 
+        [Fact]
+        public void MakesModifiableTypeRememberSimpleValues()
+        {
+            var modifiable = constructorModifiable(constructTemplate(42, null, null));
+
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
+        }
+
+        [Fact]
+        public void MakesModifiableTypeRememberModifiableValues()
+        {
+            var modifiable = constructorModifiable(constructTemplate(0, 10, null));
+
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
+        }
+        
+        [Fact]
+        public void MakesModifiableTypeRememberModifiableWrappedValues()
+        {
+            var modifiable = constructorModifiable(
+                constructTemplate(
+                    0,
+                    null,
+                    getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
+
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.WrappedIntProperty.Val)).Should().Be(18);
+        }
+        
+        [Fact]
+        public void MakesModifiableTypeAbleToModifyValues()
+        {
+            var modifiable = constructorModifiable(constructTemplate(0, 10, null));
+
+            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.DamagePerUnit,
+                new Modification(Modification.ModificationType.Multiplicative, 1));
+
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(20);
+        }
+        
+        [Fact]
+        public void MakesModifiableTypeAbleToModifyWrappedValues()
+        {
+            var modifiable = constructorModifiable(
+                constructTemplate(
+                    0,
+                    null,
+                    getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
+            
+            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.Cooldown,
+                new Modification(Modification.ModificationType.Multiplicative, 1));
+
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.WrappedIntProperty.Val)).Should().Be(36);
+        }
+
         private static object constructTemplate(params object[] constructorParams)
         {
             return getTemplateConstructorInfo().Invoke(constructorParams);
+        }
+
+        private static object constructorModifiable(object template)
+        {
+            return getModifiableConstructorInfo().Invoke(new[] { template });
         }
 
         private static ConstructorInfo getTemplateConstructorInfo()
