@@ -20,7 +20,6 @@ namespace Bearded.TD.Rendering.Deferred
 
         private readonly Level level;
         
-        // TODO: actually create this on game creation (in GameWorldControl?)
         // TODO: in the future this also needs to know about textures and stuff from mods
         public LevelGeometryManager(GameInstance game, RenderContext context)
         {
@@ -47,8 +46,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         private void markDirty((int X, int Y) tile)
             => batchLookup[batchIndexFor(tile)].MarkAsDirty();
-
-        // TODO: call this from deferred renderer
+        
         public void RenderAll()
         {
             foreach (var batch in batches)
