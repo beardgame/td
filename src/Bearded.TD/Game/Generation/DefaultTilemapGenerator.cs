@@ -124,7 +124,7 @@ namespace Bearded.TD.Game.Generation
                 intersections.Add(level.GetPosition(center));
 
                 var circles = (int)(Math.Sqrt(tilemap.Radius) / 1.4);
-                var radiusStep = tilemap.Radius / (float) (circles + 1);
+                var radiusStep = tilemap.Radius / (float) (circles + 1) * 0.9f;
 
                 for (var circle = 0; circle < circles; circle++)
                 {
@@ -149,6 +149,11 @@ namespace Bearded.TD.Game.Generation
                                 + random.NextFloat(-angleVariance, angleVariance).Radians();
                     var point = new Position2() + angle.Vector
                                 * (levelRadius * random.NextFloat(0.8f, 1));
+
+                    var tile = level.GetTile(point);
+                    if (!tile.IsValid)
+                        continue;
+
                     intersections.Add(point);
                 }
             }
@@ -233,7 +238,7 @@ namespace Bearded.TD.Game.Generation
                         continue;
                     var tiles = new List<Tile> {tile};
 
-                    var maxCount = random.Next(8, tilemap.Radius / 2);
+                    var maxCount = random.Next(8, (int) Math.Sqrt(tilemap.Radius) * 3);
 
                     while (tiles.Count < maxCount)
                     {
