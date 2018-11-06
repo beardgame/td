@@ -36,9 +36,9 @@ namespace Bearded.TD.Game.Generation
             gen.FillAll();
             gen.ClearCenter(tilemap.Radius - 1, 0.1);
             logger.Trace?.Log("Clearing tilemap center and corners");
-            gen.ClearCenter(3);
-            gen.ClearCenter(4, 0.3);
-            gen.ClearCenter(6, 0.1);
+            gen.ClearCenter(4);
+            gen.ClearCenter(5, 0.3);
+            gen.ClearCenter(7, 0.1);
             gen.ClearCorners(1);
             gen.ClearCorners(2, 0.5);
             gen.ClearCorners(3, 0.2);
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Generation
             gen.ConnectCornersToGraph();
             logger.Trace?.Log("Digging tunnels");
             gen.ClearTunnels();
-            gen.DigDeep(30);
+            gen.DigDeep(radius * radius / 15);
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
@@ -110,7 +110,7 @@ namespace Bearded.TD.Game.Generation
 
                     open(tile);
                     spray(spiral(tile, 1), open, 0.05);
-                    spray(spiral(tile, 2), open, 0.03);
+                    spray(spiral(tile, 2), open, 0.04);
                 }
             }
 
