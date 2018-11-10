@@ -140,7 +140,7 @@ namespace Weavers.Tests
         [Fact]
         public void MakesModifiableTypeRememberSimpleValues()
         {
-            var modifiable = constructorModifiable(constructTemplate(42, null, null));
+            var modifiable = constructModifiable(constructTemplate(42, null, null));
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
         }
@@ -148,7 +148,7 @@ namespace Weavers.Tests
         [Fact]
         public void MakesModifiableTypeRememberModifiableValues()
         {
-            var modifiable = constructorModifiable(constructTemplate(0, 10, null));
+            var modifiable = constructModifiable(constructTemplate(0, 10, null));
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
@@ -156,11 +156,15 @@ namespace Weavers.Tests
         [Fact]
         public void MakesModifiableTypeRememberModifiableWrappedValues()
         {
-            var modifiable = constructorModifiable(
+            var modifiable = constructModifiable(
                 constructTemplate(
                     0,
                     null,
                     getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
+
+            var val = modifiable
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val));
             
             modifiable
                 .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
@@ -171,7 +175,7 @@ namespace Weavers.Tests
         [Fact]
         public void MakesModifiableTypeAbleToModifyValues()
         {
-            var modifiable = constructorModifiable(constructTemplate(0, 10, null));
+            var modifiable = constructModifiable(constructTemplate(0, 10, null));
 
             modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.DamagePerUnit,
                 new Modification(Modification.ModificationType.Multiplicative, 1));
@@ -182,7 +186,7 @@ namespace Weavers.Tests
         [Fact]
         public void MakesModifiableTypeAbleToModifyWrappedValues()
         {
-            var modifiable = constructorModifiable(
+            var modifiable = constructModifiable(
                 constructTemplate(
                     0,
                     null,
@@ -202,7 +206,7 @@ namespace Weavers.Tests
             return getTemplateConstructorInfo().Invoke(constructorParams);
         }
 
-        private static object constructorModifiable(object template)
+        private static object constructModifiable(object template)
         {
             return getModifiableConstructorInfo().Invoke(new[] { template });
         }
