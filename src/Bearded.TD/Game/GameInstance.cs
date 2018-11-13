@@ -139,7 +139,7 @@ namespace Bearded.TD.Game
             if (State != null)
                 throw new InvalidOperationException("Cannot override the gamestate once set.");
             State = state;
-            GameStateInitialized.Invoke(State);
+            GameStateInitialized?.Invoke(State);
         }
     }
 }
