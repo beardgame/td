@@ -154,9 +154,9 @@ namespace Weavers.TechEffects
                 if (!typeOnStack.IsPrimitive)
                 {
                     var fieldType = ModuleDefinition
-                        .ImportReference(fieldInfo.innerFieldType)
-                        .Resolve();
+                        .ImportReference(fieldInfo.innerFieldType);
                     var innerProperty = fieldType
+                        .Resolve()
                         .Properties[0]
                         .Resolve();
 
