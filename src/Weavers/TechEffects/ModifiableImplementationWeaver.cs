@@ -160,12 +160,15 @@ namespace Weavers.TechEffects
                         .Properties[0]
                         .Resolve();
 
-                    var localVar = new VariableDefinition(fieldType);
-                    method.Body.Variables.Add(localVar);
-                    hasLocals = true;
-                    // Turn the object into an address using a local variable
-                    processor.Emit(OpCodes.Stloc, localVar);
-                    processor.Emit(OpCodes.Ldloca, localVar);
+                    if (fieldType.IsValueType)
+                    {
+                        var localVar = new VariableDefinition(fieldType);
+                        method.Body.Variables.Add(localVar);
+                        hasLocals = true;
+                        // Turn the object into an address using a local variable
+                        processor.Emit(OpCodes.Stloc, localVar);
+                        processor.Emit(OpCodes.Ldloca, localVar);
+                    }
                     
                     processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(innerProperty.GetMethod));
                     typeOnStack = innerProperty.PropertyType;

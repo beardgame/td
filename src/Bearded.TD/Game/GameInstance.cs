@@ -52,6 +52,8 @@ namespace Bearded.TD.Game
                 GameStatusChanged?.Invoke(status);
             }
         }
+
+        public event GenericEventHandler<GameState> GameStateInitialized; 
         public event GenericEventHandler<GameStatus> GameStatusChanged;
         public event GenericEventHandler<Player> PlayerAdded;
         public event GenericEventHandler<Player> PlayerRemoved;
@@ -137,6 +139,7 @@ namespace Bearded.TD.Game
             if (State != null)
                 throw new InvalidOperationException("Cannot override the gamestate once set.");
             State = state;
+            GameStateInitialized.Invoke(State);
         }
     }
 }
