@@ -3,25 +3,28 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Units
 {
-    sealed class UnitWarning : GameObject
+    sealed class UnitWarning : GameObject, IIdable<UnitWarning>
     {
+        public Id<UnitWarning> Id { get; }
+
         private readonly Tile<TileInfo> tile;
-        private readonly Instant dieAt;
         private Instant nextIndicatorSpawn;
 
-        public UnitWarning(Tile<TileInfo> tile, Instant dieAt)
+        public UnitWarning(Id<UnitWarning> id, Tile<TileInfo> tile)
         {
+            Id = id;
             this.tile = tile;
-            this.dieAt = dieAt;
         }
 
         protected override void OnAdded()
         {
             base.OnAdded();
+            Game.IdAs(this);
             nextIndicatorSpawn = Game.Time;
         }
 
@@ -31,10 +34,6 @@ namespace Bearded.TD.Game.Units
             {
                 Game.Add(new EnemyPathIndicator(tile));
                 nextIndicatorSpawn = Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
-            }
-            if (Game.Time >= dieAt)
-            {
-                Delete();
             }
         }
 

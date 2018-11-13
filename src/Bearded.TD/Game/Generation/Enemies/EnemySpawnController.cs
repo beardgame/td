@@ -17,13 +17,12 @@ namespace Bearded.TD.Game.Generation.Enemies
 {
     class EnemySpawnController
     {
-        private const int numAvailableSpawnPoints = 6;
-
         private readonly GameInstance game;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
         private readonly IReadOnlyList<EnemySpawnDefinition> enemies;
+        private IReadOnlyList<SpawnPoint> spawnPoints;
 
         private double debit;
         private double debitPayoffFactor = InitialDebitPayoffRate;
@@ -37,10 +36,26 @@ namespace Bearded.TD.Game.Generation.Enemies
         {
             this.game = game;
             enemies = EnemySpawnDefinitions.BuildSpawnDefinitions();
+
+            game.GameStateInitialized += state =>
+            {
+                spawnPoints = Directions
+                    .All
+                    .Enumerate()
+                    .Select(
+                        dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
+                            .Offset(dir.Step() * game.State.Level.Tilemap.Radius))
+                    .Select(tile => new SpawnPoint(game, tile))
+                    .ToList()
+                    .AsReadOnly();
+            };
         }
 
         public void Update(TimeSpan elapsedTime)
         {
+            DebugAssert.State.Satisfies(
+                spawnPoints != null, "Expected the spawn points to be initialized before first update.");
+
             debitPayoffFactor *= DebitPayoffGrowth.Powed(elapsedTime.NumericValue);
             minWaveCost *= WaveCostGrowth.Powed(elapsedTime.NumericValue);
             maxWaveCost *= WaveCostGrowth.Powed(elapsedTime.NumericValue);
@@ -58,6 +73,11 @@ namespace Bearded.TD.Game.Generation.Enemies
                     plannedWaves.Remove(curr);
                 curr = next;
             }
+
+            foreach (var spawnPoint in spawnPoints)
+            {
+                spawnPoint.Update();
+            }
         }
 
         private void queueNextWave()
@@ -73,7 +93,7 @@ namespace Bearded.TD.Game.Generation.Enemies
 
             var minSpawnPoints = Mathf.FloorToInt(minTimeToSpawn / MaxWaveDuration);
             var maxSpawnPoints = Mathf.CeilToInt(maxTimeToSpawn / MinWaveDuration);
-            var numSpawnPoints = random.Next(minSpawnPoints, maxSpawnPoints + 1).Clamped(1, numAvailableSpawnPoints);
+            var numSpawnPoints = random.Next(minSpawnPoints, maxSpawnPoints + 1).Clamped(1, spawnPoints.Count);
 
             var minDuration = TimeSpan.Max(MinWaveDuration, MinTimeBetweenEnemies / numSpawnPoints * numEnemies);
             var maxDuration = TimeSpan.Min(MaxWaveDuration, MaxTimeBetweenEnemies / numSpawnPoints * numEnemies);
@@ -98,7 +118,7 @@ namespace Bearded.TD.Game.Generation.Enemies
 
         private void buildWave(int numSpawnPoints, IUnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
         {
-            foreach (var (tile, i) in selectSpawnLocations(numSpawnPoints).Indexed())
+            foreach (var (spawnPoint, i) in spawnPoints.RandomSubset(numSpawnPoints).Indexed())
             {
                 var numEnemiesForPoint = numEnemies / numSpawnPoints;
                 if (i < numEnemiesForPoint % numSpawnPoints)
@@ -110,21 +130,76 @@ namespace Bearded.TD.Game.Generation.Enemies
                         game.State.Time + TimeBeforeFirstWave,
                         numEnemiesForPoint,
                         timeBetweenSpawns,
-                        tile));
+                        spawnPoint));
             }
 
             debit = blueprint.Value * numEnemies;
         }
 
-        private IEnumerable<Tile<TileInfo>> selectSpawnLocations(int num)
+        private class SpawnPoint
         {
-            return Directions
-                    .All
-                    .Enumerate()
-                    .RandomSubset(num)
-                    .Select(
-                        dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
-                                .Offset(dir.Step() * game.State.Level.Tilemap.Radius));
+            private readonly GameInstance game;
+            private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
+
+            public Tile<TileInfo> Tile { get; }
+
+            private Id<UnitWarning>? warningId;
+
+            public SpawnPoint(GameInstance game, Tile<TileInfo> tile)
+            {
+                this.game = game;
+                Tile = tile;
+            }
+
+            public void Update()
+            {
+                while (plannedWaves.Count > 0 && plannedWaves.First.Value.IsFinished)
+                {
+                    plannedWaves.RemoveFirst();
+                }
+
+                if (plannedWaves.Count == 0 && warningId.HasValue)
+                {
+                    game.Meta.Dispatcher.RunOnlyOnServer(() => HideUnitSpawnWarning.Command(game, warningId.Value));
+                    warningId = null;
+                }
+            }
+
+            public void ShowWarningForWave(EnemyWave wave)
+            {
+                insertWave(wave);
+                if (!warningId.HasValue)
+                {
+                    warningId = game.Meta.Ids.GetNext<UnitWarning>();
+                    game.Meta.Dispatcher.RunOnlyOnServer(
+                        () => ShowUnitSpawnWarning.Command(game, warningId.Value, Tile));
+                }
+            }
+
+            private void insertWave(EnemyWave wave)
+            {
+                if (plannedWaves.Count == 0 || wave.EndTime >= plannedWaves.Last.Value.EndTime)
+                {
+                    plannedWaves.AddLast(wave);
+                }
+                else
+                {
+                    var before = plannedWaves.Last;
+                    while (before.Previous != null && wave.EndTime < before.Previous.Value.EndTime)
+                    {
+                        before = before.Previous;
+                    }
+
+                    if (before == null)
+                    {
+                        plannedWaves.AddFirst(wave);
+                    }
+                    else
+                    {
+                        plannedWaves.AddBefore(before, wave);
+                    }
+                }
+            }
         }
 
         private class EnemyWave
@@ -134,12 +209,13 @@ namespace Bearded.TD.Game.Generation.Enemies
             private readonly Instant start;
             private readonly int size;
             private readonly TimeSpan timeBetweenSpawns;
-            private readonly Tile<TileInfo> tile;
+            private readonly SpawnPoint spawnPoint;
 
             private bool warningSent;
             private int enemiesSpawned;
 
             public bool IsFinished => enemiesSpawned == size;
+            public Instant EndTime => start + (size - 1) * timeBetweenSpawns;
 
             public EnemyWave(
                 GameInstance game,
@@ -147,14 +223,14 @@ namespace Bearded.TD.Game.Generation.Enemies
                 Instant start,
                 int size,
                 TimeSpan timeBetweenSpawns,
-                Tile<TileInfo> tile)
+                SpawnPoint spawnPoint)
             {
                 this.game = game;
                 this.blueprint = blueprint;
                 this.start = start;
                 this.size = size;
                 this.timeBetweenSpawns = timeBetweenSpawns;
-                this.tile = tile;
+                this.spawnPoint = spawnPoint;
             }
 
             public void Update()
@@ -175,8 +251,7 @@ namespace Bearded.TD.Game.Generation.Enemies
 
             private void showWarning()
             {
-                game.State.Meta.Dispatcher.RunOnlyOnServer(() => ShowUnitSpawnWarning.Command(
-                    game, tile, start + (size - 1) * timeBetweenSpawns));
+                spawnPoint.ShowWarningForWave(this);
                 warningSent = true;
             }
 
@@ -194,7 +269,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             {
                 game.State.Meta.Dispatcher.RunOnlyOnServer(() => SpawnUnit.Command(
                     game.State,
-                    tile,
+                    spawnPoint.Tile,
                     blueprint,
                     game.Meta.Ids.GetNext<EnemyUnit>()));
                 enemiesSpawned++;
