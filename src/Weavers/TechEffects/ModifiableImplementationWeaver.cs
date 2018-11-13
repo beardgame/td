@@ -133,6 +133,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Stfld, templateField);
             
             var funcCtor = ReferenceFinder.GetConstructorReference(typeof(Func<,>));
+            var hasLocals = false;
 
             // create modifiable wrappers for all properties
             foreach (var fieldInfo in fields)
@@ -152,11 +153,20 @@ namespace Weavers.TechEffects
                 var typeOnStack = fieldInfo.innerFieldType;
                 if (!typeOnStack.IsPrimitive)
                 {
-                    var innerProperty = ModuleDefinition
+                    var fieldType = ModuleDefinition
                         .ImportReference(fieldInfo.innerFieldType)
-                        .Resolve()
+                        .Resolve();
+                    var innerProperty = fieldType
                         .Properties[0]
                         .Resolve();
+
+                    var localVar = new VariableDefinition(fieldType);
+                    method.Body.Variables.Add(localVar);
+                    hasLocals = true;
+                    // Turn the object into an address using a local variable
+                    processor.Emit(OpCodes.Stloc, localVar);
+                    processor.Emit(OpCodes.Ldloca, localVar);
+                    
                     processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(innerProperty.GetMethod));
                     typeOnStack = innerProperty.PropertyType;
                 }
@@ -185,6 +195,8 @@ namespace Weavers.TechEffects
                 // set field to this instance
                 processor.Emit(OpCodes.Stfld, fieldInfo.field);
             }
+
+            method.Body.InitLocals = hasLocals;
 
             // prepare a 'this' on the stack for later
             processor.Emit(OpCodes.Ldarg_0);
