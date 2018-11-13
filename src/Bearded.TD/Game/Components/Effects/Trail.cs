@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
@@ -24,6 +26,8 @@ namespace Bearded.TD.Game.Components.Effects
         }
 
         private readonly List<Part> parts = new List<Part>();
+        private readonly float angleThresholdCosine;
+        private readonly Squared<Unit> distanceThresholdSquared;
 
         private int firstPartIndex;
         private int lastPartIndex => parts.Count - 1;
@@ -31,12 +35,14 @@ namespace Bearded.TD.Game.Components.Effects
 
         public TimeSpan TimeoutDuration { get; }
         
-        public Trail(TimeSpan timeoutDuration)
+        public Trail(TimeSpan timeoutDuration, Angle? newPartAngleThreshold = null, Unit? newPartDistanceThreshold = null)
         {
             TimeoutDuration = timeoutDuration;
+            angleThresholdCosine = (newPartAngleThreshold ?? 5.Degrees()).Cos();
+            distanceThresholdSquared = (newPartDistanceThreshold ?? 1.U()).Squared;
         }
 
-        public void Update(Instant currentTime, Position2 parentPosition)
+        public void Update(Instant currentTime, Position2 parentPosition, bool onlyFadeAway = false)
         {
             if (parts.Count == 0)
             {
@@ -44,15 +50,109 @@ namespace Bearded.TD.Game.Components.Effects
                 return;
             }
 
-            // TODO: only update last part if some min angle/distance not crossed
-            addPart(parentPosition, currentTime);
+            if (!onlyFadeAway)
+            {
+                addPartOrUpdateLast(parentPosition, currentTime);
 
-            // TODO: recalculate normals of last two/three points
+                updateLastPartNormals();
+            }
 
             timeoutParts(currentTime);
         }
 
-        private void addPart(Position2 parentPosition, Instant currentTime)
+        private void updateLastPartNormals()
+        {
+            if (parts.Count < 3)
+                return;
+
+            var lastI = lastPartIndex;
+            
+            var nextPart = parts[lastI];
+            var thisPart = parts[lastI - 1];
+            var previousPart = parts[lastI - 2];
+
+            var nextNormal = nextPart.Normal;
+            var nextWeight = nextPart.DistanceToPreviousPart;
+
+            var previousNormal = ((thisPart.Point - previousPart.Point) / thisPart.DistanceToPreviousPart).PerpendicularRight;
+            var previousWeight = thisPart.DistanceToPreviousPart;
+
+            var weight = previousWeight / (previousWeight + nextWeight);
+
+            var normal = Vector2.Lerp(previousNormal, nextNormal, weight).NormalizedSafe();
+
+            parts[lastI - 1] = part(thisPart, normal);
+        }
+
+        private void addPartOrUpdateLast(Position2 parentPosition, Instant currentTime)
+        {
+            // we want 3 parts so we can calculate the andle between the last two segments below
+            if (parts.Count < 3)
+            {
+                addNewLastPart(parentPosition, currentTime);
+                return;
+            }
+            
+            var lastFixedPart = parts[lastPartIndex - 1];
+            
+            var newLastFixedDifference = parentPosition - lastFixedPart.Point;
+            var newLastFixedDistanceSquared = newLastFixedDifference.LengthSquared;
+
+            if (newLastFixedDistanceSquared > distanceThresholdSquared)
+            {
+                addNewLastPart(parentPosition, currentTime);
+                return;
+            }
+            
+            var previousFixedPart = parts[lastPartIndex - 2];
+
+            var previousDifference = lastFixedPart.Point - previousFixedPart.Point;
+            var previousNormal = (previousDifference / previousDifference.Length).PerpendicularRight;
+            
+            var newLastFixedNormal = (newLastFixedDifference / newLastFixedDistanceSquared.Sqrt()).PerpendicularRight;
+
+            var previousNewAngleCosine = Vector2.Dot(previousNormal, newLastFixedNormal);
+
+            if (previousNewAngleCosine < angleThresholdCosine)
+            {
+                addNewLastPart(parentPosition, currentTime);
+                return;
+            }
+
+            var lastPart = parts[lastPartIndex];
+
+            var lastDifference = lastPart.Point - lastFixedPart.Point;
+            var lastNormal = (lastDifference / lastDifference.Length).PerpendicularRight;
+            
+            var newLastDifference = parentPosition - lastPart.Point;
+            var newLastNormal = (newLastDifference / newLastDifference.Length).PerpendicularRight;
+            
+            var lastNewAngleCosine = Vector2.Dot(lastNormal, newLastNormal);
+            
+            if (lastNewAngleCosine < angleThresholdCosine)
+            {
+                addNewLastPart(parentPosition, currentTime);
+                return;
+            }
+
+            updateLastPart(parentPosition, currentTime);
+        }
+
+        private void updateLastPart(Position2 parentPosition, Instant currentTime)
+        {
+            parts.RemoveAt(lastPartIndex);
+
+            addNewLastPart(parentPosition, currentTime);
+        }
+
+        private void addNewLastPart(Position2 parentPosition, Instant currentTime)
+        {
+            var part = createNewLastPart(parentPosition, currentTime);
+            
+            parts.Add(part);
+        }
+
+        private Part createNewLastPart(Position2 parentPosition, Instant currentTime)
         {
             var lastPart = parts[lastPartIndex];
 
@@ -61,7 +161,8 @@ namespace Bearded.TD.Game.Components.Effects
             var vector = difference / distance;
             var normal = vector.PerpendicularRight;
 
-            parts.Add(part(parentPosition, normal, distance, currentTime + TimeoutDuration));
+            var p = part(parentPosition, normal, distance, currentTime + TimeoutDuration);
+            return p;
         }
 
         private void addFirstPart(Position2 parentPosition, Instant currentTime)
@@ -71,12 +172,21 @@ namespace Bearded.TD.Game.Components.Effects
 
         private void timeoutParts(Instant currentTime)
         {
+            var previousFirstPartIndex = firstPartIndex;
+
             while (partCount > 1)
             {
                 var firstPart = parts[firstPartIndex];
 
                 if (currentTime <= firstPart.Timeout)
+                {
+                    if (previousFirstPartIndex != firstPartIndex)
+                    {
+                        // keep one timed out part around for better fading purposes
+                        firstPartIndex--;
+                    }
                     break;
+                }
 
                 firstPartIndex++;
             }
@@ -93,6 +203,9 @@ namespace Bearded.TD.Game.Components.Effects
         
         private static Part part(Position2 position, Instant timeOut)
             => new Part(position, Vector2.Zero, Unit.Zero, timeOut);
+
+        private static Part part(Part part, Vector2 normal)
+            => new Part(part.Point, normal, part.DistanceToPreviousPart, part.Timeout);
 
 
         public IEnumerator<Part> GetEnumerator()

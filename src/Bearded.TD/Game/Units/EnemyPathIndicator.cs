@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Components.Effects;
 using Bearded.TD.Game.World;
@@ -8,6 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {
@@ -18,7 +20,7 @@ namespace Bearded.TD.Game.Units
 
         private readonly Tile<TileInfo> startTile;
         private TileWalker tileWalker;
-        private readonly Trail trail = new Trail(trailTimeout);
+        private readonly Trail trail = new Trail(trailTimeout, newPartDistanceThreshold: 2.U());
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -50,7 +52,7 @@ namespace Bearded.TD.Game.Units
                 Delete();
             }
 
-            trail.Update(Game.Time, Position);
+            trail.Update(Game.Time, Position, deleteAt != null);
         }
 
         public override void Draw(GeometryManager geometries)
@@ -81,7 +83,7 @@ namespace Bearded.TD.Game.Units
             var center = part.Point.NumericValue;
             var offset = part.Normal * renderSize;
 
-            var alpha = (part.Timeout - Game.Time) / trailTimeout;
+            var alpha = Math.Max(0, (part.Timeout - Game.Time) / trailTimeout);
 
             return (
                 Left: (center - offset).WithZ(),
