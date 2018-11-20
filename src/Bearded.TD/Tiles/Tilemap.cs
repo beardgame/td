@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Tiles
 {
@@ -15,7 +14,7 @@ namespace Bearded.TD.Tiles
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
     }
 
-    class Tilemap<TValue> : IEnumerable<(Tile Tile, TValue Value)>
+    class Tilemap<TValue> : IEnumerable<Tile>
     {
         public int Radius { get; }
         private readonly TValue[,] tiles;
@@ -41,7 +40,7 @@ namespace Bearded.TD.Tiles
         {
             foreach (var tile in this)
             {
-                this[tile.Tile] = initialiseTile(tile.Tile);
+                this[tile] = initialiseTile(tile);
             }
         }
 
@@ -73,14 +72,12 @@ namespace Bearded.TD.Tiles
 
         public bool IsValidTile(Tile tile) => IsValidTile(tile.X, tile.Y);
 
-        public IEnumerable<(Tile Tile, TValue Value)> SpiralCenteredAt(Tile center, int radius)
+        public IEnumerable<Tile> SpiralCenteredAt(Tile center, int radius)
             => spiral(center.X, center.Y, radius)
-                .Where(IsValidTile)
-                .Select(tileWithValue);
+                .Where(IsValidTile);
 
-        public IEnumerable<(Tile Tile, TValue Value)> TilesSpiralOutward
-            => spiral(0, 0, Radius)
-                .Select(tileWithValue);
+        public IEnumerable<Tile> TilesSpiralOutward
+            => spiral(0, 0, Radius);
 
         private IEnumerable<Tile> spiral(int centerX, int centerY, int radius)
         {
@@ -112,7 +109,7 @@ namespace Bearded.TD.Tiles
             }
         }
 
-        public IEnumerator<(Tile Tile, TValue Value)> GetEnumerator()
+        public IEnumerator<Tile> GetEnumerator()
         {
             for (var y = -Radius; y <= Radius; y++)
             {
@@ -121,14 +118,11 @@ namespace Bearded.TD.Tiles
 
                 for (var x = xMin; x <= xMax; x++)
                 {
-                    yield return tileWithValue(x, y);
+                    yield return new Tile(x, y);
                 }
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        
-        private (Tile, TValue) tileWithValue(int x, int y) => tileWithValue(new Tile(x, y));
-        private (Tile, TValue) tileWithValue(Tile tile) => (tile, this[tile]);
     }
 }

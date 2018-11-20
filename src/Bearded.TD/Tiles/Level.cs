@@ -4,16 +4,9 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Tiles
 {
-    class Level<TTileInfo>
+    class Level
     {
-        public Tilemap<TTileInfo> Tilemap { get; }
-
-        public Level(Tilemap<TTileInfo> tilemap)
-        {
-            Tilemap = tilemap;
-        }
-
-        public Tile<TTileInfo> GetTile(Position2 position)
+        public Tile GetTile(Position2 position)
         {
             var yf = position.Y.NumericValue * (1 / HexagonDistanceY) + 1 / 1.5f;
             var y = Floor(yf);
@@ -32,10 +25,10 @@ namespace Bearded.TD.Tiles
             tx += isBottomRightCorner ? 1 : 0;
             ty += isBottomRightCorner || isBottomLeftConer ? -1 : 0;
 
-            return new Tile<TTileInfo>(Tilemap, tx, ty);
+            return new Tile(tx, ty);
         }
 
-        public Position2 GetPosition(Tile<TTileInfo> tile)
+        public Position2 GetPosition(Tile tile)
             => new Position2(
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
