@@ -10,12 +10,12 @@ namespace Bearded.TD.Game.World
         private readonly Level level;
 
         public Position2 Position { get; private set; }
-        public Tile<TileInfo> CurrentTile { get; private set; }
+        public Tile CurrentTile { get; private set; }
         private Position2 currentTilePosition => level.GetPosition(CurrentTile);
-        private Tile<TileInfo> goalTile;
+        private Tile goalTile;
         private Position2 goalPosition => level.GetPosition(goalTile);
 
-        public Tile<TileInfo> GoalTile => goalTile;
+        public Tile GoalTile => goalTile;
         public bool IsMoving { get; private set; }
 
         public TileWalker(ITileWalkerOwner owner, Level level)
@@ -30,10 +30,10 @@ namespace Bearded.TD.Game.World
             updateCurrentTileIfNeeded();
         }
 
-        public void Teleport(Position2 newPos, Tile<TileInfo> goalTile)
+        public void Teleport(Position2 newPos, Tile teleportToTile)
         {
             Position = newPos;
-            this.goalTile = goalTile;
+            this.goalTile = teleportToTile;
             updateCurrentTileIfNeeded();
         }
 
@@ -75,7 +75,7 @@ namespace Bearded.TD.Game.World
             }
         }
 
-        private void setCurrentTile(Tile<TileInfo> newTile)
+        private void setCurrentTile(Tile newTile)
         {
             var oldTile = CurrentTile;
             CurrentTile = newTile;
@@ -85,7 +85,7 @@ namespace Bearded.TD.Game.World
 
     interface ITileWalkerOwner
     {
-        void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile);
+        void OnTileChanged(Tile oldTile, Tile newTile);
         Direction GetNextDirection();
     }
 }

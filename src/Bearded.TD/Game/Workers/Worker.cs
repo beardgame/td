@@ -20,10 +20,10 @@ namespace Bearded.TD.Game.Workers
         public Squared<Unit> WorkRadiusSquared = Constants.Game.Worker.WorkRadiusSquared;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
-        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? Game.Level.GetTile(Position2.Zero);
+        public Tile CurrentTile => tileWalker?.CurrentTile ?? Game.Level.GetTile(Position2.Zero);
 
         private WorkerState currentState;
-        private IEnumerable<Tile<TileInfo>> taskTiles;
+        private IEnumerable<Tile> taskTiles;
 
         public Worker(WorkerManager manager, Faction faction)
         {
@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Workers
             currentState.Start();
         }
 
-        private void setTaskTiles(IEnumerable<Tile<TileInfo>> newTaskTiles)
+        private void setTaskTiles(IEnumerable<Tile> newTaskTiles)
         {
             taskTiles = newTaskTiles;
         }
@@ -86,7 +86,7 @@ namespace Bearded.TD.Game.Workers
             sprite.Draw(Position.NumericValue.WithZ(0), Faction.Color, 0.5f);
         }
 
-        public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile) { }
+        public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
         public Direction GetNextDirection()
         {
