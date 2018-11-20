@@ -18,16 +18,16 @@ namespace Bearded.TD.Game.Units
         private const float renderSize = .1f;
         private static readonly TimeSpan trailTimeout = 1.S();
 
-        private readonly Tile<TileInfo> startTile;
+        private readonly Tile startTile;
         private TileWalker tileWalker;
         private readonly Trail trail = new Trail(trailTimeout, newPartDistanceThreshold: 2.U());
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
-        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
+        public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
 
         private Instant? deleteAt;
 
-        public EnemyPathIndicator(Tile<TileInfo> currentTile)
+        public EnemyPathIndicator(Tile currentTile)
         {
             if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
             startTile = currentTile;
@@ -92,7 +92,7 @@ namespace Bearded.TD.Game.Units
                 );
         }
 
-        public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile) { }
+        public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
         public Direction GetNextDirection()
         {

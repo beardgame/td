@@ -11,16 +11,16 @@ namespace Bearded.TD.Game.Commands
 {
     static class MineTile
     {
-        public static IRequest<GameInstance> Request(GameInstance game, Faction faction, Tile<TileInfo> tile)
+        public static IRequest<GameInstance> Request(GameInstance game, Faction faction, Tile tile)
             => new Implementation(game, faction, tile);
 
         private class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
-            private readonly Tile<TileInfo> tile;
+            private readonly Tile tile;
 
-            public Implementation(GameInstance game, Faction faction, Tile<TileInfo> tile)
+            public Implementation(GameInstance game, Faction faction, Tile tile)
             {
                 this.game = game;
                 this.faction = faction;
@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Tile<TileInfo> tile, Faction faction)
+            public Serializer(Tile tile, Faction faction)
             {
                 tileX = tile.X;
                 tileY = tile.Y;
@@ -61,8 +61,7 @@ namespace Bearded.TD.Game.Commands
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
-                return new Implementation(
-                    game, game.State.FactionFor(faction), new Tile<TileInfo>(game.State.Level.Tilemap, tileX, tileY));
+                return new Implementation(game, game.State.FactionFor(faction), new Tile(tileX, tileY));
             }
 
             public override void Serialize(INetBufferStream stream)

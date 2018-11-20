@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Buildings
         public Faction Faction { get; }
         public Position2 Position { get; private set; }
         
-        public IEnumerable<Tile<TileInfo>> OccupiedTiles => Footprint.OccupiedTiles;
+        public IEnumerable<Tile> OccupiedTiles => Footprint.OccupiedTiles;
 
         protected BuildingBase(
             IBuildingBlueprint blueprint,
@@ -80,7 +80,7 @@ namespace Bearded.TD.Game.Buildings
             }
         }
 
-        protected void DrawTile(GeometryManager geometries, Color color, Tile<TileInfo> tile)
+        protected void DrawTile(GeometryManager geometries, Color color, Tile tile)
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = color;

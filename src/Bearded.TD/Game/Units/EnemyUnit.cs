@@ -22,11 +22,11 @@ namespace Bearded.TD.Game.Units
         public Id<EnemyUnit> Id { get; }
         
         private readonly IUnitBlueprint blueprint;
-        private readonly Tile<TileInfo> startTile;
+        private readonly Tile startTile;
         private TileWalker tileWalker;
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
-        public Tile<TileInfo> CurrentTile => tileWalker?.CurrentTile ?? startTile;
+        public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
         private bool propertiesDirty;
@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Units
         private Instant nextAttack;
         private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
 
-        public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile<TileInfo> currentTile)
+        public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
             if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
 
@@ -139,13 +139,8 @@ namespace Bearded.TD.Game.Units
                 : desiredDirection;
         }
 
-        public void OnTileChanged(Tile<TileInfo> oldTile, Tile<TileInfo> newTile)
-        {
-            if (oldTile.IsValid)
-                oldTile.Info.RemoveEnemy(this);
-            if (newTile.IsValid)
-                newTile.Info.AddEnemy(this);
-        }
+        public void OnTileChanged(Tile oldTile, Tile newTile) =>
+            Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
         public void ApplyStatusEffect(IStatusEffectSource statusEffect)
         {
@@ -184,7 +179,7 @@ namespace Bearded.TD.Game.Units
         {
             tileWalker.Teleport(
                 new Position2(state.X, state.Y),
-                new Tile<TileInfo>(Game.Level.Tilemap, state.GoalTileX, state.GoalTileY));
+                new Tile(state.GoalTileX, state.GoalTileY));
             properties = EnemyUnitProperties.FromState(state);
             health = state.Health;
         }

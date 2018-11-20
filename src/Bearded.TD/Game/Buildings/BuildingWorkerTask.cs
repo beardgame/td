@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Workers;
-using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -21,7 +20,7 @@ namespace Bearded.TD.Game.Buildings
         private int healthGiven = 1;
         private bool finished;
 
-        public override IEnumerable<Tile<TileInfo>> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
+        public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
         public override bool Finished => finished;
 
         public BuildingWorkerTask(BuildingPlaceholder placeholder)

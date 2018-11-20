@@ -8,11 +8,11 @@ namespace Bearded.TD.Game.World
     struct PositionedFootprint
     {
         private readonly Level level;
-        public Tile<TileInfo> RootTile { get; }
+        public Tile RootTile { get; }
         public FootprintGroup Footprint { get; }
         public int FootprintIndex { get; }
 
-        public PositionedFootprint(Level level, FootprintGroup footprint, int index, Tile<TileInfo> rootTile)
+        public PositionedFootprint(Level level, FootprintGroup footprint, int index, Tile rootTile)
         {
             this.level = level;
             RootTile = rootTile;
@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.World
             FootprintIndex = index;
         }
 
-        public IEnumerable<Tile<TileInfo>> OccupiedTiles => Footprint?.Footprints[FootprintIndex].OccupiedTiles(RootTile);
+        public IEnumerable<Tile> OccupiedTiles => Footprint?.Footprints[FootprintIndex].OccupiedTiles(RootTile);
         public bool IsValid => OccupiedTiles?.All(tile => tile.IsValid) ?? false;
         public Position2 CenterPosition => Footprint?.Footprints[FootprintIndex].Center(level, RootTile) ?? new Position2();
     }

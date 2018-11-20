@@ -1,6 +1,5 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -10,10 +9,10 @@ namespace Bearded.TD.Game.Workers
     class MiningTaskPlaceholder : GameObject
     {
         private readonly Faction faction;
-        private readonly Tile<TileInfo> tile;
+        private readonly Tile tile;
         private MiningTask task;
 
-        public MiningTaskPlaceholder(Faction faction, Tile<TileInfo> tile)
+        public MiningTaskPlaceholder(Faction faction, Tile tile)
         {
             this.faction = faction;
             this.tile = tile;

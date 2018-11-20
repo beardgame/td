@@ -10,17 +10,17 @@ namespace Bearded.TD.Game.Workers
 {
     class MiningTask : WorkerTask
     {
-        public override IEnumerable<Tile<TileInfo>> Tiles => tile.Yield();
+        public override IEnumerable<Tile> Tiles => tile.Yield();
         public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
         private readonly Level level;
-        private readonly Tile<TileInfo> tile;
+        private readonly Tile tile;
         private readonly LevelGeometry geometry;
         private readonly Unit originalTileHeight;
 
         private double miningProgress;
 
-        public MiningTask(Level level, Tile<TileInfo> tile, LevelGeometry geometry)
+        public MiningTask(Level level, Tile tile, LevelGeometry geometry)
         {
             DebugAssert.Argument.Satisfies(tile.Info.IsMineable);
 

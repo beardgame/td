@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
