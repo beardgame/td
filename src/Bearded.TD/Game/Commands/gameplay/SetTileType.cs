@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Commands
 
             protected override bool CheckPreconditionsDebug() => tile.IsValid;
 
-            public override void Execute() => game.Geometry.SetTileType(tile, type, drawInfo);
+            public override void Execute() => game.GeometryLayer.SetTileType(tile, type, drawInfo);
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(tile, type, drawInfo);
         }

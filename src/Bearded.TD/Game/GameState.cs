@@ -32,10 +32,10 @@ namespace Bearded.TD.Game
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
         public Level Level { get; }
-        public GeometryLayer Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
         public TechnologyManager Technology { get; }
-
+        
+        public GeometryLayer GeometryLayer { get; }
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
 
@@ -49,12 +49,12 @@ namespace Bearded.TD.Game
         {
             Meta = meta;
             Level = level;
-            Geometry = new GeometryLayer(meta.Events, level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(meta.Events, level.Tilemap);
             Technology = new TechnologyManager();
-
+            
+            GeometryLayer = new GeometryLayer(meta.Events, level.Tilemap);
             UnitLayer = new UnitLayer();
-            BuildingLayer = new BuildingLayer();
+            BuildingLayer = new BuildingLayer(Meta.Events);
         }
 
         public void FinishLoading()
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game
                 throw new Exception("Can only finish loading game state once.");
             }
 
-            Geometry.Initialise();
+            GeometryLayer.Initialise();
             Navigator.Initialise();
             isLoading = false;
         }
