@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -33,6 +34,8 @@ namespace Bearded.TD.Game
         public MultipleSinkNavigationSystem Navigator { get; }
         public TechnologyManager Technology { get; }
 
+        public UnitLayer UnitLayer { get; }
+
         private bool isLoading = true;
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
@@ -46,6 +49,8 @@ namespace Bearded.TD.Game
             Geometry = new LevelGeometry(meta.Events, level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(meta.Events, level.Tilemap);
             Technology = new TechnologyManager();
+
+            UnitLayer = new UnitLayer();
         }
 
         public void FinishLoading()
