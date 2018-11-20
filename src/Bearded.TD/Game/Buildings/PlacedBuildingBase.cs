@@ -3,7 +3,6 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -49,22 +48,12 @@ namespace Bearded.TD.Game.Buildings
         protected override void OnAdded()
         {
             base.OnAdded();
-            OccupiedTiles.ForEach(tile =>
-            {
-                var info = tile.Info;
-                DebugAssert.State.Satisfies(info.PlacedBuilding == null, "Tile already taken by other placed building.");
-                info.PlacedBuilding = this;
-            });
+            Game.BuildingLayer.AddBuilding(this);
         }
 
         protected override void OnDelete()
         {
-            OccupiedTiles.ForEach(tile =>
-            {
-                var info = tile.Info;
-                DebugAssert.State.Satisfies(info.PlacedBuilding == this, "Cannot remove placed building from tile it is not on.");
-                info.PlacedBuilding = null;
-            });
+            Game.BuildingLayer.RemoveBuilding(this);
             base.OnDelete();
         }
     }

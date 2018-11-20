@@ -56,11 +56,7 @@ namespace Bearded.TD.Game.Buildings
         {
             Game.IdAs(this);
 
-            OccupiedTiles.ForEach(tile =>
-            {
-                Game.Geometry.SetBuilding(tile, this);
-                Game.Navigator.AddBackupSink(tile);
-            });
+            OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
 
             base.OnAdded();
         }

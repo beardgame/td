@@ -52,28 +52,6 @@ namespace Bearded.TD.Game.World
         public Directions OpenDirectionsForUnits { get; private set; }
         private Type tileType;
 
-        private IPlacedBuilding placedBuilding;
-        public IPlacedBuilding PlacedBuilding
-        {
-            get => placedBuilding;
-            set
-            {
-                placedBuilding = value;
-                updatePassability();
-            }
-        }
-
-        private Building finishedBuilding;
-        public Building FinishedBuilding
-        {
-            get => finishedBuilding;
-            set
-            {
-                finishedBuilding = value;
-                updatePassability();
-            }
-        }
-
         private readonly List<EnemyUnit> enemies = new List<EnemyUnit>();
         public ReadOnlyCollection<EnemyUnit> Enemies { get; }
 

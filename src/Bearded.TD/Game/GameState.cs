@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Technologies;
@@ -36,6 +37,7 @@ namespace Bearded.TD.Game
         public TechnologyManager Technology { get; }
 
         public UnitLayer UnitLayer { get; }
+        public BuildingLayer BuildingLayer { get; }
 
         private bool isLoading = true;
 
@@ -52,6 +54,7 @@ namespace Bearded.TD.Game
             Technology = new TechnologyManager();
 
             UnitLayer = new UnitLayer();
+            BuildingLayer = new BuildingLayer();
         }
 
         public void FinishLoading()
