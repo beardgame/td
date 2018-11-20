@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -12,10 +11,10 @@ namespace Bearded.TD.Game.Units
     {
         public Id<UnitWarning> Id { get; }
 
-        private readonly Tile<TileInfo> tile;
+        private readonly Tile tile;
         private Instant nextIndicatorSpawn;
 
-        public UnitWarning(Id<UnitWarning> id, Tile<TileInfo> tile)
+        public UnitWarning(Id<UnitWarning> id, Tile tile)
         {
             Id = id;
             this.tile = tile;
