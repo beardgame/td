@@ -2,10 +2,10 @@
 
 namespace Bearded.TD.Game.Events
 {
-    struct TileDrawInfoChanged : IEvent
+    struct TileTypeChanged : IEvent
     {
         public Tile Tile { get; }
 
-        public TileDrawInfoChanged(Tile tile) => Tile = tile;
+        public TileTypeChanged(Tile tile) => Tile = tile;
     }
 }

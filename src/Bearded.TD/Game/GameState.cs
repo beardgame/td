@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
         public Level Level { get; }
-        public LevelGeometry Geometry { get; }
+        public GeometryLayer Geometry { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
         public TechnologyManager Technology { get; }
 
@@ -47,7 +47,7 @@ namespace Bearded.TD.Game
         {
             Meta = meta;
             Level = level;
-            Geometry = new LevelGeometry(meta.Events, level.Tilemap);
+            Geometry = new GeometryLayer(meta.Events, level.Tilemap);
             Navigator = new MultipleSinkNavigationSystem(meta.Events, level.Tilemap);
             Technology = new TechnologyManager();
 

@@ -15,12 +15,12 @@ namespace Bearded.TD.Game.Workers
 
         private readonly Level level;
         private readonly Tile tile;
-        private readonly LevelGeometry geometry;
+        private readonly GeometryLayer geometry;
         private readonly Unit originalTileHeight;
 
         private double miningProgress;
 
-        public MiningTask(Level level, Tile tile, LevelGeometry geometry)
+        public MiningTask(Level level, Tile tile, GeometryLayer geometry)
         {
             DebugAssert.Argument.Satisfies(tile.Info.IsMineable);
 
