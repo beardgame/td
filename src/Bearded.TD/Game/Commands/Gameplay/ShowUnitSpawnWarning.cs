@@ -1,7 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Units;
-using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -10,17 +9,16 @@ namespace Bearded.TD.Game.Commands
 {
     static class ShowUnitSpawnWarning
     {
-        public static ISerializableCommand<GameInstance> Command(
-                    GameInstance game, Id<UnitWarning> id, Tile<TileInfo> tile)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Id<UnitWarning> id, Tile tile)
             => new Implementation(game, id, tile);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Id<UnitWarning> id;
-            private readonly Tile<TileInfo> tile;
+            private readonly Tile tile;
 
-            public Implementation(GameInstance game, Id<UnitWarning> id, Tile<TileInfo> tile)
+            public Implementation(GameInstance game, Id<UnitWarning> id, Tile tile)
             {
                 this.game = game;
                 this.id = id;
@@ -46,7 +44,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Id<UnitWarning> id, Tile<TileInfo> tile)
+            public Serializer(Id<UnitWarning> id, Tile tile)
             {
                 this.id = id;
                 tileX = tile.X;
@@ -54,7 +52,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, id, new Tile<TileInfo>(game.State.Level.Tilemap, tileX, tileY));
+                => new Implementation(game, id, new Tile(tileX, tileY));
 
             public void Serialize(INetBufferStream stream)
             {

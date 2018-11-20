@@ -141,11 +141,11 @@ namespace Bearded.TD.Game.Generation.Enemies
             private readonly GameInstance game;
             private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
-            public Tile<TileInfo> Tile { get; }
+            public Tile Tile { get; }
 
             private Id<UnitWarning>? warningId;
 
-            public SpawnPoint(GameInstance game, Tile<TileInfo> tile)
+            public SpawnPoint(GameInstance game, Tile tile)
             {
                 this.game = game;
                 Tile = tile;
