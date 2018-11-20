@@ -38,6 +38,7 @@ namespace Bearded.TD.Game
         public GeometryLayer GeometryLayer { get; }
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
+        public BuildingPlacementLayer BuildingPlacementLayer { get; }
 
         private bool isLoading = true;
 
@@ -55,6 +56,7 @@ namespace Bearded.TD.Game
             GeometryLayer = new GeometryLayer(meta.Events, level.Tilemap);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
+            BuildingPlacementLayer = new BuildingPlacementLayer(GeometryLayer, BuildingLayer);
         }
 
         public void FinishLoading()

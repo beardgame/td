@@ -23,9 +23,12 @@ namespace Bearded.TD.Game.Buildings
 
         public override SelectionState SelectionState => SelectionState.Selected;
         
-        public override void ResetSelection() => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Focus(SelectionManager selectionManager) => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Select(SelectionManager selectionManager) => throw new InvalidOperationException(selectionIsImmutable);
+        public override void ResetSelection()
+            => throw new InvalidOperationException(selectionIsImmutable);
+        public override void Focus(SelectionManager selectionManager)
+            => throw new InvalidOperationException(selectionIsImmutable);
+        public override void Select(SelectionManager selectionManager)
+            => throw new InvalidOperationException(selectionIsImmutable);
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
             => Blueprint.GetComponentsForGhost();
@@ -34,7 +37,7 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                var color = (tile.IsValid && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building) ? Color.Green : Color.Red) * 0.5f;
+                var color = (Game.BuildingPlacementLayer.IsTileValidForBuilding(tile) ? Color.Green : Color.Red) * 0.5f;
                 DrawTile(geometries, color, tile);
             }
             

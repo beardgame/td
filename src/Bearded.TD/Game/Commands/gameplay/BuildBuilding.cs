@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Bearded.TD.Commands;
+﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
@@ -32,8 +31,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions()
-                => footprint.OccupiedTiles.All(tile => tile.IsValid
-                        && tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Building))
+                => game.State.BuildingPlacementLayer.AreTilesValidForBuilding(footprint.OccupiedTiles)
                         && blueprint.FootprintGroup == footprint.Footprint;
 
             public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);

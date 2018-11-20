@@ -50,15 +50,15 @@ namespace Bearded.TD.Game.Buildings
             }
         }
 
-        public IPlacedBuilding GetBuildingOnTile(Tile tile)
+        public IPlacedBuilding GetBuildingFor(Tile tile)
         {
             buildingLookup.TryGetValue(tile, out var building);
             return building;
         }
 
-        public Occupation GetOccupationForTile(Tile tile)
+        public Occupation GetOccupationFor(Tile tile)
         {
-            var building = GetBuildingOnTile(tile);
+            var building = GetBuildingFor(tile);
             switch (building)
             {
                 case null:
@@ -70,5 +70,7 @@ namespace Bearded.TD.Game.Buildings
             }
             throw new InvalidOperationException();
         }
+
+        public IPlacedBuilding this[Tile tile] => GetBuildingFor(tile);
     }
 }
