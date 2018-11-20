@@ -5,6 +5,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
