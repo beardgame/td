@@ -7,7 +7,6 @@ namespace Bearded.TD.Game.Buildings
 {
     sealed class BuildingLayer
     {
-
         public enum Occupation
         {
             None,
