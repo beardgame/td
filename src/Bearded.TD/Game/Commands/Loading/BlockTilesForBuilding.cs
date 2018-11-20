@@ -11,15 +11,15 @@ namespace Bearded.TD.Game.Commands
 {
     static class BlockTilesForBuilding
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, IList<Tile<TileInfo>> tiles)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, IList<Tile> tiles)
             => new Implementation(game, tiles);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
-            private readonly IList<Tile<TileInfo>> tiles;
+            private readonly IList<Tile> tiles;
 
-            public Implementation(GameInstance game, IList<Tile<TileInfo>> tiles)
+            public Implementation(GameInstance game, IList<Tile> tiles)
             {
                 this.game = game;
                 this.tiles = tiles;
@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Commands
             {
                 game.MustBeLoading();
 
-                tiles.ForEach(t => t.Info.BlockForBuilding());
+                tiles.ForEach(game.State.BuildingPlacementLayer.BlockTileForBuilding);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(tiles);
@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Commands
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 
-            public Serializer(IEnumerable<Tile<TileInfo>> tiles)
+            public Serializer(IEnumerable<Tile> tiles)
             {
                 this.tiles = tiles.Select(tile => (tile.X, tile.Y)).ToArray();
             }
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Commands
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(
                         game,
-                        tiles.Select(coords => new Tile<TileInfo>(game.State.Level.Tilemap, coords.x, coords.y)).ToList());
+                        tiles.Select(coords => new Tile(coords.x, coords.y)).ToList());
 
             public void Serialize(INetBufferStream stream)
             {
