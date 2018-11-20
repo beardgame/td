@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Tiles
 {
@@ -14,10 +15,10 @@ namespace Bearded.TD.Tiles
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
     }
 
-    class Tilemap<TTileInfo> : IEnumerable<Tile<TTileInfo>>
+    class Tilemap<TValue> : IEnumerable<(Tile Tile, TValue Value)>
     {
         public int Radius { get; }
-        private readonly TTileInfo[,] tiles;
+        private readonly TValue[,] tiles;
 
         /* Layout of array:
          * (radius 1)
@@ -35,12 +36,12 @@ namespace Bearded.TD.Tiles
          *
          */
 
-        public Tilemap(int radius, Func<Tile<TTileInfo>, TTileInfo> initialiseTile)
+        public Tilemap(int radius, Func<Tile, TValue> initialiseTile)
             : this(radius)
         {
             foreach (var tile in this)
             {
-                this[tile] = initialiseTile(tile);
+                this[tile.Tile] = initialiseTile(tile.Tile);
             }
         }
 
@@ -48,18 +49,18 @@ namespace Bearded.TD.Tiles
         {
             Radius = radius;
             var arrayDimension = radius * 2 + 1;
-            tiles = new TTileInfo[arrayDimension, arrayDimension];
+            tiles = new TValue[arrayDimension, arrayDimension];
         }
 
         public int Count => Tilemap.TileCountForRadius(Radius);
 
-        public TTileInfo this[int x, int y]
+        public TValue this[int x, int y]
         {
             get => tiles[x + Radius, y + Radius];
             set => tiles[x + Radius, y + Radius] = value;
         }
 
-        public TTileInfo this[Tile<TTileInfo> tile]
+        public TValue this[Tile tile]
         {
             get => this[tile.X, tile.Y];
             set => this[tile.X, tile.Y] = value;
@@ -70,22 +71,23 @@ namespace Bearded.TD.Tiles
             Math.Abs(y) <= Radius &&
             Math.Abs(x + y) <= Radius;
 
-        public bool IsValidTile(Tile<TTileInfo> tile) => IsValidTile(tile.X, tile.Y);
+        public bool IsValidTile(Tile tile) => IsValidTile(tile.X, tile.Y);
 
-        public IEnumerable<Tile<TTileInfo>> SpiralCenteredAt(Tile<TTileInfo> center, int radius)
-            => spiralTiles(center.X, center.Y, radius).Where(t => t.IsValid);
+        public IEnumerable<(Tile Tile, TValue Value)> SpiralCenteredAt(Tile center, int radius)
+            => spiral(center.X, center.Y, radius)
+                .Where(IsValidTile)
+                .Select(tileWithValue);
 
-        public IEnumerable<Tile<TTileInfo>> TilesSpiralOutward => spiralTiles(0, 0, Radius);
+        public IEnumerable<(Tile Tile, TValue Value)> TilesSpiralOutward
+            => spiral(0, 0, Radius)
+                .Select(tileWithValue);
 
-        private IEnumerable<Tile<TTileInfo>> spiralTiles(int centerX, int centerY, int radius)
-            => spiral(centerX, centerY, radius).Select(xy => new Tile<TTileInfo>(this, xy.X, xy.Y));
-
-        private IEnumerable<(int X, int Y)> spiral(int centerX, int centerY, int radius)
+        private IEnumerable<Tile> spiral(int centerX, int centerY, int radius)
         {
             var x = 0;
             var y = 0;
 
-            yield return (centerX, centerY);
+            yield return new Tile(centerX, centerY);
 
             // for each circle
             for (var r = 0; r < radius; r++)
@@ -100,7 +102,7 @@ namespace Bearded.TD.Tiles
                     // for each tile
                     for (var t = 0; t <= r; t++)
                     {
-                        yield return (centerX + x, centerY + y);
+                        yield return new Tile(centerX + x, centerY + y);
 
                         x += step.X;
                         y += step.Y;
@@ -110,7 +112,7 @@ namespace Bearded.TD.Tiles
             }
         }
 
-        public IEnumerator<Tile<TTileInfo>> GetEnumerator()
+        public IEnumerator<(Tile Tile, TValue Value)> GetEnumerator()
         {
             for (var y = -Radius; y <= Radius; y++)
             {
@@ -119,12 +121,14 @@ namespace Bearded.TD.Tiles
 
                 for (var x = xMin; x <= xMax; x++)
                 {
-                    yield return new Tile<TTileInfo>(this, x, y);
+                    yield return tileWithValue(x, y);
                 }
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
+        
+        private (Tile, TValue) tileWithValue(int x, int y) => tileWithValue(new Tile(x, y));
+        private (Tile, TValue) tileWithValue(Tile tile) => (tile, this[tile]);
     }
 }
