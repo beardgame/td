@@ -39,8 +39,6 @@ namespace Bearded.TD.Game.Units
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
-            if (!Game.Level.IsValid(currentTile)) throw new System.ArgumentOutOfRangeException();
-
             Id = id;
             this.blueprint = blueprint;
             properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
@@ -51,6 +49,8 @@ namespace Bearded.TD.Game.Units
         protected override void OnAdded()
         {
             base.OnAdded();
+
+            if (!Game.Level.IsValid(startTile)) throw new System.ArgumentOutOfRangeException();
 
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
