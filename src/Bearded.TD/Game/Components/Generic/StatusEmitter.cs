@@ -96,7 +96,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var rangeSquared = Parameters.Range.Squared;
 
-            tilesInRange = new LevelVisibilityChecker<TileInfo>()
+            tilesInRange = new LevelVisibilityChecker()
                     .EnumerateVisibleTiles(Owner.Game.Level, Owner.Position, Parameters.Range,
                             t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                     .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&

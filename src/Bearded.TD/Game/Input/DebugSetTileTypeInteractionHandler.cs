@@ -21,12 +21,12 @@ namespace Bearded.TD.Game.Input
         {
             if (cursor.Click.Hit)
                 cursor.CurrentFootprint.OccupiedTiles
-                    .Where(t => t.IsValid)
+                    .Where(t => Game.State.Level.IsValid(t))
                     .ForEach(setTile);
             else if (cursor.Cancel.Hit)
                 Game.PlayerInput.ResetInteractionHandler();
         }
         
-        private void setTile(Tile<TileInfo> tile) => Game.Request(SetTileType.Request, tile, tileType, TileDrawInfo.For(tileType));
+        private void setTile(Tile tile) => Game.Request(SetTileType.Request, tile, tileType, TileDrawInfo.For(tileType));
     }
 }

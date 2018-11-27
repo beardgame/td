@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Projectiles
 
         public Position2 Position { get; private set; }
         public Velocity2 Velocity { get; private set; }
-        public Tile<TileInfo> CurrentTile { get; private set; }
+        public Tile CurrentTile { get; private set; }
         
         public Projectile(IProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
         {

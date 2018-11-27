@@ -56,6 +56,12 @@ namespace Bearded.TD.Game.Buildings
             return building;
         }
 
+        public bool TryGetMaterializedBuilding(Tile tile, out Building building)
+        {
+            building = GetBuildingFor(tile) as Building;
+            return building != null;
+        }
+
         public Occupation GetOccupationFor(Tile tile)
         {
             var building = GetBuildingFor(tile);

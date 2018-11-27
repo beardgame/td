@@ -10,10 +10,10 @@ namespace Bearded.TD.Game.Input
 
         public override void Update(UpdateEventArgs args, ICursorHandler cursor)
         {
-            var currentTile = cursor.CurrentFootprint;
-            if (!currentTile.IsValid)
+            var currentFootprint = cursor.CurrentFootprint;
+            if (!currentFootprint.IsValid)
                 return;
-            var building = currentTile.RootTile.Info.PlacedBuilding;
+            var building = Game.State.BuildingLayer.GetBuildingFor(currentFootprint.RootTile);
             var clicked = cursor.Click.Hit;
             if (building == null)
             {

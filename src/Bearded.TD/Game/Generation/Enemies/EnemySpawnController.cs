@@ -42,9 +42,7 @@ namespace Bearded.TD.Game.Generation.Enemies
                 spawnPoints = Directions
                     .All
                     .Enumerate()
-                    .Select(
-                        dir => new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0)
-                            .Offset(dir.Step() * game.State.Level.Tilemap.Radius))
+                    .Select(dir => new Tile(0, 0).Offset(dir.Step() * game.State.Level.Radius))
                     .Select(tile => new SpawnPoint(game, tile))
                     .ToList()
                     .AsReadOnly();

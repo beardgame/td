@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Navigation
             events.Subscribe(this);
         }
 
-        public Direction GetDirections(Tile<TileInfo> from) => directions[from.X, from.Y].Direction;
+        public Direction GetDirections(Tile from) => directions[from.X, from.Y].Direction;
         
         public void HandleEvent(TilePassabilityChanged @event)
         {
