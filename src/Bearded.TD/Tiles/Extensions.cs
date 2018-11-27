@@ -71,7 +71,7 @@ namespace Bearded.TD.Tiles
 
         #region Tile<TTileInfo>
 
-        public static IEnumerable<Tile<TTileInfo>> PossibleNeighbours<TTileInfo>(this Tile<TTileInfo> tile)
+        public static IEnumerable<Tile> PossibleNeighbours(this Tile tile)
         {
             for (var i = 1; i <= 6; i++)
             {
