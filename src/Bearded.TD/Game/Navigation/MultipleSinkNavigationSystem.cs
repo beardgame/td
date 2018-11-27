@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
@@ -13,18 +12,16 @@ namespace Bearded.TD.Game.Navigation
     class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     {
         private readonly GameEvents events;
-        private readonly Queue<FrontUpdate> updateFront = new Queue<FrontUpdate>();
-        private readonly HashSet<FrontUpdate> updatesInQueue = new HashSet<FrontUpdate>();
+        private readonly Queue<Tile> updateFront = new Queue<Tile>();
+        private readonly HashSet<Tile> updatesInQueue = new HashSet<Tile>();
 
-        private readonly Tilemap<TileInfo> tilemap;
         private readonly Tilemap<Directions> directions;
 
-        public MultipleSinkNavigationSystem(GameEvents events, Tilemap<TileInfo> tilemap)
+        public MultipleSinkNavigationSystem(GameEvents events, int radius)
         {
             this.events = events;
-            this.tilemap = tilemap;
 
-            directions = new Tilemap<Directions>(tilemap.Radius);
+            directions = new Tilemap<Directions>(radius);
             foreach (var tile in directions)
                 directions[tile] = none;
         }
@@ -58,10 +55,9 @@ namespace Bearded.TD.Game.Navigation
 
         private void updateOneTile()
         {
-            var xy = updateFront.Dequeue();
-            updatesInQueue.Remove(xy);
-            var tile = new Tile<Directions>(directions, xy.X, xy.Y);
-            var info = tile.Info;
+            var tile = updateFront.Dequeue();
+            updatesInQueue.Remove(tile);
+            var info = directions[tile];
 
             if (info.IsInvalid)
             {
@@ -122,11 +118,11 @@ namespace Bearded.TD.Game.Navigation
             }
         }
 
-        public void AddSink(Tile<TileInfo> tile)
+        public void AddSink(Tile tile)
         {
             updateTile(tile.X, tile.Y, sink);
         }
-        public void AddBackupSink(Tile<TileInfo> tile)
+        public void AddBackupSink(Tile tile)
         {
             updateTile(tile.X, tile.Y, backupSink);
             foreach (var direction in tile.Info.OpenDirectionsForUnits.Enumerate())
@@ -135,12 +131,12 @@ namespace Bearded.TD.Game.Navigation
                 touchTile(neighbour.X, neighbour.Y);
             }
         }
-        public void RemoveSink(Tile<TileInfo> tile)
+        public void RemoveSink(Tile tile)
         {
             invalidateTile(tile.X, tile.Y);
         }
 
-        private void invalidateTile(Tile<Directions> tile)
+        private void invalidateTile(Tile tile)
         {
             invalidateTile(tile.X, tile.Y);
         }
@@ -148,7 +144,7 @@ namespace Bearded.TD.Game.Navigation
         {
             updateTile(x, y, directions[x, y].Invalidated);
         }
-        private void updateTile(Tile<Directions> tile, int newDistance, Direction direction)
+        private void updateTile(Tile tile, int newDistance, Direction direction)
         {
             updateTile(tile.X, tile.Y, new Directions(newDistance, direction));
         }
@@ -160,7 +156,7 @@ namespace Bearded.TD.Game.Navigation
         }
         private void touchTile(int x, int y)
         {
-            var update = new FrontUpdate(x, y);
+            var update = new Tile(x, y);
             if (!updatesInQueue.Add(update))
                 return;
             updateFront.Enqueue(update);
@@ -185,7 +181,7 @@ namespace Bearded.TD.Game.Navigation
                 var i = 0;
                 foreach (var tile in updateFront)
                 {
-                    var p = level.GetPosition(new Tile<TileInfo>(null, tile.X, tile.Y)).NumericValue;
+                    var p = level.GetPosition(tile).NumericValue;
 
                     geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
 
@@ -200,7 +196,7 @@ namespace Bearded.TD.Game.Navigation
             {
                 var info = tile.Info;
 
-                var p = level.GetPosition(new Tile<TileInfo>(null, tile.X, tile.Y)).NumericValue;
+                var p = level.GetPosition(tile).NumericValue;
 
                 var d = info.Direction.Vector() * HexagonWidth;
 
@@ -265,26 +261,6 @@ namespace Bearded.TD.Game.Navigation
 
             public bool IsInvalid => Distance == int.MaxValue;
             public bool IsSink => Distance == 0 || Distance == backupSinkDistance;
-        }
-
-        private struct FrontUpdate : IEquatable<FrontUpdate>
-        {
-            public int X { get; }
-            public int Y { get; }
-
-            public FrontUpdate(int x, int y)
-            {
-                X = x;
-                Y = y;
-            }
-
-            public bool Equals(FrontUpdate other) => X == other.X && Y == other.Y;
-
-            public override bool Equals(object obj)
-                => !(obj is null) && (obj is FrontUpdate update && Equals(update));
-
-            public override int GetHashCode() => (X * 397) ^ Y;
-
         }
     }
 }

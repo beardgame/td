@@ -62,7 +62,7 @@ namespace Bearded.TD.Tiles
                 tile.Y * HexagonDistanceY
             );
 
-        public IEnumerator<Tile> GetEnumerator() => TilemapHelpers.EnumerateTilemapWith(Radius);
+        public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
