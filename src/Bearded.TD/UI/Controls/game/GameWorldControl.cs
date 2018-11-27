@@ -71,7 +71,7 @@ namespace Bearded.TD.UI.Controls
 
         private void drawAmbientLight(GameState state)
         {
-            var radius = state.Level.Tilemap.Radius;
+            var radius = state.Level.Radius;
 
             geometries.PointLight.Draw(
                 new Vector3(-radius * 2, radius * 2, radius),
@@ -92,7 +92,7 @@ namespace Bearded.TD.UI.Controls
             var debugPathfinding = UserSettings.Instance.Debug.Pathfinding;
             if (debugPathfinding > 0)
             {
-                state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
+                state.Navigator.DrawDebug(geometries, debugPathfinding > 1);
             }
         }
 
