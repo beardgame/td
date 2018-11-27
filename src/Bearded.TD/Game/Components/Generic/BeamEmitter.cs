@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
@@ -41,7 +42,8 @@ namespace Bearded.TD.Game.Components.Generic
                 Weapon.AimDirection * Parameters.Range
             );
 
-            var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(ray);
+            var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(
+                ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile));
 
             endPoint = point;
 

@@ -104,7 +104,7 @@ namespace Bearded.TD.Game.Components.Generic
                     Owner.Game.Level,
                     Owner.Position,
                     Parameters.Range,
-                    t => !Owner.Game.Level.IsValid(t) || !passabilityLayer.GetPassabilityFor(t).IsPassable)
+                    t => !Owner.Game.Level.IsValid(t) || !passabilityLayer[t].IsPassable)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                         (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)

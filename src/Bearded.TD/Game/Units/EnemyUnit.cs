@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Units.StatusEffects;
 using Bearded.TD.Game.World;
@@ -24,6 +25,7 @@ namespace Bearded.TD.Game.Units
         private readonly IUnitBlueprint blueprint;
         private readonly Tile startTile;
         private TileWalker tileWalker;
+        private PassabilityLayer passabilityLayer;
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -56,6 +58,8 @@ namespace Bearded.TD.Game.Units
             tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
+
+            passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
             nextAttack = Game.Time + properties.TimeBetweenAttacks;
         }
@@ -138,7 +142,8 @@ namespace Bearded.TD.Game.Units
         public Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-            return !CurrentTile.Neighbour(desiredDirection).Info.IsPassableFor(TileInfo.PassabilityLayer.Unit)
+            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            return !isPassable
                 ? Direction.Unknown
                 : desiredDirection;
         }

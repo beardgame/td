@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -49,7 +50,8 @@ namespace Bearded.TD.Game.Projectiles
             var step = Velocity * elapsedTime;
             var ray = new Ray(Position, step);
 
-            var (result, _, _, enemy) = Game.Level.CastRayAgainstEnemies(ray);
+            var (result, _, _, enemy) = Game.Level.CastRayAgainstEnemies(
+                ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile));
             
             switch (result)
             {

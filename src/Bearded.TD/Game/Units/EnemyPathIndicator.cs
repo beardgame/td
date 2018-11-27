@@ -2,6 +2,7 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Components.Effects;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -20,6 +21,7 @@ namespace Bearded.TD.Game.Units
 
         private readonly Tile startTile;
         private TileWalker tileWalker;
+        private PassabilityLayer passabilityLayer;
         private readonly Trail trail = new Trail(trailTimeout, newPartDistanceThreshold: 2.U());
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
@@ -39,6 +41,8 @@ namespace Bearded.TD.Game.Units
 
             tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
+
+            passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -97,7 +101,7 @@ namespace Bearded.TD.Game.Units
         public Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-            var isPassable = CurrentTile.Neighbour(desiredDirection).Info.IsPassableFor(TileInfo.PassabilityLayer.Unit);
+            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
 
             if (!isPassable)
                 deleteAfterTimeout();

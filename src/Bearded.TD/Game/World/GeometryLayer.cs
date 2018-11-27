@@ -3,7 +3,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.World
 {
-    class GeometryLayer
+    sealed class GeometryLayer
     {
         private readonly GameEvents events;
         private Tilemap<TileGeometry> tilemap { get; }
