@@ -1,4 +1,6 @@
-﻿using Bearded.Utilities.SpaceTime;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Bearded.Utilities.SpaceTime;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
@@ -6,6 +8,31 @@ namespace Bearded.TD.Tiles
 {
     class Level
     {
+        public int Radius { get; }
+
+        public Level(int radius)
+        {
+            Radius = radius;
+        }
+
+        public bool IsValid(Tile tile)
+        {
+            return tile.Radius <= Radius;
+        }
+
+        public IEnumerable<Direction> ValidDirectionsFrom(Tile tile)
+        {
+            if (tile.Radius < Radius)
+                return Tilemap.Directions;
+
+            return Tilemap.Directions.Where(d => tile.Neighbour(d).Radius < Radius);
+        }
+
+        public IEnumerable<Tile> ValidNeighboursOf(Tile tile)
+        {
+            return ValidDirectionsFrom(tile).Select(tile.Neighbour);
+        }
+
         public Tile GetTile(Position2 position)
         {
             var yf = position.Y.NumericValue * (1 / HexagonDistanceY) + 1 / 1.5f;
@@ -20,10 +47,10 @@ namespace Bearded.TD.Tiles
             var ty = (int)y;
 
             var isBottomRightCorner = xRemainder > yRemainder;
-            var isBottomLeftConer = -xRemainder > yRemainder;
+            var isBottomLeftCorner = -xRemainder > yRemainder;
 
             tx += isBottomRightCorner ? 1 : 0;
-            ty += isBottomRightCorner || isBottomLeftConer ? -1 : 0;
+            ty += isBottomRightCorner || isBottomLeftCorner ? -1 : 0;
 
             return new Tile(tx, ty);
         }
