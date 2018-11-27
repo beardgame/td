@@ -107,7 +107,7 @@ namespace Bearded.TD.Game.Navigation
             tilemap[tile] = passability.WithPassableDirections(passableDirections);
         }
 
-        public TilePassability GetPassabilityFor(Tile tile) => tilemap[tile];
+        public TilePassability this[Tile tile] => tilemap[tile];
     }
 
     sealed class PassabilityManager : IListener<TileTypeChanged>
