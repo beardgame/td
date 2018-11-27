@@ -3,13 +3,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.World
 {
-    struct TiledRayHitResult<TTileInfo>
+    struct TiledRayHitResult
     {
-        public Tile<TTileInfo> Tile { get; }
+        public Tile Tile { get; }
         public Position2 GlobalPoint { get; }
         public RayHitResult Results { get; }
 
-        public TiledRayHitResult(Tile<TTileInfo> tile, RayHitResult results, Difference2 tileOffset)
+        public TiledRayHitResult(Tile tile, RayHitResult results, Difference2 tileOffset)
         {
             Tile = tile;
             GlobalPoint = results.Point + tileOffset;

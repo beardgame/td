@@ -11,7 +11,6 @@ namespace Bearded.TD.Game.World
         public Position2 Point { get; }
         public Difference2 Normal { get; }
 
-
         public static RayHitResult Hit(Ray ray, Position2 hitPoint, Difference2 normal = default(Difference2))
             => new RayHitResult(true, ray, hitPoint, normal);
 
@@ -44,7 +43,7 @@ namespace Bearded.TD.Game.World
         public RayHitResult WithNewPoint(Position2 point)
             => new RayHitResult(IsHit, RayFactor, point, Normal);
 
-        public TiledRayHitResult<TTileInfo> OnTile<TTileInfo>(Tile<TTileInfo> tile, Difference2 offset)
-            => new TiledRayHitResult<TTileInfo>(tile, this, offset);
+        public TiledRayHitResult OnTile<TTileInfo>(Tile tile, Difference2 offset)
+            => new TiledRayHitResult(tile, this, offset);
     }
 }
