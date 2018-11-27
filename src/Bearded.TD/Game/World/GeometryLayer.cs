@@ -1,7 +1,5 @@
-﻿using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Events;
+﻿using Bearded.TD.Game.Events;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.World
 {
@@ -16,11 +14,6 @@ namespace Bearded.TD.Game.World
             tilemap = new Tilemap<TileGeometry>(radius);
         }
 
-        public void Initialise()
-        {
-            tilemap.ForEach(updatePassability);
-        }
-
         public void SetTileType(Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
         {
             if (tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
@@ -29,7 +22,6 @@ namespace Bearded.TD.Game.World
             
             onDrawInfoChanged(tile);
             onTileTypeChanged(tile, type);
-            updatePassability(tile);
         }
 
         public void SetDrawInfo(Tile tile, TileDrawInfo drawInfo)
@@ -52,12 +44,5 @@ namespace Bearded.TD.Game.World
         }
 
         public TileGeometry this[Tile tile] => tilemap[tile];
-
-        public void SetBuilding(Tile tile, Building building)
-        {
-            if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
-            tile.Info.FinishedBuilding = building;
-            updatePassability(tile);
-        }
     }
 }
