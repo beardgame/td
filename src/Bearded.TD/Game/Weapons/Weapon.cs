@@ -6,6 +6,7 @@ using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -21,6 +22,7 @@ namespace Bearded.TD.Game.Weapons
         private readonly IWeaponBlueprint blueprint;
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
+        private readonly PassabilityLayer passabilityLayer;
 
         private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
 
@@ -41,6 +43,7 @@ namespace Bearded.TD.Game.Weapons
             this.blueprint = blueprint;
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
+            passabilityLayer = turret.Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
 
             components.Add(this, blueprint.GetComponents());
         }
@@ -97,8 +100,11 @@ namespace Bearded.TD.Game.Weapons
             var level = game.Level;
 
             tilesInRange = new LevelVisibilityChecker()
-                .EnumerateVisibleTiles(level, turret.Position, blueprint.Range,
-                    t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
+                .EnumerateVisibleTiles(
+                    level,
+                    turret.Position,
+                    blueprint.Range,
+                    t => !level.IsValid(t) || !passabilityLayer.GetPassabilityFor(t).IsPassable)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                             (level.GetPosition(t.tile) - turret.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)

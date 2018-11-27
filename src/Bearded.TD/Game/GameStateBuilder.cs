@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
@@ -46,7 +47,7 @@ namespace Bearded.TD.Game
             yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
             yield return BlockTilesForBuilding.Command(
                     game,
-                    game.State.Level.Tilemap.SpiralCenteredAt(Tile.Origin, 3).ToList());
+                    Tilemap.GetSpiralCenteredAt(Tile.Origin, 3).ToList());
         }
 
         private IEnumerable<ISerializableCommand<GameInstance>> setupFactions()

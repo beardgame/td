@@ -4,6 +4,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Units.StatusEffects;
 using Bearded.TD.Game.World;
@@ -24,6 +25,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         private readonly IUnitStatusEffect statusEffect;
         private Building ownerAsBuilding;
+        private PassabilityLayer passabilityLayer;
 
         private Instant nextTilesInRangeRecalculationTime;
         private Instant nextUnitsInRangeRecalculationTime;
@@ -39,6 +41,7 @@ namespace Bearded.TD.Game.Components.Generic
             nextTilesInRangeRecalculationTime = Owner.Game.Time;
             nextUnitsInRangeRecalculationTime = Owner.Game.Time;
             ownerAsBuilding = Owner as Building;
+            passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
 
             Owner.Deleting += onOwnerDeleted;
         }
@@ -97,12 +100,15 @@ namespace Bearded.TD.Game.Components.Generic
             var rangeSquared = Parameters.Range.Squared;
 
             tilesInRange = new LevelVisibilityChecker()
-                    .EnumerateVisibleTiles(Owner.Game.Level, Owner.Position, Parameters.Range,
-                            t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
-                    .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                            (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
-                    .Select(t => t.tile)
-                    .ToList();
+                .EnumerateVisibleTiles(
+                    Owner.Game.Level,
+                    Owner.Position,
+                    Parameters.Range,
+                    t => !Owner.Game.Level.IsValid(t) || !passabilityLayer.GetPassabilityFor(t).IsPassable)
+                .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
+                        (Owner.Game.Level.GetPosition(t.tile) - Owner.Position).LengthSquared < rangeSquared)
+                .Select(t => t.tile)
+                .ToList();
 
             nextTilesInRangeRecalculationTime = Owner.Game.Time + Parameters.RecalculateTilesInRangeInterval;
         }
