@@ -13,21 +13,19 @@ namespace Bearded.TD.Game.Workers
         public override IEnumerable<Tile> Tiles => tile.Yield();
         public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
-        private readonly Level level;
         private readonly Tile tile;
         private readonly GeometryLayer geometry;
-        private readonly Unit originalTileHeight;
+        private readonly TileDrawInfo originalDrawInfo;
 
         private double miningProgress;
 
         public MiningTask(Level level, Tile tile, GeometryLayer geometry)
         {
-            DebugAssert.Argument.Satisfies(tile.Info.IsMineable);
+            DebugAssert.Argument.Satisfies(geometry[tile].Type == TileGeometry.TileType.Wall);
 
-            this.level = level;
             this.tile = tile;
             this.geometry = geometry;
-            originalTileHeight = tile.Info.DrawInfo.Height;
+            originalDrawInfo = geometry[tile].DrawInfo;
         }
 
         public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
@@ -35,14 +33,14 @@ namespace Bearded.TD.Game.Workers
             miningProgress += ratePerS * elapsedTime.NumericValue;
             if (Finished)
             {
-                geometry.SetTileType(tile, TileGeometry.TileType.Floor, new TileDrawInfo(0.U(), tile.Info.DrawInfo.HexScale));
+                geometry.SetTileType(tile, TileGeometry.TileType.Floor, new TileDrawInfo(0.U(), originalDrawInfo.HexScale));
             }
             else
             {
                 geometry.SetDrawInfo(tile,
                     new TileDrawInfo(
-                        originalTileHeight * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
-                        tile.Info.DrawInfo.HexScale)
+                        originalDrawInfo.Height * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
+                        originalDrawInfo.HexScale)
                 );
             }
         }
