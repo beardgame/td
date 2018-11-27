@@ -29,7 +29,8 @@ namespace Bearded.TD.Game.Commands
 
             public override bool CheckPreconditions()
             {
-                return tile.IsValid && tile.Info.IsMineable;
+                return game.State.Level.IsValid(tile)
+                       && game.State.GeometryLayer[tile].Type == TileGeometry.TileType.Wall;
             }
 
             public override void Execute()
