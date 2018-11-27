@@ -40,20 +40,18 @@ namespace Bearded.TD.Game.World
             => new TileVisibility(parameters.flags, parameters.visiblePercentage);
     }
 
-    struct LevelVisibilityChecker<TTileInfo>
+    struct LevelVisibilityChecker
     {
-        private IEnumerable<Tile<TTileInfo>> tiles;
-        private Tile<TTileInfo> startTile;
+        private IEnumerable<Tile> tiles;
+        private Tile startTile;
         private int tileRadius;
         private List<(Direction2 start, Angle width)> intervalsBlocked;
         private int currentIntervalIndex;
         private Position2 origin;
-        private Level<TTileInfo> level;
+        private Level level;
 
-        public IEnumerable<(Tile<TTileInfo> tile, TileVisibility visibility)> EnumerateVisibleTiles(
-            Level<TTileInfo> level, Position2 origin, Unit radius,
-            Func<Tile<TTileInfo>, bool> blocksVisibility
-            )
+        public IEnumerable<(Tile tile, TileVisibility visibility)> EnumerateVisibleTiles(
+            Level level, Position2 origin, Unit radius, Func<Tile, bool> blocksVisibility)
         {
             initialise(level, origin, radius);
 
@@ -218,7 +216,7 @@ namespace Bearded.TD.Game.World
             }
         }
 
-        private (Direction2 start, Angle width) intervalForTile(Tile<TTileInfo> tile)
+        private (Direction2 start, Angle width) intervalForTile(Tile tile)
         {
             var center = level.GetPosition(tile);
 
@@ -228,7 +226,7 @@ namespace Bearded.TD.Game.World
 
             // https://en.wikipedia.org/wiki/Angular_diameter#Formula
             // correct formula is 2*asin(hexD/(2*distance))) for circular tiles
-            // the approximiation 2*atan(hexD/(2*distance))) flattens along the difference vector
+            // the approximation 2*atan(hexD/(2*distance))) flattens along the difference vector
             // the effect is that even when being very close there is no risk of rounding causing NaN/infinity issues
 
             const float tileCircleRadius = (HexagonDiameter + HexagonWidth) * 0.5f;
@@ -238,7 +236,7 @@ namespace Bearded.TD.Game.World
             return (centerAngle - angularRadius, angularRadius * 2);
         }
 
-        private void initialise(Level<TTileInfo> level, Position2 origin, Unit radius)
+        private void initialise(Level level, Position2 origin, Unit radius)
         {
             this.level = level;
             this.origin = origin;

@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         private Instant nextTilesInRangeRecalculationTime;
         private Instant nextUnitsInRangeRecalculationTime;
-        private List<Tile<TileInfo>> tilesInRange;
+        private List<Tile> tilesInRange;
 
         public StatusEmitter(IStatusEmitterParameters parameters) : base(parameters)
         {
@@ -61,8 +61,9 @@ namespace Bearded.TD.Game.Components.Generic
 
             ensureTilesInRangeUpToDate();
 
-            var newUnitsInRange =
-                    tilesInRange.SelectMany(tile => tile.Info.Enemies).Where(enemy => !affectedUnits.Contains(enemy));
+            var newUnitsInRange = tilesInRange
+                .SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile)
+                .Where(enemy => !affectedUnits.Contains(enemy));
             foreach (var unit in newUnitsInRange)
             {
                 var statusEffectForUnit = new StatusEffectSource(unit, statusEffect, isTileInRange);
@@ -124,7 +125,7 @@ namespace Bearded.TD.Game.Components.Generic
             }
         }
 
-        private bool isTileInRange(Tile<TileInfo> tile)
+        private bool isTileInRange(Tile tile)
         {
             return tilesInRange.Contains(tile);
         }
@@ -134,11 +135,11 @@ namespace Bearded.TD.Game.Components.Generic
             public EnemyUnit Unit { get; }
             public IUnitStatusEffect Effect { get; }
 
-            private readonly Func<Tile<TileInfo>, bool> rangeChecker;
+            private readonly Func<Tile, bool> rangeChecker;
 
             public bool HasEnded { get; private set; }
 
-            public StatusEffectSource(EnemyUnit unit, IUnitStatusEffect effect, Func<Tile<TileInfo>, bool> rangeChecker)
+            public StatusEffectSource(EnemyUnit unit, IUnitStatusEffect effect, Func<Tile, bool> rangeChecker)
             {
                 Unit = unit;
                 Effect = effect;

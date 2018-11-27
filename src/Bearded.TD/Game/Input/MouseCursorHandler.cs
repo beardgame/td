@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Input
 
         public MouseCursorHandler(GameCamera camera, Level level)
         {
-            cameraController = new MouseCameraController(camera, level.Tilemap.Radius);
+            cameraController = new MouseCameraController(camera, level.Radius);
             this.camera = camera;
             this.level = level;
             tileSelection = TileSelection.FromFootprints(FootprintGroup.Single);
