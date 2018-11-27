@@ -150,5 +150,7 @@ namespace Bearded.TD.Game.Navigation
                 events.Send(new TilePassabilityChanged(tile));
             }
         }
+
+        public PassabilityLayer GetLayer(Passability passability) => passabilityLayers[passability];
     }
 }
