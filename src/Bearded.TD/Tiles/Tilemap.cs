@@ -109,19 +109,7 @@ namespace Bearded.TD.Tiles
             }
         }
 
-        public IEnumerator<Tile> GetEnumerator()
-        {
-            for (var y = -Radius; y <= Radius; y++)
-            {
-                var xMin = Math.Max(-Radius, -Radius - y);
-                var xMax = Math.Min(Radius, Radius - y);
-
-                for (var x = xMin; x <= xMax; x++)
-                {
-                    yield return new Tile(x, y);
-                }
-            }
-        }
+        public IEnumerator<Tile> GetEnumerator() => TilemapHelpers.EnumerateTilemapWith(Radius);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

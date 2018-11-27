@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
@@ -6,7 +7,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Tiles
 {
-    class Level
+    class Level : IEnumerable<Tile>
     {
         public int Radius { get; }
 
@@ -60,5 +61,9 @@ namespace Bearded.TD.Tiles
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
             );
+
+        public IEnumerator<Tile> GetEnumerator() => TilemapHelpers.EnumerateTilemapWith(Radius);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

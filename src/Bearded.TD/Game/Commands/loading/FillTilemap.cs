@@ -17,7 +17,6 @@ namespace Bearded.TD.Game.Commands
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly Tilemap<TileInfo> tilemap;
             private readonly IList<TileGeometry.TileType> types;
             private readonly IList<TileDrawInfo> drawInfos;
             private readonly GameInstance game;
@@ -28,7 +27,6 @@ namespace Bearded.TD.Game.Commands
                     throw new ArgumentException();
 
                 this.game = game;
-                tilemap = game.State.Level.Tilemap;
                 this.types = types;
                 this.drawInfos = drawInfos;
             }
@@ -37,11 +35,11 @@ namespace Bearded.TD.Game.Commands
             {
                 game.MustBeLoading();
 
-                foreach (var (tile, i) in tilemap.Select((t, i) => (t: t.Info, i: i)))
+                var geometry = game.State.GeometryLayer;
+                
+                foreach (var (tile, i) in game.State.Level.Select((t, i) => (t, i)))
                 {
-                    game.State.GeometryLayer.SetTileType(tile, types[i], drawInfos[i]);
-                    tile.SetTileType(types[i]);
-                    tile.SetDrawInfo(drawInfos[i]);
+                    geometry.SetTileType(tile, types[i], drawInfos[i]);
                 }
             }
 
