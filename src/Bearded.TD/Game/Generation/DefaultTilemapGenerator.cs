@@ -11,7 +11,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.World.TileInfo.Type;
+using static Bearded.TD.Game.World.TileGeometry.TileType;
 using static Bearded.TD.Tiles.Directions;
 
 namespace Bearded.TD.Game.Generation
@@ -25,11 +25,11 @@ namespace Bearded.TD.Game.Generation
             this.logger = logger;
         }
 
-        public Tilemap<TileInfo.Type> Generate(int radius, int seed)
+        public Tilemap<TileGeometry.TileType> Generate(int radius, int seed)
         {
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
-            var tilemap = new Tilemap<TileInfo.Type>(radius);
+            var tilemap = new Tilemap<TileGeometry.TileType>(radius);
             var gen = new Generator(tilemap, seed, logger);
             logger.Trace?.Log("Filling tilemap");
             gen.FillAll();
@@ -58,14 +58,14 @@ namespace Bearded.TD.Game.Generation
 
         private class Generator
         {
-            private readonly Tilemap<TileInfo.Type> tilemap;
+            private readonly Tilemap<TileGeometry.TileType> tilemap;
             private readonly Random random;
             private readonly Logger logger;
             private readonly Level level;
             private readonly List<Position2> intersections = new List<Position2>();
             private readonly List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
 
-            public Generator(Tilemap<TileInfo.Type> tilemap, int seed, Logger logger)
+            public Generator(Tilemap<TileGeometry.TileType> tilemap, int seed, Logger logger)
             {
                 this.tilemap = tilemap;
                 random = new Random(seed);
@@ -290,7 +290,7 @@ namespace Bearded.TD.Game.Generation
             private void open(Tile tile) => set(tile, Floor);
             private void close(Tile tile) => set(tile, Wall);
 
-            private void set(Tile tile, TileInfo.Type type)
+            private void set(Tile tile, TileGeometry.TileType type)
                 => tilemap[tile] = type;
 
             private IEnumerable<Tile> spiral(Tile tile, int radius)

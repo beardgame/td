@@ -8,17 +8,17 @@ namespace Bearded.TD.Game.Commands
 {
     static class SetTileType
     {
-        public static IRequest<GameInstance> Request(GameState game, Tile tile, TileInfo.Type type, TileDrawInfo drawInfo)
+        public static IRequest<GameInstance> Request(GameState game, Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
             => new Implementation(game, tile, type, drawInfo);
 
         private class Implementation : UnifiedDebugRequestCommand
         {
             private readonly GameState game;
             private readonly Tile tile;
-            private readonly TileInfo.Type type;
+            private readonly TileGeometry.TileType type;
             private readonly TileDrawInfo drawInfo;
 
-            public Implementation(GameState game, Tile tile, TileInfo.Type type, TileDrawInfo drawInfo)
+            public Implementation(GameState game, Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
             {
                 this.game = game;
                 this.tile = tile;
@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Commands
         {
             private int x;
             private int y;
-            private TileInfo.Type type;
+            private TileGeometry.TileType type;
             private Unit height;
             private float hexScale;
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Commands
             {
             }
 
-            public Serializer(Tile tile, TileInfo.Type type, TileDrawInfo drawInfo)
+            public Serializer(Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
             {
                 x = tile.X;
                 y = tile.Y;
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Commands
                 stream.Serialize(ref y);
                 var t = (byte) type;
                 stream.Serialize(ref t);
-                type = (TileInfo.Type) t;
+                type = (TileGeometry.TileType) t;
                 stream.Serialize(ref height);
                 stream.Serialize(ref hexScale);
             }

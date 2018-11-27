@@ -12,17 +12,17 @@ namespace Bearded.TD.Game.Commands
 {
     static class FillTilemap
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tilemap<TileInfo.Type> types, Tilemap<TileDrawInfo> drawInfos)
-            => new Implementation(game, types.Select(t => t.Info).ToList(), drawInfos.Select(t => t.Info).ToList());
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tilemap<TileGeometry.TileType> types, Tilemap<TileDrawInfo> drawInfos)
+            => new Implementation(game, types.Select(t => types[t]).ToList(), drawInfos.Select(t => drawInfos[t]).ToList());
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Tilemap<TileInfo> tilemap;
-            private readonly IList<TileInfo.Type> types;
+            private readonly IList<TileGeometry.TileType> types;
             private readonly IList<TileDrawInfo> drawInfos;
             private readonly GameInstance game;
 
-            public Implementation(GameInstance game, IList<TileInfo.Type> types, IList<TileDrawInfo> drawInfos)
+            public Implementation(GameInstance game, IList<TileGeometry.TileType> types, IList<TileDrawInfo> drawInfos)
             {
                 if (types.Count != drawInfos.Count)
                     throw new ArgumentException();
@@ -39,6 +39,7 @@ namespace Bearded.TD.Game.Commands
 
                 foreach (var (tile, i) in tilemap.Select((t, i) => (t: t.Info, i: i)))
                 {
+                    game.State.GeometryLayer.SetTileType(tile, types[i], drawInfos[i]);
                     tile.SetTileType(types[i]);
                     tile.SetDrawInfo(drawInfos[i]);
                 }
@@ -49,11 +50,11 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
-            private TileInfo.Type[] types;
+            private TileGeometry.TileType[] types;
             private Unit[] drawHeights;
             private float[] drawSizeFactors;
 
-            public Serializer(IList<TileInfo.Type> types, IList<TileDrawInfo> drawInfos)
+            public Serializer(IList<TileGeometry.TileType> types, IList<TileDrawInfo> drawInfos)
             {
                 this.types = types.ToArray();
                 drawHeights = drawInfos.Select(i => i.Height).ToArray();

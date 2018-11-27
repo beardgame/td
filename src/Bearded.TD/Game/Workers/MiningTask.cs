@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Workers
             miningProgress += ratePerS * elapsedTime.NumericValue;
             if (Finished)
             {
-                geometry.SetTileType(tile, TileInfo.Type.Floor, new TileDrawInfo(0.U(), tile.Info.DrawInfo.HexScale));
+                geometry.SetTileType(tile, TileGeometry.TileType.Floor, new TileDrawInfo(0.U(), tile.Info.DrawInfo.HexScale));
             }
             else
             {

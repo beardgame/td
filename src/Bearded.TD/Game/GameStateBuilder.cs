@@ -60,7 +60,7 @@ namespace Bearded.TD.Game
             }
         }
 
-        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileInfo.Type> types)
+        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileGeometry.TileType> types)
         {
             var drawInfos = new Tilemap<TileDrawInfo>(types.Radius);
 

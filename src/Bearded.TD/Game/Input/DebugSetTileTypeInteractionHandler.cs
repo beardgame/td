@@ -9,9 +9,9 @@ namespace Bearded.TD.Game.Input
 {
     class DebugSetTileTypeInteractionHandler : InteractionHandler
     {
-        private readonly TileInfo.Type tileType;
+        private readonly TileGeometry.TileType tileType;
 
-        public DebugSetTileTypeInteractionHandler(GameInstance game, TileInfo.Type tileType)
+        public DebugSetTileTypeInteractionHandler(GameInstance game, TileGeometry.TileType tileType)
             : base(game)
         {
             this.tileType = tileType;

@@ -20,24 +20,24 @@ namespace Bearded.TD.Game.World
             HexScale = hexScale;
         }
 
-        public static TileDrawInfo For(TileInfo.Type type)
+        public static TileDrawInfo For(TileGeometry.TileType type)
         {
             var (height, hexScale) = defaultParametersFor(type);
 
             return new TileDrawInfo(height, hexScale);
         }
 
-        private static (float height, float hexScale) defaultParametersFor(TileInfo.Type type)
+        private static (float height, float hexScale) defaultParametersFor(TileGeometry.TileType type)
         {
             switch (type)
             {
-                case TileInfo.Type.Unknown:
+                case TileGeometry.TileType.Unknown:
                     return (0, 0);
-                case TileInfo.Type.Floor:
+                case TileGeometry.TileType.Floor:
                     return (rnd(0, 0.05f), rnd(0.9f, 0.9f));
-                case TileInfo.Type.Wall:
+                case TileGeometry.TileType.Wall:
                     return (rnd(0.4f, 0.8f), rnd(0.3f, 0.7f));
-                case TileInfo.Type.Crevice:
+                case TileGeometry.TileType.Crevice:
                     return (-3, rnd(0.1f, 0.5f));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
