@@ -24,6 +24,8 @@ namespace Bearded.TD.Game.Navigation
         }
         
         // TODO: OMG improve the naming of all of this, and probably invert 'blocked'
+        // TODO: should we store this value at all? we can just calculate it when needed?
+        //     or maybe a separate layer, and then a bunch of 'open directions for X' layers?
         public Passability BlockedFor { get; }
         public Directions OpenDirectionsForUnits { get; private set; }
 
@@ -75,7 +77,8 @@ namespace Bearded.TD.Game.Navigation
 
         // TODO: need different open/closed values for walking, flying,
         //     burrowing (different events for different pathfinding trees?)
-        // TODO: only send events if it actually changed
+        // TODO: take buildings into account
+        // TODO: stretch goal: only send events if it actually changed
         
         public void HandleEvent(TileTypeChanged @event)
         {
