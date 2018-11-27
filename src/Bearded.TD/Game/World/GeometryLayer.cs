@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.World
 
         public void SetTileType(Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
         {
-            if (tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
+            if (!tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
 
             tilemap[tile] = new TileGeometry(type, drawInfo);
             
