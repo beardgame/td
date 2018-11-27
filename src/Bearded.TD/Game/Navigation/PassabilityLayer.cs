@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Navigation
 {
-    class PassabilityLayer
+    sealed class PassabilityLayer
     {
         private readonly Level level;
         private readonly Tilemap<TilePassability> tilemap;
