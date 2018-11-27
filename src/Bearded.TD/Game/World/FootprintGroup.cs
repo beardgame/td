@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -11,10 +12,8 @@ namespace Bearded.TD.Game.World
     {
         public string Id { get; }
 
+        [Obsolete]
         public static FootprintGroup Single { get; } = new FootprintGroup("single0", Footprint.Single);
-        public static FootprintGroup Triangle { get; }
-            = new FootprintGroup("triangle0", Footprint.TriangleUp, Footprint.TriangleDown);
-        public static FootprintGroup CircleSeven { get; } = new FootprintGroup("seven0", Footprint.CircleSeven);
         
         public ReadOnlyCollection<Footprint> Footprints { get; }
 
