@@ -58,7 +58,7 @@ namespace Bearded.TD.Game
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
-            PassabilityManager = new PassabilityManager(Level, meta.Events);
+            PassabilityManager = new PassabilityManager(meta.Events, Level);
         }
 
         public void FinishLoading()
