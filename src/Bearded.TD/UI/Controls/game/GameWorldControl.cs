@@ -92,7 +92,7 @@ namespace Bearded.TD.UI.Controls
             var debugPathfinding = UserSettings.Instance.Debug.Pathfinding;
             if (debugPathfinding > 0)
             {
-                state.Navigator.DrawDebug(geometries, state.Level, debugPathfinding > 1);
+                state.Navigator.DrawDebug(geometries, debugPathfinding > 1);
             }
         }
 
