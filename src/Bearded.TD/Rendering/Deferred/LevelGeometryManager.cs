@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
@@ -19,11 +18,13 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly List<Batch> batches = new List<Batch>();
 
         private readonly Level level;
-        
+        private readonly GeometryLayer geometryLayer;
+
         // TODO: in the future this also needs to know about textures and stuff from mods
         public LevelGeometryManager(GameInstance game, RenderContext context)
         {
             level = game.State.Level;
+            geometryLayer = game.State.GeometryLayer;
             tileMapRadius = level.Radius;
 
             var tileMapWidth = tileMapRadius * 2 + 1;
@@ -71,7 +72,7 @@ namespace Bearded.TD.Rendering.Deferred
                 .Where(isValidBatch))
             {
                 var baseTile = baseTileFor(i);
-                var batch = new Batch(context, level, baseTile);
+                var batch = new Batch(context, level, geometryLayer, baseTile);
 
                 batchLookup[i] = batch;
                 batches.Add(batch);
@@ -108,15 +109,17 @@ namespace Bearded.TD.Rendering.Deferred
         class Batch
         {
             private readonly Level level;
+            private readonly GeometryLayer geometryLayer;
             private readonly (int X, int Y) baseTile;
             private readonly IndexedSurface<LevelVertex> surface;
             private readonly LevelGeometry geometry;
 
             private bool isDirty = true;
 
-            public Batch(RenderContext context, Level level, (int X, int Y) baseTile)
+            public Batch(RenderContext context, Level level, GeometryLayer geometryLayer, (int X, int Y) baseTile)
             {
                 this.level = level;
+                this.geometryLayer = geometryLayer;
                 this.baseTile = baseTile;
                 surface = createSurface(context);
                 
@@ -169,10 +172,10 @@ namespace Bearded.TD.Rendering.Deferred
                         
                         geometry.DrawTile(
                             level.GetPosition(tile).NumericValue,
-                            tile.Info,
-                            tile.NeighbourInfoOrDummy(Direction.Right),
-                            tile.NeighbourInfoOrDummy(Direction.UpRight),
-                            tile.NeighbourInfoOrDummy(Direction.DownRight)
+                            geometryLayer[tile],
+                            neighbourInfoOrDummy(tile, Direction.Right),
+                            neighbourInfoOrDummy(tile, Direction.UpRight),
+                            neighbourInfoOrDummy(tile, Direction.DownRight)
                         );
                     }
 
@@ -181,14 +184,12 @@ namespace Bearded.TD.Rendering.Deferred
                 // consider sharing a single level geometry instance across batches?
                 // (need to inject surface then and pass that around internally, yuck)
             }
-        }
-    }
-
-    static class LevelRenderingExtensions
-    {
-        public static TileInfo NeighbourInfoOrDummy(this Tile tile, Direction direction)
-        {
-            return tile.Neighbour(direction).ValidOrNull?.Info ?? TileInfo.Dummy;
+            
+            private TileGeometry neighbourInfoOrDummy(Tile tile, Direction direction)
+            {
+                var neighbour = tile.Neighbour(direction);
+                return level.IsValid(neighbour) ? geometryLayer[neighbour] : new TileGeometry();
+            }
         }
     }
 }

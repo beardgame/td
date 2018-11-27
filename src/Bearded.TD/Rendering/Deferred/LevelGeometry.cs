@@ -19,8 +19,8 @@ namespace Bearded.TD.Rendering.Deferred
         }
 
         public void DrawTile(Vector2 position,
-            TileInfo tileInfo, TileInfo rightTileInfo,
-            TileInfo upRightTileInfo, TileInfo downRightTileInfo)
+            TileGeometry tileInfo, TileGeometry rightTileInfo,
+            TileGeometry upRightTileInfo, TileGeometry downRightTileInfo)
         {
             var (selfZ, selfScale) = getHeightAndScale(tileInfo);
             var (rightZ, rightScale) = getHeightAndScale(rightTileInfo);
@@ -84,7 +84,7 @@ namespace Bearded.TD.Rendering.Deferred
             }
         }
 
-        private (float height, float scale) getHeightAndScale(TileInfo info)
+        private (float height, float scale) getHeightAndScale(TileGeometry info)
         {
             var drawInfo = info.DrawInfo;
             return (drawInfo.Height.NumericValue, drawInfo.HexScale);
@@ -158,7 +158,7 @@ namespace Bearded.TD.Rendering.Deferred
         {
             var a = (1 - Math.Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
 
-            return new LevelVertex(v, n, Vector2.Zero, new Color(c * a, c.A));
+            return new LevelVertex(v, n, uv, new Color(c * a, c.A));
         }
     }
 }

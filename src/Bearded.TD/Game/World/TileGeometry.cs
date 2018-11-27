@@ -13,6 +13,8 @@
         public TileType Type { get; private set; }
         public TileDrawInfo DrawInfo { get; private set; }
         
+        public bool HasKnownType => Type != TileType.Unknown;
+        
         public TileGeometry(TileType type, TileDrawInfo drawInfo)
         {
             Type = type;
