@@ -1,32 +1,7 @@
-﻿using System;
-using Bearded.TD.Tiles;
+﻿using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Navigation
 {
-
-
-    struct TilePassability
-    {
-        public bool IsPassable { get; }
-        public Directions PassableDirections { get; }
-
-        public TilePassability(bool isPassable, Directions passableDirections)
-        {
-            IsPassable = isPassable;
-            PassableDirections = passableDirections;
-        }
-
-        public TilePassability WithPassability(bool isPassable)
-        {
-            return new TilePassability(isPassable, PassableDirections);
-        }
-
-        public TilePassability WithPassableDirections(Directions passableDirections)
-        {
-            return new TilePassability(IsPassable, passableDirections);
-        }
-    }
-
     class PassabilityLayer
     {
         private readonly Level level;
