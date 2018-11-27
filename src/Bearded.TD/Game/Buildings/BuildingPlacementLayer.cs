@@ -29,6 +29,7 @@ namespace Bearded.TD.Game.Buildings
                 && buildingLayer[tile] == null;
         }
 
-        public bool AreTilesValidForBuilding(IEnumerable<Tile> tiles) => tiles.All(IsTileValidForBuilding);
+        public bool IsFootprintValidForBuilding(PositionedFootprint footprint)
+            => footprint.OccupiedTiles.All(IsTileValidForBuilding);
     }
 }

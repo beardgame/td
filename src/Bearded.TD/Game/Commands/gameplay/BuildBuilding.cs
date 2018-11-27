@@ -31,8 +31,8 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions()
-                => game.State.BuildingPlacementLayer.AreTilesValidForBuilding(footprint.OccupiedTiles)
-                        && blueprint.FootprintGroup == footprint.Footprint;
+                => blueprint.FootprintGroup == footprint.Footprint
+                        && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint);
 
             public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(game, faction, game.Meta.Ids.GetNext<BuildingPlaceholder>(), blueprint, footprint);
 
