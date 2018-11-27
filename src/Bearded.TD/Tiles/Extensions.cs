@@ -69,7 +69,7 @@ namespace Bearded.TD.Tiles
 
         #endregion
 
-        #region Tile<TTileInfo>
+        #region Tile
 
         public static IEnumerable<Tile> PossibleNeighbours(this Tile tile)
         {

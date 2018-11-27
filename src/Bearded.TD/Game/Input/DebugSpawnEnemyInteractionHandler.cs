@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
-using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Input
@@ -21,7 +21,8 @@ namespace Bearded.TD.Game.Input
         {
             if (cursor.Click.Hit)
                 cursor.CurrentFootprint.OccupiedTiles
-                    .Where(t => t.IsValid && t.Info.IsPassableFor(TileInfo.PassabilityLayer.Unit))
+                    .Where(t => Game.State.Level.IsValid(t)
+                        && Game.State.PassabilityManager.GetLayer(Passability.WalkingUnit)[t].IsPassable)
                     .ForEach(tile => Game.State.Meta.Dispatcher.RunOnlyOnServer(
                         SpawnUnit.Command,
                         Game.State,

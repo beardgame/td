@@ -10,6 +10,6 @@ namespace Bearded.TD.Tiles
             => tiles.Any(otherTiles.Contains);
 
         public static bool NeighboursToTiles(this Tile tile, IEnumerable<Tile> otherTiles)
-            => tile.Neighbours.Prepend(tile).OverlapsWithTiles(otherTiles);
+            => tile.PossibleNeighbours().Prepend(tile).OverlapsWithTiles(otherTiles);
     }
 }

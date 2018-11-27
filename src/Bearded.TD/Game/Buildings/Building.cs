@@ -79,7 +79,6 @@ namespace Bearded.TD.Game.Buildings
         {
             OccupiedTiles.ForEach(tile =>
             {
-                Game.GeometryLayer.SetBuilding(tile, null);
                 Game.Navigator.RemoveSink(tile);
             });
 
