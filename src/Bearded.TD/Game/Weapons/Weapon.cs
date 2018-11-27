@@ -104,7 +104,7 @@ namespace Bearded.TD.Game.Weapons
                     level,
                     turret.Position,
                     blueprint.Range,
-                    t => !level.IsValid(t) || !passabilityLayer.GetPassabilityFor(t).IsPassable)
+                    t => !level.IsValid(t) || !passabilityLayer[t].IsPassable)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                             (level.GetPosition(t.tile) - turret.Position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)

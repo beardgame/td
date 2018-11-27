@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             var tiles = new LevelVisibilityChecker()
                 .EnumerateVisibleTiles(level, Owner.Position, Parameters.Range,
-                    tile => passability.GetPassabilityFor(tile).IsPassable);
+                    tile => passability[tile].IsPassable);
 
             var radiusSquared = Parameters.Range.Squared;
 

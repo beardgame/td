@@ -1,8 +1,8 @@
-﻿using Bearded.TD.Game.Units;
+﻿using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Units;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.World.TileInfo.PassabilityLayer;
 using static Bearded.TD.Game.World.RayCastResult;
 
 namespace Bearded.TD.Game.World
@@ -17,19 +17,19 @@ namespace Bearded.TD.Game.World
     static class RayCastingHelpers
     {
         public static (RayCastResult Result, float RayFactor, Position2 Point, EnemyUnit Enemy)
-            CastRayAgainstEnemies(this Level level, Ray ray, TileInfo.PassabilityLayer passability = Projectile)
+            CastRayAgainstEnemies(this Level level, Ray ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
         {
             level.Cast(ray, out var rayCaster);
 
             while (rayCaster.MoveNext(out var tile))
             {
-                if (!tile.IsValid || !tile.Info.IsPassableFor(passability))
+                if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
                 {
                     var factor = rayCaster.CurrentRayFactor;
                     return (HitLevel, factor, ray.PointAt(factor), null);
                 }
 
-                var enemies = tile.Info.Enemies;
+                var enemies = unitLayer.GetUnitsOnTile(tile);
                 
                 var closestHit = default((EnemyUnit unit, float factor, Position2 point));
                 closestHit.factor = float.PositiveInfinity;
