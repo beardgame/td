@@ -226,7 +226,7 @@ namespace Bearded.TD.Game.World
 
             // https://en.wikipedia.org/wiki/Angular_diameter#Formula
             // correct formula is 2*asin(hexD/(2*distance))) for circular tiles
-            // the approximiation 2*atan(hexD/(2*distance))) flattens along the difference vector
+            // the approximation 2*atan(hexD/(2*distance))) flattens along the difference vector
             // the effect is that even when being very close there is no risk of rounding causing NaN/infinity issues
 
             const float tileCircleRadius = (HexagonDiameter + HexagonWidth) * 0.5f;
