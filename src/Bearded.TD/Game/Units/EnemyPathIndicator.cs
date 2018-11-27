@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Units
 
         public EnemyPathIndicator(Tile currentTile)
         {
-            if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
+            if (!Game.Level.IsValid(currentTile)) throw new ArgumentOutOfRangeException();
             startTile = currentTile;
         }
 

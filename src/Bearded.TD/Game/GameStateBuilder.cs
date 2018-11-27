@@ -46,8 +46,7 @@ namespace Bearded.TD.Game
             yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
             yield return BlockTilesForBuilding.Command(
                     game,
-                    game.State.Level.Tilemap.SpiralCenteredAt(
-                            new Tile<TileInfo>(game.State.Level.Tilemap, 0, 0), 3).ToList());
+                    game.State.Level.Tilemap.SpiralCenteredAt(Tile.Origin, 3).ToList());
         }
 
         private IEnumerable<ISerializableCommand<GameInstance>> setupFactions()
@@ -67,7 +66,7 @@ namespace Bearded.TD.Game
 
             foreach (var type in types)
             {
-                drawInfos[type.X, type.Y] = TileDrawInfo.For(type.Info);
+                drawInfos[type.X, type.Y] = TileDrawInfo.For(types[type]);
             }
 
             return drawInfos;

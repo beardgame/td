@@ -8,25 +8,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.World
 {
-    static class LevelRayCaster
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static LevelRayCaster<TTileInfo> Cast<TTileInfo>(this Level<TTileInfo> level, Ray ray)
-        {
-            var rayCaster = new LevelRayCaster<TTileInfo>();
-            rayCaster.StartEnumeratingTiles(level, ray);
-            return rayCaster;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Cast<TTileInfo>(this Level<TTileInfo> level, Ray ray, out LevelRayCaster<TTileInfo> rayCaster)
-        {
-            rayCaster = new LevelRayCaster<TTileInfo>();
-            rayCaster.StartEnumeratingTiles(level, ray);
-        }
-    }
-
-    struct LevelRayCaster<TTileInfo>
+    struct LevelRayCaster
     {
         private static readonly Vector2[] directionVectorsWithHexWidthLength =
             Tiles.Extensions.Directions
@@ -38,15 +20,15 @@ namespace Bearded.TD.Game.World
         private float nextLeftIntersection, leftFullStep, leftHalfStep;
         private float nextRightIntersection, rightFullStep, rightHalfStep;
         private float currentRayFactor;
-        private Tile<TTileInfo> tile;
+        private Tile tile;
         private bool firstMove;
 
         private bool reachedFinalTile => nextCenterIntersection > 1 && nextLeftIntersection > 1 && nextRightIntersection > 1;
 
-        public Tile<TTileInfo> Current => tile;
+        public Tile Current => tile;
         public float CurrentRayFactor => currentRayFactor;
 
-        public void StartEnumeratingTiles(Level<TTileInfo> level, Ray ray)
+        public void StartEnumeratingTiles(Level level, Ray ray)
         {
             initialise(level, ray, level.GetTile(ray.Start));
             firstMove = true;
@@ -68,10 +50,10 @@ namespace Bearded.TD.Game.World
             return true;
         }
 
-        public LevelRayCaster<TTileInfo> GetEnumerator() => this;
+        public LevelRayCaster GetEnumerator() => this;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool MoveNext(out Tile<TTileInfo> current)
+        public bool MoveNext(out Tile current)
         {
             var value = MoveNext();
             current = tile;
@@ -79,7 +61,7 @@ namespace Bearded.TD.Game.World
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void initialise(Level<TTileInfo> level, Ray ray, Tile<TTileInfo> startTile)
+        private void initialise(Level level, Ray ray, Tile startTile)
         {
             var startTilePosition = level.GetPosition(startTile);
             var relativeStartTilePosition = (ray.Start - startTilePosition).NumericValue;

@@ -56,7 +56,7 @@ namespace Bearded.TD.Game
             GeometryLayer = new GeometryLayer(meta.Events, level.Tilemap);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
-            BuildingPlacementLayer = new BuildingPlacementLayer(GeometryLayer, BuildingLayer);
+            BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
         }
 
         public void FinishLoading()

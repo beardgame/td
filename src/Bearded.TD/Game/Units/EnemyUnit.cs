@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Units
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
-            if (!currentTile.IsValid) throw new System.ArgumentOutOfRangeException();
+            if (!Game.Level.IsValid(currentTile)) throw new System.ArgumentOutOfRangeException();
 
             Id = id;
             this.blueprint = blueprint;
@@ -55,6 +55,7 @@ namespace Bearded.TD.Game.Units
 
             tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
+            Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             nextAttack = Game.Time + properties.TimeBetweenAttacks;
         }
@@ -62,7 +63,7 @@ namespace Bearded.TD.Game.Units
         protected override void OnDelete()
         {
             base.OnDelete();
-            CurrentTile.Info.RemoveEnemy(this);
+            Game.UnitLayer.RemoveEnemyFromTile(CurrentTile, this);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -102,9 +103,12 @@ namespace Bearded.TD.Game.Units
             while (nextAttack <= Game.Time)
             {
                 var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-                var target = CurrentTile.Neighbour(desiredDirection).Info.FinishedBuilding;
 
-                if (target == null) return;
+                if (!Game.BuildingLayer.TryGetMaterializedBuilding(
+                    CurrentTile.Neighbour(desiredDirection), out var target))
+                {
+                    return;
+                }
                 
                 target.Damage(properties.Damage);
                 nextAttack = Game.Time + properties.TimeBetweenAttacks;

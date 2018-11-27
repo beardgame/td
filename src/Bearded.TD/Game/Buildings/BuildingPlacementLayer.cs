@@ -7,12 +7,14 @@ namespace Bearded.TD.Game.Buildings
 {
     sealed class BuildingPlacementLayer
     {
+        private readonly Level level;
         private readonly GeometryLayer geometryLayer;
         private readonly BuildingLayer buildingLayer;
         private readonly HashSet<Tile> blockedTiles = new HashSet<Tile>();
 
-        public BuildingPlacementLayer(GeometryLayer geometryLayer, BuildingLayer buildingLayer)
+        public BuildingPlacementLayer(Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
         {
+            this.level = level;
             this.geometryLayer = geometryLayer;
             this.buildingLayer = buildingLayer;
         }
@@ -21,7 +23,7 @@ namespace Bearded.TD.Game.Buildings
 
         public bool IsTileValidForBuilding(Tile tile)
         {
-            return tile.IsValid
+            return level.IsValid(tile)
                 && !blockedTiles.Contains(tile)
                 && geometryLayer[tile].Type == TileGeometry.TileType.Floor
                 && buildingLayer[tile] == null;

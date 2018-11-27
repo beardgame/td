@@ -37,7 +37,10 @@ namespace Bearded.TD.Game.Buildings
         {
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                var color = (Game.BuildingPlacementLayer.IsTileValidForBuilding(tile) ? Color.Green : Color.Red) * 0.5f;
+                var baseColor = Game.BuildingPlacementLayer.IsTileValidForBuilding(tile)
+                    ? Color.Green
+                    : Color.Red;
+                var color = baseColor * 0.5f;
                 DrawTile(geometries, color, tile);
             }
             

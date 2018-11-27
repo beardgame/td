@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var level = Owner.Game.Level;
 
-            var tiles = new LevelVisibilityChecker<TileInfo>()
+            var tiles = new LevelVisibilityChecker()
                 .EnumerateVisibleTiles(level, Owner.Position, Parameters.Range,
                     tile => tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile));
 

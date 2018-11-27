@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.World
         {
             initialise(level, origin, radius);
 
-            if (!startTile.IsValid || blocksVisibility(startTile))
+            if (!level.IsValid(startTile) || blocksVisibility(startTile))
                 yield break;
 
             intervalsBlocked = new List<(Direction2, Angle)>(10);

@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Weapons
         private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
 
         private Instant nextTileInRangeRecalculationTime;
-        private List<Tile<TileInfo>> tilesInRange;
+        private List<Tile> tilesInRange;
         private EnemyUnit target;
         private Instant endOfIdleTime;
 
@@ -96,7 +96,7 @@ namespace Bearded.TD.Game.Weapons
             var game = owner.Game;
             var level = game.Level;
 
-            tilesInRange = new LevelVisibilityChecker<TileInfo>()
+            tilesInRange = new LevelVisibilityChecker()
                 .EnumerateVisibleTiles(level, turret.Position, blueprint.Range,
                     t => !t.IsValid || !t.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile))
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
@@ -124,7 +124,7 @@ namespace Bearded.TD.Game.Weapons
         private void tryFindTarget()
         {
             target = tilesInRange
-                .SelectMany(t => t.Info.Enemies)
+                .SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile)
                 .FirstOrDefault();
         }
 

@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Commands
                     new PositionedFootprint(
                         game.State.Level,
                         game.Blueprints.Footprints[footprint], footprintIndex,
-                        new Tile<TileInfo>(game.State.Level.Tilemap, footprintX, footprintY)));
+                        new Tile(footprintX, footprintY)));
             }
 
             public void Serialize(INetBufferStream stream)
