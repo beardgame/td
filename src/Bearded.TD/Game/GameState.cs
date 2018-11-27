@@ -46,14 +46,14 @@ namespace Bearded.TD.Game
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
         public Faction RootFaction { get; private set; }
 
-        public GameState(GameMeta meta, Level level)
+        public GameState(GameMeta meta, int radius)
         {
             Meta = meta;
-            Level = level;
-            Navigator = new MultipleSinkNavigationSystem(meta.Events, level.Tilemap);
+            Level = new Level(radius);
+            Navigator = new MultipleSinkNavigationSystem(meta.Events, radius);
             Technology = new TechnologyManager();
             
-            GeometryLayer = new GeometryLayer(meta.Events, level.Tilemap);
+            GeometryLayer = new GeometryLayer(meta.Events, radius);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);

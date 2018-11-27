@@ -10,10 +10,10 @@ namespace Bearded.TD.Game.World
         private readonly GameEvents events;
         private Tilemap<TileGeometry> tilemap { get; }
 
-        public GeometryLayer(GameEvents events, Tilemap<TileGeometry> tilemap)
+        public GeometryLayer(GameEvents events, int radius)
         {
             this.events = events;
-            this.tilemap = tilemap;
+            tilemap = new Tilemap<TileGeometry>(radius);
         }
 
         public void Initialise()
