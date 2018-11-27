@@ -31,13 +31,14 @@ namespace Bearded.TD.Game.Units
 
         public EnemyPathIndicator(Tile currentTile)
         {
-            if (!Game.Level.IsValid(currentTile)) throw new ArgumentOutOfRangeException();
             startTile = currentTile;
         }
 
         protected override void OnAdded()
         {
             base.OnAdded();
+            
+            if (!Game.Level.IsValid(startTile)) throw new ArgumentOutOfRangeException();
 
             tileWalker = new TileWalker(this, Game.Level);
             tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
