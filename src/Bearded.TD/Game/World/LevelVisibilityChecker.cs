@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.World
 
             intervalsBlocked = new List<(Direction2, Angle)>(10);
             
-            tiles = level.Tilemap.SpiralCenteredAt(startTile, tileRadius);
+            tiles = Tilemap.GetSpiralCenteredAt(startTile, tileRadius);
 
             foreach (var tile in tiles)
             {

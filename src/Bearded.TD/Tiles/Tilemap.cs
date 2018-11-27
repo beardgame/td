@@ -26,6 +26,42 @@ namespace Bearded.TD.Tiles
                 }
             }
         }
+
+        public static IEnumerable<Tile> GetOutwardSpiralForTilemapWith(int radius)
+            => spiral(0, 0, radius);
+
+        public static IEnumerable<Tile> GetSpiralCenteredAt(Tile tile, int radius)
+            => spiral(tile.X, tile.Y, radius);
+
+        private static IEnumerable<Tile> spiral(int centerX, int centerY, int radius)
+        {
+            var x = 0;
+            var y = 0;
+
+            yield return new Tile(centerX, centerY);
+
+            // for each circle
+            for (var r = 0; r < radius; r++)
+            {
+                y--;
+
+                // for each edge
+                for (var d = 1; d <= 6; d++)
+                {
+                    var step = ((Direction)d).Step();
+
+                    // for each tile
+                    for (var t = 0; t <= r; t++)
+                    {
+                        yield return new Tile(centerX + x, centerY + y);
+
+                        x += step.X;
+                        y += step.Y;
+                    }
+                }
+
+            }
+        }
     }
 
     class Tilemap<TValue> : IEnumerable<Tile>
@@ -87,41 +123,10 @@ namespace Bearded.TD.Tiles
         public bool IsValidTile(Tile tile) => IsValidTile(tile.X, tile.Y);
 
         public IEnumerable<Tile> SpiralCenteredAt(Tile center, int radius)
-            => spiral(center.X, center.Y, radius)
-                .Where(IsValidTile);
+            => Tilemap.GetSpiralCenteredAt(center, radius).Where(IsValidTile);
 
         public IEnumerable<Tile> TilesSpiralOutward
-            => spiral(0, 0, Radius);
-
-        private IEnumerable<Tile> spiral(int centerX, int centerY, int radius)
-        {
-            var x = 0;
-            var y = 0;
-
-            yield return new Tile(centerX, centerY);
-
-            // for each circle
-            for (var r = 0; r < radius; r++)
-            {
-                y--;
-
-                // for each edge
-                for (var d = 1; d <= 6; d++)
-                {
-                    var step = ((Direction)d).Step();
-
-                    // for each tile
-                    for (var t = 0; t <= r; t++)
-                    {
-                        yield return new Tile(centerX + x, centerY + y);
-
-                        x += step.X;
-                        y += step.Y;
-                    }
-                }
-
-            }
-        }
+            => Tilemap.GetOutwardSpiralForTilemapWith(Radius);
 
         public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius);
 

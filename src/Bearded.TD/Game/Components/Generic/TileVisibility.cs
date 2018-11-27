@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
@@ -23,10 +24,11 @@ namespace Bearded.TD.Game.Components.Generic
         public override void Draw(GeometryManager geometries)
         {
             var level = Owner.Game.Level;
+            var passability = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
 
             var tiles = new LevelVisibilityChecker()
                 .EnumerateVisibleTiles(level, Owner.Position, Parameters.Range,
-                    tile => tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Projectile));
+                    tile => passability.GetPassabilityFor(tile).IsPassable);
 
             var radiusSquared = Parameters.Range.Squared;
 
