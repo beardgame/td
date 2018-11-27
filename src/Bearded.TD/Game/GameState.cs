@@ -39,6 +39,7 @@ namespace Bearded.TD.Game
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
+        public PassabilityManager PassabilityManager { get; }
 
         private bool isLoading = true;
 
@@ -57,6 +58,7 @@ namespace Bearded.TD.Game
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
+            PassabilityManager = new PassabilityManager(Level, meta.Events);
         }
 
         public void FinishLoading()
