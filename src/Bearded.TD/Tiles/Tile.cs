@@ -4,6 +4,8 @@ namespace Bearded.TD.Tiles
 {
     struct Tile
     {
+        public static Tile Origin = new Tile(0, 0);
+
         public int X { get; }
         public int Y { get; }
 

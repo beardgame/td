@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Units;
-using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -42,7 +41,7 @@ namespace Bearded.TD.Game.Generation.Enemies
                 spawnPoints = Directions
                     .All
                     .Enumerate()
-                    .Select(dir => new Tile(0, 0).Offset(dir.Step() * game.State.Level.Radius))
+                    .Select(dir => Tile.Origin.Offset(dir.Step() * game.State.Level.Radius))
                     .Select(tile => new SpawnPoint(game, tile))
                     .ToList()
                     .AsReadOnly();
@@ -72,6 +71,7 @@ namespace Bearded.TD.Game.Generation.Enemies
                 curr = next;
             }
 
+            // ReSharper disable once PossibleNullReferenceException
             foreach (var spawnPoint in spawnPoints)
             {
                 spawnPoint.Update();
