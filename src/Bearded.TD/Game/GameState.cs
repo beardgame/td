@@ -51,7 +51,6 @@ namespace Bearded.TD.Game
         {
             Meta = meta;
             Level = new Level(radius);
-            Navigator = new MultipleSinkNavigationSystem(meta.Events, radius);
             Technology = new TechnologyManager();
             
             GeometryLayer = new GeometryLayer(meta.Events, radius);
@@ -59,6 +58,7 @@ namespace Bearded.TD.Game
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
             PassabilityManager = new PassabilityManager(meta.Events, Level, GeometryLayer, BuildingLayer);
+            Navigator = new MultipleSinkNavigationSystem(meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         }
 
         public void FinishLoading()

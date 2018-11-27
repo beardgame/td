@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Events;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Constants.Game.World;
@@ -12,18 +12,22 @@ namespace Bearded.TD.Game.Navigation
     class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     {
         private readonly GameEvents events;
+        private readonly Level level;
+        private readonly PassabilityLayer passability;
         private readonly Queue<Tile> updateFront = new Queue<Tile>();
         private readonly HashSet<Tile> updatesInQueue = new HashSet<Tile>();
 
-        private readonly Tilemap<Directions> directions;
+        private readonly Tilemap<Node> graph;
 
-        public MultipleSinkNavigationSystem(GameEvents events, int radius)
+        public MultipleSinkNavigationSystem(GameEvents events, Level level, PassabilityLayer passability)
         {
             this.events = events;
+            this.level = level;
+            this.passability = passability;
 
-            directions = new Tilemap<Directions>(radius);
-            foreach (var tile in directions)
-                directions[tile] = none;
+            graph = new Tilemap<Node>(level.Radius);
+            foreach (var tile in graph)
+                graph[tile] = none;
         }
 
         public void Initialise()
@@ -31,16 +35,16 @@ namespace Bearded.TD.Game.Navigation
             events.Subscribe(this);
         }
 
-        public Direction GetDirections(Tile from) => directions[from.X, from.Y].Direction;
+        public Direction GetDirections(Tile from) => graph[from].Direction;
         
         public void HandleEvent(TilePassabilityChanged @event)
         {
             var tile = @event.Tile;
 
-            if (directions[tile.X, tile.Y].IsSink)
+            if (graph[tile].IsSink)
                 return;
 
-            invalidateTile(tile.X, tile.Y);
+            invalidateTile(tile);
         }
 
         public void Update()
@@ -57,112 +61,105 @@ namespace Bearded.TD.Game.Navigation
         {
             var tile = updateFront.Dequeue();
             updatesInQueue.Remove(tile);
-            var info = directions[tile];
+            var node = graph[tile];
 
-            if (info.IsInvalid)
+            if (node.IsInvalid)
             {
-                foreach (var direction in Tilemap.Directions)
+                foreach (var direction in level.ValidDirectionsFrom(tile))
                 {
-                    var neighbour = tile.Neighbour(direction);
-                    if (!neighbour.IsValid)
+                    var neighbourTile = tile.Neighbour(direction);
+                    var neighbourNode = graph[neighbourTile];
+                    if (neighbourNode.IsInvalid || neighbourNode.IsSink)
                         continue;
-                    var neighbourInfo = neighbour.Info;
-                    if (neighbourInfo.IsInvalid || neighbourInfo.IsSink)
-                        continue;
-                    if (neighbourInfo.Direction == direction.Opposite())
+                    if (neighbourNode.Direction == direction.Opposite())
                     {
-                        invalidateTile(neighbour);
+                        invalidateTile(neighbourTile);
                     }
                     else
                     {
-                        touchTile(neighbour.X, neighbour.Y);
+                        touchTile(neighbourTile);
                     }
                 }
             }
             else
             {
-                if (!info.IsSink && tile.Neighbour(info.Direction).Info.IsInvalid)
+                if (!node.IsSink && graph[tile.Neighbour(node.Direction)].IsInvalid)
                 {
                     invalidateTile(tile);
                     return;
                 }
 
-                var newDistance = info.Distance + 1;
-
-                var gameTile = new Tile<TileInfo>(tilemap, xy.X, xy.Y);
+                var newDistance = node.Distance + 1;
 
                 var invalidatedAChild = false;
 
-                foreach (var direction in gameTile.Info.OpenDirectionsForUnits.Enumerate())
+                foreach (var direction in passableDirectionsFrom(tile).Enumerate())
                 {
-                    var neighbour = tile.Neighbour(direction);
-                    var neighbourInfo = neighbour.Info;
-                    if (neighbourInfo.Distance > newDistance)
+                    var neighbourTile = tile.Neighbour(direction);
+                    var neighbourNode = graph[neighbourTile];
+                    if (neighbourNode.Distance > newDistance)
                     {
-                        updateTile(neighbour, newDistance, direction.Opposite());
+                        updateTile(neighbourTile, newDistance, direction.Opposite());
                     }
-                    else if (neighbourInfo.Distance < newDistance)
+                    else if (neighbourNode.Distance < newDistance
+                        && neighbourNode.Direction == direction.Opposite())
                     {
-                        if (neighbourInfo.Direction == direction.Opposite())
-                        {
-                            invalidateTile(neighbour);
-                            invalidatedAChild = true;
-                        }
+                        invalidateTile(neighbourTile);
+                        invalidatedAChild = true;
                     }
                 }
 
                 if (invalidatedAChild)
                 {
-                    touchTile(tile.X, tile.Y);
+                    touchTile(tile);
                 }
             }
         }
 
         public void AddSink(Tile tile)
         {
-            updateTile(tile.X, tile.Y, sink);
+            updateTile(tile, sink);
         }
         public void AddBackupSink(Tile tile)
         {
-            updateTile(tile.X, tile.Y, backupSink);
-            foreach (var direction in tile.Info.OpenDirectionsForUnits.Enumerate())
+            updateTile(tile, backupSink);
+            foreach (var direction in passableDirectionsFrom(tile).Enumerate())
             {
                 var neighbour = tile.Neighbour(direction);
-                touchTile(neighbour.X, neighbour.Y);
+                touchTile(neighbour);
             }
         }
         public void RemoveSink(Tile tile)
         {
-            invalidateTile(tile.X, tile.Y);
+            invalidateTile(tile);
         }
 
         private void invalidateTile(Tile tile)
         {
-            invalidateTile(tile.X, tile.Y);
-        }
-        private void invalidateTile(int x, int y)
-        {
-            updateTile(x, y, directions[x, y].Invalidated);
+            updateTile(tile, graph[tile].Invalidated);
         }
         private void updateTile(Tile tile, int newDistance, Direction direction)
         {
-            updateTile(tile.X, tile.Y, new Directions(newDistance, direction));
+            updateTile(tile, new Node(newDistance, direction));
         }
-
-        private void updateTile(int x, int y, Directions tileDirections)
+        private void updateTile(Tile tile, Node node)
         {
-            directions[x, y] = tileDirections;
-            touchTile(x, y);
+            graph[tile] = node;
+            touchTile(tile);
         }
-        private void touchTile(int x, int y)
+        private void touchTile(Tile tile)
         {
-            var update = new Tile(x, y);
-            if (!updatesInQueue.Add(update))
+            if (!updatesInQueue.Add(tile))
                 return;
-            updateFront.Enqueue(update);
+            updateFront.Enqueue(tile);
+        }
+        
+        private Directions passableDirectionsFrom(Tile tile)
+        {
+            return passability[tile].PassableDirections;
         }
 
-        public void DrawDebug(GeometryManager geometries, Level level, bool drawWeights)
+        public void DrawDebug(GeometryManager geometries, bool drawWeights)
         {
             var geo = geometries.ConsoleBackground;
             var font = geometries.ConsoleFont;
@@ -192,45 +189,45 @@ namespace Bearded.TD.Game.Navigation
 
             font.Height = HexagonSide;
 
-            foreach (var tile in directions)
+            foreach (var tile in graph)
             {
-                var info = tile.Info;
-
+                var node = graph[tile];
+                
                 var p = level.GetPosition(tile).NumericValue;
 
-                var d = info.Direction.Vector() * HexagonWidth;
+                var d = node.Direction.Vector() * HexagonWidth;
 
 
-                if (!info.IsSink)
+                if (!node.IsSink)
                 {
-                    var pointsTo = tile.Neighbour(info.Direction);
+                    var pointsToTile = tile.Neighbour(node.Direction);
+                    var pointsToNode = graph[pointsToTile];
 
-                    if (!pointsTo.Info.IsInvalid && pointsTo.Info.Distance >= info.Distance)
+                    if (!pointsToNode.IsInvalid && pointsToNode.Distance >= node.Distance)
                     {
 
                         geo.Color = Color.Red * 0.3f;
                         geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
                     }
 
-                    geo.Color = (pointsTo.Info.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
+                    geo.Color = (pointsToNode.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
                     geo.DrawLine(p, p + d);
                     geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularRight);
                     geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularLeft);
                 }
 
-                if (drawWeights && !info.IsInvalid)
+                if (drawWeights && !node.IsInvalid)
                 {
                     font.Color = Color.Yellow;
-                    var distance = info.Distance;
+                    var distance = node.Distance;
                     if (distance >= backupSinkDistance)
                     {
                         distance -= backupSinkDistance;
                         font.Color = Color.Red;
                     }
 
-                    if (!info.IsSink && tile.Neighbours.Any(n =>
-                        n.IsValid && !n.Info.IsInvalid && !n.Info.IsSink &&
-                        Math.Abs(n.Info.Distance - info.Distance) > 1))
+                    if (!node.IsSink && level.ValidNeighboursOf(tile).Select(t => graph[t])
+                            .Any(n => !n.IsInvalid && !n.IsSink && Math.Abs(n.Distance - node.Distance) > 1))
                     {
                         font.Color = Color.MediumPurple;
                     }
@@ -242,22 +239,22 @@ namespace Bearded.TD.Game.Navigation
         
         private const int backupSinkDistance = 100_000_000;
         
-        private static Directions none => new Directions(int.MaxValue, Direction.Unknown);
-        private static Directions sink => new Directions(0, Direction.Unknown);
-        private static Directions backupSink => new Directions(backupSinkDistance, Direction.Unknown);
+        private static Node none => new Node(int.MaxValue, Direction.Unknown);
+        private static Node sink => new Node(0, Direction.Unknown);
+        private static Node backupSink => new Node(backupSinkDistance, Direction.Unknown);
 
-        private struct Directions
+        private struct Node
         {
             public int Distance { get; }
             public Direction Direction { get; }
 
-            public Directions(int distance, Direction direction)
+            public Node(int distance, Direction direction)
             {
                 Distance = distance;
                 Direction = direction;
             }
 
-            public Directions Invalidated => new Directions(int.MaxValue, Direction);
+            public Node Invalidated => new Node(int.MaxValue, Direction);
 
             public bool IsInvalid => Distance == int.MaxValue;
             public bool IsSink => Distance == 0 || Distance == backupSinkDistance;
