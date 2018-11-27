@@ -11,7 +11,6 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using Tile = Bearded.TD.Tiles.Tile<Bearded.TD.Game.World.TileInfo.Type>;
 using static Bearded.TD.Game.World.TileInfo.Type;
 using static Bearded.TD.Tiles.Directions;
 
@@ -62,16 +61,16 @@ namespace Bearded.TD.Game.Generation
             private readonly Tilemap<TileInfo.Type> tilemap;
             private readonly Random random;
             private readonly Logger logger;
-            private readonly Level<TileInfo.Type> level;
-            private List<Position2> intersections = new List<Position2>();
-            private List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
+            private readonly Level level;
+            private readonly List<Position2> intersections = new List<Position2>();
+            private readonly List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
 
             public Generator(Tilemap<TileInfo.Type> tilemap, int seed, Logger logger)
             {
                 this.tilemap = tilemap;
                 random = new Random(seed);
                 this.logger = logger;
-                level = new Level<TileInfo.Type>(tilemap);
+                level = new Level(tilemap.Radius);
             }
 
             public void ClearTunnels() => tunnels.ForEach(clearTunnel);
@@ -100,7 +99,7 @@ namespace Bearded.TD.Game.Generation
                     var directionToStep = currentDirection.Hexagonal();
 
                     var newTile = tile.Neighbour(directionToStep);
-                    if (!newTile.IsValid)
+                    if (!isValidTile(newTile))
                     {
                         newTile = tile.Neighbour(directionToGoal.Hexagonal());
                         currentDirection = directionToGoal;
@@ -151,7 +150,7 @@ namespace Bearded.TD.Game.Generation
                                 * (levelRadius * random.NextFloat(0.8f, 1));
 
                     var tile = level.GetTile(point);
-                    if (!tile.IsValid)
+                    if (!isValidTile(tile))
                         continue;
 
                     intersections.Add(point);
@@ -188,9 +187,9 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
-            private void connectVertexToGraph(Position2 vertex, List<Position2> graph)
+            private void connectVertexToGraph(Position2 vertex, IEnumerable<Position2> graph)
             {
-                var verticesByDistance = graph.OrderBy(v => (v - vertex).LengthSquared);
+                var verticesByDistance = graph.OrderBy(v => (v - vertex).LengthSquared).ToList();
                 var connectTo = verticesByDistance
                     .Select(v => isValidArc(vertex, v) ? (Position2?) v : null)
                     .FirstOrDefault(v => v.HasValue);
@@ -231,10 +230,10 @@ namespace Bearded.TD.Game.Generation
 
             public void DigDeep(int count = 10)
             {
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var tile = randomTile();
-                    if (tile.Info != Wall)
+                    if (tilemap[tile] != Wall)
                         continue;
                     var tiles = new List<Tile> {tile};
 
@@ -242,7 +241,10 @@ namespace Bearded.TD.Game.Generation
 
                     while (tiles.Count < maxCount)
                     {
-                        var closedNeighbours = tile.Neighbours.Where(t => t.Info == Wall && !tiles.Contains(t)).ToList();
+                        var closedNeighbours = level
+                            .ValidNeighboursOf(tile)
+                            .Where(t => tilemap[t] == Wall && !tiles.Contains(t))
+                            .ToList();
                         if (closedNeighbours.Count == 0)
                             break;
 
@@ -250,11 +252,10 @@ namespace Bearded.TD.Game.Generation
                         tiles.Add(tile);
                     }
 
-                    if (tiles.Count > 3)
-                    {
-                        foreach (var t in tiles)
-                            set(t, Crevice);
-                    }
+                    if (tiles.Count <= 3) continue;
+
+                    foreach (var t in tiles)
+                        set(t, Crevice);
                 }
             }
 
@@ -265,9 +266,14 @@ namespace Bearded.TD.Game.Generation
                 {
                     var tile = this.tile(random.Next(-r, r), random.Next(-r, r));
 
-                    if (tile.IsValid)
+                    if (isValidTile(tile))
                         return tile;
                 }
+            }
+
+            private bool isValidTile(Tile tile)
+            {
+                return tilemap.IsValidTile(tile);
             }
 
             private void spray(IEnumerable<Tile> area, Action<Tile> action, double fraction)
@@ -291,7 +297,7 @@ namespace Bearded.TD.Game.Generation
                 => tilemap.SpiralCenteredAt(tile, radius);
 
             private Tile center => tile(0, 0);
-            private Tile tile(int x, int y) => new Tile(tilemap, x, y);
+            private Tile tile(int x, int y) => new Tile(x, y);
         }
     }
 }
