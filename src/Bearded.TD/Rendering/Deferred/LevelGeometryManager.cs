@@ -24,7 +24,7 @@ namespace Bearded.TD.Rendering.Deferred
         public LevelGeometryManager(GameInstance game, RenderContext context)
         {
             level = game.State.Level;
-            tileMapRadius = level.Tilemap.Radius;
+            tileMapRadius = level.Radius;
 
             var tileMapWidth = tileMapRadius * 2 + 1;
 
@@ -85,7 +85,7 @@ namespace Bearded.TD.Rendering.Deferred
             for (var x = 0; x < batchWidth; x++)
                 for (var y = 0; y < batchWidth; y++)
                 {
-                    if (level.Tilemap.IsValidTile(baseTile.X + x, baseTile.Y + y))
+                    if (level.IsValid(new Tile(baseTile.X + x, baseTile.Y + y)))
                         return true;
                 }
 
@@ -162,9 +162,9 @@ namespace Bearded.TD.Rendering.Deferred
                     {
                         var (tileX, tileY) = (baseTile.X + x, baseTile.Y + y);
 
-                        var tile = new Tile<TileInfo>(level.Tilemap, tileX, tileY);
+                        var tile = new Tile(tileX, tileY);
 
-                        if (!tile.IsValid)
+                        if (!level.IsValid(tile))
                             continue;
                         
                         geometry.DrawTile(
@@ -186,7 +186,7 @@ namespace Bearded.TD.Rendering.Deferred
 
     static class LevelRenderingExtensions
     {
-        public static TileInfo NeighbourInfoOrDummy(this Tile<TileInfo> tile, Direction direction)
+        public static TileInfo NeighbourInfoOrDummy(this Tile tile, Direction direction)
         {
             return tile.Neighbour(direction).ValidOrNull?.Info ?? TileInfo.Dummy;
         }
