@@ -16,10 +16,8 @@ namespace Bearded.TD.Game.World
 
     static class RayCastingHelpers
     {
-        public static (RayCastResult Result, float RayFactor,
-            Position2 Point, EnemyUnit Enemy)
-            CastRayAgainstEnemies(this Level<TileInfo> level, Ray ray,
-            TileInfo.PassabilityLayer passability = Projectile)
+        public static (RayCastResult Result, float RayFactor, Position2 Point, EnemyUnit Enemy)
+            CastRayAgainstEnemies(this Level level, Ray ray, TileInfo.PassabilityLayer passability = Projectile)
         {
             level.Cast(ray, out var rayCaster);
 
