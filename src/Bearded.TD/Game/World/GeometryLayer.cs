@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.World
             tilemap[tile] = new TileGeometry(type, drawInfo);
             
             onDrawInfoChanged(tile);
-            onTileTypeChanged(tile);
+            onTileTypeChanged(tile, type);
             updatePassability(tile);
         }
 
@@ -41,9 +41,9 @@ namespace Bearded.TD.Game.World
             onDrawInfoChanged(tile);
         }
 
-        private void onTileTypeChanged(Tile tile)
+        private void onTileTypeChanged(Tile tile, TileGeometry.TileType type)
         {
-            events.Send(new TileTypeChanged(tile));
+            events.Send(new TileTypeChanged(tile, type));
         }
 
         private void onDrawInfoChanged(Tile tile)
@@ -58,22 +58,6 @@ namespace Bearded.TD.Game.World
             if (!tile.IsValid) throw new System.ArgumentOutOfRangeException();
             tile.Info.FinishedBuilding = building;
             updatePassability(tile);
-        }
-
-        private void updatePassability(Tile tile)
-        {
-            var isPassable = tile.Info.IsPassableFor(TileInfo.PassabilityLayer.Unit);
-
-            foreach (var dir in tile.Info.ValidDirections.Enumerate())
-            {
-                var neighbour = tile.Neighbour(dir);
-                if (isPassable)
-                    neighbour.Info.OpenForUnitsTo(dir.Opposite());
-                else
-                    neighbour.Info.CloseForUnitsTo(dir.Opposite());
-            }
-
-            events.Send(new TilePassabilityChanged(tile));
         }
     }
 }
