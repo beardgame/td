@@ -1,6 +1,8 @@
-﻿using Bearded.TD.Tiles;
+﻿using System;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.World
 {
@@ -18,10 +20,16 @@ namespace Bearded.TD.Game.World
         public Tile GoalTile => goalTile;
         public bool IsMoving { get; private set; }
 
-        public TileWalker(ITileWalkerOwner owner, Level level)
+        public TileWalker(ITileWalkerOwner owner, Level level, Tile startTile)
         {
+            if (!level.IsValid(startTile)) throw new ArgumentOutOfRangeException();
+
             this.owner = owner;
             this.level = level;
+
+            CurrentTile = startTile;
+            goalTile = startTile;
+            Position = currentTilePosition;
         }
 
         public void Update(TimeSpan elapsedTime, Speed currentSpeed)
@@ -33,7 +41,7 @@ namespace Bearded.TD.Game.World
         public void Teleport(Position2 newPos, Tile teleportToTile)
         {
             Position = newPos;
-            this.goalTile = teleportToTile;
+            goalTile = teleportToTile;
             updateCurrentTileIfNeeded();
         }
 

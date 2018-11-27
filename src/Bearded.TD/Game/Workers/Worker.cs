@@ -35,8 +35,7 @@ namespace Bearded.TD.Game.Workers
         {
             base.OnAdded();
 
-            tileWalker = new TileWalker(this, Game.Level);
-            tileWalker.Teleport(Position2.Zero, Game.Level.GetTile(Position2.Zero));
+            tileWalker = new TileWalker(this, Game.Level, Tile.Origin);
 
             manager.RegisterWorker(this);
             setState(WorkerState.Idle(manager, this));

@@ -50,14 +50,11 @@ namespace Bearded.TD.Game.Units
         {
             base.OnAdded();
 
-            if (!Game.Level.IsValid(startTile)) throw new System.ArgumentOutOfRangeException();
-
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
-
-            tileWalker = new TileWalker(this, Game.Level);
-            tileWalker.Teleport(Game.Level.GetPosition(startTile), startTile);
+            
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
+            tileWalker = new TileWalker(this, Game.Level, startTile);
 
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
