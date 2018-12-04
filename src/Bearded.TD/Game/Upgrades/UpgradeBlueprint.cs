@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Upgrades
         }
 
         public bool CanApplyTo<T>(ComponentCollection<T> components)
-            => effects.TrueForAll(effect => effect.CanApplyTo(components));
+            => components.Components.Count > 0 && effects.TrueForAll(effect => effect.CanApplyTo(components));
 
         public void ApplyTo<T>(ComponentCollection<T> components)
         {
