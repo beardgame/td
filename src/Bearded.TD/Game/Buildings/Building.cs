@@ -74,6 +74,11 @@ namespace Bearded.TD.Game.Buildings
             return upgrade.CanApplyTo(Components);
         }
 
+        public void ApplyUpgrade(UpgradeBlueprint upgrade)
+        {
+            upgrade.ApplyTo(Components);
+        }
+
         protected override void OnDelete()
         {
             OccupiedTiles.ForEach(tile =>
