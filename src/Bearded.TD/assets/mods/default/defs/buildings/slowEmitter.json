@@ -2,9 +2,9 @@
     "id" : "slowEmitter",
     "name" : "Slow Emitter",
     "footprint" : "triangle",
-    "health" : 300,
     "cost" : 95,
     "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 300 } },
         {
             "id" : "statusEmitter",
             "parameters" : {

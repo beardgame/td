@@ -2,9 +2,9 @@
     "id" : "triangle",
     "name" : "Triangular Turret",
     "footprint" : "triangle",
-    "health" : 300,
     "cost" : 75,
     "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 300 } },
         {
             "id" : "turret",
             "onPlaceholder" :  true,

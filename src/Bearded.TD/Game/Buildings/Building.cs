@@ -1,22 +1,19 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
-using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
     [ComponentOwner]
-    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageable
+    class Building : PlacedBuildingBase<Building>, IIdable<Building>
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -27,19 +24,17 @@ namespace Bearded.TD.Game.Buildings
 
         public Id<Building> Id { get; }
 
-        private int health;
-        public override int Health => health;
         public bool IsCompleted { get; private set; }
         private double buildProgress;
 
         public event VoidEventHandler Completing;
-        public event VoidEventHandler Damaged;
+        public event GenericEventHandler<int> Damaged;
+        public event GenericEventHandler<int> HealthAdded;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
         {
             Id = id;
-            health = 1;
         }
 
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
@@ -47,9 +42,7 @@ namespace Bearded.TD.Game.Buildings
 
         public void Damage(int damage)
         {
-            if (!UserSettings.Instance.Debug.InvulnerableBuildings)
-                health -= damage;
-            Damaged?.Invoke();
+            Damaged?.Invoke(damage);
         }
 
         protected override void OnAdded()
@@ -65,7 +58,7 @@ namespace Bearded.TD.Game.Buildings
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             buildProgress = newBuildProgress;
-            health += healthAdded;
+            HealthAdded?.Invoke(healthAdded);
         }
 
         public void SetBuildCompleted()
@@ -83,16 +76,6 @@ namespace Bearded.TD.Game.Buildings
             });
 
             base.OnDelete();
-        }
-
-        public override void Update(TimeSpan elapsedTime)
-        {
-            base.Update(elapsedTime);
-
-            if (Health <= 0)
-            {
-                this.Sync(KillBuilding.Command);
-            }
         }
 
         public override void Draw(GeometryManager geometries)

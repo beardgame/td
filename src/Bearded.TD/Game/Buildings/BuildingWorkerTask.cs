@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
@@ -18,6 +19,7 @@ namespace Bearded.TD.Game.Buildings
 
         private double resourcesConsumed;
         private int healthGiven = 1;
+        private int maxHealth = 1;
         private bool finished;
 
         public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
@@ -36,6 +38,11 @@ namespace Bearded.TD.Game.Buildings
             placeholder = null;
             this.building = building;
             building.Completing += onBuildingCompleting;
+
+            if (building.GetComponent<Health>() is var health)
+            {
+                maxHealth = health.MaxHealth;
+            }
         }
 
         private void onBuildingCompleting()
@@ -44,7 +51,7 @@ namespace Bearded.TD.Game.Buildings
             // Make sure to apply remaining progress before it is no longer possible.
             // Note that we can assume building is set, because the StartBuildingConstruction command has been called.
 
-            var healthRemaining = blueprint.MaxHealth - healthGiven;
+            var healthRemaining = maxHealth - healthGiven;
             building.SetBuildProgress(1, healthRemaining);
             building.Completing -= onBuildingCompleting;
             finished = true;
@@ -94,7 +101,7 @@ namespace Bearded.TD.Game.Buildings
 
             var buildProgress = resourcesConsumed / blueprint.ResourceCost;
             DebugAssert.State.Satisfies(buildProgress <= 1);
-            var expectedHealthGiven = Mathf.CeilToInt(buildProgress * blueprint.MaxHealth);
+            var expectedHealthGiven = Mathf.CeilToInt(buildProgress * maxHealth);
             var newHealthGiven = expectedHealthGiven - healthGiven;
             building.SetBuildProgress(buildProgress, newHealthGiven);
             healthGiven = expectedHealthGiven;

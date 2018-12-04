@@ -15,7 +15,6 @@ namespace Bearded.TD.Game.Buildings
     {
         public Id<BuildingPlaceholder> Id { get; }
         private readonly BuildingWorkerTask workerTask;
-        public override int Health => 0;
 
         public BuildingPlaceholder(Id<BuildingPlaceholder> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)

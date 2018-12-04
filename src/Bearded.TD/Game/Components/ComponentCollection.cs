@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -25,6 +26,12 @@ namespace Bearded.TD.Game.Components
         {
             components.Add(component);
             component.OnAdded(owner);
+        }
+
+        public T Get<T>()
+            where T : IComponent<TOwner>
+        {
+            return (T) components.FirstOrDefault(c => c is T);
         }
 
         public void Update(TimeSpan elapsedTime)

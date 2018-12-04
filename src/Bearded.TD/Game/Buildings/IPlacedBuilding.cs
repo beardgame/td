@@ -8,7 +8,6 @@ namespace Bearded.TD.Game.Buildings
     {
         IBuildingBlueprint Blueprint { get; }
         Faction Faction { get; }
-        int Health { get; }
         IEnumerable<Tile> OccupiedTiles { get; }
     }
 }

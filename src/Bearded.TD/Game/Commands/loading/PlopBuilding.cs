@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
@@ -35,7 +36,10 @@ namespace Bearded.TD.Game.Commands
             {
                 var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
-                building.SetBuildProgress(1, building.Blueprint.MaxHealth - 1);
+                if (building.GetComponent<Health>() is var health)
+                {
+                    building.SetBuildProgress(1, health.MaxHealth - 1);
+                }
                 building.SetBuildCompleted();
             }
 
