@@ -7,9 +7,9 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components
 {
     [Component("damageOnHit")]
-    class ProjectileDamage : Component<Projectile, IProjectileDamageComponent>
+    class ProjectileDamage : Component<Projectile, IProjectileDamageComponentParameters>
     {
-        public ProjectileDamage(IProjectileDamageComponent parameters) : base(parameters)
+        public ProjectileDamage(IProjectileDamageComponentParameters parameters) : base(parameters)
         {
         }
         
