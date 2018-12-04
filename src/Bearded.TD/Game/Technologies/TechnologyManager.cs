@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Upgrades;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Technologies
@@ -8,6 +10,7 @@ namespace Bearded.TD.Game.Technologies
     sealed class TechnologyManager
     {
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
+        private readonly List<UpgradeBlueprint> unlockedUpgrades = new List<UpgradeBlueprint>();
 
         public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.ToList();
 
@@ -20,6 +23,12 @@ namespace Bearded.TD.Game.Technologies
 
             unlockedBuildings.Add(blueprint);
             BuildingUnlocked?.Invoke(blueprint);
+        }
+
+        public IEnumerable<UpgradeBlueprint> GetApplicableUpgradesFor(Building building)
+        {
+            var components = new ComponentCollection<Building>();
+            return unlockedUpgrades.Where(upgrade => upgrade.CanApplyTo(components));
         }
     }
 }

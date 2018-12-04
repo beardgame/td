@@ -2,7 +2,7 @@
 using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.Utilities.Linq;
 
