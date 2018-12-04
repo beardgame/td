@@ -34,6 +34,7 @@ namespace Weavers.TechEffects
             }
 
             addCreateModifiableInstanceMethod(templateType, genericParameterInterface, modifiableType);
+            addHasAttributeOfTypeMethod(templateType, genericParameterInterface);
             addModifyAttributeMethod(templateType, genericParameterInterface);
 
             return templateType;
@@ -155,17 +156,36 @@ namespace Weavers.TechEffects
         {
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, modifiableType, null);
         }
+        
+        private void addHasAttributeOfTypeMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        {
+            addInvalidOperationMethodOverride(
+                type,
+                genericParameterInterface,
+                Constants.HasAttributeOfTypeMethod,
+                "Cannot check attributes on immutable template.");
+        }
 
         private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        {
+            addInvalidOperationMethodOverride(
+                type,
+                genericParameterInterface,
+                Constants.ModifyAttributeMethod,
+                "Cannot modify attributes on immutable template.");
+        }
+
+        private void addInvalidOperationMethodOverride(
+            TypeDefinition type, TypeReference genericParameterInterface, string methodName, string error)
         {
             var exceptionCtor = ReferenceFinder.GetConstructorReference(typeof(InvalidOperationException));
 
             var methodBase =
-                ReferenceFinder.GetMethodReference(genericParameterInterface, Constants.ModifyAttributeMethod);
+                ReferenceFinder.GetMethodReference(genericParameterInterface, methodName);
             var method = MethodHelpers.CreateMethodDefinitionFromInterfaceMethod(methodBase);
 
             var processor = method.Body.GetILProcessor();
-            processor.Emit(OpCodes.Ldstr, "Cannot modify attributes on immutable template.");
+            processor.Emit(OpCodes.Ldstr, error);
             processor.Emit(OpCodes.Newobj, exceptionCtor);
             processor.Emit(OpCodes.Throw);
 

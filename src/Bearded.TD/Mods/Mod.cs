@@ -2,8 +2,8 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
-using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
 using Bearded.TD.Mods.Models;

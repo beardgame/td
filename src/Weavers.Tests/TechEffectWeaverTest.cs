@@ -177,8 +177,8 @@ namespace Weavers.Tests
         {
             var modifiable = constructModifiable(constructTemplate(0, 10, null));
 
-            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.Damage,
-                new Modification(Modification.ModificationType.Multiplicative, 1));
+            modifiable.CallMethod(
+                nameof(ModifiableBase.ModifyAttribute), AttributeType.Damage, Modification.AddFractionOfBase(1));
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(20);
         }
@@ -192,8 +192,8 @@ namespace Weavers.Tests
                     null,
                     getWrappedIntType().GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
             
-            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.Cooldown,
-                new Modification(Modification.ModificationType.Multiplicative, 1));
+            modifiable.CallMethod(
+                nameof(ModifiableBase.ModifyAttribute), AttributeType.Cooldown, Modification.AddFractionOfBase(1));
             
             modifiable
                 .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))

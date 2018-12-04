@@ -1,10 +1,13 @@
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
     abstract class WeaponCycleHandler<TParameters> : IComponent<Weapon>
+        where TParameters : IParametersTemplate<TParameters>
     {
         protected TParameters Parameters { get; }
 
@@ -52,5 +55,11 @@ namespace Bearded.TD.Game.Components.Generic
         public virtual void Draw(GeometryManager geometries)
         {
         }
+
+        public bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+            => effect.CanApplyTo(Parameters);
+
+        public void ApplyUpgradeEffect(IUpgradeEffect effect)
+            => effect.ApplyTo(Parameters);
     }
 }

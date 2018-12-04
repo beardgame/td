@@ -51,9 +51,9 @@ namespace Bearded.TD.Game
         {
             Meta = meta;
             Level = new Level(radius);
-            Technology = new TechnologyManager();
+            Technology = new TechnologyManager(Meta.Events);
             
-            GeometryLayer = new GeometryLayer(meta.Events, radius);
+            GeometryLayer = new GeometryLayer(Meta.Events, radius);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);

@@ -1,8 +1,8 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.World;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Tiles;
+using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -25,10 +25,14 @@ namespace Bearded.TD.Game.Commands
             public void Execute()
             {
                 var state = new GameState(game.Meta, radius);
+
                 foreach (var blueprint in game.Blueprints.Buildings.All)
                 {
                     state.Technology.UnlockBlueprint(blueprint);
                 }
+                state.Technology.UnlockUpgrade(new UpgradeBlueprint("+25% damage",
+                    new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
+
                 game.InitialiseState(state);
             }
 
