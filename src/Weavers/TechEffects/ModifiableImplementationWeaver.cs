@@ -47,6 +47,7 @@ namespace Weavers.TechEffects
             }
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
+            addHasAttributeOfTypeMethod(interfaceToImplement, modifiableType);
             addModifyAttributeMethod(interfaceToImplement, modifiableType);
 
             return modifiableType;
@@ -384,13 +385,27 @@ namespace Weavers.TechEffects
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, type, field);
         }
 
+        private void addHasAttributeOfTypeMethod(TypeReference interfaceToImplement, TypeDefinition type)
+        {
+            var baseMethod = ReferenceFinder
+                .GetMethodReference<ModifiableBase>(b =>
+                    b.HasAttributeOfType(AttributeType.None))
+                .Resolve();
+            addMethodImplementation(interfaceToImplement, type, baseMethod);
+        }
+
         private void addModifyAttributeMethod(TypeReference interfaceToImplement, TypeDefinition type)
         {
             var baseMethod = ReferenceFinder
                 .GetMethodReference<ModifiableBase>(b =>
                     b.ModifyAttribute(AttributeType.None, new Modification()))
                 .Resolve();
+            addMethodImplementation(interfaceToImplement, type, baseMethod);
+        }
 
+        private void addMethodImplementation(
+            TypeReference interfaceToImplement, TypeDefinition type, MethodReference baseMethod)
+        {
             var method = new MethodDefinition(
                 baseMethod.Name,
                 MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
