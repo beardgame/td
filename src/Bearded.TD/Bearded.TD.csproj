@@ -37,6 +37,7 @@
     <PackageReference Include="Google.Protobuf" Version="3.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="OpenTK" Version="2.0.0" targetFramework="net45" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
@@ -61,10 +62,5 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\..\.nuget\packages\system.collections.immutable\1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>
