@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.World
 
         public void SetDrawInfo(Tile tile, TileDrawInfo drawInfo)
         {
-            if (tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
+            if (!tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
 
             tilemap[tile] = tilemap[tile].WithDrawInfo(drawInfo);
 
