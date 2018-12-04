@@ -7,33 +7,24 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Components
 {
     [Component("damageOnHit")]
-    class ProjectileDamage : IComponent<Projectile>
+    class ProjectileDamage : Component<Projectile, IProjectileDamageComponent>
     {
-        private readonly IProjectileDamageComponent parameters;
-        public Projectile Owner { get; private set; }
-
-        public ProjectileDamage(IProjectileDamageComponent parameters)
+        public ProjectileDamage(IProjectileDamageComponent parameters) : base(parameters)
         {
-            this.parameters = parameters;
         }
         
-        public void OnAdded(Projectile owner)
+        protected override void Initialise()
         {
-            Owner = owner;
-            owner.HitEnemy += onHitEnemy;
+            Owner.HitEnemy += onHitEnemy;
         }
-
+        
         private void onHitEnemy(EnemyUnit enemy)
         {
-            enemy.Damage(parameters.Damage, Owner.DamageSource);
+            enemy.Damage(Parameters.Damage, Owner.DamageSource);
         }
 
-        public void Update(TimeSpan elapsedTime)
-        {
-        }
+        public override void Update(TimeSpan elapsedTime) { }
 
-        public void Draw(GeometryManager geometries)
-        {
-        }
+        public override void Draw(GeometryManager geometries) { }
     }
 }
