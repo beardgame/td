@@ -8,6 +8,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -46,6 +47,16 @@ namespace Bearded.TD.Game.Weapons
             passabilityLayer = turret.Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
 
             components.Add(this, blueprint.GetComponents());
+        }
+
+        public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
+        {
+            return upgradeEffect.CanApplyTo(components);
+        }
+
+        public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
+        {
+            upgradeEffect.ApplyTo(components);
         }
 
         public void Update(TimeSpan elapsedTime)

@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Weavers.Tests", "src\Weaver
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Weavers.Tests.AssemblyToProcess", "src\Weavers.Tests.AssemblyToProcess\Weavers.Tests.AssemblyToProcess.csproj", "{4F3AEA6D-0DF0-401F-84B8-A435E4C71D38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Shared", "src\Bearded.TD.Shared\Bearded.TD.Shared.csproj", "{8B1B362B-7883-489D-AD98-2060FB174B20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Shared", "src\Bearded.TD.Shared\Bearded.TD.Shared.csproj", "{8B1B362B-7883-489D-AD98-2060FB174B20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

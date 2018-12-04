@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
@@ -40,5 +41,16 @@ namespace Bearded.TD.Game.Components.Generic
 
         GameObject ITurret.Owner => Owner;
         Faction ITurret.OwnerFaction => Owner.Faction;
+
+        public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+        {
+            return base.CanApplyUpgradeEffect(effect) || weapon.CanApplyUpgradeEffect(effect);
+        }
+
+        public override void ApplyUpgradeEffect(IUpgradeEffect effect)
+        {
+            base.ApplyUpgradeEffect(effect);
+            weapon.ApplyUpgradeEffect(effect);
+        }
     }
 }

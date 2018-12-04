@@ -56,10 +56,10 @@ namespace Bearded.TD.Game.Components.Generic
         {
         }
 
-        public bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+        public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect)
             => effect.CanApplyTo(Parameters);
 
-        public void ApplyUpgradeEffect(IUpgradeEffect effect)
+        public virtual void ApplyUpgradeEffect(IUpgradeEffect effect)
             => effect.ApplyTo(Parameters);
     }
 }
