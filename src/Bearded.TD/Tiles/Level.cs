@@ -26,7 +26,7 @@ namespace Bearded.TD.Tiles
             if (tile.Radius < Radius)
                 return Tilemap.Directions;
 
-            return Tilemap.Directions.Where(d => tile.Neighbour(d).Radius < Radius);
+            return Tilemap.Directions.Where(d => tile.Neighbour(d).Radius <= Radius);
         }
 
         public IEnumerable<Tile> ValidNeighboursOf(Tile tile)
