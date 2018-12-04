@@ -23,14 +23,14 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
             if (health != null)
+            {
                 Add(new DynamicLabel(() => $"Hitpoints: {health.CurrentHealth} / {health.MaxHealth}")
                         {FontSize = 16}
                     .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
+            }
 
-            // Listview
-            var upgradeList = new ListControl
-                {ItemSource = new UpgradeListItemSource(building, buildingStatus.UpgradesForBuilding)};
-            Add(upgradeList
+            Add(new ListControl
+                    {ItemSource = new UpgradeListItemSource(building, buildingStatus.UpgradesForBuilding)}
                 .Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
 
             Add(Default.Button("Close")
@@ -54,12 +54,12 @@ namespace Bearded.TD.UI.Controls
             {
                 this.building = building;
                 this.upgrades = upgrades.ToList();
-                ItemCount = this.upgrades.Count();
+                ItemCount = this.upgrades.Count;
             }
 
             public double HeightOfItemAt(int index)
             {
-                return 48;
+                return 32;
             }
 
             public Control CreateItemControlFor(int index)
@@ -67,7 +67,7 @@ namespace Bearded.TD.UI.Controls
                 var upgrade = upgrades[index];
                 var ctrl = new Button
                 {
-                    new Label(upgrade.Name)
+                    new Label(upgrade.Name) {FontSize = 14}
                 };
                 ctrl.Clicked += () => building.ApplyUpgrade(upgrade);
                 return ctrl;
