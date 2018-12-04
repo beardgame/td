@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -66,6 +67,11 @@ namespace Bearded.TD.Game.Buildings
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot complete building more than once.");
             Completing?.Invoke();
             IsCompleted = true;
+        }
+
+        public bool CanApplyUpgrade(UpgradeBlueprint upgrade)
+        {
+            return upgrade.CanApplyTo(Components);
         }
 
         protected override void OnDelete()

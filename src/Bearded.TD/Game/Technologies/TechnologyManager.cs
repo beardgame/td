@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Upgrades;
 
 namespace Bearded.TD.Game.Technologies
@@ -35,8 +34,7 @@ namespace Bearded.TD.Game.Technologies
 
         public IEnumerable<UpgradeBlueprint> GetApplicableUpgradesFor(Building building)
         {
-            var components = new ComponentCollection<Building>();
-            return unlockedUpgrades.Where(upgrade => upgrade.CanApplyTo(components));
+            return unlockedUpgrades.Where(building.CanApplyUpgrade);
         }
     }
 }

@@ -16,7 +16,8 @@ namespace Bearded.TD.Game.Buildings
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
-        private readonly ComponentCollection<T> components = new ComponentCollection<T>();
+
+        protected ComponentCollection<T> Components { get; } = new ComponentCollection<T>();
 
         public abstract SelectionState SelectionState { get; }
 
@@ -58,24 +59,24 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnAdded();
 
-            components.Add((T)this, InitialiseComponents());
+            Components.Add((T)this, InitialiseComponents());
         }
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
         
         public TComponent GetComponent<TComponent>()
             where TComponent : IComponent<T>
         {
-            return components.Get<TComponent>();
+            return Components.Get<TComponent>();
         }
         
         public override void Update(TimeSpan elapsedTime)
         {
-            components.Update(elapsedTime);
+            Components.Update(elapsedTime);
         }
 
         public override void Draw(GeometryManager geometries)
         {
-            components.Draw(geometries);
+            Components.Draw(geometries);
         }
 
         protected void DrawTiles(GeometryManager geometries, Color color)
