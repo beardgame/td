@@ -9,7 +9,7 @@ namespace Weavers.Tests.AssemblyToProcess
         [Modifiable]
         int IntProperty { get; }
         
-        [Modifiable(10, Type = AttributeType.DamagePerUnit)]
+        [Modifiable(10, Type = AttributeType.Damage)]
         int IntPropertyWithDefault { get; }
         
         [Modifiable(10, Type = AttributeType.Cooldown)]
@@ -58,7 +58,7 @@ namespace Weavers.Tests.AssemblyToProcess
 
             InitializeAttributes(new List<KeyValuePair<AttributeType, IAttributeWithModifications>>
             {
-                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.DamagePerUnit, intPropertyWithDefault),
+                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.Damage, intPropertyWithDefault),
                 new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.Cooldown, wrappedIntProperty)
             });
         }

@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -17,8 +18,10 @@ namespace Bearded.TD.Game.Projectiles
     [ComponentOwner]
     class Projectile : GameObject
     {
+        public event GenericEventHandler<EnemyUnit> HitEnemy;
+        public Building DamageSource { get; }
+        
         private readonly IProjectileBlueprint blueprint;
-        private readonly Building damageSource;
         private readonly ComponentCollection<Projectile> components = new ComponentCollection<Projectile>();
 
         public Position2 Position { get; private set; }
@@ -28,7 +31,7 @@ namespace Bearded.TD.Game.Projectiles
         public Projectile(IProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
         {
             this.blueprint = blueprint;
-            this.damageSource = damageSource;
+            DamageSource = damageSource;
             Position = position;
             Velocity = velocity;
         }
@@ -61,7 +64,7 @@ namespace Bearded.TD.Game.Projectiles
                     Delete();
                     break;
                 case RayCastResult.HitEnemy:
-                    enemy.Damage(blueprint.Damage, damageSource);
+                    HitEnemy?.Invoke(enemy);
                     Delete();
                     break;
                 default:

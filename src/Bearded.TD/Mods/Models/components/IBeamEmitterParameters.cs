@@ -6,7 +6,7 @@ namespace Bearded.TD.Mods.Models
 {
     interface IBeamEmitterParameters : IParametersTemplate<IBeamEmitterParameters>
     {
-        [Modifiable(10, Type = AttributeType.DamagePerUnit)]
+        [Modifiable(10, Type = AttributeType.Damage)]
         int DamagePerSecond { get; }
 
         [Modifiable(5f)]

@@ -9,7 +9,6 @@ namespace Bearded.TD.Mods.Models
     sealed class ProjectileBlueprint : IProjectileBlueprint
     {
         public string Id { get; }
-        public int Damage { get; }
         public Color Color { get; }
         public ISprite Sprite { get; }
 
@@ -19,13 +18,11 @@ namespace Bearded.TD.Mods.Models
             => componentFactories.Select(f => f.Create());
 
         public ProjectileBlueprint(string id,
-            int damage,
             Color color,
             ISprite sprite,
             IEnumerable<IComponentFactory<Projectile>> componentFactories)
         {
             Id = id;
-            Damage = damage;
             Color = color;
             Sprite = sprite;
             this.componentFactories =
