@@ -65,10 +65,7 @@ namespace Bearded.TD.UI.Controls
             public Control CreateItemControlFor(int index)
             {
                 var upgrade = upgrades[index];
-                var ctrl = new Button
-                {
-                    new Label(upgrade.Name) {FontSize = 14}
-                };
+                var ctrl = Default.Button(upgrade.Name);
                 ctrl.Clicked += () => building.ApplyUpgrade(upgrade);
                 return ctrl;
             }
