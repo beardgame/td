@@ -13,19 +13,17 @@ namespace Bearded.TD.Mods.Models
         public string Id { get; }
         public string Name { get; }
         public FootprintGroup FootprintGroup { get; }
-        public int MaxHealth { get; }
         public int ResourceCost { get; }
 
         public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
-        public BuildingBlueprint(string id, string name, FootprintGroup footprintGroup, int maxHealth,
+        public BuildingBlueprint(string id, string name, FootprintGroup footprintGroup,
             int resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;
             FootprintGroup = footprintGroup;
-            MaxHealth = maxHealth;
             ResourceCost = resourceCost;
 
             Tags = (tags?.ToList() ?? new List<UpgradeTag>()).AsReadOnly();

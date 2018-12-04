@@ -1,4 +1,6 @@
-﻿using Bearded.UI.Controls;
+﻿using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components.Generic;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
@@ -7,16 +9,20 @@ namespace Bearded.TD.UI.Controls
     {
         public BuildingStatusUIControl(BuildingStatusUI buildingStatus)
         {
+            var building = buildingStatus.Building as Building;
+            var health = building?.GetComponent<Health>();
+            
             Add(new BackgroundBox());
 
             Add(new Label(buildingStatus.Building.Blueprint.Name) { FontSize = 24 }
                 .Anchor(a => a.Top(margin: 4, height: 24).Left(margin: 4).Right(margin: 4)));
             Add(new Label($"Owned by {buildingStatus.Building.Faction.Name ?? "nobody"}") { FontSize = 16 }
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
-            Add(new DynamicLabel(() => 
-                    $"Hitpoints: {buildingStatus.Building.Health} / {buildingStatus.Building.Blueprint.MaxHealth}")
-                    { FontSize = 16 }
-                .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
+            
+            if (health != null)
+                Add(new DynamicLabel(() => $"Hitpoints: {health.CurrentHealth} / {health.MaxHealth}")
+                        { FontSize = 16 }
+                    .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
 
             // Listview
             Add(new SimpleControl()

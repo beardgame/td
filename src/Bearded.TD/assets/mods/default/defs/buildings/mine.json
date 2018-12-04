@@ -2,9 +2,9 @@
     "id" : "mine",
     "name" : "Small Mine",
     "footprint" : "triangle",
-    "health" : 200,
     "cost" : 250,
     "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 200 } },
         {
             "id" : "incomeOverTime",
             "parameters" : { "incomePerSecond" : 2.5 }

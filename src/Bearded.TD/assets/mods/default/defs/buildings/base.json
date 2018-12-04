@@ -2,9 +2,9 @@
     "id" : "base",
     "name" : "Main Base",
     "footprint" : "seven",
-    "health" : 1000,
     "cost" : 1,
     "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
         { "id" :  "sink" },
         { "id" :  "gameOverOnDestroy" },
         {

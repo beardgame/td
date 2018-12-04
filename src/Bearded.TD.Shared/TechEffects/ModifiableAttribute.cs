@@ -17,5 +17,11 @@ namespace Bearded.TD.Shared.TechEffects
         {
             DefaultValue = defaultValue;
         }
+        
+        public ModifiableAttribute(object defaultValue, AttributeType type = AttributeType.None)
+        {
+            DefaultValue = defaultValue;
+            Type = type;
+        }
     }
 }

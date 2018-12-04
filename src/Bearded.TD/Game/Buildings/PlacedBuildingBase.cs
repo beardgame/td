@@ -12,8 +12,6 @@ namespace Bearded.TD.Game.Buildings
         private SelectionState selectionState;
         public override SelectionState SelectionState => selectionState;
 
-        public abstract int Health { get; }
-
         protected PlacedBuildingBase(
             IBuildingBlueprint blueprint,
             Faction faction,

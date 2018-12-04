@@ -6,19 +6,16 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("gameOverOnDestroy")]
     class GameOverOnDestroy<T> : Component<T>
-        where T : GameObject, IDamageable
+        where T : GameObject
     {
         protected override void Initialise()
         {
-            Owner.Damaged += onDamaged;
+            Owner.Deleting += onDeleting;
         }
 
-        private void onDamaged()
+        private void onDeleting()
         {
-            if (Owner.Health <= 0)
-            {
-                Owner.Sync(GameOver.Command);
-            }
+            Owner.Sync(GameOver.Command);
         }
 
         public override void Update(TimeSpan elapsedTime) { }

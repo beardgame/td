@@ -2,6 +2,8 @@
     "id" : "wall",
     "name" : "Wall",
     "footprint" : "single",
-    "health" : 100,
-    "cost" : 15
+    "cost" : 15,
+    "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 100 } }
+    ]
 }

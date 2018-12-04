@@ -7,5 +7,6 @@
         Cooldown,
         Damage,
         DroneCount,
+        Health
     }
 }

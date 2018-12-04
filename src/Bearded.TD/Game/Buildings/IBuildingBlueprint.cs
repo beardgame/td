@@ -9,7 +9,6 @@ namespace Bearded.TD.Game.Buildings
     {
         string Name { get; }
         FootprintGroup FootprintGroup { get; }
-        int MaxHealth { get; }
         int ResourceCost { get; }
         IReadOnlyList<UpgradeTag> Tags { get; }
 
