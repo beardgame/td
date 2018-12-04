@@ -5,7 +5,7 @@
         None = 0,
 
         Cooldown,
-        DamagePerUnit,
+        Damage,
         DroneCount,
     }
 }

@@ -177,7 +177,7 @@ namespace Weavers.Tests
         {
             var modifiable = constructModifiable(constructTemplate(0, 10, null));
 
-            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.DamagePerUnit,
+            modifiable.CallMethod(nameof(ModifiableBase.ModifyAttribute), AttributeType.Damage,
                 new Modification(Modification.ModificationType.Multiplicative, 1));
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(20);

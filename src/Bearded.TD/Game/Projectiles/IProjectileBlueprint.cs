@@ -7,7 +7,6 @@ namespace Bearded.TD.Game.Projectiles
 {
     interface IProjectileBlueprint : IBlueprint
     {
-        int Damage { get; }
         Color Color { get; }
         ISprite Sprite { get; }
 
