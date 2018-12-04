@@ -13,6 +13,8 @@ namespace Bearded.TD.Shared.TechEffects
             attributesByType = attributes.ToLookup(attr => attr.Key, attr => attr.Value);
         }
 
+        public bool HasAttributeOfType(AttributeType type) => attributesByType.Contains(type);
+
         public bool ModifyAttribute(AttributeType type, Modification modification)
         {
             var hasModified = false;

@@ -42,6 +42,8 @@ namespace Bearded.TD.Game.Components
 
         public VoidParameters CreateModifiableInstance() => this;
 
+        public bool HasAttributeOfType(AttributeType type) => false;
+
         public bool ModifyAttribute(AttributeType type, Modification modification) => false;
     }
 }
