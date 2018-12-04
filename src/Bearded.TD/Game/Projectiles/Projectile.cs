@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Projectiles
     [ComponentOwner]
     class Projectile : GameObject
     {
-        public event EventHandler<EnemyUnit> HitEnemy;
+        public event GenericEventHandler<EnemyUnit> HitEnemy;
         public Building DamageSource { get; }
         
         private readonly IProjectileBlueprint blueprint;
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game.Projectiles
                     Delete();
                     break;
                 case RayCastResult.HitEnemy:
-                    HitEnemy?.Invoke(this, enemy);
+                    HitEnemy?.Invoke(enemy);
                     Delete();
                     break;
                 default:

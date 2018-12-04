@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Components
             owner.HitEnemy += onHitEnemy;
         }
 
-        private void onHitEnemy(object _, EnemyUnit enemy)
+        private void onHitEnemy(EnemyUnit enemy)
         {
             enemy.Damage(parameters.Damage, Owner.DamageSource);
         }
