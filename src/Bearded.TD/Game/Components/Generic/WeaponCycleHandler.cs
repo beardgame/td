@@ -55,11 +55,5 @@ namespace Bearded.TD.Game.Components.Generic
         public virtual void Draw(GeometryManager geometries)
         {
         }
-
-        public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-            => effect.CanApplyTo(Parameters);
-
-        public virtual void ApplyUpgradeEffect(IUpgradeEffect effect)
-            => effect.ApplyTo(Parameters);
     }
 }

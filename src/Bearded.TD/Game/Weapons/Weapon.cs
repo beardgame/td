@@ -49,16 +49,6 @@ namespace Bearded.TD.Game.Weapons
             components.Add(this, blueprint.GetComponents());
         }
 
-        public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
-        {
-            return upgradeEffect.CanApplyTo(components);
-        }
-
-        public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
-        {
-            upgradeEffect.ApplyTo(components);
-        }
-
         public void Update(TimeSpan elapsedTime)
         {
             if (ownerAsBuilding == null || !ownerAsBuilding.IsCompleted)

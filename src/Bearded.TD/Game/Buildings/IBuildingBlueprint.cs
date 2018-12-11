@@ -5,7 +5,7 @@ using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game.Buildings
 {
-    interface IBuildingBlueprint : IBlueprint
+    interface IBuildingBlueprint : IBlueprint, IAttributeModifiable
     {
         string Name { get; }
         FootprintGroup FootprintGroup { get; }
@@ -15,5 +15,7 @@ namespace Bearded.TD.Game.Buildings
         IEnumerable<IComponent<Building>> GetComponentsForBuilding();
         IEnumerable<IComponent<BuildingGhost>> GetComponentsForGhost();
         IEnumerable<IComponent<BuildingPlaceholder>> GetComponentsForPlaceholder();
+
+        IBuildingBlueprint MakeModifiableInstance();
     }
 }

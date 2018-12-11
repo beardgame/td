@@ -16,13 +16,22 @@ namespace Bearded.TD.Game.Upgrades
             this.effects = ImmutableList.CreateRange(effects);
         }
 
-        public bool CanApplyTo<T>(ComponentCollection<T> components)
-            => components.Components.Count > 0 && effects.TrueForAll(effect => effect.CanApplyTo(components));
-
-        public void ApplyTo<T>(ComponentCollection<T> components)
+        public bool CanApplyTo(IAttributeModifiable attributeModifiable)
+            => effects.TrueForAll(effect => effect.CanApplyTo(attributeModifiable));
+        
+        public void ApplyTo(IAttributeModifiable attributeModifiable)
         {
-            DebugAssert.Argument.Satisfies(CanApplyTo(components));
-            effects.ForEach(effect => effect.ApplyTo(components));
+            DebugAssert.Argument.Satisfies(CanApplyTo(attributeModifiable));
+            effects.ForEach(effect => effect.ApplyTo(attributeModifiable));
         }
+
+        //public bool CanApplyTo<T>(ComponentCollection<T> components)
+        //    => components.Components.Count > 0 && effects.TrueForAll(effect => effect.CanApplyTo(components));
+
+        //public void ApplyTo<T>(ComponentCollection<T> components)
+        //{
+        //    DebugAssert.Argument.Satisfies(CanApplyTo(components));
+        //    effects.ForEach(effect => effect.ApplyTo(components));
+        //}
     }
 }

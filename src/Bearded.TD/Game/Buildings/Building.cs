@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Buildings
         public event GenericEventHandler<int> HealthAdded;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
-            : base(blueprint, faction, footprint)
+            : base(blueprint.MakeModifiableInstance(), faction, footprint)
         {
             Id = id;
         }
@@ -71,12 +71,12 @@ namespace Bearded.TD.Game.Buildings
 
         public bool CanApplyUpgrade(UpgradeBlueprint upgrade)
         {
-            return upgrade.CanApplyTo(Components);
+            return upgrade.CanApplyTo(Blueprint);
         }
 
         public void ApplyUpgrade(UpgradeBlueprint upgrade)
         {
-            upgrade.ApplyTo(Components);
+            upgrade.ApplyTo(Blueprint);
         }
 
         protected override void OnDelete()

@@ -13,9 +13,14 @@ namespace Bearded.TD.Game.Upgrades
             this.modification = modification;
         }
 
-        public override bool CanApplyTo<T>(IParametersTemplate<T> subject) => subject.HasAttributeOfType(attributeType);
-        
-        public override void ApplyTo<T>(IParametersTemplate<T> subject)
+        public override bool CanApplyTo(IAttributeModifiable subject) => subject.HasAttributeOfType(attributeType);
+
+        //public override bool CanApplyTo<T>(IParametersTemplate<T> subject) => subject.HasAttributeOfType(attributeType);
+
+        public override void ApplyTo(IAttributeModifiable subject)
             => subject.ModifyAttribute(attributeType, modification);
+        
+        //public override void ApplyTo<T>(IParametersTemplate<T> subject)
+        //    => subject.ModifyAttribute(attributeType, modification);
     }
 }

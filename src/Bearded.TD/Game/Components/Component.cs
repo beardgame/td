@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Rendering;
+﻿using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -12,7 +11,7 @@ namespace Bearded.TD.Game.Components
 
         protected Component(TParameters parameters)
         {
-            Parameters = parameters.CreateModifiableInstance();
+            Parameters = parameters;
         }
 
         public TOwner Owner { get; private set; }
@@ -28,10 +27,6 @@ namespace Bearded.TD.Game.Components
         public abstract void Update(TimeSpan elapsedTime);
 
         public abstract void Draw(GeometryManager geometries);
-
-        public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(Parameters);
-
-        public virtual void ApplyUpgradeEffect(IUpgradeEffect effect) => effect.ApplyTo(Parameters);
     }
 
     abstract class Component<T> : Component<T, VoidParameters>
