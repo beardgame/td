@@ -401,6 +401,13 @@ namespace Bearded.UI.Controls
             cells.Clear();
         }
 
+        public override void Render(IRendererRouter r)
+        {
+            // hack to make list populate even if the list itself isn't rendered
+            _ = Frame;
+            base.Render(r);
+        }
+
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
 }
