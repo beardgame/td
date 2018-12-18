@@ -61,9 +61,6 @@ namespace Weavers.Tests.AssemblyToProcess
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
-
-        public bool ModifyAttribute(AttributeType type, Modification modification)
-            => ModifyAttributeOfInstance(this, type, modification);
         
         static DummyParametersModifiableReference()
         {

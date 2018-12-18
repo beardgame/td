@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Bearded.TD.Shared.TechEffects
 {
-    public abstract class ModifiableBase<T>
+    public abstract class ModifiableBase<T> where T : ModifiableBase<T>
     {
         private static IDictionary<AttributeType, List<Func<T, IAttributeWithModifications>>> attributeGettersByType;
 
@@ -20,6 +20,9 @@ namespace Bearded.TD.Shared.TechEffects
         }
         
         public bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
+
+        public bool ModifyAttribute(AttributeType type, Modification modification)
+            => ModifyAttributeOfInstance((T)this, type, modification);
 
         public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType.ContainsKey(type);
 
