@@ -94,7 +94,7 @@ namespace Weavers.TechEffects
                 processor.Emit(OpCodes.Ldarg, i);
             }
 
-            processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(baseMethod));
+            processor.Emit(OpCodes.Call, baseMethod);
             processor.Emit(OpCodes.Ret);
 
             var interfaceMethod = ReferenceFinder

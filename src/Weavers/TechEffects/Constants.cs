@@ -7,7 +7,7 @@ namespace Weavers.TechEffects
     {
         internal static readonly Type Interface = typeof(IParametersTemplate<>);
         internal static readonly Type ModifiableAttribute = typeof(ModifiableAttribute);
-        internal static readonly Type ModifiableBase = typeof(ModifiableBase);
+        internal static readonly Type ModifiableBase = typeof(ModifiableBase<>);
         internal static readonly Type AttributeWithModificationsType = typeof(AttributeWithModifications<>);
 
         // Can't nameof these because they are members of a generic class with annoying limitations :(

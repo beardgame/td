@@ -175,6 +175,9 @@ namespace Weavers.TechEffects
         
         private void addHasAttributeOfTypeMethod(TypeDefinition type, TypeReference genericParameterInterface)
         {
+            // Note: make this call AttributeIsKnown on the modifiable type.
+            // You should be able to import the method reference using ReferenceFinder (a helper class I made) and call
+            // it. I believe a "call" will work for static methods as well.
             addInvalidOperationMethodOverride(
                 type,
                 genericParameterInterface,

@@ -27,17 +27,23 @@ namespace Weavers.TechEffects
             TypeReference interfaceToImplement,
             IReadOnlyCollection<PropertyDefinition> properties)
         {
+            // Note: this PrepareImplementation and the one in the template implementation weaver will have to be
+            // pulled out since the weavers have to refer to each other. Prepare implementation first (which will create
+            // the type and set up the basic type metadata), then pass the type definitions into the weave functions.
             var (modifiableType, genericParameterInterface) = PrepareImplementation(
                 interfaceToImplement,
                 Constants.GetModifiableClassNameForInterface(interfaceToImplement.Name),
                 baseClassType);
-
+            modifiableType.BaseType = baseClassType.MakeGenericInstanceType(modifiableType);
+            
             var (fieldsByProperty, templateField) = addConstructor(modifiableType, interfaceToImplement, properties);
-
+            
             foreach (var property in properties)
             {
                 if (fieldsByProperty.ContainsKey(property))
                 {
+                    // Note: field backed properties are the modifiable ones, so this might be a good place to also add
+                    // the static functions that you will use in the static constructor.
                     addFieldBackedProperty(modifiableType, property, fieldsByProperty[property]);
                 }
                 else
@@ -45,10 +51,16 @@ namespace Weavers.TechEffects
                     addTemplateBackedProperty(modifiableType, property, templateField);
                 }
             }
+            
+            // Note: This is probably the place where you will be wanting to add the static constructor.
+            // Static constructors have the special name .cctor. You can see how the lambdas object works for an idea
+            // of how to define a static constructor. I have marked some code in the constructor code below to explain
+            // how you can get the modifiable types. My suggestion is to extract that code and generate a map from
+            // property to attribute type that you can reuse in addConstructor.
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
-            addHasAttributeOfTypeMethod(interfaceToImplement, modifiableType);
-            addModifyAttributeMethod(interfaceToImplement, modifiableType);
+            addHasAttributeOfTypeMethod(modifiableType, genericParameterInterface);
+            addModifyAttributeMethod(modifiableType, genericParameterInterface);
 
             return modifiableType;
         }
@@ -90,8 +102,13 @@ namespace Weavers.TechEffects
 
             foreach (var property in properties)
             {
-                property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute);
+                if (!property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute))
+                {
+                    continue;
+                }
 
+                // Note: this bit of ugly code looks through all the properties in the type of the Modifiable attribute
+                // and gets the value of it. This will be the AttributeType for this property.
                 var attributeType = (AttributeType) (modifiableAttribute
                     .Properties
                     .FirstOrDefault(arg => arg.Name == nameof(ModifiableAttribute.Type))
@@ -201,6 +218,10 @@ namespace Weavers.TechEffects
             }
 
             method.Body.InitLocals = hasLocals;
+            
+            // Note: everything starting here is used for the current InitializeAttributes. That means you can probably
+            // kill most of this, but I am leaving it here for inspiration, since this took many hours of hard work to
+            // get running.
 
             // prepare a 'this' on the stack for later
             processor.Emit(OpCodes.Ldarg_0);
@@ -249,6 +270,8 @@ namespace Weavers.TechEffects
             var methodReference =
                 ReferenceFinder.GetMethodReference(baseClassType, Constants.ModifiableBaseInitializeMethod);
             processor.Emit(OpCodes.Call, methodReference);
+            
+            // Note: when you delete the old code, you will want to leave the lines below.
 
             processor.Emit(OpCodes.Ret);
             type.Methods.Add(method);
@@ -280,7 +303,6 @@ namespace Weavers.TechEffects
                 | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
                 TypeSystem.VoidReference);
 
-            //lambdas.Methods.Add(ctor);
             lambdas.Methods.Add(cctor);
 
             var processor = cctor.Body.GetILProcessor();
@@ -379,28 +401,33 @@ namespace Weavers.TechEffects
             type.Methods.Add(getMethodImpl);
         }
 
-        private void addCreateModifiableInstanceMethod(TypeDefinition type, GenericInstanceType genericParameterInterface)
+        private void addCreateModifiableInstanceMethod(
+            TypeDefinition type, GenericInstanceType genericParameterInterface)
         {
             var field = type.Fields.First(f => f.Name == Constants.TemplateFieldName);
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, type, field);
         }
 
-        private void addHasAttributeOfTypeMethod(TypeReference interfaceToImplement, TypeDefinition type)
+        // Note: apparently this method doesn't properly do the virtual method implementation (same with the next method)
+        // Probably something to do with the generic instance, but the IL looks as I expect.
+        // Maybe the generic parameter of the base class gets lost somewhere in AddVirtualMethodImplementation
+        private void addHasAttributeOfTypeMethod(
+            TypeDefinition type, TypeReference genericParameterInterface)
         {
             var baseMethod = ReferenceFinder
-                .GetMethodReference<ModifiableBase>(b =>
-                    b.HasAttributeOfType(AttributeType.None))
-                .Resolve();
-            AddVirtualMethodImplementation(interfaceToImplement, type, baseMethod);
+                .GetMethodReference(type.BaseType, Constants.HasAttributeOfTypeMethod)
+                .MakeHostInstanceGeneric(type);
+            
+            AddVirtualMethodImplementation(genericParameterInterface, type, baseMethod);
         }
 
-        private void addModifyAttributeMethod(TypeReference interfaceToImplement, TypeDefinition type)
+        private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)
         {
             var baseMethod = ReferenceFinder
-                .GetMethodReference<ModifiableBase>(b =>
-                    b.ModifyAttribute(AttributeType.None, new Modification()))
-                .Resolve();
-            AddVirtualMethodImplementation(interfaceToImplement, type, baseMethod);
+                .GetMethodReference(type.BaseType, Constants.ModifyAttributeMethod)
+                .MakeHostInstanceGeneric(type);
+            
+            AddVirtualMethodImplementation(genericParameterInterface, type, baseMethod);
         }
     }
 }

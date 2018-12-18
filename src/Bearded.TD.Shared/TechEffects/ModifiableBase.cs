@@ -19,9 +19,9 @@ namespace Bearded.TD.Shared.TechEffects
                 );
         }
         
-        public bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
+        public virtual bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
 
-        public bool ModifyAttribute(AttributeType type, Modification modification)
+        public virtual bool ModifyAttribute(AttributeType type, Modification modification)
             => ModifyAttributeOfInstance((T)this, type, modification);
 
         public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType.ContainsKey(type);
