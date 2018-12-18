@@ -1,30 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Bearded.TD.Shared.TechEffects
 {
-    public abstract class ModifiableBase
+    public abstract class ModifiableBase<T>
     {
-        private ILookup<AttributeType, IAttributeWithModifications> attributesByType;
+        private static IDictionary<AttributeType, List<Func<T, IAttributeWithModifications>>> attributeGettersByType;
 
-        protected void InitializeAttributes(
-            IEnumerable<KeyValuePair<AttributeType, IAttributeWithModifications>> attributes)
+        protected static void InitializeAttributes(
+            IEnumerable<KeyValuePair<AttributeType, Func<T, IAttributeWithModifications>>> attributes)
         {
-            attributesByType = attributes.ToLookup(attr => attr.Key, attr => attr.Value);
+            attributeGettersByType = attributes
+                .GroupBy(kvp => kvp.Key)
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.Select(kvp => kvp.Value).ToList()
+                );
         }
 
-        public bool HasAttributeOfType(AttributeType type) => attributesByType.Contains(type);
+        public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType.ContainsKey(type);
 
-        public bool ModifyAttribute(AttributeType type, Modification modification)
+        protected static bool ModifyAttributeOfInstance(T instance, AttributeType type, Modification modification)
         {
-            var hasModified = false;
-            foreach (var attribute in attributesByType[type])
+            if (!attributeGettersByType.TryGetValue(type, out var attributeGetters))
+                return false;
+            
+            foreach (var attributeGetter in attributeGetters)
             {
-                hasModified = true;
+                var attribute = attributeGetter(instance);
                 attribute.AddModification(modification);
             }
 
-            return hasModified;
+            return true;
         }
     }
 }
