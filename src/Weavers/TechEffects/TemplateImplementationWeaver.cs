@@ -5,6 +5,7 @@ using Bearded.TD.Shared.TechEffects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Mono.Collections.Generic;
 using Newtonsoft.Json;
 using TypeSystem = Fody.TypeSystem;
 
@@ -12,9 +13,14 @@ namespace Weavers.TechEffects
 {
     sealed class TemplateImplementationWeaver : BaseImplementationWeaver
     {
+        private readonly TypeReference nullableReference;
+
         public TemplateImplementationWeaver(
                 ModuleDefinition moduleDefinition, TypeSystem typeSystem, ILogger logger, ReferenceFinder referenceFinder)
-            : base(moduleDefinition, typeSystem, logger, referenceFinder) { }
+            : base(moduleDefinition, typeSystem, logger, referenceFinder)
+        {
+            nullableReference = ReferenceFinder.GetTypeReference(typeof(Nullable<>));
+        }
 
         public TypeDefinition WeaveImplementation(
             TypeReference interfaceToImplement,
@@ -43,8 +49,6 @@ namespace Weavers.TechEffects
         private Dictionary<PropertyDefinition, FieldReference> addConstructor(
             TypeDefinition type, IReadOnlyCollection<PropertyDefinition> properties)
         {
-            var nullable = ReferenceFinder.GetTypeReference(typeof(Nullable<>));
-
             var method = new MethodDefinition(
                 ".ctor",
                 MethodAttributes.Public | MethodAttributes.SpecialName
@@ -58,12 +62,17 @@ namespace Weavers.TechEffects
 
             foreach (var property in properties)
             {
-                property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute);
-                var attributeParameters = modifiableAttribute.Constructor.Resolve().Parameters;
+                var parameterType = property.PropertyType;
+                var attributeParameters = new Collection<ParameterDefinition>();
 
-                var parameterType = attributeParameters.Count == 0
-                    ? property.PropertyType
-                    : nullable.MakeGenericInstanceType(property.PropertyType);
+                if (property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute))
+                {
+                    attributeParameters = modifiableAttribute.Constructor.Resolve().Parameters;
+                    parameterType = attributeParameters.Count == 0
+                        ? property.PropertyType
+                        : nullableReference.MakeGenericInstanceType(property.PropertyType);
+                }
+                
                 method.Parameters.Add(
                     new ParameterDefinition(
                         property.Name.ToCamelCase(), ParameterAttributes.None, parameterType));
@@ -75,35 +84,9 @@ namespace Weavers.TechEffects
 
                 type.Fields.Add(fieldDef);
 
-                var processorCommands = new List<Action<ILProcessor>>();
-                if (attributeParameters.Count > 0)
-                {
-                    var defaultValue = (CustomAttributeArgument) modifiableAttribute.ConstructorArguments[0].Value;
-
-                    processorCommands.Add(p => ILHelpers.EmitLd(p, defaultValue.Type, defaultValue.Value));
-
-                    if (!property.PropertyType.IsPrimitive)
-                    {
-                        var expectedConstructorParamType = (Type) modifiableAttribute.Properties
-                            .FirstOrDefault(p => p.Name == nameof(ModifiableAttribute.DefaultValueType))
-                            .Argument
-                            .Value;
-                        var resolvedType = ModuleDefinition.ImportReference(property.PropertyType);
-                        var wrapperConstructor = resolvedType.Resolve().GetConstructors().FirstOrDefault(c =>
-                            c.Parameters.Count == 1 &&
-                            (expectedConstructorParamType == null ||
-                                c.Parameters[0].ParameterType.FullName == expectedConstructorParamType.FullName));
-                        processorCommands.Add(p =>
-                            p.Emit(OpCodes.Newobj, ModuleDefinition.ImportReference(wrapperConstructor)));
-                    }
-
-                    var getOrDefault = ReferenceFinder.GetMethodReference(
-                            nullable,
-                            methodDef => methodDef.Name == nameof(Nullable<int>.GetValueOrDefault) &&
-                                methodDef.HasParameters)
-                        .MakeHostInstanceGeneric(property.PropertyType);
-                    processorCommands.Add(p => p.Emit(OpCodes.Call, getOrDefault));
-                }
+                var processorCommands = attributeParameters.Count > 0
+                    ? getConstructorCommandsForProperty(property, modifiableAttribute)
+                    : new List<Action<ILProcessor>>();
 
                 propertyFields.Add((fieldDef, processorCommands));
                 fieldsByProperty.Add(property, fieldDef);
@@ -136,6 +119,39 @@ namespace Weavers.TechEffects
             type.Methods.Add(method);
 
             return fieldsByProperty;
+        }
+
+        private List<Action<ILProcessor>> getConstructorCommandsForProperty(
+            PropertyReference property, ICustomAttribute modifiableAttribute)
+        {
+            var processorCommands = new List<Action<ILProcessor>>();
+            var defaultValue = (CustomAttributeArgument) modifiableAttribute.ConstructorArguments[0].Value;
+
+            processorCommands.Add(p => ILHelpers.EmitLd(p, defaultValue.Type, defaultValue.Value));
+
+            if (!property.PropertyType.IsPrimitive)
+            {
+                var expectedConstructorParamType = (Type) modifiableAttribute.Properties
+                    .FirstOrDefault(p => p.Name == nameof(ModifiableAttribute.DefaultValueType))
+                    .Argument
+                    .Value;
+                var resolvedType = ModuleDefinition.ImportReference(property.PropertyType);
+                var wrapperConstructor = resolvedType.Resolve().GetConstructors().FirstOrDefault(c =>
+                    c.Parameters.Count == 1 &&
+                    (expectedConstructorParamType == null ||
+                        c.Parameters[0].ParameterType.FullName == expectedConstructorParamType.FullName));
+                processorCommands.Add(p =>
+                    p.Emit(OpCodes.Newobj, ModuleDefinition.ImportReference(wrapperConstructor)));
+            }
+
+            var getOrDefault = ReferenceFinder.GetMethodReference(
+                    nullableReference,
+                    methodDef => methodDef.Name == nameof(Nullable<int>.GetValueOrDefault) &&
+                        methodDef.HasParameters)
+                .MakeHostInstanceGeneric(property.PropertyType);
+            processorCommands.Add(p => p.Emit(OpCodes.Call, getOrDefault));
+
+            return processorCommands;
         }
 
         private void addProperty(

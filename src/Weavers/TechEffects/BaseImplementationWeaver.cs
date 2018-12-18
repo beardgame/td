@@ -72,5 +72,38 @@ namespace Weavers.TechEffects
 
             type.Methods.Add(method);
         }
+
+        protected void AddVirtualMethodImplementation(
+            TypeReference interfaceToImplement, TypeDefinition type, MethodReference baseMethod)
+        {
+            var method = new MethodDefinition(
+                baseMethod.Name,
+                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
+                | MethodAttributes.ReuseSlot | MethodAttributes.Virtual,
+                baseMethod.ReturnType);
+            foreach (var p in baseMethod.Parameters)
+            {
+                method.Parameters.Add(new ParameterDefinition(
+                    p.Name, p.Attributes, ModuleDefinition.ImportReference(p.ParameterType)));
+            }
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            for (var i = 1; i <= baseMethod.Parameters.Count; i++)
+            {
+                processor.Emit(OpCodes.Ldarg, i);
+            }
+
+            processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(baseMethod));
+            processor.Emit(OpCodes.Ret);
+
+            var interfaceMethod = ReferenceFinder
+                .GetMethodReference(
+                    ModuleDefinition.ImportReference(Constants.Interface),
+                    baseMethod.Name)
+                .MakeHostInstanceGeneric(interfaceToImplement);
+            method.Overrides.Add(ModuleDefinition.ImportReference(interfaceMethod));
+            type.Methods.Add(method);
+        }
     }
 }
