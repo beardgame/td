@@ -18,6 +18,8 @@ namespace Bearded.TD.Shared.TechEffects
                     g => g.Select(kvp => kvp.Value).ToList()
                 );
         }
+        
+        public bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
 
         public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType.ContainsKey(type);
 
