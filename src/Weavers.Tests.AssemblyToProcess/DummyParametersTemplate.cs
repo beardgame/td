@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
 
@@ -6,7 +7,6 @@ namespace Weavers.Tests.AssemblyToProcess
 {
     public interface IDummyParametersTemplate : IParametersTemplate<IDummyParametersTemplate>
     {
-        [Modifiable]
         int IntProperty { get; }
         
         [Modifiable(10, Type = AttributeType.Damage)]
@@ -15,7 +15,7 @@ namespace Weavers.Tests.AssemblyToProcess
         [Modifiable(10, Type = AttributeType.Cooldown)]
         WrappedInt WrappedIntProperty { get; }
     }
-
+    
     public sealed class DummyParametersReference : IDummyParametersTemplate
     {
         public int IntProperty { get; }
@@ -30,20 +30,18 @@ namespace Weavers.Tests.AssemblyToProcess
             WrappedIntProperty = wrappedInt.GetValueOrDefault(new WrappedInt(10));
         }
 
-        public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(this);
-
-        public bool HasAttributeOfType(AttributeType type)
-        {
-            throw new System.InvalidOperationException("Cannot check attributes on immutable template.");
-        }
-
+        public bool HasAttributeOfType(AttributeType type) =>
+            DummyParametersModifiableReference.AttributeIsKnown(type);
+        
         public bool ModifyAttribute(AttributeType type, Modification modification)
         {
             throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
         }
+
+        public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(this);
     }
 
-    public sealed class DummyParametersModifiableReference : ModifiableBase, IDummyParametersTemplate
+    public sealed class DummyParametersModifiableReference : ModifiableBase<DummyParametersModifiableReference>, IDummyParametersTemplate
     {
         private readonly IDummyParametersTemplate template;
 
@@ -60,15 +58,38 @@ namespace Weavers.Tests.AssemblyToProcess
 
             intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
             wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
-
-            InitializeAttributes(new List<KeyValuePair<AttributeType, IAttributeWithModifications>>
-            {
-                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.Damage, intPropertyWithDefault),
-                new KeyValuePair<AttributeType, IAttributeWithModifications>(AttributeType.Cooldown, wrappedIntProperty)
-            });
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
+        
+        public bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
+
+        public bool ModifyAttribute(AttributeType type, Modification modification)
+            => ModifyAttributeOfInstance(this, type, modification);
+        
+        static DummyParametersModifiableReference()
+        {
+            InitializeAttributes(
+                new List<KeyValuePair<AttributeType,
+                    Func<DummyParametersModifiableReference, IAttributeWithModifications>>>
+                {
+                    new KeyValuePair<AttributeType,
+                        Func<DummyParametersModifiableReference, IAttributeWithModifications>>(
+                        AttributeType.Damage, getIntPropertyWithDefault
+                    ),
+                    new KeyValuePair<AttributeType,
+                        Func<DummyParametersModifiableReference, IAttributeWithModifications>>(
+                        AttributeType.Cooldown, getWrappedIntProperty
+                    )
+                }
+            );
+        }
+
+        private static IAttributeWithModifications getIntPropertyWithDefault(DummyParametersModifiableReference instance)
+            => instance.intPropertyWithDefault;
+            
+        private static IAttributeWithModifications getWrappedIntProperty(DummyParametersModifiableReference instance)
+            => instance.intPropertyWithDefault;
     }
 
     public struct WrappedInt
