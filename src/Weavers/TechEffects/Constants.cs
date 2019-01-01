@@ -14,6 +14,7 @@ namespace Weavers.TechEffects
         internal static readonly string CreateModifiableInstanceMethod = "CreateModifiableInstance";
         internal static readonly string HasAttributeOfTypeMethod = "HasAttributeOfType";
         internal static readonly string ModifyAttributeMethod = "ModifyAttribute";
+        internal static readonly string AttributeIsKnownMethod = "AttributeIsKnown";
 
         // Can't nameof this one due to protectedness :(
         internal static readonly string ModifiableBaseInitializeMethod = "InitializeAttributes";

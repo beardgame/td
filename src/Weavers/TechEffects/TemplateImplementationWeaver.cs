@@ -40,7 +40,7 @@ namespace Weavers.TechEffects
             }
 
             addCreateModifiableInstanceMethod(templateType, genericParameterInterface, modifiableType);
-            addHasAttributeOfTypeMethod(templateType, genericParameterInterface);
+            addHasAttributeOfTypeMethod(templateType, genericParameterInterface, modifiableType);
             addModifyAttributeMethod(templateType, genericParameterInterface);
 
             return templateType;
@@ -168,21 +168,28 @@ namespace Weavers.TechEffects
             type.Methods.Add(getMethodImpl);
         }
 
-        private void addCreateModifiableInstanceMethod(TypeDefinition type, GenericInstanceType genericParameterInterface, TypeReference modifiableType)
+        private void addCreateModifiableInstanceMethod(
+            TypeDefinition type, GenericInstanceType genericParameterInterface, TypeReference modifiableType)
         {
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, modifiableType, null);
         }
         
-        private void addHasAttributeOfTypeMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        private void addHasAttributeOfTypeMethod(
+            TypeDefinition type, TypeReference genericParameterInterface, TypeReference modifiableType)
         {
-            // Note: make this call AttributeIsKnown on the modifiable type.
-            // You should be able to import the method reference using ReferenceFinder (a helper class I made) and call
-            // it. I believe a "call" will work for static methods as well.
-            addInvalidOperationMethodOverride(
-                type,
-                genericParameterInterface,
-                Constants.HasAttributeOfTypeMethod,
-                "Cannot check attributes on immutable template.");
+            var methodBase =
+                ReferenceFinder.GetMethodReference(genericParameterInterface, Constants.HasAttributeOfTypeMethod);
+            var method = MethodHelpers.CreateMethodDefinitionFromInterfaceMethod(methodBase);
+
+            var attributeIsKnownMethod = ReferenceFinder
+                .GetMethodReference(modifiableType, Constants.AttributeIsKnownMethod);
+            
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_1);
+            processor.Emit(OpCodes.Call, attributeIsKnownMethod);
+            processor.Emit(OpCodes.Ret);
+
+            type.Methods.Add(method);
         }
 
         private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)

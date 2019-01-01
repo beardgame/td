@@ -49,6 +49,7 @@ namespace Weavers.TechEffects
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
             addHasAttributeOfTypeMethod(modifiableType, genericParameterInterface);
             addModifyAttributeMethod(modifiableType, genericParameterInterface);
+            addStaticAttributeIsKnownMethod(modifiableType);
 
             return modifiableType;
         }
@@ -500,6 +501,28 @@ namespace Weavers.TechEffects
             
             AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
+
+        private void addStaticAttributeIsKnownMethod(TypeDefinition type)
+        {
+            var templateMethod = ReferenceFinder
+                .GetMethodReference(type.BaseType, Constants.AttributeIsKnownMethod)
+                .MakeHostInstanceGeneric(type);
+
+            var method = new MethodDefinition(
+                Constants.AttributeIsKnownMethod,
+                MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Static,
+                TypeSystem.BooleanReference);
+            method.Parameters.Add(new ParameterDefinition("type", ParameterAttributes.None,
+                ReferenceFinder.GetTypeReference<AttributeType>()));
+
+            var processor = method.Body.GetILProcessor();
+            processor.Emit(OpCodes.Ldarg_0);
+            processor.Emit(OpCodes.Call, templateMethod);
+            processor.Emit(OpCodes.Ret);
+
+            type.Methods.Add(method);
+        }
+
         #endregion
     }
 }
