@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
@@ -23,6 +24,9 @@ namespace Bearded.TD.Game.Buildings
             {SelectionState.Selected, Color.RoyalBlue}
         };
 
+        private readonly List<UpgradeBlueprint> appliedUpgrades = new List<UpgradeBlueprint>();
+        public ReadOnlyCollection<UpgradeBlueprint> AppliedUpgrades { get; }
+        
         public Id<Building> Id { get; }
 
         public bool IsCompleted { get; private set; }
@@ -36,6 +40,7 @@ namespace Bearded.TD.Game.Buildings
             : base(blueprint, faction, footprint)
         {
             Id = id;
+            AppliedUpgrades = appliedUpgrades.AsReadOnly();
         }
 
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
@@ -77,6 +82,8 @@ namespace Bearded.TD.Game.Buildings
         public void ApplyUpgrade(UpgradeBlueprint upgrade)
         {
             upgrade.ApplyTo(Components);
+
+            appliedUpgrades.Add(upgrade);
         }
 
         protected override void OnDelete()

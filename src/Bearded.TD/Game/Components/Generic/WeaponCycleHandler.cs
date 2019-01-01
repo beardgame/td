@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
@@ -6,34 +5,24 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
-    abstract class WeaponCycleHandler<TParameters> : IComponent<Weapon>
+    abstract class WeaponCycleHandler<TParameters> : Component<Weapon, TParameters>
         where TParameters : IParametersTemplate<TParameters>
     {
-        protected TParameters Parameters { get; }
-
-        public Weapon Weapon { get; private set; }
-
-        Weapon IComponent<Weapon>.Owner => Weapon;
-        protected GameState Game => Weapon.Owner.Game;
-
-        protected WeaponCycleHandler(TParameters parameters)
-        {
-            Parameters = parameters;
-        }
-
-        public void OnAdded(Weapon owner)
-        {
-            Weapon = owner;
-            Initialize();
-        }
-
-        protected virtual void Initialize()
+        protected Weapon Weapon => Owner;
+        protected GameState Game => Owner.Owner.Game;
+        
+        protected WeaponCycleHandler(TParameters parameters) : base(parameters)
         {
         }
 
-        public virtual void Update(TimeSpan elapsedTime)
+        protected override void Initialise()
         {
-            if (Weapon.ShootingThisFrame)
+            
+        }
+
+        public override void Update(TimeSpan elapsedTime)
+        {
+            if (Owner.ShootingThisFrame)
             {
                 UpdateShooting(elapsedTime);
             }
@@ -50,16 +39,9 @@ namespace Bearded.TD.Game.Components.Generic
         protected virtual void UpdateIdle(TimeSpan elapsedTime)
         {
         }
-
-
-        public virtual void Draw(GeometryManager geometries)
+        
+        public override void Draw(GeometryManager geometries)
         {
         }
-
-        public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-            => effect.CanApplyTo(Parameters);
-
-        public virtual void ApplyUpgradeEffect(IUpgradeEffect effect)
-            => effect.ApplyTo(Parameters);
     }
 }

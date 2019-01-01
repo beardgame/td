@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Navigation;
@@ -45,6 +46,14 @@ namespace Bearded.TD.Game.Projectiles
             CurrentTile = Game.Level.GetTile(Position);
 
             components.Add(this, blueprint.GetComponents());
+            
+            foreach (var upgrade in DamageSource.AppliedUpgrades)
+            {
+                if (!upgrade.CanApplyTo(components))
+                    continue;
+                
+                upgrade.ApplyTo(components);
+            }
         }
 
         public override void Update(TimeSpan elapsedTime)
