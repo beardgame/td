@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Components
 
         public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent<TOwner>> factory)
         {
-            this.parameters = parameters.CreateModifiableInstance();
+            this.parameters = parameters;
             this.factory = factory;
         }
 
