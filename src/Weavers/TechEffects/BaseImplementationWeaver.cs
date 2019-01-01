@@ -100,8 +100,8 @@ namespace Weavers.TechEffects
             var interfaceMethod = ReferenceFinder
                 .GetMethodReference(
                     ModuleDefinition.ImportReference(Constants.Interface),
-                    baseMethod.Name)
-                .MakeHostInstanceGeneric(interfaceToImplement);
+                    baseMethod.Name);
+            interfaceMethod.DeclaringType = interfaceToImplement;
             method.Overrides.Add(ModuleDefinition.ImportReference(interfaceMethod));
             type.Methods.Add(method);
         }

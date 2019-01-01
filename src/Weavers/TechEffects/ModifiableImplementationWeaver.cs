@@ -11,30 +11,23 @@ namespace Weavers.TechEffects
 {
     sealed class ModifiableImplementationWeaver : BaseImplementationWeaver
     {
-        private readonly TypeReference baseClassType;
-
         public ModifiableImplementationWeaver(
                 ModuleDefinition moduleDefinition,
                 TypeSystem typeSystem,
                 ILogger logger,
                 ReferenceFinder referenceFinder)
-            : base(moduleDefinition, typeSystem, logger, referenceFinder)
-        {
-            baseClassType = ReferenceFinder.GetTypeReference(Constants.ModifiableBase);
-        }
+            : base(moduleDefinition, typeSystem, logger, referenceFinder) {}
 
         public TypeDefinition WeaveImplementation(
             TypeReference interfaceToImplement,
             IReadOnlyCollection<PropertyDefinition> properties)
         {
-            // Note: this PrepareImplementation and the one in the template implementation weaver will have to be
-            // pulled out since the weavers have to refer to each other. Prepare implementation first (which will create
-            // the type and set up the basic type metadata), then pass the type definitions into the weave functions.
             var (modifiableType, genericParameterInterface) = PrepareImplementation(
                 interfaceToImplement,
                 Constants.GetModifiableClassNameForInterface(interfaceToImplement.Name),
-                baseClassType);
-            modifiableType.BaseType = baseClassType.MakeGenericInstanceType(modifiableType);
+                TypeSystem.ObjectReference);
+            modifiableType.BaseType =
+                ReferenceFinder.GetTypeReference(Constants.ModifiableBase).MakeGenericInstanceType(modifiableType);
             
             var (fieldsByProperty, templateField) = addConstructor(modifiableType, interfaceToImplement, properties);
             
@@ -42,9 +35,8 @@ namespace Weavers.TechEffects
             {
                 if (fieldsByProperty.ContainsKey(property))
                 {
-                    // Note: field backed properties are the modifiable ones, so this might be a good place to also add
-                    // the static functions that you will use in the static constructor.
                     addFieldBackedProperty(modifiableType, property, fieldsByProperty[property]);
+                    addStaticAttributeGetMethod(modifiableType, fieldsByProperty[property]);
                 }
                 else
                 {
@@ -52,11 +44,7 @@ namespace Weavers.TechEffects
                 }
             }
             
-            // Note: This is probably the place where you will be wanting to add the static constructor.
-            // Static constructors have the special name .cctor. You can see how the lambdas object works for an idea
-            // of how to define a static constructor. I have marked some code in the constructor code below to explain
-            // how you can get the modifiable types. My suggestion is to extract that code and generate a map from
-            // property to attribute type that you can reuse in addConstructor.
+            addStaticConstructor(modifiableType, fieldsByProperty);
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
             addHasAttributeOfTypeMethod(modifiableType, genericParameterInterface);
@@ -65,6 +53,7 @@ namespace Weavers.TechEffects
             return modifiableType;
         }
         
+        #region Constructor
         private (Dictionary<PropertyDefinition, FieldReference> fieldsByProperty, FieldReference templateField)
             addConstructor(
                 TypeDefinition type,
@@ -91,7 +80,6 @@ namespace Weavers.TechEffects
             var fieldsByProperty = new Dictionary<PropertyDefinition, FieldReference>();
             var fields = new List<(
                 FieldReference field,
-                AttributeType attributeType,
                 TypeReference innerFieldType,
                 MethodReference conversionLambda)>();
 
@@ -102,24 +90,12 @@ namespace Weavers.TechEffects
 
             foreach (var property in properties)
             {
-                if (!property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute))
+                if (!property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute)
+                    || extractAttributeType(modifiableAttribute) == AttributeType.None)
                 {
                     continue;
                 }
-
-                // Note: this bit of ugly code looks through all the properties in the type of the Modifiable attribute
-                // and gets the value of it. This will be the AttributeType for this property.
-                var attributeType = (AttributeType) (modifiableAttribute
-                    .Properties
-                    .FirstOrDefault(arg => arg.Name == nameof(ModifiableAttribute.Type))
-                    .Argument
-                    .Value ?? AttributeType.None);
-
-                if (attributeType == AttributeType.None)
-                {
-                    continue;
-                }
-
+                
                 var fieldType = attributeWithModificationsType.MakeGenericInstanceType(property.PropertyType);
 
                 var fieldDef = new FieldDefinition(
@@ -132,12 +108,12 @@ namespace Weavers.TechEffects
                 fieldsByProperty.Add(property, fieldDef);
                 fields.Add((
                     field: fieldDef,
-                    attributeType: attributeType,
                     innerFieldType: property.PropertyType,
                     conversionLambda: lambdaMethod));
             }
 
-            var baseConstructor = ReferenceFinder.GetConstructorReference(baseClassType);
+            var baseConstructor = ReferenceFinder.GetConstructorReference(type.BaseType);
+            baseConstructor.DeclaringType = type.BaseType;
 
             var processor = method.Body.GetILProcessor();
 
@@ -218,67 +194,15 @@ namespace Weavers.TechEffects
             }
 
             method.Body.InitLocals = hasLocals;
-            
-            // Note: everything starting here is used for the current InitializeAttributes. That means you can probably
-            // kill most of this, but I am leaving it here for inspiration, since this took many hours of hard work to
-            // get running.
-
-            // prepare a 'this' on the stack for later
-            processor.Emit(OpCodes.Ldarg_0);
-
-            var keyValueType = ReferenceFinder
-                .GetTypeReference(typeof(KeyValuePair<,>))
-                .MakeGenericInstanceType(
-                    ReferenceFinder.GetTypeReference<AttributeType>(),
-                    ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
-            var keyValueCtor = ReferenceFinder
-                .GetConstructorReference(typeof(KeyValuePair<,>))
-                .MakeHostInstanceGeneric(
-                    ReferenceFinder.GetTypeReference<AttributeType>(),
-                    ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
-            var keyValueListCtor = ReferenceFinder
-                .GetConstructorReference(typeof(List<>))
-                .MakeHostInstanceGeneric(keyValueType);
-            var keyValueListAdd = ReferenceFinder
-                .GetMethodReference<List<KeyValuePair<AttributeType, IAttributeWithModifications>>>(
-                    l => l.Add(new KeyValuePair<AttributeType, IAttributeWithModifications>()));
-
-            // create list of key-value pairs of attribute type and attribute where modifiable
-            processor.Emit(OpCodes.Newobj, keyValueListCtor);
-            foreach (var fieldInfo in fields)
-            {
-                if (fieldInfo.attributeType == AttributeType.None) continue;
-
-                // duplicate the list on stack
-                processor.Emit(OpCodes.Dup);
-
-                // load enum value as int value
-                processor.Emit(OpCodes.Ldc_I4, (int) fieldInfo.attributeType);
-
-                // load field object
-                processor.Emit(OpCodes.Ldarg_0);
-                processor.Emit(OpCodes.Ldfld, fieldInfo.field);
-
-                // create key-value pair
-                processor.Emit(OpCodes.Newobj, keyValueCtor);
-
-                // add to list
-                processor.Emit(OpCodes.Callvirt, keyValueListAdd);
-            }
-
-            // call base dictionary method
-            var methodReference =
-                ReferenceFinder.GetMethodReference(baseClassType, Constants.ModifiableBaseInitializeMethod);
-            processor.Emit(OpCodes.Call, methodReference);
-            
-            // Note: when you delete the old code, you will want to leave the lines below.
 
             processor.Emit(OpCodes.Ret);
             type.Methods.Add(method);
 
             return (fieldsByProperty, templateField);
         }
+        #endregion
 
+        #region Lambdas
         private TypeDefinition createLambdasObject(TypeDefinition outerType, out FieldReference instanceFieldRef)
         {
             var lambdas = new TypeDefinition(
@@ -359,7 +283,133 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ret);
             return lambdaMethod;
         }
+        #endregion
+        
+        #region Static constructor
 
+        private void addStaticConstructor(
+            TypeDefinition type, Dictionary<PropertyDefinition, FieldReference> fieldsByProperty)
+        {
+            var cctor = new MethodDefinition(
+                ".cctor",
+                MethodAttributes.Private | MethodAttributes.SpecialName
+                | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
+                TypeSystem.VoidReference);
+            
+            var fieldsWithAttributes = getFieldsWithAttributes(fieldsByProperty);
+
+            var processor = cctor.Body.GetILProcessor();
+
+            var funcType = ReferenceFinder
+                .GetTypeReference(typeof(Func<,>))
+                .MakeGenericInstanceType(
+                    type,
+                    ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
+            var funcTypeCtor = ReferenceFinder
+                .GetConstructorReference(funcType)
+                .MakeHostInstanceGeneric(
+                    type,
+                    ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
+            var keyValueType = ReferenceFinder
+                .GetTypeReference(typeof(KeyValuePair<,>))
+                .MakeGenericInstanceType(
+                    ReferenceFinder.GetTypeReference<AttributeType>(),
+                    funcType);
+            var keyValueCtor = ReferenceFinder
+                .GetConstructorReference(typeof(KeyValuePair<,>))
+                .MakeHostInstanceGeneric(
+                    ReferenceFinder.GetTypeReference<AttributeType>(),
+                    funcType);
+            var keyValueListCtor = ReferenceFinder
+                .GetConstructorReference(typeof(List<>))
+                .MakeHostInstanceGeneric(keyValueType);
+            var keyValueListAdd = ReferenceFinder
+                .GetMethodReference(
+                    ReferenceFinder.GetTypeReference(typeof(List<>)),
+                    nameof(List<int>.Add))
+                .MakeHostInstanceGeneric(keyValueType);
+            
+            // create new list
+            processor.Emit(OpCodes.Newobj, keyValueListCtor);
+            
+            foreach (var (field, attributeType) in fieldsWithAttributes)
+            {
+                if (attributeType == AttributeType.None)
+                {
+                    throw new InvalidOperationException("Fields without attributes should be filtered out.");
+                }
+
+                // duplicate the list on stack
+                processor.Emit(OpCodes.Dup);
+
+                // load enum value as int value
+                processor.Emit(OpCodes.Ldc_I4, (int) attributeType);
+
+                // load static function
+                var getAttributeMethod =
+                    ReferenceFinder.GetMethodReference(type, getStaticAttributeGetMethodName(field));
+                
+                processor.Emit(OpCodes.Ldnull);
+                processor.Emit(OpCodes.Ldftn, getAttributeMethod);
+                processor.Emit(OpCodes.Newobj, funcTypeCtor);
+
+                // create key-value pair
+                processor.Emit(OpCodes.Newobj, keyValueCtor);
+
+                // add to list
+                processor.Emit(OpCodes.Callvirt, keyValueListAdd);
+            }
+
+            var methodReference =
+                ReferenceFinder.GetMethodReference(type.BaseType, Constants.ModifiableBaseInitializeMethod);
+            methodReference.DeclaringType = type.BaseType;
+            processor.Emit(OpCodes.Call, methodReference);
+            
+            processor.Emit(OpCodes.Ret);
+            
+            type.Methods.Add(cctor);
+        }
+
+        private static List<(FieldReference, AttributeType)> getFieldsWithAttributes(
+            Dictionary<PropertyDefinition, FieldReference> fieldsByProperty)
+        {
+            var fieldToAttributeType = new List<(FieldReference, AttributeType)>();
+
+            foreach (var pair in fieldsByProperty)
+            {
+                var property = pair.Key;
+                var field = pair.Value;
+
+                if (!property.TryGetCustomAttribute(typeof(ModifiableAttribute), out var modifiableAttribute))
+                {
+                    continue;
+                }
+
+                var attributeType = extractAttributeType(modifiableAttribute);
+
+                if (attributeType == AttributeType.None)
+                {
+                    continue;
+                }
+
+                fieldToAttributeType.Add((field, attributeType));
+            }
+
+            return fieldToAttributeType;
+        }
+
+        private static AttributeType extractAttributeType(CustomAttribute modifiableAttribute)
+        {
+            return (AttributeType) (modifiableAttribute
+                .Properties
+                .FirstOrDefault(arg => arg.Name == nameof(ModifiableAttribute.Type))
+                .Argument
+                .Value ?? AttributeType.None);
+        }
+
+        #endregion
+
+        #region Properties
         private void addFieldBackedProperty(
             TypeDefinition type, PropertyDefinition propertyBase, FieldReference fieldReference)
         {
@@ -379,6 +429,28 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ret);
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
+        }
+        
+        private void addStaticAttributeGetMethod(TypeDefinition type, FieldReference attributeField)
+        {
+            var method = new MethodDefinition(
+                getStaticAttributeGetMethodName(attributeField),
+                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static,
+                ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
+            method.Parameters.Add(new ParameterDefinition("instance", ParameterAttributes.None, type));
+
+            var processor = method.Body.GetILProcessor();
+            
+            processor.Emit(OpCodes.Ldarg_0);
+            processor.Emit(OpCodes.Ldfld, attributeField);
+            processor.Emit(OpCodes.Ret);
+            
+            type.Methods.Add(method);
+        }
+
+        private static string getStaticAttributeGetMethodName(MemberReference attributeField)
+        {
+            return $"get{attributeField.Name.ToTitleCase()}";
         }
 
         private void addTemplateBackedProperty(
@@ -400,7 +472,9 @@ namespace Weavers.TechEffects
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
         }
+        #endregion
 
+        #region Simple method implementations
         private void addCreateModifiableInstanceMethod(
             TypeDefinition type, GenericInstanceType genericParameterInterface)
         {
@@ -408,26 +482,24 @@ namespace Weavers.TechEffects
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, type, field);
         }
 
-        // Note: apparently this method doesn't properly do the virtual method implementation (same with the next method)
-        // Probably something to do with the generic instance, but the IL looks as I expect.
-        // Maybe the generic parameter of the base class gets lost somewhere in AddVirtualMethodImplementation
         private void addHasAttributeOfTypeMethod(
-            TypeDefinition type, TypeReference genericParameterInterface)
+            TypeDefinition type, TypeReference interfaceType)
         {
             var baseMethod = ReferenceFinder
                 .GetMethodReference(type.BaseType, Constants.HasAttributeOfTypeMethod)
                 .MakeHostInstanceGeneric(type);
             
-            AddVirtualMethodImplementation(genericParameterInterface, type, baseMethod);
+            AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
 
-        private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        private void addModifyAttributeMethod(TypeDefinition type, TypeReference interfaceType)
         {
             var baseMethod = ReferenceFinder
                 .GetMethodReference(type.BaseType, Constants.ModifyAttributeMethod)
                 .MakeHostInstanceGeneric(type);
             
-            AddVirtualMethodImplementation(genericParameterInterface, type, baseMethod);
+            AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
+        #endregion
     }
 }

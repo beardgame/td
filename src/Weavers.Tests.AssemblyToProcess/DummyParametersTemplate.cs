@@ -84,7 +84,7 @@ namespace Weavers.Tests.AssemblyToProcess
             => instance.intPropertyWithDefault;
             
         private static IAttributeWithModifications getWrappedIntProperty(DummyParametersModifiableReference instance)
-            => instance.intPropertyWithDefault;
+            => instance.wrappedIntProperty;
     }
 
     public struct WrappedInt
