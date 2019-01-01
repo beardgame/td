@@ -78,15 +78,15 @@ namespace Weavers
         internal MethodReference GetMethodReference(TypeReference typeReference, Func<MethodDefinition, bool> predicate)
         {
             var typeDefinition = typeReference.Resolve();
-
-            MethodDefinition methodDefinition;
-            do
+            var methodDefinition = typeDefinition.Methods.FirstOrDefault(predicate);
+            if (methodDefinition == null)
             {
-                methodDefinition = typeDefinition.Methods.FirstOrDefault(predicate);
-                typeDefinition = typeDefinition.BaseType?.Resolve();
-            } while (methodDefinition == null && typeDefinition != null);
-
-            return moduleDefinition.ImportReference(methodDefinition);
+                throw new InvalidOperationException("Cannot find valid method.");
+            }
+            var importedMethod = moduleDefinition.ImportReference(methodDefinition);
+            // set the declaring type to the original type in case we lost the generic parameters
+            importedMethod.DeclaringType = moduleDefinition.ImportReference(typeReference);
+            return importedMethod;
         }
 
         internal TypeReference GetTypeReference<T>() => GetTypeReference(typeof(T));
