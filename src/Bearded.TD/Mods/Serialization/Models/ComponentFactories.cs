@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Mods.Serialization.Models
@@ -47,7 +48,8 @@ namespace Bearded.TD.Mods.Serialization.Models
 
         #region Initialisation
 
-        private delegate ComponentFactory<TOwner, TParameters> ComponentFactoryFactory<TOwner, TParameters>(TParameters parameters);
+        private delegate ComponentFactory<TOwner, TParameters> ComponentFactoryFactory<TOwner, TParameters>(TParameters parameters)
+            where TParameters : IParametersTemplate<TParameters>;
 
         public static void Initialize()
         {
@@ -132,7 +134,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(ComponentFactories)
             .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static readonly Type emptyConstructorParameterType = typeof(Bearded.Utilities.Void);
+        private static readonly Type emptyConstructorParameterType = typeof(VoidParameters);
 
         private static object makeFactoryFactory(Type component, Type owner, Type parameters)
         {
@@ -151,6 +153,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         }
 
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(Func<TParameters, IComponent<TOwner>> constructor)
+            where TParameters : IParametersTemplate<TParameters>
         {
             return (ComponentFactoryFactory<TOwner, TParameters>)(p => new ComponentFactory<TOwner, TParameters>(p, constructor));
         }
@@ -190,7 +193,15 @@ namespace Bearded.TD.Mods.Serialization.Models
             var parameterData = parameters.Parameters;
             var parameterType = ParameterTypeForComponent(id);
 
-            DebugAssert.State.Satisfies(parameterType.IsInstanceOfType(parameterData));
+            if (parameterType == emptyConstructorParameterType)
+            {
+                DebugAssert.State.Satisfies(parameterData == null);
+                parameterData = VoidParameters.Instance;
+            }
+            else
+            {
+                DebugAssert.State.Satisfies(parameterType.IsInstanceOfType(parameterData));
+            }
 
             var tryMakeFactory = tryMakeComponentFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
 
@@ -198,6 +209,7 @@ namespace Bearded.TD.Mods.Serialization.Models
         }
 
         private static IComponentFactory<TOwner> tryMakeComponentFactoryGeneric<TOwner, TParameters>(string id, TParameters parameters)
+            where TParameters : IParametersTemplate<TParameters>
         {
             var factoryFactories = componentFactoryFactoriesForComponentIds[id];
 

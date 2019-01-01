@@ -1,6 +1,8 @@
 ﻿using System;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Mods.Serialization.Models;
+using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Components
 {
@@ -28,21 +30,25 @@ namespace Bearded.TD.Game.Components
     }
 
     class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>
+        where TComponentParameters : IParametersTemplate<TComponentParameters>
     {
         private readonly TComponentParameters parameters;
         private readonly Func<TComponentParameters, IComponent<TOwner>> factory;
 
         public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent<TOwner>> factory)
         {
-            this.parameters = parameters;
+            this.parameters = parameters.CreateModifiableInstance();
             this.factory = factory;
         }
 
         public IComponent<TOwner> Create() => factory(parameters);
+        
+        public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(parameters);
     }
 
     interface IComponentFactory<TOwner>
     {
         IComponent<TOwner> Create();
+        bool CanApplyUpgradeEffect(IUpgradeEffect effect);
     }
 }

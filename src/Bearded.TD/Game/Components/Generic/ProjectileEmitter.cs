@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Mods.Models;
 using Bearded.Utilities.SpaceTime;
 
@@ -15,6 +16,10 @@ namespace Bearded.TD.Game.Components.Generic
             : base(parameters)
         {
         }
+
+        public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+            => base.CanApplyUpgradeEffect(effect)
+               || Parameters.Projectile.CanApplyUpgradeEffect(effect);
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {

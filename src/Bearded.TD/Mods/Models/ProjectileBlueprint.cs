@@ -3,6 +3,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Upgrades;
 
 namespace Bearded.TD.Mods.Models
 {
@@ -28,6 +29,11 @@ namespace Bearded.TD.Mods.Models
             this.componentFactories =
                 (componentFactories?.ToList() ?? new List<IComponentFactory<Projectile>>())
                     .AsReadOnly();
+        }
+
+        public bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+        {
+            return componentFactories.Any(f => f.CanApplyUpgradeEffect(effect));
         }
     }
 }
