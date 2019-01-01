@@ -7,6 +7,7 @@ namespace Weavers.Tests.AssemblyToProcess
 {
     public interface IDummyParametersTemplate : IParametersTemplate<IDummyParametersTemplate>
     {
+        [Modifiable]
         int IntProperty { get; }
         
         [Modifiable(10, Type = AttributeType.Damage)]
