@@ -11,6 +11,9 @@ namespace Bearded.TD.Shared.TechEffects
         protected static void InitializeAttributes(
             IEnumerable<KeyValuePair<AttributeType, Func<T, IAttributeWithModifications>>> attributes)
         {
+            if (attributeGettersByType != null)
+                throw new InvalidOperationException("Do not initialise attributes multiple times.");
+            
             attributeGettersByType = attributes
                 .GroupBy(kvp => kvp.Key)
                 .ToDictionary(
