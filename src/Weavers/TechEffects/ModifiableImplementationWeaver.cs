@@ -114,7 +114,6 @@ namespace Weavers.TechEffects
             }
 
             var baseConstructor = ReferenceFinder.GetConstructorReference(type.BaseType);
-            baseConstructor.DeclaringType = type.BaseType;
 
             var processor = method.Body.GetILProcessor();
 
@@ -307,20 +306,14 @@ namespace Weavers.TechEffects
                     type,
                     ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
             var funcTypeCtor = ReferenceFinder
-                .GetConstructorReference(funcType)
-                .MakeHostInstanceGeneric(
-                    type,
-                    ReferenceFinder.GetTypeReference<IAttributeWithModifications>());
+                .GetConstructorReference(funcType);
             var keyValueType = ReferenceFinder
                 .GetTypeReference(typeof(KeyValuePair<,>))
                 .MakeGenericInstanceType(
                     ReferenceFinder.GetTypeReference<AttributeType>(),
                     funcType);
             var keyValueCtor = ReferenceFinder
-                .GetConstructorReference(typeof(KeyValuePair<,>))
-                .MakeHostInstanceGeneric(
-                    ReferenceFinder.GetTypeReference<AttributeType>(),
-                    funcType);
+                .GetConstructorReference(keyValueType);
             var keyValueListCtor = ReferenceFinder
                 .GetConstructorReference(typeof(List<>))
                 .MakeHostInstanceGeneric(keyValueType);
@@ -363,7 +356,6 @@ namespace Weavers.TechEffects
 
             var methodReference =
                 ReferenceFinder.GetMethodReference(type.BaseType, Constants.ModifiableBaseInitializeMethod);
-            methodReference.DeclaringType = type.BaseType;
             processor.Emit(OpCodes.Call, methodReference);
             
             processor.Emit(OpCodes.Ret);
@@ -486,27 +478,21 @@ namespace Weavers.TechEffects
         private void addHasAttributeOfTypeMethod(
             TypeDefinition type, TypeReference interfaceType)
         {
-            var baseMethod = ReferenceFinder
-                .GetMethodReference(type.BaseType, Constants.HasAttributeOfTypeMethod)
-                .MakeHostInstanceGeneric(type);
+            var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, Constants.HasAttributeOfTypeMethod);
             
             AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
 
         private void addModifyAttributeMethod(TypeDefinition type, TypeReference interfaceType)
         {
-            var baseMethod = ReferenceFinder
-                .GetMethodReference(type.BaseType, Constants.ModifyAttributeMethod)
-                .MakeHostInstanceGeneric(type);
+            var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, Constants.ModifyAttributeMethod);
             
             AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
 
         private void addStaticAttributeIsKnownMethod(TypeDefinition type)
         {
-            var templateMethod = ReferenceFinder
-                .GetMethodReference(type.BaseType, Constants.AttributeIsKnownMethod)
-                .MakeHostInstanceGeneric(type);
+            var templateMethod = ReferenceFinder.GetMethodReference(type.BaseType, Constants.AttributeIsKnownMethod);
 
             var method = new MethodDefinition(
                 Constants.AttributeIsKnownMethod,

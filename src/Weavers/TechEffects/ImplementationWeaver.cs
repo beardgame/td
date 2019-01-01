@@ -61,10 +61,8 @@ namespace Weavers.TechEffects
 
         private void preProcessTypeDictionary()
         {
-            var typeTypeReference = referenceFinder.GetTypeReference<Type>();
             var dictConstructor = referenceFinder
-                .GetConstructorReference(typeof(Dictionary<Type, Type>))
-                .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
+                .GetConstructorReference(referenceFinder.GetTypeReference(typeof(Dictionary<Type, Type>)));
 
             parametersTemplateDictionaryMethod.Body =
                 new MethodBody(parametersTemplateDictionaryMethod) {InitLocals = true};
@@ -77,10 +75,8 @@ namespace Weavers.TechEffects
 
         private void postProcessTypeDictionary()
         {
-            var typeTypeReference = referenceFinder.GetTypeReference<Type>();
             var readOnlyDictConstructor = referenceFinder
-                .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>))
-                .MakeHostInstanceGeneric(typeTypeReference, typeTypeReference);
+                .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>));
 
             var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);

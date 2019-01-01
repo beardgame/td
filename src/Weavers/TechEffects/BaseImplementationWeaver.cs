@@ -97,11 +97,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Call, baseMethod);
             processor.Emit(OpCodes.Ret);
 
-            var interfaceMethod = ReferenceFinder
-                .GetMethodReference(
-                    ModuleDefinition.ImportReference(Constants.Interface),
-                    baseMethod.Name);
-            interfaceMethod.DeclaringType = interfaceToImplement;
+            var interfaceMethod = ReferenceFinder.GetMethodReference(interfaceToImplement, baseMethod.Name);
             method.Overrides.Add(ModuleDefinition.ImportReference(interfaceMethod));
             type.Methods.Add(method);
         }
