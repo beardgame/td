@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class FinishBuildingUpgrade
     {
-        public static void Command(Building building, UpgradeBlueprint upgrade)
+        public static ISerializableCommand<GameInstance> Command(Building building, UpgradeBlueprint upgrade)
             => new Implementation(building, upgrade);
 
         private class Implementation : ISerializableCommand<GameInstance>
