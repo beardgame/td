@@ -9,6 +9,9 @@ namespace Bearded.TD.Shared.TechEffects
         public object DefaultValue { get; }
         public Type DefaultValueType { get; set; }
 
+        // Important note: there is currently no constructor which takes Type as optional parameters.
+        // The weaver is dependent on the Type being said through "Type = AttributeType.Something" for some reason.
+        
         public ModifiableAttribute()
         {
         }
@@ -16,12 +19,6 @@ namespace Bearded.TD.Shared.TechEffects
         public ModifiableAttribute(object defaultValue)
         {
             DefaultValue = defaultValue;
-        }
-        
-        public ModifiableAttribute(object defaultValue, AttributeType type = AttributeType.None)
-        {
-            DefaultValue = defaultValue;
-            Type = type;
         }
     }
 }
