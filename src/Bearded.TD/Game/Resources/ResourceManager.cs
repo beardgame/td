@@ -35,44 +35,49 @@ namespace Bearded.TD.Game.Resources
 
         public void DistributeResources(TimeSpan elapsedTime)
         {
-            currentResources += elapsedTime.NumericValue * totalResourcesProvided;
-            var resourceOut = elapsedTime.NumericValue * totalResourcesRequested;
+            currentResources += totalResourcesProvided * elapsedTime.NumericValue;
+            var resourceOut = totalResourcesRequested * elapsedTime.NumericValue;
 
             if (resourceOut <= currentResources)
             {
-                foreach (var request in requestedResources)
-                {
-                    var consumerGrantedResources = elapsedTime.NumericValue * request.RatePerS;
-                    var grant = new ResourceGrant(
-                        Math.Min(request.Maximum, consumerGrantedResources),
-                        consumerGrantedResources >= request.Maximum);
-                    currentResources -= grant.Amount;
-                    request.Consumer.ConsumeResources(grant);
-                }
-                resetForFrame();
-                return;
+                distributeAtFullMaxRates(elapsedTime);
             }
+            else
+            {
+                distributedAtLimitedRates(elapsedTime, resourceOut);
+            }
+            
+            resetForFrame();
+        }
 
-            var sortedRequests = requestedResources.OrderBy((consumer) => (consumer.Maximum / consumer.RatePerS));
+        private void distributeAtFullMaxRates(TimeSpan elapsedTime)
+        {
+            foreach (var request in requestedResources)
+            {
+                var grantedResources = elapsedTime.NumericValue * request.RatePerS;
+                request.TryGrant(grantedResources, out var consumedResources);
+                currentResources -= consumedResources;
+            }
+        }
+
+        private void distributedAtLimitedRates(TimeSpan elapsedTime, double resourceOut)
+        {
+            var sortedRequests = requestedResources.OrderBy(consumer => consumer.Maximum / consumer.RatePerS);
             var resourceRatio = currentResources / resourceOut;
+            
             foreach (var request in sortedRequests)
             {
-                var requestGrantedResources = resourceRatio * elapsedTime.NumericValue * request.RatePerS;
-                if (request.Maximum <= requestGrantedResources)
+                var grantedResources = request.RatePerS * resourceRatio * elapsedTime.NumericValue;
+
+                var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
+                currentResources -= consumedResources;
+                
+                if (!grantFullyConsumed)
                 {
-                    request.Consumer.ConsumeResources(new ResourceGrant(request.Maximum, true));
-                    resourceOut -= request.Maximum;
-                    currentResources -= request.Maximum;
+                    resourceOut -= consumedResources;
                     resourceRatio = currentResources / resourceOut;
                 }
-                else
-                {
-                    request.Consumer.ConsumeResources(new ResourceGrant(requestGrantedResources, false));
-                    currentResources -= requestGrantedResources;
-                }
             }
-                
-            resetForFrame();
         }
 
         private void resetForFrame()
@@ -94,6 +99,22 @@ namespace Bearded.TD.Game.Resources
                 Consumer = consumer;
                 RatePerS = ratePerS;
                 Maximum = maximum;
+            }
+            
+            public bool TryGrant(double resourcesAvailable, out double grantedResources)
+            {
+                if (resourcesAvailable >= Maximum)
+                {
+                    Consumer.ConsumeResources(new ResourceGrant(Maximum, true));
+                    grantedResources = Maximum;
+                    return false;
+                }
+                else
+                {
+                    Consumer.ConsumeResources(new ResourceGrant(resourcesAvailable, false));
+                    grantedResources = resourcesAvailable;
+                    return true;
+                }
             }
         }
     }
