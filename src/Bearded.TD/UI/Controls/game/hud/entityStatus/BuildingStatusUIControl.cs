@@ -5,6 +5,7 @@ using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Upgrades;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -66,7 +67,7 @@ namespace Bearded.TD.UI.Controls
             {
                 var upgrade = upgrades[index];
                 var ctrl = Default.Button(upgrade.Name);
-                ctrl.Clicked += () => building.ApplyUpgrade(upgrade);
+                ctrl.Clicked += () => building.StartUpgrade(upgrade);
                 return ctrl;
             }
 
