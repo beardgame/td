@@ -1,44 +1,62 @@
-using System;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {
     static class UpgradeBuilding
     {
-        public static IRequest<GameInstance> Request(GameInstance game)
-            => new Implementation(game);
+        public static IRequest<GameInstance> Request(GameInstance game, Building building, UpgradeBlueprint upgrade)
+            => new Implementation(game, building, upgrade);
 
         private class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
+            private readonly Building building;
+            private readonly UpgradeBlueprint upgrade;
 
-            public Implementation(GameInstance game)
+            public Implementation(GameInstance game, Building building, UpgradeBlueprint upgrade)
             {
                 this.game = game;
+                this.building = building;
+                this.upgrade = upgrade;
             }
 
-            public override bool CheckPreconditions() => true;
+            public override bool CheckPreconditions() => building.CanApplyUpgrade(upgrade);
 
             public override void Execute()
             {
-                throw new NotImplementedException();
+                var upgradeTask = new BuildingUpgradeTask(building, upgrade);
+                game.State.Add(upgradeTask);
             }
 
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(building, upgrade);
         }
 
         private class Serializer : UnifiedRequestCommandSerializer
         {
+            private Id<Building> building;
+            private Id<UpgradeBlueprint> upgrade;
+            
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
-
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+            
+            public Serializer(Building building, UpgradeBlueprint upgrade)
             {
-                return new Implementation(game);
+                this.building = building.Id;
+                this.upgrade = upgrade.Id;
             }
 
-            public override void Serialize(INetBufferStream stream) { }
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+                => new Implementation(game, game.State.Find(building), game.Blueprints.Upgrades[upgrade]);
+
+            public override void Serialize(INetBufferStream stream)
+            {
+                stream.Serialize(ref building);
+                stream.Serialize(ref upgrade);
+            }
         }
     }
 }

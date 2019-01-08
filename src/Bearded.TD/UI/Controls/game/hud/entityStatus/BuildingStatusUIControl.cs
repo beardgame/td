@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Upgrades;
 using Bearded.UI.Controls;
@@ -31,7 +33,7 @@ namespace Bearded.TD.UI.Controls
             }
 
             Add(new ListControl
-                    {ItemSource = new UpgradeListItemSource(building, buildingStatus.UpgradesForBuilding)}
+                    {ItemSource = new UpgradeListItemSource(buildingStatus.Game, building, buildingStatus.UpgradesForBuilding)}
                 .Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
 
             Add(Default.Button("Close")
@@ -46,13 +48,15 @@ namespace Bearded.TD.UI.Controls
 
         private class UpgradeListItemSource : IListItemSource
         {
+            private readonly GameInstance game;
             private readonly Building building;
             private readonly List<UpgradeBlueprint> upgrades;
             
             public int ItemCount { get; }
 
-            public UpgradeListItemSource(Building building, IEnumerable<UpgradeBlueprint> upgrades)
+            public UpgradeListItemSource(GameInstance game, Building building, IEnumerable<UpgradeBlueprint> upgrades)
             {
+                this.game = game;
                 this.building = building;
                 this.upgrades = upgrades.ToList();
                 ItemCount = this.upgrades.Count;
@@ -67,7 +71,7 @@ namespace Bearded.TD.UI.Controls
             {
                 var upgrade = upgrades[index];
                 var ctrl = Default.Button(upgrade.Name);
-                ctrl.Clicked += () => building.StartUpgrade(upgrade);
+                ctrl.Clicked += () => game.Request(UpgradeBuilding.Request, building, upgrade);
                 return ctrl;
             }
 
