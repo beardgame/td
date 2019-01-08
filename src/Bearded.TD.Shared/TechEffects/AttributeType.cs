@@ -7,6 +7,7 @@
         Cooldown,
         Damage,
         DroneCount,
-        Health
+        Health,
+        ResourceIncome
     }
 }
