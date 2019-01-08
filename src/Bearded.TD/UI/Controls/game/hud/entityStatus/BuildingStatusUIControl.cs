@@ -5,7 +5,6 @@ using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Upgrades;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
