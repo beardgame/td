@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -69,12 +70,45 @@ namespace Bearded.TD.UI.Controls
             public Control CreateItemControlFor(int index)
             {
                 var upgrade = upgrades[index];
-                var ctrl = Default.Button(upgrade.Name);
+                var ctrl = new UpgradeButton(building, upgrade);
                 ctrl.Clicked += () => game.Request(UpgradeBuilding.Request, building, upgrade);
                 return ctrl;
             }
 
             public void DestroyItemControlAt(int index, Control control) {}
+        }
+        
+        private class UpgradeButton : Button
+        {
+            private readonly Building building;
+            private readonly UpgradeBlueprint upgrade;
+            private readonly BackgroundBox progressBar;
+
+            public UpgradeButton(Building building, UpgradeBlueprint upgrade)
+            {
+                this.building = building;
+                this.upgrade = upgrade;
+                this.WithDefaultStyle(upgrade.Name);
+                progressBar = new BackgroundBox { Color = Color.White.WithAlpha(0.25f).Premultiplied };
+                Add(progressBar);
+            }
+
+            public override void Render(IRendererRouter r)
+            {
+                var activeUpgrade = building.UpgradesInProgress.FirstOrDefault(task => task.Upgrade == upgrade);
+                var upgradeIsActive = activeUpgrade != null;
+
+                IsEnabled = !upgradeIsActive;
+                progressBar.IsVisible = upgradeIsActive;
+                
+                if (upgradeIsActive)
+                {
+                    var percentage = activeUpgrade.ProgressPercentage;
+                    progressBar.Anchor(a => a.Right(relativePercentage: percentage));
+                }
+
+                base.Render(r);
+            }
         }
     }
 }
