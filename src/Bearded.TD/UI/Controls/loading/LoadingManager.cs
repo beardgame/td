@@ -107,9 +107,9 @@ namespace Bearded.TD.UI.Controls
             var idManager = new IdManager();
             var builder = ImmutableDictionary.CreateBuilder<Id<UpgradeBlueprint>, UpgradeBlueprint>();
             
-            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% damage",
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% damage", 50,
                 new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
-            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+1 worker",
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+1 worker", 100,
                     new[] {new ParameterModifiable(AttributeType.DroneCount, Modification.AddConstant(1))}));
             
             return builder.ToImmutable();

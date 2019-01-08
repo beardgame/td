@@ -11,8 +11,7 @@ namespace Bearded.TD.Game.Upgrades
         private readonly Building building;
         private readonly UpgradeBlueprint upgrade;
 
-        // TODO: use blueprint cost instead
-        private readonly double maximumResources = 50;
+        private double maximumResources => upgrade.Cost;
         
         private double progress;
         private bool completed;
