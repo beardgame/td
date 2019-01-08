@@ -113,6 +113,8 @@ namespace Bearded.TD.UI.Controls
                     new[] {new ParameterModifiable(AttributeType.DroneCount, Modification.AddConstant(1))}));
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+20% resources", 75,
                 new[] {new ParameterModifiable(AttributeType.ResourceIncome, Modification.AddFractionOfBase(.2))}));
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% health", 80,
+                new[] {new ParameterModifiable(AttributeType.Health, Modification.AddFractionOfBase(.25))}));
             
             return builder.ToImmutable();
 
