@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
@@ -104,17 +105,20 @@ namespace Bearded.TD.UI.Controls
         private static ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> getHardcodedUpgrades()
         {
             var idManager = new IdManager();
-            
             var builder = ImmutableDictionary.CreateBuilder<Id<UpgradeBlueprint>, UpgradeBlueprint>();
-            builder.Add(idManager.GetNext<UpgradeBlueprint>(),
-                new UpgradeBlueprint(
-                    "+25% damage",
-                    new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
-            builder.Add(idManager.GetNext<UpgradeBlueprint>(),
-                new UpgradeBlueprint(
-                    "+1 worker",
+            
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% damage",
+                new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+1 worker",
                     new[] {new ParameterModifiable(AttributeType.DroneCount, Modification.AddConstant(1))}));
+            
             return builder.ToImmutable();
+
+            void addHardcodedUpgrade(Func<Id<UpgradeBlueprint>, UpgradeBlueprint> blueprintFactory)
+            {
+                var id = idManager.GetNext<UpgradeBlueprint>();
+                builder.Add(id, blueprintFactory(id));
+            }
         }
     }
 }

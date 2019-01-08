@@ -9,18 +9,18 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class BuildingStatusUI : NavigationNode<IPlacedBuilding>
     {
-        private GameInstance game;
+        public GameInstance Game { get; private set; }
 
         public IPlacedBuilding Building { get; private set; }
 
         public IEnumerable<UpgradeBlueprint> UpgradesForBuilding
             => Building is Building b
-                ? game.State.Technology.GetApplicableUpgradesFor(b)
+                ? Game.State.Technology.GetApplicableUpgradesFor(b)
                 : Enumerable.Empty<UpgradeBlueprint>();
 
         protected override void Initialize(DependencyResolver dependencies, IPlacedBuilding building)
         {
-            this.game = dependencies.Resolve<GameInstance>();
+            Game = dependencies.Resolve<GameInstance>();
             Building = building;
         }
 

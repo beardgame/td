@@ -88,15 +88,7 @@ namespace Bearded.TD.Game.Buildings
 
             appliedUpgrades.Add(upgrade);
         }
-
-        public void StartUpgrade(UpgradeBlueprint upgrade)
-        {
-            // TODO: Sync() this entire method
-            
-            var upgradeTask = new BuildingUpgradeTask(this, upgrade);
-            Game.Add(upgradeTask);
-        }
-
+        
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
             DebugAssert.State.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
