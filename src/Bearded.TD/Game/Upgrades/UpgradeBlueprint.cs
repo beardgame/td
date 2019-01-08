@@ -2,16 +2,19 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Upgrades
 {
     sealed class UpgradeBlueprint
     {
+        public Id<UpgradeBlueprint> Id { get; }
         public string Name { get; }
         private readonly ImmutableList<IUpgradeEffect> effects;
 
-        public UpgradeBlueprint(string name, IEnumerable<IUpgradeEffect> effects)
+        public UpgradeBlueprint(Id<UpgradeBlueprint> id, string name, IEnumerable<IUpgradeEffect> effects)
         {
+            Id = id;
             Name = name;
             this.effects = ImmutableList.CreateRange(effects);
         }

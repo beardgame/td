@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
@@ -43,8 +44,7 @@ namespace Bearded.TD.Game.Upgrades
 
             if (completed)
             {
-                // TODO: Sync() this
-                building.ApplyUpgrade(upgrade);
+                building.Sync(() => FinishBuildingUpgrade.Command(building, upgrade));
                 
                 // Maybe don't Sync() this to consume right amount of resource on the client as well?
                 // Test this well in that case though!
