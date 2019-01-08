@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -10,6 +11,8 @@ namespace Bearded.TD.Utilities.Collections
         private readonly List<T> objects = new List<T>();
         private readonly IdDictionary<T> objectsById = new IdDictionary<T>();
         public ReadOnlyCollection<T> AsReadOnly { get; }
+        public ImmutableDictionary<Id<T>, T> AsImmutableDictionary
+            => objectsById.ToImmutableDictionary(entry => entry.Key, entry => entry.Value);
 
         public IdCollection()
         {

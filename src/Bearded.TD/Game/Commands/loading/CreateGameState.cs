@@ -30,10 +30,11 @@ namespace Bearded.TD.Game.Commands
                 {
                     state.Technology.UnlockBlueprint(blueprint);
                 }
-                state.Technology.UnlockUpgrade(new UpgradeBlueprint("+25% damage",
-                    new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
-                state.Technology.UnlockUpgrade(new UpgradeBlueprint("+1 worker",
-                    new[] {new ParameterModifiable(AttributeType.DroneCount, Modification.AddConstant(1))}));
+
+                foreach (var upgrade in game.Blueprints.Upgrades.Values)
+                {
+                    state.Technology.UnlockUpgrade(upgrade);
+                }
 
                 game.InitialiseState(state);
             }

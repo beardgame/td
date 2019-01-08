@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +10,13 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Mods.Serialization.Converters;
 using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
 using BuildingBlueprintJson = Bearded.TD.Mods.Serialization.Models.BuildingBlueprint;
@@ -82,6 +85,7 @@ namespace Bearded.TD.Mods
                     units,
                     weapons,
                     projectiles,
+                    ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
                     tags.GetForCurrentMod());
             }
             
