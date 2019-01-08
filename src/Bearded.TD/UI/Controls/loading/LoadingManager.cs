@@ -1,15 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.Weapons;
+using Bearded.TD.Game.World;
 using Bearded.TD.Mods;
+using Bearded.TD.Mods.Models;
 using Bearded.TD.Networking;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -60,8 +71,10 @@ namespace Bearded.TD.UI.Controls
         private void gatherModBlueprints()
         {
             Game.SetBlueprints(Blueprints.Merge(
-                modsForLoading.Select(modForLoading => modForLoading.GetLoadedMod())
-                    .Select(mod => mod.Blueprints)));
+                modsForLoading
+                    .Select(modForLoading => modForLoading.GetLoadedMod())
+                    .Select(mod => mod.Blueprints)
+                    .Append(getHardcodedBlueprints())));
 
             Game.RequestDispatcher.Dispatch(
                 ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
@@ -74,6 +87,34 @@ namespace Bearded.TD.UI.Controls
             var camera = new GameCamera();
 
             Game.IntegrateUI(camera);
+        }
+
+        private static Blueprints getHardcodedBlueprints()
+        {
+            return new Blueprints(
+                new ReadonlyBlueprintCollection<SpriteSet>(Enumerable.Empty<SpriteSet>()),
+                new ReadonlyBlueprintCollection<FootprintGroup>(Enumerable.Empty<FootprintGroup>()),
+                new ReadonlyBlueprintCollection<IBuildingBlueprint>(Enumerable.Empty<IBuildingBlueprint>()),
+                new ReadonlyBlueprintCollection<IUnitBlueprint>(Enumerable.Empty<IUnitBlueprint>()),
+                new ReadonlyBlueprintCollection<IWeaponBlueprint>(Enumerable.Empty<IWeaponBlueprint>()),
+                new ReadonlyBlueprintCollection<IProjectileBlueprint>(Enumerable.Empty<IProjectileBlueprint>()),
+                getHardcodedUpgrades());
+        }
+        
+        private static ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> getHardcodedUpgrades()
+        {
+            var idManager = new IdManager();
+            
+            var builder = ImmutableDictionary.CreateBuilder<Id<UpgradeBlueprint>, UpgradeBlueprint>();
+            builder.Add(idManager.GetNext<UpgradeBlueprint>(),
+                new UpgradeBlueprint(
+                    "+25% damage",
+                    new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
+            builder.Add(idManager.GetNext<UpgradeBlueprint>(),
+                new UpgradeBlueprint(
+                    "+1 worker",
+                    new[] {new ParameterModifiable(AttributeType.DroneCount, Modification.AddConstant(1))}));
+            return builder.ToImmutable();
         }
     }
 }
