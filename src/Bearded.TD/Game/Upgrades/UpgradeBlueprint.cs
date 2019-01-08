@@ -10,12 +10,14 @@ namespace Bearded.TD.Game.Upgrades
     {
         public Id<UpgradeBlueprint> Id { get; }
         public string Name { get; }
+        public double Cost { get; }
         private readonly ImmutableList<IUpgradeEffect> effects;
 
-        public UpgradeBlueprint(Id<UpgradeBlueprint> id, string name, IEnumerable<IUpgradeEffect> effects)
+        public UpgradeBlueprint(Id<UpgradeBlueprint> id, string name, double cost, IEnumerable<IUpgradeEffect> effects)
         {
             Id = id;
             Name = name;
+            Cost = cost;
             this.effects = ImmutableList.CreateRange(effects);
         }
 
