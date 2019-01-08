@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Resources
 
             if (resourceOut <= currentResources)
             {
-                distributeAtFullMaxRates(elapsedTime);
+                distributeAtMaxRates(elapsedTime);
             }
             else
             {
@@ -50,11 +50,11 @@ namespace Bearded.TD.Game.Resources
             resetForFrame();
         }
 
-        private void distributeAtFullMaxRates(TimeSpan elapsedTime)
+        private void distributeAtMaxRates(TimeSpan elapsedTime)
         {
             foreach (var request in requestedResources)
             {
-                var grantedResources = elapsedTime.NumericValue * request.RatePerS;
+                var grantedResources = request.RatePerS * elapsedTime.NumericValue;
                 request.TryGrant(grantedResources, out var consumedResources);
                 currentResources -= consumedResources;
             }
