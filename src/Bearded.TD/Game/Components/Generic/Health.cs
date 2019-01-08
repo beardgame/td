@@ -1,10 +1,12 @@
+using System;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.Generic
 {
@@ -12,12 +14,13 @@ namespace Bearded.TD.Game.Components.Generic
     class Health : Component<Building, IHealthComponentParameter>
     {
         public int CurrentHealth { get; private set; }
-        public int MaxHealth => Parameters.MaxHealth;
+        public int MaxHealth { get; private set; }
         public double HealthPercentage => (double) CurrentHealth / MaxHealth;
         
         public Health(IHealthComponentParameter parameters) : base(parameters)
         {
             CurrentHealth = 1;
+            MaxHealth = parameters.MaxHealth;
         }
 
         protected override void Initialise()
@@ -53,5 +56,29 @@ namespace Bearded.TD.Game.Components.Generic
         }
 
         public override void Draw(GeometryManager geometries) { }
+
+        public override void ApplyUpgradeEffect(IUpgradeEffect effect)
+        {
+            base.ApplyUpgradeEffect(effect);
+
+            if (Parameters.MaxHealth != MaxHealth)
+            {
+                applyNewMaxHealth();
+            }
+        }
+
+        private void applyNewMaxHealth()
+        {
+            if (Parameters.MaxHealth > MaxHealth)
+            {
+                CurrentHealth += Parameters.MaxHealth - MaxHealth;
+                MaxHealth = Parameters.MaxHealth;
+            }
+            else
+            {
+                MaxHealth = Parameters.MaxHealth;
+                CurrentHealth = Math.Min(CurrentHealth, MaxHealth);
+            }
+        }
     }
 }
