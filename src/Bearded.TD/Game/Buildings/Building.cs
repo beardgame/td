@@ -24,6 +24,8 @@ namespace Bearded.TD.Game.Buildings
             {SelectionState.Selected, Color.RoyalBlue}
         };
 
+        private readonly List<BuildingUpgradeTask> upgradesInProgress = new List<BuildingUpgradeTask>();
+        public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
         private readonly List<UpgradeBlueprint> appliedUpgrades = new List<UpgradeBlueprint>();
         public ReadOnlyCollection<UpgradeBlueprint> AppliedUpgrades { get; }
         
@@ -41,6 +43,7 @@ namespace Bearded.TD.Game.Buildings
         {
             Id = id;
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
+            UpgradesInProgress = upgradesInProgress.AsReadOnly();
         }
 
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
@@ -85,7 +88,21 @@ namespace Bearded.TD.Game.Buildings
 
             appliedUpgrades.Add(upgrade);
         }
+        
+        public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
+        {
+            DebugAssert.State.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
+            DebugAssert.State.Satisfies(!upgradesInProgress.Contains(task), "Can not add same task more than once.");
+            upgradesInProgress.Add(task);
+        }
 
+        public void UnregisterBuildingUpgradeTask(BuildingUpgradeTask task)
+        {
+            var wasRemoved = upgradesInProgress.Remove(task);
+            
+            DebugAssert.State.Satisfies(wasRemoved, "Can only remove task that was added previously.");
+        }
+        
         protected override void OnDelete()
         {
             OccupiedTiles.ForEach(tile =>

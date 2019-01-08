@@ -16,16 +16,31 @@ namespace Bearded.TD.Game.Upgrades
         private double progress;
         private bool completed;
 
+        public Building Building => building;
         public double ProgressPercentage => progress / maximumResources;
+        public UpgradeBlueprint Upgrade => upgrade;
 
         public BuildingUpgradeTask(Building building, UpgradeBlueprint upgrade)
         {
             this.building = building;
             this.upgrade = upgrade;
         }
-        
+
+        protected override void OnAdded()
+        {
+            building.RegisterBuildingUpgradeTask(this);
+        }
+
+        protected override void OnDelete()
+        {
+            building.UnregisterBuildingUpgradeTask(this);
+        }
+
         public override void Update(TimeSpan elapsedTime)
         {
+            if (!building.IsCompleted)
+                return;
+            
             if (completed)
                 return;
             
