@@ -55,7 +55,13 @@ namespace Bearded.TD.Game
             foreach (var (p, i) in game.Players.Indexed())
             {
                 var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(game.Ids.GetNext<Faction>(), game.State.RootFaction, false, true, p.Name, factionColor);
+                var playerFaction = new Faction(
+                    game.Ids.GetNext<Faction>(),
+                    game.State.RootFaction,
+                    false,
+                    gameSettings.WorkerDistributionMethod != WorkerDistributionMethod.Neutral,
+                    p.Name,
+                    factionColor);
                 yield return AddFaction.Command(game, playerFaction);
                 yield return SetPlayerFaction.Command(p, playerFaction);
             }

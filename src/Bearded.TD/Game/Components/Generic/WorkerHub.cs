@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.Generic
 {
@@ -10,40 +13,73 @@ namespace Bearded.TD.Game.Components.Generic
     class WorkerHub<T> : Component<T, IWorkerHubParameters>
         where T : GameObject, IFactioned
     {
+        private static readonly ImmutableHashSet<WorkerDistributionMethod> upgradableWorkerDistributionMethods =
+            ImmutableHashSet.CreateRange(
+                new [] {WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin});
+        
+        private bool canUpgradeToMoreWorkers;
+        private ImmutableList<Faction> childFactions;
+        private int numWorkersActive;
+        
         public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
         {
-            //for (var i = 0; i < Parameters.NumWorkers; i++)
-            //{
-            //    Owner.Game.Add(new Worker(Owner.Faction.Workers, Owner.Faction));
-            //}
+            canUpgradeToMoreWorkers =
+                upgradableWorkerDistributionMethods.Contains(Owner.Game.GameSettings.WorkerDistributionMethod);
+            childFactions = Owner.Game.Factions.Where(f => f.Parent == Owner.Faction).ToImmutableList();
 
-            var playerFactions = Owner.Game.Factions.Where(f => f.Parent == Owner.Faction).ToList();
-
-            if (playerFactions.Count > 0)
+            switch (Owner.Game.GameSettings.WorkerDistributionMethod)
             {
-                foreach (var f in playerFactions)
-                {
-                    for (var i = 0; i < Parameters.NumWorkers / playerFactions.Count; i++)
+                case WorkerDistributionMethod.Neutral:
+                case WorkerDistributionMethod.RoundRobin:
+                    for (var i = 0; i < Parameters.NumWorkers; i++)
                     {
-                        Owner.Game.Add(new Worker(f.Workers, f));
+                        addNewWorker();
                     }
-                }
-            }
-
-            var leftOverWorkers = playerFactions.Count > 0
-                ? Parameters.NumWorkers % playerFactions.Count
-                : Parameters.NumWorkers;
-
-            for (var i = 0; i < leftOverWorkers; i++)
-            {
-                Owner.Game.Add(new Worker(Owner.Faction.Workers, Owner.Faction));
+                    break;
+                case WorkerDistributionMethod.OnePerPlayer:
+                    foreach (var f in childFactions)
+                    {
+                        addNewWorker(f);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        public override void Update(TimeSpan elapsedTime) { }
+        public override void Update(TimeSpan elapsedTime)
+        {
+            while (numWorkersActive < Parameters.NumWorkers && canUpgradeToMoreWorkers)
+            {
+                addNewWorker();
+            }
+        }
+        
         public override void Draw(GeometryManager geometries) { }
 
+        private void addNewWorker()
+        {
+            switch (Owner.Game.GameSettings.WorkerDistributionMethod)
+            {
+                case WorkerDistributionMethod.Neutral:
+                    addNewWorker(Owner.Faction);
+                    return;
+                case WorkerDistributionMethod.RoundRobin:
+                    addNewWorker(childFactions[numWorkersActive % childFactions.Count]);
+                    return;
+                case WorkerDistributionMethod.OnePerPlayer:
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void addNewWorker(Faction faction)
+        {
+            Owner.Game.Add(new Worker(faction.Workers, faction));
+            numWorkersActive++;
+        }
     }
 }
