@@ -12,6 +12,7 @@ namespace Bearded.TD.Game
             LevelSize = builder.LevelSize;
         }
 
+        [Serializable]
         public sealed class Builder
         {
             public int LevelSize { get; set; }

@@ -19,6 +19,8 @@ namespace Bearded.TD.UI.Controls
         private readonly ServerMasterServer masterServer;
         private float secondsUntilNextHeartbeat;
 
+        public override bool CanChangeGameSettings => true;
+
         private ServerLobbyManager(GameInstance game, ServerNetworkInterface networkInterface)
             : base(game, networkInterface)
         {
@@ -59,8 +61,8 @@ namespace Bearded.TD.UI.Controls
             secondsUntilNextHeartbeat = heartbeatTimeSeconds;
         }
 
-        public override LoadingManager GetLoadingManager(GameSettings gameSettings) =>
-            new ServerLoadingManager(Game, Network, gameSettings);
+        public override LoadingManager GetLoadingManager(GameSettings gameSettings)
+            => new ServerLoadingManager(Game, Network, gameSettings);
 
         public static ServerLobbyManager Create(
             ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)

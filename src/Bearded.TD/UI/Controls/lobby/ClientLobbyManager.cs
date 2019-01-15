@@ -5,6 +5,8 @@ namespace Bearded.TD.UI.Controls
 {
     class ClientLobbyManager : LobbyManager
     {
+        public override bool CanChangeGameSettings => false;
+        
         public ClientLobbyManager(GameInstance game, NetworkInterface networkInterface)
             : base(game, networkInterface) {}
 

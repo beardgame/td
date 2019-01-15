@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities;
+﻿using Bearded.TD.Game;
+using Bearded.Utilities;
 using Newtonsoft.Json;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable ConvertToConstant.Global
@@ -32,6 +33,7 @@ namespace Bearded.TD.Meta
         public UISettings UI = new UISettings();
         public GraphicsSettings Graphics = new GraphicsSettings();
         public DebugSettings Debug = new DebugSettings();
+        public GameSettings.Builder LastGameSettings = new GameSettings.Builder();
         
         public class MiscSettings
         {
