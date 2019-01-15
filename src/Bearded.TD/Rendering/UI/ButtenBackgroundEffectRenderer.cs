@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
 
@@ -17,6 +18,9 @@ namespace Bearded.TD.Rendering.UI
         public void Render(ButtonBackgroundEffect control)
         {
             if (!control.MouseIsOver)
+                return;
+            
+            if (control.Parent is Button button && !button.IsEnabled)
                 return;
 
             var frame = control.Frame;

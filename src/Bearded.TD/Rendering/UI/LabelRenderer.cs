@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
 
@@ -20,7 +21,12 @@ namespace Bearded.TD.Rendering.UI
         public void Render(Label label)
         {
             geometry.Height = (float)label.FontSize;
-            geometry.Color = label.Color;
+            var argb = label.Color;
+
+            if (label.Parent is Button button && !button.IsEnabled)
+                argb *= 0.5f;
+            
+            geometry.Color = argb;
 
             var textAnchor = label.TextAnchor;
             var frame = label.Frame;
