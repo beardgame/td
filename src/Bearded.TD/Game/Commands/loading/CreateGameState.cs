@@ -1,8 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -47,7 +45,7 @@ namespace Bearded.TD.Game.Commands
             private readonly GameSettings.Serializer gameSettingsSerializer;
 
             // ReSharper disable once UnusedMember.Local
-            public Serializer() { }
+            public Serializer() : this(new GameSettings.Builder().Build()) { }
 
             public Serializer(GameSettings gameSettings)
             {
