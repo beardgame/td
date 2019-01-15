@@ -59,7 +59,8 @@ namespace Bearded.TD.UI.Controls
             secondsUntilNextHeartbeat = heartbeatTimeSeconds;
         }
 
-        public override LoadingManager GetLoadingManager(int levelSize) =>  new ServerLoadingManager(Game, Network, levelSize);
+        public override LoadingManager GetLoadingManager(GameSettings gameSettings) =>
+            new ServerLoadingManager(Game, Network, gameSettings);
 
         public static ServerLobbyManager Create(
             ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)

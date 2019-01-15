@@ -37,6 +37,6 @@ namespace Bearded.TD.UI.Controls
             Game.UpdatePlayers(args);
         }
 
-        public abstract LoadingManager GetLoadingManager(int levelSize);
+        public abstract LoadingManager GetLoadingManager(GameSettings gameSettings);
     }
 }
