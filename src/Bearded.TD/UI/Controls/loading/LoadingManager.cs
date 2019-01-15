@@ -115,6 +115,8 @@ namespace Bearded.TD.UI.Controls
                 new[] {new ParameterModifiable(AttributeType.ResourceIncome, Modification.AddFractionOfBase(.2))}));
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% health", 80,
                 new[] {new ParameterModifiable(AttributeType.Health, Modification.AddFractionOfBase(.25))}));
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+20% range", 30,
+                new[] {new ParameterModifiable(AttributeType.Range, Modification.AddFractionOfBase(.2))}));
             
             return builder.ToImmutable();
 
