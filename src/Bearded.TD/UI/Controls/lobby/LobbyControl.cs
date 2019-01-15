@@ -1,5 +1,6 @@
 ﻿using Bearded.UI.Controls;
 using static Bearded.TD.UI.Controls.Default;
+using Button = Bearded.UI.Controls.Button;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -30,8 +31,12 @@ namespace Bearded.TD.UI.Controls
                         MaxValue = 100,
                         IsEnabled = !model.CanChangeGameSettings
                     }
-                    .Anchor(a => a.Top(margin: 0, height: 50))
+                        .Anchor(a => a.Top(margin: 0, height: 32))
                         .Subscribe(b => b.ValueChanged += model.OnSetLevelSize),
+                    
+                    Button(() => model.WorkerDistributionMethod.ToString())
+                        .Anchor(a => a.Top(margin: 36, height: 32))
+                        .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod)
                 }.Anchor(a => a.Left(margin: 20, width: 250).Top(margin: 20, height: 100))
             );
 

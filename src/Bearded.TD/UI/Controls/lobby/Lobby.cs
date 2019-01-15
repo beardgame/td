@@ -22,6 +22,7 @@ namespace Bearded.TD.UI.Controls
 
         public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
         public int LevelSize => gameSettings.LevelSize;
+        public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
 
         public event VoidEventHandler PlayersChanged;
 
@@ -69,6 +70,15 @@ namespace Bearded.TD.UI.Controls
         public void OnSetLevelSize(int size)
         {
             gameSettings.LevelSize = size;
+        }
+        
+        public void OnCycleWorkerDistributionMethod()
+        {
+            gameSettings.WorkerDistributionMethod = gameSettings.WorkerDistributionMethod + 1;
+            if ((int) gameSettings.WorkerDistributionMethod >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
+            {
+                gameSettings.WorkerDistributionMethod = 0;
+            }
         }
 
         private void onGameStatusChanged(GameStatus gameStatus)
