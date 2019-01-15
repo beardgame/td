@@ -28,7 +28,7 @@ namespace Bearded.TD.UI.Controls
                     {
                         MinValue = 10,
                         MaxValue = 100,
-                        IsEnabled = model.CanChangeGameSettings
+                        IsEnabled = !model.CanChangeGameSettings
                     }
                     .Anchor(a => a.Top(margin: 0, height: 50))
                         .Subscribe(b => b.ValueChanged += model.OnSetLevelSize),

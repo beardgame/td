@@ -27,6 +27,13 @@ namespace Bearded.TD.Rendering.UI
         {
             boxRenderer.Render(textInput);
 
+            var argb = White;
+            if (!textInput.IsEnabled)
+            {
+                argb *= .5f;
+            }
+
+            geometry.Color = argb;
             geometry.Height = (float)textInput.FontSize;
             
             var topLeft = textInput.Frame.TopLeft;
@@ -36,10 +43,13 @@ namespace Bearded.TD.Rendering.UI
 
             geometry.DrawString((Vector2)topLeft, textInput.Text);
 
-            geometry.DrawString(
-                (Vector2)new Vector2d(topLeft.X + stringWidthBeforeCursor, topLeft.Y + textInput.FontSize * 0.5f),
-                cursorString, .5f, .5f
+            if (textInput.IsFocused)
+            {
+                geometry.DrawString(
+                    (Vector2) new Vector2d(topLeft.X + stringWidthBeforeCursor, topLeft.Y + textInput.FontSize * 0.5f),
+                    cursorString, .5f, .5f
                 );
+            }
         }
     }
 }
