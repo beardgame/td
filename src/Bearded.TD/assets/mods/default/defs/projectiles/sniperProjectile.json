@@ -1,0 +1,14 @@
+{
+    "id" : "sniperProjectile",
+    "speed" : 50,
+    "color" : "LightBlue",
+    "sprite" : "particle.star",
+    "components" : [
+        {
+            "id" : "damageOnHit",
+            "parameters" : {
+                "damage" : 100
+            }
+        }
+    ]
+}

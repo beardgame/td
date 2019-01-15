@@ -1,0 +1,19 @@
+{
+    "id": "sniper",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 8
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "sniperProjectile",
+                "muzzleVelocity" : 50,
+                "shootInterval" : 1
+            }
+        }
+    ]
+}
