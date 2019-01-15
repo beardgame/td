@@ -13,6 +13,8 @@ namespace Bearded.TD.UI.Controls
         protected NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
         
+        public abstract bool CanChangeGameSettings { get; }
+        
         protected LobbyManager(GameInstance game, NetworkInterface network)
         {
             Game = game;
@@ -37,6 +39,6 @@ namespace Bearded.TD.UI.Controls
             Game.UpdatePlayers(args);
         }
 
-        public abstract LoadingManager GetLoadingManager(int levelSize);
+        public abstract LoadingManager GetLoadingManager(GameSettings gameSettings);
     }
 }

@@ -9,10 +9,27 @@ namespace Bearded.TD.UI.Controls
         public event GenericEventHandler<int> ValueChanged; 
 
         private readonly TextInput textInput;
+        private readonly Button plusButton;
+        private readonly Button minusButton;
+        private bool isEnabled;
         private int value = -1;
-        private bool supressTextChangedEvent;
+        private bool suppressTextChangedEvent;
         private int minValue = 0;
         private int maxValue = 100;
+
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                if (isEnabled == value) return;
+
+                isEnabled = value;
+                textInput.IsEnabled = isEnabled;
+                plusButton.IsEnabled = isEnabled;
+                minusButton.IsEnabled = isEnabled;
+            }
+        }
 
         public int Value
         {
@@ -24,7 +41,7 @@ namespace Bearded.TD.UI.Controls
                     return;
 
                 this.value = clampedValue;
-                supressTextChangedEvent = true;
+                suppressTextChangedEvent = true;
                 textInput.Text = clampedValue.ToString();
 
                 onValueChanged();
@@ -66,25 +83,26 @@ namespace Bearded.TD.UI.Controls
                 AllowSpecialCharacters = false,
                 AllowLetters = false
             };
-            var buttonUp = new Button { new Label("+") };
-            var buttonDown = new Button { new Label("-") };
+            plusButton = new Button { new Label("+") };
+            minusButton = new Button { new Label("-") };
 
-            buttonUp.Clicked += stepUp;
-            buttonDown.Clicked += stepDown;
+            plusButton.Clicked += stepUp;
+            minusButton.Clicked += stepDown;
             textInput.TextChanged += textChanged;
 
             Add(textInput.Anchor(a => a.Right(20)));
-            Add(buttonUp.Anchor(a => a.Right(0, 20).Bottom(0, null, 0.5)));
-            Add(buttonDown.Anchor(a => a.Right(0, 20).Top(0, null, 0.5)));
+            Add(plusButton.Anchor(a => a.Right(0, 20).Bottom(0, null, 0.5)));
+            Add(minusButton.Anchor(a => a.Right(0, 20).Top(0, null, 0.5)));
 
+            isEnabled = true;
             Value = value;
         }
 
         private void textChanged()
         {
-            if (supressTextChangedEvent)
+            if (suppressTextChangedEvent)
             {
-                supressTextChangedEvent = false;
+                suppressTextChangedEvent = false;
                 return;
             }
 
