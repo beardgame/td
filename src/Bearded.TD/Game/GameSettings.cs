@@ -38,12 +38,12 @@ namespace Bearded.TD.Game
         public class Serializer
         {
             private int levelSize;
-            private WorkerDistributionMethod workerDistributionMethod;
+            private byte workerDistributionMethod;
             
             public Serializer(GameSettings gameSettings)
             {
                 levelSize = gameSettings.LevelSize;
-                workerDistributionMethod = gameSettings.WorkerDistributionMethod;
+                workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
             }
 
             public void Serialize(INetBufferStream stream)
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game
                 return new Builder
                 {
                     LevelSize = levelSize,
-                    WorkerDistributionMethod = workerDistributionMethod,
+                    WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
                 }.Build();
             }
         }

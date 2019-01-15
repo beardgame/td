@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game
 {
-    public enum WorkerDistributionMethod
+    public enum WorkerDistributionMethod : byte
     {
         OnePerPlayer,
         RoundRobin,
