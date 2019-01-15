@@ -2,6 +2,12 @@
     "id": "triangleWeapon",
     "components" : [
         {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 5
+            }
+        },
+        {
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "boringProjectile",
