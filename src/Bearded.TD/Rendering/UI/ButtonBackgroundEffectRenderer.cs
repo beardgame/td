@@ -6,11 +6,11 @@ using OpenTK;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class ButtenBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
+    class ButtonBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
     {
         private readonly PrimitiveGeometry geometry;
 
-        public ButtenBackgroundEffectRenderer(IndexedSurface<PrimitiveVertexData> surface)
+        public ButtonBackgroundEffectRenderer(IndexedSurface<PrimitiveVertexData> surface)
         {
             geometry = new PrimitiveGeometry(surface);
         }

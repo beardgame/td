@@ -1,4 +1,5 @@
-﻿
+﻿using Bearded.UI.Rendering;
+
 namespace Bearded.TD.UI.Layers
 {
     class ViewportClippingLayerControl : DefaultRenderLayerControl
@@ -16,6 +17,16 @@ namespace Bearded.TD.UI.Layers
             var openGly = ViewportSize.Height - (y + h);
 
             return ((x, openGly), (w, h));
+        }
+        
+        protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
+        {
+            SkipNextRender();
+        }
+        
+        protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
+        {
+            RenderAsLayer(router);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Bearded.UI.Rendering;
+using OpenTK;
 
 namespace Bearded.TD.UI.Layers
 {
@@ -18,6 +19,12 @@ namespace Bearded.TD.UI.Layers
                     originCenter,
                     -Vector3.UnitY);
             }
+        }
+
+        protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
+        {
+            RenderAsLayer(router);
+            SkipNextRender();
         }
 
         public override RenderOptions RenderOptions { get; } = RenderOptions.Default;

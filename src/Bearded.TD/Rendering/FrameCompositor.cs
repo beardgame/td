@@ -32,6 +32,7 @@ namespace Bearded.TD.Rendering
             reloadShadersIfNeeded();
 
             GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
+            GL.Disable(EnableCap.ScissorTest);
 
             var argb = Color.Black;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);

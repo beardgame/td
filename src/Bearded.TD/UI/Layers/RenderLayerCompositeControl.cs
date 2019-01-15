@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Utilities;
+﻿using System;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
@@ -23,28 +24,47 @@ namespace Bearded.TD.UI.Layers
 
         public void RenderAsLayer(IRendererRouter router)
         {
-            renderDescendendRenderLayerControls(router, this);
-
             renderRouter = router;
+            renderDescendantRenderLayerControlsBefore(this);
             router.Render(this);
+            renderDescendantRenderLayerControlsAfter(this);
             renderRouter = null;
         }
 
-        private void renderDescendendRenderLayerControls(IRendererRouter router, IControlParent parent)
+        private void renderDescendantRenderLayerControlsBefore(IControlParent parent)
+        {
+            callOnAllVisibleDescendantLayers(parent, layer => layer.RenderAsLayerBeforeAncestorLayer);
+        }
+        private void renderDescendantRenderLayerControlsAfter(IControlParent parent)
+        {
+            callOnAllVisibleDescendantLayers(parent, layer => layer.RenderAsLayerAfterAncestorLayer);
+        }
+        
+        private void callOnAllVisibleDescendantLayers(IControlParent parent, Func<RenderLayerCompositeControl, Action<IRendererRouter>> getRenderFunction)
         {
             foreach (var control in parent.Children)
             {
+                if(!control.IsVisible)
+                    continue;
+                
                 switch (control)
                 {
                     case RenderLayerCompositeControl renderLayer:
-                        renderLayer.RenderAsLayer(router);
-                        renderLayer.SkipNextRender();
+                        getRenderFunction(renderLayer)(renderRouter);
                         break;
                     case IControlParent controlParent:
-                        renderDescendendRenderLayerControls(router, controlParent);
+                        callOnAllVisibleDescendantLayers(controlParent, getRenderFunction);
                         break;
                 }
             }
+        }
+
+        protected virtual void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
+        {
+        }
+        
+        protected virtual void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
+        {
         }
 
         public void SkipNextRender()
