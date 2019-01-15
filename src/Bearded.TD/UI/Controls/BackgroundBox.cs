@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class BackgroundBox : CompositeControl
     {
-        public Color Color = Color.Black * .5f;
+        public Color Color = Color.Black * .75f;
 
         public BackgroundBox() { }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
@@ -34,7 +35,7 @@ namespace Bearded.TD.UI.Controls
             this.debug = debug;
             commandInput = new AutoCompletingTextInput(str => debug.AutoCompleteCommand(str, false)) { FontSize = 16 }
                 .Anchor(a => a.Bottom(margin: 0, height: 20));
-            logBox = new ListControl(startStuckToBottom: true)
+            logBox = new ListControl(new ViewportClippingLayerControl(), startStuckToBottom: true)
                 .Anchor(a => a.Bottom(margin: 20));
             listItemSource = new RotatingListItemSource<Logger.Entry>(
                 logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry, 20, logHistoryLength);
