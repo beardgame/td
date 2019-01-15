@@ -23,16 +23,16 @@ namespace Bearded.TD.UI.Controls
         public BuildingStatusUIControl(BuildingStatusUI buildingStatus)
         {
             this.buildingStatus = buildingStatus;
-            building = (Building)buildingStatus.Building;
+            building = buildingStatus.Building as Building;
             
             Add(new BackgroundBox());
 
-            Add(new Label(building.Blueprint.Name) {FontSize = 24}
+            Add(new Label(buildingStatus.Building.Blueprint.Name) {FontSize = 24}
                 .Anchor(a => a.Top(margin: 4, height: 24).Left(margin: 4).Right(margin: 4)));
-            Add(new Label($"Owned by {building.Faction.Name ?? "nobody"}") {FontSize = 16}
+            Add(new Label($"Owned by {buildingStatus.Building.Faction.Name ?? "nobody"}") {FontSize = 16}
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
-            if (building.GetComponent<Health>() is Health health)
+            if (building?.GetComponent<Health>() is Health health)
             {
                 Add(new DynamicLabel(() => $"Hitpoints: {health.CurrentHealth} / {health.MaxHealth}")
                         {FontSize = 16}
@@ -60,7 +60,7 @@ namespace Bearded.TD.UI.Controls
 
         private void updateUpgradeListIfNeeded()
         {
-            if (upgradeItemSource?.AppliedUpgradesCount != building.AppliedUpgrades.Count)
+            if (upgradeItemSource?.AppliedUpgradesCount != building?.AppliedUpgrades.Count)
                 updateUpgradeList();
         }
 
@@ -88,7 +88,7 @@ namespace Bearded.TD.UI.Controls
             {
                 this.game = game;
                 this.building = building;
-                appliedUpgrades = building.AppliedUpgrades.ToList();
+                appliedUpgrades = building?.AppliedUpgrades.ToList() ?? new List<UpgradeBlueprint>();
                 availableUpgrades = upgrades.ToList();
                 ItemCount = availableUpgrades.Count + appliedUpgrades.Count;
             }
