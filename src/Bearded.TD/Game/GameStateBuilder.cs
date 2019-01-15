@@ -18,19 +18,19 @@ namespace Bearded.TD.Game
     class GameStateBuilder
     {
         private readonly GameInstance game;
-        private readonly int radius;
+        private readonly GameSettings gameSettings;
         private readonly ITilemapGenerator tilemapGenerator;
 
-        public GameStateBuilder(GameInstance game, int radius, ITilemapGenerator tilemapGenerator)
+        public GameStateBuilder(GameInstance game, GameSettings gameSettings, ITilemapGenerator tilemapGenerator)
         {
             this.game = game;
-            this.radius = radius;
+            this.gameSettings = gameSettings;
             this.tilemapGenerator = tilemapGenerator;
         }
 
         public IEnumerable<ISerializableCommand<GameInstance>> Generate()
         {
-            yield return CreateGameState.Command(game, radius);
+            yield return CreateGameState.Command(game, gameSettings);
             yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true, true));
 
             foreach (var command in setupFactions())
@@ -40,7 +40,7 @@ namespace Bearded.TD.Game
             var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
             yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
 
-            var tilemapTypes = tilemapGenerator.Generate(radius, UserSettings.Instance.Misc.MapGenSeed ?? StaticRandom.Int());
+            var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, UserSettings.Instance.Misc.MapGenSeed ?? StaticRandom.Int());
 
             var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
 

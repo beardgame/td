@@ -1,12 +1,10 @@
-﻿using Bearded.TD.Commands;
+using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Commands
 {
-    static class CreateGameState
+    static class SetGameSettings
     {
         public static ISerializableCommand<GameInstance> Command(GameInstance game, GameSettings gameSettings)
             => new Implementation(game, gameSettings);
@@ -24,19 +22,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                var state = new GameState(game.Meta, gameSettings);
-
-                foreach (var blueprint in game.Blueprints.Buildings.All)
-                {
-                    state.Technology.UnlockBlueprint(blueprint);
-                }
-
-                foreach (var upgrade in game.Blueprints.Upgrades.Values)
-                {
-                    state.Technology.UnlockUpgrade(upgrade);
-                }
-
-                game.InitialiseState(state);
+                // todo: do something here
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);
@@ -45,7 +31,7 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : ICommandSerializer<GameInstance>
         {
             private readonly GameSettings.Serializer gameSettingsSerializer;
-
+            
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 

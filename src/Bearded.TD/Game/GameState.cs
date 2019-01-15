@@ -31,6 +31,7 @@ namespace Bearded.TD.Game
 
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
+        public GameSettings GameSettings { get; }
         public Level Level { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
         public TechnologyManager Technology { get; }
@@ -47,18 +48,19 @@ namespace Bearded.TD.Game
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
         public Faction RootFaction { get; private set; }
 
-        public GameState(GameMeta meta, int radius)
+        public GameState(GameMeta meta, GameSettings gameSettings)
         {
             Meta = meta;
-            Level = new Level(radius);
+            GameSettings = gameSettings;
+            Level = new Level(GameSettings.LevelSize);
             Technology = new TechnologyManager(Meta.Events);
             
-            GeometryLayer = new GeometryLayer(Meta.Events, radius);
+            GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
-            PassabilityManager = new PassabilityManager(meta.Events, Level, GeometryLayer, BuildingLayer);
-            Navigator = new MultipleSinkNavigationSystem(meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
+            PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
+            Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         }
 
         public void FinishLoading()
