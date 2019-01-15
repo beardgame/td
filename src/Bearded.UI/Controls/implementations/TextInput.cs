@@ -10,8 +10,25 @@ namespace Bearded.UI.Controls
     {
         public event VoidEventHandler TextChanged;
 
+        private bool isEnabled;
         private string text = "";
         private int cursorPosition;
+
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                if (value == isEnabled) return;
+                
+                isEnabled = value;
+                if (!isEnabled && IsFocused)
+                {
+                    Unfocus();
+                }
+                CanBeFocused = isEnabled;
+            }
+        }
 
         public string Text
         {
@@ -39,7 +56,7 @@ namespace Bearded.UI.Controls
 
         public TextInput()
         {
-            CanBeFocused = true;
+            IsEnabled = true;
         }
 
         public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
@@ -49,7 +66,7 @@ namespace Bearded.UI.Controls
 
         public override void KeyHit(KeyEventArgs eventArgs)
         {
-            eventArgs.Handled = tryHandleKeyHit(eventArgs);
+            eventArgs.Handled = isEnabled && tryHandleKeyHit(eventArgs);
         }
 
         private bool tryHandleKeyHit(KeyEventArgs eventArgs)
@@ -84,6 +101,7 @@ namespace Bearded.UI.Controls
 
         public override void CharacterTyped(CharEventArgs eventArgs)
         {
+            if (!isEnabled) return;
             InsertTextAtCursor(eventArgs.Character.ToString());
             eventArgs.Handled = true;
         }

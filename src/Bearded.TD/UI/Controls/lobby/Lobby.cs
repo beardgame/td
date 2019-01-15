@@ -15,12 +15,12 @@ namespace Bearded.TD.UI.Controls
         private LobbyManager lobbyManager;
         private Logger logger;
 
+        // todo: sync settings from server to client when changed
         private GameSettings.Builder gameSettings;
 
         public IList<Player> Players => lobbyManager.Game.Players;
-        
-        // todo: sync settings from server to client when changed
-        // todo: make ui on client read-only
+
+        public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
         public int LevelSize => gameSettings.LevelSize;
 
         public event VoidEventHandler PlayersChanged;
@@ -74,7 +74,7 @@ namespace Bearded.TD.UI.Controls
         private void onGameStatusChanged(GameStatus gameStatus)
         {
             if (gameStatus != GameStatus.Loading) throw new Exception("Unexpected game status change.");
-            if (lobbyManager.CanChangeGameSettings)
+            if (CanChangeGameSettings)
             {
                 UserSettings.Instance.LastGameSettings = new GameSettings.Builder(gameSettings);
                 UserSettings.RaiseSettingsChanged();
