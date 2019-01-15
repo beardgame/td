@@ -9,7 +9,7 @@ namespace Bearded.TD.Mods.Models
         [Modifiable(10, Type = AttributeType.Damage)]
         int DamagePerSecond { get; }
 
-        [Modifiable(5f)]
+        [Modifiable(Type = AttributeType.Range)]
         Unit Range { get; }
 
         [Modifiable(0xFFFFA500 /* orange */)]

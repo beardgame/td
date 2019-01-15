@@ -11,7 +11,8 @@
             "id" : "beamEmitter",
             "parameters" : {
                 "color" : "cyan",
-                "damagePerSecond" : 50
+                "damagePerSecond" : 50,
+                "range" : 5
             }
         }
     ]
