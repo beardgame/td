@@ -2,6 +2,12 @@
     "id": "beamWeapon",
     "components" : [
         {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 5
+            }
+        },
+        {
             "id" : "beamEmitter",
             "parameters" : {
                 "color" : "cyan",

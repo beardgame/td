@@ -8,6 +8,7 @@
         Damage,
         DroneCount,
         Health,
-        ResourceIncome
+        ResourceIncome,
+        Range,
     }
 }
