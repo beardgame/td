@@ -43,10 +43,8 @@ namespace Bearded.TD.UI.Controls
 
         private void generateGame()
         {
-            var radius = gameSettings.LevelSize;
-
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
-            var builder = new GameStateBuilder(Game, radius, tilemapGenerator);
+            var builder = new GameStateBuilder(Game, gameSettings, tilemapGenerator);
 
             var commands = builder.Generate();
 
