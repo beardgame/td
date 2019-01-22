@@ -10,13 +10,8 @@ namespace Bearded.TD.UI.Controls
 {
     class ServerLoadingManager : LoadingManager
     {
-        private readonly GameSettings gameSettings;
-
-        public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface, GameSettings gameSettings)
-            : base(game, networkInterface)
-        {
-            this.gameSettings = gameSettings;
-        }
+        public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface)
+            : base(game, networkInterface) { }
 
         public override void Update(UpdateEventArgs args)
         {
@@ -44,7 +39,7 @@ namespace Bearded.TD.UI.Controls
         private void generateGame()
         {
             var tilemapGenerator = new DefaultTilemapGenerator(Logger);
-            var builder = new GameStateBuilder(Game, gameSettings, tilemapGenerator);
+            var builder = new GameStateBuilder(Game, tilemapGenerator);
 
             var commands = builder.Generate();
 

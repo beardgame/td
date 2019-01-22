@@ -15,7 +15,6 @@ namespace Bearded.TD.UI.Controls
         private LobbyManager lobbyManager;
         private Logger logger;
 
-        // todo: sync settings from server to client when changed
         private GameSettings.Builder gameSettings;
 
         public IList<Player> Players => lobbyManager.Game.Players;
@@ -25,6 +24,7 @@ namespace Bearded.TD.UI.Controls
         public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
 
         public event VoidEventHandler PlayersChanged;
+        public event VoidEventHandler GameSettingsChanged;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
         {
@@ -33,13 +33,15 @@ namespace Bearded.TD.UI.Controls
             this.lobbyManager = lobbyManager;
             logger = dependencies.Resolve<Logger>();
             
-            gameSettings = UserSettings.Instance.LastGameSettings != null
+            gameSettings = CanChangeGameSettings && UserSettings.Instance.LastGameSettings != null
                 ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
                 : new GameSettings.Builder();
+            if (CanChangeGameSettings) lobbyManager.UpdateGameSettings(gameSettings.Build());
             
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
             lobbyManager.Game.PlayerRemoved += onPlayersChanged;
+            lobbyManager.Game.GameSettingsChanged += onGameSettingsChanged;
         }
 
         public override void Terminate()
@@ -70,15 +72,18 @@ namespace Bearded.TD.UI.Controls
         public void OnSetLevelSize(int size)
         {
             gameSettings.LevelSize = size;
+            lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
         
         public void OnCycleWorkerDistributionMethod()
         {
             gameSettings.WorkerDistributionMethod = gameSettings.WorkerDistributionMethod + 1;
-            if ((int) gameSettings.WorkerDistributionMethod >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
+            if ((byte) gameSettings.WorkerDistributionMethod
+                >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
             {
                 gameSettings.WorkerDistributionMethod = 0;
             }
+            lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
         private void onGameStatusChanged(GameStatus gameStatus)
@@ -90,13 +95,18 @@ namespace Bearded.TD.UI.Controls
                 UserSettings.RaiseSettingsChanged();
                 UserSettings.Save(logger);
             }
-            Navigation.Replace<LoadingScreen, LoadingManager>(
-                lobbyManager.GetLoadingManager(gameSettings.Build()), this);
+            Navigation.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
         }
 
         private void onPlayersChanged(Player player)
         {
             PlayersChanged?.Invoke();
+        }
+
+        private void onGameSettingsChanged(IGameSettings newGameSettings)
+        {
+            gameSettings = new GameSettings.Builder(newGameSettings);
+            GameSettingsChanged?.Invoke();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Bearded.UI.Controls;
 using static Bearded.TD.UI.Controls.Default;
-using Button = Bearded.UI.Controls.Button;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -22,18 +21,22 @@ namespace Bearded.TD.UI.Controls
             );
 
             // game settings
-            Add(
-                new CompositeControl // ButtonGroup
-                {
-                    new NumericInput(model.LevelSize)
+            var levelSize =
+                new NumericInput(model.LevelSize)
                     {
                         MinValue = 10,
                         MaxValue = 100,
                         IsEnabled = model.CanChangeGameSettings
                     }
-                        .Anchor(a => a.Top(margin: 0, height: 32))
-                        .Subscribe(b => b.ValueChanged += model.OnSetLevelSize),
-                    
+                    .Anchor(a => a.Top(margin: 0, height: 32))
+                    .Subscribe(b => b.ValueChanged += newValue =>
+                    {
+                        if (b.IsEnabled) model.OnSetLevelSize(newValue);
+                    });
+            Add(
+                new CompositeControl // ButtonGroup
+                {
+                    levelSize,
                     Button(() => model.WorkerDistributionMethod.ToString())
                         .Anchor(a => a.Top(margin: 36, height: 32))
                         .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod)
@@ -47,7 +50,9 @@ namespace Bearded.TD.UI.Controls
                     .Top(margin: 20)
                     .Bottom(margin: 20));
             Add(list);
+            
             model.PlayersChanged += list.Reload;
+            model.GameSettingsChanged += () => { levelSize.Value = model.LevelSize; };
         }
 
         private class PlayerListItemSource : IListItemSource

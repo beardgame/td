@@ -2,18 +2,24 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game
 {
-    sealed class GameSettings
+    interface IGameSettings
+    {
+        int LevelSize { get; }
+        WorkerDistributionMethod WorkerDistributionMethod { get; }
+    }
+    
+    sealed class GameSettings : IGameSettings
     {
         public int LevelSize { get; }
         public WorkerDistributionMethod WorkerDistributionMethod { get; }
 
-        private GameSettings(Builder builder)
+        private GameSettings(IGameSettings builder)
         {
             LevelSize = builder.LevelSize;
             WorkerDistributionMethod = builder.WorkerDistributionMethod;
         }
 
-        public sealed class Builder
+        public sealed class Builder : IGameSettings
         {
             public int LevelSize { get; set; }
             public WorkerDistributionMethod WorkerDistributionMethod { get; set; }
@@ -25,9 +31,9 @@ namespace Bearded.TD.Game
                 WorkerDistributionMethod = WorkerDistributionMethod.OnePerPlayer;
             }
 
-            public Builder(Builder template)
+            public Builder(IGameSettings template)
             {
-                // Copy values from an existing builder
+                // Copy values
                 LevelSize = template.LevelSize;
                 WorkerDistributionMethod = template.WorkerDistributionMethod;
             }
@@ -40,7 +46,7 @@ namespace Bearded.TD.Game
             private int levelSize;
             private byte workerDistributionMethod;
             
-            public Serializer(GameSettings gameSettings)
+            public Serializer(IGameSettings gameSettings)
             {
                 levelSize = gameSettings.LevelSize;
                 workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
@@ -52,14 +58,13 @@ namespace Bearded.TD.Game
                 stream.Serialize(ref workerDistributionMethod);
             }
 
-            public GameSettings ToGameSettings()
+            public Builder ToGameSettingsBuilder() => new Builder
             {
-                return new Builder
-                {
-                    LevelSize = levelSize,
-                    WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
-                }.Build();
-            }
+                LevelSize = levelSize,
+                WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
+            };
+
+            public GameSettings ToGameSettings() => ToGameSettingsBuilder().Build();
         }
     }
 }

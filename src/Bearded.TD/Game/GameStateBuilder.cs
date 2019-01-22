@@ -21,10 +21,10 @@ namespace Bearded.TD.Game
         private readonly GameSettings gameSettings;
         private readonly ITilemapGenerator tilemapGenerator;
 
-        public GameStateBuilder(GameInstance game, GameSettings gameSettings, ITilemapGenerator tilemapGenerator)
+        public GameStateBuilder(GameInstance game, ITilemapGenerator tilemapGenerator)
         {
             this.game = game;
-            this.gameSettings = gameSettings;
+            gameSettings = game.GameSettings;
             this.tilemapGenerator = tilemapGenerator;
         }
 

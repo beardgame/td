@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                // todo: do something here
+                game.SetGameSettings(gameSettings);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);
@@ -33,9 +33,9 @@ namespace Bearded.TD.Game.Commands
             private readonly GameSettings.Serializer gameSettingsSerializer;
             
             // ReSharper disable once UnusedMember.Local
-            public Serializer() { }
+            public Serializer() : this(new GameSettings.Builder().Build()) { }
 
-            public Serializer(GameSettings gameSettings)
+            public Serializer(IGameSettings gameSettings)
             {
                 gameSettingsSerializer = new GameSettings.Serializer(gameSettings);
             }

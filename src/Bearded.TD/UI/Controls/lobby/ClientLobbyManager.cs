@@ -10,7 +10,6 @@ namespace Bearded.TD.UI.Controls
         public ClientLobbyManager(GameInstance game, NetworkInterface networkInterface)
             : base(game, networkInterface) {}
 
-        public override LoadingManager GetLoadingManager(GameSettings gameSettings)
-            => new ClientLoadingManager(Game, Network);
+        public override LoadingManager GetLoadingManager() => new ClientLoadingManager(Game, Network);
     }
 }

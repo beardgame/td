@@ -23,6 +23,7 @@ namespace Bearded.TD.Game
         public ChatLog ChatLog { get; } = new ChatLog();
         public IdManager Ids { get; }
 
+        public GameSettings GameSettings { get; private set; } = new GameSettings.Builder().Build();
         public GameState State { get; private set; }
         public PlayerInput PlayerInput { get; private set; }
         public GameCamera Camera { get; private set; }
@@ -55,6 +56,7 @@ namespace Bearded.TD.Game
 
         public event GenericEventHandler<GameState> GameStateInitialized; 
         public event GenericEventHandler<GameStatus> GameStatusChanged;
+        public event GenericEventHandler<GameSettings> GameSettingsChanged; 
         public event GenericEventHandler<Player> PlayerAdded;
         public event GenericEventHandler<Player> PlayerRemoved;
 
@@ -73,6 +75,14 @@ namespace Bearded.TD.Game
 
             playerManager = context.PlayerManagerFactory(this);
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
+        }
+
+        public void SetGameSettings(GameSettings gameSettings)
+        {
+            if (Status != GameStatus.Lobby)
+                throw new InvalidOperationException("Can only change game settings in the lobby.");
+            GameSettings = gameSettings;
+            GameSettingsChanged?.Invoke(gameSettings);
         }
 
         public void AddPlayer(Player player)

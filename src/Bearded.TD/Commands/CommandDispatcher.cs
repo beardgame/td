@@ -51,14 +51,7 @@ namespace Bearded.TD.Commands
                 return;
 
             var message = network.CreateMessage();
-
-            var serializer = command.Serializer;
-            var serializers = Serializers<TObject>.Instance;
-            var id = serializers.CommandId(command.Serializer);
-
-            message.Write(id);
-            serializer.Serialize(new NetBufferWriter(message));
-
+            CommandToNetworkMessageWriter.WriteCommandToMessage(command, message);
             network.SendMessageToAll(message, NetworkChannel.Chat);
         }
     }
