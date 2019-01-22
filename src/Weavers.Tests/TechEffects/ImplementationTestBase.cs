@@ -19,6 +19,7 @@ namespace Weavers.Tests.TechEffects
 
         protected const string HasAttributeOfTypeMethodName = "HasAttributeOfType";
         protected const string ModifyAttributeMethodName = "ModifyAttribute";
+        protected const string CreateModifiableInstanceMethodName = "CreateModifiableInstance";
 
         protected static ConstructorInfo TemplateConstructorInfo
         {
@@ -46,6 +47,10 @@ namespace Weavers.Tests.TechEffects
         protected static object ConstructModifiable(object template)
             => ModifiableConstructorInfo.Invoke(new[] { template });
         
+        protected static object ConstructWrappedInt(int val)
+            // ReSharper disable once PossibleNullReferenceException
+            => WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { val });
+
         #endregion
         
         #region Tests

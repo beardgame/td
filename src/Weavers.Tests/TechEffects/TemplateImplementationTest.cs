@@ -33,8 +33,7 @@ namespace Weavers.Tests.TechEffects
         public void RemembersWrappedValues()
         {
             // ReSharper disable once PossibleNullReferenceException
-            var template = ConstructTemplate(
-                0, null, WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 }));
+            var template = ConstructTemplate(0, null, ConstructWrappedInt(18));
 
             template
                 .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
@@ -115,6 +114,29 @@ namespace Weavers.Tests.TechEffects
                 .Should()
                 .Throw<Exception>() // indirection because of reflection call
                 .WithInnerException<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void CreateModifiableInstance_ReturnsAModifiableInstance()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            template.CallMethod(CreateModifiableInstanceMethodName).Should().BeAssignableTo(ModifiableType);
+        }
+
+        [Fact]
+        public void CreateModifiableInstance_CopiesValuesFromTemplate()
+        {
+            var template = ConstructTemplate(42, 10, ConstructWrappedInt(18));
+
+            var modifiable = template.CallMethod(CreateModifiableInstanceMethodName);
+            
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
+            modifiable
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val))
+                .Should().Be(18);
         }
     }
 }

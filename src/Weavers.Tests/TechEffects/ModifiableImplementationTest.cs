@@ -29,12 +29,7 @@ namespace Weavers.Tests.TechEffects
         [Fact]
         public void RemembersModifiableWrappedValues()
         {
-            var modifiable = ConstructModifiable(
-                ConstructTemplate(
-                    0,
-                    null,
-                    // ReSharper disable once PossibleNullReferenceException
-                    WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
+            var modifiable = ConstructModifiable(ConstructTemplate(0, null, ConstructWrappedInt(18)));
             
             modifiable
                 .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
@@ -72,12 +67,7 @@ namespace Weavers.Tests.TechEffects
         [Fact]
         public void ModifyAttribute_ModifiesWrappedValues()
         {
-            var modifiable = ConstructModifiable(
-                ConstructTemplate(
-                    0,
-                    null,
-                    // ReSharper disable once PossibleNullReferenceException
-                    WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
+            var modifiable = ConstructModifiable(ConstructTemplate(0, null, ConstructWrappedInt(18)));
             
             modifiable.CallMethod(
                 ModifyAttributeMethodName, AttributeType.Cooldown, Modification.AddFractionOfBase(1));
@@ -99,6 +89,31 @@ namespace Weavers.Tests.TechEffects
                 .Should()
                 .NotThrow();
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
+        }
+
+        [Fact]
+        public void CreateModifiableInstance_ReturnsAModifiableInstance()
+        {
+            var modifiable = ConstructModifiable(ConstructTemplate(0, 10, null));
+
+            modifiable.CallMethod(CreateModifiableInstanceMethodName).Should().BeAssignableTo(ModifiableType);
+        }
+
+        [Fact]
+        public void CreateModifiableInstance_DoesNotCopyModifications()
+        {
+            var original = ConstructModifiable(ConstructTemplate(42, 10, ConstructWrappedInt(18)));
+
+            original.CallMethod(
+                ModifyAttributeMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1));
+            var newModifiable = original.CallMethod(CreateModifiableInstanceMethodName);
+            
+            newModifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntProperty)).Should().Be(42);
+            newModifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
+            newModifiable
+                .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
+                .GetPropertyValue<int>(nameof(WrappedInt.Val))
+                .Should().Be(18);
         }
     }
 }
