@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Bearded.TD.Shared.TechEffects;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Weavers.Tests.AssemblyToProcess;
@@ -78,12 +79,42 @@ namespace Weavers.Tests.TechEffects
                 nameof(ParametersTemplateLibrary.Instance),
                 BindingFlags.GetProperty | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy,
                 null, null, null);
-            // ReSharper disable once PossibleNullReferenceException
+            // ReSharper disable PossibleNullReferenceException
             var dict = TechEffectLibraryType
                 .GetMethod(nameof(ParametersTemplateLibrary.GetInterfaceToTemplateMap))
                 .Invoke(libraryInstance, null) as IDictionary<Type, Type>;
+            // ReSharper restore PossibleNullReferenceException
 
             dict.Should().Contain(InterfaceType, TemplateType);
+        }
+
+        [Fact]
+        public void HasAttributeOfType_AttributeOfTypePresent_ReturnsTrue()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            ((bool) template.CallMethod(HasAttributeOfTypeMethodName, AttributeType.Damage)).Should().BeTrue();
+        }
+
+        [Fact]
+        public void HasAttributeOfType_AttributeOfTypeAbsent_ReturnsFalse()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            ((bool) template.CallMethod(HasAttributeOfTypeMethodName, AttributeType.DroneCount)).Should().BeFalse();
+        }
+
+        [Fact]
+        public void ModifyAttribute_ThrowsException()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            template
+                .Invoking(obj => obj.CallMethod(
+                    ModifyAttributeMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1)))
+                .Should()
+                .Throw<Exception>() // indirection because of reflection call
+                .WithInnerException<InvalidOperationException>();
         }
     }
 }

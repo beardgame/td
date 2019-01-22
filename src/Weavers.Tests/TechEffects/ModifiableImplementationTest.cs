@@ -8,8 +8,6 @@ namespace Weavers.Tests.TechEffects
 {
     public sealed class ModifiableImplementationTest : ImplementationTestBase
     {
-        private const string modifyAttributeMethodName = "ModifyAttribute";
-        
         protected override Type ImplementationType => ModifiableType;
         
         [Fact]
@@ -43,20 +41,36 @@ namespace Weavers.Tests.TechEffects
                 .GetPropertyValue<int>(nameof(WrappedInt.Val))
                 .Should().Be(18);
         }
+
+        [Fact]
+        public void HasAttributeOfType_AttributeOfTypePresent_ReturnsTrue()
+        {
+            var modifiable = ConstructModifiable(ConstructTemplate(42, null, null));
+
+            ((bool) modifiable.CallMethod(HasAttributeOfTypeMethodName, AttributeType.Damage)).Should().BeTrue();
+        }
+
+        [Fact]
+        public void HasAttributeOfType_AttributeOfTypeAbsent_ReturnsFalse()
+        {
+            var modifiable = ConstructModifiable(ConstructTemplate(42, null, null));
+
+            ((bool) modifiable.CallMethod(HasAttributeOfTypeMethodName, AttributeType.DroneCount)).Should().BeFalse();
+        }
         
         [Fact]
-        public void ModifiesValues()
+        public void ModifyAttribute_ModifiesSimpleValue()
         {
             var modifiable = ConstructModifiable(ConstructTemplate(0, 10, null));
 
             modifiable.CallMethod(
-                modifyAttributeMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1));
+                ModifyAttributeMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1));
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(20);
         }
         
         [Fact]
-        public void ModifiesWrappedValues()
+        public void ModifyAttribute_ModifiesWrappedValues()
         {
             var modifiable = ConstructModifiable(
                 ConstructTemplate(
@@ -66,12 +80,25 @@ namespace Weavers.Tests.TechEffects
                     WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { 18 })));
             
             modifiable.CallMethod(
-                modifyAttributeMethodName, AttributeType.Cooldown, Modification.AddFractionOfBase(1));
+                ModifyAttributeMethodName, AttributeType.Cooldown, Modification.AddFractionOfBase(1));
             
             modifiable
                 .GetPropertyValue<object>(nameof(IDummyParametersTemplate.WrappedIntProperty))
                 .GetPropertyValue<int>(nameof(WrappedInt.Val))
                 .Should().Be(36);
+        }
+        
+        [Fact]
+        public void ModifyAttribute_IgnoresMissingAttributeType()
+        {
+            var modifiable = ConstructModifiable(ConstructTemplate(0, 10, null));
+            
+            modifiable
+                .Invoking(obj => obj.CallMethod(
+                    ModifyAttributeMethodName, AttributeType.DroneCount, Modification.AddFractionOfBase(1)))
+                .Should()
+                .NotThrow();
+            modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
     }
 }

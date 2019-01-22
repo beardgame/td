@@ -17,6 +17,9 @@ namespace Weavers.Tests.TechEffects
         protected static readonly Type TechEffectLibraryType = GetAssemblyType(nameof(ParametersTemplateLibrary));
         protected static readonly Type WrappedIntType = GetAssemblyType(nameof(WrappedInt));
 
+        protected const string HasAttributeOfTypeMethodName = "HasAttributeOfType";
+        protected const string ModifyAttributeMethodName = "ModifyAttribute";
+
         protected static ConstructorInfo TemplateConstructorInfo
         {
             get
