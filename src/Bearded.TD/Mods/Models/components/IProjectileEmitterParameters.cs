@@ -5,7 +5,6 @@ namespace Bearded.TD.Mods.Models
 {
     interface IProjectileEmitterParameters : IParametersTemplate<IProjectileEmitterParameters>
     {
-        [Modifiable]
         ProjectileBlueprint Projectile { get; }
 
         [Modifiable(.15, Type = AttributeType.Cooldown)]

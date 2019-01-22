@@ -88,12 +88,12 @@ namespace Weavers.TechEffects
         {
             logger.LogInfo($"Weaving implementations for {interfaceToImplement}.");
 
-            var properties = interfaceToImplement.Properties
-                .Where(p => p.TryGetCustomAttribute(Constants.ModifiableAttribute, out _))
-                .ToList();
+            var properties = new List<PropertyDefinition>(interfaceToImplement.Properties).AsReadOnly();
 
-            var modifiableType = modifiableWeaver.WeaveImplementation(interfaceToImplement, properties);
-            var templateType = templateWeaver.WeaveImplementation(interfaceToImplement, properties, modifiableType);
+            var modifiableType = modifiableWeaver.WeaveImplementation(
+                interfaceToImplement, properties);
+            var templateType = templateWeaver.WeaveImplementation(
+                interfaceToImplement, properties, modifiableType);
             registerInterfaceImplementation(interfaceToImplement, templateType);
         }
 

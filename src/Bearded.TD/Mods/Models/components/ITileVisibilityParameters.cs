@@ -5,6 +5,6 @@ namespace Bearded.TD.Mods.Models
 {
     interface ITileVisibilityParameters : IParametersTemplate<ITileVisibilityParameters>
     {
-        [Modifiable] Unit Range { get; }
+        Unit Range { get; }
     }
 }

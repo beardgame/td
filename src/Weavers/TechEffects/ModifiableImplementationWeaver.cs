@@ -5,6 +5,7 @@ using Bearded.TD.Shared.TechEffects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Mono.Collections.Generic;
 using TypeSystem = Fody.TypeSystem;
 
 namespace Weavers.TechEffects

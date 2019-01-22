@@ -6,7 +6,7 @@ namespace Bearded.TD.Mods.Models
 {
     interface ITurretParameters : IParametersTemplate<ITurretParameters>
     {
-        [Modifiable] IWeaponBlueprint Weapon { get; }
-        [Modifiable] Difference2 Offset { get; }
+        IWeaponBlueprint Weapon { get; }
+        Difference2 Offset { get; }
     }
 }
