@@ -2,6 +2,7 @@
 using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Upgrades;
 using Bearded.UI.Navigation;
 
@@ -22,6 +23,15 @@ namespace Bearded.TD.UI.Controls
         {
             Game = dependencies.Resolve<GameInstance>();
             Building = building;
+
+            Building.Deleting += Navigation.Exit;
+        }
+
+        public override void Terminate()
+        {
+            base.Terminate();
+            
+            Building.Deleting -= Navigation.Exit;
         }
 
         public void OnCloseClicked()
@@ -31,7 +41,15 @@ namespace Bearded.TD.UI.Controls
 
         public void OnDeleteBuildingClicked()
         {
-
+            switch (Building)
+            {
+                case BuildingPlaceholder placeholder:
+                    Game.RequestDispatcher.Dispatch(CancelBuildingConstruction.Request(placeholder));
+                    break;
+                case Building b:
+                    // TODO: implement
+                    break;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Workers
@@ -40,6 +41,7 @@ namespace Bearded.TD.Game.Workers
             {
                 manager.RegisterIdleWorker(worker);
                 // TODO: move back to base
+                setTaskTiles(worker.CurrentTile.Yield());
             }
         }
 
