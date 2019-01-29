@@ -2,11 +2,11 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using OpenTK.Graphics.OpenGL;
-using static Bearded.TD.Mods.Models.SpriteDrawGroup;
+using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
 {

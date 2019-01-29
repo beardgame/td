@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Workers;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

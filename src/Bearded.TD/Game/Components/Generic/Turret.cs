@@ -1,8 +1,8 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 

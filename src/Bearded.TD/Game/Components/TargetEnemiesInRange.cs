@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;

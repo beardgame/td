@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Bearded.TD.Mods;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Content;
+using Bearded.TD.Content.Models;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.Threading;
 

@@ -1,7 +1,7 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Mods.Models;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic

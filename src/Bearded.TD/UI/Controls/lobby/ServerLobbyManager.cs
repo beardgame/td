@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
-using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.MasterServer;
 using Bearded.Utilities;

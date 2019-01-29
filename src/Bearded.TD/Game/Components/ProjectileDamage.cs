@@ -1,6 +1,6 @@
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 

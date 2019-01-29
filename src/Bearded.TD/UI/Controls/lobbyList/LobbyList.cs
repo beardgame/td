@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
-using Bearded.TD.Mods;
 using Bearded.TD.Networking;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;

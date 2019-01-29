@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Content.Models;
 using OpenTK;
 
 namespace Bearded.TD.Rendering.Loading

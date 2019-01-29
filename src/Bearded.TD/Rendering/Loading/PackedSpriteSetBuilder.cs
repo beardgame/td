@@ -4,8 +4,8 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
-using Bearded.TD.Mods;
-using Bearded.TD.Mods.Models;
+using Bearded.TD.Content;
+using Bearded.TD.Content.Models;
 using Bearded.Utilities.Threading;
 
 namespace Bearded.TD.Rendering.Loading

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 

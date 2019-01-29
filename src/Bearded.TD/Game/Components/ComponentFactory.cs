@@ -1,7 +1,7 @@
 ﻿using System;
+using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Mods.Serialization.Models;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Components

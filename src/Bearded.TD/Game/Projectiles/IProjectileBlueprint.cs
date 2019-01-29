@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Mods.Models;
 
 namespace Bearded.TD.Game.Projectiles
 {

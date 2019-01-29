@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
-using Bearded.TD.Mods.Models;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;

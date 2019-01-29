@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using amulware.Graphics;
+using Bearded.TD.Content;
 using Bearded.TD.Meta;
-using Bearded.TD.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
 using Bearded.TD.UI;
