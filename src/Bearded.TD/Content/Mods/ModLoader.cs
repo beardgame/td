@@ -51,10 +51,10 @@ namespace Bearded.TD.Content.Mods
 
             public async Task<Mod> Load()
             {
-                return await Task.Run(load);
+                return await Task.Run(() => load());
             }
 
-            private async Task<Mod> load()
+            private Mod load()
             {
                 var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
 

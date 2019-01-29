@@ -12,8 +12,7 @@ namespace Bearded.TD.Game.World
     {
         public string Id { get; }
 
-        [Obsolete]
-        public static FootprintGroup Single { get; } = new FootprintGroup("single0", Footprint.Single);
+        public static FootprintGroup Single { get; } = new FootprintGroup(null, Footprint.Single);
         
         public ReadOnlyCollection<Footprint> Footprints { get; }
 
