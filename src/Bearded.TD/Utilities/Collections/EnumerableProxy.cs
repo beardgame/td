@@ -26,7 +26,7 @@ namespace Bearded.TD.Utilities.Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return list.GetEnumerator();
         }
 
     }

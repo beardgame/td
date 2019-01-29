@@ -40,7 +40,6 @@ namespace Bearded.TD.Game.Workers
             public override void Start()
             {
                 manager.RegisterIdleWorker(worker);
-                // TODO: move back to base
                 setTaskTiles(worker.CurrentTile.Yield());
             }
         }
