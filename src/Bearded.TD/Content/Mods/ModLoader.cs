@@ -135,8 +135,8 @@ namespace Bearded.TD.Content.Mods
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
-                foreach (var entry in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
-                    serializer.Converters.Add(new TechEffectTemplateConverter(entry.Key, entry.Value));
+                foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
+                    serializer.Converters.Add(new TechEffectTemplateConverter(key, value));
             }
 
             private void configureSpriteSerializerDependency(

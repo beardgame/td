@@ -85,9 +85,9 @@ namespace Bearded.TD
             
             var shortcuts = new ShortcutManager();
             eventManager = new EventManager(rootControl, inputManager, shortcuts);
-            var uiFactories = UILibrary.CreateFactories(renderContext);
+            var (models, views) = UILibrary.CreateFactories(renderContext);
             var navigationController =
-                new NavigationController(rootControl, dependencyResolver, uiFactories.models, uiFactories.views);
+                new NavigationController(rootControl, dependencyResolver, models, views);
             navigationController.Push<MainMenu>();
             var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
             navigationController.Push<VersionOverlay>(a => a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));

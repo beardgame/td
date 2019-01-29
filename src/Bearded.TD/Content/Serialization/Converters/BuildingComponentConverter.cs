@@ -23,11 +23,11 @@ namespace Bearded.TD.Content.Serialization.Converters
 
         public BuildingComponentConverter(Type genericComponentType, IDictionary<string, Type> componentParameterTypes)
         {
-            Type GenericComponent(Type parameter)
+            Type genericComponent(Type parameter)
                 => genericComponentType.MakeGenericType(parameter);
 
             componentTypes = componentParameterTypes
-                .ToDictionary(t => t.Key, t => GenericComponent(t.Value));
+                .ToDictionary(t => t.Key, t => genericComponent(t.Value));
         }
 
         protected override TComponentInterface ReadJson(JsonReader reader, JsonSerializer serializer)

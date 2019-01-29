@@ -60,7 +60,6 @@ namespace Bearded.TD.Meta
         {
             public bool Deferred = false;
             public int Pathfinding = 0;
-            public int InfoScreen = 0;
             public bool InvulnerableBuildings = false;
             public double GameSpeed = 1;
             public bool RenderUIFallBack = false;

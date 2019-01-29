@@ -69,15 +69,15 @@ namespace Bearded.TD.UI.Controls
             var dependencies = new DependencyResolver();
             dependencies.Add(Game);
 
-            var nodes = NavigationFactories.ForBoth()
+            var (models, views) = NavigationFactories.ForBoth()
                 .Add<BuildingStatusUI, IPlacedBuilding>(m => new BuildingStatusUIControl(m))
                 .ToDictionaries();
 
             entityStatusNavigation = new NavigationController(
                 controlParent,
                 dependencies,
-                nodes.models,
-                nodes.views);
+                models,
+                views);
             entityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
         }
 
