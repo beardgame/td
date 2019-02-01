@@ -1,4 +1,6 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
+using Bearded.TD.Game.Components;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Units
@@ -12,5 +14,7 @@ namespace Bearded.TD.Game.Units
         Speed Speed { get; }
         float Value { get; }
         Color Color { get; }
+        
+        IEnumerable<IComponent<EnemyUnit>> GetComponents();
     }
 }

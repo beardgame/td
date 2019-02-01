@@ -1,4 +1,7 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Units;
 using Bearded.Utilities.SpaceTime;
 
@@ -14,6 +17,11 @@ namespace Bearded.TD.Content.Models
         public Speed Speed { get; }
         public float Value { get; }
         public Color Color { get; }
+        
+        private readonly IReadOnlyList<IComponentFactory<EnemyUnit>> componentFactories;
+        
+        public IEnumerable<IComponent<EnemyUnit>> GetComponents()
+            => componentFactories.Select(f => f.Create());
 
         public UnitBlueprint(
             string id,
@@ -23,7 +31,8 @@ namespace Bearded.TD.Content.Models
             TimeSpan timeBetweenAttacks,
             Speed speed,
             float value,
-            Color color)
+            Color color,
+            IEnumerable<IComponentFactory<EnemyUnit>> componentFactories)
         {
             Id = id;
             Name = name;
@@ -33,6 +42,9 @@ namespace Bearded.TD.Content.Models
             Speed = speed;
             Value = value;
             Color = color;
+            
+            this.componentFactories = (componentFactories?.ToList() ?? new List<IComponentFactory<EnemyUnit>>())
+                .AsReadOnly();
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics;
+using Bearded.TD.Game.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -16,10 +19,20 @@ namespace Bearded.TD.Content.Serialization.Models
         public Speed Speed { get; set; }
         public float Value { get; set; }
         public Color Color { get; set; }
+        public List<IComponent> Components { get; set; }
 
         public Content.Models.UnitBlueprint ToGameModel(Void _)
         {
-            return new Content.Models.UnitBlueprint(Id, Name, Health, Damage, TimeBetweenAttacks, Speed, Value, Color);
+            return new Content.Models.UnitBlueprint(
+                Id,
+                Name,
+                Health,
+                Damage,
+                TimeBetweenAttacks,
+                Speed,
+                Value,
+                Color,
+                Components?.Select(ComponentFactories.CreateComponentFactory<EnemyUnit>));
         }
     }
 }

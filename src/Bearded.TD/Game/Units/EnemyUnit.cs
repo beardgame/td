@@ -2,6 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Synchronization;
@@ -18,6 +19,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Units
 {
+    [ComponentOwner]
     class EnemyUnit : GameObject, IIdable<EnemyUnit>, IPositionable, ISyncable<EnemyUnitState>, ITileWalkerOwner
     {
         public Id<EnemyUnit> Id { get; }
@@ -26,6 +28,8 @@ namespace Bearded.TD.Game.Units
         private readonly Tile startTile;
         private TileWalker tileWalker;
         private PassabilityLayer passabilityLayer;
+        
+        private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -44,6 +48,8 @@ namespace Bearded.TD.Game.Units
             properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
             health = blueprint.Health;
+            
+            components.Add(this, blueprint.GetComponents());
         }
 
         protected override void OnAdded()
@@ -76,6 +82,7 @@ namespace Bearded.TD.Game.Units
             }
             tileWalker.Update(elapsedTime, properties.Speed);
             tryDealDamage();
+            components.Update(elapsedTime);
         }
 
         private void updateStatusEffects(TimeSpan elapsedTime)
@@ -134,6 +141,8 @@ namespace Bearded.TD.Game.Units
                 1.5f,
                 blueprint.Color
                 );
+            
+            components.Draw(geometries);
         }
 
         public Direction GetNextDirection()
