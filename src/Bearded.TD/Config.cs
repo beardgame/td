@@ -2,7 +2,7 @@
 {
     static class Config
     {
-        public const string BaseVersionString = "0.2";
+        public const string BaseVersionString = "0.3";
 
 #if DEBUG
         private const string versionSuffix = "-dev";
