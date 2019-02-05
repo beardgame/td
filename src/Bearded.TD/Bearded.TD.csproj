@@ -29,7 +29,7 @@
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.195-dev" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.200-dev" />
     <PackageReference Include="Fody" Version="3.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -38,7 +38,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="OpenTK" Version="2.0.0" targetFramework="net45" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
