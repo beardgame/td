@@ -12,7 +12,7 @@
     <OutputPath>../../bin/Bearded.UI/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.131-develop" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.195-dev" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 </Project>
