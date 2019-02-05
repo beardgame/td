@@ -132,6 +132,7 @@ namespace Bearded.TD.Content.Mods
                 serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => v.U()));
                 serializer.Converters.Add(new SpaceTime1Converter<Speed>(v => v.UnitsPerSecond()));
                 serializer.Converters.Add(new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()));
+                serializer.Converters.Add(new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()));
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
