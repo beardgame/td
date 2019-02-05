@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Debug;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
@@ -15,6 +16,7 @@ namespace Bearded.TD.Game
         {
             this.game = game;
             this.networkInterface = networkInterface;
+            DebugGameManager.Instance.RegisterGame(game);
         }
 
         public void HandleInput(UpdateEventArgs args, InputState inputState)
@@ -45,6 +47,7 @@ namespace Bearded.TD.Game
         public void Shutdown()
         {
             networkInterface.Shutdown();
+            DebugGameManager.Instance.UnregisterGame();
         }
     }
 }
