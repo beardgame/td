@@ -10,5 +10,6 @@
         Health,
         ResourceIncome,
         Range,
+        FireRate
     }
 }

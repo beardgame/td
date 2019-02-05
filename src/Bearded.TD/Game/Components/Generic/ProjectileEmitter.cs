@@ -35,11 +35,11 @@ namespace Bearded.TD.Game.Components.Generic
 
                 if (!wasShootingLastFrame)
                 {
-                    nextPossibleShootTime = currentTime + Parameters.ShootInterval;
+                    nextPossibleShootTime = currentTime + 1 / Parameters.FireRate;
                     break;
                 }
 
-                nextPossibleShootTime += Parameters.ShootInterval;
+                nextPossibleShootTime += 1 / Parameters.FireRate;
             }
             wasShootingLastFrame = true;
         }
