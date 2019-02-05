@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Bearded.UI</RootNamespace>
     <AssemblyName>Bearded.TD.UI</AssemblyName>
@@ -12,7 +12,8 @@
     <OutputPath>../../bin/Bearded.UI/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.195-dev" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.200-dev" />
+    <PackageReference Include="OpenTK" Version="2.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 </Project>
