@@ -7,8 +7,8 @@ namespace Bearded.TD.Content.Models
     {
         ProjectileBlueprint Projectile { get; }
 
-        [Modifiable(.15, Type = AttributeType.Cooldown)]
-        TimeSpan ShootInterval { get; }
+        [Modifiable(6.6, Type = AttributeType.FireRate)]
+        Frequency FireRate { get; }
 
         [Modifiable(10.0)]
         Speed MuzzleVelocity { get; }

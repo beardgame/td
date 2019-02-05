@@ -12,7 +12,7 @@
             "parameters" : {
                 "projectile" : "sniperProjectile",
                 "muzzleVelocity" : 50,
-                "shootInterval" : 1
+                "fireRate" : 1
             }
         }
     ]
