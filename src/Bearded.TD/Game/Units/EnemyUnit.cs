@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Units
         private PassabilityLayer passabilityLayer;
         
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
-        private readonly Health<EnemyUnit> health;
+        private Health<EnemyUnit> health;
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -61,9 +61,6 @@ namespace Bearded.TD.Game.Units
             properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
             
-            components.Add(this, blueprint.GetComponents());
-            health = components.Get<Health<EnemyUnit>>()
-                ?? throw new InvalidOperationException("All enemies must have a health component.");
         }
 
         protected override void OnAdded()
@@ -79,6 +76,10 @@ namespace Bearded.TD.Game.Units
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
             nextAttack = Game.Time + properties.TimeBetweenAttacks;
+            
+            components.Add(this, blueprint.GetComponents());
+            health = components.Get<Health<EnemyUnit>>()
+                ?? throw new InvalidOperationException("All enemies must have a health component.");
         }
 
         protected override void OnDelete()
