@@ -10,7 +10,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class DebugConsoleControl : CompositeControl
+    sealed class DebugConsoleControl : ViewportClippingLayerControl
     {
         private const int logHistoryLength = 100;
         private static readonly Dictionary<Logger.Severity, Color> colorBySeverity =
@@ -123,7 +123,5 @@ namespace Bearded.TD.UI.Controls
 
             return true;
         }
-
-        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
 }
