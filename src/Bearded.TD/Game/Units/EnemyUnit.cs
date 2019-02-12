@@ -118,8 +118,6 @@ namespace Bearded.TD.Game.Units
             propertiesDirty = false;
         }
 
-
-
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
