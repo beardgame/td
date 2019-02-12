@@ -1,10 +1,12 @@
 {
     "id" : "fast02",
     "name" : "Faster enemy",
-    "health" : 90,
     "damage" : 4,
     "timeBetweenAttacks" : 0.4,
     "speed" : 4,
     "value" : 7,
-    "color" : "CornflowerBlue"
+    "color" : "CornflowerBlue",
+    "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 90 } }
+    ]
 }

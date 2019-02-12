@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Synchronization;
@@ -16,6 +18,7 @@ using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
 {
@@ -23,6 +26,7 @@ namespace Bearded.TD.Game.Units
     class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
         IIdable<EnemyUnit>,
+        IMortal,
         IPositionable,
         ISyncable<EnemyUnitState>,
         ITileWalkerOwner
@@ -35,6 +39,7 @@ namespace Bearded.TD.Game.Units
         private PassabilityLayer passabilityLayer;
         
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
+        private readonly Health<EnemyUnit> health;
 
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -42,9 +47,12 @@ namespace Bearded.TD.Game.Units
 
         private bool propertiesDirty;
         private EnemyUnitProperties properties;
-        private int health;
         private Instant nextAttack;
+        private Faction lastDamageSource;
         private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
+
+        public event GenericEventHandler<int> Damaged;
+        public event GenericEventHandler<int> Healed;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
@@ -52,9 +60,10 @@ namespace Bearded.TD.Game.Units
             this.blueprint = blueprint;
             properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
-            health = blueprint.Health;
             
             components.Add(this, blueprint.GetComponents());
+            health = components.Get<Health<EnemyUnit>>()
+                ?? throw new InvalidOperationException("All enemies must have a health component.");
         }
 
         protected override void OnAdded()
@@ -135,10 +144,10 @@ namespace Bearded.TD.Game.Units
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = blueprint.Color;
-            var size = (Mathf.Atan(.005f * (blueprint.Health - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f;
+            var size = (Mathf.Atan(.005f * (health.MaxHealth - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f;
             geo.DrawCircle(Position.NumericValue, size, true, 6);
 
-            var p = (health / (float)blueprint.Health).Clamped(0, 1);
+            var p = (float) health.HealthPercentage;
             geo.Color = Color.DarkGray;
             geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
             geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
@@ -173,9 +182,13 @@ namespace Bearded.TD.Game.Units
 
         public void Damage(int damage, Building damageSource)
         {
-            health -= damage;
-            if (health <= 0)
-                this.Sync(KillUnit.Command, this, damageSource.Faction);
+            lastDamageSource = damageSource.Faction;
+            Damaged?.Invoke(damage);
+        }
+        
+        public void OnDeath()
+        {
+            this.Sync(KillUnit.Command, this, lastDamageSource);
         }
 
         public void Kill(Faction killingBlowFaction)
@@ -192,7 +205,7 @@ namespace Bearded.TD.Game.Units
                 Position.Y.NumericValue,
                 tileWalker.GoalTile.X,
                 tileWalker.GoalTile.Y,
-                health,
+                health.CurrentHealth,
                 properties.Damage,
                 properties.TimeBetweenAttacks.NumericValue,
                 properties.Speed.NumericValue);
@@ -204,7 +217,9 @@ namespace Bearded.TD.Game.Units
                 new Position2(state.X, state.Y),
                 new Tile(state.GoalTileX, state.GoalTileY));
             properties = EnemyUnitProperties.FromState(state);
-            health = state.Health;
+            
+            if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
+            if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
         }
     }
 }

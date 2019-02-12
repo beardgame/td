@@ -1,10 +1,12 @@
 {
     "id" : "standard02",
     "name" : "Standard enemy",
-    "health" : 140,
     "damage" : 12,
     "timeBetweenAttacks" : 1.5,
     "speed" : 2,
     "value" : 4,
-    "color" : "DarkRed"
+    "color" : "DarkRed",
+    "components" : [
+        { "id" : "health", "parameters" : { "maxHealth" : 140 } }
+    ]
 }

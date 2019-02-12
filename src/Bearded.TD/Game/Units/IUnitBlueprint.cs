@@ -8,7 +8,6 @@ namespace Bearded.TD.Game.Units
     interface IUnitBlueprint : IBlueprint
     {
         string Name { get; }
-        int Health { get; }
         int Damage { get; }
         TimeSpan TimeBetweenAttacks { get; }
         Speed Speed { get; }
