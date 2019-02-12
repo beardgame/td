@@ -193,8 +193,6 @@ namespace Bearded.TD.Game.Units
 
         public void Kill(Faction killingBlowFaction)
         {
-            // killingBlowFaction?.Resources.ProvideOneTimeResource(blueprint.Value);
-            // boom! <-- almost as good as particle explosions
             Delete();
         }
 
