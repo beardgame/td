@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Components
         public T Get<T>()
             where T : IComponent<TOwner>
         {
-            return (T) components.FirstOrDefault(c => c is T);
+            return components.OfType<T>().FirstOrDefault();
         }
 
         public void Update(TimeSpan elapsedTime)
