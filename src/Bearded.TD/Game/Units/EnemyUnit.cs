@@ -60,7 +60,6 @@ namespace Bearded.TD.Game.Units
             this.blueprint = blueprint;
             properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
-            
         }
 
         protected override void OnAdded()
