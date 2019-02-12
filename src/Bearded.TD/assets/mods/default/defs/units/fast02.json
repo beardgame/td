@@ -1,12 +1,11 @@
 {
     "id" : "fast02",
     "name" : "Faster enemy",
-    "damage" : 4,
-    "timeBetweenAttacks" : 0.4,
     "speed" : 4,
     "value" : 7,
     "color" : "CornflowerBlue",
     "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 90 } }
+        { "id" : "health", "parameters" : { "maxHealth" : 90 } },
+        { "id" : "damageBuildings", "parameters" : { "damage" : 4, "attackRate" : 2.5 } }
     ]
 }

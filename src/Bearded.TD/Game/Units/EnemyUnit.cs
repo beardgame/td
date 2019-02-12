@@ -44,10 +44,10 @@ namespace Bearded.TD.Game.Units
         public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
+        public bool IsMoving => tileWalker.IsMoving;
 
         private bool propertiesDirty;
         private EnemyUnitProperties properties;
-        private Instant nextAttack;
         private Faction lastDamageSource;
         private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
 
@@ -73,8 +73,6 @@ namespace Bearded.TD.Game.Units
             tileWalker = new TileWalker(this, Game.Level, startTile);
 
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
-
-            nextAttack = Game.Time + properties.TimeBetweenAttacks;
             
             components.Add(this, blueprint.GetComponents());
             health = components.Get<Health<EnemyUnit>>()
@@ -98,7 +96,6 @@ namespace Bearded.TD.Game.Units
                 refreshProperties();
             }
             tileWalker.Update(elapsedTime, properties.Speed);
-            tryDealDamage();
             components.Update(elapsedTime);
         }
 
@@ -121,24 +118,7 @@ namespace Bearded.TD.Game.Units
             propertiesDirty = false;
         }
 
-        private void tryDealDamage()
-        {
-            if (tileWalker.IsMoving) return;
 
-            while (nextAttack <= Game.Time)
-            {
-                var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-
-                if (!Game.BuildingLayer.TryGetMaterializedBuilding(
-                    CurrentTile.Neighbour(desiredDirection), out var target))
-                {
-                    return;
-                }
-                
-                target.Damage(properties.Damage);
-                nextAttack = Game.Time + properties.TimeBetweenAttacks;
-            }
-        }
 
         public override void Draw(GeometryManager geometries)
         {
@@ -204,8 +184,6 @@ namespace Bearded.TD.Game.Units
                 tileWalker.GoalTile.X,
                 tileWalker.GoalTile.Y,
                 health.CurrentHealth,
-                properties.Damage,
-                properties.TimeBetweenAttacks.NumericValue,
                 properties.Speed.NumericValue);
         }
 

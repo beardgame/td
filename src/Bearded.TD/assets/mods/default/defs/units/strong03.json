@@ -1,12 +1,11 @@
 {
     "id" : "strong03",
     "name" : "Strongest enemy",
-    "damage" : 50,
-    "timeBetweenAttacks" : 2,
     "speed" : 1.2,
     "value" : 15,
     "color" : "Yellow",
     "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 900 } }
+        { "id" : "health", "parameters" : { "maxHealth" : 900 } },
+        { "id" : "damageBuildings", "parameters" : { "damage" : 50, "attackRate" : 0.5 } }
     ]
 }

@@ -1,12 +1,11 @@
 {
     "id" : "standard01",
     "name" : "Standard enemy",
-    "damage" : 8,
-    "timeBetweenAttacks" : 2,
     "speed" : 2,
     "value" : 2,
     "color" : "DarkRed",
     "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 80 } }
+        { "id" : "health", "parameters" : { "maxHealth" : 80 } },
+        { "id" : "damageBuildings", "parameters" : { "damage" : 8, "attackRate" : 0.5 } }
     ]
 }
