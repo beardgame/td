@@ -4,7 +4,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components
+namespace Bearded.TD.Game.Components.Generic
 {
     [Component("damageOnHit")]
     class ProjectileDamage : Component<Projectile, IProjectileDamageComponentParameters>

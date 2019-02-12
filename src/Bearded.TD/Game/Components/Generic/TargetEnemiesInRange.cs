@@ -11,7 +11,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components
+namespace Bearded.TD.Game.Components.Generic
 {
     [Component("targetEnemiesInRange")]
     class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>
