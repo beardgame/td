@@ -32,7 +32,7 @@ namespace Bearded.TD.UI.Controls
             Add(new Label($"Owned by {buildingStatus.Building.Faction.Name ?? "nobody"}") {FontSize = 16}
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
-            if (building?.GetComponent<Health>() is Health health)
+            if (building?.GetComponent<Health<Building>>() is Health<Building> health)
             {
                 Add(new DynamicLabel(() => $"Hitpoints: {health.CurrentHealth} / {health.MaxHealth}")
                         {FontSize = 16}

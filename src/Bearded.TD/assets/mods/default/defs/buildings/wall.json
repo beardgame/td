@@ -4,6 +4,6 @@
     "footprint" : "single",
     "cost" : 15,
     "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 100 } }
+        { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } }
     ]
 }

@@ -8,14 +8,14 @@ namespace Bearded.TD.Game.Components.Generic
     [Component("sink")]
     class EnemySink : Component<Building>
     {
-        private Health healthComponent;
+        private Health<Building> healthComponent;
 
         protected override void Initialise()
         {
             foreach (var tile in Owner.OccupiedTiles)
                 Owner.Game.Navigator.AddSink(tile);
 
-            healthComponent = Owner.GetComponent<Health>();
+            healthComponent = Owner.GetComponent<Health<Building>>();
         }
 
         public override void Update(TimeSpan elapsedTime) { }

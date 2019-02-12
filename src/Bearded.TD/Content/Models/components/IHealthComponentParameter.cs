@@ -6,5 +6,7 @@ namespace Bearded.TD.Content.Models
     {
         [Modifiable(1, Type = AttributeType.Health)]
         int MaxHealth { get; }
+
+        int? InitialHealth { get; }
     }
 }

@@ -4,7 +4,7 @@
     "footprint" : "triangle",
     "cost" : 250,
     "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 200 } },
+        { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 200 } },
         {
             "id" : "incomeOverTime",
             "parameters" : { "incomePerSecond" : 2.5 }

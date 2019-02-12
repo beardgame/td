@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands
             {
                 var building = new Building(id, blueprint, faction, footprint);
                 game.State.Add(building);
-                if (building.GetComponent<Health>() is var health)
+                if (building.GetComponent<Health<Building>>() is var health)
                 {
                     building.SetBuildProgress(1, health.MaxHealth - 1);
                 }

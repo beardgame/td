@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Buildings
             this.building = building;
             building.Completing += onBuildingCompleting;
 
-            if (building.GetComponent<Health>() is var health)
+            if (building.GetComponent<Health<Building>>() is var health)
             {
                 maxHealth = health.MaxHealth;
             }

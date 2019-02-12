@@ -1,7 +1,5 @@
 using System;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
@@ -11,7 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("health")]
-    class Health : Component<Building, IHealthComponentParameter>
+    class Health<T> : Component<T, IHealthComponentParameter> where T : IMortal
     {
         public int CurrentHealth { get; private set; }
         public int MaxHealth { get; private set; }
@@ -19,14 +17,14 @@ namespace Bearded.TD.Game.Components.Generic
         
         public Health(IHealthComponentParameter parameters) : base(parameters)
         {
-            CurrentHealth = 1;
+            CurrentHealth = parameters.InitialHealth ?? parameters.MaxHealth;
             MaxHealth = parameters.MaxHealth;
         }
 
         protected override void Initialise()
         {
             Owner.Damaged += onDamaged;
-            Owner.HealthAdded += onHealthAdded;
+            Owner.Healed += onHealed;
         }
 
         private void onDamaged(int damage)
@@ -37,7 +35,7 @@ namespace Bearded.TD.Game.Components.Generic
             changeHealth(-damage);
         }
 
-        private void onHealthAdded(int health)
+        private void onHealed(int health)
         {
             changeHealth(health);
         }
@@ -51,7 +49,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             if (CurrentHealth <= 0)
             {
-                Owner.Sync(KillBuilding.Command);
+                Owner.OnDeath();
             }
         }
 

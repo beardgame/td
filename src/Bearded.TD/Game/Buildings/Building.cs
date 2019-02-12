@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using amulware.Graphics;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
@@ -15,7 +16,7 @@ using Bearded.Utilities.Collections;
 namespace Bearded.TD.Game.Buildings
 {
     [ComponentOwner]
-    class Building : PlacedBuildingBase<Building>, IIdable<Building>
+    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -36,7 +37,7 @@ namespace Bearded.TD.Game.Buildings
 
         public event VoidEventHandler Completing;
         public event GenericEventHandler<int> Damaged;
-        public event GenericEventHandler<int> HealthAdded;
+        public event GenericEventHandler<int> Healed;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
@@ -53,6 +54,11 @@ namespace Bearded.TD.Game.Buildings
         {
             Damaged?.Invoke(damage);
         }
+        
+        public void OnDeath()
+        {
+            this.Sync(KillBuilding.Command);
+        }
 
         protected override void OnAdded()
         {
@@ -67,7 +73,7 @@ namespace Bearded.TD.Game.Buildings
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             buildProgress = newBuildProgress;
-            HealthAdded?.Invoke(healthAdded);
+            Healed?.Invoke(healthAdded);
         }
 
         public void SetBuildCompleted()
