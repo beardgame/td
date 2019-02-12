@@ -12,7 +12,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IPositionable, IFactioned, ISelectable
+    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IFactioned, IPositionable, ISelectable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;

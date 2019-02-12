@@ -20,7 +20,12 @@ using static Bearded.TD.Constants.Game.World;
 namespace Bearded.TD.Game.Units
 {
     [ComponentOwner]
-    class EnemyUnit : GameObject, IIdable<EnemyUnit>, IPositionable, ISyncable<EnemyUnitState>, ITileWalkerOwner
+    class EnemyUnit : GameObject,
+        IComponentOwner<EnemyUnit>,
+        IIdable<EnemyUnit>,
+        IPositionable,
+        ISyncable<EnemyUnitState>,
+        ITileWalkerOwner
     {
         public Id<EnemyUnit> Id { get; }
         
@@ -72,6 +77,9 @@ namespace Bearded.TD.Game.Units
             base.OnDelete();
             Game.UnitLayer.RemoveEnemyFromTile(CurrentTile, this);
         }
+
+        public TComponent GetComponent<TComponent>() where TComponent : IComponent<EnemyUnit>
+            => components.Get<TComponent>();
 
         public override void Update(TimeSpan elapsedTime)
         {
