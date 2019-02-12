@@ -44,7 +44,6 @@ namespace Bearded.TD.Game.Units
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
         public bool IsMoving => tileWalker.IsMoving;
 
-        private EnemyUnitProperties properties;
         private Faction lastDamageSource;
 
         public event GenericEventHandler<int> Damaged;
@@ -54,7 +53,6 @@ namespace Bearded.TD.Game.Units
         {
             Id = id;
             this.blueprint = blueprint;
-            properties = EnemyUnitProperties.BuilderFromBlueprint(blueprint).Build();
             startTile = currentTile;
         }
 
@@ -86,7 +84,7 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            tileWalker.Update(elapsedTime, properties.Speed);
+            tileWalker.Update(elapsedTime, blueprint.Speed);
             components.Update(elapsedTime);
         }
 
@@ -147,8 +145,7 @@ namespace Bearded.TD.Game.Units
                 Position.Y.NumericValue,
                 tileWalker.GoalTile.X,
                 tileWalker.GoalTile.Y,
-                health.CurrentHealth,
-                properties.Speed.NumericValue);
+                health.CurrentHealth);
         }
 
         public void SyncFrom(EnemyUnitState state)
@@ -156,7 +153,6 @@ namespace Bearded.TD.Game.Units
             tileWalker.Teleport(
                 new Position2(state.X, state.Y),
                 new Tile(state.GoalTileX, state.GoalTileY));
-            properties = EnemyUnitProperties.FromState(state);
             
             if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
             if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
