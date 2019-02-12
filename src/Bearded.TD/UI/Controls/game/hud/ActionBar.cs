@@ -10,7 +10,6 @@ namespace Bearded.TD.UI.Controls
         {
             "wall",
             "triangle",
-            "slowEmitter",
             "mine",
             "beamTurret",
             "sniperTurret"

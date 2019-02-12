@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -8,7 +7,6 @@ using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Game.Units.StatusEffects;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -46,10 +44,8 @@ namespace Bearded.TD.Game.Units
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
         public bool IsMoving => tileWalker.IsMoving;
 
-        private bool propertiesDirty;
         private EnemyUnitProperties properties;
         private Faction lastDamageSource;
-        private readonly List<IStatusEffectSource> statusEffects = new List<IStatusEffectSource>();
 
         public event GenericEventHandler<int> Damaged;
         public event GenericEventHandler<int> Healed;
@@ -90,32 +86,8 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            updateStatusEffects(elapsedTime);
-            if (propertiesDirty)
-            {
-                refreshProperties();
-            }
             tileWalker.Update(elapsedTime, properties.Speed);
             components.Update(elapsedTime);
-        }
-
-        private void updateStatusEffects(TimeSpan elapsedTime)
-        {
-            statusEffects.ForEach(effect => effect.Update(elapsedTime));
-            var oldSize = statusEffects.Count;
-            statusEffects.RemoveAll(effect => effect.HasEnded);
-            if (statusEffects.Count < oldSize)
-            {
-                propertiesDirty = true;
-            }
-        }
-
-        private void refreshProperties()
-        {
-            var builder = EnemyUnitProperties.BuilderFromBlueprint(blueprint);
-            statusEffects.ForEach(effect => effect.Effect.Apply(builder));
-            properties = builder.Build();
-            propertiesDirty = false;
         }
 
         public override void Draw(GeometryManager geometries)
@@ -151,12 +123,6 @@ namespace Bearded.TD.Game.Units
 
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
-
-        public void ApplyStatusEffect(IStatusEffectSource statusEffect)
-        {
-            statusEffects.Add(statusEffect);
-            propertiesDirty = true;
-        }
 
         public void Damage(int damage, Building damageSource)
         {
