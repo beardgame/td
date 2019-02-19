@@ -3,11 +3,10 @@ using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
@@ -26,23 +25,21 @@ namespace Bearded.TD.Game.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        ISyncable<EnemyUnitState>,
-        ITileWalkerOwner
+        ISyncable<EnemyUnitState>
     {
         public Id<EnemyUnit> Id { get; }
         
         private readonly IUnitBlueprint blueprint;
         private readonly Tile startTile;
-        private TileWalker tileWalker;
-        private PassabilityLayer passabilityLayer;
+        private IEnemyMovement enemyMovement;
         
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
         private Health<EnemyUnit> health;
 
-        public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
-        public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
+        public Position2 Position => enemyMovement?.Position ?? Game.Level.GetPosition(CurrentTile);
+        public Tile CurrentTile => enemyMovement?.CurrentTile ?? startTile;
+        public bool IsMoving => enemyMovement?.IsMoving ?? false;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
-        public bool IsMoving => tileWalker.IsMoving;
 
         private Faction lastDamageSource;
 
@@ -64,13 +61,12 @@ namespace Bearded.TD.Game.Units
             Game.Meta.Synchronizer.RegisterSyncable(this);
             
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
-            tileWalker = new TileWalker(this, Game.Level, startTile);
-
-            passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
             
             components.Add(this, blueprint.GetComponents());
             health = components.Get<Health<EnemyUnit>>()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
+            enemyMovement = components.Get<IEnemyMovement>()
+                ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
         }
 
         protected override void OnDelete()
@@ -84,7 +80,6 @@ namespace Bearded.TD.Game.Units
 
         public override void Update(TimeSpan elapsedTime)
         {
-            tileWalker.Update(elapsedTime, blueprint.Speed);
             components.Update(elapsedTime);
         }
 
@@ -108,15 +103,6 @@ namespace Bearded.TD.Game.Units
                 );
             
             components.Draw(geometries);
-        }
-
-        public Direction GetNextDirection()
-        {
-            var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
-            return !isPassable
-                ? Direction.Unknown
-                : desiredDirection;
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
@@ -143,14 +129,14 @@ namespace Bearded.TD.Game.Units
             return new EnemyUnitState(
                 Position.X.NumericValue,
                 Position.Y.NumericValue,
-                tileWalker.GoalTile.X,
-                tileWalker.GoalTile.Y,
+                enemyMovement.GoalTile.X,
+                enemyMovement.GoalTile.Y,
                 health.CurrentHealth);
         }
 
         public void SyncFrom(EnemyUnitState state)
         {
-            tileWalker.Teleport(
+            enemyMovement.Teleport(
                 new Position2(state.X, state.Y),
                 new Tile(state.GoalTileX, state.GoalTileY));
             

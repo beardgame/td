@@ -1,11 +1,11 @@
 {
     "id" : "tank01",
     "name" : "A tank vroom vroom",
-    "speed" : 0.8,
     "value" : 12,
     "color" : "SandyBrown",
     "components" : [
         { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
-        { "id" : "damageBuildings", "parameters" : { "damage" : 50, "attackRate" : 0.5 } }
+        { "id" : "damageBuildings", "parameters" : { "damage" : 50, "attackRate" : 0.5 } },
+        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 0.8 } }
     ]
 }

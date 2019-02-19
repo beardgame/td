@@ -7,9 +7,10 @@
         Cooldown,
         Damage,
         DroneCount,
+        FireRate,
         Health,
+        MovementSpeed,
         ResourceIncome,
-        Range,
-        FireRate
+        Range
     }
 }

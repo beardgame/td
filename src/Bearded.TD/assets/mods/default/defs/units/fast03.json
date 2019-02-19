@@ -1,11 +1,11 @@
 {
     "id" : "fast03",
     "name" : "Fastest enemy",
-    "speed" : 5,
     "value" : 10,
     "color" : "CornflowerBlue",
     "components" : [
         { "id" : "health", "parameters" : { "maxHealth" : 140 } },
-        { "id" : "damageBuildings", "parameters" : { "damage" : 5, "attackRate" : 3.33 } }
+        { "id" : "damageBuildings", "parameters" : { "damage" : 5, "attackRate" : 3.33 } },
+        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 5 } }
     ]
 }
