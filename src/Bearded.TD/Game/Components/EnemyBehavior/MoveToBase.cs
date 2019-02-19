@@ -8,6 +8,8 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.EnemyBehavior
 {
+    // Note: right now this component does both the movement and determining the target. Ideally we want to split that,
+    // but right now there is no good way to communicate between components.
     [Component("moveToBase")]
     sealed class MoveToBase : Component<EnemyUnit, IMoveToBaseParameters>, IEnemyMovement, ITileWalkerOwner
     {
