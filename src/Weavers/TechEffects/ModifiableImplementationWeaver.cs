@@ -49,7 +49,7 @@ namespace Weavers.TechEffects
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
             addHasAttributeOfTypeMethod(modifiableType, genericParameterInterface);
-            addModifyAttributeMethod(modifiableType, genericParameterInterface);
+            addModificationMethods(modifiableType, genericParameterInterface);
             addStaticAttributeIsKnownMethod(modifiableType);
 
             return modifiableType;
@@ -484,11 +484,14 @@ namespace Weavers.TechEffects
             AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
 
-        private void addModifyAttributeMethod(TypeDefinition type, TypeReference interfaceType)
+        private void addModificationMethods(TypeDefinition type, TypeReference interfaceType)
         {
-            var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, Constants.ModifyAttributeMethod);
+            foreach (var methodName in Constants.ModificationMethods)
+            {
+                var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, methodName);
             
-            AddVirtualMethodImplementation(interfaceType, type, baseMethod);
+                AddVirtualMethodImplementation(interfaceType, type, baseMethod);
+            }
         }
 
         private void addStaticAttributeIsKnownMethod(TypeDefinition type)

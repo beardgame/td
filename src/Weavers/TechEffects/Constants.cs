@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities.SpaceTime;
 
 namespace Weavers.TechEffects
 {
@@ -11,10 +12,18 @@ namespace Weavers.TechEffects
         internal static readonly Type AttributeWithModificationsType = typeof(AttributeWithModifications<>);
 
         // Can't nameof these because they are members of a generic class with annoying limitations :(
-        internal static readonly string CreateModifiableInstanceMethod = "CreateModifiableInstance";
-        internal static readonly string HasAttributeOfTypeMethod = "HasAttributeOfType";
-        internal static readonly string ModifyAttributeMethod = "ModifyAttribute";
-        internal static readonly string AttributeIsKnownMethod = "AttributeIsKnown";
+        internal const string CreateModifiableInstanceMethod = "CreateModifiableInstance";
+        internal const string HasAttributeOfTypeMethod = "HasAttributeOfType";
+        internal const string AddModificationMethod = "AddModification";
+        internal const string AddModificationWithIdMethod = "AddModificationWithId";
+        internal const string UpdateModificationMethod = "UpdateModification";
+        internal const string RemoveModificationMethod = "RemoveModification";
+        internal const string AttributeIsKnownMethod = "AttributeIsKnown";
+
+        internal static readonly string[] ModificationMethods = new[]
+        {
+            AddModificationMethod, AddModificationWithIdMethod, UpdateModificationMethod, RemoveModificationMethod
+        };
 
         // Can't nameof this one due to protectedness :(
         internal static readonly string ModifiableBaseInitializeMethod = "InitializeAttributes";

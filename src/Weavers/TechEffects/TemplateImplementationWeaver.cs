@@ -41,7 +41,7 @@ namespace Weavers.TechEffects
 
             addCreateModifiableInstanceMethod(templateType, genericParameterInterface, modifiableType);
             addHasAttributeOfTypeMethod(templateType, genericParameterInterface, modifiableType);
-            addModifyAttributeMethod(templateType, genericParameterInterface);
+            addModificationMethods(templateType, genericParameterInterface);
 
             return templateType;
         }
@@ -192,13 +192,16 @@ namespace Weavers.TechEffects
             type.Methods.Add(method);
         }
 
-        private void addModifyAttributeMethod(TypeDefinition type, TypeReference genericParameterInterface)
+        private void addModificationMethods(TypeDefinition type, TypeReference genericParameterInterface)
         {
-            addInvalidOperationMethodOverride(
-                type,
-                genericParameterInterface,
-                Constants.ModifyAttributeMethod,
-                "Cannot modify attributes on immutable template.");
+            foreach (var methodName in Constants.ModificationMethods)
+            {
+                addInvalidOperationMethodOverride(
+                    type,
+                    genericParameterInterface,
+                    methodName,
+                    "Cannot modify attributes on immutable template.");
+            }
         }
 
         private void addInvalidOperationMethodOverride(

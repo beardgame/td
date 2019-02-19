@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Weavers.Tests.AssemblyToProcess;
@@ -104,13 +105,54 @@ namespace Weavers.Tests.TechEffects
         }
 
         [Fact]
-        public void ModifyAttribute_ThrowsException()
+        public void AddModification_ThrowsException()
         {
             var template = ConstructTemplate(42, null, null);
 
             template
                 .Invoking(obj => obj.CallMethod(
-                    ModifyAttributeMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1)))
+                    AddModificationMethodName, AttributeType.Damage, Modification.AddFractionOfBase(1)))
+                .Should()
+                .Throw<Exception>() // indirection because of reflection call
+                .WithInnerException<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void AddModificationWithId_ThrowsException()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            template
+                .Invoking(obj => obj.CallMethod(
+                    AddModificationWithIdMethodName, AttributeType.Damage,
+                    new ModificationWithId(new Id<Modification>(1), Modification.AddFractionOfBase(1))))
+                .Should()
+                .Throw<Exception>() // indirection because of reflection call
+                .WithInnerException<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void UpdateModification_ThrowsException()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            template
+                .Invoking(obj => obj.CallMethod(
+                    UpdateModificationMethodName, AttributeType.Damage, new Id<Modification>(1),
+                    Modification.AddFractionOfBase(1)))
+                .Should()
+                .Throw<Exception>() // indirection because of reflection call
+                .WithInnerException<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void RemoveModification_ThrowsException()
+        {
+            var template = ConstructTemplate(42, null, null);
+
+            template
+                .Invoking(obj => obj.CallMethod(
+                    RemoveModificationMethodName, AttributeType.Damage, new Id<Modification>(1)))
                 .Should()
                 .Throw<Exception>() // indirection because of reflection call
                 .WithInnerException<InvalidOperationException>();

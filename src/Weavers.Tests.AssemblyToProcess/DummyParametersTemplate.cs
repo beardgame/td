@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 using Newtonsoft.Json;
 
 namespace Weavers.Tests.AssemblyToProcess
@@ -33,15 +34,31 @@ namespace Weavers.Tests.AssemblyToProcess
         public bool HasAttributeOfType(AttributeType type) =>
             DummyParametersModifiableReference.AttributeIsKnown(type);
         
-        public bool ModifyAttribute(AttributeType type, Modification modification)
+        public bool AddModification(AttributeType type, Modification modification)
         {
-            throw new System.InvalidOperationException("Cannot modify attributes on immutable template.");
+            throw new InvalidOperationException("Cannot modify attributes on immutable template.");
+        }
+
+        public bool AddModificationWithId(AttributeType type, ModificationWithId modification)
+        {
+            throw new InvalidOperationException("Cannot modify attributes on immutable template.");
+        }
+
+        public bool UpdateModification(AttributeType type, Id<Modification> id, Modification modification)
+        {
+            throw new InvalidOperationException("Cannot modify attributes on immutable template.");
+        }
+
+        public bool RemoveModification(AttributeType type, Id<Modification> id)
+        {
+            throw new InvalidOperationException("Cannot modify attributes on immutable template.");
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(this);
     }
 
-    public sealed class DummyParametersModifiableReference : ModifiableBase<DummyParametersModifiableReference>, IDummyParametersTemplate
+    public sealed class DummyParametersModifiableReference
+        : ModifiableBase<DummyParametersModifiableReference>, IDummyParametersTemplate
     {
         private readonly IDummyParametersTemplate template;
 

@@ -18,7 +18,10 @@ namespace Weavers.Tests.TechEffects
         protected static readonly Type WrappedIntType = GetAssemblyType(nameof(WrappedInt));
 
         protected const string HasAttributeOfTypeMethodName = "HasAttributeOfType";
-        protected const string ModifyAttributeMethodName = "ModifyAttribute";
+        protected const string AddModificationMethodName = "AddModification";
+        protected const string AddModificationWithIdMethodName = "AddModificationWithId";
+        protected const string UpdateModificationMethodName = "UpdateModification";
+        protected const string RemoveModificationMethodName = "RemoveModification";
         protected const string CreateModifiableInstanceMethodName = "CreateModifiableInstance";
 
         protected static ConstructorInfo TemplateConstructorInfo

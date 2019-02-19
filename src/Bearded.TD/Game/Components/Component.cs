@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components
@@ -49,6 +50,9 @@ namespace Bearded.TD.Game.Components
 
         public bool HasAttributeOfType(AttributeType type) => false;
 
-        public bool ModifyAttribute(AttributeType type, Modification modification) => false;
+        public bool AddModification(AttributeType type, Modification modification) => false;
+        public bool AddModificationWithId(AttributeType type, ModificationWithId modification) => false;
+        public bool UpdateModification(AttributeType type, Id<Modification> id, Modification modification) => false;
+        public bool RemoveModification(AttributeType type, Id<Modification> id) => false;
     }
 }
