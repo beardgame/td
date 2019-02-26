@@ -12,7 +12,8 @@ namespace Bearded.TD.UI.Controls
             "triangle",
             "mine",
             "beamTurret",
-            "sniperTurret"
+            "sniperTurret",
+            "slowEmitter",
         };
 
         public event VoidEventHandler ActionsChanged;

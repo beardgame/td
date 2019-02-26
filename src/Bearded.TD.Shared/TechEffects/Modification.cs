@@ -3,14 +3,20 @@
     public struct Modification
     {
         public static Modification AddConstant(double constant)
-            => new Modification(ModificationType.Additive, constant);
+            => new Modification(ModificationType.AdditiveAbsolute, constant);
         public static Modification AddFractionOfBase(double fraction)
-            => new Modification(ModificationType.Multiplicative, fraction);
+            => new Modification(ModificationType.AdditiveRelative, fraction);
+        public static Modification MultiplyWith(double exponent)
+            => new Modification(ModificationType.Exponent, exponent);
 
         public enum ModificationType : byte
         {
-            Additive,
-            Multiplicative
+            // Additive
+            AdditiveAbsolute,
+            AdditiveRelative,
+            
+            // Exponential
+            Exponent,
         }
 
         public ModificationType Type { get; }

@@ -1,0 +1,17 @@
+{
+  "id" : "slowEmitter",
+  "name" : "Slow field emitter",
+  "footprint" : "triangle",
+  "cost" : 150,
+  "components" : [
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 250 } },
+    {
+      "id" : "statusEffectEmitter",
+      "parameters" : { 
+        "attributeAffected" : "MovementSpeed",
+        "modificationValue" : 0.8,
+        "range" : 3
+      }
+    }
+  ]
+}

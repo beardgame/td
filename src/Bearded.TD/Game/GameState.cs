@@ -36,12 +36,15 @@ namespace Bearded.TD.Game
         public MultipleSinkNavigationSystem Navigator { get; }
         public TechnologyManager Technology { get; }
         
+        // Should only be used to communicate between game objects internally.
+        public IdManager GamePlayIds { get; } = new IdManager();
+        
         public GeometryLayer GeometryLayer { get; }
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
         public PassabilityManager PassabilityManager { get; }
-
+        
         private bool isLoading = true;
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();

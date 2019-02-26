@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Shared.TechEffects
@@ -9,7 +8,8 @@ namespace Bearded.TD.Shared.TechEffects
     {
         private readonly double baseValue;
         private readonly Func<double, T> valueTransformer;
-        private readonly List<ModificationWithId> modifications = new List<ModificationWithId>();
+        private readonly List<ModificationWithId> additiveModifications = new List<ModificationWithId>();
+        private readonly List<ModificationWithId> exponentialModifications = new List<ModificationWithId>();
 
         private bool currentValueDirty;
         private T currentValue;
@@ -35,19 +35,43 @@ namespace Bearded.TD.Shared.TechEffects
 
         private void recalculateCurrentValue()
         {
-            currentValue = valueTransformer(
-                modifications.Select(m => m.Modification).Aggregate(baseValue, applyModification));
+            var val = baseValue;
+            
+            foreach (var mod in additiveModifications)
+            {
+                val = applyAdditiveModification(val, mod.Modification);
+            }
+            
+            foreach (var mod in exponentialModifications)
+            {
+                val = applyExponentialModification(val, mod.Modification);
+            }
+
+            currentValue = valueTransformer(val);
             currentValueDirty = false;
         }
 
-        private double applyModification(double val, Modification modification)
+        private double applyAdditiveModification(double val, Modification modification)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (modification.Type)
             {
-                case Modification.ModificationType.Additive:
+                case Modification.ModificationType.AdditiveAbsolute:
                     return val + modification.Value;
-                case Modification.ModificationType.Multiplicative:
+                case Modification.ModificationType.AdditiveRelative:
                     return val + modification.Value * baseValue;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
+        private double applyExponentialModification(double val, Modification modification)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (modification.Type)
+            {
+                case Modification.ModificationType.Exponent:
+                    return val * modification.Value;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -67,13 +91,28 @@ namespace Bearded.TD.Shared.TechEffects
         
         public void AddModificationWithId(ModificationWithId modification)
         {
-            modifications.Add(modification);
+            switch (modification.Modification.Type)
+            {
+                case Modification.ModificationType.AdditiveAbsolute:
+                case Modification.ModificationType.AdditiveRelative:
+                    additiveModifications.Add(modification);
+                    break;
+                
+                case Modification.ModificationType.Exponent:
+                    exponentialModifications.Add(modification);
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
             currentValueDirty = true;
         }
-        
+
         public bool RemoveModification(Id<Modification> id)
         {
-            var deleted = modifications.RemoveAll(m => m.Id == id) > 0;
+            var deleted = additiveModifications.RemoveAll(m => m.Id == id) > 0;
+            deleted |= exponentialModifications.RemoveAll(m => m.Id == id) > 0;
             currentValueDirty |= deleted;
             return deleted;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -7,7 +8,9 @@ using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
@@ -104,6 +107,12 @@ namespace Bearded.TD.Game.Units
             
             components.Draw(geometries);
         }
+
+        public bool CanApplyEffect(IUpgradeEffect effect) => effect.CanApplyTo(components);
+
+        public void ApplyEffect(IUpgradeEffect effect) => effect.ApplyTo(components);
+
+        public void RemoveEffect(IUpgradeEffect effect) => effect.RemoveFrom(components);
 
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);

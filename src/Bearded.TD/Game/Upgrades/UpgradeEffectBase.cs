@@ -19,5 +19,13 @@ namespace Bearded.TD.Game.Upgrades
         {
             throw new System.InvalidOperationException("Cannot apply upgrade effect to parameters template.");
         }
+
+        public virtual bool RemoveFrom<T>(ComponentCollection<T> subject)
+            => subject.Components.Aggregate(false, (b, c) => c.RemoveUpgradeEffect(this) || b);
+
+        public virtual bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>
+        {
+            throw new System.InvalidOperationException("Cannot remove upgrade effect from parameters template.");
+        }
     }
 }

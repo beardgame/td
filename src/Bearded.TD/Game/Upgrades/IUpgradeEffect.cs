@@ -10,5 +10,8 @@ namespace Bearded.TD.Game.Upgrades
         
         void ApplyTo<T>(ComponentCollection<T> subject);
         void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
+
+        bool RemoveFrom<T>(ComponentCollection<T> subject);
+        bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
     }
 }
