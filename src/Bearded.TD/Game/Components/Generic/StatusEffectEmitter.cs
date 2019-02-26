@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Components.Generic
         private void removeModificationsFromUnitsOutOfRange()
         {
             var unitsOutOfRange = affectedUnits.Where(unit => !tilesInRange.Contains(unit.CurrentTile));
-            var upgradeEffect = new ParameterModifiableWithId(AttributeType.None, new ModificationWithId(modificationId, new Modification()));
+            var upgradeEffect = createUpgradeEffect();
             
             foreach (var unit in unitsOutOfRange)
             {

@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Upgrades
         }
 
         public virtual bool RemoveFrom<T>(ComponentCollection<T> subject)
-            => subject.Components.Aggregate(false, (b, c) => b || c.RemoveUpgradeEffect(this));
+            => subject.Components.Aggregate(false, (b, c) => c.RemoveUpgradeEffect(this) || b);
 
         public virtual bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>
         {
