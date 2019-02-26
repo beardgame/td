@@ -252,3 +252,5 @@ paket-files/
 tools/**
 Tools/**
 !tools/packages.config
+
+.DS_Store
