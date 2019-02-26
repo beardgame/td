@@ -7,6 +7,7 @@
         Cooldown,
         Damage,
         DroneCount,
+        EffectStrength,
         FireRate,
         Health,
         MovementSpeed,

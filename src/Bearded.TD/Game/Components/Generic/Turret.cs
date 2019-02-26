@@ -52,5 +52,13 @@ namespace Bearded.TD.Game.Components.Generic
             base.ApplyUpgradeEffect(effect);
             weapon.ApplyUpgradeEffect(effect);
         }
+
+        public override bool RemoveUpgradeEffect(IUpgradeEffect effect)
+        {
+            var removed = false;
+            removed |= base.RemoveUpgradeEffect(effect);
+            removed |= weapon.RemoveUpgradeEffect(effect);
+            return removed;
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace Bearded.TD.Game.Components
 
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);
         void ApplyUpgradeEffect(IUpgradeEffect effect);
+        bool RemoveUpgradeEffect(IUpgradeEffect effect);
     }
 }

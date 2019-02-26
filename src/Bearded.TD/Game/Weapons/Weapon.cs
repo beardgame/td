@@ -32,15 +32,11 @@ namespace Bearded.TD.Game.Weapons
             components.Add(this, blueprint.GetComponents());
         }
 
-        public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
-        {
-            return upgradeEffect.CanApplyTo(components);
-        }
+        public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(components);
 
-        public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect)
-        {
-            upgradeEffect.ApplyTo(components);
-        }
+        public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.ApplyTo(components);
+
+        public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(components);
 
         public void ShootIn(Direction2 direction)
         {
