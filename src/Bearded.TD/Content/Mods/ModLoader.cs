@@ -24,6 +24,7 @@ using FootprintGroup = Bearded.TD.Game.World.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Content.Serialization.Models.FootprintGroup;
 using ProjectileBlueprintJson = Bearded.TD.Content.Serialization.Models.ProjectileBlueprint;
 using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
+using Shader = Bearded.TD.Content.Models.Shader;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
 using WeaponBlueprintJson = Bearded.TD.Content.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
@@ -59,6 +60,8 @@ namespace Bearded.TD.Content.Mods
                 var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
 
                 configureSerializer();
+                
+                var shaders = loadShaders();
 
                 var sprites = loadSprites();
 
@@ -87,6 +90,14 @@ namespace Bearded.TD.Content.Mods
                     projectiles,
                     ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
                     tags.GetForCurrentMod());
+            }
+            
+            private ReadonlyBlueprintCollection<Shader> loadShaders()
+            {
+                var shaderJsonFiles = jsonFilesIn("gfx/shaders");
+                var loader = new ShaderLoader(context, meta, serializer);
+                var shaders = shaderJsonFiles.Select(loader.TryLoad).Where(s => s != null);
+                return new ReadonlyBlueprintCollection<Shader>(shaders);
             }
             
             private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
