@@ -17,6 +17,7 @@ namespace Bearded.TD.Game.Components.Generic
      * Open questions:
      * 1) Do we take into account tile visibility? (Does not right now)
      * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
+     * 3) How to apply effect strength upgrades?
      */
     
     [Component("statusEffectEmitter")]
