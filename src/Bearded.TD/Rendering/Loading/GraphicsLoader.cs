@@ -8,7 +8,7 @@ using Bearded.Utilities.Threading;
 
 namespace Bearded.TD.Rendering.Loading
 {
-    partial class GraphicsLoader : IGraphicsLoader
+    class GraphicsLoader : IGraphicsLoader
     {
         private readonly RenderContext context;
         private readonly IActionQueue glActions;
