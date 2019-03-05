@@ -1,4 +1,3 @@
-using Bearded.TD.Meta;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
@@ -33,15 +32,15 @@ namespace Bearded.TD.Game
             public Builder()
             {
                 // Initialize default values
-                Seed = UserSettings.Instance.Misc.MapGenSeed ?? StaticRandom.Int();
+                Seed = StaticRandom.Int();
                 LevelSize = Constants.Game.World.Radius;
                 WorkerDistributionMethod = WorkerDistributionMethod.OnePerPlayer;
             }
 
-            public Builder(IGameSettings template)
+            public Builder(IGameSettings template, bool includeRandomAttributes = false)
             {
                 // Copy values
-                Seed = template.Seed;
+                Seed = includeRandomAttributes ? template.Seed : StaticRandom.Int();
                 LevelSize = template.LevelSize;
                 WorkerDistributionMethod = template.WorkerDistributionMethod;
             }
@@ -51,23 +50,27 @@ namespace Bearded.TD.Game
 
         public class Serializer
         {
+            private int seed;
             private int levelSize;
             private byte workerDistributionMethod;
             
             public Serializer(IGameSettings gameSettings)
             {
+                seed = gameSettings.Seed;
                 levelSize = gameSettings.LevelSize;
                 workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
             }
 
             public void Serialize(INetBufferStream stream)
             {
+                stream.Serialize(ref seed);
                 stream.Serialize(ref levelSize);
                 stream.Serialize(ref workerDistributionMethod);
             }
 
             public Builder ToGameSettingsBuilder() => new Builder
             {
+                Seed = seed,
                 LevelSize = levelSize,
                 WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
             };

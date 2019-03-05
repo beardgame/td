@@ -36,7 +36,14 @@ namespace Bearded.TD.UI.Controls
             gameSettings = CanChangeGameSettings && UserSettings.Instance.LastGameSettings != null
                 ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
                 : new GameSettings.Builder();
-            if (CanChangeGameSettings) lobbyManager.UpdateGameSettings(gameSettings.Build());
+            if (CanChangeGameSettings)
+            {
+                if (UserSettings.Instance.Misc.MapGenSeed.HasValue)
+                {
+                    gameSettings.Seed = UserSettings.Instance.Misc.MapGenSeed.Value;
+                }
+                lobbyManager.UpdateGameSettings(gameSettings.Build());
+            }
             
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
@@ -91,7 +98,7 @@ namespace Bearded.TD.UI.Controls
             if (gameStatus != GameStatus.Loading) throw new Exception("Unexpected game status change.");
             if (CanChangeGameSettings)
             {
-                UserSettings.Instance.LastGameSettings = new GameSettings.Builder(gameSettings);
+                UserSettings.Instance.LastGameSettings = new GameSettings.Builder(gameSettings) {Seed = 0};
                 UserSettings.RaiseSettingsChanged();
                 UserSettings.Save(logger);
             }
@@ -105,7 +112,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onGameSettingsChanged(IGameSettings newGameSettings)
         {
-            gameSettings = new GameSettings.Builder(newGameSettings);
+            gameSettings = new GameSettings.Builder(newGameSettings, includeRandomAttributes: true);
             GameSettingsChanged?.Invoke();
         }
     }
