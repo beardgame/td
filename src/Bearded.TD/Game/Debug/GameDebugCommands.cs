@@ -11,6 +11,12 @@ namespace Bearded.TD.Game.Debug
 {
     static class GameDebugCommands
     {
+        [Command("game.seed")]
+        private static void seed(Logger logger, CommandParameters _) => run(logger, gameInstance =>
+        {
+            logger.Info?.Log(gameInstance.GameSettings.Seed);
+        });
+        
         [Command("game.killall")]
         private static void killAll(Logger logger, CommandParameters p) => run(logger, gameInstance =>
         {
