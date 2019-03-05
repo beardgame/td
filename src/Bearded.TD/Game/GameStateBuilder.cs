@@ -40,7 +40,7 @@ namespace Bearded.TD.Game
             var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
             yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
 
-            var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, UserSettings.Instance.Misc.MapGenSeed ?? StaticRandom.Int());
+            var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 
             var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
 
