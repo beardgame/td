@@ -9,6 +9,7 @@ using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
+using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -21,9 +22,13 @@ namespace Bearded.TD.UI.Controls
 
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
+
+        private bool isGameMenuOpen = false;
         
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
         public event VoidEventHandler EntityStatusClosed;
+        public event VoidEventHandler GameMenuOpened;
+        public event VoidEventHandler GameMenuClosed;
         public event VoidEventHandler GameOverTriggered;
 
         private NavigationController entityStatusNavigation;
@@ -54,8 +59,10 @@ namespace Bearded.TD.UI.Controls
 
         public override void Update(UpdateEventArgs args)
         {
-            var inputState = new InputState(new List<char>(), inputManager);
+            updateGameMenuVisibility();
             
+            var inputState = new InputState(new List<char>(), inputManager);
+
             runner.HandleInput(args, inputState);
             runner.Update(args);
 
@@ -104,6 +111,37 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(GameOverTriggered @event)
         {
             GameOverTriggered?.Invoke();
+        }
+        
+        private void updateGameMenuVisibility()
+        {
+            if (!inputManager.IsKeyHit(Key.Escape)) return;
+            
+            if (isGameMenuOpen)
+            {
+                closeGameMenu();
+            }
+            else
+            {
+                openGameMenu();
+            }
+        }
+
+        public void OnCloseGameMenuButtonClicked()
+        {
+            closeGameMenu();
+        }
+
+        private void openGameMenu()
+        {
+            GameMenuOpened?.Invoke();
+            isGameMenuOpen = true;
+        }
+
+        private void closeGameMenu()
+        {
+            isGameMenuOpen = false;
+            GameMenuClosed?.Invoke();
         }
         
         public void OnReturnToMainMenuButtonClicked()
