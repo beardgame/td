@@ -121,7 +121,7 @@ namespace Bearded.TD.UI.Controls
                 new[] {new ParameterModifiable(AttributeType.Range, Modification.AddFractionOfBase(.2))}));
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+50% fire rate", 100,
                 new[] {new ParameterModifiable(AttributeType.FireRate, Modification.AddFractionOfBase(.5))}));
-            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "x1.5 effect strength", 100,
+            addHardcodedUpgrade(id => new UpgradeBlueprint(id, "x1.5 potency", 100,
                 new[] {new ParameterModifiable(AttributeType.EffectStrength, Modification.MultiplyWith(1.5))}));
             
             return builder.ToImmutable();
