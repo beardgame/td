@@ -31,7 +31,7 @@ namespace Bearded.TD.Content.Mods
 
                 // don't load same key/friendly name twice, just assume it's already there (keep local hashset?)
                 // consider implementing IShaderReloader with a more lazy version that can load source on one thread and compile the shader on a different one
-                //   - or actually only fetch shader file the first time it's used? no that's no good, we want fast loading!
+                //   - or actually only fetch shader file the first time it's used? no that's no good, we want shaders compiled during loading!
                 var shaderProgram = new ShaderCompiler(meta, file.Directory, jsonModel.Id)
                     .Add(ShaderType.VertexShader, jsonModel.VertexShader)
                     .Add(ShaderType.FragmentShader, jsonModel.FragmentShader)
@@ -66,7 +66,11 @@ namespace Bearded.TD.Content.Mods
             public ShaderCompiler Add(ShaderType type, string path)
             {
                 shaders.Add(
-                    (Type: type, Filepath: path, FriendlyName: friendlyName(path))
+                    (
+                        Type: type,
+                        Filepath: Path.Combine(directory.ToString(), path),
+                        FriendlyName: friendlyName(path)
+                    )
                 );
 
                 return this;
