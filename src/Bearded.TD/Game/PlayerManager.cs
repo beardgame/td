@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
