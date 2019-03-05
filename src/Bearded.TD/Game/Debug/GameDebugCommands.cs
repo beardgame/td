@@ -16,6 +16,13 @@ namespace Bearded.TD.Game.Debug
         {
             logger.Info?.Log(gameInstance.GameSettings.Seed);
         });
+
+#if DEBUG
+        [Command("game.die")]
+        private static void die(Logger logger, CommandParameters _) => run(logger, gameInstance =>
+        {
+            gameInstance.RequestDispatcher.Dispatch(DebugGameOver.Request(gameInstance.State));
+        });
         
         [Command("game.killall")]
         private static void killAll(Logger logger, CommandParameters p) => run(logger, gameInstance =>
@@ -51,6 +58,7 @@ namespace Bearded.TD.Game.Debug
             
             gameInstance.RequestDispatcher.Dispatch(GrantResources.Request(faction, amount));
         });
+#endif
 
         private static void run(Logger logger, Action<GameInstance> command) =>
             DebugGameManager.Instance.RunCommandOrLog(logger, command);
