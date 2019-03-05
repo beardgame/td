@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components.utilities;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
@@ -17,7 +19,6 @@ namespace Bearded.TD.Game.Components.Generic
      * Open questions:
      * 1) Do we take into account tile visibility? (Does not right now)
      * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
-     * 3) How to apply effect strength upgrades?
      */
     
     [Component("statusEffectEmitter")]
@@ -26,10 +27,14 @@ namespace Bearded.TD.Game.Components.Generic
     {
         // TODO: allow this to affect other things than enemies as well
         private readonly HashSet<EnemyUnit> affectedUnits = new HashSet<EnemyUnit>();
+
+        private TileRangeDrawer tileRangeDrawer;
         
         private Id<Modification> modificationId;
         private UnitLayer unitLayer;
+        private Tile ownerTile;
         private Unit range;
+        private Building ownerAsBuilding;
         private ImmutableList<Tile> tilesInRange;
         
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
@@ -38,20 +43,34 @@ namespace Bearded.TD.Game.Components.Generic
         {
             modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
             unitLayer = Owner.Game.UnitLayer;
+            ownerTile = Owner.Game.Level.GetTile(Owner.Position);
             range = Parameters.Range;
+            ownerAsBuilding = Owner as Building;
             recalculateTilesInRange();
+
+            if (Owner is ISelectable selectable)
+            {
+                tileRangeDrawer = new TileRangeDrawer(Owner.Game, selectable, () => tilesInRange);
+            }
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
             ensureRangeUpToDate();
+
+            // Don't apply status effects for uncompleted buildings
+            // We probably should have a better pattern for this...
+            if (!(ownerAsBuilding?.IsCompleted ?? true)) return;
+            
             removeModificationsFromUnitsOutOfRange();
             addModificationsToNewUnitsInRange();
         }
 
         private void ensureRangeUpToDate()
         {
-            if (range == Parameters.Range) return;
+            var level = Owner.Game.Level;
+            
+            if (range == Parameters.Range && level.GetTile(Owner.Position) == ownerTile) return;
             range = Parameters.Range;
             recalculateTilesInRange();
         }
@@ -90,7 +109,10 @@ namespace Bearded.TD.Game.Components.Generic
             }
         }
 
-        public override void Draw(GeometryManager geometries) { }
+        public override void Draw(GeometryManager geometries)
+        {
+            tileRangeDrawer.Draw(geometries);
+        }
 
         private void recalculateTilesInRange()
         {

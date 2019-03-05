@@ -7,6 +7,8 @@
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 250 } },
     {
       "id" : "statusEffectEmitter",
+      "onPlaceholder" :  true,
+      "onGhost": true,
       "parameters" : { 
         "attributeAffected" : "MovementSpeed",
         "modificationValue" : 0.2,
