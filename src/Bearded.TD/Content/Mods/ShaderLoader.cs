@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using amulware.Graphics;
@@ -12,39 +11,24 @@ namespace Bearded.TD.Content.Mods
     {
         private readonly ModLoadingContext context;
         private readonly ModMetadata meta;
-        private readonly JsonSerializer serializer;
 
-        public ShaderLoader(ModLoadingContext context, ModMetadata meta, JsonSerializer serializer)
+        public ShaderLoader(ModLoadingContext context, ModMetadata meta)
         {
             this.context = context;
             this.meta = meta;
-            this.serializer = serializer;
         }
 
-        public Shader TryLoad(FileInfo file)
+        public Shader TryLoad(FileInfo file, Serialization.Models.Shader jsonModel)
         {
-            try
-            {
-                var text = file.OpenText();
-                var reader = new JsonTextReader(text);
-                var jsonModel = serializer.Deserialize<Serialization.Models.Shader>(reader);
+            // don't load same key/friendly name twice, just assume it's already there (keep local hashset?)
+            // consider implementing IShaderReloader with a more lazy version that can load source on one thread and compile the shader on a different one
+            //   - or actually only fetch shader file the first time it's used? no that's no good, we want shaders compiled during loading!
+            var shaderProgram = new ShaderCompiler(meta, file.Directory, jsonModel.Id)
+                .Add(ShaderType.VertexShader, jsonModel.VertexShader)
+                .Add(ShaderType.FragmentShader, jsonModel.FragmentShader)
+                .Compile(context);
 
-                // don't load same key/friendly name twice, just assume it's already there (keep local hashset?)
-                // consider implementing IShaderReloader with a more lazy version that can load source on one thread and compile the shader on a different one
-                //   - or actually only fetch shader file the first time it's used? no that's no good, we want shaders compiled during loading!
-                var shaderProgram = new ShaderCompiler(meta, file.Directory, jsonModel.Id)
-                    .Add(ShaderType.VertexShader, jsonModel.VertexShader)
-                    .Add(ShaderType.FragmentShader, jsonModel.FragmentShader)
-                    .Compile(context);
-
-                return new Shader(jsonModel.Id, shaderProgram);
-            }
-            catch (Exception e)
-            {
-                context.Logger.Error?.Log($"Error loading '{meta.Id}/gfx/shaders/../{file.Name}': {e.Message}");
-
-                return null;
-            }
+            return new Shader(jsonModel.Id, shaderProgram);
         }
         
         private class ShaderCompiler

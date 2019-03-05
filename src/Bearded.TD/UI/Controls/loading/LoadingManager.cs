@@ -22,6 +22,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
+using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -93,12 +94,13 @@ namespace Bearded.TD.UI.Controls
         private static Blueprints getHardcodedBlueprints()
         {
             return new Blueprints(
-                new ReadonlyBlueprintCollection<SpriteSet>(Enumerable.Empty<SpriteSet>()),
-                new ReadonlyBlueprintCollection<FootprintGroup>(Enumerable.Empty<FootprintGroup>()),
-                new ReadonlyBlueprintCollection<IBuildingBlueprint>(Enumerable.Empty<IBuildingBlueprint>()),
-                new ReadonlyBlueprintCollection<IUnitBlueprint>(Enumerable.Empty<IUnitBlueprint>()),
-                new ReadonlyBlueprintCollection<IWeaponBlueprint>(Enumerable.Empty<IWeaponBlueprint>()),
-                new ReadonlyBlueprintCollection<IProjectileBlueprint>(Enumerable.Empty<IProjectileBlueprint>()),
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
                 getHardcodedUpgrades());
         }
         
