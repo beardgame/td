@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Components.utilities;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
@@ -17,6 +18,7 @@ namespace Bearded.TD.Game.Components.Generic
     class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>
     {
         private PassabilityLayer passabilityLayer;
+        private TileRangeDrawer tileRangeDrawer;
     
         // mutable state
         private Instant endOfIdleTime;
@@ -35,6 +37,14 @@ namespace Bearded.TD.Game.Components.Generic
         protected override void Initialise()
         {
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
+            if (Owner.Owner is ISelectable owner)
+            {
+                tileRangeDrawer = new TileRangeDrawer(game, owner, () =>
+                {
+                    recalculateTilesInRange();
+                    return tilesInRange;
+                });
+            }
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -118,24 +128,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Draw(GeometryManager geometries)
         {
-            if (!(Owner.Owner is ISelectable owner))
-                return;
-
-            if (owner.SelectionState == SelectionState.Default)
-                return;
-
-            recalculateTilesInRange();
-
-            var geo = geometries.ConsoleBackground;
-
-            geo.Color = Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
-
-            var level = game.Level;
-
-            foreach (var tile in tilesInRange)
-            {
-                geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
-            }
+            tileRangeDrawer?.Draw(geometries);
         }
     }
 }
