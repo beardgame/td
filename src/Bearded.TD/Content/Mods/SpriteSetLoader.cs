@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Mods
 {

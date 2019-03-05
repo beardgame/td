@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using Bearded.TD.Content.Models;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Mods
 {
