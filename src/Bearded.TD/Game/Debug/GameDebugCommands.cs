@@ -1,9 +1,5 @@
 using System;
-using System.Linq;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Debug;
-using Bearded.TD.Game.Units;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
 
