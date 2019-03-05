@@ -1,16 +1,20 @@
-﻿using Bearded.TD.Content.Models;
+﻿using System.IO;
+using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    class SpriteSet : IConvertsTo<Content.Models.SpriteSet, PackedSpriteSet>
+    class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, SpriteSetLoader)>
     {
         public string Id { get; set; }
         public SpriteDrawGroup DrawGroup { get; set; } = SpriteDrawGroup.Unknown;
         public int DrawGroupOrderKey { get; set; }
 
-        public Content.Models.SpriteSet ToGameModel(PackedSpriteSet sprites)
+        public Content.Models.SpriteSet ToGameModel((FileInfo, SpriteSetLoader) resolvers)
         {
-            return new Content.Models.SpriteSet(Id, DrawGroup, DrawGroupOrderKey, sprites);
+            var (file, loader) = resolvers;
+
+            return loader.TryLoad(file, this);
         }
     }
 }

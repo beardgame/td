@@ -26,6 +26,7 @@ using Material = Bearded.TD.Content.Models.Material;
 using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
 using ProjectileBlueprintJson = Bearded.TD.Content.Serialization.Models.ProjectileBlueprint;
 using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
+using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using Shader = Bearded.TD.Content.Models.Shader;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
@@ -115,10 +116,8 @@ namespace Bearded.TD.Content.Mods
             
             private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
             {
-                var spriteSetFiles = jsonFilesIn("gfx/sprites");
-                var loader = new SpriteSetLoader(context, meta, serializer);
-                var spriteSets = spriteSetFiles.Select(loader.TryLoad).Where(s => s != null);
-                return new ReadonlyBlueprintCollection<SpriteSet>(spriteSets);
+                var loader = new SpriteSetLoader(context);
+                return loadBlueprintsDependingOnJsonFile<SpriteSet, SpriteSetJson, SpriteSetLoader>("gfx/sprites", loader);
             }
 
             private ReadonlyBlueprintCollection<IBuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
