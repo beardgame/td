@@ -39,5 +39,15 @@ namespace Bearded.TD.Game
 
         public T this[string id] => blueprintsById[id];
         public IEnumerable<T> All => blueprintsById.Values;
+        
+        public static implicit operator ReadonlyBlueprintCollection<T>(ReadonlyBlueprintCollection.EmptyReadonlyBlueprintCollection empty)
+            => new ReadonlyBlueprintCollection<T>(Enumerable.Empty<T>());
+    }
+
+    static class ReadonlyBlueprintCollection
+    {
+        public struct EmptyReadonlyBlueprintCollection { }
+        
+        public static EmptyReadonlyBlueprintCollection Empty => new EmptyReadonlyBlueprintCollection();
     }
 }

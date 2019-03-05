@@ -22,9 +22,13 @@ using Newtonsoft.Json;
 using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBlueprint;
 using FootprintGroup = Bearded.TD.Game.World.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Content.Serialization.Models.FootprintGroup;
+using Material = Bearded.TD.Content.Models.Material;
+using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
 using ProjectileBlueprintJson = Bearded.TD.Content.Serialization.Models.ProjectileBlueprint;
 using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
+using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using Shader = Bearded.TD.Content.Models.Shader;
+using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
 using WeaponBlueprintJson = Bearded.TD.Content.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
@@ -62,6 +66,10 @@ namespace Bearded.TD.Content.Mods
                 configureSerializer();
                 
                 var shaders = loadShaders();
+                
+                configureSerializerDependency(shaders, m => m.Blueprints.Shaders);
+
+                //var materials = loadMaterials(shaders);
 
                 var sprites = loadSprites();
 
@@ -82,6 +90,7 @@ namespace Bearded.TD.Content.Mods
                 return new Mod(
                     meta.Id,
                     meta.Name,
+                    shaders,
                     sprites,
                     footprints,
                     buildings,
@@ -91,28 +100,26 @@ namespace Bearded.TD.Content.Mods
                     ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
                     tags.GetForCurrentMod());
             }
-            
+
+
             private ReadonlyBlueprintCollection<Shader> loadShaders()
             {
-                var shaderJsonFiles = jsonFilesIn("gfx/shaders");
-                var loader = new ShaderLoader(context, meta, serializer);
-                var shaders = shaderJsonFiles.Select(loader.TryLoad).Where(s => s != null);
-                return new ReadonlyBlueprintCollection<Shader>(shaders);
+                var loader = new ShaderLoader(context, meta);
+                return loadBlueprintsDependingOnJsonFile<Shader, ShaderJson, ShaderLoader>("gfx/shaders", loader);
+            }
+
+            private ReadonlyBlueprintCollection<Material> loadMaterials(ReadonlyBlueprintCollection<Shader> shaders)
+            {
+                var loader = new MaterialLoader(context, meta);
+                return loadBlueprintsDependingOnJsonFile<Material, MaterialJson, MaterialLoader>("gfx/materials", loader);
             }
             
             private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
             {
-                var spriteSetFiles = jsonFilesIn("gfx/sprites");
-                var spriteSets = loadSpriteSets(spriteSetFiles);
-                return new ReadonlyBlueprintCollection<SpriteSet>(spriteSets);
+                var loader = new SpriteSetLoader(context);
+                return loadBlueprintsDependingOnJsonFile<SpriteSet, SpriteSetJson, SpriteSetLoader>("gfx/sprites", loader);
             }
 
-            private IEnumerable<SpriteSet> loadSpriteSets(IEnumerable<FileInfo> spriteSetFiles)
-            {
-                var loader = new SpriteSetLoader(context, meta, serializer);
-                return spriteSetFiles.Select(loader.TryLoad).Where(s => s != null);
-            }
-            
             private ReadonlyBlueprintCollection<IBuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
                 => loadBlueprints<IBuildingBlueprint, BuildingBlueprintJson, (DependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
                 "defs/buildings",
@@ -167,6 +174,12 @@ namespace Bearded.TD.Content.Mods
                     meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
                 serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
             }
+            
+            private ReadonlyBlueprintCollection<TBlueprint> loadBlueprintsDependingOnJsonFile
+                <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers)
+                where TBlueprint : IBlueprint
+                where TJsonModel : IConvertsTo<TBlueprint, (FileInfo, TResolvers)>
+                => loadBlueprints<TBlueprint, TJsonModel, (FileInfo, TResolvers)>(path, file => (file, resolvers));
 
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
                 <TBlueprint, TJsonModel>(string path)
@@ -178,18 +191,24 @@ namespace Bearded.TD.Content.Mods
                 <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers)
                 where TBlueprint : IBlueprint
                 where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
+                => loadBlueprints<TBlueprint, TJsonModel, TResolvers>(path, _ => resolvers);
+            
+            private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
+                <TBlueprint, TJsonModel, TResolvers>(string path, Func<FileInfo, TResolvers> buildResolvers)
+                where TBlueprint : IBlueprint
+                where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
             {
                 var files = jsonFilesIn(path);
 
                 return new ReadonlyBlueprintCollection<TBlueprint>(
                     files.IsNullOrEmpty()
                         ? Enumerable.Empty<TBlueprint>()
-                        : loadBlueprintsFromFiles<TBlueprint, TJsonModel, TResolvers>(path, resolvers, files)
+                        : loadBlueprintsFromFiles<TBlueprint, TJsonModel, TResolvers>(path, files, buildResolvers)
                     );
             }
 
             private List<TBlueprint> loadBlueprintsFromFiles
-                <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers, FileInfo[] files)
+                <TBlueprint, TJsonModel, TResolvers>(string path, FileInfo[] files, Func<FileInfo, TResolvers> buildResolvers)
                 where TBlueprint : IBlueprint
                 where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
             {
@@ -202,7 +221,8 @@ namespace Bearded.TD.Content.Mods
                         var text = file.OpenText();
                         var reader = new JsonTextReader(text);
                         var jsonModel = serializer.Deserialize<TJsonModel>(reader);
-                        var gameModel = jsonModel.ToGameModel(resolvers);
+                        var finalResolvers = buildResolvers(file);
+                        var gameModel = jsonModel.ToGameModel(finalResolvers);
 
                         if (Path.GetFileNameWithoutExtension(file.FullName) != gameModel.Id)
                         {

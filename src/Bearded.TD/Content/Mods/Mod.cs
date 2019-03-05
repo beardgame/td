@@ -20,9 +20,9 @@ namespace Bearded.TD.Content.Mods
         public Blueprints Blueprints { get; }
         public IDictionary<string, UpgradeTag> Tags { get; }
         
-        public Mod(
-            string id,
+        public Mod(string id,
             string name,
+            ReadonlyBlueprintCollection<Shader> shaders,
             ReadonlyBlueprintCollection<SpriteSet> sprites,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
@@ -34,7 +34,7 @@ namespace Bearded.TD.Content.Mods
         {
             Id = id;
             Name = name;
-            Blueprints = new Blueprints(sprites, footprints, buildings, units, weapons, projectiles, upgrades);
+            Blueprints = new Blueprints(shaders, sprites, footprints, buildings, units, weapons, projectiles, upgrades);
             Tags = tags;
         }
     }
