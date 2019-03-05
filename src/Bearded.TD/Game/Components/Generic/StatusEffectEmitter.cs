@@ -69,9 +69,11 @@ namespace Bearded.TD.Game.Components.Generic
 
         private ParameterModifiableWithId createUpgradeEffect()
         {
+            var modificationFactor =
+                Parameters.IsReduction ? 1 - Parameters.ModificationValue : Parameters.ModificationValue;
             return new ParameterModifiableWithId(
                 Parameters.AttributeAffected,
-                new ModificationWithId(modificationId, Modification.MultiplyWith(Parameters.ModificationValue)));
+                new ModificationWithId(modificationId, Modification.MultiplyWith(modificationFactor)));
         }
 
         private void addModificationsToNewUnitsInRange()
