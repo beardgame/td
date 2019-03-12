@@ -7,7 +7,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.World;
-using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;

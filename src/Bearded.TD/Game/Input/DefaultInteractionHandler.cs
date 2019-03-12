@@ -35,7 +35,6 @@ namespace Bearded.TD.Game.Input
         {
             base.OnStart(cursor);
             Game.State.Meta.Events.Subscribe(this);
-
         }
 
         protected override void OnEnd(ICursorHandler cursor)

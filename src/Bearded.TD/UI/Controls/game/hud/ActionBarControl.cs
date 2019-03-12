@@ -5,7 +5,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class ActionBarControl : CompositeControl
     {
-        private const float buttonHeightPercentage = 1f / Constants.Game.UI.ActionBarSize;
+        private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
         
         private readonly ActionBar model;
         private readonly Button[] buttons;
@@ -16,7 +16,7 @@ namespace Bearded.TD.UI.Controls
 
             Add(new BackgroundBox());
 
-            buttons = new Button[Constants.Game.UI.ActionBarSize];
+            buttons = new Button[Constants.Game.GameUI.ActionBarSize];
             for (var i = 0; i < buttons.Length; i++)
             {
                 var i1 = i;

@@ -1,12 +1,12 @@
 ﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("incomeOverTime")]
-    class IncomeOverTime<T> : Component<T, IIncomeOverTimeParameters>
-        where T : IFactioned
+    class IncomeOverTime : Component<Building, IIncomeOverTimeParameters>
     {
         public IncomeOverTime(IIncomeOverTimeParameters parameters) : base(parameters) { }
 
@@ -14,6 +14,8 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Update(TimeSpan elapsedTime)
         {
+            if (!Owner.IsCompleted) return;
+
             Owner.Faction.Resources.ProvideResourcesOverTime(Parameters.IncomePerSecond);
         }
 

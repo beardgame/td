@@ -4,17 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Projectiles;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.Weapons;
-using Bearded.TD.Game.World;
 using Bearded.TD.Networking;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
@@ -22,7 +16,6 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
-using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.UI.Controls
 {

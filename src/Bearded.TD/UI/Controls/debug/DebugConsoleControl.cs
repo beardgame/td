@@ -3,7 +3,6 @@ using amulware.Graphics;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
-using Bearded.UI.Rendering;
 using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Input;
