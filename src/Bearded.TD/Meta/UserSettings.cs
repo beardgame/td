@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Game;
+using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Newtonsoft.Json;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -63,6 +64,14 @@ namespace Bearded.TD.Meta
             public bool InvulnerableBuildings = false;
             public double GameSpeed = 1;
             public bool RenderUIFallBack = false;
+            public LevelGenerator LevelGenerator = LevelGenerator.Default;
+        }
+
+        public enum LevelGenerator
+        {
+            Default,
+            Legacy,
+            Perlin
         }
     }
 }
