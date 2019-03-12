@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 
 namespace Bearded.TD.UI.Controls
@@ -38,14 +40,27 @@ namespace Bearded.TD.UI.Controls
 
         private void generateGame()
         {
-            var tilemapGenerator = new DefaultTilemapGenerator(Logger);
-            var builder = new GameStateBuilder(Game, tilemapGenerator);
+            var builder = new GameStateBuilder(Game, getTilemapGenerator());
 
             var commands = builder.Generate();
 
             foreach (var command in commands)
             {
                 Dispatcher.RunOnlyOnServer(() => command);
+            }
+        }
+
+        private ITilemapGenerator getTilemapGenerator()
+        {
+            switch (UserSettings.Instance.Debug.LevelGenerator)
+            {
+                case UserSettings.LevelGenerator.Default:
+                case UserSettings.LevelGenerator.Legacy:
+                    return new DefaultTilemapGenerator(Logger);
+                case UserSettings.LevelGenerator.Perlin:
+                    return new PerlinTilemapGenerator(Logger);
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }
