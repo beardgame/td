@@ -30,7 +30,7 @@ namespace Bearded.TD.Meta
                     var fieldName = field.Name.ToLower();
                     var fieldType = field.FieldType;
 
-                    if (fieldType.Assembly != thisAssembly)
+                    if (fieldType.Assembly != thisAssembly || fieldType.IsEnum)
                         return new[] {fieldName};
 
                     return getFieldsOf(fieldType).Select(suffix => $"{fieldName}.{suffix}");
