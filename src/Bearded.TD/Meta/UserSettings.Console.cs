@@ -74,9 +74,9 @@ namespace Bearded.TD.Meta
                 currentObject = field.GetValue(currentObject);
             }
 
-            var jsonLines = JsonConvert
-                .SerializeObject(currentObject, Formatting.Indented)
-                .Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries);
+            var writer = new StringWriter();
+            serializer.Serialize(writer, currentObject);
+            var jsonLines = writer.ToString().Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in jsonLines)
             {
