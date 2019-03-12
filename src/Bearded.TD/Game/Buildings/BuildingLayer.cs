@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Buildings
             ReservedForBuilding, // a building is scheduled to be built in this tile, but hasn't yet
             FinishedBuilding
         }
-        
+
         private readonly GameEvents events;
         private readonly Dictionary<Tile, IPlacedBuilding> buildingLookup = new Dictionary<Tile, IPlacedBuilding>();
 
