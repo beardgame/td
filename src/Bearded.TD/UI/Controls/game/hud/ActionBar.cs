@@ -18,8 +18,8 @@ namespace Bearded.TD.UI.Controls
 
         public event VoidEventHandler ActionsChanged;
 
-        private readonly InteractionHandler[] handlers = new InteractionHandler[Constants.Game.UI.ActionBarSize];
-        private readonly string[] labels = new string[Constants.Game.UI.ActionBarSize];
+        private readonly InteractionHandler[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
+        private readonly string[] labels = new string[Constants.Game.GameUI.ActionBarSize];
         private GameInstance game;
 
         public void Initialize(GameInstance game)
@@ -33,8 +33,8 @@ namespace Bearded.TD.UI.Controls
                 labels[i] = blueprint.Name;
             }
 
-            handlers[Constants.Game.UI.ActionBarSize - 1] = new MiningInteractionHandler(game, game.Me.Faction);
-            labels[Constants.Game.UI.ActionBarSize - 1] = "Mine tile";
+            handlers[Constants.Game.GameUI.ActionBarSize - 1] = new MiningInteractionHandler(game, game.Me.Faction);
+            labels[Constants.Game.GameUI.ActionBarSize - 1] = "Mine tile";
 
             ActionsChanged?.Invoke();
         }

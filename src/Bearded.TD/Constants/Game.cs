@@ -28,7 +28,7 @@ namespace Bearded.TD
                 public static readonly Squared<Unit> HexagonOuterRadiusSquared = HexagonSide.U().Squared;
             }
 
-            public static class UI
+            public static class GameUI
             {
                 public const int ActionBarSize = 10;
             }

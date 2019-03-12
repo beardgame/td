@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Bearded.TD.Game;
+﻿using Bearded.TD.Game;
 
 namespace Bearded.TD.Content.Serialization.Models
 {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Components;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Weapons
 {
