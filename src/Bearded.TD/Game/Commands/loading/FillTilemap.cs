@@ -13,16 +13,16 @@ namespace Bearded.TD.Game.Commands
 {
     static class FillTilemap
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tilemap<TileGeometry.TileType> types, Tilemap<TileDrawInfo> drawInfos)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, Tilemap<TileType> types, Tilemap<TileDrawInfo> drawInfos)
             => new Implementation(game, types.Select(t => types[t]).ToList(), drawInfos.Select(t => drawInfos[t]).ToList());
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
-            private readonly IList<TileGeometry.TileType> types;
+            private readonly IList<TileType> types;
             private readonly IList<TileDrawInfo> drawInfos;
 
-            public Implementation(GameInstance game, IList<TileGeometry.TileType> types, IList<TileDrawInfo> drawInfos)
+            public Implementation(GameInstance game, IList<TileType> types, IList<TileDrawInfo> drawInfos)
             {
                 if (types.Count != drawInfos.Count)
                     throw new ArgumentException();
@@ -50,11 +50,11 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
-            private TileGeometry.TileType[] types;
+            private TileType[] types;
             private Unit[] drawHeights;
             private float[] drawSizeFactors;
 
-            public Serializer(IList<TileGeometry.TileType> types, IList<TileDrawInfo> drawInfos)
+            public Serializer(IList<TileType> types, IList<TileDrawInfo> drawInfos)
             {
                 this.types = types.ToArray();
                 drawHeights = drawInfos.Select(i => i.Height).ToArray();

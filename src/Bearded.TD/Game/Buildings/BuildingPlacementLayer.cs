@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Buildings
         {
             return level.IsValid(tile)
                 && !blockedTiles.Contains(tile)
-                && geometryLayer[tile].Type == TileGeometry.TileType.Floor
+                && geometryLayer[tile].Type == TileType.Floor
                 && buildingLayer[tile] == null;
         }
 

@@ -13,13 +13,13 @@ namespace Bearded.TD.Game.Navigation
     sealed class PassabilityManager
         : IListener<TileTypeChanged>, IListener<BuildingConstructionStarted>, IListener<BuildingDestroyed>
     {
-        private static readonly Dictionary<TileGeometry.TileType, Passabilities>
-            passabilityByTileType = new Dictionary<TileGeometry.TileType, Passabilities>
+        private static readonly Dictionary<TileType, Passabilities>
+            passabilityByTileType = new Dictionary<TileType, Passabilities>
             {
-                { TileGeometry.TileType.Unknown, Passabilities.All },
-                { TileGeometry.TileType.Floor, Passabilities.All },
-                { TileGeometry.TileType.Wall, Passabilities.None },
-                { TileGeometry.TileType.Crevice, ~Passabilities.WalkingUnit }
+                { TileType.Unknown, Passabilities.All },
+                { TileType.Floor, Passabilities.All },
+                { TileType.Wall, Passabilities.None },
+                { TileType.Crevice, ~Passabilities.WalkingUnit }
             };
         private static readonly Passabilities passabilityInBuilding = ~Passabilities.WalkingUnit;
 

@@ -2,14 +2,6 @@
 {
     struct TileGeometry
     {
-        public enum TileType : byte
-        {
-            Unknown = 0,
-            Floor = 1,
-            Wall = 2,
-            Crevice = 3,
-        }
-
         public TileType Type { get; }
         public TileDrawInfo DrawInfo { get; }
 

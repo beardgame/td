@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.World
             tilemap = new Tilemap<TileGeometry>(radius);
         }
 
-        public void SetTileType(Tile tile, TileGeometry.TileType type, TileDrawInfo drawInfo)
+        public void SetTileType(Tile tile, TileType type, TileDrawInfo drawInfo)
         {
             if (!tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
 
@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.World
             onDrawInfoChanged(tile);
         }
 
-        private void onTileTypeChanged(Tile tile, TileGeometry.TileType type)
+        private void onTileTypeChanged(Tile tile, TileType type)
         {
             events.Send(new TileTypeChanged(tile, type));
         }

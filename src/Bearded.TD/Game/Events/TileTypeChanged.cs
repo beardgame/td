@@ -6,9 +6,9 @@ namespace Bearded.TD.Game.Events
     struct TileTypeChanged : IEvent
     {
         public Tile Tile { get; }
-        public TileGeometry.TileType Type { get; }
+        public TileType Type { get; }
 
-        public TileTypeChanged(Tile tile, TileGeometry.TileType type)
+        public TileTypeChanged(Tile tile, TileType type)
         {
             Tile = tile;
             Type = type;

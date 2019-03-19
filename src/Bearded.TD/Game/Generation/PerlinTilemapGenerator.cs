@@ -25,12 +25,12 @@ namespace Bearded.TD.Game.Generation
             this.gridSize = gridSize;
         }
 
-        public Tilemap<TileGeometry.TileType> Generate(int radius, int seed)
+        public Tilemap<TileType> Generate(int radius, int seed)
         {
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
 
-            var tilemap = new Tilemap<TileGeometry.TileType>(radius);
+            var tilemap = new Tilemap<TileType>(radius);
             var gen = new Generator(tilemap, seed, logger, gridSize);
 
             gen.GenerateTilemap();
@@ -42,14 +42,14 @@ namespace Bearded.TD.Game.Generation
 
         private class Generator
         {
-            private readonly Tilemap<TileGeometry.TileType> tilemap;
+            private readonly Tilemap<TileType> tilemap;
             private readonly Level level;
             private readonly Random random;
             private readonly Logger logger;
             private readonly int gridSize;
 
             public Generator(
-                Tilemap<TileGeometry.TileType> tilemap,
+                Tilemap<TileType> tilemap,
                 int seed,
                 Logger logger,
                 int gridSize)
@@ -71,7 +71,7 @@ namespace Bearded.TD.Game.Generation
                 var perlinTilemap = new Tilemap<double>(tilemap.Radius);
                 fillTilemapWithNormalizedPerlin(gradientArray, perlinTilemap);
 
-                resetTilemap(TileGeometry.TileType.Wall);
+                resetTilemap(TileType.Wall);
 
                 createPathsFromNoiseTilemap(perlinTilemap);
                 clearCenter(4);
@@ -141,7 +141,7 @@ namespace Bearded.TD.Game.Generation
                 return Vector2.Dot(distance.Normalized(), gradientArray[gridX, gridY]);
             }
 
-            private void resetTilemap(TileGeometry.TileType tileType)
+            private void resetTilemap(TileType tileType)
             {
                 foreach (var t in tilemap)
                 {
@@ -163,7 +163,7 @@ namespace Bearded.TD.Game.Generation
                     var curr = start;
                     while (curr != Tile.Origin)
                     {
-                        tilemap[curr] = TileGeometry.TileType.Floor;
+                        tilemap[curr] = TileType.Floor;
                         curr = result[curr].Parent;
                     }
                 }
@@ -213,29 +213,29 @@ namespace Bearded.TD.Game.Generation
 
                 foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
                 {
-                    tilemap[tile] = TileGeometry.TileType.Floor;
+                    tilemap[tile] = TileType.Floor;
                 }
             }
 
             private void carve(Tilemap<double> perlinTilemap)
             {
-                var q = new Queue<Tile>(tilemap.Where(isType(TileGeometry.TileType.Floor)));
+                var q = new Queue<Tile>(tilemap.Where(isType(TileType.Floor)));
 
                 while (q.Count > 0)
                 {
                     var curr = q.Dequeue();
-                    foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileGeometry.TileType.Wall)))
+                    foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileType.Wall)))
                     {
                         if (random.NormalDouble(0, .3) >= perlinTilemap[curr])
                         {
-                            var type = random.NextDouble() < .2 ? TileGeometry.TileType.Crevice : tilemap[curr];
+                            var type = random.NextDouble() < .2 ? TileType.Crevice : tilemap[curr];
                             tilemap[neighbor] = type;
                             q.Enqueue(neighbor);
                         }
                     }
                 }
 
-                Func<Tile, bool> isType(TileGeometry.TileType type) => tile => tilemap[tile] == type;
+                Func<Tile, bool> isType(TileType type) => tile => tilemap[tile] == type;
             }
         }
     }

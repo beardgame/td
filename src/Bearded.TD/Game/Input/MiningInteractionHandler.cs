@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Input
             if (cursor.Click.Hit)
             {
                 foreach (var tile in currentTile.OccupiedTiles.Where(
-                    t => Game.State.GeometryLayer[t].Type == TileGeometry.TileType.Wall))
+                    t => Game.State.GeometryLayer[t].Type == TileType.Wall))
                 {
                     Game.RequestDispatcher.Dispatch(MineTile.Request(Game, faction, tile));
                 }
