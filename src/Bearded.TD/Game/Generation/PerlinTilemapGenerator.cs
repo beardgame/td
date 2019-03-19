@@ -126,7 +126,6 @@ namespace Bearded.TD.Game.Generation
             private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
             {
                 var q = new PriorityQueue<double, Tile>();
-                var visited = new HashSet<Tile>();
                 var result = new Tilemap<(Tile Parent, double Cost)>(tilemap.Radius);
 
                 result.ForEach(t => result[t] = (Tile.Origin, double.PositiveInfinity));
@@ -139,9 +138,8 @@ namespace Bearded.TD.Game.Generation
                 while (q.Count > 0)
                 {
                     var (currPriority, currTile) = q.Dequeue();
-                    visited.Add(currTile);
 
-                    foreach (var neighbor in level.ValidNeighboursOf(currTile).WhereNot(visited.Contains))
+                    foreach (var neighbor in level.ValidNeighboursOf(currTile))
                     {
                         var costToNeighbor = result[neighbor].Cost;
                         var candidateCost = currPriority + perlinTilemap[neighbor];
@@ -238,7 +236,7 @@ namespace Bearded.TD.Game.Generation
                 Vector2[,] gradientArray, int gridX, int gridY, float x, float y)
             {
                 var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
-                return Vector2.Dot(distance, gradientArray[gridX, gridY]);
+                return Vector2.Dot(distance.Normalized(), gradientArray[gridX, gridY]);
             }
         }
     }
