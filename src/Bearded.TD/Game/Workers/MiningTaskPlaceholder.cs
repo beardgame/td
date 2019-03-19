@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Workers
         {
             base.OnAdded();
 
-            task = new MiningTask(Game.Level, tile, Game.GeometryLayer);
+            task = new MiningTask(tile, Game.GeometryLayer);
             faction.Workers.RegisterTask(task);
         }
 

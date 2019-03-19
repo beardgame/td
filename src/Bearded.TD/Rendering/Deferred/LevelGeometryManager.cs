@@ -185,10 +185,10 @@ namespace Bearded.TD.Rendering.Deferred
                 // (need to inject surface then and pass that around internally, yuck)
             }
             
-            private TileInfo neighbourInfoOrDummy(Tile tile, Direction direction)
+            private DrawableTileGeometry neighbourInfoOrDummy(Tile tile, Direction direction)
             {
                 var neighbour = tile.Neighbour(direction);
-                return level.IsValid(neighbour) ? geometryLayer[neighbour] : new TileInfo();
+                return level.IsValid(neighbour) ? geometryLayer[neighbour] : new DrawableTileGeometry();
             }
         }
     }

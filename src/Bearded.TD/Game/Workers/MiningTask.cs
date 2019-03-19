@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Workers
 
         private double miningProgress;
 
-        public MiningTask(Level level, Tile tile, GeometryLayer geometry)
+        public MiningTask(Tile tile, GeometryLayer geometry)
         {
             DebugAssert.Argument.Satisfies(geometry[tile].Type == TileType.Wall);
 
@@ -33,7 +33,8 @@ namespace Bearded.TD.Game.Workers
             miningProgress += ratePerS * elapsedTime.NumericValue;
             if (Finished)
             {
-                geometry.SetTileType(tile, TileType.Floor, new TileDrawInfo(0.U(), originalDrawInfo.HexScale));
+                var tileGeo = new TileGeometry(TileType.Floor, geometry[tile].Geometry.Hardness);
+                geometry.SetTileGeometry(tile, tileGeo, new TileDrawInfo(0.U(), originalDrawInfo.HexScale));
             }
             else
             {

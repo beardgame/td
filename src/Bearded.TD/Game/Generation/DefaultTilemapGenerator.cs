@@ -25,15 +25,15 @@ namespace Bearded.TD.Game.Generation
             this.logger = logger;
         }
 
-        public Tilemap<TileType> Generate(int radius, int seed)
+        public Tilemap<TileGeometry> Generate(int radius, int seed)
         {
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
-            var tilemap = new Tilemap<TileType>(radius);
-            var gen = new Generator(tilemap, seed, logger);
+            var typeTilemap = new Tilemap<TileType>(radius);
+            var gen = new Generator(typeTilemap, seed, logger);
             logger.Trace?.Log("Filling tilemap");
             gen.FillAll();
-            gen.ClearCenter(tilemap.Radius - 1, 0.1);
+            gen.ClearCenter(typeTilemap.Radius - 1, 0.1);
             logger.Trace?.Log("Clearing tilemap center and corners");
             gen.ClearCenter(4);
             gen.ClearCenter(5, 0.3);
@@ -50,6 +50,11 @@ namespace Bearded.TD.Game.Generation
             logger.Trace?.Log("Digging tunnels");
             gen.ClearTunnels();
             gen.DigDeep(radius * radius / 15);
+
+            logger.Trace?.Log("Copy data to final tilemap");
+            var tilemap = new Tilemap<TileGeometry>(radius);
+            foreach (var t in tilemap)
+                tilemap[t] = new TileGeometry(typeTilemap[t], gen.RandomHardness());
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
@@ -257,6 +262,11 @@ namespace Bearded.TD.Game.Generation
                     foreach (var t in tiles)
                         set(t, Crevice);
                 }
+            }
+
+            public double RandomHardness()
+            {
+                return random.NextDouble();
             }
 
             private Tile randomTile()

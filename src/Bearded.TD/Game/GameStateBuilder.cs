@@ -66,13 +66,13 @@ namespace Bearded.TD.Game
             }
         }
 
-        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileType> types)
+        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileGeometry> tileGeometries)
         {
-            var drawInfos = new Tilemap<TileDrawInfo>(types.Radius);
+            var drawInfos = new Tilemap<TileDrawInfo>(tileGeometries.Radius);
 
-            foreach (var type in types)
+            foreach (var tile in tileGeometries)
             {
-                drawInfos[type.X, type.Y] = TileDrawInfo.For(types[type]);
+                drawInfos[tile] = TileDrawInfo.For(tileGeometries[tile]);
             }
 
             return drawInfos;

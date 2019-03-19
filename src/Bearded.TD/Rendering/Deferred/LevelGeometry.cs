@@ -19,13 +19,13 @@ namespace Bearded.TD.Rendering.Deferred
         }
 
         public void DrawTile(Vector2 position,
-            TileInfo tileInfo, TileInfo rightTileInfo,
-            TileInfo upRightTileInfo, TileInfo downRightTileInfo)
+            DrawableTileGeometry tile, DrawableTileGeometry rightTile,
+            DrawableTileGeometry upRightTile, DrawableTileGeometry downRightTile)
         {
-            var (selfZ, selfScale) = getHeightAndScale(tileInfo);
-            var (rightZ, rightScale) = getHeightAndScale(rightTileInfo);
-            var (downZ, downScale) = getHeightAndScale(downRightTileInfo);
-            var (upZ, upScale) = getHeightAndScale(upRightTileInfo);
+            var (selfZ, selfScale) = getHeightAndScale(tile);
+            var (rightZ, rightScale) = getHeightAndScale(rightTile);
+            var (downZ, downScale) = getHeightAndScale(downRightTile);
+            var (upZ, upScale) = getHeightAndScale(upRightTile);
 
             var selfCorners = cornerOffsetsWithScale(selfScale);
 
@@ -52,7 +52,7 @@ namespace Bearded.TD.Rendering.Deferred
             var upBottomLeftV = (upPosition + new Vector2(-upCorners.sideX, -upCorners.sideY)).WithZ(upZ);
             var upBottomV = (upPosition + new Vector2(0, -upCorners.topY)).WithZ(upZ);
 
-            if (upRightTileInfo.HasKnownType)
+            if (upRightTile.HasKnownType)
             {
                 addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
             }
@@ -60,7 +60,7 @@ namespace Bearded.TD.Rendering.Deferred
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
             var downTopLeftV = (downPosition + new Vector2(-downCorners.sideX, downCorners.sideY)).WithZ(downZ);
 
-            if (downRightTileInfo.HasKnownType)
+            if (downRightTile.HasKnownType)
             {
                 addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
             }
@@ -68,25 +68,25 @@ namespace Bearded.TD.Rendering.Deferred
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
             var rightBottomLeftV = (rightPosition + new Vector2(-rightCorners.sideX, -rightCorners.sideY)).WithZ(rightZ);
 
-            if (rightTileInfo.HasKnownType)
+            if (rightTile.HasKnownType)
             {
                 addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
             }
 
-            if (rightTileInfo.HasKnownType && upRightTileInfo.HasKnownType)
+            if (rightTile.HasKnownType && upRightTile.HasKnownType)
             {
                 addTriangle(topRightV, upBottomV, rightTopLeftV, c);
             }
             
-            if (rightTileInfo.HasKnownType && downRightTileInfo.HasKnownType)
+            if (rightTile.HasKnownType && downRightTile.HasKnownType)
             {
                 addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
             }
         }
 
-        private (float height, float scale) getHeightAndScale(TileInfo info)
+        private (float height, float scale) getHeightAndScale(DrawableTileGeometry geometry)
         {
-            var drawInfo = info.DrawInfo;
+            var drawInfo = geometry.DrawInfo;
             return (drawInfo.Height.NumericValue, drawInfo.HexScale);
         }
 
