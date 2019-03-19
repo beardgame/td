@@ -9,12 +9,12 @@
             Wall = 2,
             Crevice = 3,
         }
-        
-        public TileType Type { get; private set; }
-        public TileDrawInfo DrawInfo { get; private set; }
-        
+
+        public TileType Type { get; }
+        public TileDrawInfo DrawInfo { get; }
+
         public bool HasKnownType => Type != TileType.Unknown;
-        
+
         public TileGeometry(TileType type, TileDrawInfo drawInfo)
         {
             Type = type;
