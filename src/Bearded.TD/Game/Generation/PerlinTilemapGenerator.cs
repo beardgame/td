@@ -17,16 +17,11 @@ namespace Bearded.TD.Game.Generation
     {
         private readonly Logger logger;
         private readonly int gridSize;
-        private readonly double fillThreshold;
-        private readonly double creviceThreshold;
 
-        public PerlinTilemapGenerator(
-            Logger logger, int gridSize = 3, double fillThreshold = .7, double creviceThreshold = .2)
+        public PerlinTilemapGenerator(Logger logger, int gridSize = 3)
         {
             this.logger = logger;
             this.gridSize = gridSize;
-            this.fillThreshold = fillThreshold;
-            this.creviceThreshold = creviceThreshold;
         }
 
         public Tilemap<TileGeometry.TileType> Generate(int radius, int seed)
@@ -35,7 +30,7 @@ namespace Bearded.TD.Game.Generation
             var timer = Stopwatch.StartNew();
 
             var tilemap = new Tilemap<TileGeometry.TileType>(radius);
-            var gen = new Generator(tilemap, seed, logger, gridSize, fillThreshold, creviceThreshold);
+            var gen = new Generator(tilemap, seed, logger, gridSize);
 
             gen.GenerateTilemap();
 
@@ -50,23 +45,17 @@ namespace Bearded.TD.Game.Generation
             private readonly Random random;
             private readonly Logger logger;
             private readonly int gridSize;
-            private readonly double fillThreshold;
-            private readonly double creviceThreshold;
 
             public Generator(
                 Tilemap<TileGeometry.TileType> tilemap,
                 int seed,
                 Logger logger,
-                int gridSize,
-                double fillThreshold,
-                double creviceThreshold)
+                int gridSize)
             {
                 this.tilemap = tilemap;
                 random = new Random(seed);
                 this.logger = logger;
                 this.gridSize = gridSize;
-                this.fillThreshold = fillThreshold;
-                this.creviceThreshold = creviceThreshold;
             }
 
             public void GenerateTilemap()
