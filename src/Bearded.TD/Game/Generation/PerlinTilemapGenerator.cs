@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using OpenTK;
@@ -75,18 +80,19 @@ namespace Bearded.TD.Game.Generation
                 var perlinTilemap = new Tilemap<double>(tilemap.Radius);
                 fillTilemapWithNormalizedPerlin(gradientArray, perlinTilemap);
 
-                populateTileTypeFromNoiseTilemap(perlinTilemap);
+                // populateTileTypeFromNoiseTilemap(perlinTilemap);
+
+                resetTilemap(TileGeometry.TileType.Wall);
+                createPathsFromNoiseTilemap(perlinTilemap);
 
                 clearCenter(4);
             }
 
-            private void clearCenter(int radius)
+            private void resetTilemap(TileGeometry.TileType tileType)
             {
-                logger.Trace?.Log("Clearing center tiles");
-
-                foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
+                foreach (var t in tilemap)
                 {
-                    tilemap[tile] = TileGeometry.TileType.Floor;
+                    tilemap[t] = tileType;
                 }
             }
 
@@ -117,6 +123,59 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
+            private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
+            {
+                var q = new PriorityQueue<double, Tile>();
+                var visited = new HashSet<Tile>();
+                var result = new Tilemap<(Tile Parent, double Cost)>(tilemap.Radius);
+
+                result.ForEach(t => result[t] = (Tile.Origin, double.PositiveInfinity));
+
+                var level = new Level(tilemap.Radius);
+
+                q.Enqueue(0, Tile.Origin);
+                result[Tile.Origin] = (Tile.Origin, 0);
+
+                while (q.Count > 0)
+                {
+                    var (currPriority, currTile) = q.Dequeue();
+                    visited.Add(currTile);
+
+                    foreach (var neighbor in level.ValidNeighboursOf(currTile).WhereNot(visited.Contains))
+                    {
+                        var costToNeighbor = result[neighbor].Cost;
+                        var candidateCost = currPriority + perlinTilemap[neighbor];
+
+                        if (candidateCost >= costToNeighbor) continue;
+
+                        result[neighbor] = (currTile, candidateCost);
+
+                        if (double.IsPositiveInfinity(costToNeighbor))
+                        {
+                            q.Enqueue(candidateCost, neighbor);
+                        }
+                        else
+                        {
+                            q.DecreasePriority(neighbor, candidateCost);
+                        }
+                    }
+                }
+
+                var corners = Directions
+                    .All
+                    .Enumerate()
+                    .Select(dir => Tile.Origin.Offset(dir.Step() * tilemap.Radius));
+                foreach (var start in corners)
+                {
+                    var curr = start;
+                    while (curr != Tile.Origin)
+                    {
+                        tilemap[curr] = TileGeometry.TileType.Floor;
+                        curr = result[curr].Parent;
+                    }
+                }
+            }
+
             private void populateTileTypeFromNoiseTilemap(Tilemap<double> perlinTilemap)
             {
                 foreach (var tile in tilemap)
@@ -134,6 +193,16 @@ namespace Bearded.TD.Game.Generation
                     {
                         tilemap[tile] = TileGeometry.TileType.Floor;
                     }
+                }
+            }
+
+            private void clearCenter(int radius)
+            {
+                logger.Trace?.Log("Clearing center tiles");
+
+                foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
+                {
+                    tilemap[tile] = TileGeometry.TileType.Floor;
                 }
             }
 
