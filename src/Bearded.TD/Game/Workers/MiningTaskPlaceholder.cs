@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Workers
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = Color.MediumVioletRed * 0.5f;
-            geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
         }
     }
 }

@@ -59,10 +59,8 @@ namespace Bearded.TD.Tiles
         public IEnumerable<Tile> OccupiedTiles(Tile rootTile)
             => tileOffsets.Select(rootTile.Offset);
 
-        public Position2 Center(Level level, Tile rootTile)
-            => level.GetPosition(rootTile) - rootTileOffset;
+        public Position2 Center(Tile rootTile) => Level.GetPosition(rootTile) - rootTileOffset;
 
-        public Tile RootTileClosestToWorldPosition(Level level, Position2 position)
-            => level.GetTile(position + rootTileOffset);
+        public Tile RootTileClosestToWorldPosition(Position2 position) => Level.GetTile(position + rootTileOffset);
     }
 }

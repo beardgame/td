@@ -76,17 +76,17 @@ namespace Bearded.TD.Game.Generation
             public void ClearTunnels() => tunnels.ForEach(clearTunnel);
 
             private void clearTunnel(Tuple<Position2, Position2> tunnel)
-                => clearTunnel(level.GetTile(tunnel.Item1), level.GetTile(tunnel.Item2));
+                => clearTunnel(Level.GetTile(tunnel.Item1), Level.GetTile(tunnel.Item2));
 
             private void clearTunnel(Tile start, Tile goal)
             {
-                var goalPosition = level.GetPosition(goal);
+                var goalPosition = Level.GetPosition(goal);
                 var tile = start;
-                var currentDirection = (goalPosition - level.GetPosition(tile)).Direction;
+                var currentDirection = (goalPosition - Level.GetPosition(tile)).Direction;
                 open(tile);
                 while (tile != goal)
                 {
-                    var vectorToGoal = goalPosition - level.GetPosition(tile);
+                    var vectorToGoal = goalPosition - Level.GetPosition(tile);
                     var directionToGoal = vectorToGoal.Direction;
 
                     var distance = vectorToGoal.LengthSquared;
@@ -115,12 +115,12 @@ namespace Bearded.TD.Game.Generation
 
             public void ConnectCornersToGraph()
             {
-                corners.Select(level.GetPosition).ForEach(p => connectVertexToGraph(p, intersections));
+                corners.Select(Level.GetPosition).ForEach(p => connectVertexToGraph(p, intersections));
             }
 
             public void GenerateRandomIntersections()
             {
-                intersections.Add(level.GetPosition(center));
+                intersections.Add(Level.GetPosition(center));
 
                 var circles = (int)(Math.Sqrt(tilemap.Radius) / 1.4);
                 var radiusStep = tilemap.Radius / (float) (circles + 1) * 0.9f;
@@ -149,7 +149,7 @@ namespace Bearded.TD.Game.Generation
                     var point = new Position2() + angle.Vector
                                 * (levelRadius * random.NextFloat(0.8f, 1));
 
-                    var tile = level.GetTile(point);
+                    var tile = Level.GetTile(point);
                     if (!isValidTile(tile))
                         continue;
 

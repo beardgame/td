@@ -22,6 +22,6 @@ namespace Bearded.TD.Game.World
 
         public IEnumerable<Tile> OccupiedTiles => Footprint?.Footprints[FootprintIndex].OccupiedTiles(RootTile);
         public bool IsValid => OccupiedTiles?.All(level.IsValid) ?? false;
-        public Position2 CenterPosition => Footprint?.Footprints[FootprintIndex].Center(level, RootTile) ?? new Position2();
+        public Position2 CenterPosition => Footprint?.Footprints[FootprintIndex].Center(RootTile) ?? new Position2();
     }
 }

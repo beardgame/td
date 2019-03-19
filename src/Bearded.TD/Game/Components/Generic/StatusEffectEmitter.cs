@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
             unitLayer = Owner.Game.UnitLayer;
-            ownerTile = Owner.Game.Level.GetTile(Owner.Position);
+            ownerTile = Level.GetTile(Owner.Position);
             range = Parameters.Range;
             ownerAsBuilding = Owner as Building;
             recalculateTilesInRange();
@@ -70,7 +70,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var level = Owner.Game.Level;
             
-            if (range == Parameters.Range && level.GetTile(Owner.Position) == ownerTile) return;
+            if (range == Parameters.Range && Level.GetTile(Owner.Position) == ownerTile) return;
             range = Parameters.Range;
             recalculateTilesInRange();
         }
@@ -118,7 +118,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var level = Owner.Game.Level;
             
-            var tile = level.GetTile(Owner.Position);
+            var tile = Level.GetTile(Owner.Position);
             
             if (!level.IsValid(tile))
             {

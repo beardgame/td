@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.World
             DebugAssert.Argument.Satisfies(index >= 0 && index < Footprints.Count);
 
             return new PositionedFootprint(level, this, index,
-                Footprints[index].RootTileClosestToWorldPosition(level, position));
+                Footprints[index].RootTileClosestToWorldPosition(position));
         }
     }
 }

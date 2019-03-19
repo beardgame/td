@@ -3,6 +3,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
@@ -39,11 +40,11 @@ namespace Bearded.TD.Game.Components.Generic
                 if (visibility.IsBlocking || visibility.VisiblePercentage <= 0)
                     continue;
 
-                if ((level.GetPosition(tile) - Owner.Position).LengthSquared >= radiusSquared)
+                if ((Level.GetPosition(tile) - Owner.Position).LengthSquared >= radiusSquared)
                     continue;
 
                 geo.Color = Color.Lerp(Color.Green, Color.Orange, 1 - visibility.VisiblePercentage) * 0.25f;
-                geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+                geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
             }
         }
     }

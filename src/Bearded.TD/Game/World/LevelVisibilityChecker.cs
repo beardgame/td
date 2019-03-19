@@ -218,7 +218,7 @@ namespace Bearded.TD.Game.World
 
         private (Direction2 start, Angle width) intervalForTile(Tile tile)
         {
-            var center = level.GetPosition(tile);
+            var center = Level.GetPosition(tile);
 
             var centerAngle = Direction2.Between(origin.NumericValue, center.NumericValue);
 
@@ -241,7 +241,7 @@ namespace Bearded.TD.Game.World
             this.level = level;
             this.origin = origin;
             tileRadius = (int)(radius.NumericValue * (1 / HexagonWidth) + HexagonWidth);
-            startTile = level.GetTile(origin);
+            startTile = Level.GetTile(origin);
         }
     }
 }

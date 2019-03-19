@@ -91,7 +91,7 @@ namespace Bearded.TD.Game.Buildings
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = color;
-            geo.DrawCircle(Game.Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
         }
 
         protected void DrawBuildingName(GeometryManager geometries, Color color)

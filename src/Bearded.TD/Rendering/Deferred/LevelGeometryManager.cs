@@ -171,7 +171,7 @@ namespace Bearded.TD.Rendering.Deferred
                             continue;
                         
                         geometry.DrawTile(
-                            level.GetPosition(tile).NumericValue,
+                            Level.GetPosition(tile).NumericValue,
                             geometryLayer[tile],
                             neighbourInfoOrDummy(tile, Direction.Right),
                             neighbourInfoOrDummy(tile, Direction.UpRight),

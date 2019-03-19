@@ -7,6 +7,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -17,9 +18,9 @@ namespace Bearded.TD.Game.Commands
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
+            private readonly GameInstance game;
             private readonly IList<TileGeometry.TileType> types;
             private readonly IList<TileDrawInfo> drawInfos;
-            private readonly GameInstance game;
 
             public Implementation(GameInstance game, IList<TileGeometry.TileType> types, IList<TileDrawInfo> drawInfos)
             {
@@ -36,8 +37,9 @@ namespace Bearded.TD.Game.Commands
                 game.MustBeLoading();
 
                 var geometry = game.State.GeometryLayer;
-                
-                foreach (var (tile, i) in game.State.Level.Select((t, i) => (t, i)))
+                var tilemapForEnumeration = new Tilemap<Void>(game.State.Level.Radius);
+
+                foreach (var (tile, i) in tilemapForEnumeration.Select((t, i) => (t, i)))
                 {
                     geometry.SetTileType(tile, types[i], drawInfos[i]);
                 }

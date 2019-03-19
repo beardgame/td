@@ -26,7 +26,7 @@ namespace Bearded.TD.Rendering.Deferred
             var (rightZ, rightScale) = getHeightAndScale(rightTileInfo);
             var (downZ, downScale) = getHeightAndScale(downRightTileInfo);
             var (upZ, upScale) = getHeightAndScale(upRightTileInfo);
-            
+
             var selfCorners = cornerOffsetsWithScale(selfScale);
 
             var topV = (position + new Vector2(0, selfCorners.topY)).WithZ(selfZ);

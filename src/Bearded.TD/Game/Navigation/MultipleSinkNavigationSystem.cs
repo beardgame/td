@@ -178,7 +178,7 @@ namespace Bearded.TD.Game.Navigation
                 var i = 0;
                 foreach (var tile in updateFront)
                 {
-                    var p = level.GetPosition(tile).NumericValue;
+                    var p = Level.GetPosition(tile).NumericValue;
 
                     geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
 
@@ -193,7 +193,7 @@ namespace Bearded.TD.Game.Navigation
             {
                 var node = graph[tile];
                 
-                var p = level.GetPosition(tile).NumericValue;
+                var p = Level.GetPosition(tile).NumericValue;
 
                 var d = node.Direction.Vector() * HexagonWidth;
 

@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Units
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
         private Health<EnemyUnit> health;
 
-        public Position2 Position => enemyMovement?.Position ?? Game.Level.GetPosition(CurrentTile);
+        public Position2 Position => enemyMovement?.Position ?? Level.GetPosition(CurrentTile);
         public Tile CurrentTile => enemyMovement?.CurrentTile ?? startTile;
         public bool IsMoving => enemyMovement?.IsMoving ?? false;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);

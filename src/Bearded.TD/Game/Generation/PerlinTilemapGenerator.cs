@@ -87,6 +87,8 @@ namespace Bearded.TD.Game.Generation
 
             private Vector2[,] createRandomGradientGrid(int dimension)
             {
+                logger.Trace?.Log("Generating random gradients for level generation.");
+
                 var grid = new Vector2[dimension, dimension];
                 for (var j = 0; j < dimension; j++)
                 {

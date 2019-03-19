@@ -96,7 +96,7 @@ namespace Bearded.TD.Game.Components.Generic
                     currentRange,
                     t => !level.IsValid(t) || !passabilityLayer[t].IsPassable)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                            (level.GetPosition(t.tile) - position).LengthSquared < rangeSquared)
+                            (Level.GetPosition(t.tile) - position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .ToList();
 

@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Workers
         public Squared<Unit> WorkRadiusSquared = Constants.Game.Worker.WorkRadiusSquared;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
-        public Tile CurrentTile => tileWalker?.CurrentTile ?? Game.Level.GetTile(Position2.Zero);
+        public Tile CurrentTile => tileWalker?.CurrentTile ?? Level.GetTile(Position2.Zero);
 
         private WorkerState currentState;
         private IEnumerable<Tile> taskTiles;
@@ -95,7 +95,7 @@ namespace Bearded.TD.Game.Workers
             }
 
             var goalTile = taskTiles.MinBy(tile => tile.DistanceTo(CurrentTile));
-            var diff = Game.Level.GetPosition(goalTile) - Position;
+            var diff = Level.GetPosition(goalTile) - Position;
             return diff.Direction.Hexagonal();
         }
     }

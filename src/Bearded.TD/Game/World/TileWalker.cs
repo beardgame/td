@@ -13,9 +13,9 @@ namespace Bearded.TD.Game.World
 
         public Position2 Position { get; private set; }
         public Tile CurrentTile { get; private set; }
-        private Position2 currentTilePosition => level.GetPosition(CurrentTile);
+        private Position2 currentTilePosition => Level.GetPosition(CurrentTile);
         private Tile goalTile;
-        private Position2 goalPosition => level.GetPosition(goalTile);
+        private Position2 goalPosition => Level.GetPosition(goalTile);
 
         public Tile GoalTile => goalTile;
         public bool IsMoving { get; private set; }
@@ -76,7 +76,7 @@ namespace Bearded.TD.Game.World
         {
             if ((Position - currentTilePosition).LengthSquared <= HexagonInnerRadiusSquared) return;
 
-            var newTile = level.GetTile(Position);
+            var newTile = Level.GetTile(Position);
             if (newTile != CurrentTile)
             {
                 setCurrentTile(newTile);

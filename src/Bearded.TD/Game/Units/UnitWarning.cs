@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Units
             var radius = .3f * (1.2f + Mathf.Sin((float)Game.Time.NumericValue * Mathf.Pi));
             geo.Color = Color.Red * .8f;
             geo.LineWidth = .1f;
-            var position = Game.Level.GetPosition(tile);
+            var position = Level.GetPosition(tile);
             geo.DrawCircle(position.NumericValue, radius, false);
         }
     }

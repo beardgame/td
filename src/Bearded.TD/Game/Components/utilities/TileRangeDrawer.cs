@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Components.utilities
 
             foreach (var tile in tilesInRange)
             {
-                geo.DrawCircle(level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+                geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
             }
         }
     }

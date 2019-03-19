@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Units
         private PassabilityLayer passabilityLayer;
         private readonly Trail trail = new Trail(trailTimeout, newPartDistanceThreshold: 2.U());
 
-        public Position2 Position => tileWalker?.Position ?? Game.Level.GetPosition(CurrentTile);
+        public Position2 Position => tileWalker?.Position ?? Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
 
         private Instant? deleteAt;

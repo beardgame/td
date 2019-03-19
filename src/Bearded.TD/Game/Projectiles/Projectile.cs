@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Projectiles
 
         protected override void OnAdded()
         {
-            CurrentTile = Game.Level.GetTile(Position);
+            CurrentTile = Level.GetTile(Position);
 
             components.Add(this, blueprint.GetComponents());
             

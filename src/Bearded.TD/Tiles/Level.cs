@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
@@ -7,7 +6,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Tiles
 {
-    class Level : IEnumerable<Tile>
+    sealed class Level
     {
         public int Radius { get; }
 
@@ -23,10 +22,9 @@ namespace Bearded.TD.Tiles
 
         public IEnumerable<Direction> ValidDirectionsFrom(Tile tile)
         {
-            if (tile.Radius < Radius)
-                return Tilemap.Directions;
-
-            return Tilemap.Directions.Where(d => tile.Neighbour(d).Radius <= Radius);
+            return tile.Radius < Radius
+                ? Tilemap.Directions
+                : Tilemap.Directions.Where(d => tile.Neighbour(d).Radius <= Radius);
         }
 
         public IEnumerable<Tile> ValidNeighboursOf(Tile tile)
@@ -34,7 +32,7 @@ namespace Bearded.TD.Tiles
             return ValidDirectionsFrom(tile).Select(tile.Neighbour);
         }
 
-        public Tile GetTile(Position2 position)
+        public static Tile GetTile(Position2 position)
         {
             var yf = position.Y.NumericValue * (1 / HexagonDistanceY) + 1 / 1.5f;
             var y = Floor(yf);
@@ -56,14 +54,10 @@ namespace Bearded.TD.Tiles
             return new Tile(tx, ty);
         }
 
-        public Position2 GetPosition(Tile tile)
+        public static Position2 GetPosition(Tile tile)
             => new Position2(
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
             );
-
-        public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius);
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
