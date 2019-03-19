@@ -80,8 +80,6 @@ namespace Bearded.TD.Game.Generation
                 var perlinTilemap = new Tilemap<double>(tilemap.Radius);
                 fillTilemapWithNormalizedPerlin(gradientArray, perlinTilemap);
 
-                // populateTileTypeFromNoiseTilemap(perlinTilemap);
-
                 resetTilemap(TileGeometry.TileType.Wall);
                 createPathsFromNoiseTilemap(perlinTilemap);
 
@@ -123,87 +121,6 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
-            private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
-            {
-                var q = new PriorityQueue<double, Tile>();
-                var result = new Tilemap<(Tile Parent, double Cost)>(tilemap.Radius);
-
-                result.ForEach(t => result[t] = (Tile.Origin, double.PositiveInfinity));
-
-                var level = new Level(tilemap.Radius);
-
-                q.Enqueue(0, Tile.Origin);
-                result[Tile.Origin] = (Tile.Origin, 0);
-
-                while (q.Count > 0)
-                {
-                    var (currPriority, currTile) = q.Dequeue();
-
-                    foreach (var neighbor in level.ValidNeighboursOf(currTile))
-                    {
-                        var costToNeighbor = result[neighbor].Cost;
-                        var candidateCost = currPriority + perlinTilemap[neighbor];
-
-                        if (candidateCost >= costToNeighbor) continue;
-
-                        result[neighbor] = (currTile, candidateCost);
-
-                        if (double.IsPositiveInfinity(costToNeighbor))
-                        {
-                            q.Enqueue(candidateCost, neighbor);
-                        }
-                        else
-                        {
-                            q.DecreasePriority(neighbor, candidateCost);
-                        }
-                    }
-                }
-
-                var corners = Directions
-                    .All
-                    .Enumerate()
-                    .Select(dir => Tile.Origin.Offset(dir.Step() * tilemap.Radius));
-                foreach (var start in corners)
-                {
-                    var curr = start;
-                    while (curr != Tile.Origin)
-                    {
-                        tilemap[curr] = TileGeometry.TileType.Floor;
-                        curr = result[curr].Parent;
-                    }
-                }
-            }
-
-            private void populateTileTypeFromNoiseTilemap(Tilemap<double> perlinTilemap)
-            {
-                foreach (var tile in tilemap)
-                {
-                    var normalizedPerlin = perlinTilemap[tile];
-                    if (normalizedPerlin < creviceThreshold)
-                    {
-                        tilemap[tile] = TileGeometry.TileType.Crevice;
-                    }
-                    else if (normalizedPerlin > fillThreshold)
-                    {
-                        tilemap[tile] = TileGeometry.TileType.Wall;
-                    }
-                    else
-                    {
-                        tilemap[tile] = TileGeometry.TileType.Floor;
-                    }
-                }
-            }
-
-            private void clearCenter(int radius)
-            {
-                logger.Trace?.Log("Clearing center tiles");
-
-                foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
-                {
-                    tilemap[tile] = TileGeometry.TileType.Floor;
-                }
-            }
-
             private float perlinAt(Vector2[,] gradientArray, int x, int y)
             {
                 // Grid coordinates lower and upper
@@ -237,6 +154,75 @@ namespace Bearded.TD.Game.Generation
             {
                 var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
                 return Vector2.Dot(distance.Normalized(), gradientArray[gridX, gridY]);
+            }
+
+            private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
+            {
+                var result = doAllPairPathFindingFromTile(perlinTilemap, Tile.Origin);
+
+                var corners = Directions
+                    .All
+                    .Enumerate()
+                    .Select(dir => Tile.Origin.Offset(dir.Step() * tilemap.Radius));
+                foreach (var start in corners)
+                {
+                    var curr = start;
+                    while (curr != Tile.Origin)
+                    {
+                        tilemap[curr] = TileGeometry.TileType.Floor;
+                        curr = result[curr].Parent;
+                    }
+                }
+            }
+
+            private static Tilemap<(Tile Parent, double Cost)> doAllPairPathFindingFromTile(
+                Tilemap<double> perlinTilemap, Tile origin)
+            {
+                var q = new PriorityQueue<double, Tile>();
+                var result = new Tilemap<(Tile Parent, double Cost)>(perlinTilemap.Radius);
+
+                result.ForEach(t => result[t] = (origin, double.PositiveInfinity));
+
+                var level = new Level(perlinTilemap.Radius);
+
+                q.Enqueue(0, origin);
+                result[origin] = (origin, 0);
+
+                while (q.Count > 0)
+                {
+                    var (currPriority, currTile) = q.Dequeue();
+
+                    foreach (var neighbor in level.ValidNeighboursOf(currTile))
+                    {
+                        var costToNeighbor = result[neighbor].Cost;
+                        var candidateCost = currPriority + perlinTilemap[neighbor];
+
+                        if (candidateCost >= costToNeighbor) continue;
+
+                        result[neighbor] = (currTile, candidateCost);
+
+                        if (double.IsPositiveInfinity(costToNeighbor))
+                        {
+                            q.Enqueue(candidateCost, neighbor);
+                        }
+                        else
+                        {
+                            q.DecreasePriority(neighbor, candidateCost);
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            private void clearCenter(int radius)
+            {
+                logger.Trace?.Log("Clearing center tiles");
+
+                foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
+                {
+                    tilemap[tile] = TileGeometry.TileType.Floor;
+                }
             }
         }
     }
