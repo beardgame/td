@@ -26,6 +26,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Weavers.Tests.AssemblyToPro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Shared", "src\Bearded.TD.Shared\Bearded.TD.Shared.csproj", "{8B1B362B-7883-489D-AD98-2060FB174B20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Tests", "src\Bearded.TD.Tests\Bearded.TD.Tests.csproj", "{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,14 @@ Global
 		{8B1B362B-7883-489D-AD98-2060FB174B20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B1B362B-7883-489D-AD98-2060FB174B20}.Release|x86.ActiveCfg = Release|Any CPU
 		{8B1B362B-7883-489D-AD98-2060FB174B20}.Release|x86.Build.0 = Release|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Debug|x86.Build.0 = Debug|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|x86.ActiveCfg = Release|Any CPU
+		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

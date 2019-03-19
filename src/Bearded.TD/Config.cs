@@ -1,4 +1,8 @@
-﻿namespace Bearded.TD
+﻿using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("Bearded.TD.Tests")]
+
+namespace Bearded.TD
 {
     static class Config
     {
