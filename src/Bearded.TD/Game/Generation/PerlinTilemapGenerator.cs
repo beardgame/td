@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Game.World;
@@ -42,6 +43,7 @@ namespace Bearded.TD.Game.Generation
         private class Generator
         {
             private readonly Tilemap<TileGeometry.TileType> tilemap;
+            private readonly Level level;
             private readonly Random random;
             private readonly Logger logger;
             private readonly int gridSize;
@@ -53,6 +55,7 @@ namespace Bearded.TD.Game.Generation
                 int gridSize)
             {
                 this.tilemap = tilemap;
+                level = new Level(tilemap.Radius);
                 random = new Random(seed);
                 this.logger = logger;
                 this.gridSize = gridSize;
@@ -69,9 +72,11 @@ namespace Bearded.TD.Game.Generation
                 fillTilemapWithNormalizedPerlin(gradientArray, perlinTilemap);
 
                 resetTilemap(TileGeometry.TileType.Wall);
-                createPathsFromNoiseTilemap(perlinTilemap);
 
+                createPathsFromNoiseTilemap(perlinTilemap);
                 clearCenter(4);
+
+                carve(perlinTilemap);
             }
 
             private Vector2[,] createRandomGradientGrid(int dimension)
@@ -146,6 +151,7 @@ namespace Bearded.TD.Game.Generation
 
             private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
             {
+                logger.Trace?.Log("Digging paths to all corners");
                 var result = doAllPairPathFindingFromTile(perlinTilemap, Tile.Origin);
 
                 var corners = Directions
@@ -163,15 +169,13 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
-            private static Tilemap<(Tile Parent, double Cost)> doAllPairPathFindingFromTile(
+            private Tilemap<(Tile Parent, double Cost)> doAllPairPathFindingFromTile(
                 Tilemap<double> perlinTilemap, Tile origin)
             {
                 var q = new PriorityQueue<double, Tile>();
                 var result = new Tilemap<(Tile Parent, double Cost)>(perlinTilemap.Radius);
 
                 result.ForEach(t => result[t] = (origin, double.PositiveInfinity));
-
-                var level = new Level(perlinTilemap.Radius);
 
                 q.Enqueue(0, origin);
                 result[origin] = (origin, 0);
@@ -211,6 +215,27 @@ namespace Bearded.TD.Game.Generation
                 {
                     tilemap[tile] = TileGeometry.TileType.Floor;
                 }
+            }
+
+            private void carve(Tilemap<double> perlinTilemap)
+            {
+                var q = new Queue<Tile>(tilemap.Where(isType(TileGeometry.TileType.Floor)));
+
+                while (q.Count > 0)
+                {
+                    var curr = q.Dequeue();
+                    foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileGeometry.TileType.Wall)))
+                    {
+                        if (random.NormalDouble(0, .3) >= perlinTilemap[curr])
+                        {
+                            var type = random.NextDouble() < .2 ? TileGeometry.TileType.Crevice : tilemap[curr];
+                            tilemap[neighbor] = type;
+                            q.Enqueue(neighbor);
+                        }
+                    }
+                }
+
+                Func<Tile, bool> isType(TileGeometry.TileType type) => tile => tilemap[tile] == type;
             }
         }
     }
