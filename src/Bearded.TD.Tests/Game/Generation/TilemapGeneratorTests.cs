@@ -40,8 +40,8 @@ namespace Bearded.TD.Tests.Game.Generation
         }
 
         private static void assertTilemapsEqual(
-            Tilemap<TileType> firstTilemap,
-            Tilemap<TileType> secondTilemap)
+            Tilemap<TileGeometry> firstTilemap,
+            Tilemap<TileGeometry> secondTilemap)
         {
             firstTilemap.TilesSpiralOutward.Should().ContainInOrder(secondTilemap.TilesSpiralOutward);
         }
