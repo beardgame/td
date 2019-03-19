@@ -1,21 +1,21 @@
 ﻿namespace Bearded.TD.Game.World
 {
-    struct TileGeometry
+    struct TileInfo
     {
         public TileType Type { get; }
         public TileDrawInfo DrawInfo { get; }
 
         public bool HasKnownType => Type != TileType.Unknown;
 
-        public TileGeometry(TileType type, TileDrawInfo drawInfo)
+        public TileInfo(TileType type, TileDrawInfo drawInfo)
         {
             Type = type;
             DrawInfo = drawInfo;
         }
 
-        public TileGeometry WithDrawInfo(TileDrawInfo drawInfo)
+        public TileInfo WithDrawInfo(TileDrawInfo drawInfo)
         {
-            return new TileGeometry(Type, drawInfo);
+            return new TileInfo(Type, drawInfo);
         }
     }
 }

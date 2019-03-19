@@ -6,19 +6,19 @@ namespace Bearded.TD.Game.World
     sealed class GeometryLayer
     {
         private readonly GameEvents events;
-        private Tilemap<TileGeometry> tilemap { get; }
+        private Tilemap<TileInfo> tilemap { get; }
 
         public GeometryLayer(GameEvents events, int radius)
         {
             this.events = events;
-            tilemap = new Tilemap<TileGeometry>(radius);
+            tilemap = new Tilemap<TileInfo>(radius);
         }
 
         public void SetTileType(Tile tile, TileType type, TileDrawInfo drawInfo)
         {
             if (!tilemap.IsValidTile(tile)) throw new System.ArgumentOutOfRangeException();
 
-            tilemap[tile] = new TileGeometry(type, drawInfo);
+            tilemap[tile] = new TileInfo(type, drawInfo);
             
             onDrawInfoChanged(tile);
             onTileTypeChanged(tile, type);
@@ -43,6 +43,6 @@ namespace Bearded.TD.Game.World
             events.Send(new TileDrawInfoChanged(tile));
         }
 
-        public TileGeometry this[Tile tile] => tilemap[tile];
+        public TileInfo this[Tile tile] => tilemap[tile];
     }
 }
