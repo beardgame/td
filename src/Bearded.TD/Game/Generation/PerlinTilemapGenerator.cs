@@ -72,13 +72,18 @@ namespace Bearded.TD.Game.Generation
                 var gradientArrayDimension = Mathf.CeilToInt((double) tileArrayDimension / gridSize) + 1;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
-                fillTilemap(gradientArray);
+                var perlinTilemap = new Tilemap<double>(tilemap.Radius);
+                fillTilemapWithNormalizedPerlin(gradientArray, perlinTilemap);
+
+                populateTileTypeFromNoiseTilemap(perlinTilemap);
 
                 clearCenter(4);
             }
 
             private void clearCenter(int radius)
             {
+                logger.Trace?.Log("Clearing center tiles");
+
                 foreach (var tile in tilemap.SpiralCenteredAt(Tile.Origin, radius))
                 {
                     tilemap[tile] = TileGeometry.TileType.Floor;
@@ -101,28 +106,33 @@ namespace Bearded.TD.Game.Generation
                 return grid;
             }
 
-            private void fillTilemap(Vector2[,] gradientArray)
+            // Fills a tilemap with values 0-1 based on the Perlin noise gradient array.
+            private void fillTilemapWithNormalizedPerlin(Vector2[,] gradientArray, Tilemap<double> perlinTilemap)
             {
-                for (var j = -tilemap.Radius; j <= tilemap.Radius; j++)
+                foreach (var tile in tilemap)
                 {
-                    for (var i = -tilemap.Radius; i <= tilemap.Radius; i++)
-                    {
-                        if (!tilemap.IsValidTile(i, j)) continue;
+                    var perlin = perlinAt(gradientArray, tile.X + perlinTilemap.Radius, tile.Y + perlinTilemap.Radius);
+                    var normalizedPerlin = perlin * .5 + .5;
+                    perlinTilemap[tile] = normalizedPerlin;
+                }
+            }
 
-                        var perlin = perlinAt(gradientArray, i + tilemap.Radius, j + tilemap.Radius);
-                        var normalizedPerlin = perlin * .5 + .5;
-                        if (normalizedPerlin < creviceThreshold)
-                        {
-                            tilemap[i, j] = TileGeometry.TileType.Crevice;
-                        }
-                        else if (normalizedPerlin > fillThreshold)
-                        {
-                            tilemap[i, j] = TileGeometry.TileType.Wall;
-                        }
-                        else
-                        {
-                            tilemap[i, j] = TileGeometry.TileType.Floor;
-                        }
+            private void populateTileTypeFromNoiseTilemap(Tilemap<double> perlinTilemap)
+            {
+                foreach (var tile in tilemap)
+                {
+                    var normalizedPerlin = perlinTilemap[tile];
+                    if (normalizedPerlin < creviceThreshold)
+                    {
+                        tilemap[tile] = TileGeometry.TileType.Crevice;
+                    }
+                    else if (normalizedPerlin > fillThreshold)
+                    {
+                        tilemap[tile] = TileGeometry.TileType.Wall;
+                    }
+                    else
+                    {
+                        tilemap[tile] = TileGeometry.TileType.Floor;
                     }
                 }
             }
