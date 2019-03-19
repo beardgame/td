@@ -1,3 +1,4 @@
+using System.Linq;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
@@ -43,7 +44,10 @@ namespace Bearded.TD.Tests.Game.Generation
             Tilemap<TileGeometry> firstTilemap,
             Tilemap<TileGeometry> secondTilemap)
         {
-            firstTilemap.TilesSpiralOutward.Should().ContainInOrder(secondTilemap.TilesSpiralOutward);
+            var firstTilemapGeometries = firstTilemap.TilesSpiralOutward.Select(t => firstTilemap[t]);
+            var secondTilemapGeometries = secondTilemap.TilesSpiralOutward.Select(t => secondTilemap[t]);
+
+            firstTilemapGeometries.Should().ContainInOrder(secondTilemapGeometries);
         }
     }
 }
