@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Game.World;
@@ -86,14 +85,6 @@ namespace Bearded.TD.Game.Generation
                 clearCenter(4);
             }
 
-            private void resetTilemap(TileGeometry.TileType tileType)
-            {
-                foreach (var t in tilemap)
-                {
-                    tilemap[t] = tileType;
-                }
-            }
-
             private Vector2[,] createRandomGradientGrid(int dimension)
             {
                 logger.Trace?.Log("Generating random gradients for level generation.");
@@ -154,6 +145,14 @@ namespace Bearded.TD.Game.Generation
             {
                 var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
                 return Vector2.Dot(distance.Normalized(), gradientArray[gridX, gridY]);
+            }
+
+            private void resetTilemap(TileGeometry.TileType tileType)
+            {
+                foreach (var t in tilemap)
+                {
+                    tilemap[t] = tileType;
+                }
             }
 
             private void createPathsFromNoiseTilemap(Tilemap<double> perlinTilemap)
