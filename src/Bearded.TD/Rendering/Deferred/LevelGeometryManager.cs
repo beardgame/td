@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
@@ -21,7 +22,7 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly GeometryLayer geometryLayer;
 
         // TODO: in the future this also needs to know about textures and stuff from mods
-        public LevelGeometryManager(GameInstance game, RenderContext context)
+        public LevelGeometryManager(GameInstance game, RenderContext context, Material material)
         {
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
@@ -33,7 +34,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             batchLookup = new Batch[batchesPerRow * batchesPerRow];
 
-            createValidBatches(context);
+            createValidBatches(context, material);
 
             game.Meta.Events.Subscribe(this);
         }
@@ -65,14 +66,14 @@ namespace Bearded.TD.Rendering.Deferred
             }
         }
 
-        private void createValidBatches(RenderContext context)
+        private void createValidBatches(RenderContext context, Material material)
         {
             foreach (var i in Enumerable
                 .Range(0, batchLookup.Length)
                 .Where(isValidBatch))
             {
                 var baseTile = baseTileFor(i);
-                var batch = new Batch(context, level, geometryLayer, baseTile);
+                var batch = new Batch(context, material, level, geometryLayer, baseTile);
 
                 batchLookup[i] = batch;
                 batches.Add(batch);
@@ -116,28 +117,29 @@ namespace Bearded.TD.Rendering.Deferred
 
             private bool isDirty = true;
 
-            public Batch(RenderContext context, Level level, GeometryLayer geometryLayer, (int X, int Y) baseTile)
+            public Batch(RenderContext context, Material material, Level level, GeometryLayer geometryLayer, (int X, int Y) baseTile)
             {
                 this.level = level;
                 this.geometryLayer = geometryLayer;
                 this.baseTile = baseTile;
-                surface = createSurface(context);
+                surface = createSurface(context, material);
                 
                 geometry = new LevelGeometry(surface);
             }
 
-            private static IndexedSurface<LevelVertex> createSurface(RenderContext context)
+            private static IndexedSurface<LevelVertex> createSurface(RenderContext context, Material material)
             {
                 return new IndexedSurface<LevelVertex>
                     {
                         ClearOnRender = false,
                         IsStatic = true
                     }
-                    .WithShader(context.Surfaces.Shaders["deferred/gLevel"])
+                    .WithShader(material.Shader.SurfaceShader)
                     .AndSettings(
                         context.Surfaces.ViewMatrix,
                         context.Surfaces.ProjectionMatrix,
-                        context.Surfaces.FarPlaneDistance
+                        context.Surfaces.FarPlaneDistance,
+                        new ArrayTextureUniform("textures", material.ArrayTexture)
                     );
             }
 

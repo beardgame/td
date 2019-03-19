@@ -7,13 +7,13 @@ namespace Bearded.TD.Content.Models
     {
         public string Id { get; }
         public Shader Shader { get; }
-        public Texture TextureArray { get; }
+        public ArrayTexture ArrayTexture { get; }
         
-        public Material(string id, Shader shader, Texture textureArray)
+        public Material(string id, Shader shader, ArrayTexture arrayTexture)
         {
             Id = id;
             Shader = shader;
-            TextureArray = textureArray;
+            ArrayTexture = arrayTexture;
         }
     }
 }

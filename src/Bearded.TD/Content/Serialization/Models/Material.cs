@@ -15,8 +15,9 @@ namespace Bearded.TD.Content.Serialization.Models
         public Content.Models.Material ToGameModel((FileInfo, MaterialLoader) resolvers)
         {
             var (file, loader) = resolvers;
-
-            return loader.TryLoad(file, this);
+            var texture = loader.CreateArrayTexture(file, this);
+            
+            return new Content.Models.Material(Id, Shader, texture);
         }
     }
 }

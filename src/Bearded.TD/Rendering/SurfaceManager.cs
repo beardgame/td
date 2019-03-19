@@ -25,8 +25,6 @@ namespace Bearded.TD.Rendering
         public IndexedSurface<UVColorVertexData> UIFontSurface { get; }
         public Font ConsoleFont { get; }
         public Font UIFont { get; }
-
-        public IndexedSurface<LevelVertex> LevelSurface { get; }
         
         public IndexedSurface<PointLightVertex> PointLights { get; }
 
@@ -39,7 +37,6 @@ namespace Bearded.TD.Rendering
             {
                 "geometry", "uvcolor",
                 "deferred/gSprite",
-                "deferred/gLevel",
                 "deferred/debug",
                 "deferred/compose",
                 "deferred/pointlight"
@@ -67,10 +64,6 @@ namespace Bearded.TD.Rendering
                         ViewMatrix, ProjectionMatrix,
                         new TextureUniform("diffuse", new Texture(font("helveticaneue.png"), preMultiplyAlpha: true))
                     );
-
-            LevelSurface = new IndexedSurface<LevelVertex>()
-                .WithShader(Shaders["deferred/gLevel"])
-                .AndSettings(ViewMatrix, ProjectionMatrix, FarPlaneDistance);
             
             PointLights = new IndexedSurface<PointLightVertex>()
                 .WithShader(Shaders["deferred/pointlight"])

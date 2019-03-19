@@ -46,10 +46,16 @@ namespace Bearded.TD.UI.Controls
         {
             this.game = game;
             geometries = renderContext.Geometries;
+            
+            // TODO: this should not stay hardcoded forever
+            var levelMaterial = game.Blueprints.Materials["default"];
 
-            var levelGeometry = new LevelGeometryManager(game, renderContext);
+            var levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
 
-            DeferredSurfaces = new ContentSurfaceManager(levelGeometry, game.Blueprints.Sprites);
+            DeferredSurfaces = new ContentSurfaceManager(
+                levelGeometry,
+                game.Blueprints.Sprites
+                );
         }
 
         public override void Draw()

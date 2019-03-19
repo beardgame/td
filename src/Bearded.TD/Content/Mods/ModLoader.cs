@@ -69,7 +69,7 @@ namespace Bearded.TD.Content.Mods
                 
                 configureSerializerDependency(shaders, m => m.Blueprints.Shaders);
 
-                //var materials = loadMaterials(shaders);
+                var materials = loadMaterials(shaders);
 
                 var sprites = loadSprites();
 
@@ -91,6 +91,7 @@ namespace Bearded.TD.Content.Mods
                     meta.Id,
                     meta.Name,
                     shaders,
+                    materials,
                     sprites,
                     footprints,
                     buildings,

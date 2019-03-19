@@ -13,8 +13,6 @@ namespace Bearded.TD.Rendering
         public PrimitiveGeometry ConsoleBackground { get; }
 
         public FontGeometry UIFont { get; }
-
-        public LevelGeometry Level { get; }
         
         public PointLightGeometry PointLight { get; }
 
@@ -26,7 +24,6 @@ namespace Bearded.TD.Rendering
             ConsoleBackground = new PrimitiveGeometry(surfaces.ConsoleBackground);
             ConsoleFont = new FontGeometry(surfaces.ConsoleFontSurface, surfaces.ConsoleFont);
             UIFont = new FontGeometry(surfaces.UIFontSurface, surfaces.UIFont);
-            Level = new LevelGeometry(surfaces.LevelSurface);
             PointLight = new PointLightGeometry(surfaces.PointLights);
         }
     }

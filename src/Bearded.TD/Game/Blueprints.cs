@@ -17,6 +17,7 @@ namespace Bearded.TD.Game
     sealed class Blueprints
     {
         public ReadonlyBlueprintCollection<Shader> Shaders { get; }
+        public ReadonlyBlueprintCollection<Material> Materials { get; }
         public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
         public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
         public ReadonlyBlueprintCollection<IBuildingBlueprint> Buildings { get; }
@@ -26,6 +27,7 @@ namespace Bearded.TD.Game
         public ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> Upgrades { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
+            ReadonlyBlueprintCollection<Material> materials,
             ReadonlyBlueprintCollection<SpriteSet> sprites,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
@@ -35,6 +37,7 @@ namespace Bearded.TD.Game
             ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades)
         {
             Shaders = shaders;
+            Materials = materials;
             Sprites = sprites;
             Footprints = footprints;
             Buildings = buildings;
@@ -49,6 +52,7 @@ namespace Bearded.TD.Game
             var list = blueprints as IList<Blueprints> ?? blueprints.ToList();
             return new Blueprints(
                 flatten(list, b => b.Shaders),
+                flatten(list, b => b.Materials),
                 flatten(list, b => b.Sprites),
                 flatten(list, b => b.Footprints),
                 flatten(list, b => b.Buildings),

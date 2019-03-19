@@ -69,5 +69,10 @@ namespace Bearded.TD.Rendering.Loading
             }
         }
 
+        public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
+        {
+            return glActions.RunAndReturn(() => new ArrayTexture(layers));
+        }
+
     }
 }

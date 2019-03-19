@@ -12,5 +12,7 @@ namespace Bearded.TD.Content
         
         ISurfaceShader CreateShaderProgram(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);
+
+        ArrayTexture CreateArrayTexture(List<Bitmap> layers);
     }
 }
