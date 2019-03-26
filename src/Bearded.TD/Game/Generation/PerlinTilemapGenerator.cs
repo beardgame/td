@@ -10,6 +10,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Generation
@@ -77,7 +78,8 @@ namespace Bearded.TD.Game.Generation
             {
                 var tileArrayDimension = 2 * typeTilemap.Radius + 1;
 
-                var gradientArrayDimension = Mathf.CeilToInt((double) tileArrayDimension / gridSize) + 1;
+                var gradientArrayDimension =
+                    Mathf.CeilToInt(Constants.Game.World.HexagonDiameter * tileArrayDimension / gridSize) + 1;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
                 fillHardnessTilemapWithNormalizedPerlin(gradientArray);
@@ -117,44 +119,56 @@ namespace Bearded.TD.Game.Generation
             {
                 foreach (var tile in typeTilemap)
                 {
-                    var perlin = perlinAt(
-                        gradientArray, tile.X + hardnessTilemap.Radius, tile.Y + hardnessTilemap.Radius);
+                    var perlin = perlinAtGridCellFromWorldSpace(gradientArray, tile);
                     var normalizedPerlin = (perlin + .5).Clamped(0, 1);
                     normalizedPerlin = Math.Sin(Mathf.PiOver2 * normalizedPerlin);
                     hardnessTilemap[tile] = normalizedPerlin;
                 }
             }
 
-            private float perlinAt(Vector2[,] gradientArray, int x, int y)
+            private float perlinAtGridCellFromTileSpace(Vector2[,] gradientArray, Tile tile)
+            {
+                var xInGradientArraySpace = (float) (tile.X + hardnessTilemap.Radius) / gridSize;
+                var yInGradientArraySpace = (float) (tile.Y + hardnessTilemap.Radius) / gridSize;
+
+                return perlinAt(gradientArray, xInGradientArraySpace, yInGradientArraySpace);
+            }
+
+            private float perlinAtGridCellFromWorldSpace(Vector2[,] gradientArray, Tile tile)
+            {
+                var offset = new Vector2(gradientArray.GetLength(0) / 2f, gradientArray.GetLength(1) / 2f);
+
+                var worldPosition = Level.GetPosition(tile).NumericValue / gridSize + offset;
+
+                return perlinAt(gradientArray, worldPosition.X, worldPosition.Y);
+            }
+
+            private static float perlinAt(Vector2[,] gradientArray, float x, float y)
             {
                 // Grid coordinates lower and upper
-                var xInGradientArraySpace = (float) x / gridSize;
-                var xLower = (int) xInGradientArraySpace;
+                var xLower = (int) x;
                 var xUpper = xLower + 1;
 
-                var yInGradientArraySpace = (float) y / gridSize;
-                var yLower = (int) yInGradientArraySpace;
+                var yLower = (int) y;
                 var yUpper = yLower + 1;
 
                 // Calculate dot products between distance and gradient for each of the grid corners
                 var topLeft = dotProductWithGridDirection(
-                    gradientArray, xLower, yUpper, xInGradientArraySpace, yInGradientArraySpace);
+                    gradientArray, xLower, yUpper, x, y);
                 var topRight = dotProductWithGridDirection(
-                    gradientArray, xUpper, yUpper, xInGradientArraySpace, yInGradientArraySpace);
+                    gradientArray, xUpper, yUpper, x, y);
                 var bottomLeft = dotProductWithGridDirection(
-                    gradientArray, xLower, yLower, xInGradientArraySpace, yInGradientArraySpace);
+                    gradientArray, xLower, yLower, x, y);
                 var bottomRight = dotProductWithGridDirection(
-                    gradientArray, xUpper, yLower, xInGradientArraySpace, yInGradientArraySpace);
+                    gradientArray, xUpper, yLower, x, y);
 
                 // Interpolation weights
-                var tx = Interpolate.SmoothStep(0f, 1f, xInGradientArraySpace - xLower);
-                var ty = 1 - Interpolate.SmoothStep(0f, 1f, yInGradientArraySpace - yLower);
+                var tx = Interpolate.SmoothStep(0f, 1f, x - xLower);
+                var ty = 1 - Interpolate.SmoothStep(0f, 1f, y - yLower);
 
                 var top = Interpolate.Lerp(topLeft, topRight, tx);
                 var bottom = Interpolate.Lerp(bottomLeft, bottomRight, tx);
                 return Interpolate.Lerp(top, bottom, ty);
-
-//                return Interpolate.BiLerp(topLeft, topRight, bottomLeft, bottomRight, tx, ty);
             }
 
             private static float dotProductWithGridDirection(
