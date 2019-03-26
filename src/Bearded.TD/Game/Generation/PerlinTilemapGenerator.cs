@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Generation
         private readonly Logger logger;
         private readonly int gridSize;
 
-        public PerlinTilemapGenerator(Logger logger, int gridSize = 5)
+        public PerlinTilemapGenerator(Logger logger, int gridSize = 10)
         {
             this.logger = logger;
             this.gridSize = gridSize;
@@ -94,12 +94,18 @@ namespace Bearded.TD.Game.Generation
             {
                 logger.Trace?.Log("Generating random gradients for level generation.");
 
+                // Use uniformly distributed vectors to force better gradient distribution.
+                const int numSamples = 12;
+                var vectors = Enumerable.Range(0, numSamples)
+                    .Select(i => Direction2.FromRadians(Mathf.TwoPi * i / numSamples).Vector)
+                    .ToArray();
+
                 var grid = new Vector2[dimension, dimension];
                 for (var j = 0; j < dimension; j++)
                 {
                     for (var i = 0; i < dimension; i++)
                     {
-                        grid[i, j] = Direction2.FromRadians(random.NextFloat(0, Mathf.TwoPi)).Vector;
+                        grid[i, j] = vectors[random.Next(numSamples)];
                     }
                 }
 
@@ -113,7 +119,8 @@ namespace Bearded.TD.Game.Generation
                 {
                     var perlin = perlinAt(
                         gradientArray, tile.X + hardnessTilemap.Radius, tile.Y + hardnessTilemap.Radius);
-                    var normalizedPerlin = (perlin * .5 + .5).Clamped(0, 1);
+                    var normalizedPerlin = (perlin + .5).Clamped(0, 1);
+                    normalizedPerlin = Math.Sin(Mathf.PiOver2 * normalizedPerlin);
                     hardnessTilemap[tile] = normalizedPerlin;
                 }
             }
