@@ -18,10 +18,10 @@ namespace Bearded.TD.Tiles
         public int Radius => X * Y >= 0
             ? Math.Abs(X + Y)
             : Math.Max(Math.Abs(X), Math.Abs(Y));
-        
+
         public Tile Neighbour(Direction direction) => Offset(direction.Step());
         public Tile Offset(Step step) => new Tile(X + step.X, Y + step.Y);
-        
+
         public int DistanceTo(Tile other)
         {
             if (Equals(other)) return 0;
