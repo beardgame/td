@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Generation
         private readonly Logger logger;
         private readonly int gridSize;
 
-        public PerlinTilemapGenerator(Logger logger, int gridSize = 2)
+        public PerlinTilemapGenerator(Logger logger, int gridSize = 5)
         {
             this.logger = logger;
             this.gridSize = gridSize;
@@ -113,7 +113,7 @@ namespace Bearded.TD.Game.Generation
                 {
                     var perlin = perlinAt(
                         gradientArray, tile.X + hardnessTilemap.Radius, tile.Y + hardnessTilemap.Radius);
-                    var normalizedPerlin = perlin * .5 + .5;
+                    var normalizedPerlin = (perlin * .5 + .5).Clamped(0, 1);
                     hardnessTilemap[tile] = normalizedPerlin;
                 }
             }
@@ -131,26 +131,30 @@ namespace Bearded.TD.Game.Generation
 
                 // Calculate dot products between distance and gradient for each of the grid corners
                 var topLeft = dotProductWithGridDirection(
-                    gradientArray, xLower, yLower, xInGradientArraySpace, yInGradientArraySpace);
-                var topRight = dotProductWithGridDirection(
-                    gradientArray, xUpper, yLower, xInGradientArraySpace, yInGradientArraySpace);
-                var bottomLeft = dotProductWithGridDirection(
                     gradientArray, xLower, yUpper, xInGradientArraySpace, yInGradientArraySpace);
-                var bottomRight = dotProductWithGridDirection(
+                var topRight = dotProductWithGridDirection(
                     gradientArray, xUpper, yUpper, xInGradientArraySpace, yInGradientArraySpace);
+                var bottomLeft = dotProductWithGridDirection(
+                    gradientArray, xLower, yLower, xInGradientArraySpace, yInGradientArraySpace);
+                var bottomRight = dotProductWithGridDirection(
+                    gradientArray, xUpper, yLower, xInGradientArraySpace, yInGradientArraySpace);
 
                 // Interpolation weights
-                var tx = Interpolate.SmoothStep(0f, 1f, (float) x - xLower);
-                var ty = Interpolate.SmoothStep(0f, 1f, (float) y - yLower);
+                var tx = Interpolate.SmoothStep(0f, 1f, xInGradientArraySpace - xLower);
+                var ty = 1 - Interpolate.SmoothStep(0f, 1f, yInGradientArraySpace - yLower);
 
-                return Interpolate.BiLerp(topLeft, topRight, bottomLeft, bottomRight, tx, ty);
+                var top = Interpolate.Lerp(topLeft, topRight, tx);
+                var bottom = Interpolate.Lerp(bottomLeft, bottomRight, tx);
+                return Interpolate.Lerp(top, bottom, ty);
+
+//                return Interpolate.BiLerp(topLeft, topRight, bottomLeft, bottomRight, tx, ty);
             }
 
             private static float dotProductWithGridDirection(
                 Vector2[,] gradientArray, int gridX, int gridY, float x, float y)
             {
                 var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
-                return Vector2.Dot(distance.Normalized(), gradientArray[gridX, gridY]);
+                return Vector2.Dot(distance, gradientArray[gridX, gridY]);
             }
 
             private void resetTilemap(TileType tileType)
