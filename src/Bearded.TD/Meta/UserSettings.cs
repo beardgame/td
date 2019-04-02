@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Game;
-using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Newtonsoft.Json;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -29,13 +28,13 @@ namespace Bearded.TD.Meta
         [JsonIgnore]
         // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings Dump;
-        
+
         public MiscSettings Misc = new MiscSettings();
         public UISettings UI = new UISettings();
         public GraphicsSettings Graphics = new GraphicsSettings();
         public DebugSettings Debug = new DebugSettings();
         public GameSettings.Builder LastGameSettings = new GameSettings.Builder();
-        
+
         public class MiscSettings
         {
             public string Username = "";
@@ -65,14 +64,6 @@ namespace Bearded.TD.Meta
             public bool InvulnerableBuildings = false;
             public double GameSpeed = 1;
             public bool RenderUIFallBack = false;
-            public LevelGenerator LevelGenerator = LevelGenerator.Default;
-        }
-
-        public enum LevelGenerator
-        {
-            Default,
-            Legacy,
-            Perlin
         }
     }
 }

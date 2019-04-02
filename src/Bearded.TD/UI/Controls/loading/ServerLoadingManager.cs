@@ -5,7 +5,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 
 namespace Bearded.TD.UI.Controls
@@ -52,12 +51,11 @@ namespace Bearded.TD.UI.Controls
 
         private ITilemapGenerator getTilemapGenerator()
         {
-            switch (UserSettings.Instance.Debug.LevelGenerator)
+            switch (Game.GameSettings.LevelGenerationMethod)
             {
-                case UserSettings.LevelGenerator.Default:
-                case UserSettings.LevelGenerator.Legacy:
+                case LevelGenerationMethod.Legacy:
                     return new DefaultTilemapGenerator(Logger);
-                case UserSettings.LevelGenerator.Perlin:
+                case LevelGenerationMethod.Perlin:
                     return new PerlinTilemapGenerator(Logger);
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.UI.Navigation;
@@ -22,6 +23,7 @@ namespace Bearded.TD.UI.Controls
         public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
         public int LevelSize => gameSettings.LevelSize;
         public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
+        public LevelGenerationMethod LevelGenerationMethod => gameSettings.LevelGenerationMethod;
 
         public event VoidEventHandler PlayersChanged;
         public event VoidEventHandler GameSettingsChanged;
@@ -81,7 +83,7 @@ namespace Bearded.TD.UI.Controls
             gameSettings.LevelSize = size;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
-        
+
         public void OnCycleWorkerDistributionMethod()
         {
             gameSettings.WorkerDistributionMethod = gameSettings.WorkerDistributionMethod + 1;
@@ -89,6 +91,16 @@ namespace Bearded.TD.UI.Controls
                 >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
             {
                 gameSettings.WorkerDistributionMethod = 0;
+            }
+            lobbyManager.UpdateGameSettings(gameSettings.Build());
+        }
+
+        public void OnCycleLevelGenerationMethod()
+        {
+            gameSettings.LevelGenerationMethod = gameSettings.LevelGenerationMethod + 1;
+            if ((byte) gameSettings.LevelGenerationMethod >= Enum.GetValues(LevelGenerationMethod.GetType()).Length)
+            {
+                gameSettings.LevelGenerationMethod = 0;
             }
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }

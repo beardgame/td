@@ -39,8 +39,11 @@ namespace Bearded.TD.UI.Controls
                     levelSize,
                     Button(() => model.WorkerDistributionMethod.ToString())
                         .Anchor(a => a.Top(margin: 36, height: 32))
-                        .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod)
-                }.Anchor(a => a.Left(margin: 20, width: 250).Top(margin: 20, height: 100))
+                        .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
+                    Button(() => model.LevelGenerationMethod.ToString())
+                        .Anchor(a => a.Top(margin: 72, height: 32))
+                        .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
+                }.Anchor(a => a.Left(margin: 20, width: 250).Top(margin: 20, height: 136))
             );
 
             var list = new ListControl {ItemSource = new PlayerListItemSource(model)}
