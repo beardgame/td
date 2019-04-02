@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Game.World;
+using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -117,13 +118,40 @@ namespace Bearded.TD.Game.Generation
             // Fills a tilemap with values 0-1 based on the Perlin noise gradient array.
             private void fillHardnessTilemapWithNormalizedPerlin(Vector2[,] gradientArray)
             {
+                var perlinTilemap = new Tilemap<double>(hardnessTilemap.Radius);
+
                 foreach (var tile in typeTilemap)
                 {
                     var perlin = perlinAtGridCellFromWorldSpace(gradientArray, tile);
+                    // We should be doing (perlin * .5 + .5) here, but somehow we are getting values very close to .5 :(
                     var normalizedPerlin = (perlin + .5).Clamped(0, 1);
-                    normalizedPerlin = Math.Sin(Mathf.PiOver2 * normalizedPerlin);
-                    hardnessTilemap[tile] = normalizedPerlin;
+                    perlinTilemap[tile] = normalizedPerlin;
                 }
+
+                foreach (var tile in perlinTilemap)
+                {
+                    hardnessTilemap[tile] = transformNoise(perlinTilemap, tile);
+                }
+            }
+
+            private static double transformNoise(Tilemap<double> sourceMap, Tile tile)
+            {
+                return 2.2 * Math.Abs(sourceMap[tile]);
+
+//                const int numIterations = 5;
+//                double sum = tile.Y;
+//
+//                for (var i = 0; i < numIterations; i++)
+//                {
+//                    var multiplier = 1 << i;
+//
+//                    var multipliedX = (multiplier * tile.X) % sourceMap.Radius;
+//                    var multipliedY = (multiplier * tile.Y) % sourceMap.Radius;
+//
+//                    sum += sourceMap[multipliedX, multipliedY] / multiplier;
+//                }
+//
+//                return .5 + .5 * Math.Sin(sum);
             }
 
             private float perlinAtGridCellFromTileSpace(Vector2[,] gradientArray, Tile tile)
