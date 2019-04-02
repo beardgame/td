@@ -49,5 +49,22 @@ namespace Bearded.TD.Tiles
 
         public override string ToString()
             => $"{X},{Y}";
+
+        /*
+         *    -z
+         * +y    +x
+         * -z    -y
+         *    +z
+         */
+        public (int X, int Y, int Z) ToXYZ()
+        {
+            var yy = -X;
+            var zz = -Y;
+            var xx = -yy - zz;
+
+            return (xx, yy, zz);
+        }
+
+        public static Tile FromXYZ(int _, int y, int z) => new Tile(-y, -z);
     }
 }
