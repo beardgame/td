@@ -60,6 +60,7 @@ namespace Bearded.TD.Meta
         public class DebugSettings
         {
             public bool Deferred = false;
+            public int Coordinates = 0;
             public int Pathfinding = 0;
             public bool InvulnerableBuildings = false;
             public double GameSpeed = 1;
