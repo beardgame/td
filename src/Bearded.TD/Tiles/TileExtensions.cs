@@ -11,5 +11,17 @@ namespace Bearded.TD.Tiles
 
         public static bool NeighboursToTiles(this Tile tile, IEnumerable<Tile> otherTiles)
             => tile.PossibleNeighbours().Prepend(tile).OverlapsWithTiles(otherTiles);
+
+        public static Tile RotatedCounterClockwiseAroundOrigin(this Tile tile)
+        {
+            var (x, y, z) = tile.ToXYZ();
+            return Tile.FromXYZ(-z, -x, -y);
+        }
+
+        public static Tile RotatedClockwiseAroundOrigin(this Tile tile)
+        {
+            var (x, y, z) = tile.ToXYZ();
+            return Tile.FromXYZ(-y, -z, -x);
+        }
     }
 }
