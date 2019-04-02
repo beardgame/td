@@ -36,8 +36,8 @@ namespace Bearded.TD.Game.World
                 case TileType.Floor:
                     return (rnd(0, 0.05f), rnd(0.9f, 0.9f));
                 case TileType.Wall:
-                    //return (.4f + .4f * (float) geometry.Hardness, rnd(0.3f, 0.7f));
-                    return (rnd(0.4f, 0.8f), rnd(0.3f, 0.7f));
+                    return (.4f + .4f * (float) geometry.Hardness, rnd(0.3f, 0.7f));
+//                    return (rnd(0.4f, 0.8f), rnd(0.3f, 0.7f));
                 case TileType.Crevice:
                     return (-3, rnd(0.1f, 0.5f));
                 default:

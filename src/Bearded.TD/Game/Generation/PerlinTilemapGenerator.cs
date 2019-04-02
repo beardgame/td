@@ -16,6 +16,8 @@ namespace Bearded.TD.Game.Generation
 {
     sealed class PerlinTilemapGenerator : ITilemapGenerator
     {
+        private const int hardnessRampDistance = 5;
+
         private readonly Logger logger;
 
         public PerlinTilemapGenerator(Logger logger)
@@ -86,7 +88,16 @@ namespace Bearded.TD.Game.Generation
 
                 foreach (var tile in hardnessTilemap)
                 {
-                    hardnessTilemap[tile] = (sourceMap1[tile] + sourceMap2[tile] + sourceMap3[tile]).Clamped(0, 1);
+                    double hardnessOverride = 0;
+                    var distanceFromEdge = hardnessTilemap.Radius - tile.Radius;
+
+                    if (distanceFromEdge < hardnessRampDistance)
+                    {
+                        hardnessOverride = 1 - (double) distanceFromEdge / hardnessRampDistance;
+                    }
+
+                    var desiredHardness = (sourceMap1[tile] + sourceMap2[tile] + sourceMap3[tile]).Clamped(0, 1);
+                    hardnessTilemap[tile] = Math.Max(desiredHardness, hardnessOverride);
                 }
 
                 createPathsFromNoiseTilemap();
@@ -164,6 +175,8 @@ namespace Bearded.TD.Game.Generation
 
             private void carve()
             {
+                carveEverythingBelowHardness(0.08);
+
                 var q = new Queue<Tile>(typeTilemap.Where(isType(TileType.Floor)));
 
                 while (q.Count > 0)
@@ -171,9 +184,9 @@ namespace Bearded.TD.Game.Generation
                     var curr = q.Dequeue();
                     foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileType.Wall)))
                     {
-                        if (random.NormalDouble(0, .3) >= hardnessTilemap[curr])
+                        if (random.NormalDouble(0, 0.33) >= hardnessTilemap[curr])
                         {
-                            var type = random.NextDouble() < .2 ? TileType.Crevice : typeTilemap[curr];
+                            var type = typeTilemap[curr];
                             typeTilemap[neighbor] = type;
                             q.Enqueue(neighbor);
                         }
@@ -181,6 +194,15 @@ namespace Bearded.TD.Game.Generation
                 }
 
                 Func<Tile, bool> isType(TileType type) => tile => typeTilemap[tile] == type;
+            }
+
+            private void carveEverythingBelowHardness(double hardness)
+            {
+                foreach (var tile in hardnessTilemap.Where(tile =>
+                    typeTilemap[tile] == TileType.Wall && hardnessTilemap[tile] < hardness))
+                {
+                    typeTilemap[tile] = TileType.Floor;
+                }
             }
         }
 
