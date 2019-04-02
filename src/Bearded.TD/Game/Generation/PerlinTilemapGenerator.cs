@@ -77,9 +77,10 @@ namespace Bearded.TD.Game.Generation
                 var sourceMap3 = new Tilemap<double>(hardnessTilemap.Radius);
 
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
-                    sourceMap1, 10, (tilemap, tile) => 1.8 * Math.Abs(tilemap[tile]));
+                    sourceMap1, 10, (tilemap, tile) => 1.8 * Math.Abs(tilemap[tile.RotatedClockwiseAroundOrigin()]));
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
-                    sourceMap2, 5, (tilemap, tile) => 0.6 * Math.Abs(tilemap[tile]));
+                    sourceMap2, 5, (tilemap, tile) => 0.6 * Math.Abs(tilemap[tile.RotatedCounterClockwiseAroundOrigin()]));
+                // Keep the lowest amplitude noise coordinate-system aligned
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     sourceMap3, 3, (tilemap, tile) => 0.2 * Math.Abs(tilemap[tile]));
 
