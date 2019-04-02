@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Generation
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
 
-            var typeTilemap = new Tilemap<TileType>(radius);
+            var typeTilemap = new Tilemap<TileType>(radius, _ => TileType.Wall);
             var hardnessTilemap = new Tilemap<double>(radius);
             var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger);
 
@@ -72,42 +72,26 @@ namespace Bearded.TD.Game.Generation
 
             public void GenerateTilemap()
             {
-                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(hardnessTilemap, 10, transformNoise);
+                var sourceMap1 = new Tilemap<double>(hardnessTilemap.Radius);
+                var sourceMap2 = new Tilemap<double>(hardnessTilemap.Radius);
+                var sourceMap3 = new Tilemap<double>(hardnessTilemap.Radius);
 
-                resetTilemap(TileType.Wall);
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    sourceMap1, 10, (tilemap, tile) => 1.8 * Math.Abs(tilemap[tile]));
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    sourceMap2, 5, (tilemap, tile) => 0.6 * Math.Abs(tilemap[tile]));
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    sourceMap3, 3, (tilemap, tile) => 0.2 * Math.Abs(tilemap[tile]));
+
+                foreach (var tile in hardnessTilemap)
+                {
+                    hardnessTilemap[tile] = (sourceMap1[tile] + sourceMap2[tile] + sourceMap3[tile]).Clamped(0, 1);
+                }
 
                 createPathsFromNoiseTilemap();
                 clearCenter(4);
 
                 carve();
-            }
-
-            private static double transformNoise(Tilemap<double> sourceMap, Tile tile)
-            {
-                return 2.2 * Math.Abs(sourceMap[tile]);
-
-//                const int numIterations = 5;
-//                double sum = tile.Y;
-//
-//                for (var i = 0; i < numIterations; i++)
-//                {
-//                    var multiplier = 1 << i;
-//
-//                    var multipliedX = (multiplier * tile.X) % sourceMap.Radius;
-//                    var multipliedY = (multiplier * tile.Y) % sourceMap.Radius;
-//
-//                    sum += sourceMap[multipliedX, multipliedY] / multiplier;
-//                }
-//
-//                return .5 + .5 * Math.Sin(sum);
-            }
-
-            private void resetTilemap(TileType tileType)
-            {
-                foreach (var t in typeTilemap)
-                {
-                    typeTilemap[t] = tileType;
-                }
             }
 
             private void createPathsFromNoiseTilemap()
@@ -218,10 +202,9 @@ namespace Bearded.TD.Game.Generation
             public void FillTilemapWithPerlinNoise(
                 Tilemap<double> tilemap, int gridSize, Func<Tilemap<double>, Tile, double> noiseTransformer)
             {
-                var tileArrayDimension = 2 * tilemap.Radius + 1;
+                var maxDeviationFromCenter = (tilemap.Radius + 1) * Constants.Game.World.HexagonDiameter;
 
-                var gradientArrayDimension =
-                    Mathf.CeilToInt(Constants.Game.World.HexagonDiameter * tileArrayDimension / gridSize) + 1;
+                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 1;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
                 var sourceMap = new Tilemap<double>(tilemap.Radius);
