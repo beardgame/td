@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Game.World;
-using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -11,7 +10,6 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Generation
@@ -19,12 +17,10 @@ namespace Bearded.TD.Game.Generation
     sealed class PerlinTilemapGenerator : ITilemapGenerator
     {
         private readonly Logger logger;
-        private readonly int gridSize;
 
-        public PerlinTilemapGenerator(Logger logger, int gridSize = 10)
+        public PerlinTilemapGenerator(Logger logger)
         {
             this.logger = logger;
-            this.gridSize = gridSize;
         }
 
         public Tilemap<TileGeometry> Generate(int radius, int seed)
@@ -34,7 +30,7 @@ namespace Bearded.TD.Game.Generation
 
             var typeTilemap = new Tilemap<TileType>(radius);
             var hardnessTilemap = new Tilemap<double>(radius);
-            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger, gridSize);
+            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger);
 
             gen.GenerateTilemap();
 
@@ -55,35 +51,28 @@ namespace Bearded.TD.Game.Generation
         {
             private readonly Tilemap<TileType> typeTilemap;
             private readonly Tilemap<double> hardnessTilemap;
+            private readonly Logger logger;
             private readonly Level level;
             private readonly Random random;
-            private readonly Logger logger;
-            private readonly int gridSize;
+            private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
 
             public Generator(
                 Tilemap<TileType> typeTilemap,
                 Tilemap<double> hardnessTilemap,
                 int seed,
-                Logger logger,
-                int gridSize)
+                Logger logger)
             {
                 this.typeTilemap = typeTilemap;
                 this.hardnessTilemap = hardnessTilemap;
+                this.logger = logger;
                 level = new Level(typeTilemap.Radius);
                 random = new Random(seed);
-                this.logger = logger;
-                this.gridSize = gridSize;
+                perlinSourcemapGenerator = new PerlinSourcemapGenerator(random);
             }
 
             public void GenerateTilemap()
             {
-                var tileArrayDimension = 2 * typeTilemap.Radius + 1;
-
-                var gradientArrayDimension =
-                    Mathf.CeilToInt(Constants.Game.World.HexagonDiameter * tileArrayDimension / gridSize) + 1;
-                var gradientArray = createRandomGradientGrid(gradientArrayDimension);
-
-                fillHardnessTilemapWithNormalizedPerlin(gradientArray);
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(hardnessTilemap, 10, transformNoise);
 
                 resetTilemap(TileType.Wall);
 
@@ -91,47 +80,6 @@ namespace Bearded.TD.Game.Generation
                 clearCenter(4);
 
                 carve();
-            }
-
-            private Vector2[,] createRandomGradientGrid(int dimension)
-            {
-                logger.Trace?.Log("Generating random gradients for level generation.");
-
-                // Use uniformly distributed vectors to force better gradient distribution.
-                const int numSamples = 12;
-                var vectors = Enumerable.Range(0, numSamples)
-                    .Select(i => Direction2.FromRadians(Mathf.TwoPi * i / numSamples).Vector)
-                    .ToArray();
-
-                var grid = new Vector2[dimension, dimension];
-                for (var j = 0; j < dimension; j++)
-                {
-                    for (var i = 0; i < dimension; i++)
-                    {
-                        grid[i, j] = vectors[random.Next(numSamples)];
-                    }
-                }
-
-                return grid;
-            }
-
-            // Fills a tilemap with values 0-1 based on the Perlin noise gradient array.
-            private void fillHardnessTilemapWithNormalizedPerlin(Vector2[,] gradientArray)
-            {
-                var perlinTilemap = new Tilemap<double>(hardnessTilemap.Radius);
-
-                foreach (var tile in typeTilemap)
-                {
-                    var perlin = perlinAtGridCellFromWorldSpace(gradientArray, tile);
-                    // We should be doing (perlin * .5 + .5) here, but somehow we are getting values very close to .5 :(
-                    var normalizedPerlin = (perlin + .5).Clamped(0, 1);
-                    perlinTilemap[tile] = normalizedPerlin;
-                }
-
-                foreach (var tile in perlinTilemap)
-                {
-                    hardnessTilemap[tile] = transformNoise(perlinTilemap, tile);
-                }
             }
 
             private static double transformNoise(Tilemap<double> sourceMap, Tile tile)
@@ -152,58 +100,6 @@ namespace Bearded.TD.Game.Generation
 //                }
 //
 //                return .5 + .5 * Math.Sin(sum);
-            }
-
-            private float perlinAtGridCellFromTileSpace(Vector2[,] gradientArray, Tile tile)
-            {
-                var xInGradientArraySpace = (float) (tile.X + hardnessTilemap.Radius) / gridSize;
-                var yInGradientArraySpace = (float) (tile.Y + hardnessTilemap.Radius) / gridSize;
-
-                return perlinAt(gradientArray, xInGradientArraySpace, yInGradientArraySpace);
-            }
-
-            private float perlinAtGridCellFromWorldSpace(Vector2[,] gradientArray, Tile tile)
-            {
-                var offset = new Vector2(gradientArray.GetLength(0) / 2f, gradientArray.GetLength(1) / 2f);
-
-                var worldPosition = Level.GetPosition(tile).NumericValue / gridSize + offset;
-
-                return perlinAt(gradientArray, worldPosition.X, worldPosition.Y);
-            }
-
-            private static float perlinAt(Vector2[,] gradientArray, float x, float y)
-            {
-                // Grid coordinates lower and upper
-                var xLower = (int) x;
-                var xUpper = xLower + 1;
-
-                var yLower = (int) y;
-                var yUpper = yLower + 1;
-
-                // Calculate dot products between distance and gradient for each of the grid corners
-                var topLeft = dotProductWithGridDirection(
-                    gradientArray, xLower, yUpper, x, y);
-                var topRight = dotProductWithGridDirection(
-                    gradientArray, xUpper, yUpper, x, y);
-                var bottomLeft = dotProductWithGridDirection(
-                    gradientArray, xLower, yLower, x, y);
-                var bottomRight = dotProductWithGridDirection(
-                    gradientArray, xUpper, yLower, x, y);
-
-                // Interpolation weights
-                var tx = Interpolate.SmoothStep(0f, 1f, x - xLower);
-                var ty = 1 - Interpolate.SmoothStep(0f, 1f, y - yLower);
-
-                var top = Interpolate.Lerp(topLeft, topRight, tx);
-                var bottom = Interpolate.Lerp(bottomLeft, bottomRight, tx);
-                return Interpolate.Lerp(top, bottom, ty);
-            }
-
-            private static float dotProductWithGridDirection(
-                Vector2[,] gradientArray, int gridX, int gridY, float x, float y)
-            {
-                var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
-                return Vector2.Dot(distance, gradientArray[gridX, gridY]);
             }
 
             private void resetTilemap(TileType tileType)
@@ -300,6 +196,119 @@ namespace Bearded.TD.Game.Generation
                 }
 
                 Func<Tile, bool> isType(TileType type) => tile => typeTilemap[tile] == type;
+            }
+        }
+
+        private class PerlinSourcemapGenerator
+        {
+            private readonly Random random;
+            private readonly Vector2[] vectors;
+
+            public PerlinSourcemapGenerator(Random random)
+            {
+                this.random = random;
+
+                // Use uniformly distributed vectors to force better gradient distribution.
+                const int numSamples = 12;
+                vectors = Enumerable.Range(0, numSamples)
+                    .Select(i => Direction2.FromRadians(Mathf.TwoPi * i / numSamples).Vector)
+                    .ToArray();
+            }
+
+            public void FillTilemapWithPerlinNoise(
+                Tilemap<double> tilemap, int gridSize, Func<Tilemap<double>, Tile, double> noiseTransformer)
+            {
+                var tileArrayDimension = 2 * tilemap.Radius + 1;
+
+                var gradientArrayDimension =
+                    Mathf.CeilToInt(Constants.Game.World.HexagonDiameter * tileArrayDimension / gridSize) + 1;
+                var gradientArray = createRandomGradientGrid(gradientArrayDimension);
+
+                var sourceMap = new Tilemap<double>(tilemap.Radius);
+
+                fillTilemapWithPerlin(sourceMap, gridSize, gradientArray);
+
+                foreach (var t in tilemap)
+                {
+                    tilemap[t] = noiseTransformer(sourceMap, t);
+                }
+            }
+
+            private Vector2[,] createRandomGradientGrid(int dimension)
+            {
+                var grid = new Vector2[dimension, dimension];
+                for (var j = 0; j < dimension; j++)
+                {
+                    for (var i = 0; i < dimension; i++)
+                    {
+                        grid[i, j] = vectors[random.Next(vectors.Length)];
+                    }
+                }
+
+                return grid;
+            }
+
+            // Fills a tilemap with values 0-1 based on the Perlin noise gradient array.
+            private static void fillTilemapWithPerlin(
+                Tilemap<double> tilemap, int gridSize, Vector2[,] gradientArray)
+            {
+                foreach (var tile in tilemap)
+                {
+                    tilemap[tile] = perlinAtGridCellFromWorldSpace(gridSize, gradientArray, tile);
+                }
+            }
+
+            private float perlinAtGridCellFromTileSpace(
+                Tilemap<double> tilemap, int gridSize, Vector2[,] gradientArray, Tile tile)
+            {
+                var xInGradientArraySpace = (float) (tile.X + tilemap.Radius) / gridSize;
+                var yInGradientArraySpace = (float) (tile.Y + tilemap.Radius) / gridSize;
+
+                return perlinAt(gradientArray, xInGradientArraySpace, yInGradientArraySpace);
+            }
+
+            private static float perlinAtGridCellFromWorldSpace(int gridSize, Vector2[,] gradientArray, Tile tile)
+            {
+                var offset = new Vector2(gradientArray.GetLength(0) / 2f, gradientArray.GetLength(1) / 2f);
+
+                var worldPosition = Level.GetPosition(tile).NumericValue / gridSize + offset;
+
+                return perlinAt(gradientArray, worldPosition.X, worldPosition.Y);
+            }
+
+            private static float perlinAt(Vector2[,] gradientArray, float x, float y)
+            {
+                // Grid coordinates lower and upper
+                var xLower = (int) x;
+                var xUpper = xLower + 1;
+
+                var yLower = (int) y;
+                var yUpper = yLower + 1;
+
+                // Calculate dot products between distance and gradient for each of the grid corners
+                var topLeft = dotProductWithGridDirection(
+                    gradientArray, xLower, yUpper, x, y);
+                var topRight = dotProductWithGridDirection(
+                    gradientArray, xUpper, yUpper, x, y);
+                var bottomLeft = dotProductWithGridDirection(
+                    gradientArray, xLower, yLower, x, y);
+                var bottomRight = dotProductWithGridDirection(
+                    gradientArray, xUpper, yLower, x, y);
+
+                // Interpolation weights
+                var tx = Interpolate.SmoothStep(0f, 1f, x - xLower);
+                var ty = 1 - Interpolate.SmoothStep(0f, 1f, y - yLower);
+
+                var top = Interpolate.Lerp(topLeft, topRight, tx);
+                var bottom = Interpolate.Lerp(bottomLeft, bottomRight, tx);
+                return Interpolate.Lerp(top, bottom, ty);
+            }
+
+            private static float dotProductWithGridDirection(
+                Vector2[,] gradientArray, int gridX, int gridY, float x, float y)
+            {
+                var distance = new Vector2(x, y) - new Vector2(gridX, gridY);
+                return Vector2.Dot(distance, gradientArray[gridX, gridY]);
             }
         }
     }
