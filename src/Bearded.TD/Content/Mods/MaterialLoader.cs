@@ -1,22 +1,41 @@
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using Bearded.TD.Content.Models;
+using System.Linq;
+using amulware.Graphics;
 
 namespace Bearded.TD.Content.Mods
 {
     class MaterialLoader
     {
         private readonly ModLoadingContext context;
-        private readonly ModMetadata meta;
 
-        public MaterialLoader(ModLoadingContext context, ModMetadata meta)
+        public MaterialLoader(ModLoadingContext context)
         {
             this.context = context;
-            this.meta = meta;
         }
 
-        public Material TryLoad(FileInfo file, Serialization.Models.Material materialJson)
+        public ArrayTexture CreateArrayTexture(FileInfo file, List<string> textureFilenames)
         {
-            return null;
+            var baseDir = file.Directory;
+            var textureFiles = textureFilenames
+                .Select(name => (Name: name, File: baseDir.GetFiles(name).SingleOrDefault()))
+                .Where(f => f.File != null ? true : throw new InvalidDataException($"Could not find unique material texture file '{f.Name}'."))
+                .Select(f => f.File)
+                .ToList();
+
+            var textureBitmaps = textureFiles.Select(f => new Bitmap(f.FullName)).ToList();
+
+            var resizedBitmaps = unifySize(textureBitmaps);
+
+            return context.GraphicsLoader.CreateArrayTexture(resizedBitmaps);
+        }
+
+        private static List<Bitmap> unifySize(List<Bitmap> bitmaps)
+        {
+            var size = new Size(bitmaps.Max(b => b.Width), bitmaps.Max(b => b.Height));
+
+            return bitmaps.Select(b => b.Size == size ? b : new Bitmap(b, size)).ToList();
         }
     }
 }

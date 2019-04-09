@@ -18,10 +18,8 @@ namespace Bearded.TD.Rendering
 
         private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
 
-        public ContentSurfaceManager(
-            LevelGeometryManager levelGeometry,
-            ReadonlyBlueprintCollection<SpriteSet> spriteSets
-            )
+        public ContentSurfaceManager(LevelGeometryManager levelGeometry,
+            ReadonlyBlueprintCollection<SpriteSet> spriteSets)
         {
             LevelGeometry = levelGeometry;
             groupedAndSortedSpriteSets = spriteSets.All

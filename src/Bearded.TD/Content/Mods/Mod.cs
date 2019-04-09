@@ -23,6 +23,7 @@ namespace Bearded.TD.Content.Mods
         public Mod(string id,
             string name,
             ReadonlyBlueprintCollection<Shader> shaders,
+            ReadonlyBlueprintCollection<Material> materials,
             ReadonlyBlueprintCollection<SpriteSet> sprites,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
@@ -34,7 +35,11 @@ namespace Bearded.TD.Content.Mods
         {
             Id = id;
             Name = name;
-            Blueprints = new Blueprints(shaders, sprites, footprints, buildings, units, weapons, projectiles, upgrades);
+            Blueprints = new Blueprints(
+                shaders, materials, sprites,
+                footprints, buildings, units,
+                weapons, projectiles, upgrades
+                );
             Tags = tags;
         }
     }

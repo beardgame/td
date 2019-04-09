@@ -49,10 +49,16 @@ namespace Bearded.TD.UI.Controls
         {
             this.game = game;
             geometries = renderContext.Geometries;
+            
+            // TODO: this should not stay hardcoded forever
+            var levelMaterial = game.Blueprints.Materials["default"];
 
-            var levelGeometry = new LevelGeometryManager(game, renderContext);
+            var levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
 
-            DeferredSurfaces = new ContentSurfaceManager(levelGeometry, game.Blueprints.Sprites);
+            DeferredSurfaces = new ContentSurfaceManager(
+                levelGeometry,
+                game.Blueprints.Sprites
+                );
         }
 
         public override void Draw()
@@ -60,7 +66,8 @@ namespace Bearded.TD.UI.Controls
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
             var state = game.State;
-            
+
+            drawCursorLight(state);
             drawAmbientLight(state);
             drawGameObjects(state);
             drawDebug(state);
@@ -72,13 +79,21 @@ namespace Bearded.TD.UI.Controls
             game.Camera.OnViewportSizeChanged(ViewportSize);
         }
 
+        private void drawCursorLight(GameState state)
+        {
+            geometries.PointLight.Draw(
+                game.PlayerInput.CursorPosition.NumericValue.WithZ(0.5f),
+                radius: 5, color: Color.White
+                );
+        }
+
         private void drawAmbientLight(GameState state)
         {
             var radius = state.Level.Radius;
 
             geometries.PointLight.Draw(
                 new Vector3(-radius * 2, radius * 2, radius),
-                radius * 10, Color.White * 0.15f
+                radius * 10, Color.White * 0.25f
                 );
         }
 

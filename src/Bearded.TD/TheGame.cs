@@ -56,7 +56,7 @@ namespace Bearded.TD
             var dependencyResolver = new DependencyResolver();
             dependencyResolver.Add(logger);
 
-            renderContext = new RenderContext(glActionQueue);
+            renderContext = new RenderContext(glActionQueue, logger);
 
             var surfaces = renderContext.Surfaces;
             rendererRouter = new CachedRendererRouter(

@@ -94,6 +94,7 @@ namespace Bearded.TD.UI.Controls
                 ReadonlyBlueprintCollection.Empty,
                 ReadonlyBlueprintCollection.Empty,
                 ReadonlyBlueprintCollection.Empty,
+                ReadonlyBlueprintCollection.Empty,
                 getHardcodedUpgrades());
         }
         

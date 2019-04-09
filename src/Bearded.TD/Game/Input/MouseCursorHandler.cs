@@ -12,10 +12,11 @@ namespace Bearded.TD.Game.Input
         private readonly GameCamera camera;
         private readonly Level level;
         private TileSelection tileSelection;
-        private Position2 mousePosition;
 
         public ActionState Click { get; private set; }
         public ActionState Cancel { get; private set; }
+        public Position2 CursorPosition { get; private set; }
+
         public PositionedFootprint CurrentFootprint { get; private set; }
 
         public MouseCursorHandler(GameCamera camera, Level level)
@@ -29,7 +30,7 @@ namespace Bearded.TD.Game.Input
         public void Update(UpdateEventArgs args, InputState input)
         {
             cameraController.HandleInput(args, input);
-            mousePosition = new Position2(camera.TransformScreenToWorldPos(input.Mouse.Position));
+            CursorPosition = new Position2(camera.TransformScreenToWorldPos(input.Mouse.Position));
             Click = input.Mouse.Click;
             Cancel = input.Mouse.Cancel;
             updateFootprint();
@@ -43,7 +44,7 @@ namespace Bearded.TD.Game.Input
 
         private void updateFootprint()
         {
-            CurrentFootprint = tileSelection.GetPositionedFootprint(level, mousePosition);
+            CurrentFootprint = tileSelection.GetPositionedFootprint(level, CursorPosition);
         }
     }
 }
