@@ -126,7 +126,7 @@ namespace Bearded.TD.Game.Buildings
             DrawBuildingName(geometries, Color.Black);
             base.Draw(geometries);
 
-            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Orange * 0.2f);
+            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Coral * 0.75f);
         }
     }
 }

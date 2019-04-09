@@ -117,24 +117,48 @@ namespace Bearded.TD.Rendering
         {
             renderTo(gTarget, bufferSize);
             
+            setLevelGeometryRenderSettings();
+            clear();
+
+            renderLevelGeometry(contentSurfaces);
+            
+            setSpriteGeometryRenderSettings();
+
+            renderDrawGroups(contentSurfaces, worldDrawGroups);
+
+            unsetGeometryRenderSettings();
+        }
+
+        private static void renderLevelGeometry(ContentSurfaceManager contentSurfaces)
+        {
+            contentSurfaces.LevelGeometry.RenderAll();
+        }
+
+        private static void unsetGeometryRenderSettings()
+        {
+            GL.Disable(EnableCap.DepthTest);
+        }
+
+        private static void setSpriteGeometryRenderSettings()
+        {
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Blend);
+        }
+
+        private static void setLevelGeometryRenderSettings()
+        {
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
             GL.Disable(EnableCap.Blend);
+        }
 
+        private static void clear()
+        {
             GL.ClearColor(0, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
-            contentSurfaces.LevelGeometry.RenderAll();
-            
-            GL.DepthMask(false);
-            GL.Disable(EnableCap.CullFace);
-            GL.Enable(EnableCap.Blend);
-
-            renderDrawGroups(contentSurfaces, worldDrawGroups);
-
-            GL.Disable(EnableCap.DepthTest);
         }
 
         private void renderLightsToAccumBuffer()

@@ -69,7 +69,7 @@ namespace Bearded.TD.Content.Mods
                 
                 configureSerializerDependency(shaders, m => m.Blueprints.Shaders);
 
-                //var materials = loadMaterials(shaders);
+                var materials = loadMaterials(shaders);
 
                 var sprites = loadSprites();
 
@@ -91,6 +91,7 @@ namespace Bearded.TD.Content.Mods
                     meta.Id,
                     meta.Name,
                     shaders,
+                    materials,
                     sprites,
                     footprints,
                     buildings,
@@ -110,7 +111,7 @@ namespace Bearded.TD.Content.Mods
 
             private ReadonlyBlueprintCollection<Material> loadMaterials(ReadonlyBlueprintCollection<Shader> shaders)
             {
-                var loader = new MaterialLoader(context, meta);
+                var loader = new MaterialLoader(context);
                 return loadBlueprintsDependingOnJsonFile<Material, MaterialJson, MaterialLoader>("gfx/materials", loader);
             }
             

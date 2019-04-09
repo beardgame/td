@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Utilities.Input;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input
 {
@@ -11,6 +12,7 @@ namespace Bearded.TD.Game.Input
         private InteractionHandler interactionHandler;
 
         public bool IsMouseFocused { get; set; }
+        public Position2 CursorPosition => cursor.CursorPosition;
 
         public PlayerInput(GameInstance game)
         {

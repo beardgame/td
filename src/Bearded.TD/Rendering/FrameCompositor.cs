@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -10,13 +13,16 @@ namespace Bearded.TD.Rendering
 {
     class FrameCompositor
     {
-        private DateTime nextShaderReloadTime = DateTime.UtcNow;
+        private readonly Logger logger;
         private readonly SurfaceManager surfaces;
         private readonly DeferredRenderer deferredRenderer;
+        
+        private DateTime nextShaderReloadTime = DateTime.UtcNow;
         public ViewportSize ViewPort { get; private set; }
 
-        public FrameCompositor(SurfaceManager surfaces)
+        public FrameCompositor(Logger logger, SurfaceManager surfaces)
         {
+            this.logger = logger;
             this.surfaces = surfaces;
             deferredRenderer = new DeferredRenderer(surfaces);
         }
@@ -29,7 +35,9 @@ namespace Bearded.TD.Rendering
 
         public void PrepareForFrame()
         {
+#if DEBUG
             reloadShadersIfNeeded();
+#endif
 
             GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
             GL.Disable(EnableCap.ScissorTest);
@@ -54,8 +62,39 @@ namespace Bearded.TD.Rendering
 
             nextShaderReloadTime = now + TimeSpan.FromSeconds(1);
             
-            // TODO: debug why this doesn't work and print something to the console every time shaders are reloaded or fail to
-            surfaces.Shaders.TryReloadAll();
+            var report = surfaces.Shaders.TryReloadAll();
+
+            logShaderReloadReport(report);
+        }
+
+        private void logShaderReloadReport(ShaderReloadReport report)
+        {
+            if (!report.TriedReloadingAnything)
+                return;
+            
+            if (report.ReloadedShaderCount > 0)
+                logger.Debug?.Log($"Reloaded {report.ReloadedShaderCount} shaders.");
+            
+            if (report.ReloadedProgramCount > 0)
+                logger.Debug?.Log($"Reloaded {report.ReloadedProgramCount} shader programs.");
+
+            logShaderReloadErrors(report);
+        }
+
+        private void logShaderReloadErrors(ShaderReloadReport report)
+        {
+            if (report.ReloadExceptions.Count <= 0)
+                return;
+
+            logger.Error?.Log($"Failed to reload shaders:");
+
+            foreach (var exception in report.ReloadExceptions)
+            {
+                foreach (var line in exception.Message.Split('\n'))
+                {
+                    logger.Error?.Log(line);
+                }
+            }
         }
 
         public void RenderLayer(IRenderLayer layer)
