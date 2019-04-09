@@ -9,7 +9,7 @@ namespace Bearded.TD.Commands.Serialization
 {
     sealed class Serializers<TObject>
     {
-        public static Serializers<TObject> Instance { get; } = new Serializers<TObject>();
+        public static Serializers<TObject> Instance { get; private set; }
 
         private readonly Dictionary<Type, int> requestIds;
         private readonly Dictionary<Type, int> commandIds;
@@ -25,6 +25,11 @@ namespace Bearded.TD.Commands.Serialization
         public bool IsRequestSerializer(int id) => id >= 0 && id < firstCommandId;
         public bool IsCommandSerializer(int id) => id >= firstCommandId && id < maxId;
         public bool IsValidId(int id) => id >= 0 && id < maxId;
+
+        public static void Initialize()
+        {
+            Instance = new Serializers<TObject>();
+        }
 
         private Serializers()
         {

@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using amulware.Graphics;
+using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content;
+using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
@@ -49,6 +51,8 @@ namespace Bearded.TD
 
         protected override void OnLoad(EventArgs e)
         {
+            Serializers<GameInstance>.Initialize();
+            
             ConsoleCommands.Initialise();
             UserSettings.Load(logger);
             UserSettings.Save(logger);
