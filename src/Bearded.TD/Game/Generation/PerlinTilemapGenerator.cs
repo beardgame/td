@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Game.World;
@@ -10,6 +11,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 using OpenTK;
 
 namespace Bearded.TD.Game.Generation
@@ -57,6 +59,7 @@ namespace Bearded.TD.Game.Generation
             private readonly Level level;
             private readonly Random random;
             private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
+            private readonly GraphGenerator graphGenerator;
 
             public Generator(
                 Tilemap<TileType> typeTilemap,
@@ -70,6 +73,7 @@ namespace Bearded.TD.Game.Generation
                 level = new Level(typeTilemap.Radius);
                 random = new Random(seed);
                 perlinSourcemapGenerator = new PerlinSourcemapGenerator(random);
+                graphGenerator = new GraphGenerator(random);
             }
 
             public void GenerateTilemap()
@@ -86,10 +90,10 @@ namespace Bearded.TD.Game.Generation
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     sourceMap1, 10, (tilemap, tile) => 1.8 * Math.Abs(tilemap[tile.RotatedClockwiseAroundOrigin()]));
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
-                    sourceMap2, 5, (tilemap, tile) => 0.6 * Math.Abs(tilemap[tile.RotatedCounterClockwiseAroundOrigin()]));
+                    sourceMap2, 5, (tilemap, tile) => 0.9 * Math.Abs(tilemap[tile.RotatedCounterClockwiseAroundOrigin()]));
                 // Keep the lowest amplitude noise coordinate-system aligned
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
-                    sourceMap3, 3, (tilemap, tile) => 0.2 * Math.Abs(tilemap[tile]));
+                    sourceMap3, 3, (tilemap, tile) => 0.3 * Math.Abs(tilemap[tile]));
 
                 foreach (var tile in hardnessTilemap)
                 {
@@ -106,7 +110,8 @@ namespace Bearded.TD.Game.Generation
                     hardnessTilemap[tile] = Math.Max(desiredHardness, hardnessOverride);
                 }
 
-                createPathsToCorners();
+                //createPathsToCorners();
+                createTunnels();
                 clearCenter(4);
 
                 carve();
@@ -115,30 +120,70 @@ namespace Bearded.TD.Game.Generation
             private void createPathsToCorners()
             {
                 logger.Trace?.Log("Digging paths to all corners");
-                var result = doAllPairPathFindingFromTile(Tile.Origin);
+                var corners = Directions
+                    .All
+                    .Enumerate()
+                    .Select(dir => Tile.Origin.Offset(dir.Step() * typeTilemap.Radius))
+                    .ToList();
+
+                var result = createPathFindingTilemapToTile(Tile.Origin, corners);
+
+                foreach (var start in corners)
+                {
+                    digAlongShortestPath(start, Tile.Origin, result);
+                }
+            }
+
+            private void createTunnels()
+            {
+                var paths = graphGenerator.GenerateEdgesForConnectedGraph(getTilesForTunnelGraph().ToList());
+
+                foreach (var (from, to) in paths)
+                {
+                    var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableList.Create(from));
+                    digAlongShortestPath(from, to, pathFindingResult);
+                }
+            }
+
+            private IEnumerable<Tile> getTilesForTunnelGraph()
+            {
+                var points = graphGenerator.GenerateVerticesAlongConcentricRings(typeTilemap.Radius);
+
+                // Use this if you already have some tunnels and want avoid making other points next to it.
+//                var snappedPoints = points.Select(t => snapTileToAlreadyCarved(t, 3)).ToList();
+
+                // Use this if you want to make it less likely that points show up in hard rock.
+                var pushedPoints = points.Select(t => pushTileToLowestHardnessInRange(t, 5)).Distinct();
 
                 var corners = Directions
                     .All
                     .Enumerate()
                     .Select(dir => Tile.Origin.Offset(dir.Step() * typeTilemap.Radius));
-                foreach (var start in corners)
-                {
-                    var curr = start;
-                    while (curr != Tile.Origin)
-                    {
-                        typeTilemap[curr] = TileType.Floor;
-                        curr = result[curr].Parent;
-                    }
-                }
+                var center = Tile.Origin;
+
+                return pushedPoints.Concat(corners).Concat(ImmutableList.Create(center));
             }
 
-            private void createPathsBetweenRandomPoints()
+            private Tile snapTileToAlreadyCarved(Tile tile, int searchRadius)
             {
-
+                var floorTilesInRange = Tilemap.GetSpiralCenteredAt(tile, searchRadius)
+                    .Where(t => level.IsValid(t) && typeTilemap[t] == TileType.Floor)
+                    .ToList();
+                return floorTilesInRange.Count > 0 ? floorTilesInRange[random.Next(floorTilesInRange.Count)] : tile;
             }
 
-            private Tilemap<(Tile Parent, double Cost)> doAllPairPathFindingFromTile(Tile origin)
+            private Tile pushTileToLowestHardnessInRange(Tile tile, int searchRadius)
             {
+                return Tilemap.GetSpiralCenteredAt(tile, searchRadius)
+                    .Where(level.IsValid)
+                    .MinBy(t => hardnessTilemap[t]);
+            }
+
+            private Tilemap<(Tile Parent, double Cost)> createPathFindingTilemapToTile(
+                Tile origin, IEnumerable<Tile> targets)
+            {
+                var targetsLeft = new HashSet<Tile>(targets);
+
                 var q = new PriorityQueue<double, Tile>();
                 var result = new Tilemap<(Tile Parent, double Cost)>(hardnessTilemap.Radius);
 
@@ -147,9 +192,10 @@ namespace Bearded.TD.Game.Generation
                 q.Enqueue(0, origin);
                 result[origin] = (origin, 0);
 
-                while (q.Count > 0)
+                while (q.Count > 0 && targetsLeft.Count > 0)
                 {
                     var (currPriority, currTile) = q.Dequeue();
+                    targetsLeft.Remove(currTile);
 
                     foreach (var neighbor in level.ValidNeighboursOf(currTile))
                     {
@@ -174,6 +220,16 @@ namespace Bearded.TD.Game.Generation
                 return result;
             }
 
+            private void digAlongShortestPath(Tile source, Tile target, Tilemap<(Tile Parent, double Cost)> paths)
+            {
+                var curr = source;
+                while (curr != target)
+                {
+                    typeTilemap[curr] = TileType.Floor;
+                    curr = paths[curr].Parent;
+                }
+            }
+
             private void clearCenter(int radius)
             {
                 logger.Trace?.Log("Clearing center tiles");
@@ -187,7 +243,7 @@ namespace Bearded.TD.Game.Generation
             private void carve()
             {
                 // The value here has been chosen based on experimentation on what looks good.
-//                carveEverythingBelowHardness(0.08);
+                carveEverythingBelowHardness(0.1);
 
                 var q = new Queue<Tile>(typeTilemap.Where(isType(TileType.Floor)));
 
@@ -197,7 +253,9 @@ namespace Bearded.TD.Game.Generation
                     foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileType.Wall)))
                     {
                         // The standard deviation here has been chosen based on experimentation on what looks good.
-                        if (random.NormalDouble(0, 0.33) < hardnessTilemap[curr]) continue;
+                        // We use the hardness cubed to increase the contrast between low and high hardness, causing a
+                        // wider variance in tunnel width.
+                        if (random.NormalDouble(0, 0.05) < hardnessTilemap[curr].Cubed()) continue;
 
                         var type = typeTilemap[curr];
                         typeTilemap[neighbor] = type;

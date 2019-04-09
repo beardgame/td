@@ -51,8 +51,9 @@ namespace Bearded.TD.Game.Generation
             // This value has been determined by experimentation as something that looks good.
             var numRings = (int)(Math.Sqrt(tilemapRadius) / 1.4);
 
-            // We put the points in the inner 90% of the circle.
-            var radiusStep = .9f * tilemapRadius / numRings;
+            // We put the points in the inner 90% of the tilemap.
+            // We also add an artificial ring at the outside to prevent having points too close to the edge.
+            var radiusStep = .9f * tilemapRadius / (numRings + 1);
 
             return Enumerable.Range(0, numRings).Select(i => (Radius: radiusStep * (i + 1), NumPoints: i + 2));
         }
