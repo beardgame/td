@@ -25,6 +25,12 @@ namespace Bearded.TD.Game.Debug
         {
             gameInstance.RequestDispatcher.Dispatch(KillAllEnemies.Request(gameInstance));
         });
+        
+        [Command("game.repairall")]
+        private static void repairAll(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+        {
+            gameInstance.RequestDispatcher.Dispatch(RepairAllBuildings.Request(gameInstance));
+        });
 
         [Command("game.resources")]
         private static void giveResources(Logger logger, CommandParameters p) => run(logger, gameInstance =>
