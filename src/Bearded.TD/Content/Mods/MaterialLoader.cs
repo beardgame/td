@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -10,20 +9,19 @@ namespace Bearded.TD.Content.Mods
     class MaterialLoader
     {
         private readonly ModLoadingContext context;
-        private readonly ModMetadata meta;
 
-        public MaterialLoader(ModLoadingContext context, ModMetadata meta)
+        public MaterialLoader(ModLoadingContext context)
         {
             this.context = context;
-            this.meta = meta;
         }
 
-        public ArrayTexture CreateArrayTexture(FileInfo file, Serialization.Models.Material materialJson)
+        public ArrayTexture CreateArrayTexture(FileInfo file, List<string> textureFilenames)
         {
             var baseDir = file.Directory;
-            var textureFiles = materialJson.Textures
-                .Select(name => baseDir.GetFiles(name).SingleOrDefault())
-                .Where(f => f != null ? true : throw new InvalidDataException($"Could not find material texture file '{f}'."))
+            var textureFiles = textureFilenames
+                .Select(name => (Name: name, File: baseDir.GetFiles(name).SingleOrDefault()))
+                .Where(f => f.File != null ? true : throw new InvalidDataException($"Could not find unique material texture file '{f.Name}'."))
+                .Select(f => f.File)
                 .ToList();
 
             var textureBitmaps = textureFiles.Select(f => new Bitmap(f.FullName)).ToList();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
@@ -49,6 +50,7 @@ namespace Bearded.TD.Rendering.Loading
         public ISurfaceShader CreateShaderProgram(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
         {
+            
             return glActions.RunAndReturn(glOperations);
 
             ISurfaceShader glOperations()
@@ -64,8 +66,30 @@ namespace Bearded.TD.Rendering.Loading
             ShaderFile shaderFile((ShaderType, string, string) data)
             {
                 var (type, file, name) = data;
+
+                file = adjustToReloadable(file);
                 
                 return new ShaderFile(type, file, name);
+            }
+
+            string adjustToReloadable(string file)
+            {
+                #if DEBUG
+                // point at shader files in the actual repo instead of the binary folder for easy live shader editing
+                
+                // C:\Users\amulware\git\td\
+                // \bin\Bearded.TD\Debug\ -> \src\Bearded.TD\
+                // assets\mods\default\gfx\shaders\default-terrain.vs
+
+                var newFile = file
+                    .Replace("\\", "/")
+                    .Replace("/bin/Bearded.TD/Debug/", "/src/Bearded.TD/");
+
+                if (File.Exists(newFile))
+                    return newFile;
+                #endif
+                
+                return file;
             }
         }
 

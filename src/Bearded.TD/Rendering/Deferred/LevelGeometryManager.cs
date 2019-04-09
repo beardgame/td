@@ -6,6 +6,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Deferred
 {
@@ -129,7 +130,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             private static IndexedSurface<LevelVertex> createSurface(RenderContext context, Material material)
             {
-                return new IndexedSurface<LevelVertex>
+                var surface = new IndexedSurface<LevelVertex>
                     {
                         ClearOnRender = false,
                         IsStatic = true
@@ -138,9 +139,19 @@ namespace Bearded.TD.Rendering.Deferred
                     .AndSettings(
                         context.Surfaces.ViewMatrix,
                         context.Surfaces.ProjectionMatrix,
-                        context.Surfaces.FarPlaneDistance,
-                        new ArrayTextureUniform("textures", material.ArrayTexture)
+                        context.Surfaces.FarPlaneDistance
                     );
+
+                var textureUnit = TextureUnit.Texture0;
+
+                foreach (var texture in material.ArrayTextures)
+                {
+                    surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture, textureUnit));
+
+                    textureUnit++;
+                }
+                
+                return surface;
             }
 
             public void MarkAsDirty()

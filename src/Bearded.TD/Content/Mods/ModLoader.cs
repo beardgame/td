@@ -111,7 +111,7 @@ namespace Bearded.TD.Content.Mods
 
             private ReadonlyBlueprintCollection<Material> loadMaterials(ReadonlyBlueprintCollection<Shader> shaders)
             {
-                var loader = new MaterialLoader(context, meta);
+                var loader = new MaterialLoader(context);
                 return loadBlueprintsDependingOnJsonFile<Material, MaterialJson, MaterialLoader>("gfx/materials", loader);
             }
             

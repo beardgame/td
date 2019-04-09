@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.TD.Game;
 
@@ -7,13 +8,13 @@ namespace Bearded.TD.Content.Models
     {
         public string Id { get; }
         public Shader Shader { get; }
-        public ArrayTexture ArrayTexture { get; }
+        public ReadOnlyCollection<(string UniformName, ArrayTexture Texture)> ArrayTextures { get; }
         
-        public Material(string id, Shader shader, ArrayTexture arrayTexture)
+        public Material(string id, Shader shader, ReadOnlyCollection<(string, ArrayTexture)> arrayTextures)
         {
             Id = id;
             Shader = shader;
-            ArrayTexture = arrayTexture;
+            ArrayTextures = arrayTextures;
         }
     }
 }
