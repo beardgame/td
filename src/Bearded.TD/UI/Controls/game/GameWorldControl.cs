@@ -82,7 +82,7 @@ namespace Bearded.TD.UI.Controls
         private void drawCursorLight(GameState state)
         {
             geometries.PointLight.Draw(
-                game.PlayerInput.CursorPosition.NumericValue.WithZ(0.5f),
+                game.PlayerInput.CursorPosition.NumericValue.WithZ(2f),
                 radius: 5, color: Color.White
                 );
         }
