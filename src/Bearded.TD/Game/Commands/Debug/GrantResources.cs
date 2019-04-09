@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Commands.Debug
         public static IRequest<GameInstance> Request(Faction faction, double amount)
             => new Implementation(faction, amount);
 
-        private class Implementation : UnifiedRequestCommand
+        private class Implementation : UnifiedDebugRequestCommand
         {
             private readonly Faction faction;
             private readonly double amount;
@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Commands.Debug
                 this.amount = amount;
             }
 
-            public override bool CheckPreconditions() => DebugGuards.IsInDebugMode && faction.HasResources;
+            protected override bool CheckPreconditionsDebug() => faction.HasResources;
 
             public override void Execute() => faction.Resources.ProvideOneTimeResource(amount);
 

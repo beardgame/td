@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Commands.Debug
         public static IRequest<GameInstance> Request(GameState game)
             => new Implementation(game);
 
-        private class Implementation : UnifiedRequestCommand
+        private class Implementation : UnifiedDebugRequestCommand
         {
             private readonly GameState game;
 
@@ -17,8 +17,6 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 this.game = game;
             }
-
-            public override bool CheckPreconditions() => DebugGuards.IsInDebugMode;
 
             public override void Execute() => game.Meta.DoGameOver();
 

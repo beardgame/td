@@ -28,11 +28,43 @@ namespace Bearded.TD.Game.Commands
 
     abstract class UnifiedDebugRequestCommand : UnifiedRequestCommand
     {
-        protected abstract bool CheckPreconditionsDebug();
+        protected virtual bool CheckPreconditionsDebug() => true;
 #if DEBUG
-        public override bool CheckPreconditions() => CheckPreconditionsDebug();
+        public sealed override bool CheckPreconditions() => CheckPreconditionsDebug();
 #else
-        public override bool CheckPreconditions() => false;
+        public sealed override bool CheckPreconditions() => false;
 #endif
+    }
+
+    abstract class UnifiedDebugRequestCommandWithoutParameter<TSelf> :
+        IRequest<GameInstance>,
+        ISerializableCommand<GameInstance>,
+        IRequestSerializer<GameInstance>,
+        ICommandSerializer<GameInstance>
+        where TSelf : UnifiedDebugRequestCommandWithoutParameter<TSelf>, new()
+    {
+        protected GameInstance Game { get; private set; }
+        
+        public static UnifiedDebugRequestCommandWithoutParameter<TSelf> For(GameInstance game)
+            => new TSelf { Game = game };
+        
+        public abstract void Execute();
+        
+        protected virtual bool CheckPreconditionsDebug() => true;
+        
+#if DEBUG
+        public bool CheckPreconditions() => CheckPreconditionsDebug();
+#else
+        public bool CheckPreconditions() => false;
+#endif
+
+        IRequest<GameInstance> IRequestSerializer<GameInstance>.GetRequest(GameInstance game) => For(game);
+        ISerializableCommand<GameInstance> ICommandSerializer<GameInstance>.GetCommand(GameInstance game) => For(game);
+        
+        ISerializableCommand<GameInstance> IRequest<GameInstance>.ToCommand() => this;
+        IRequestSerializer<GameInstance> IRequest<GameInstance>.Serializer => this;
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => this;
+        
+        public void Serialize(INetBufferStream stream) { }
     }
 }
