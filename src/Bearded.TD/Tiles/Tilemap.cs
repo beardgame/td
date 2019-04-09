@@ -12,7 +12,7 @@ namespace Bearded.TD.Tiles
             = Extensions.Directions;
 
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
-        
+
         public static IEnumerator<Tile> EnumerateTilemapWith(int radius)
         {
             for (var y = -radius; y <= radius; y++)
