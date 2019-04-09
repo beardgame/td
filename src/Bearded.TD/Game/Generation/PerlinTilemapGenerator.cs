@@ -78,6 +78,11 @@ namespace Bearded.TD.Game.Generation
                 var sourceMap2 = new Tilemap<double>(hardnessTilemap.Radius);
                 var sourceMap3 = new Tilemap<double>(hardnessTilemap.Radius);
 
+                // Generate three different perlin noise maps with different grid sizes (= 1 / frequency). We rotate
+                // each of them by 60% relative to each other to hide the
+                // We use the absolute value which causes us to have sharp valleys in the noise map. This creates a
+                // better texture for digging tunnels in. We also multiply by some factors to amplify low frequency
+                // noise.
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     sourceMap1, 10, (tilemap, tile) => 1.8 * Math.Abs(tilemap[tile.RotatedClockwiseAroundOrigin()]));
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
@@ -91,6 +96,7 @@ namespace Bearded.TD.Game.Generation
                     double hardnessOverride = 0;
                     var distanceFromEdge = hardnessTilemap.Radius - tile.Radius;
 
+                    // Make the hardness artificially high near the map edges to direct paths to the interior.
                     if (distanceFromEdge < hardnessRampDistance)
                     {
                         hardnessOverride = 1 - (double) distanceFromEdge / hardnessRampDistance;
@@ -100,13 +106,13 @@ namespace Bearded.TD.Game.Generation
                     hardnessTilemap[tile] = Math.Max(desiredHardness, hardnessOverride);
                 }
 
-                createPathsFromNoiseTilemap();
+                createPathsToCorners();
                 clearCenter(4);
 
                 carve();
             }
 
-            private void createPathsFromNoiseTilemap()
+            private void createPathsToCorners()
             {
                 logger.Trace?.Log("Digging paths to all corners");
                 var result = doAllPairPathFindingFromTile(Tile.Origin);
@@ -124,6 +130,11 @@ namespace Bearded.TD.Game.Generation
                         curr = result[curr].Parent;
                     }
                 }
+            }
+
+            private void createPathsBetweenRandomPoints()
+            {
+
             }
 
             private Tilemap<(Tile Parent, double Cost)> doAllPairPathFindingFromTile(Tile origin)
@@ -175,7 +186,8 @@ namespace Bearded.TD.Game.Generation
 
             private void carve()
             {
-                carveEverythingBelowHardness(0.08);
+                // The value here has been chosen based on experimentation on what looks good.
+//                carveEverythingBelowHardness(0.08);
 
                 var q = new Queue<Tile>(typeTilemap.Where(isType(TileType.Floor)));
 
@@ -184,12 +196,12 @@ namespace Bearded.TD.Game.Generation
                     var curr = q.Dequeue();
                     foreach (var neighbor in level.ValidNeighboursOf(curr).Where(isType(TileType.Wall)))
                     {
-                        if (random.NormalDouble(0, 0.33) >= hardnessTilemap[curr])
-                        {
-                            var type = typeTilemap[curr];
-                            typeTilemap[neighbor] = type;
-                            q.Enqueue(neighbor);
-                        }
+                        // The standard deviation here has been chosen based on experimentation on what looks good.
+                        if (random.NormalDouble(0, 0.33) < hardnessTilemap[curr]) continue;
+
+                        var type = typeTilemap[curr];
+                        typeTilemap[neighbor] = type;
+                        q.Enqueue(neighbor);
                     }
                 }
 
@@ -262,15 +274,6 @@ namespace Bearded.TD.Game.Generation
                 {
                     tilemap[tile] = perlinAtGridCellFromWorldSpace(gridSize, gradientArray, tile);
                 }
-            }
-
-            private float perlinAtGridCellFromTileSpace(
-                Tilemap<double> tilemap, int gridSize, Vector2[,] gradientArray, Tile tile)
-            {
-                var xInGradientArraySpace = (float) (tile.X + tilemap.Radius) / gridSize;
-                var yInGradientArraySpace = (float) (tile.Y + tilemap.Radius) / gridSize;
-
-                return perlinAt(gradientArray, xInGradientArraySpace, yInGradientArraySpace);
             }
 
             private static float perlinAtGridCellFromWorldSpace(int gridSize, Vector2[,] gradientArray, Tile tile)
