@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Global
 
 namespace Bearded.TD.Utilities
 {
@@ -19,6 +20,13 @@ namespace Bearded.TD.Utilities
             {
                 if (!condition)
                     throw new ArgumentException();
+            }
+
+            [Conditional("DEBUG")]
+            public static void Satisfies(bool condition, string message)
+            {
+                if (!condition)
+                    throw new ArgumentException(message);
             }
         }
 

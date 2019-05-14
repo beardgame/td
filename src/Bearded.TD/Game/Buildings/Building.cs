@@ -99,8 +99,8 @@ namespace Bearded.TD.Game.Buildings
 
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
-            DebugAssert.State.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
-            DebugAssert.State.Satisfies(!upgradesInProgress.Contains(task), "Can not add same task more than once.");
+            DebugAssert.Argument.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
+            DebugAssert.Argument.Satisfies(!upgradesInProgress.Contains(task), "Can not add same task more than once.");
             upgradesInProgress.Add(task);
         }
 
@@ -108,7 +108,7 @@ namespace Bearded.TD.Game.Buildings
         {
             var wasRemoved = upgradesInProgress.Remove(task);
 
-            DebugAssert.State.Satisfies(wasRemoved, "Can only remove task that was added previously.");
+            DebugAssert.Argument.Satisfies(wasRemoved, "Can only remove task that was added previously.");
         }
 
         protected override void OnDelete()
