@@ -12,6 +12,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -29,11 +30,12 @@ namespace Bearded.TD.Game.Buildings
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
         private readonly List<UpgradeBlueprint> appliedUpgrades = new List<UpgradeBlueprint>();
         public ReadOnlyCollection<UpgradeBlueprint> AppliedUpgrades { get; }
-        
+
         public Id<Building> Id { get; }
 
         public bool IsCompleted { get; private set; }
         private double buildProgress;
+        private bool isDead;
 
         public event VoidEventHandler Completing;
         public event GenericEventHandler<int> Damaged;
@@ -54,10 +56,10 @@ namespace Bearded.TD.Game.Buildings
         {
             Damaged?.Invoke(damage);
         }
-        
+
         public void OnDeath()
         {
-            this.Sync(KillBuilding.Command);
+            isDead = true;
         }
 
         protected override void OnAdded()
@@ -94,7 +96,7 @@ namespace Bearded.TD.Game.Buildings
 
             appliedUpgrades.Add(upgrade);
         }
-        
+
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
             DebugAssert.State.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
@@ -105,10 +107,10 @@ namespace Bearded.TD.Game.Buildings
         public void UnregisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
             var wasRemoved = upgradesInProgress.Remove(task);
-            
+
             DebugAssert.State.Satisfies(wasRemoved, "Can only remove task that was added previously.");
         }
-        
+
         protected override void OnDelete()
         {
             OccupiedTiles.ForEach(tile =>
@@ -117,6 +119,16 @@ namespace Bearded.TD.Game.Buildings
             });
 
             base.OnDelete();
+        }
+
+        public override void Update(TimeSpan elapsedTime)
+        {
+            base.Update(elapsedTime);
+
+            if (isDead)
+            {
+                this.Sync(KillBuilding.Command);
+            }
         }
 
         public override void Draw(GeometryManager geometries)

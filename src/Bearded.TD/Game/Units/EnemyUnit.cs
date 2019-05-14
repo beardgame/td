@@ -29,13 +29,14 @@ namespace Bearded.TD.Game.Units
         ISyncable<EnemyUnitState>
     {
         public Id<EnemyUnit> Id { get; }
-        
+
         private readonly IUnitBlueprint blueprint;
         private readonly Tile startTile;
         private IEnemyMovement enemyMovement;
-        
+
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
         private Health<EnemyUnit> health;
+        private bool isDead;
 
         public Position2 Position => enemyMovement?.Position ?? Level.GetPosition(CurrentTile);
         public Tile CurrentTile => enemyMovement?.CurrentTile ?? startTile;
@@ -60,9 +61,9 @@ namespace Bearded.TD.Game.Units
 
             Game.IdAs(this);
             Game.Meta.Synchronizer.RegisterSyncable(this);
-            
+
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
-            
+
             components.Add(this, blueprint.GetComponents());
             health = components.Get<Health<EnemyUnit>>()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
@@ -82,6 +83,11 @@ namespace Bearded.TD.Game.Units
         public override void Update(TimeSpan elapsedTime)
         {
             components.Update(elapsedTime);
+
+            if (isDead)
+            {
+                this.Sync(KillUnit.Command, this, lastDamageSource);
+            }
         }
 
         public override void Draw(GeometryManager geometries)
@@ -102,7 +108,7 @@ namespace Bearded.TD.Game.Units
                 1.5f,
                 blueprint.Color
                 );
-            
+
             components.Draw(geometries);
         }
 
@@ -120,16 +126,13 @@ namespace Bearded.TD.Game.Units
             lastDamageSource = damageSource.Faction;
             Damaged?.Invoke(damage);
         }
-        
+
         public void OnDeath()
         {
-            this.Sync(KillUnit.Command, this, lastDamageSource);
+            isDead = true;
         }
 
-        public void Kill(Faction killingBlowFaction)
-        {
-            Delete();
-        }
+        public void Execute() => Delete();
 
         public EnemyUnitState GetCurrentState()
         {
@@ -146,7 +149,7 @@ namespace Bearded.TD.Game.Units
             enemyMovement.Teleport(
                 new Position2(state.X, state.Y),
                 new Tile(state.GoalTileX, state.GoalTileY));
-            
+
             if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
             if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
         }

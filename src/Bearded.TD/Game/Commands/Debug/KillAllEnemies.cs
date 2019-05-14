@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var enemy in Game.State.GameObjects.OfType<EnemyUnit>())
                 {
-                    enemy.Kill(Game.State.RootFaction);
+                    enemy.Execute();
                 }
             }
         }

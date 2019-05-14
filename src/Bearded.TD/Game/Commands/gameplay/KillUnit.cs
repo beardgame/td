@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Commands
                 this.killingBlowFaction = killingBlowFaction;
             }
 
-            public void Execute() => unit.Kill(killingBlowFaction);
+            public void Execute() => unit.Execute();
             public ICommandSerializer<GameInstance> Serializer => new Serializer(unit, killingBlowFaction);
         }
 
