@@ -22,6 +22,7 @@ namespace Bearded.TD.Game
         public void HandleInput(UpdateEventArgs args, InputState inputState)
         {
             game.PlayerInput.HandleInput(args, inputState);
+            game.PlayerCursors.Update();
         }
 
         public void Update(UpdateEventArgs args)

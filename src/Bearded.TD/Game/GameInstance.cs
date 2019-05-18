@@ -21,6 +21,7 @@ namespace Bearded.TD.Game
         public GameMeta Meta { get; }
 
         public ChatLog ChatLog { get; } = new ChatLog();
+        public PlayerCursors PlayerCursors { get; }
         public IdManager Ids { get; }
 
         public GameSettings GameSettings { get; private set; } = new GameSettings.Builder().Build();
@@ -73,6 +74,7 @@ namespace Bearded.TD.Game
 
             AddPlayer(me);
 
+            PlayerCursors = new PlayerCursors(this);
             playerManager = context.PlayerManagerFactory(this);
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
         }

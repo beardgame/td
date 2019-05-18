@@ -2,6 +2,8 @@ using System;
 using Bearded.TD.Game.Commands.Debug;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
 
 namespace Bearded.TD.Game.Debug
 {
@@ -19,15 +21,15 @@ namespace Bearded.TD.Game.Debug
         {
             gameInstance.RequestDispatcher.Dispatch(DebugGameOver.Request(gameInstance.State));
         });
-        
+
         [Command("game.killall")]
-        private static void killAll(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+        private static void killAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
             gameInstance.RequestDispatcher.Dispatch(KillAllEnemies.Request(gameInstance));
         });
-        
+
         [Command("game.repairall")]
-        private static void repairAll(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+        private static void repairAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
             gameInstance.RequestDispatcher.Dispatch(RepairAllBuildings.Request(gameInstance));
         });
@@ -57,7 +59,7 @@ namespace Bearded.TD.Game.Debug
             {
                 logger.Warning?.Log($"Cannot add resources: player is not part of a faction with resource management.");
             }
-            
+
             gameInstance.RequestDispatcher.Dispatch(GrantResources.Request(faction, amount));
         });
 #endif
