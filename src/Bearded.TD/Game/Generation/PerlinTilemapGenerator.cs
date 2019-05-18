@@ -115,6 +115,8 @@ namespace Bearded.TD.Game.Generation
                 clearCenter(4);
 
                 carve();
+
+                createCrevices();
             }
 
             private void createPathsToCorners()
@@ -274,6 +276,47 @@ namespace Bearded.TD.Game.Generation
                     typeTilemap[tile] = TileType.Floor;
                 }
             }
+
+            private void createCrevices()
+            {
+                for (var i = 0; i < numCrevices; i++)
+                {
+                    tryCreateCrevice();
+                }
+            }
+
+            private void tryCreateCrevice()
+            {
+                var tile = level.RandomTile(random);
+                if (typeTilemap[tile] != TileType.Wall) return;
+
+                var creviceTiles = new HashSet<Tile> { tile };
+                var targetCreviceSize = random.Next(minTargetCreviceSize, maxTargetCreviceSize);
+
+                while (creviceTiles.Count < targetCreviceSize)
+                {
+                    var closedNeighbours = level
+                        .ValidNeighboursOf(tile)
+                        .Where(t => typeTilemap[t] == TileType.Wall && !creviceTiles.Contains(t))
+                        .ToList();
+                    if (closedNeighbours.Count == 0) break;
+
+                    tile = closedNeighbours.RandomElement(random);
+                    creviceTiles.Add(tile);
+                }
+
+                if (creviceTiles.Count < minCreviceSize) return;
+
+                foreach (var t in creviceTiles)
+                {
+                    typeTilemap[t] = TileType.Crevice;
+                }
+            }
+
+            private int numCrevices => typeTilemap.Radius * typeTilemap.Radius / 15;
+            private const int minCreviceSize = 3;
+            private const int minTargetCreviceSize = 8;
+            private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
         private class PerlinSourcemapGenerator
