@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         private void onDamaged(int damage)
         {
-            if (UserSettings.Instance.Debug.InvulnerableBuildings)
+            if (damage > 0 && UserSettings.Instance.Debug.InvulnerableBuildings)
                 return;
 
             changeHealth(-damage);
