@@ -49,7 +49,7 @@ namespace Bearded.TD.UI.Controls
         {
             this.game = game;
             geometries = renderContext.Geometries;
-            
+
             // TODO: this should not stay hardcoded forever
             var levelMaterial = game.Blueprints.Materials["default"];
 
@@ -67,7 +67,7 @@ namespace Bearded.TD.UI.Controls
 
             var state = game.State;
 
-            drawCursorLight(state);
+            game.PlayerCursors.DrawCursors(geometries);
             drawAmbientLight(state);
             drawGameObjects(state);
             drawDebug(state);
@@ -77,14 +77,6 @@ namespace Bearded.TD.UI.Controls
         {
             base.UpdateViewport(viewport);
             game.Camera.OnViewportSizeChanged(ViewportSize);
-        }
-
-        private void drawCursorLight(GameState state)
-        {
-            geometries.PointLight.Draw(
-                game.PlayerInput.CursorPosition.NumericValue.WithZ(2f),
-                radius: 5, color: Color.White
-                );
         }
 
         private void drawAmbientLight(GameState state)
