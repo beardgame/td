@@ -19,6 +19,7 @@ namespace Bearded.TD.UI.Controls
     {
         private readonly GameInstance game;
         private readonly GeometryManager geometries;
+        private readonly LevelGeometryManager levelGeometry;
 
         public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
         public override RenderOptions RenderOptions => RenderOptions.Default;
@@ -52,8 +53,8 @@ namespace Bearded.TD.UI.Controls
             
             // TODO: this should not stay hardcoded forever
             var levelMaterial = game.Blueprints.Materials["default"];
-
-            var levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
+            
+            levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
 
             DeferredSurfaces = new ContentSurfaceManager(
                 levelGeometry,
@@ -171,6 +172,12 @@ namespace Bearded.TD.UI.Controls
         {
             base.MouseExited(eventArgs);
             game.PlayerInput.IsMouseFocused = false;
+        }
+
+        public void CleanUp()
+        {
+            levelGeometry.CleanUp();
+            new GraphicsUnloader().CleanUp(game.Blueprints);
         }
     }
 }

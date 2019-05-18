@@ -203,6 +203,19 @@ namespace Bearded.TD.Rendering.Deferred
                 var neighbour = tile.Neighbour(direction);
                 return level.IsValid(neighbour) ? geometryLayer[neighbour] : new DrawableTileGeometry();
             }
+
+            public void CleanUp()
+            {
+                surface.Dispose();
+            }
+        }
+
+        public void CleanUp()
+        {
+            foreach (var batch in batches)
+            {
+                batch.CleanUp();
+            }
         }
     }
 }

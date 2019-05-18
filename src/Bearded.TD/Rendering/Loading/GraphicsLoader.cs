@@ -50,15 +50,22 @@ namespace Bearded.TD.Rendering.Loading
         public ISurfaceShader CreateShaderProgram(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
         {
+            var shaderManager = context.Surfaces.Shaders;
+
+            var shadersToAdd = shaders.Where(s => !shaderManager.Contains(s.Type, s.FriendlyName)).ToList();
+            var shaderProgram = shaderManager[shaderProgramName];
+
+            if (shadersToAdd.Count == 0 && shaderProgram != null)
+                return shaderProgram;
             
             return glActions.RunAndReturn(glOperations);
 
             ISurfaceShader glOperations()
             {
-                shaders.Select(shaderFile).ForEach(context.Surfaces.Shaders.Add);
+                shadersToAdd.Select(shaderFile).ForEach(shaderManager.Add);
 
-                return shaders.Aggregate(
-                    context.Surfaces.Shaders.BuildShaderProgram(),
+                return shaderProgram ?? shaders.Aggregate(
+                    shaderManager.BuildShaderProgram(),
                     (builder, shader) => builder.With(shader.Type, shader.FriendlyName)
                 ).As(shaderProgramName);
             }
@@ -67,14 +74,15 @@ namespace Bearded.TD.Rendering.Loading
             {
                 var (type, file, name) = data;
 
+#if DEBUG
                 file = adjustToReloadable(file);
+#endif
                 
                 return new ShaderFile(type, file, name);
             }
 
             string adjustToReloadable(string file)
             {
-                #if DEBUG
                 // point at shader files in the actual repo instead of the binary folder for easy live shader editing
                 
                 // C:\Users\amulware\git\td\
@@ -87,7 +95,6 @@ namespace Bearded.TD.Rendering.Loading
 
                 if (File.Exists(newFile))
                     return newFile;
-                #endif
                 
                 return file;
             }

@@ -7,12 +7,13 @@ namespace Bearded.TD.UI.Controls
     {
         private readonly GameUI gameUI;
         private readonly GamePausedControl gamePausedControl;
+        private readonly GameWorldControl gameWorldControl;
 
         public GameUIControl(GameUI gameUI, RenderContext renderContext)
         {
             this.gameUI = gameUI;
 
-            Add(new GameWorldControl(gameUI.Game, renderContext));
+            Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
@@ -40,6 +41,7 @@ namespace Bearded.TD.UI.Controls
             gameUI.GameMenuOpened += onGameMenuOpened;
             gameUI.GameMenuClosed += onGameMenuClosed;
             gameUI.GameOverTriggered += onGameOver;
+            gameUI.GameLeft += gameWorldControl.CleanUp;
         }
 
         private void onGameMenuOpened()

@@ -60,6 +60,7 @@ namespace Bearded.TD.Rendering.Loading
 
             return new PackedSpriteSet(
                 texture,
+                surface,
                 sprites
                 );
         }

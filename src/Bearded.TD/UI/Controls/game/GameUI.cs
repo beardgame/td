@@ -30,6 +30,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler GameMenuOpened;
         public event VoidEventHandler GameMenuClosed;
         public event VoidEventHandler GameOverTriggered;
+        public event VoidEventHandler GameLeft;
 
         private NavigationController entityStatusNavigation;
         
@@ -148,6 +149,7 @@ namespace Bearded.TD.UI.Controls
         {
             runner.Shutdown();
             Navigation.Replace<MainMenu>(this);
+            GameLeft?.Invoke();
         }
     }
 }

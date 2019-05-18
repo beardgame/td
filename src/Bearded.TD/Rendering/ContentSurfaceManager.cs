@@ -29,7 +29,6 @@ namespace Bearded.TD.Rendering
                     group => group
                         .OrderBy(sprites => sprites.DrawGroupOrderKey)
                         .Select(surfaceFromSpriteSet)
-                        .NotNull()
                         .ToList()
                         .AsReadOnly()
                 );
@@ -39,8 +38,7 @@ namespace Bearded.TD.Rendering
 
         private Surface surfaceFromSpriteSet(SpriteSet spriteSet)
         {
-            var someSpriteOrNull = spriteSet.Sprites.All.FirstOrDefault();
-            return ((IHasSurface)someSpriteOrNull.Sprite)?.Surface;
+            return spriteSet.Sprites.Surface;
         }
 
         private void fillDictionaryForMissingGroups()

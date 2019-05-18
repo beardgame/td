@@ -4,7 +4,7 @@ using OpenTK;
 
 namespace Bearded.TD.Rendering.Loading
 {
-    class Sprite : ISprite, IHasSurface
+    class Sprite : ISprite
     {
         private readonly IndexedSurface<UVColorVertexData> surface;
         private readonly UVRectangle uv;
@@ -22,8 +22,6 @@ namespace Bearded.TD.Rendering.Loading
             uUnit = uv.TopRight - uvBase;
             vUnit = uv.BottomLeft - uvBase;
         }
-
-        Surface IHasSurface.Surface => surface;
 
         public void Draw(Vector3 position, Color color, float size)
         {
