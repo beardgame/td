@@ -62,11 +62,11 @@ namespace Bearded.TD.Game.Commands
                     new Faction(
                         id,
                         parent.IsValid ? game.State.FactionFor(parent) : null,
-                        hasResources,
-                        hasWorkers,
-                        hasWorkerNetwork,
-                        name,
-                        color));
+                        hasResources: hasResources,
+                        hasWorkerNetwork: hasWorkerNetwork,
+                        hasWorkers: hasWorkers,
+                        name: name,
+                        color: color));
 
             public void Serialize(INetBufferStream stream)
             {
