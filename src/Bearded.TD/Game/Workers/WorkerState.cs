@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Workers
             => new ExecutingWorkerState(manager, worker, task);
 
         public event GenericEventHandler<WorkerState> StateChanged;
-        public event GenericEventHandler<IEnumerable<Tile>> TaskTilesChanged; 
+        public event GenericEventHandler<IEnumerable<Tile>> TaskTilesChanged;
 
         private WorkerManager manager { get; }
         private Worker worker { get; }
@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Workers
 
             public override void Start()
             {
-                manager.RegisterIdleWorker(worker);
+                manager.RequestTask(worker);
                 setTaskTiles(worker.CurrentTile.Yield());
             }
         }
@@ -62,6 +62,7 @@ namespace Bearded.TD.Game.Workers
                 }
                 if (task.Finished)
                 {
+                    worker.Faction.Workers.FinishTask(task);
                     moveToState(Idle(manager, worker));
                 }
             }

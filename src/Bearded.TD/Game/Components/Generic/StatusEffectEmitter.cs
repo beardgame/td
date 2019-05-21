@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Components.Generic
      * 1) Do we take into account tile visibility? (Does not right now)
      * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
      */
-    
+
     [Component("statusEffectEmitter")]
     sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>
         where T : GameObject, IPositionable
@@ -29,16 +29,16 @@ namespace Bearded.TD.Game.Components.Generic
         private readonly HashSet<EnemyUnit> affectedUnits = new HashSet<EnemyUnit>();
 
         private TileRangeDrawer tileRangeDrawer;
-        
+
         private Id<Modification> modificationId;
         private UnitLayer unitLayer;
         private Tile ownerTile;
         private Unit range;
         private Building ownerAsBuilding;
         private ImmutableList<Tile> tilesInRange;
-        
+
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
-        
+
         protected override void Initialise()
         {
             modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Components.Generic
             // Don't apply status effects for uncompleted buildings
             // We probably should have a better pattern for this...
             if (!(ownerAsBuilding?.IsCompleted ?? true)) return;
-            
+
             removeModificationsFromUnitsOutOfRange();
             addModificationsToNewUnitsInRange();
         }
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Components.Generic
         private void ensureRangeUpToDate()
         {
             var level = Owner.Game.Level;
-            
+
             if (range == Parameters.Range && Level.GetTile(Owner.Position) == ownerTile) return;
             range = Parameters.Range;
             recalculateTilesInRange();
@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var unitsOutOfRange = affectedUnits.Where(unit => !tilesInRange.Contains(unit.CurrentTile));
             var upgradeEffect = createUpgradeEffect();
-            
+
             foreach (var unit in unitsOutOfRange)
             {
                 unit.RemoveEffect(upgradeEffect);
@@ -100,10 +100,10 @@ namespace Bearded.TD.Game.Components.Generic
             foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
             {
                 if (affectedUnits.Contains(unit)) continue;
-                
+
                 var upgradeEffect = createUpgradeEffect();
                 if (!unit.CanApplyEffect(upgradeEffect)) continue;
-                
+
                 unit.ApplyEffect(upgradeEffect);
                 affectedUnits.Add(unit);
             }
@@ -117,9 +117,9 @@ namespace Bearded.TD.Game.Components.Generic
         private void recalculateTilesInRange()
         {
             var level = Owner.Game.Level;
-            
+
             var tile = Level.GetTile(Owner.Position);
-            
+
             if (!level.IsValid(tile))
             {
                 tilesInRange = ImmutableList<Tile>.Empty;

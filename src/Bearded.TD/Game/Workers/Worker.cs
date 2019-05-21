@@ -17,7 +17,6 @@ namespace Bearded.TD.Game.Workers
 
         public Faction Faction { get; }
         public double WorkerSpeed => Constants.Game.Worker.WorkerSpeed;
-        public Squared<Unit> WorkRadiusSquared = Constants.Game.Worker.WorkRadiusSquared;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
         public Tile CurrentTile => tileWalker?.CurrentTile ?? Level.GetTile(Position2.Zero);
