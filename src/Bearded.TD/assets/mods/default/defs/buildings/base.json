@@ -12,6 +12,10 @@
             "parameters" : { "numWorkers" : 2 }
         },
         {
+            "id" : "workerAntenna",
+            "parameters" : { "workerRange" : 12 }
+        },
+        {
             "id" : "incomeOverTime",
             "parameters" : { "incomePerSecond" : 5 }
         }

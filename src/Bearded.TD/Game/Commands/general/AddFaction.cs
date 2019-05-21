@@ -36,6 +36,7 @@ namespace Bearded.TD.Game.Commands
             private Id<Faction> id;
             private Id<Faction> parent;
             private bool hasResources;
+            private bool hasWorkerNetwork;
             private bool hasWorkers;
             private string name;
             private Color? color;
@@ -59,13 +60,20 @@ namespace Bearded.TD.Game.Commands
                 => new Implementation(
                     game,
                     new Faction(
-                        id, parent.IsValid ? game.State.FactionFor(parent) : null, hasResources, hasWorkers, name, color));
+                        id,
+                        parent.IsValid ? game.State.FactionFor(parent) : null,
+                        hasResources,
+                        hasWorkers,
+                        hasWorkerNetwork,
+                        name,
+                        color));
 
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref id);
                 stream.Serialize(ref parent);
                 stream.Serialize(ref hasResources);
+                stream.Serialize(ref hasWorkerNetwork);
                 stream.Serialize(ref hasWorkers);
                 stream.Serialize(ref name);
                 stream.Serialize(ref color, 0U);

@@ -10,17 +10,18 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("workerHub")]
-    class WorkerHub<T> : Component<T, IWorkerHubParameters>
+    sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
         where T : GameObject, IFactioned
     {
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly ImmutableHashSet<WorkerDistributionMethod> upgradableWorkerDistributionMethods =
             ImmutableHashSet.CreateRange(
                 new [] {WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin});
-        
+
         private bool canUpgradeToMoreWorkers;
         private ImmutableList<Faction> childFactions;
         private int numWorkersActive;
-        
+
         public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
@@ -56,7 +57,7 @@ namespace Bearded.TD.Game.Components.Generic
                 addNewWorker();
             }
         }
-        
+
         public override void Draw(GeometryManager geometries) { }
 
         private void addNewWorker()

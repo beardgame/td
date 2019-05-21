@@ -1,0 +1,13 @@
+{
+  "id" : "workerAntenna",
+  "name" : "Worker Antenna",
+  "footprint" : "triangle",
+  "cost" : 150,
+  "components" : [
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
+    {
+      "id" : "workerAntenna",
+      "parameters" : { "workerRange" : 8 }
+    }
+  ]
+}

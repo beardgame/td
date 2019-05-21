@@ -16,8 +16,6 @@ namespace Bearded.TD.Game.Buildings
         public Id<BuildingPlaceholder> Id { get; }
         private readonly BuildingWorkerTask workerTask;
 
-        public event VoidEventHandler Cancelled;
-
         public BuildingPlaceholder(Id<BuildingPlaceholder> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
         {
@@ -31,7 +29,7 @@ namespace Bearded.TD.Game.Buildings
         protected override void OnAdded()
         {
             base.OnAdded();
-            
+
             Game.IdAs(this);
             Faction.Workers.RegisterTask(workerTask);
         }
@@ -47,7 +45,7 @@ namespace Bearded.TD.Game.Buildings
 
         public void CancelBuild()
         {
-            Cancelled?.Invoke();
+            Faction.Workers.AbortTask(workerTask);
             Delete();
         }
 

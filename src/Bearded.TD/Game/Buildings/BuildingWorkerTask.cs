@@ -29,8 +29,6 @@ namespace Bearded.TD.Game.Buildings
         {
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
-            
-            placeholder.Cancelled += onBuildingCancelled;
         }
 
         public void SetBuilding(Building building)
@@ -38,7 +36,6 @@ namespace Bearded.TD.Game.Buildings
             DebugAssert.State.Satisfies(placeholder != null, "Placeholder needs to be set when building is set.");
             DebugAssert.State.Satisfies(this.building == null, "Can only set building once.");
             // ReSharper disable once PossibleNullReferenceException
-            placeholder.Cancelled -= onBuildingCancelled;
             placeholder = null;
             this.building = building;
             building.Completing += onBuildingCompleting;
@@ -47,13 +44,6 @@ namespace Bearded.TD.Game.Buildings
             {
                 maxHealth = health.MaxHealth;
             }
-        }
-
-        private void onBuildingCancelled()
-        {
-            DebugAssert.State.Satisfies(placeholder != null, "Placeholder needs to be set when building is cancelled.");
-            finished = true;
-            placeholder = null;
         }
 
         private void onBuildingCompleting()

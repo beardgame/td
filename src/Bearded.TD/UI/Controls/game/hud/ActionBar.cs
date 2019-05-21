@@ -10,10 +10,11 @@ namespace Bearded.TD.UI.Controls
         {
             "wall",
             "triangle",
-            "mine",
             "beamTurret",
             "sniperTurret",
             "slowEmitter",
+            "mine",
+            "workerAntenna",
         };
 
         public event VoidEventHandler ActionsChanged;

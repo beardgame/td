@@ -30,7 +30,12 @@ namespace Bearded.TD.Game
         public IEnumerable<ISerializableCommand<GameInstance>> Generate()
         {
             yield return CreateGameState.Command(game, gameSettings);
-            yield return AddFaction.Command(game, new Faction(game.Ids.GetNext<Faction>(), null, true, true));
+            yield return AddFaction.Command(game, new Faction(
+                game.Ids.GetNext<Faction>(),
+                parent: null,
+                hasResources: true,
+                hasWorkerNetwork: true,
+                hasWorkers: true));
 
             foreach (var command in setupFactions())
                 yield return command;
@@ -56,11 +61,12 @@ namespace Bearded.TD.Game
                 var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
                 var playerFaction = new Faction(
                     game.Ids.GetNext<Faction>(),
-                    game.State.RootFaction,
-                    false,
-                    gameSettings.WorkerDistributionMethod != WorkerDistributionMethod.Neutral,
-                    p.Name,
-                    factionColor);
+                    parent: game.State.RootFaction,
+                    hasResources: false,
+                    hasWorkerNetwork: false,
+                    hasWorkers: gameSettings.WorkerDistributionMethod != WorkerDistributionMethod.Neutral,
+                    name: p.Name,
+                    color: factionColor);
                 yield return AddFaction.Command(game, playerFaction);
                 yield return SetPlayerFaction.Command(p, playerFaction);
             }
