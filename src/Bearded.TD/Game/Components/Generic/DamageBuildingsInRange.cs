@@ -14,16 +14,30 @@ namespace Bearded.TD.Game.Components.Generic
         
         protected override void Initialise()
         {
-            nextAttack = Owner.Game.Time + 1 / Parameters.AttackRate;
+            resetAttackTime();
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (Owner.IsMoving) return;
+            if (Owner.IsMoving)
+            {
+                resetAttackTime();
+            }
+            else
+            {
+                tryAttack();  
+            }
+        }
 
+        private void resetAttackTime()
+        {
+            nextAttack = Owner.Game.Time + 1 / Parameters.AttackRate;
+        }
+
+        private void tryAttack()
+        {
             while (nextAttack <= Owner.Game.Time)
             {
-                // TODO: add range
                 var desiredDirection = Owner.Game.Navigator.GetDirections(Owner.CurrentTile);
 
                 if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(
@@ -31,9 +45,9 @@ namespace Bearded.TD.Game.Components.Generic
                 {
                     return;
                 }
-                
+
                 target.Damage(Parameters.Damage);
-                nextAttack = Owner.Game.Time + 1 / Parameters.AttackRate;
+                nextAttack += 1 / Parameters.AttackRate;
             }
         }
 

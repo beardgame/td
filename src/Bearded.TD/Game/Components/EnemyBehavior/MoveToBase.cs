@@ -43,11 +43,23 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         public Direction GetNextDirection()
         {
-            var desiredDirection = Owner.Game.Navigator.GetDirections(Owner.CurrentTile);
-            var isPassable = passabilityLayer[Owner.CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            var desiredDirection = Owner.Game.Navigator.GetDirections(CurrentTile);
+
+            if (desiredDirection == Direction.Unknown && !passabilityLayer[CurrentTile].IsPassable)
+            {
+                // this accounts for getting stuck in building or other changes to level
+                desiredDirection = tryToGetUnstuck();
+            }
+            
+            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
             return !isPassable
                 ? Direction.Unknown
                 : desiredDirection;
+        }
+
+        private Direction tryToGetUnstuck()
+        {
+            return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(CurrentTile);
         }
 
         public void Teleport(Position2 pos, Tile tile) => tileWalker.Teleport(pos, tile);

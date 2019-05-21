@@ -36,7 +36,26 @@ namespace Bearded.TD.Game.Navigation
         }
 
         public Direction GetDirections(Tile from) => graph[from].Direction;
-        
+
+        public Direction GetDirectionToClosestToSinkNeighbour(Tile from)
+        {
+            var minDirection = Direction.Unknown;
+            var minDistance = int.MaxValue;
+            foreach (var direction in level.ValidDirectionsFrom(from))
+            {
+                var neighbour = from.Neighbour(direction);
+                if (!passability[neighbour].IsPassable)
+                    continue;
+                var node = graph[neighbour];
+                if (node.Distance >= minDistance)
+                    continue;
+                minDirection = direction;
+                minDistance = node.Distance;
+            }
+
+            return minDirection;
+        }
+
         public void HandleEvent(TilePassabilityChanged @event)
         {
             var tile = @event.Tile;
