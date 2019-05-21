@@ -31,16 +31,15 @@ namespace Bearded.TD.Game.Units
         public Id<EnemyUnit> Id { get; }
 
         private readonly IUnitBlueprint blueprint;
-        private readonly Tile startTile;
         private IEnemyMovement enemyMovement;
 
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
         private Health<EnemyUnit> health;
         private bool isDead;
 
-        public Position2 Position => enemyMovement?.Position ?? Level.GetPosition(CurrentTile);
-        public Tile CurrentTile => enemyMovement?.CurrentTile ?? startTile;
-        public bool IsMoving => enemyMovement?.IsMoving ?? false;
+        public Position2 Position => enemyMovement.Position;
+        public Tile CurrentTile => enemyMovement.CurrentTile;
+        public bool IsMoving => enemyMovement.IsMoving;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
 
         private Faction lastDamageSource;
@@ -52,7 +51,8 @@ namespace Bearded.TD.Game.Units
         {
             Id = id;
             this.blueprint = blueprint;
-            startTile = currentTile;
+            
+            enemyMovement = new EnemyMovementDummy(this, currentTile);
         }
 
         protected override void OnAdded()
