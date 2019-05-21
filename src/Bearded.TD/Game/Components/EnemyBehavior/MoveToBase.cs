@@ -60,30 +60,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         private Direction tryToGetUnstuck()
         {
-            return getDirectionToBestNeighbourTile() ?? getDirectionToClosestPassableTile();
-        }
-
-        private Direction? getDirectionToBestNeighbourTile()
-        {
-            var bestNeighbourDirection = Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(CurrentTile);
-
-            if (bestNeighbourDirection != Direction.Unknown)
-                return bestNeighbourDirection;
-
-            return null;
-        }
-
-        private Direction getDirectionToClosestPassableTile()
-        {
-            var level = Owner.Game.Level;
-            var closeTiles = Tilemap.GetSpiralCenteredAt(CurrentTile, 5);
-            foreach (var tile in closeTiles.Where(t => level.IsValid(t) && passabilityLayer[t].IsPassable))
-            {
-                var diff = Level.GetPosition(tile) - Position;
-                return diff.Direction.Hexagonal();
-            }
-
-            return Direction.Unknown;
+            return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(CurrentTile);
         }
 
         public void Teleport(Position2 pos, Tile tile) => tileWalker.Teleport(pos, tile);
