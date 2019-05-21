@@ -1,3 +1,4 @@
+using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
@@ -43,11 +44,46 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         public Direction GetNextDirection()
         {
-            var desiredDirection = Owner.Game.Navigator.GetDirections(Owner.CurrentTile);
-            var isPassable = passabilityLayer[Owner.CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            var desiredDirection = Owner.Game.Navigator.GetDirections(CurrentTile);
+
+            if (desiredDirection == Direction.Unknown && !passabilityLayer[CurrentTile].IsPassable)
+            {
+                // this accounts for getting stuck in building or other changes to level
+                desiredDirection = tryToGetUnstuck();
+            }
+            
+            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
             return !isPassable
                 ? Direction.Unknown
                 : desiredDirection;
+        }
+
+        private Direction tryToGetUnstuck()
+        {
+            return getDirectionToBestNeighbourTile() ?? getDirectionToClosestPassableTile();
+        }
+
+        private Direction? getDirectionToBestNeighbourTile()
+        {
+            var bestNeighbourDirection = Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(CurrentTile);
+
+            if (bestNeighbourDirection != Direction.Unknown)
+                return bestNeighbourDirection;
+
+            return null;
+        }
+
+        private Direction getDirectionToClosestPassableTile()
+        {
+            var level = Owner.Game.Level;
+            var closeTiles = Tilemap.GetSpiralCenteredAt(CurrentTile, 5);
+            foreach (var tile in closeTiles.Where(t => level.IsValid(t) && passabilityLayer[t].IsPassable))
+            {
+                var diff = Level.GetPosition(tile) - Position;
+                return diff.Direction.Hexagonal();
+            }
+
+            return Direction.Unknown;
         }
 
         public void Teleport(Position2 pos, Tile tile) => tileWalker.Teleport(pos, tile);
