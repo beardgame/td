@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Workers
         private readonly WorkerNetwork network;
         private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
         private readonly List<WorkerTask> tasks = new List<WorkerTask>();
-        private readonly HashSet<WorkerTask> assignedTasks = new HashSet<WorkerTask>();
+        private readonly Dictionary<WorkerTask, Worker> workerAssignments = new Dictionary<WorkerTask, Worker>();
 
         public WorkerManager(WorkerNetwork network)
         {
@@ -19,7 +19,8 @@ namespace Bearded.TD.Game.Workers
 
         private void onNetworkChanged()
         {
-            // TODO: abort assigned tasks out of range
+            var tasksOutOfRange = workerAssignments.Keys.Where(task => !task.Tiles.Any(network.IsInRange)).ToList();
+            foreach (var task in tasksOutOfRange) AbortTask(task);
 
             if (idleWorkers.Count == 0) return;
             foreach (var task in tasks.Where(isUnassignedTaskInAntennaRange).Take(idleWorkers.Count))
@@ -39,7 +40,7 @@ namespace Bearded.TD.Game.Workers
 
         public void ReturnTask(WorkerTask task)
         {
-            assignedTasks.Remove(task);
+            workerAssignments.Remove(task);
             tryAssignTaskToFirstIdleWorker(task);
         }
 
@@ -61,19 +62,30 @@ namespace Bearded.TD.Game.Workers
         private void assignTask(Worker worker, WorkerTask task)
         {
             worker.AssignTask(task);
-            assignedTasks.Add(task);
+            workerAssignments.Add(task, worker);
+        }
+
+        public void AbortTask(WorkerTask task)
+        {
+            if (workerAssignments.TryGetValue(task, out var worker))
+            {
+                worker.AbortCurrentTask();
+                workerAssignments.Remove(task);
+            }
+            var deletedFromList = tasks.Remove(task);
+            DebugAssert.State.Satisfies(deletedFromList);
         }
 
         public void FinishTask(WorkerTask task)
         {
-            DebugAssert.Argument.Satisfies(assignedTasks.Contains(task));
-            assignedTasks.Remove(task);
+            DebugAssert.Argument.Satisfies(workerAssignments.ContainsKey(task));
+            workerAssignments.Remove(task);
             var deletedFromList = tasks.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
         }
 
         private bool isUnassignedTaskInAntennaRange(WorkerTask task) =>
-            !assignedTasks.Contains(task) && isTaskInAntennaRange(task);
+            !workerAssignments.ContainsKey(task) && isTaskInAntennaRange(task);
 
         private bool isTaskInAntennaRange(WorkerTask task) => task.Tiles.Any(network.IsInRange);
     }

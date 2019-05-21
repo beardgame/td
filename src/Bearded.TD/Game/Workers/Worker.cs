@@ -45,6 +45,11 @@ namespace Bearded.TD.Game.Workers
             setState(WorkerState.ExecuteTask(manager, this, task));
         }
 
+        public void AbortCurrentTask()
+        {
+            setState(WorkerState.Idle(manager, this));
+        }
+
         private void setState(WorkerState newState)
         {
             if (currentState != null)
