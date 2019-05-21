@@ -65,10 +65,12 @@ namespace Bearded.TD.Game.World
                 }
                 goalTile = goalTile.Neighbour(owner.GetNextDirection());
 
-                // We did not receive a new goal, so unit is standing still.
-                if (goalTile != CurrentTile) continue;
-                IsMoving = false;
-                break;
+                if (goalTile == CurrentTile)
+                {
+                    // We did not receive a new goal, so unit is standing still.
+                    IsMoving = false;
+                    break;
+                }
             }
         }
 
