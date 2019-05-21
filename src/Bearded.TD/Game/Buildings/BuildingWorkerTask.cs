@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Buildings
         {
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
-            
+
             placeholder.Cancelled += onBuildingCancelled;
         }
 

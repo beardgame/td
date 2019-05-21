@@ -14,6 +14,18 @@ namespace Bearded.TD.Game.Workers
         public WorkerManager(WorkerNetwork network)
         {
             this.network = network;
+            network.NetworkChanged += onNetworkChanged;
+        }
+
+        private void onNetworkChanged()
+        {
+            // TODO: abort assigned tasks out of range
+
+            if (idleWorkers.Count == 0) return;
+            foreach (var task in tasks.Where(isUnassignedTaskInAntennaRange).Take(idleWorkers.Count))
+            {
+                assignTask(idleWorkers.Dequeue(), task);
+            }
         }
 
         public void RegisterWorker(Worker worker) { }
