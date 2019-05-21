@@ -30,8 +30,6 @@ namespace Bearded.TD.Game.Components.utilities
 
             geo.Color = Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
 
-            var level = game.Level;
-
             foreach (var tile in tilesInRange)
             {
                 geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);

@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
@@ -29,7 +30,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         private void onDamaged(int damage)
         {
-            if (damage > 0 && UserSettings.Instance.Debug.InvulnerableBuildings)
+            if (damage > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
                 return;
 
             changeHealth(-damage);

@@ -88,6 +88,7 @@ namespace Bearded.TD.Game.Components.Generic
             var rangeSquared = currentRange.Squared;
 
             var level = game.Level;
+            var navigator = game.Navigator;
 
             tilesInRange = new LevelVisibilityChecker()
                 .EnumerateVisibleTiles(
@@ -98,6 +99,7 @@ namespace Bearded.TD.Game.Components.Generic
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
                             (Level.GetPosition(t.tile) - position).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
+                .OrderBy(navigator.GetDistanceToClosestSink)
                 .ToList();
 
             nextTileInRangeRecalculationTime = game.Time + Parameters.ReCalculateTilesInRangeInterval;
