@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Workers
 {
     sealed class WorkerManager
     {
         private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
-        private readonly Queue<WorkerTask> tasks = new Queue<WorkerTask>();
+        private readonly List<WorkerTask> tasks = new List<WorkerTask>();
 
         public void RegisterWorker(Worker worker) { }
         public void UnregisterWorker(Worker worker) { }
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Workers
         public void RegisterIdleWorker(Worker worker)
         {
             if (tasks.Count > 0)
-                worker.AssignTask(tasks.Dequeue());
+                worker.AssignTask(tasks.Shift());
             else
                 idleWorkers.Enqueue(worker);
         }
@@ -23,7 +24,7 @@ namespace Bearded.TD.Game.Workers
             if (idleWorkers.Count > 0)
                 idleWorkers.Dequeue().AssignTask(task);
             else
-                tasks.Enqueue(task);
+                tasks.Add(task);
         }
     }
 }
