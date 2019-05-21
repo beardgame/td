@@ -56,6 +56,14 @@ namespace Bearded.TD.Game.Navigation
             return minDirection;
         }
 
+        public int GetDistanceToClosestSink(Tile tile)
+        {
+            var distance = graph[tile].Distance;
+            return distance < backupSinkDistance
+                ? distance
+                : distance - backupSinkDistance;
+        }
+
         public void HandleEvent(TilePassabilityChanged @event)
         {
             var tile = @event.Tile;
