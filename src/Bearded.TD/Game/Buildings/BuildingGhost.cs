@@ -35,11 +35,19 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
+            var workerNetwork = Faction.WorkerNetwork;
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                var baseColor = Game.BuildingPlacementLayer.IsTileValidForBuilding(tile)
-                    ? Color.Green
-                    : Color.Red;
+                var baseColor = Color.Green;
+                if (!Game.BuildingPlacementLayer.IsTileValidForBuilding(tile))
+                {
+                    baseColor = Color.Red;
+                }
+                else if (!workerNetwork.IsInRange(tile))
+                {
+                    baseColor = Color.Orange;
+                }
+
                 var color = baseColor * 0.5f;
                 DrawTile(geometries, color, tile);
             }
