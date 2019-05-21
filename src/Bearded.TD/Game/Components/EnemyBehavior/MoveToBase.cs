@@ -1,4 +1,3 @@
-using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
