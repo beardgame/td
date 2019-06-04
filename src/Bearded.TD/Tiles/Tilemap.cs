@@ -13,7 +13,7 @@ namespace Bearded.TD.Tiles
 
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
 
-        public static IEnumerator<Tile> EnumerateTilemapWith(int radius)
+        public static IEnumerable<Tile> EnumerateTilemapWith(int radius)
         {
             for (var y = -radius; y <= radius; y++)
             {
@@ -128,7 +128,7 @@ namespace Bearded.TD.Tiles
         public IEnumerable<Tile> TilesSpiralOutward
             => Tilemap.GetOutwardSpiralForTilemapWith(Radius);
 
-        public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius);
+        public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

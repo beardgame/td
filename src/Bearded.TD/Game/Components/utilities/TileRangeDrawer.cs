@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
+using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Components.utilities
 {
@@ -26,14 +29,11 @@ namespace Bearded.TD.Game.Components.utilities
 
             var tilesInRange = getTilesInRange();
 
-            var geo = geometries.ConsoleBackground;
+            var border = TileAreaBorder.From(tilesInRange);
 
-            geo.Color = Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.15f : 0.1f);
-
-            foreach (var tile in tilesInRange)
-            {
-                geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
-            }
+            TileAreaBorderRenderer.Render(border, geometries.ConsoleBackground, 
+                Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.5f : 0.25f)
+                );
         }
     }
 }

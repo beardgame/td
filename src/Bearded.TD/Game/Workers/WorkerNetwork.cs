@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Workers
 {
@@ -38,10 +39,13 @@ namespace Bearded.TD.Game.Workers
             foreach (var t in antennaCoverage)
             {
                 var pos = Level.GetPosition(t);
-                antennaCoverage[t] = antennae.Any(a => (a.Position - pos).LengthSquared < a.WorkerRange.Squared);
+                antennaCoverage[t] = antennae.Any(a => IsTileInAntennaRange(a, pos));
             }
             NetworkChanged?.Invoke();
         }
+
+        public static bool IsTileInAntennaRange(IWorkerAntenna antenna, Position2 point)
+            => (antenna.Position - point).LengthSquared < antenna.WorkerRange.Squared;
 
         public bool IsInRange(Tile tile) => antennaCoverage?[tile] ?? false;
     }
