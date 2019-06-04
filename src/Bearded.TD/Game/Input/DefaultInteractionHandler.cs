@@ -3,7 +3,9 @@ using amulware.Graphics;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Workers;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Input
 {
@@ -16,32 +18,37 @@ namespace Bearded.TD.Game.Input
             var currentFootprint = cursor.CurrentFootprint;
             if (!currentFootprint.IsValid)
                 return;
-            var building = Game.State.BuildingLayer.GetBuildingFor(currentFootprint.RootTile);
-            var clicked = cursor.Click.Hit;
-            if (building == null)
-            {
-                if (clicked)
-                {
-                    Game.State.Enumerate<Worker>()
-                        .Where(w => w.CurrentTile == currentFootprint.RootTile)
-                        .FirstMaybe()
-                        .Match(
-                            onValue: w => Game.SelectionManager.SelectObject(w),
-                            onNothing: Game.SelectionManager.ResetSelection);
-                }
-                else
-                {
-                    Game.SelectionManager.ResetFocus();
-                }
 
-            }
-            else
-            {
-                if (clicked)
-                    Game.SelectionManager.SelectObject(building);
-                else
-                    Game.SelectionManager.FocusObject(building);
-            }
+            var clicked = cursor.Click.Hit;
+            getSelectableForTile(currentFootprint.RootTile, clicked).Match(
+                onValue: selectable =>
+                {
+                    if (clicked)
+                        Game.SelectionManager.SelectObject(selectable);
+                    else
+                        Game.SelectionManager.FocusObject(selectable);
+                },
+                onNothing: () =>
+                {
+                    if (clicked)
+                        Game.SelectionManager.ResetSelection();
+                    else
+                        Game.SelectionManager.ResetFocus();
+                });
+        }
+
+        private Maybe<ISelectable> getSelectableForTile(Tile tile, bool forClick)
+        {
+            var building = Game.State.BuildingLayer.GetBuildingFor(tile);
+            if (building != null) return Maybe.Just<ISelectable>(building);
+
+            // The following calculations may expensive and if we can't focus these on hover anyway, might as well skip.
+            if (!forClick) return Maybe.Nothing<ISelectable>();
+
+            return Game.State.Enumerate<Worker>()
+                .Where(w => w.CurrentTile == tile)
+                .Cast<ISelectable>()
+                .FirstMaybe();
         }
 
         protected override void OnStart(ICursorHandler cursor)
