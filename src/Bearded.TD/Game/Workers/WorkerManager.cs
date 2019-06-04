@@ -11,10 +11,14 @@ namespace Bearded.TD.Game.Workers
         private readonly List<WorkerTask> tasks = new List<WorkerTask>();
         private readonly Dictionary<WorkerTask, Worker> workerAssignments = new Dictionary<WorkerTask, Worker>();
 
+        public int NumIdleWorkers => idleWorkers.Count;
+        public IList<WorkerTask> QueuedTasks { get; }
+
         public WorkerManager(WorkerNetwork network)
         {
             this.network = network;
             network.NetworkChanged += onNetworkChanged;
+            QueuedTasks = tasks.AsReadOnly();
         }
 
         private void onNetworkChanged()

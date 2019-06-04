@@ -22,6 +22,7 @@ namespace Bearded.TD.Game.Buildings
         private int maxHealth = 1;
         private bool finished;
 
+        public override string Name => $"Build {blueprint.Name}";
         public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
         public override bool Finished => finished;
 

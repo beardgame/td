@@ -7,6 +7,7 @@ namespace Bearded.TD.Game.Workers
 {
     abstract class WorkerTask
     {
+        public abstract string Name { get; }
         public abstract IEnumerable<Tile> Tiles { get; }
         public abstract bool Finished { get; }
 

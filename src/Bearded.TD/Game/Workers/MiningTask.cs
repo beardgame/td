@@ -10,6 +10,7 @@ namespace Bearded.TD.Game.Workers
 {
     class MiningTask : WorkerTask
     {
+        public override string Name => "Mine a tile";
         public override IEnumerable<Tile> Tiles => tile.Yield();
         public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
