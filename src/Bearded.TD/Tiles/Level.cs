@@ -10,9 +10,17 @@ namespace Bearded.TD.Tiles
     {
         public int Radius { get; }
 
+        public Tile Center { get; } = Tile.Origin;
+        public IList<Tile> Corners { get; }
+
         public Level(int radius)
         {
             Radius = radius;
+            Corners = Directions
+                .All
+                .Enumerate()
+                .Select(dir => Tile.Origin.Offset(dir.Step() * Radius))
+                .ToList();
         }
 
         public bool IsValid(Tile tile)

@@ -113,6 +113,7 @@ namespace Bearded.TD.Game.Generation
                 //createPathsToCorners();
                 createTunnels();
                 clearCenter(4);
+                clearCorners(2);
 
                 carve();
 
@@ -122,17 +123,12 @@ namespace Bearded.TD.Game.Generation
             private void createPathsToCorners()
             {
                 logger.Trace?.Log("Digging paths to all corners");
-                var corners = Directions
-                    .All
-                    .Enumerate()
-                    .Select(dir => Tile.Origin.Offset(dir.Step() * typeTilemap.Radius))
-                    .ToList();
 
-                var result = createPathFindingTilemapToTile(Tile.Origin, corners);
+                var result = createPathFindingTilemapToTile(level.Center, level.Corners);
 
-                foreach (var start in corners)
+                foreach (var start in level.Corners)
                 {
-                    digAlongShortestPath(start, Tile.Origin, result);
+                    digAlongShortestPath(start, level.Center, result);
                 }
             }
 
@@ -157,13 +153,7 @@ namespace Bearded.TD.Game.Generation
                 // Use this if you want to make it less likely that points show up in hard rock.
                 var pushedPoints = points.Select(t => pushTileToLowestHardnessInRange(t, 5)).Distinct();
 
-                var corners = Directions
-                    .All
-                    .Enumerate()
-                    .Select(dir => Tile.Origin.Offset(dir.Step() * typeTilemap.Radius));
-                var center = Tile.Origin;
-
-                return pushedPoints.Concat(corners).Concat(ImmutableList.Create(center));
+                return pushedPoints.Concat(level.Corners).Concat(ImmutableList.Create(level.Center));
             }
 
             private Tile snapTileToAlreadyCarved(Tile tile, int searchRadius)
@@ -230,13 +220,26 @@ namespace Bearded.TD.Game.Generation
                     typeTilemap[curr] = TileType.Floor;
                     curr = paths[curr].Parent;
                 }
+                typeTilemap[target] = TileType.Floor;
             }
 
             private void clearCenter(int radius)
             {
                 logger.Trace?.Log("Clearing center tiles");
 
-                foreach (var tile in typeTilemap.SpiralCenteredAt(Tile.Origin, radius))
+                clearAroundTile(level.Center, radius);
+            }
+
+            private void clearCorners(int radius)
+            {
+                logger.Trace?.Log("Clearing corner tiles");
+
+                foreach (var corner in level.Corners) clearAroundTile(corner, radius);
+            }
+
+            private void clearAroundTile(Tile t, int radius)
+            {
+                foreach (var tile in typeTilemap.SpiralCenteredAt(t, radius).Where(level.IsValid))
                 {
                     typeTilemap[tile] = TileType.Floor;
                 }
