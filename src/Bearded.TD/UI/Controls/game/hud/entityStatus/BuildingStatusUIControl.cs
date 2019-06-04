@@ -15,16 +15,16 @@ namespace Bearded.TD.UI.Controls
     sealed class BuildingStatusUIControl : CompositeControl
     {
         private readonly ListControl upgradeList = new ListControl(new ViewportClippingLayerControl());
-        
-        private BuildingStatusUI buildingStatus;
-        private Building building;
+
+        private readonly BuildingStatusUI buildingStatus;
+        private readonly Building building;
         private UpgradeListItemSource upgradeItemSource;
 
         public BuildingStatusUIControl(BuildingStatusUI buildingStatus)
         {
             this.buildingStatus = buildingStatus;
             building = buildingStatus.Building as Building;
-            
+
             Add(new BackgroundBox());
 
             Add(new Label(buildingStatus.Building.Blueprint.Name) {FontSize = 24}
@@ -47,14 +47,14 @@ namespace Bearded.TD.UI.Controls
             Add(Default.Button("Delete")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Right(margin: 4).Left(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += buildingStatus.OnDeleteBuildingClicked));
-            
+
             updateUpgradeList();
         }
-        
+
         public override void Render(IRendererRouter r)
         {
             updateUpgradeListIfNeeded();
-            
+
             base.Render(r);
         }
 
@@ -138,7 +138,7 @@ namespace Bearded.TD.UI.Controls
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
         }
-        
+
         private class UpgradeButton : Button
         {
             private readonly Building building;
@@ -161,7 +161,7 @@ namespace Bearded.TD.UI.Controls
 
                 IsEnabled = !upgradeIsActive;
                 progressBar.IsVisible = upgradeIsActive;
-                
+
                 if (upgradeIsActive)
                 {
                     var percentage = activeUpgrade.ProgressPercentage;

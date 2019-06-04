@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;

@@ -30,7 +30,7 @@ namespace Bearded.TD.UI.Controls
         public override void Terminate()
         {
             base.Terminate();
-            
+
             Building.Deleting -= Navigation.Exit;
         }
 

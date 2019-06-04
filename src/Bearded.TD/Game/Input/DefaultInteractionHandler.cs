@@ -1,6 +1,9 @@
-﻿using amulware.Graphics;
+﻿using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Workers;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Input
 {
@@ -18,9 +21,19 @@ namespace Bearded.TD.Game.Input
             if (building == null)
             {
                 if (clicked)
-                    Game.SelectionManager.ResetSelection();
+                {
+                    Game.State.Enumerate<Worker>()
+                        .Where(w => w.CurrentTile == currentFootprint.RootTile)
+                        .FirstMaybe()
+                        .Match(
+                            onValue: w => Game.SelectionManager.SelectObject(w),
+                            onNothing: Game.SelectionManager.ResetSelection);
+                }
                 else
+                {
                     Game.SelectionManager.ResetFocus();
+                }
+
             }
             else
             {

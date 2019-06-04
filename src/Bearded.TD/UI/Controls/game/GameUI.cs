@@ -3,6 +3,8 @@ using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
+using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Workers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
@@ -24,7 +26,7 @@ namespace Bearded.TD.UI.Controls
         public GameStatusUI GameStatusUI { get; }
 
         private bool isGameMenuOpen = false;
-        
+
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
         public event VoidEventHandler EntityStatusClosed;
         public event VoidEventHandler GameMenuOpened;
@@ -33,7 +35,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler GameLeft;
 
         private NavigationController entityStatusNavigation;
-        
+
         public GameUI()
         {
             ActionBar = new ActionBar();
@@ -44,7 +46,7 @@ namespace Bearded.TD.UI.Controls
             DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
         {
             base.Initialize(dependencies, parameters);
-            
+
             Game = parameters.game;
             runner = parameters.runner;
 
@@ -61,7 +63,7 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             updateGameMenuVisibility();
-            
+
             var inputState = new InputState(new List<char>(), inputManager);
 
             runner.HandleInput(args, inputState);
@@ -79,6 +81,7 @@ namespace Bearded.TD.UI.Controls
 
             var (models, views) = NavigationFactories.ForBoth()
                 .Add<BuildingStatusUI, IPlacedBuilding>(m => new BuildingStatusUIControl(m))
+                .Add<WorkerStatusUI, Faction>(m => new WorkerStatusUIControl(m))
                 .ToDictionaries();
 
             entityStatusNavigation = new NavigationController(
@@ -95,6 +98,9 @@ namespace Bearded.TD.UI.Controls
             {
                 case IPlacedBuilding building:
                     entityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
+                    break;
+                case Worker worker:
+                    entityStatusNavigation.ReplaceAll<WorkerStatusUI, Faction>(worker.Faction);
                     break;
                 default:
                     return;
@@ -113,11 +119,11 @@ namespace Bearded.TD.UI.Controls
         {
             GameOverTriggered?.Invoke();
         }
-        
+
         private void updateGameMenuVisibility()
         {
             if (!inputManager.IsKeyHit(Key.Escape)) return;
-            
+
             if (isGameMenuOpen)
             {
                 closeGameMenu();
@@ -144,7 +150,7 @@ namespace Bearded.TD.UI.Controls
             isGameMenuOpen = false;
             GameMenuClosed?.Invoke();
         }
-        
+
         public void OnReturnToMainMenuButtonClicked()
         {
             runner.Shutdown();
