@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Workers;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
@@ -51,6 +52,7 @@ namespace Bearded.TD.Game.Factions
             }
             if (hasWorkers)
             {
+                DebugAssert.State.Satisfies(WorkerNetwork != null);
                 workers = new WorkerManager(WorkerNetwork);
             }
         }

@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Meta
     class SelectionManager
     {
         public event GenericEventHandler<ISelectable> ObjectSelected;
-        public event GenericEventHandler<ISelectable> ObjectDeselected; 
+        public event GenericEventHandler<ISelectable> ObjectDeselected;
 
         public ISelectable FocusedObject { get; private set; }
         public ISelectable SelectedObject { get; private set; }

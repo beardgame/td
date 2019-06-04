@@ -46,6 +46,7 @@ namespace Bearded.TD.Game.Commands
                 id = faction.Id;
                 parent = faction.Parent?.Id ?? Id<Faction>.Invalid;
                 hasResources = faction.HasResources;
+                hasWorkerNetwork = faction.HasWorkerNetwork;
                 hasWorkers = faction.HasWorkers;
                 name = faction.Name;
                 color = faction.Color;

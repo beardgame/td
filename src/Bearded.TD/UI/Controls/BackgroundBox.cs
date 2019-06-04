@@ -8,8 +8,6 @@ namespace Bearded.TD.UI.Controls
     {
         public Color Color = Color.Black * .75f;
 
-        public BackgroundBox() { }
-
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
     }
 }

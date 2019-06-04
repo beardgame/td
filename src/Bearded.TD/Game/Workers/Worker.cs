@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -10,7 +11,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Workers
 {
-    class Worker : GameObject, ITileWalkerOwner
+    sealed class Worker : GameObject, ITileWalkerOwner, ISelectable
     {
         private readonly WorkerManager manager;
         private TileWalker tileWalker;
@@ -20,6 +21,8 @@ namespace Bearded.TD.Game.Workers
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
         public Tile CurrentTile => tileWalker?.CurrentTile ?? Level.GetTile(Position2.Zero);
+
+        public SelectionState SelectionState { get; private set; }
 
         private WorkerState currentState;
         private IEnumerable<Tile> taskTiles;
@@ -38,6 +41,8 @@ namespace Bearded.TD.Game.Workers
 
             manager.RegisterWorker(this);
             setState(WorkerState.Idle(manager, this));
+
+            Game.ListAs(this);
         }
 
         public void AssignTask(WorkerTask task)
@@ -101,6 +106,19 @@ namespace Bearded.TD.Game.Workers
             var goalTile = taskTiles.MinBy(tile => tile.DistanceTo(CurrentTile));
             var diff = Level.GetPosition(goalTile) - Position;
             return diff.Direction.Hexagonal();
+        }
+
+        public void ResetSelection()
+        {
+            SelectionState = SelectionState.Default;
+        }
+
+        public void Focus(SelectionManager selectionManager) {}
+
+        public void Select(SelectionManager selectionManager)
+        {
+            selectionManager.CheckCurrentlySelected(this);
+            SelectionState = SelectionState.Selected;
         }
     }
 }

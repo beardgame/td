@@ -1,9 +1,7 @@
 using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Rendering
 {

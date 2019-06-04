@@ -80,7 +80,7 @@ namespace Bearded.TD.Game.Navigation
             {
                 if (updateFront.Count == 0)
                     break;
-                 updateOneTile();
+                updateOneTile();
             }
         }
 

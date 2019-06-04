@@ -31,18 +31,16 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Focus(SelectionManager selectionManager)
         {
-            if (selectionManager.FocusedObject != this)
-                throw new Exception("Cannot focus an object that is not the currently focused object.");
+            selectionManager.CheckCurrentlyFocused(this);
             selectionState = SelectionState.Focused;
         }
 
         public override void Select(SelectionManager selectionManager)
         {
-            if (selectionManager.SelectedObject != this)
-                throw new Exception("Cannot select an object that is not the currently selected object.");
+            selectionManager.CheckCurrentlySelected(this);
             selectionState = SelectionState.Selected;
         }
-        
+
         protected override void OnAdded()
         {
             base.OnAdded();

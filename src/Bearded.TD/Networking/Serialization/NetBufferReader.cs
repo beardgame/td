@@ -26,7 +26,7 @@ namespace Bearded.TD.Networking.Serialization
 
         public void Serialize<T>(ref T t)
             where T : struct
-            => buffer.Read<T>(out t);
+            => buffer.Read(out t);
 
         public void Serialize<T>(ref Id<T> t) => t = new Id<T>(buffer.ReadInt32());
 
