@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Components
 {
     [AttributeUsage(AttributeTargets.Class)]
+    [BaseTypeRequired(typeof(IComponent<>))]
     [MeansImplicitUse]
     class ComponentAttribute : Attribute
     {
