@@ -13,6 +13,8 @@
         },
         {
             "id" : "workerAntenna",
+            "onPlaceholder" :  true,
+            "onGhost": true,
             "parameters" : { "workerRange" : 12 }
         },
         {
