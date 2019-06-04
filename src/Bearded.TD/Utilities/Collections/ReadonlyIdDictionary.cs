@@ -5,7 +5,7 @@ using System.Linq;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities.Collections
 {
     sealed class ReadonlyIdDictionary<T> : IReadOnlyDictionary<Id<T>, T> where T : IIdable<T>
     {

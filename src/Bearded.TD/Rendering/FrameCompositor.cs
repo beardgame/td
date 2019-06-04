@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Meta;
