@@ -10,6 +10,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
+using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Loading
 {
@@ -24,7 +25,8 @@ namespace Bearded.TD.Rendering.Loading
             glActions = glActionQueue;
         }
 
-        public PackedSpriteSet CreateSpriteSet(IEnumerable<(Bitmap Image, string Name)> sprites)
+        public PackedSpriteSet CreateSpriteSet(IEnumerable<(Bitmap Image, string Name)> sprites, Shader shader,
+            string defaultTextureSampler)
         {
             var packedSprites = BinPacking.Pack(sprites.Select(rectangle));
 
@@ -37,7 +39,7 @@ namespace Bearded.TD.Rendering.Loading
                 bitmap.Image.Dispose();
             }
 
-            return builder.Build(context, glActions);
+            return builder.Build(context, shader, defaultTextureSampler, glActions);
         }
         
         private static BinPacking.Rectangle<(Bitmap Image, string Name)>

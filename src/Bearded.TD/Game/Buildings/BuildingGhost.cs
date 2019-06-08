@@ -63,31 +63,28 @@ namespace Bearded.TD.Game.Buildings
 
             if (anyTileOutsideWorkerNetwork)
             {
-                renderWorkerNetworkBorderCloseBy(geometries, new Unit(10), Color.OrangeRed);
+                renderWorkerNetworkBorderCloseBy(new Unit(10), Color.OrangeRed);
             }
             else
             {
-                renderWorkerNetworkBorderCloseBy(geometries, new Unit(5), Color.DodgerBlue);
+                renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
             }
             
             base.Draw(geometries);
         }
 
-        private void renderWorkerNetworkBorderCloseBy(GeometryManager geometries, Unit maxDistance, Color baseColor)
+        private void renderWorkerNetworkBorderCloseBy(Unit maxDistance, Color baseColor)
         {
             var maxDistanceSquared = maxDistance.Squared;
             
             var workerNetwork = Faction.WorkerNetwork;
             var networkBorder = TileAreaBorder.From(Game.Level, workerNetwork.IsInRange);
             
-            TileAreaBorderRenderer.Render(networkBorder, geometries.ConsoleBackground, getLineColor);
+            TileAreaBorderRenderer.Render(Game, networkBorder, getLineColor);
 
-            Color? getLineColor(Position2 point1, Position2 point2)
+            Color? getLineColor(Position2 point)
             {
-                var lineCenter = point1 + (point2 - point1) * 0.5f;
-                var distanceToLineSquared = (lineCenter - Position).LengthSquared;
-
-                var alpha = 1 - distanceToLineSquared / maxDistanceSquared;
+                var alpha = 1 - (point - Position).LengthSquared / maxDistanceSquared;
 
                 return alpha < 0 ? (Color?)null : baseColor * alpha;
             }

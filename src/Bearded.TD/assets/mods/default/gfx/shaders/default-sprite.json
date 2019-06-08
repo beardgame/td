@@ -1,0 +1,5 @@
+{
+  "id" : "default-sprite",
+  "vertexShader" : "default-sprite.vs",
+  "fragmentShader" : "default-sprite.fs"
+}

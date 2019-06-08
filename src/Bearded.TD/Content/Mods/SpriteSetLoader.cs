@@ -17,18 +17,19 @@ namespace Bearded.TD.Content.Mods
 
         public SpriteSet TryLoad(FileInfo file, Content.Serialization.Models.SpriteSet jsonModel)
         {
-            var packedSpriteSet = loadPackedSpriteSet(file.Directory, context);
+            var packedSpriteSet = loadPackedSpriteSet(file.Directory, context, jsonModel);
 
             return new SpriteSet(jsonModel.Id, jsonModel.DrawGroup, jsonModel.DrawGroupOrderKey, packedSpriteSet);
         }
 
-        private static PackedSpriteSet loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext)
+        private static PackedSpriteSet loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,
+            Serialization.Models.SpriteSet jsonModel)
         {
             var files = annotatedPngFilesInRecursive(directory);
 
             var bitmaps = files.Select(file => (new Bitmap(file.file.OpenRead()), file.name));
 
-            return modLoadingContext.GraphicsLoader.CreateSpriteSet(bitmaps);
+            return modLoadingContext.GraphicsLoader.CreateSpriteSet(bitmaps, jsonModel.Shader, jsonModel.DefaultTextureSampler);
         }
 
         private static IEnumerable<(string name, FileInfo file)> annotatedPngFilesInRecursive(

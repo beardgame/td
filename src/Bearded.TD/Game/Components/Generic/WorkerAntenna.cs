@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Components.Generic
             var workerNetwork = Owner.Faction.WorkerNetwork;
             var networkBorder = TileAreaBorder.From(Owner.Game.Level, workerNetwork.IsInRange);
             
-            TileAreaBorderRenderer.Render(networkBorder, geometries.ConsoleBackground, Color.DodgerBlue * alpha);
+            TileAreaBorderRenderer.Render(Owner.Game, networkBorder, Color.DodgerBlue * alpha);
 
             var localArea = Tilemap
                 .GetSpiralCenteredAt(Level.GetTile(Position), (int) Parameters.WorkerRange.NumericValue + 1)
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             var localBorder = TileAreaBorder.From(localArea);
             
-            TileAreaBorderRenderer.Render(localBorder, geometries.ConsoleBackground, Color.Orange * alpha);
+            TileAreaBorderRenderer.Render(Owner.Game, localBorder, Color.Orange * alpha);
         }
     }
 }

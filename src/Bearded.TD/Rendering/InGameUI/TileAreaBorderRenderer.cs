@@ -1,7 +1,9 @@
 using System;
 using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
@@ -9,46 +11,48 @@ namespace Bearded.TD.Rendering.InGameUI
 {
     static class TileAreaBorderRenderer
     {
-        public static void Render(
-            TileAreaBorder border, PrimitiveGeometry geometry,
-            Color color, float lineWidth = 0.1f)
+        public static void Render(GameState game, TileAreaBorder border,
+            Color color, float lineWidth = 0.3f)
         {
-            geometry.Color = color;
-            geometry.LineWidth = lineWidth;
-            
-            border.Visit(t =>
-            {
-                var (tile, direction) = t;
-
-                var center = Level.GetPosition(tile).NumericValue;
-                var offset1 = direction.CornerBefore() * Constants.Game.World.HexagonSide;
-                var offset2 = direction.CornerAfter() * Constants.Game.World.HexagonSide;
-                
-                geometry.DrawLine(center + offset1, center + offset2);
-            });
+            Render(game, border, _ => color, lineWidth);
         }
         
-        public static void Render(
-            TileAreaBorder border, PrimitiveGeometry geometry, Func<Position2, Position2, Color?> getLineColor, float lineWidth = 0.1f)
+        public static void Render(GameState game, TileAreaBorder border,
+            Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
-            geometry.LineWidth = lineWidth;
+            var sprites = game.Meta.Blueprints.Sprites["particle"];
+            var sprite = sprites.Sprites.GetSprite("halo");
+
+            var offsetOuter = new Unit(Constants.Game.World.HexagonSide);
+            var offsetInner = new Unit(Constants.Game.World.HexagonSide - lineWidth);
             
             border.Visit(t =>
             {
                 var (tile, direction) = t;
 
                 var center = Level.GetPosition(tile);
-                var point1 = center + new Difference2(direction.CornerBefore() * Constants.Game.World.HexagonSide);
-                var point2 = center + new Difference2(direction.CornerAfter() * Constants.Game.World.HexagonSide);
+                var vector1 = direction.CornerBefore();
+                var vector2 = direction.CornerAfter();
+                var point1 = center + vector1 * offsetOuter;
+                var point2 = center + vector2 * offsetOuter;
 
-                var color = getLineColor(point1, point2);
+                var color1 = getLineColor(point1);
+                var color2 = getLineColor(point2);
 
-                if (color == null)
+                if (color1 == null && color2 == null)
                     return;
 
-                geometry.Color = color.Value;
-                
-                geometry.DrawLine(point1.NumericValue, point2.NumericValue);
+                var argb1 = color1 ?? Color.Transparent;
+                var argb2 = color2 ?? Color.Transparent;
+
+                sprite.DrawQuad(
+                    point1.NumericValue.WithZ(0), point2.NumericValue.WithZ(0),
+                    (center + vector2 * offsetInner).NumericValue.WithZ(0),
+                    (center + vector1 * offsetInner).NumericValue.WithZ(0),
+                    new Vector2(0.5f, 0), new Vector2(0.5f, 0),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    argb1, argb2, argb2, argb1
+                    );
             });
         }
     }
