@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Commands
                 this.workerTask = workerTask;
             }
 
-            public override bool CheckPreconditions() => true;
+            public override bool CheckPreconditions() => faction.Workers != null;
 
             public override void Execute()
             {
@@ -46,8 +46,11 @@ namespace Bearded.TD.Game.Commands
                 this.workerTask = workerTask.Id;
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game) =>
-                new Implementation(game.State.FactionFor(faction), game.State.Find(workerTask));
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+            {
+                var foundFaction = game.State.FactionFor(faction);
+                return new Implementation(foundFaction, foundFaction.Workers.TaskFor(workerTask));
+            }
 
             public override void Serialize(INetBufferStream stream)
             {

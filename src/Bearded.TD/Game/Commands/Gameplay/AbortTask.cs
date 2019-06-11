@@ -46,8 +46,11 @@ namespace Bearded.TD.Game.Commands
                 this.task = task.Id;
             }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game) =>
-                new Implementation(game.State.FactionFor(faction), game.State.Find(task));
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+            {
+                var foundFaction = game.State.FactionFor(faction);
+                return new Implementation(foundFaction, foundFaction.Workers.TaskFor(task));
+            }
 
             public override void Serialize(INetBufferStream stream)
             {

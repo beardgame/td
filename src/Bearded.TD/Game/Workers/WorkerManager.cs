@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Workers
 {
@@ -12,6 +13,7 @@ namespace Bearded.TD.Game.Workers
         private readonly List<Worker> allWorkers = new List<Worker>();
         private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
         private readonly List<IWorkerTask> tasks = new List<IWorkerTask>();
+        private readonly IdDictionary<IWorkerTask> tasksById = new IdDictionary<IWorkerTask>();
         private readonly Dictionary<IWorkerTask, Worker> workerAssignments = new Dictionary<IWorkerTask, Worker>();
 
         public int NumWorkers => allWorkers.Count;
@@ -29,6 +31,8 @@ namespace Bearded.TD.Game.Workers
             network.NetworkChanged += onNetworkChanged;
             QueuedTasks = tasks.AsReadOnly();
         }
+
+        public IWorkerTask TaskFor(Id<IWorkerTask> id) => tasksById[id];
 
         private void onNetworkChanged()
         {
@@ -57,6 +61,7 @@ namespace Bearded.TD.Game.Workers
         public void RegisterTask(IWorkerTask task)
         {
             tasks.Add(task);
+            tasksById.Add(task);
             tryAssignTaskToFirstIdleWorker(task);
             TasksUpdated?.Invoke();
         }
@@ -104,6 +109,7 @@ namespace Bearded.TD.Game.Workers
         public void AbortTask(IWorkerTask task)
         {
             var deletedFromList = tasks.Remove(task);
+            tasksById.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
             task.OnAbort();
 
@@ -122,6 +128,7 @@ namespace Bearded.TD.Game.Workers
             DebugAssert.Argument.Satisfies(workerAssignments.ContainsKey(task));
             workerAssignments.Remove(task);
             var deletedFromList = tasks.Remove(task);
+            tasksById.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
             TasksUpdated?.Invoke();
         }
