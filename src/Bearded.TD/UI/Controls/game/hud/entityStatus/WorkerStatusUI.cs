@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Workers;
 using Bearded.UI.Navigation;
@@ -42,7 +43,12 @@ namespace Bearded.TD.UI.Controls
 
         public void OnTaskCancelClicked(IWorkerTask task)
         {
-            game.RequestDispatcher.Dispatch(task.CancelRequest());
+            game.RequestDispatcher.Dispatch(AbortTask.Request(Faction, task));
+        }
+
+        public void OnTaskBumpClicked(IWorkerTask task)
+        {
+            game.RequestDispatcher.Dispatch(PrioritizeTask.Request(Faction, task));
         }
 
         public void OnCloseClicked()

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Resources;
@@ -8,7 +6,7 @@ using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -24,13 +22,16 @@ namespace Bearded.TD.Game.Buildings
         private int maxHealth = 1;
         private bool finished;
 
+        public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {blueprint.Name}";
         public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
         public double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
+        public bool CanAbort => placeholder != null;
         public bool Finished => finished;
 
-        public BuildingWorkerTask(BuildingPlaceholder placeholder)
+        public BuildingWorkerTask(Id<IWorkerTask> taskId, BuildingPlaceholder placeholder)
         {
+            Id = taskId;
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
         }
@@ -79,11 +80,10 @@ namespace Bearded.TD.Game.Buildings
             resourceManager.RegisterConsumer(this, ratePerS, remaining);
         }
 
-        public IRequest<GameInstance> CancelRequest()
+        public void OnAbort()
         {
-            if (placeholder == null)
-                throw new InvalidOperationException("Cannot cancel a building task after starting to build.");
-            return CancelBuildingConstruction.Request(placeholder);
+            placeholder?.Delete();
+            building?.Delete();
         }
 
         private void onConstructionStart()

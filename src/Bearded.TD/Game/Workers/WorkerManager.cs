@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Workers
 
         // Fires when workers are added OR removed.
         public event VoidEventHandler WorkersUpdated;
-        // Fires when tasks are finished OR cancelled.
+        // Fires when the task queue changes in any way.
         public event VoidEventHandler TasksUpdated;
 
         public WorkerManager(WorkerNetwork network)
@@ -88,15 +89,31 @@ namespace Bearded.TD.Game.Workers
             workerAssignments.Add(task, worker);
         }
 
+        public void SuspendTask(IWorkerTask task)
+        {
+            if (!workerAssignments.TryGetValue(task, out var worker))
+                throw new InvalidOperationException("Cannot suspend a task that is not currently assigned.");
+
+            workerAssignments.Remove(task);
+            // Note: the worker will immediately look for a new task. That task could be the same task, which is why we
+            // delete the assignment first.
+            worker.SuspendCurrentTask();
+            TasksUpdated?.Invoke();
+        }
+
         public void AbortTask(IWorkerTask task)
         {
-            if (workerAssignments.TryGetValue(task, out var worker))
-            {
-                worker.AbortCurrentTask();
-                workerAssignments.Remove(task);
-            }
             var deletedFromList = tasks.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
+            task.OnAbort();
+
+            if (workerAssignments.TryGetValue(task, out var worker))
+            {
+                workerAssignments.Remove(task);
+                // Note: the worker will immediately look for a new task. That task could be the same task, which is why
+                // we delete the task and assignment first.
+                worker.SuspendCurrentTask();
+            }
             TasksUpdated?.Invoke();
         }
 
@@ -107,6 +124,29 @@ namespace Bearded.TD.Game.Workers
             var deletedFromList = tasks.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
             TasksUpdated?.Invoke();
+        }
+
+        public void BumpTaskToTop(IWorkerTask task)
+        {
+            tasks.Remove(task);
+            tasks.Insert(0, task);
+
+            if (workerAssignments.ContainsKey(task) || NumWorkers == 0)
+            {
+                TasksUpdated?.Invoke();
+            }
+
+            // Look for the latest task with a worker assign. Force that worker to pick a new task to see if the
+            // task added on the top is picked up instead.
+            var lastAssignedTask = tasks.Where(workerAssignments.ContainsKey).LastOrDefault();
+            if (lastAssignedTask != null)
+            {
+                SuspendTask(lastAssignedTask);
+            }
+            else
+            {
+                TasksUpdated?.Invoke();
+            }
         }
 
         private bool isUnassignedTaskInAntennaRange(IWorkerTask task) =>

@@ -11,21 +11,21 @@ namespace Bearded.TD.Game.Commands
     static class MineTile
     {
         public static IRequest<GameInstance> Request(GameInstance game, Faction faction, Tile tile)
-            => new Implementation(game, Id<MiningTaskPlaceholder>.Invalid, faction, tile);
+            => new Implementation(game, faction, tile, Id<IWorkerTask>.Invalid);
 
         private class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
-            private readonly Id<MiningTaskPlaceholder> id;
             private readonly Faction faction;
             private readonly Tile tile;
+            private readonly Id<IWorkerTask> taskId;
 
-            public Implementation(GameInstance game, Id<MiningTaskPlaceholder> id, Faction faction, Tile tile)
+            public Implementation(GameInstance game, Faction faction, Tile tile, Id<IWorkerTask> taskId)
             {
                 this.game = game;
                 this.faction = faction;
                 this.tile = tile;
-                this.id = id;
+                this.taskId = taskId;
             }
 
             public override bool CheckPreconditions()
@@ -35,32 +35,32 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override ISerializableCommand<GameInstance> ToCommand()
-                => new Implementation(game, game.Meta.Ids.GetNext<MiningTaskPlaceholder>(), faction, tile);
+                => new Implementation(game, faction, tile, game.Meta.Ids.GetNext<IWorkerTask>());
 
             public override void Execute()
             {
-                var placeholder = new MiningTaskPlaceholder(id, faction, tile);
+                var placeholder = new MiningTaskPlaceholder(faction, tile, taskId);
                 game.State.Add(placeholder);
             }
 
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(id, tile, faction);
+            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(tile, faction, taskId);
         }
 
         private class Serializer : UnifiedRequestCommandSerializer
         {
-            private Id<MiningTaskPlaceholder> id;
             private int tileX;
             private int tileY;
             private Id<Faction> faction;
+            private Id<IWorkerTask> taskId;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
             {
             }
 
-            public Serializer(Id<MiningTaskPlaceholder> id, Tile tile, Faction faction)
+            public Serializer(Tile tile, Faction faction, Id<IWorkerTask> taskId)
             {
-                this.id = id;
+                this.taskId = taskId;
                 tileX = tile.X;
                 tileY = tile.Y;
                 this.faction = faction.Id;
@@ -68,15 +68,15 @@ namespace Bearded.TD.Game.Commands
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
-                return new Implementation(game, id, game.State.FactionFor(faction), new Tile(tileX, tileY));
+                return new Implementation(game, game.State.FactionFor(faction), new Tile(tileX, tileY), taskId);
             }
 
             public override void Serialize(INetBufferStream stream)
             {
-                stream.Serialize(ref id);
                 stream.Serialize(ref tileX);
                 stream.Serialize(ref tileY);
                 stream.Serialize(ref faction);
+                stream.Serialize(ref taskId);
             }
         }
     }

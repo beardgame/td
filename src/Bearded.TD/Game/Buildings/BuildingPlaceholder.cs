@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
@@ -16,11 +17,15 @@ namespace Bearded.TD.Game.Buildings
         public Id<BuildingPlaceholder> Id { get; }
         private readonly BuildingWorkerTask workerTask;
 
-        public BuildingPlaceholder(Id<BuildingPlaceholder> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
-            : base(blueprint, faction, footprint)
+        public BuildingPlaceholder(
+            Id<BuildingPlaceholder> id,
+            IBuildingBlueprint blueprint,
+            Faction faction,
+            PositionedFootprint footprint,
+            Id<IWorkerTask> taskId) : base(blueprint, faction, footprint)
         {
             Id = id;
-            workerTask = new BuildingWorkerTask(this);
+            workerTask = new BuildingWorkerTask(taskId, this);
         }
 
         protected override IEnumerable<IComponent<BuildingPlaceholder>> InitialiseComponents()

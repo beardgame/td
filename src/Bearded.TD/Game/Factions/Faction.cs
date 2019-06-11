@@ -7,7 +7,7 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Factions
 {
-    class Faction : IIdable<Faction>
+    sealed class Faction : IIdable<Faction>
     {
         private readonly Color? color;
         private readonly ResourceManager resources;

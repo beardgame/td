@@ -85,7 +85,11 @@ namespace Bearded.TD.UI.Controls
 
                 cancelButton = Default.Button("x");
                 cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
-                Add(cancelButton.Anchor(a => a.Right(width: 24)));
+                Add(cancelButton.Anchor(a => a.Right(margin: 24, width: 24)));
+
+                var bumpButton = Default.Button("+");
+                bumpButton.Clicked += () => workerStatus.OnTaskBumpClicked(task);
+                Add(bumpButton.Anchor(a => a.Right(width: 24)));
             }
 
             public override void Render(IRendererRouter r)
