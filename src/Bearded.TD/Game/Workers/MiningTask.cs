@@ -8,7 +8,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Workers
 {
-    class MiningTask : WorkerTask
+    sealed class MiningTask : WorkerTask
     {
         public override string Name => "Mine a tile";
         public override IEnumerable<Tile> Tiles => tile.Yield();
@@ -19,6 +19,8 @@ namespace Bearded.TD.Game.Workers
         private readonly TileDrawInfo originalDrawInfo;
 
         private double miningProgress;
+
+        public override double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
 
         public MiningTask(Tile tile, GeometryLayer geometry)
         {
