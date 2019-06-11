@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Workers
 {
@@ -14,6 +18,7 @@ namespace Bearded.TD.Game.Workers
         public override IEnumerable<Tile> Tiles => tile.Yield();
         public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
+        private readonly MiningTaskPlaceholder miningTaskPlaceholder;
         private readonly Tile tile;
         private readonly GeometryLayer geometry;
         private readonly TileDrawInfo originalDrawInfo;
@@ -22,10 +27,11 @@ namespace Bearded.TD.Game.Workers
 
         public override double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
 
-        public MiningTask(Tile tile, GeometryLayer geometry)
+        public MiningTask(MiningTaskPlaceholder miningTaskPlaceholder, Tile tile, GeometryLayer geometry)
         {
             DebugAssert.Argument.Satisfies(geometry[tile].Type == TileType.Wall);
 
+            this.miningTaskPlaceholder = miningTaskPlaceholder;
             this.tile = tile;
             this.geometry = geometry;
             originalDrawInfo = geometry[tile].DrawInfo;
@@ -47,6 +53,13 @@ namespace Bearded.TD.Game.Workers
                         originalDrawInfo.HexScale)
                 );
             }
+        }
+
+        public override IRequest<GameInstance> CancelRequest()
+        {
+            if (miningProgress > 0)
+                throw new InvalidOperationException("Cannot cancel a mining task after starting to mine.");
+            return CancelMiningTask.Request(miningTaskPlaceholder);
         }
     }
 }

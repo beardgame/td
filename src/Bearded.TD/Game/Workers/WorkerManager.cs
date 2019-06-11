@@ -97,6 +97,7 @@ namespace Bearded.TD.Game.Workers
             }
             var deletedFromList = tasks.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
+            TasksUpdated?.Invoke();
         }
 
         public void FinishTask(WorkerTask task)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -13,5 +14,6 @@ namespace Bearded.TD.Game.Workers
         public abstract bool Finished { get; }
 
         public abstract void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS);
+        public abstract IRequest<GameInstance> CancelRequest();
     }
 }

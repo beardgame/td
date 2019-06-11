@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Workers;
 using Bearded.UI.Navigation;
@@ -8,6 +9,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class WorkerStatusUI : NavigationNode<Faction>
     {
+        private GameInstance game;
         public Faction Faction { get; private set; }
 
         public int NumIdleWorkers => Faction.Workers.NumIdleWorkers;
@@ -18,6 +20,7 @@ namespace Bearded.TD.UI.Controls
 
         protected override void Initialize(DependencyResolver dependencies, Faction faction)
         {
+            game = dependencies.Resolve<GameInstance>();
             Faction = faction;
 
             Faction.Workers.WorkersUpdated += fireWorkerValuesUpdated;
@@ -35,6 +38,11 @@ namespace Bearded.TD.UI.Controls
         private void fireWorkerValuesUpdated()
         {
             WorkerValuesUpdated?.Invoke();
+        }
+
+        public void OnTaskCancelClicked(WorkerTask task)
+        {
+            game.RequestDispatcher.Dispatch(task.CancelRequest());
         }
 
         public void OnCloseClicked()

@@ -42,7 +42,7 @@ namespace Bearded.TD.UI.Controls
 
         private void updateDisplayValues()
         {
-            workerTaskItemSource = new WorkerTaskItemSource(workerStatus.QueuedTasks);
+            workerTaskItemSource = new WorkerTaskItemSource(workerStatus, workerStatus.QueuedTasks);
             taskList.ItemSource = workerTaskItemSource;
         }
 
@@ -50,40 +50,50 @@ namespace Bearded.TD.UI.Controls
 
         private class WorkerTaskItemSource : IListItemSource
         {
+            private readonly WorkerStatusUI workerStatus;
             private readonly IList<WorkerTask> workerTasks;
             public int ItemCount { get; }
 
-            public WorkerTaskItemSource(IList<WorkerTask> workerTasks)
+            public WorkerTaskItemSource(WorkerStatusUI workerStatus, IList<WorkerTask> workerTasks)
             {
+                this.workerStatus = workerStatus;
                 this.workerTasks = workerTasks;
                 ItemCount = workerTasks.Count;
             }
 
-            public double HeightOfItemAt(int index) => 20;
+            public double HeightOfItemAt(int index) => 24;
 
-            public Control CreateItemControlFor(int index) => new WorkerTaskControl(workerTasks[index]);
+            public Control CreateItemControlFor(int index) => new WorkerTaskControl(workerStatus, workerTasks[index]);
 
-            public void DestroyItemControlAt(int index, Control control) {}
+            public void DestroyItemControlAt(int index, Control control) { }
         }
 
         private class WorkerTaskControl : CompositeControl
         {
             private readonly WorkerTask task;
             private readonly BackgroundBox progressBar;
+            private readonly Button cancelButton;
 
-            public WorkerTaskControl(WorkerTask task)
+            public WorkerTaskControl(WorkerStatusUI workerStatus, WorkerTask task)
             {
                 this.task = task;
 
                 progressBar = new BackgroundBox { Color = Color.White * 0.25f };
                 Add(progressBar);
+
                 Add(new Label {FontSize = 16, Text = task.Name});
+
+                cancelButton = Default.Button("x");
+                cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
+                Add(cancelButton.Anchor(a => a.Right(width: 24)));
             }
 
             public override void Render(IRendererRouter r)
             {
                 var percentage = task.PercentCompleted;
                 progressBar.Anchor(a => a.Right(relativePercentage: percentage));
+
+                cancelButton.IsVisible = percentage == 0;
 
                 base.Render(r);
             }

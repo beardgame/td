@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Resources;
@@ -6,7 +8,7 @@ using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
@@ -75,6 +77,13 @@ namespace Bearded.TD.Game.Buildings
 
             var remaining = blueprint.ResourceCost - resourcesConsumed;
             resourceManager.RegisterConsumer(this, ratePerS, remaining);
+        }
+
+        public override IRequest<GameInstance> CancelRequest()
+        {
+            if (placeholder == null)
+                throw new InvalidOperationException("Cannot cancel a building task after starting to build.");
+            return CancelBuildingConstruction.Request(placeholder);
         }
 
         private void onConstructionStart()
