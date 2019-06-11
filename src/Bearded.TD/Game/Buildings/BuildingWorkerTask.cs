@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override string Name => $"Build {blueprint.Name}";
         public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
-        public override double PercentCompleted => (double) healthGiven / maxHealth;
+        public override double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
         public override bool Finished => finished;
 
         public BuildingWorkerTask(BuildingPlaceholder placeholder)
