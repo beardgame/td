@@ -4,6 +4,7 @@ namespace Bearded.TD.Game.Generation
     {
         Legacy,
         Perlin,
+        Empty,
 
         Default = Legacy
     }
