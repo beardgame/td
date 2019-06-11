@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Bearded.TD.Game.Workers;
+
 // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Global
 
 namespace Bearded.TD.Utilities
@@ -23,9 +25,23 @@ namespace Bearded.TD.Utilities
             }
 
             [Conditional("DEBUG")]
+            public static void Satisfies(Func<bool> condition)
+            {
+                if (!condition())
+                    throw new ArgumentException();
+            }
+
+            [Conditional("DEBUG")]
             public static void Satisfies(bool condition, string message)
             {
                 if (!condition)
+                    throw new ArgumentException(message);
+            }
+
+            [Conditional("DEBUG")]
+            public static void Satisfies(Func<bool> condition, string message)
+            {
+                if (!condition())
                     throw new ArgumentException(message);
             }
         }

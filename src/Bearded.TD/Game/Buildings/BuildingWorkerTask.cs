@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Resources;
@@ -6,11 +8,11 @@ using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingWorkerTask : WorkerTask, IResourceConsumer
+    sealed class BuildingWorkerTask : IWorkerTask, IResourceConsumer
     {
         private readonly IBuildingBlueprint blueprint;
 
@@ -22,10 +24,10 @@ namespace Bearded.TD.Game.Buildings
         private int maxHealth = 1;
         private bool finished;
 
-        public override string Name => $"Build {blueprint.Name}";
-        public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
-        public override double PercentCompleted => (double) healthGiven / maxHealth;
-        public override bool Finished => finished;
+        public string Name => $"Build {blueprint.Name}";
+        public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
+        public double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
+        public bool Finished => finished;
 
         public BuildingWorkerTask(BuildingPlaceholder placeholder)
         {
@@ -60,7 +62,7 @@ namespace Bearded.TD.Game.Buildings
             finished = true;
         }
 
-        public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
         {
             if (placeholder != null)
             {
@@ -75,6 +77,13 @@ namespace Bearded.TD.Game.Buildings
 
             var remaining = blueprint.ResourceCost - resourcesConsumed;
             resourceManager.RegisterConsumer(this, ratePerS, remaining);
+        }
+
+        public IRequest<GameInstance> CancelRequest()
+        {
+            if (placeholder == null)
+                throw new InvalidOperationException("Cannot cancel a building task after starting to build.");
+            return CancelBuildingConstruction.Request(placeholder);
         }
 
         private void onConstructionStart()

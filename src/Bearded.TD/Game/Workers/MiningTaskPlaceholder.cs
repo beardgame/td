@@ -2,18 +2,22 @@
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Workers
 {
-    class MiningTaskPlaceholder : GameObject
+    sealed class MiningTaskPlaceholder : GameObject, IIdable<MiningTaskPlaceholder>
     {
+        public Id<MiningTaskPlaceholder> Id { get; }
         private readonly Faction faction;
         private readonly Tile tile;
         private MiningTask task;
 
-        public MiningTaskPlaceholder(Faction faction, Tile tile)
+        public MiningTaskPlaceholder(Id<MiningTaskPlaceholder> id, Faction faction, Tile tile)
         {
+            Id = id;
             this.faction = faction;
             this.tile = tile;
         }
@@ -22,7 +26,9 @@ namespace Bearded.TD.Game.Workers
         {
             base.OnAdded();
 
-            task = new MiningTask(tile, Game.GeometryLayer);
+            Game.IdAs(this);
+
+            task = new MiningTask(this, tile, Game.GeometryLayer);
             faction.Workers.RegisterTask(task);
         }
 
@@ -30,6 +36,12 @@ namespace Bearded.TD.Game.Workers
         {
             if (task.Finished)
                 Delete();
+        }
+
+        public void Cancel()
+        {
+            faction.Workers.AbortTask(task);
+            Delete();
         }
 
         public override void Draw(GeometryManager geometries)

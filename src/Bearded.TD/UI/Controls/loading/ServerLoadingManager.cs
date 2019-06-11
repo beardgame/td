@@ -57,6 +57,8 @@ namespace Bearded.TD.UI.Controls
                     return new DefaultTilemapGenerator(Logger);
                 case LevelGenerationMethod.Perlin:
                     return new PerlinTilemapGenerator(Logger);
+                case LevelGenerationMethod.Empty:
+                    return new EmptyTilemapGenerator();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

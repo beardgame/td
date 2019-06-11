@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
@@ -10,17 +10,14 @@ namespace Bearded.TD.UI.Controls
     sealed class WorkerStatusUIControl : CompositeControl
     {
         private readonly WorkerStatusUI workerStatus;
-        private readonly WorkerManager factionWorkers;
 
         private readonly ListControl taskList = new ListControl(new ViewportClippingLayerControl());
 
         private WorkerTaskItemSource workerTaskItemSource;
-        private int totalNumWorkers;
 
         public WorkerStatusUIControl(WorkerStatusUI workerStatus)
         {
             this.workerStatus = workerStatus;
-            factionWorkers = workerStatus.Faction.Workers;
 
             Add(new BackgroundBox());
 
@@ -29,7 +26,7 @@ namespace Bearded.TD.UI.Controls
             Add(new Label($"Owned by {workerStatus.Faction.Name}") {FontSize = 16}
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
-            Add(new DynamicLabel(() => $"Idle workers: {factionWorkers.NumIdleWorkers} / {totalNumWorkers}")
+            Add(new DynamicLabel(() => $"Idle workers: {workerStatus.NumIdleWorkers} / {workerStatus.NumWorkers}")
                 {FontSize = 16}
                 .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
 
@@ -40,12 +37,12 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(btn => btn.Clicked += workerStatus.OnCloseClicked));
 
             updateDisplayValues();
+            workerStatus.WorkerValuesUpdated += updateDisplayValues;
         }
 
         private void updateDisplayValues()
         {
-            totalNumWorkers = workerStatus.Game.State.Enumerate<Worker>().Count();
-            workerTaskItemSource = new WorkerTaskItemSource(factionWorkers.QueuedTasks);
+            workerTaskItemSource = new WorkerTaskItemSource(workerStatus, workerStatus.QueuedTasks);
             taskList.ItemSource = workerTaskItemSource;
         }
 
@@ -53,23 +50,53 @@ namespace Bearded.TD.UI.Controls
 
         private class WorkerTaskItemSource : IListItemSource
         {
-            private readonly IList<WorkerTask> workerTasks;
+            private readonly WorkerStatusUI workerStatus;
+            private readonly IList<IWorkerTask> workerTasks;
             public int ItemCount { get; }
 
-            public WorkerTaskItemSource(IList<WorkerTask> workerTasks)
+            public WorkerTaskItemSource(WorkerStatusUI workerStatus, IList<IWorkerTask> workerTasks)
             {
+                this.workerStatus = workerStatus;
                 this.workerTasks = workerTasks;
                 ItemCount = workerTasks.Count;
             }
 
-            public double HeightOfItemAt(int index) => 16;
+            public double HeightOfItemAt(int index) => 24;
 
-            public Control CreateItemControlFor(int index)
+            public Control CreateItemControlFor(int index) => new WorkerTaskControl(workerStatus, workerTasks[index]);
+
+            public void DestroyItemControlAt(int index, Control control) { }
+        }
+
+        private class WorkerTaskControl : CompositeControl
+        {
+            private readonly IWorkerTask task;
+            private readonly BackgroundBox progressBar;
+            private readonly Button cancelButton;
+
+            public WorkerTaskControl(WorkerStatusUI workerStatus, IWorkerTask task)
             {
-                return new Label { FontSize = 16, Text = workerTasks[index].Name };
+                this.task = task;
+
+                progressBar = new BackgroundBox { Color = Color.White * 0.25f };
+                Add(progressBar);
+
+                Add(new Label {FontSize = 16, Text = task.Name});
+
+                cancelButton = Default.Button("x");
+                cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
+                Add(cancelButton.Anchor(a => a.Right(width: 24)));
             }
 
-            public void DestroyItemControlAt(int index, Control control) {}
+            public override void Render(IRendererRouter r)
+            {
+                var percentage = task.PercentCompleted;
+                progressBar.Anchor(a => a.Right(relativePercentage: percentage));
+
+                cancelButton.IsVisible = percentage == 0;
+
+                base.Render(r);
+            }
         }
     }
 }
