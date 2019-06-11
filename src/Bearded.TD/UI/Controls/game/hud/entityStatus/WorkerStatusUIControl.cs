@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.UI.Layers;
@@ -12,17 +10,14 @@ namespace Bearded.TD.UI.Controls
     sealed class WorkerStatusUIControl : CompositeControl
     {
         private readonly WorkerStatusUI workerStatus;
-        private readonly WorkerManager factionWorkers;
 
         private readonly ListControl taskList = new ListControl(new ViewportClippingLayerControl());
 
         private WorkerTaskItemSource workerTaskItemSource;
-        private int totalNumWorkers;
 
         public WorkerStatusUIControl(WorkerStatusUI workerStatus)
         {
             this.workerStatus = workerStatus;
-            factionWorkers = workerStatus.Faction.Workers;
 
             Add(new BackgroundBox());
 
@@ -31,7 +26,7 @@ namespace Bearded.TD.UI.Controls
             Add(new Label($"Owned by {workerStatus.Faction.Name}") {FontSize = 16}
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
-            Add(new DynamicLabel(() => $"Idle workers: {factionWorkers.NumIdleWorkers} / {totalNumWorkers}")
+            Add(new DynamicLabel(() => $"Idle workers: {workerStatus.NumIdleWorkers} / {workerStatus.NumWorkers}")
                 {FontSize = 16}
                 .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
 
@@ -42,12 +37,12 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(btn => btn.Clicked += workerStatus.OnCloseClicked));
 
             updateDisplayValues();
+            workerStatus.WorkerValuesUpdated += updateDisplayValues;
         }
 
         private void updateDisplayValues()
         {
-            totalNumWorkers = workerStatus.Game.State.Enumerate<Worker>().Count();
-            workerTaskItemSource = new WorkerTaskItemSource(factionWorkers.QueuedTasks);
+            workerTaskItemSource = new WorkerTaskItemSource(workerStatus.QueuedTasks);
             taskList.ItemSource = workerTaskItemSource;
         }
 

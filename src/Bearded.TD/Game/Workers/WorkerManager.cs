@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Workers
 {
     sealed class WorkerManager
     {
         private readonly WorkerNetwork network;
+        private readonly List<Worker> allWorkers = new List<Worker>();
         private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
         private readonly List<WorkerTask> tasks = new List<WorkerTask>();
         private readonly Dictionary<WorkerTask, Worker> workerAssignments = new Dictionary<WorkerTask, Worker>();
 
+        public int NumWorkers => allWorkers.Count;
         public int NumIdleWorkers => idleWorkers.Count;
         public IList<WorkerTask> QueuedTasks { get; }
+
+        // Fires when workers are added OR removed.
+        public event VoidEventHandler WorkersUpdated;
+        // Fires when tasks are finished OR cancelled.
+        public event VoidEventHandler TasksUpdated;
 
         public WorkerManager(WorkerNetwork network)
         {
@@ -33,13 +41,23 @@ namespace Bearded.TD.Game.Workers
             }
         }
 
-        public void RegisterWorker(Worker worker) { }
-        public void UnregisterWorker(Worker worker) { }
+        public void RegisterWorker(Worker worker)
+        {
+            allWorkers.Add(worker);
+            WorkersUpdated?.Invoke();
+        }
+
+        public void UnregisterWorker(Worker worker)
+        {
+            allWorkers.Remove(worker);
+            WorkersUpdated?.Invoke();
+        }
 
         public void RegisterTask(WorkerTask task)
         {
             tasks.Add(task);
             tryAssignTaskToFirstIdleWorker(task);
+            TasksUpdated?.Invoke();
         }
 
         public void ReturnTask(WorkerTask task)
@@ -50,6 +68,7 @@ namespace Bearded.TD.Game.Workers
 
         public void RequestTask(Worker worker)
         {
+            DebugAssert.Argument.Satisfies(() => allWorkers.Contains(worker));
             tasks.Where(isUnassignedTaskInAntennaRange).FirstMaybe().Match(
                 task => assignTask(worker, task),
                 () => idleWorkers.Enqueue(worker));
@@ -86,6 +105,7 @@ namespace Bearded.TD.Game.Workers
             workerAssignments.Remove(task);
             var deletedFromList = tasks.Remove(task);
             DebugAssert.State.Satisfies(deletedFromList);
+            TasksUpdated?.Invoke();
         }
 
         private bool isUnassignedTaskInAntennaRange(WorkerTask task) =>
