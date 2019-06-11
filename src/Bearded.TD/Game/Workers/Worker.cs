@@ -91,7 +91,7 @@ namespace Bearded.TD.Game.Workers
             var sprites = Game.Meta.Blueprints.Sprites["particle"];
             var sprite = sprites.Sprites.GetSprite("halo");
 
-            sprite.Draw(Position.NumericValue.WithZ(0), Faction.Color, 0.5f);
+            sprite.Draw(Position.NumericValue.WithZ(0.1f), Faction.Color, 0.5f);
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) { }

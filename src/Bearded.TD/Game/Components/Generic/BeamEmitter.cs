@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Components.Generic
             geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.5f, 0.8f);
             geo.LineWidth = 0.1f;
 
-            geo.DrawLine(Weapon.Position.NumericValue, endPoint.NumericValue);
+            geo.DrawLine(Weapon.Position.NumericValue.WithZ(0.2f), endPoint.NumericValue.WithZ(0.2f));
         }
     }
 }

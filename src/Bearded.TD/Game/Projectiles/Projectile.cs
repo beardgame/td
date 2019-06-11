@@ -88,7 +88,7 @@ namespace Bearded.TD.Game.Projectiles
 
         public override void Draw(GeometryManager geometries)
         {
-            blueprint.Sprite.Draw(Position.NumericValue.WithZ(0), blueprint.Color, 0.1f);
+            blueprint.Sprite.Draw(Position.NumericValue.WithZ(0.2f), blueprint.Color, 0.1f);
 
             components.Draw(geometries);
         }
