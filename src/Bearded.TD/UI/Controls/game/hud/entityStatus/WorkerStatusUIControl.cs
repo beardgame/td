@@ -10,6 +10,7 @@ namespace Bearded.TD.UI.Controls
     sealed class WorkerStatusUIControl : CompositeControl
     {
         private readonly WorkerStatusUI workerStatus;
+        private readonly WorkerManager factionWorkers;
 
         private readonly ListControl taskList = new ListControl(new ViewportClippingLayerControl());
 
@@ -19,6 +20,7 @@ namespace Bearded.TD.UI.Controls
         public WorkerStatusUIControl(WorkerStatusUI workerStatus)
         {
             this.workerStatus = workerStatus;
+            factionWorkers = workerStatus.Faction.Workers;
 
             Add(new BackgroundBox());
 
@@ -27,9 +29,8 @@ namespace Bearded.TD.UI.Controls
             Add(new Label($"Owned by {workerStatus.Faction.Name}") {FontSize = 16}
                 .Anchor(a => a.Top(margin: 32, height: 16).Left(margin: 4).Right(margin: 4)));
 
-            Add(new DynamicLabel(
-                        () => $"Idle workers: {workerStatus.Faction.Workers.NumIdleWorkers} / {totalNumWorkers}")
-                    {FontSize = 16}
+            Add(new DynamicLabel(() => $"Idle workers: {factionWorkers.NumIdleWorkers} / {totalNumWorkers}")
+                {FontSize = 16}
                 .Anchor(a => a.Top(margin: 52, height: 16).Left(margin: 4).Right(margin: 4)));
 
             Add(taskList.Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
@@ -44,7 +45,7 @@ namespace Bearded.TD.UI.Controls
         private void updateDisplayValues()
         {
             totalNumWorkers = workerStatus.Game.State.Enumerate<Worker>().Count();
-            workerTaskItemSource = new WorkerTaskItemSource(workerStatus.Faction.Workers.QueuedTasks);
+            workerTaskItemSource = new WorkerTaskItemSource(factionWorkers.QueuedTasks);
             taskList.ItemSource = workerTaskItemSource;
         }
 

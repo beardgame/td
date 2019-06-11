@@ -9,6 +9,7 @@ namespace Bearded.TD.Game.Workers
     {
         public abstract string Name { get; }
         public abstract IEnumerable<Tile> Tiles { get; }
+        public abstract double PercentCompleted { get; }
         public abstract bool Finished { get; }
 
         public abstract void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS);
