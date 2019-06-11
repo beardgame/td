@@ -39,6 +39,7 @@ namespace Bearded.TD.Rendering
                 "deferred/gSprite",
                 "deferred/debug",
                 "deferred/compose",
+                "deferred/copy",
                 "deferred/pointlight"
             }.ForEach(name => Shaders.MakeShaderProgram(name));
 

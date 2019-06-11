@@ -20,6 +20,8 @@ namespace Bearded.TD.Rendering.InGameUI
         public static void Render(GameState game, TileAreaBorder border,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
+            const float z = 0.2f;
+            
             var sprites = game.Meta.Blueprints.Sprites["particle"];
             var sprite = sprites.Sprites.GetSprite("halo");
 
@@ -49,9 +51,9 @@ namespace Bearded.TD.Rendering.InGameUI
                 var v2 = afterIsConvex ? vector2 : vector1;
 
                 sprite.DrawQuad(
-                    point1.NumericValue.WithZ(0), point2.NumericValue.WithZ(0),
-                    (point2 - v2 * lineWidthU).NumericValue.WithZ(0),
-                    (point1 - v1 * lineWidthU).NumericValue.WithZ(0),
+                    point1.NumericValue.WithZ(z), point2.NumericValue.WithZ(z),
+                    (point2 - v2 * lineWidthU).NumericValue.WithZ(z),
+                    (point1 - v1 * lineWidthU).NumericValue.WithZ(z),
                     new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     argb1, argb2, argb2, argb1

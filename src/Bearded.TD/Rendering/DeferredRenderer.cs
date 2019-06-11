@@ -13,10 +13,10 @@ namespace Bearded.TD.Rendering
     class DeferredRenderer
     {
         private static readonly SpriteDrawGroup[] worldDrawGroups = { Building, Unit };
-        private static readonly SpriteDrawGroup[] postCompositeGroups = { Particle, Unknown };
+        private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
 
         public static readonly ReadOnlyCollection<SpriteDrawGroup> AllDrawGroups =
-            new [] {worldDrawGroups, postCompositeGroups}
+            new [] {worldDrawGroups, postLightGroups}
                 .SelectMany(group => group)
                 .ToList().AsReadOnly();
         
@@ -27,15 +27,18 @@ namespace Bearded.TD.Rendering
         private readonly Texture diffuseBuffer = createTexture(); // rgba
         private readonly Texture normalBuffer = createTexture(); // xyz
         private readonly Texture depthBuffer = createTexture(); // z
-        private readonly Texture accumBuffer = createTexture(); // rgb
+        private readonly Texture lightAccumBuffer = createTexture(); // rgb
         private readonly Texture depthMaskBuffer = createDepthTexture();
+        private readonly Texture compositionBuffer = createTexture(); // rgba
 
         private readonly RenderTarget gTarget = new RenderTarget();
-        private readonly RenderTarget accumTarget = new RenderTarget();
+        private readonly RenderTarget lightAccumTarget = new RenderTarget();
+        private readonly RenderTarget compositionTarget = new RenderTarget();
 
         private readonly IndexedSurface<UVColorVertexData>[] debugSurfaces;
 
         private readonly PostProcessSurface compositeSurface;
+        private readonly PostProcessSurface copyToTargetSurface;
         private (int width, int height) bufferSize;
 
         public DeferredRenderer(SurfaceManager surfaces)
@@ -46,25 +49,34 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
             gTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
-            renderTo(gTarget, (0, 0));
+            bind(gTarget, (0, 0));
             GL.DrawBuffers(3, new []
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
                 DrawBuffersEnum.ColorAttachment2,
             });
-            renderTo(null, (0, 0));
+            bind(null, (0, 0));
 
-            accumTarget.Attach(FramebufferAttachment.ColorAttachment0, accumBuffer);
+            lightAccumTarget.Attach(FramebufferAttachment.ColorAttachment0, lightAccumBuffer);
+            
+            compositionTarget.Attach(FramebufferAttachment.ColorAttachment0, compositionBuffer);
+            compositionTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
 
             compositeSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/compose"])
                 .AndSettings(
                     new TextureUniform("albedoTexture", diffuseBuffer, TextureUnit.Texture0),
-                    new TextureUniform("lightTexture", accumBuffer, TextureUnit.Texture1)
+                    new TextureUniform("lightTexture", lightAccumBuffer, TextureUnit.Texture1)
+                );
+            
+            copyToTargetSurface = new PostProcessSurface()
+                .WithShader(surfaces.Shaders["deferred/copy"])
+                .AndSettings(
+                    new TextureUniform("inputTexture", compositionBuffer, TextureUnit.Texture0)
                 );
 
-            debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, accumBuffer}
+            debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, lightAccumBuffer}
                 .Select(createDebugSurface).ToArray();
             
             surfaces.InjectDeferredBuffer(normalBuffer, depthBuffer);
@@ -74,19 +86,6 @@ namespace Bearded.TD.Rendering
             => new IndexedSurface<UVColorVertexData>()
                 .WithShader(surfaces.Shaders["deferred/debug"])
                 .AndSettings(new TextureUniform("bufferTexture", buffer));
-
-        public void Render(ContentSurfaceManager contentSurfaces, RenderTarget target = null)
-        {
-            resizeIfNeeded();
-
-            renderWorldToGBuffers(contentSurfaces);
-
-            renderLightsToAccumBuffer();
-
-            compositeTo(target);
-
-            renderPostCompositeDrawGroups(contentSurfaces);
-        }
 
         public void RenderDebug(RenderTarget target = null)
         {
@@ -107,88 +106,104 @@ namespace Bearded.TD.Rendering
                     new UVColorVertexData(u, v2, 0, 0, 1, color)
                 );
                 
-                u = u + width;
+                u += width;
                 
                 surface.Render();
             }
         }
+        
+        public void Render(ContentSurfaceManager contentSurfaces, RenderTarget target = null)
+        {
+            resizeIfNeeded();
+
+            renderWorldToGBuffers(contentSurfaces);
+
+            renderLightsToAccumBuffer();
+
+            compositeLightsAndGBuffers();
+
+            renderPostLightDrawGroupsToComposition(contentSurfaces);
+
+            copyCompositionTo(target);
+
+            resetChangedSettings();
+        }
 
         private void renderWorldToGBuffers(ContentSurfaceManager contentSurfaces)
-        {
-            renderTo(gTarget, bufferSize);
-            
-            setLevelGeometryRenderSettings();
-            clear();
-
-            renderLevelGeometry(contentSurfaces);
-            
-            setSpriteGeometryRenderSettings();
-
-            renderDrawGroups(contentSurfaces, worldDrawGroups);
-
-            unsetGeometryRenderSettings();
-        }
-
-        private static void renderLevelGeometry(ContentSurfaceManager contentSurfaces)
-        {
-            contentSurfaces.LevelGeometry.RenderAll();
-        }
-
-        private static void unsetGeometryRenderSettings()
-        {
-            GL.Disable(EnableCap.DepthTest);
-        }
-
-        private static void setSpriteGeometryRenderSettings()
-        {
-            GL.DepthMask(false);
-            GL.Disable(EnableCap.CullFace);
-            GL.Enable(EnableCap.Blend);
-        }
-
-        private static void setLevelGeometryRenderSettings()
         {
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
             GL.Disable(EnableCap.Blend);
-        }
 
-        private static void clear()
-        {
-            GL.ClearColor(0, 0, 0, 0);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            bind(gTarget, bufferSize);
+            clearColorAndDepth();
+
+            contentSurfaces.LevelGeometry.RenderAll();
+
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Blend);
+
+            renderDrawGroups(contentSurfaces, worldDrawGroups);
         }
 
         private void renderLightsToAccumBuffer()
         {
-            renderTo(accumTarget, bufferSize);
+            bind(lightAccumTarget, bufferSize);
 
-            clearWithColor();
+            clearColor();
 
             surfaces.PointLights.Render();
         }
 
-        private void compositeTo(RenderTarget target)
+        private void compositeLightsAndGBuffers()
         {
-            renderTo(target, (viewport.Width, viewport.Height));
-
+            bind(compositionTarget, (viewport.Width, viewport.Height));
+    
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
+            
             compositeSurface.Render();
         }
 
-        private void renderPostCompositeDrawGroups(ContentSurfaceManager contentSurfaces)
+        private void renderPostLightDrawGroupsToComposition(ContentSurfaceManager contentSurfaces)
         {
-            renderDrawGroups(contentSurfaces, postCompositeGroups);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            
+            renderDrawGroups(contentSurfaces, postLightGroups);
         }
 
-        private static void renderTo(RenderTarget target, (int width, int height) viewport)
+        private void copyCompositionTo(RenderTarget target)
+        {
+            bind(target, bufferSize);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
+
+            copyToTargetSurface.Render();
+        }
+
+        private void resetChangedSettings()
+        {
+            GL.Enable(EnableCap.Blend);
+        }
+
+        private static void bind(RenderTarget target, (int width, int height) viewport)
         {
             GL.Viewport(0, 0, viewport.width, viewport.height);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);
         }
-
-        private static void clearWithColor(float r = 0, float g = 0, float b = 0, float a = 0)
+        
+        private static void clearColorAndDepth()
+        {
+            GL.ClearColor(0, 0, 0, 0);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        }
+        
+        private static void clearColor(float r = 0, float g = 0, float b = 0, float a = 0)
         {
             GL.ClearColor(r, g, b, a);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -236,7 +251,8 @@ namespace Bearded.TD.Rendering
             diffuseBuffer.Resize(w, h, PixelInternalFormat.Rgba);
             normalBuffer.Resize(w, h, PixelInternalFormat.Rgba);
             depthBuffer.Resize(w, h, PixelInternalFormat.R16f);
-            accumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
+            lightAccumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
+            compositionBuffer.Resize(w, h, PixelInternalFormat.Rgba);
             resizeDepthMask(w, h);
         }
 
