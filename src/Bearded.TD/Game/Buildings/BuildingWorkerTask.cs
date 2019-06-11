@@ -12,7 +12,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    class BuildingWorkerTask : WorkerTask, IResourceConsumer
+    sealed class BuildingWorkerTask : IWorkerTask, IResourceConsumer
     {
         private readonly IBuildingBlueprint blueprint;
 
@@ -24,10 +24,10 @@ namespace Bearded.TD.Game.Buildings
         private int maxHealth = 1;
         private bool finished;
 
-        public override string Name => $"Build {blueprint.Name}";
-        public override IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
-        public override double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
-        public override bool Finished => finished;
+        public string Name => $"Build {blueprint.Name}";
+        public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
+        public double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
+        public bool Finished => finished;
 
         public BuildingWorkerTask(BuildingPlaceholder placeholder)
         {
@@ -62,7 +62,7 @@ namespace Bearded.TD.Game.Buildings
             finished = true;
         }
 
-        public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
         {
             if (placeholder != null)
             {
@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Buildings
             resourceManager.RegisterConsumer(this, ratePerS, remaining);
         }
 
-        public override IRequest<GameInstance> CancelRequest()
+        public IRequest<GameInstance> CancelRequest()
         {
             if (placeholder == null)
                 throw new InvalidOperationException("Cannot cancel a building task after starting to build.");

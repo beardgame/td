@@ -12,11 +12,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Workers
 {
-    sealed class MiningTask : WorkerTask
+    sealed class MiningTask : IWorkerTask
     {
-        public override string Name => "Mine a tile";
-        public override IEnumerable<Tile> Tiles => tile.Yield();
-        public override bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
+        public string Name => "Mine a tile";
+        public IEnumerable<Tile> Tiles => tile.Yield();
+        public bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
         private readonly MiningTaskPlaceholder miningTaskPlaceholder;
         private readonly Tile tile;
@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Workers
 
         private double miningProgress;
 
-        public override double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
+        public double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
 
         public MiningTask(MiningTaskPlaceholder miningTaskPlaceholder, Tile tile, GeometryLayer geometry)
         {
@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Workers
             originalDrawInfo = geometry[tile].DrawInfo;
         }
 
-        public override void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
         {
             miningProgress += ratePerS * elapsedTime.NumericValue;
             if (Finished)
@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Workers
             }
         }
 
-        public override IRequest<GameInstance> CancelRequest()
+        public IRequest<GameInstance> CancelRequest()
         {
             if (miningProgress > 0)
                 throw new InvalidOperationException("Cannot cancel a mining task after starting to mine.");

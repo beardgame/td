@@ -51,10 +51,10 @@ namespace Bearded.TD.UI.Controls
         private class WorkerTaskItemSource : IListItemSource
         {
             private readonly WorkerStatusUI workerStatus;
-            private readonly IList<WorkerTask> workerTasks;
+            private readonly IList<IWorkerTask> workerTasks;
             public int ItemCount { get; }
 
-            public WorkerTaskItemSource(WorkerStatusUI workerStatus, IList<WorkerTask> workerTasks)
+            public WorkerTaskItemSource(WorkerStatusUI workerStatus, IList<IWorkerTask> workerTasks)
             {
                 this.workerStatus = workerStatus;
                 this.workerTasks = workerTasks;
@@ -70,11 +70,11 @@ namespace Bearded.TD.UI.Controls
 
         private class WorkerTaskControl : CompositeControl
         {
-            private readonly WorkerTask task;
+            private readonly IWorkerTask task;
             private readonly BackgroundBox progressBar;
             private readonly Button cancelButton;
 
-            public WorkerTaskControl(WorkerStatusUI workerStatus, WorkerTask task)
+            public WorkerTaskControl(WorkerStatusUI workerStatus, IWorkerTask task)
             {
                 this.task = task;
 

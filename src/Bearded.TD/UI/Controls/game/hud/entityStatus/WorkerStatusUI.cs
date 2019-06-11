@@ -14,7 +14,7 @@ namespace Bearded.TD.UI.Controls
 
         public int NumIdleWorkers => Faction.Workers.NumIdleWorkers;
         public int NumWorkers => Faction.Workers.NumWorkers;
-        public IList<WorkerTask> QueuedTasks => Faction.Workers.QueuedTasks;
+        public IList<IWorkerTask> QueuedTasks => Faction.Workers.QueuedTasks;
 
         public event VoidEventHandler WorkerValuesUpdated;
 
@@ -40,7 +40,7 @@ namespace Bearded.TD.UI.Controls
             WorkerValuesUpdated?.Invoke();
         }
 
-        public void OnTaskCancelClicked(WorkerTask task)
+        public void OnTaskCancelClicked(IWorkerTask task)
         {
             game.RequestDispatcher.Dispatch(task.CancelRequest());
         }

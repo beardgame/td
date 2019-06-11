@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Workers
             Game.ListAs(this);
         }
 
-        public void AssignTask(WorkerTask task)
+        public void AssignTask(IWorkerTask task)
         {
             setState(WorkerState.ExecuteTask(manager, this, task));
         }

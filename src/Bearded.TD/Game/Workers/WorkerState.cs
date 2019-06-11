@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Workers
     abstract class WorkerState
     {
         public static WorkerState Idle(WorkerManager manager, Worker worker) => new IdleWorkerState(manager, worker);
-        public static WorkerState ExecuteTask(WorkerManager manager, Worker worker, WorkerTask task)
+        public static WorkerState ExecuteTask(WorkerManager manager, Worker worker, IWorkerTask task)
             => new ExecutingWorkerState(manager, worker, task);
 
         public event GenericEventHandler<WorkerState> StateChanged;
@@ -46,9 +46,9 @@ namespace Bearded.TD.Game.Workers
 
         private class ExecutingWorkerState : WorkerState
         {
-            private readonly WorkerTask task;
+            private readonly IWorkerTask task;
 
-            public ExecutingWorkerState(WorkerManager manager, Worker worker, WorkerTask task)
+            public ExecutingWorkerState(WorkerManager manager, Worker worker, IWorkerTask task)
                 : base(manager, worker)
             {
                 this.task = task;
