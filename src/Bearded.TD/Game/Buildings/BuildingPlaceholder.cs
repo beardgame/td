@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
@@ -46,6 +48,11 @@ namespace Bearded.TD.Game.Buildings
             Game.Add(building);
             workerTask.SetBuilding(building);
             Game.Meta.Events.Send(new BuildingConstructionStarted(this, building));
+        }
+
+        public IRequest<GameInstance> CancelRequest()
+        {
+            return AbortTask.Request(Faction, workerTask);
         }
 
         public void CancelBuild()
