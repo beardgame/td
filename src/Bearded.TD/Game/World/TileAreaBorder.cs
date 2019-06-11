@@ -7,9 +7,36 @@ namespace Bearded.TD.Game.World
 {
     class TileAreaBorder
     {
-        private readonly List<(Tile, Direction)> edges;
+        public struct Part
+        {
 
-        private TileAreaBorder(List<(Tile, Direction)> edges)
+            public Tile Tile { get; }
+            public Direction Direction { get; }
+            public bool BeforeIsConvex { get; }
+            public bool AfterIsConvex { get; }
+            
+            public Part(Tile tile, Direction direction, bool beforeIsConvex, bool afterIsConvex)
+            {
+                Tile = tile;
+                Direction = direction;
+                BeforeIsConvex = beforeIsConvex;
+                AfterIsConvex = afterIsConvex;
+            }
+
+            public void Deconstruct(
+                out Tile tile, out Direction direction,
+                out bool beforeIsConvex,  out bool afterIsConvex)
+            {
+                tile = Tile;
+                direction = Direction;
+                beforeIsConvex = BeforeIsConvex;
+                afterIsConvex = AfterIsConvex;
+            }
+        }
+
+        private readonly List<Part> edges;
+
+        private TileAreaBorder(List<Part> edges)
         {
             this.edges = edges;
         }
@@ -28,14 +55,18 @@ namespace Bearded.TD.Game.World
             var edges = area.SelectMany(
                     tile => Extensions.Directions
                         .Where(direction => !area.Contains(tile.Neighbour(direction)))
-                        .Select(direction => (tile, direction))
+                        .Select(direction => new Part(
+                            tile, direction,
+                            !area.Contains(tile.Neighbour(direction.Previous())),
+                            !area.Contains(tile.Neighbour(direction.Next()))
+                            ))
                 )
                 .ToList();
             
             return new TileAreaBorder(edges);
         }
 
-        public void Visit(Action<(Tile Tile, Direction Direction)> visitBorder)
+        public void Visit(Action<Part> visitBorder)
         {
             edges.ForEach(visitBorder);
         }

@@ -68,8 +68,8 @@ namespace Bearded.TD.Game.World
             var rayDirection = ray.Direction.NumericValue;
 
             centerDirection = ray.Direction.Direction.Hexagonal();
-            leftDirection = centerDirection.NextLeft();
-            rightDirection = centerDirection.NextRight();
+            leftDirection = centerDirection.Next();
+            rightDirection = centerDirection.Previous();
 
             // project into single dimensional space aligned with the ray where the ray is of length 1
             (nextCenterIntersection, centerFullStep, centerHalfStep) = getRayTraceParameters(relativeStartTilePosition, rayDirection, centerDirection);
