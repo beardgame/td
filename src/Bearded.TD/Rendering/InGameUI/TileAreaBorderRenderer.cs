@@ -24,11 +24,11 @@ namespace Bearded.TD.Rendering.InGameUI
             var sprite = sprites.Sprites.GetSprite("halo");
 
             var offsetOuter = new Unit(Constants.Game.World.HexagonSide);
-            var offsetInner = new Unit(Constants.Game.World.HexagonSide - lineWidth);
+            var lineWidthU = new Unit(lineWidth);
             
             border.Visit(t =>
             {
-                var (tile, direction) = t;
+                var (tile, direction, beforeIsConvex, afterIsConvex) = t;
 
                 var center = Level.GetPosition(tile);
                 var vector1 = direction.CornerBefore();
@@ -45,10 +45,13 @@ namespace Bearded.TD.Rendering.InGameUI
                 var argb1 = color1 ?? Color.Transparent;
                 var argb2 = color2 ?? Color.Transparent;
 
+                var v1 = beforeIsConvex ? vector1 : vector2;
+                var v2 = afterIsConvex ? vector2 : vector1;
+
                 sprite.DrawQuad(
                     point1.NumericValue.WithZ(0), point2.NumericValue.WithZ(0),
-                    (center + vector2 * offsetInner).NumericValue.WithZ(0),
-                    (center + vector1 * offsetInner).NumericValue.WithZ(0),
+                    (point2 - v2 * lineWidthU).NumericValue.WithZ(0),
+                    (point1 - v1 * lineWidthU).NumericValue.WithZ(0),
                     new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     argb1, argb2, argb2, argb1
