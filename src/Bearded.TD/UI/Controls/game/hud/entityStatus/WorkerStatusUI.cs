@@ -43,6 +43,20 @@ namespace Bearded.TD.UI.Controls
             WorkerValuesUpdated?.Invoke();
         }
 
+        public void OnTaskHover(IWorkerTask task)
+        {
+            task.Selectable.Match(
+                onValue: selectable => game.SelectionManager.FocusObject(selectable),
+                onNothing: () => {});
+        }
+
+        public void OnTaskHoverLeave(IWorkerTask task)
+        {
+            task.Selectable.Match(
+                onValue: _ => game.SelectionManager.ResetFocus(),
+                onNothing: () => {});
+        }
+
         public void OnTaskCancelClicked(IWorkerTask task)
         {
             game.Request(AbortTask.Request(Faction, task));

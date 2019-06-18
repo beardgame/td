@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
@@ -70,12 +72,15 @@ namespace Bearded.TD.UI.Controls
 
         private class WorkerTaskControl : CompositeControl
         {
+            private readonly WorkerStatusUI workerStatus;
             private readonly IWorkerTask task;
             private readonly BackgroundBox progressBar;
             private readonly Button cancelButton;
+            private bool hasMouseEntered;
 
             public WorkerTaskControl(WorkerStatusUI workerStatus, IWorkerTask task)
             {
+                this.workerStatus = workerStatus;
                 this.task = task;
 
                 progressBar = new BackgroundBox { Color = Color.White * 0.25f };
@@ -105,6 +110,28 @@ namespace Bearded.TD.UI.Controls
                 }
 
                 base.Render(r);
+            }
+
+            public override void MouseMoved(MouseEventArgs eventArgs)
+            {
+                base.MouseMoved(eventArgs);
+
+                if (hasMouseEntered) return;
+
+                Console.WriteLine("Mouse entered");
+
+                workerStatus.OnTaskHover(task);
+                hasMouseEntered = true;
+            }
+
+            public override void MouseExited(MouseEventArgs eventArgs)
+            {
+                base.MouseExited(eventArgs);
+
+                Console.WriteLine("Mouse exited");
+
+                workerStatus.OnTaskHoverLeave(task);
+                hasMouseEntered = false;
             }
         }
     }
