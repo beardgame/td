@@ -18,8 +18,7 @@ namespace Bearded.TD.UI.Controls
             // Instantly finish loading for now.
             if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
             {
-                Game.RequestDispatcher.Dispatch(
-                    ChangePlayerState.Request(Game.Me, PlayerConnectionState.FinishedLoading));
+                Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.FinishedLoading));
             }
         }
     }

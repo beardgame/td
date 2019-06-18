@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -8,7 +9,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class AbortTask
     {
-        public static IRequest<GameInstance> Request(Faction faction, IWorkerTask task)
+        public static IRequest<Player, GameInstance> Request(Faction faction, IWorkerTask task)
             => new Implementation(faction, task);
 
         private class Implementation : UnifiedRequestCommand
@@ -22,7 +23,8 @@ namespace Bearded.TD.Game.Commands
                 this.task = task;
             }
 
-            public override bool CheckPreconditions() => task.CanAbort;
+            public override bool CheckPreconditions(Player actor) =>
+                task.CanAbort && faction.SharesWorkersWith(actor.Faction);
 
             public override void Execute()
             {

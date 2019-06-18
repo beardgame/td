@@ -5,6 +5,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
@@ -50,7 +51,7 @@ namespace Bearded.TD.Game.Buildings
             Game.Meta.Events.Send(new BuildingConstructionStarted(this, building));
         }
 
-        public IRequest<GameInstance> CancelRequest()
+        public IRequest<Player, GameInstance> CancelRequest()
         {
             return AbortTask.Request(Faction, workerTask);
         }

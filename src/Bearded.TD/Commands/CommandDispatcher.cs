@@ -22,7 +22,7 @@ namespace Bearded.TD.Commands
         }
     }
 
-    class ServerCommandDispatcher<TObject> : ICommandDispatcher<TObject>
+    class ServerCommandDispatcher<TActor, TObject> : ICommandDispatcher<TObject>
     {
         private readonly ICommandExecutor executor;
         private readonly ServerNetworkInterface network;
@@ -49,7 +49,7 @@ namespace Bearded.TD.Commands
                 return;
 
             var message = network.CreateMessage();
-            CommandToNetworkMessageWriter.WriteCommandToMessage(command, message);
+            CommandToNetworkMessageWriter.WriteCommandToMessage<TActor, TObject>(command, message);
             network.SendMessageToAll(message, NetworkChannel.Chat);
         }
     }

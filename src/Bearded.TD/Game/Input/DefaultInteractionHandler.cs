@@ -9,7 +9,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Input
 {
-    class DefaultInteractionHandler : InteractionHandler, IListener<BuildingConstructionStarted>
+    sealed class DefaultInteractionHandler : InteractionHandler, IListener<BuildingConstructionStarted>
     {
         public DefaultInteractionHandler(GameInstance game) : base(game) { }
 

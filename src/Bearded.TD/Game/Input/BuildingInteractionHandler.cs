@@ -6,7 +6,7 @@ using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game.Input
 {
-    class BuildingInteractionHandler : InteractionHandler
+    sealed class BuildingInteractionHandler : InteractionHandler
     {
         private readonly Faction faction;
         private readonly IBuildingBlueprint blueprint;

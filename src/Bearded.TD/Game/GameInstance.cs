@@ -9,14 +9,15 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
+using Lidgren.Network;
 
 namespace Bearded.TD.Game
 {
-    class GameInstance
+    sealed class GameInstance
     {
         public ContentManager ContentManager { get; }
         public Player Me { get; }
-        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
+        public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
         public IGameController Controller { get; }
         public GameMeta Meta { get; }
 
@@ -100,6 +101,8 @@ namespace Bearded.TD.Game
         }
 
         public Player PlayerFor(Id<Player> id) => players[id];
+
+        public Player PlayerFor(NetIncomingMessage msg) => playerManager.GetSender(msg);
 
         public void UpdatePlayers(UpdateEventArgs args)
         {

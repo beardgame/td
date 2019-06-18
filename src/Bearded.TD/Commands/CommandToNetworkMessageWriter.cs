@@ -6,11 +6,11 @@ namespace Bearded.TD.Commands
 {
     static class CommandToNetworkMessageWriter
     {
-        public static void WriteCommandToMessage<TObject>(
+        public static void WriteCommandToMessage<TActor, TObject>(
             ISerializableCommand<TObject> command, NetOutgoingMessage message)
         {
             var serializer = command.Serializer;
-            var serializers = Serializers<TObject>.Instance;
+            var serializers = Serializers<TActor, TObject>.Instance;
             var id = serializers.CommandId(command.Serializer);
 
             message.Write(id);

@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input
 {
-    class MouseCursorHandler : ICursorHandler
+    sealed class MouseCursorHandler : ICursorHandler
     {
         private readonly MouseCameraController cameraController;
         private readonly GameCamera camera;

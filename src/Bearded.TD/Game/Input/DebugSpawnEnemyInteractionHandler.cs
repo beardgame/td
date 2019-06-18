@@ -7,7 +7,7 @@ using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Input
 {
-    class DebugSpawnEnemyInteractionHandler : InteractionHandler
+    sealed class DebugSpawnEnemyInteractionHandler : InteractionHandler
     {
         private readonly string enemyBlueprintName;
 

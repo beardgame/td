@@ -12,14 +12,14 @@ namespace Bearded.TD.Game.Commands
 {
     static class SyncCursors
     {
-        public static IRequest<GameInstance> Request(GameInstance game, Player player, Tile cursorPosition)
+        public static IRequest<Player, GameInstance> Request(GameInstance game, Player player, Tile cursorPosition)
             => new RequestImplementation(game, player, cursorPosition);
 
         public static ISerializableCommand<GameInstance> Command(
                 GameInstance game, IDictionary<Player, Tile> cursorPositions)
             => new CommandImplementation(game, cursorPositions);
 
-        private class RequestImplementation : IRequest<GameInstance>
+        private class RequestImplementation : IRequest<Player, GameInstance>
         {
             private readonly GameInstance game;
             private readonly Player player;
@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Commands
                 this.cursorPosition = cursorPosition;
             }
 
-            public bool CheckPreconditions() => true;
+            public bool CheckPreconditions(Player actor) => player == actor;
 
             public ISerializableCommand<GameInstance> ToCommand()
             {
@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Commands
                 return null;
             }
 
-            public IRequestSerializer<GameInstance> Serializer =>
+            public IRequestSerializer<Player, GameInstance> Serializer =>
                 new Serializer(new Dictionary<Player, Tile> {{player, cursorPosition}});
         }
 
@@ -66,7 +66,7 @@ namespace Bearded.TD.Game.Commands
             public ICommandSerializer<GameInstance> Serializer => new Serializer(cursorPositions);
         }
 
-        private class Serializer : IRequestSerializer<GameInstance>, ICommandSerializer<GameInstance>
+        private class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>
         {
             private (Id<Player> player, int x, int y)[] cursorPositions;
 
@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Commands
                     cursorPositions.Select(pair => (pair.Key.Id, pair.Value.X, pair.Value.Y)).ToArray();
             }
 
-            public IRequest<GameInstance> GetRequest(GameInstance game)
+            public IRequest<Player, GameInstance> GetRequest(GameInstance game)
             {
                 DebugAssert.State.Satisfies(cursorPositions.Length == 1);
 

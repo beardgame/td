@@ -6,7 +6,7 @@ using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game.Input
 {
-    class MiningInteractionHandler : InteractionHandler
+    sealed class MiningInteractionHandler : InteractionHandler
     {
         private readonly Faction faction;
 
@@ -19,13 +19,13 @@ namespace Bearded.TD.Game.Input
         {
             var currentTile = cursor.CurrentFootprint;
             if (!currentTile.IsValid) return;
-                
+
             if (cursor.Click.Hit)
             {
                 foreach (var tile in currentTile.OccupiedTiles.Where(
                     t => Game.State.GeometryLayer[t].Type == TileType.Wall))
                 {
-                    Game.RequestDispatcher.Dispatch(MineTile.Request(Game, faction, tile));
+                    Game.Request(MineTile.Request(Game, faction, tile));
                 }
             }
             else if (cursor.Cancel.Hit)

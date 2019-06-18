@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.IO;
@@ -30,10 +31,12 @@ namespace Bearded.TD.Game
         {
             var typeId = msg.ReadInt32();
             // We only accept requests. We should not be receiving commands on the server.
-            if (Serializers<GameInstance>.Instance.IsRequestSerializer(typeId))
+            if (Serializers<Player, GameInstance>.Instance.IsRequestSerializer(typeId))
             {
                 game.RequestDispatcher.Dispatch(
-                    Serializers<GameInstance>.Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game));
+                    game.PlayerFor(msg),
+                    Serializers<Player, GameInstance>
+                        .Instance.RequestSerializer(typeId).Read(new NetBufferReader(msg), game));
                 return;
             }
 
@@ -58,10 +61,11 @@ namespace Bearded.TD.Game
         {
             var typeId = msg.ReadInt32();
             // We only accept commands. We should not be receiving requests on the client.
-            if (Serializers<GameInstance>.Instance.IsCommandSerializer(typeId))
+            if (Serializers<Player, GameInstance>.Instance.IsCommandSerializer(typeId))
             {
                 commandDispatcher.Dispatch(
-                    Serializers<GameInstance>.Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), game));
+                    Serializers<Player,GameInstance>
+                        .Instance.CommandSerializer(typeId).Read(new NetBufferReader(msg), game));
                 return;
             }
 

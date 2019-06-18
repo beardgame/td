@@ -45,12 +45,12 @@ namespace Bearded.TD.UI.Controls
 
         public void OnTaskCancelClicked(IWorkerTask task)
         {
-            game.RequestDispatcher.Dispatch(AbortTask.Request(Faction, task));
+            game.Request(AbortTask.Request(Faction, task));
         }
 
         public void OnTaskBumpClicked(IWorkerTask task)
         {
-            game.RequestDispatcher.Dispatch(PrioritizeTask.Request(Faction, task));
+            game.Request(PrioritizeTask.Request(Faction, task));
         }
 
         public void OnCloseClicked()

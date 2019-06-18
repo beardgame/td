@@ -39,8 +39,7 @@ namespace Bearded.TD.Game.Meta
         {
             if (game.State == null || game.State.Time < nextUpdate) return;
 
-            game.RequestDispatcher.Dispatch(
-                SyncCursors.Request(game, game.Me, Level.GetTile(game.PlayerInput.CursorPosition)));
+            game.Request(SyncCursors.Request(game, game.Me, Level.GetTile(game.PlayerInput.CursorPosition)));
             game.State.Meta.Dispatcher.RunOnlyOnServer(
                 SyncCursors.Command, game, ImmutableDictionary.CreateRange(latestKnownCursorPosition));
             nextUpdate = game.State.Time + timeBetweenSyncs;

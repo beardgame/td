@@ -2,9 +2,9 @@
 
 namespace Bearded.TD.Commands.Serialization
 {
-    interface IRequestSerializer<TObject>
+    interface IRequestSerializer<TActor, TObject>
     {
-        IRequest<TObject> GetRequest(TObject game);
+        IRequest<TActor, TObject> GetRequest(TObject game);
         void Serialize(INetBufferStream stream);
     }
 }

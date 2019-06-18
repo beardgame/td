@@ -13,9 +13,9 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game { get; }
         protected NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
-        
+
         public abstract bool CanChangeGameSettings { get; }
-        
+
         protected LobbyManager(GameInstance game, NetworkInterface network)
         {
             Game = game;
@@ -29,13 +29,13 @@ namespace Bearded.TD.UI.Controls
                         ? PlayerConnectionState.Waiting
                         : PlayerConnectionState.Ready;
 
-            Game.RequestDispatcher.Dispatch(ChangePlayerState.Request(Game.Me, connectionState));
+            Game.Request(ChangePlayerState.Request(Game.Me, connectionState));
         }
 
         public void UpdateGameSettings(GameSettings gameSettings)
         {
             DebugAssert.State.Satisfies(CanChangeGameSettings, "Should only set game settings on server.");
-            
+
             Dispatcher.RunOnlyOnServer(SetGameSettings.Command, Game, gameSettings);
         }
 

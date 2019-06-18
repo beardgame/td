@@ -5,6 +5,7 @@ using amulware.Graphics;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
@@ -27,7 +28,7 @@ using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD
 {
-    class TheGame : Program
+    sealed class TheGame : Program
     {
         private readonly Logger logger;
         private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
@@ -40,7 +41,7 @@ namespace Bearded.TD
 
         private ContentManager contentManager;
         private CachedRendererRouter rendererRouter;
-        
+
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
              GameWindowFlags.Default, DisplayDevice.Default,
@@ -51,8 +52,8 @@ namespace Bearded.TD
 
         protected override void OnLoad(EventArgs e)
         {
-            Serializers<GameInstance>.Initialize();
-            
+            Serializers<Player, GameInstance>.Initialize();
+
             ConsoleCommands.Initialise();
             UserSettings.Load(logger);
             UserSettings.Save(logger);
@@ -86,7 +87,7 @@ namespace Bearded.TD
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
-            
+
             var shortcuts = new ShortcutManager();
             eventManager = new EventManager(rootControl, inputManager, shortcuts);
             var (models, views) = UILibrary.CreateFactories(renderContext);

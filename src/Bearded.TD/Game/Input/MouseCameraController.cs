@@ -9,7 +9,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.Game.Input
 {
-    class MouseCameraController
+    sealed class MouseCameraController
     {
         private readonly GameCamera camera;
         private readonly float levelRadius;

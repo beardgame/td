@@ -1,5 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -8,7 +10,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class UpgradeBuilding
     {
-        public static IRequest<GameInstance> Request(GameInstance game, Building building, UpgradeBlueprint upgrade)
+        public static IRequest<Player, GameInstance> Request(GameInstance game, Building building, UpgradeBlueprint upgrade)
             => new Implementation(game, building, upgrade);
 
         private class Implementation : UnifiedRequestCommand
@@ -24,7 +26,9 @@ namespace Bearded.TD.Game.Commands
                 this.upgrade = upgrade;
             }
 
-            public override bool CheckPreconditions() => building.CanApplyUpgrade(upgrade);
+            public override bool CheckPreconditions(Player actor) =>
+                building.CanApplyUpgrade(upgrade)
+                && building.Faction.IsAncestorOf(actor.Faction);
 
             public override void Execute()
             {
@@ -39,10 +43,10 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<Building> building;
             private Id<UpgradeBlueprint> upgrade;
-            
+
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
-            
+
             public Serializer(Building building, UpgradeBlueprint upgrade)
             {
                 this.building = building.Id;

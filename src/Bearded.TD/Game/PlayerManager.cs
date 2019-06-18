@@ -60,7 +60,7 @@ namespace Bearded.TD.Game
             dispatcher.RunOnlyOnServer(SyncPlayers.Command, game);
         }
 
-        private Player getSender(NetIncomingMessage msg) => connectionToPlayer[msg.SenderConnection];
+        public Player GetSender(NetIncomingMessage msg) => connectionToPlayer[msg.SenderConnection];
 
         private void addPlayerConnection(Player player, NetConnection connection)
         {
@@ -139,11 +139,11 @@ namespace Bearded.TD.Game
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    getSender(msg).ConnectionState = PlayerConnectionState.Waiting;
+                    GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
                     
                     foreach (var p in game.Players)
                     {
-                        if (p == getSender(msg)) continue;
+                        if (p == GetSender(msg)) continue;
                         sendCommandToConnection(msg.SenderConnection, AddPlayer.Command(game, p));
                     }
 
@@ -151,7 +151,7 @@ namespace Bearded.TD.Game
                     
                     break;
                 case NetConnectionStatus.Disconnected:
-                    game.RemovePlayer(getSender(msg));
+                    game.RemovePlayer(GetSender(msg));
                     removePlayerConnection(msg.SenderConnection);
                     break;
             }
@@ -160,7 +160,7 @@ namespace Bearded.TD.Game
         private void sendCommandToConnection(NetConnection conn, ISerializableCommand<GameInstance> command)
         {
             var outMsg = networkInterface.CreateMessage();
-            CommandToNetworkMessageWriter.WriteCommandToMessage(command, outMsg);
+            CommandToNetworkMessageWriter.WriteCommandToMessage<Player, GameInstance>(command, outMsg);
             networkInterface.SendMessageToConnection(conn, outMsg, NetworkChannel.Chat);
         }
     }
