@@ -83,6 +83,8 @@ namespace Bearded.TD.UI.Controls
 
                 Add(new Label {FontSize = 16, Text = task.Name});
 
+                if (!workerStatus.CanInteract) return;
+
                 cancelButton = Default.Button("x");
                 cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
                 Add(cancelButton.Anchor(a => a.Right(margin: 24, width: 24)));
@@ -97,7 +99,10 @@ namespace Bearded.TD.UI.Controls
                 var percentage = task.PercentCompleted;
                 progressBar.Anchor(a => a.Right(relativePercentage: percentage));
 
-                cancelButton.IsVisible = percentage == 0;
+                if (cancelButton != null)
+                {
+                    cancelButton.IsVisible = percentage == 0;
+                }
 
                 base.Render(r);
             }

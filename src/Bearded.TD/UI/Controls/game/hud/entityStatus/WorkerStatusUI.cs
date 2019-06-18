@@ -12,6 +12,7 @@ namespace Bearded.TD.UI.Controls
     {
         private GameInstance game;
         public Faction Faction { get; private set; }
+        public bool CanInteract { get; private set; }
 
         public int NumIdleWorkers => Faction.Workers.NumIdleWorkers;
         public int NumWorkers => Faction.Workers.NumWorkers;
@@ -23,6 +24,7 @@ namespace Bearded.TD.UI.Controls
         {
             game = dependencies.Resolve<GameInstance>();
             Faction = faction;
+            CanInteract = game.Me.Faction.Workers == Faction.Workers;
 
             Faction.Workers.WorkersUpdated += fireWorkerValuesUpdated;
             Faction.Workers.TasksUpdated += fireWorkerValuesUpdated;
