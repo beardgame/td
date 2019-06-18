@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             var ray = new Ray(
                 Weapon.Position,
-                Weapon.AimDirection * Parameters.Range
+                Weapon.CurrentDirection * Parameters.Range
             );
 
             var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(

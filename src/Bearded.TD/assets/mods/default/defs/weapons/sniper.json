@@ -8,6 +8,9 @@
             }
         },
         {
+            "id" : "instantAim"
+        },
+        {
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "sniperProjectile",
