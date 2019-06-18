@@ -76,7 +76,6 @@ namespace Bearded.TD.UI.Controls
             private readonly IWorkerTask task;
             private readonly BackgroundBox progressBar;
             private readonly Button cancelButton;
-            private bool hasMouseEntered;
 
             public WorkerTaskControl(WorkerStatusUI workerStatus, IWorkerTask task)
             {
@@ -112,16 +111,13 @@ namespace Bearded.TD.UI.Controls
                 base.Render(r);
             }
 
-            public override void MouseMoved(MouseEventArgs eventArgs)
+            public override void MouseEntered(MouseEventArgs eventArgs)
             {
-                base.MouseMoved(eventArgs);
-
-                if (hasMouseEntered) return;
+                base.MouseEntered(eventArgs);
 
                 Console.WriteLine("Mouse entered");
 
                 workerStatus.OnTaskHover(task);
-                hasMouseEntered = true;
             }
 
             public override void MouseExited(MouseEventArgs eventArgs)
@@ -131,7 +127,6 @@ namespace Bearded.TD.UI.Controls
                 Console.WriteLine("Mouse exited");
 
                 workerStatus.OnTaskHoverLeave(task);
-                hasMouseEntered = false;
             }
         }
     }

@@ -53,7 +53,7 @@ namespace Bearded.TD.UI.Controls
 
             // TODO: this should not stay hardcoded forever
             var levelMaterial = game.Blueprints.Materials["default"];
-            
+
             levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
 
             DeferredSurfaces = new ContentSurfaceManager(
@@ -154,16 +154,16 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public override void MouseMoved(MouseEventArgs eventArgs)
+        public override void MouseEntered(MouseEventArgs eventArgs)
         {
-            base.MouseMoved(eventArgs);
-            game.PlayerInput.IsMouseFocused = true;
+            base.MouseEntered(eventArgs);
+            game.PlayerInput.Focus();
         }
 
         public override void MouseExited(MouseEventArgs eventArgs)
         {
             base.MouseExited(eventArgs);
-            game.PlayerInput.IsMouseFocused = false;
+            game.PlayerInput.UnFocus();
         }
 
         public void CleanUp()

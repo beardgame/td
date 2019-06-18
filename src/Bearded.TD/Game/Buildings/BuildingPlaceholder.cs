@@ -56,12 +56,6 @@ namespace Bearded.TD.Game.Buildings
             return AbortTask.Request(Faction, workerTask);
         }
 
-        public void CancelBuild()
-        {
-            Faction.Workers.AbortTask(workerTask);
-            Delete();
-        }
-
         public override void Draw(GeometryManager geometries)
         {
             DrawTiles(geometries, Color.Cyan * 0.25f);

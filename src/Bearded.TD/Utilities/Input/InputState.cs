@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Bearded.Utilities.Input;
 using OpenTK;
 using OpenTK.Input;
@@ -27,15 +26,15 @@ namespace Bearded.TD.Utilities.Input
             return Keyboard.GetAnyKeyState(keys);
         }
 
-        public class MouseInputState : CapturableInputState
+        public class MouseInputState
         {
             private readonly IAction click;
             private readonly IAction cancel;
             private readonly IAction drag;
 
-            public ActionState Click => GetState(click);
-            public ActionState Cancel => GetState(cancel);
-            public ActionState Drag => GetState(drag);
+            public ActionState Click => new ActionState(click);
+            public ActionState Cancel => new ActionState(cancel);
+            public ActionState Drag => new ActionState(drag);
 
             public Vector2 Position { get; }
             public float DeltaScroll { get; }
@@ -51,7 +50,7 @@ namespace Bearded.TD.Utilities.Input
             }
         }
 
-        public class KeyboardInputState : CapturableInputState
+        public class KeyboardInputState
         {
             private readonly InputManager inputManager;
 
@@ -62,27 +61,12 @@ namespace Bearded.TD.Utilities.Input
 
             public ActionState GetKeyState(Key key)
             {
-                return GetState(inputManager.Actions.Keyboard.FromKey(key));
+                return new ActionState(inputManager.Actions.Keyboard.FromKey(key));
             }
 
             public ActionState GetAnyKeyState(params Key[] keys)
             {
-                return GetState(InputAction.AnyOf(keys.Select(key => inputManager.Actions.Keyboard.FromKey(key))));
-            }
-        }
-
-        internal abstract class CapturableInputState
-        {
-            protected bool IsCaptured { get; private set; }
-
-            protected ActionState GetState(IAction action)
-            {
-                return IsCaptured ? new ActionState() : new ActionState(action);
-            }
-
-            public void Capture()
-            {
-                IsCaptured = true;
+                return new ActionState(InputAction.AnyOf(keys.Select(key => inputManager.Actions.Keyboard.FromKey(key))));
             }
         }
     }

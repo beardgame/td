@@ -3,6 +3,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
@@ -15,7 +16,7 @@ using OpenTK.Input;
 namespace Bearded.TD.UI.Controls
 {
     class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
-        IListener<GameOverTriggered>
+        IListener<GameOverTriggered>, IListener<BuildingConstructionStarted>
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;
@@ -56,7 +57,8 @@ namespace Bearded.TD.UI.Controls
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
-            Game.Meta.Events.Subscribe(this);
+            Game.Meta.Events.Subscribe<GameOverTriggered>(this);
+            Game.Meta.Events.Subscribe<BuildingConstructionStarted>(this);
         }
 
         public override void Update(UpdateEventArgs args)
@@ -117,6 +119,20 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(GameOverTriggered @event)
         {
             GameOverTriggered?.Invoke();
+        }
+
+        public void HandleEvent(BuildingConstructionStarted @event)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (@event.Placeholder.SelectionState)
+            {
+                case SelectionState.Focused:
+                    Game.SelectionManager.FocusObject(@event.Building);
+                    break;
+                case SelectionState.Selected:
+                    Game.SelectionManager.SelectObject(@event.Building);
+                    break;
+            }
         }
 
         private void updateGameMenuVisibility()

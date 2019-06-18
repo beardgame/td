@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Upgrades;
 using Bearded.UI.Navigation;
 

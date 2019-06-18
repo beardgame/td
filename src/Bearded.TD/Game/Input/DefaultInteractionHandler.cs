@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game.Events;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -9,7 +7,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Input
 {
-    sealed class DefaultInteractionHandler : InteractionHandler, IListener<BuildingConstructionStarted>
+    sealed class DefaultInteractionHandler : InteractionHandler
     {
         public DefaultInteractionHandler(GameInstance game) : base(game) { }
 
@@ -49,27 +47,6 @@ namespace Bearded.TD.Game.Input
                 .Where(w => w.CurrentTile == tile)
                 .Cast<ISelectable>()
                 .FirstMaybe();
-        }
-
-        protected override void OnStart(ICursorHandler cursor)
-        {
-            base.OnStart(cursor);
-            Game.State.Meta.Events.Subscribe(this);
-        }
-
-        protected override void OnEnd(ICursorHandler cursor)
-        {
-            base.OnEnd(cursor);
-            Game.SelectionManager.ResetSelection();
-            Game.State.Meta.Events.Unsubscribe(this);
-        }
-
-        public void HandleEvent(BuildingConstructionStarted @event)
-        {
-            if (@event.Placeholder.SelectionState == SelectionState.Selected)
-            {
-                Game.SelectionManager.SelectObject(@event.Building);
-            }
         }
     }
 }
