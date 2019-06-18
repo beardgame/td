@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
@@ -64,7 +63,7 @@ namespace Bearded.TD.UI.Controls
         {
             updateGameMenuVisibility();
 
-            var inputState = new InputState(new List<char>(), inputManager);
+            var inputState = new InputState(inputManager);
 
             runner.HandleInput(args, inputState);
             runner.Update(args);
