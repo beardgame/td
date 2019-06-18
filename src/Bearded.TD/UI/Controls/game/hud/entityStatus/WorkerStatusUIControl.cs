@@ -114,18 +114,12 @@ namespace Bearded.TD.UI.Controls
             public override void MouseEntered(MouseEventArgs eventArgs)
             {
                 base.MouseEntered(eventArgs);
-
-                Console.WriteLine("Mouse entered");
-
                 workerStatus.OnTaskHover(task);
             }
 
             public override void MouseExited(MouseEventArgs eventArgs)
             {
                 base.MouseExited(eventArgs);
-
-                Console.WriteLine("Mouse exited");
-
                 workerStatus.OnTaskHoverLeave(task);
             }
         }
