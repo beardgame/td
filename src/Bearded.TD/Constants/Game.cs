@@ -13,7 +13,7 @@ namespace Bearded.TD
 
                 private const float sqrtOfThree = 1.73205080757f;
 
-                public const float HexagonWidth = 1; // distance between hexagon centers == min diamater
+                public const float HexagonWidth = 1; // distance between hexagon centers == min diameter
                 public const float HexagonDistanceX = HexagonWidth; // horizontal distance between hexagons
 
                 public const float HexagonSide = HexagonWidth / sqrtOfThree; // side length
