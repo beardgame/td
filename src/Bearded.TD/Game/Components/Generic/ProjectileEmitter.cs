@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.Components.Generic
             Game.Add(
                 new Projectile(
                     Parameters.Projectile,
-                    Weapon.Position, Weapon.AimDirection,
+                    Weapon.Position, Weapon.CurrentDirection,
                     Parameters.MuzzleVelocity,
                     Weapon.Owner as Building
                 )

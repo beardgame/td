@@ -7,7 +7,7 @@
         {
             "id" : "damageOnHit",
             "parameters" : {
-                "damage" : 10
+                "damage" : 4
             }
         }
     ]

@@ -65,8 +65,9 @@ namespace Bearded.TD.Game.Components.Generic
             }
 
             var direction = (target.Position - position).Direction;
+            Owner.AimIn(direction);
             // TODO: this is ugly but necessary - see comment in Weapon about component order
-            Owner.ShootIn(direction);
+            Owner.ShootThisFrame();
         }
 
         private void goIdle()

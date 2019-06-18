@@ -1,9 +1,11 @@
-﻿using Bearded.TD.Content.Models;
+﻿using amulware.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
@@ -12,6 +14,7 @@ namespace Bearded.TD.Game.Components.Generic
     {
         GameObject Owner { get; }
         Faction OwnerFaction { get; }
+        Direction2 NeutralDirection { get; }
     }
 
     [Component("turret")]
@@ -21,6 +24,8 @@ namespace Bearded.TD.Game.Components.Generic
         private Weapon weapon;
 
         public Position2 Position => Owner.Position + Parameters.Offset;
+
+        public Direction2 NeutralDirection => Parameters.NeutralDirection;
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 
@@ -36,6 +41,13 @@ namespace Bearded.TD.Game.Components.Generic
         
         public override void Draw(GeometryManager geometries)
         {
+            var geo = geometries.Primitives;
+            geo.Color = Color.Green;
+            geo.LineWidth = 0.2f;
+
+            var v = NeutralDirection.Vector * geo.LineWidth;
+            geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v);
+            
             weapon.Draw(geometries);
         }
 

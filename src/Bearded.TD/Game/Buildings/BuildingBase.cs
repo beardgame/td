@@ -89,7 +89,7 @@ namespace Bearded.TD.Game.Buildings
 
         protected void DrawTile(GeometryManager geometries, Color color, Tile tile)
         {
-            var geo = geometries.ConsoleBackground;
+            var geo = geometries.Primitives;
             geo.Color = color;
             geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
         }

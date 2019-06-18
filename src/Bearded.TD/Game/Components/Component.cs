@@ -37,9 +37,27 @@ namespace Bearded.TD.Game.Components
         public virtual bool RemoveUpgradeEffect(IUpgradeEffect effect) => effect.RemoveFrom(Parameters);
     }
 
-    abstract class Component<T> : Component<T, VoidParameters>
+    abstract class Component<TOwner> : IComponent<TOwner>
     {
-        protected Component() : base(VoidParameters.Instance) { }
+        public TOwner Owner { get; private set; }
+
+        public void OnAdded(TOwner owner)
+        {
+            Owner = owner;
+            Initialise();
+        }
+
+        protected abstract void Initialise();
+
+        public abstract void Update(TimeSpan elapsedTime);
+
+        public abstract void Draw(GeometryManager geometries);
+
+        public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
+
+        public virtual void ApplyUpgradeEffect(IUpgradeEffect effect) { }
+
+        public virtual bool RemoveUpgradeEffect(IUpgradeEffect effect) => false;
     }
 
     sealed class VoidParameters : IParametersTemplate<VoidParameters>

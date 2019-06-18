@@ -23,7 +23,7 @@ namespace Bearded.TD
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-                var logger = new Logger {MirrorToConsole = false};
+                var logger = new Logger {MirrorToConsole = true};
 
 #if DEBUG
                 // ReSharper disable once AccessToDisposedClosure

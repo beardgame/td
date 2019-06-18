@@ -8,10 +8,13 @@
             }
         },
         {
+            "id" : "instantAim"
+        },
+        {
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "boringProjectile",
-                "muzzleVelocity" : 20
+                "muzzleVelocity" : 15
             }
         }
     ]

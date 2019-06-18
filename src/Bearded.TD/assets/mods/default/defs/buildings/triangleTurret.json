@@ -1,17 +1,39 @@
 {
-    "id" : "triangle",
-    "name" : "Triangular Turret",
-    "footprint" : "triangle",
-    "cost" : 75,
-    "components" : [
-        { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
-        {
-            "id" : "turret",
-            "onPlaceholder" :  true,
-            "onGhost": true,
-            "parameters" : {
-                "weapon" : "triangleWeapon"
-            }
-        }
-    ]
+  "id" : "triangle",
+  "name" : "Triangular Turret",
+  "footprint" : "triangle",
+  "cost" : 75,
+  "components" : [
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
+    {
+      "id" : "turret",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "triangleWeapon",
+        "neutralDirection" : 90,
+        "offset" : [0, 1]
+      }
+    },
+    {
+      "id" : "turret",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "triangleWeapon",
+        "neutralDirection" : 210,
+        "offset" : [-0.81, -0.58]
+      }
+    },
+    {
+      "id" : "turret",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "triangleWeapon",
+        "neutralDirection" : 330,
+        "offset" : [0.81, -0.58]
+      }
+    }
+  ]
 }
