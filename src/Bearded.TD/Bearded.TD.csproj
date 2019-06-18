@@ -29,6 +29,7 @@
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Bearded.UI" Version="0.1.6-dev" />
     <PackageReference Include="Bearded.Utilities" Version="0.2.0.200-dev" />
     <PackageReference Include="Fody" Version="3.2.1">
       <PrivateAssets>all</PrivateAssets>
@@ -50,7 +51,6 @@
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
     <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
-    <ProjectReference Include="..\Bearded.UI\Bearded.UI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
