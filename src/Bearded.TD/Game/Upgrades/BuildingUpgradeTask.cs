@@ -6,13 +6,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Upgrades
 {
-    class BuildingUpgradeTask : GameObject, IResourceConsumer
+    sealed class BuildingUpgradeTask : GameObject, IResourceConsumer
     {
         private readonly Building building;
         private readonly UpgradeBlueprint upgrade;
 
         private double maximumResources => upgrade.Cost;
-        
+
         private double progress;
         private bool completed;
 
@@ -40,10 +40,10 @@ namespace Bearded.TD.Game.Upgrades
         {
             if (!building.IsCompleted)
                 return;
-            
+
             if (completed)
                 return;
-            
+
             building.Faction.Resources.RegisterConsumer(this, 10, maximumResources - progress);
         }
 
@@ -59,7 +59,7 @@ namespace Bearded.TD.Game.Upgrades
             if (completed)
             {
                 building.Sync(FinishBuildingUpgrade.Command, building, upgrade);
-                
+
                 // Maybe don't Sync() this to consume right amount of resource on the client as well?
                 // Test this well in that case though!
                 Delete();

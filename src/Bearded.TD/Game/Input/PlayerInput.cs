@@ -4,11 +4,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input
 {
-    class PlayerInput
+    sealed class PlayerInput
     {
         private readonly GameInstance game;
         private readonly InteractionHandler defaultInteractionHandler;
-        private ICursorHandler cursor;
+        private readonly ICursorHandler cursor;
         private InteractionHandler interactionHandler;
 
         public bool IsMouseFocused { get; set; }

@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class BuildBuilding
     {
-        public static IRequest<GameInstance> Request(
+        public static IRequest<Player, GameInstance> Request(
                 GameInstance game, Faction faction, IBuildingBlueprint blueprint, PositionedFootprint footprint) =>
             new Implementation(
                 game, faction, Id<BuildingPlaceholder>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
@@ -41,9 +42,10 @@ namespace Bearded.TD.Game.Commands
                 this.taskId = taskId;
             }
 
-            public override bool CheckPreconditions()
-                => blueprint.FootprintGroup == footprint.Footprint
-                        && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint);
+            public override bool CheckPreconditions(Player actor) =>
+                blueprint.FootprintGroup == footprint.Footprint
+                && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
+                && faction.SharesWorkersWith(actor.Faction);
 
             public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
                 game,

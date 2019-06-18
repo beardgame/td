@@ -48,7 +48,7 @@ namespace Bearded.TD.UI.Controls
                 DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
                 Game.ContentManager.Mods.ForEach(loadMod);
             }
-            
+
             if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
             {
                 gatherModBlueprints();
@@ -71,8 +71,7 @@ namespace Bearded.TD.UI.Controls
                     .Select(mod => mod.Blueprints)
                     .Append(getHardcodedBlueprints())));
 
-            Game.RequestDispatcher.Dispatch(
-                ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
+            Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
 
             haveModsFinishedLoading = true;
         }
@@ -97,12 +96,12 @@ namespace Bearded.TD.UI.Controls
                 ReadonlyBlueprintCollection.Empty,
                 getHardcodedUpgrades());
         }
-        
+
         private static ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> getHardcodedUpgrades()
         {
             var idManager = new IdManager();
             var builder = ImmutableDictionary.CreateBuilder<Id<UpgradeBlueprint>, UpgradeBlueprint>();
-            
+
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% damage", 50,
                 new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+1 worker", 100,
@@ -117,7 +116,7 @@ namespace Bearded.TD.UI.Controls
                 new[] {new ParameterModifiable(AttributeType.FireRate, Modification.AddFractionOfBase(.5))}));
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "x1.5 potency", 100,
                 new[] {new ParameterModifiable(AttributeType.EffectStrength, Modification.MultiplyWith(1.5))}));
-            
+
             return builder.ToImmutable();
 
             void addHardcodedUpgrade(Func<Id<UpgradeBlueprint>, UpgradeBlueprint> blueprintFactory)

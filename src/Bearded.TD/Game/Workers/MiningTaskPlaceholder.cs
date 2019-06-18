@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -7,12 +8,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Workers
 {
-    sealed class MiningTaskPlaceholder : GameObject
+    sealed class MiningTaskPlaceholder : GameObject, ISelectable
     {
         private readonly Faction faction;
         private readonly Tile tile;
         private readonly Id<IWorkerTask> taskId;
         private MiningTask task;
+
+        public SelectionState SelectionState { get; private set; }
 
         public MiningTaskPlaceholder(Faction faction, Tile tile, Id<IWorkerTask> taskId)
         {
@@ -39,8 +42,21 @@ namespace Bearded.TD.Game.Workers
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.ConsoleBackground;
-            geo.Color = Color.MediumVioletRed * 0.5f;
+            var color = SelectionState == SelectionState.Focused ? Color.DarkViolet : Color.MediumVioletRed;
+            geo.Color = color * 0.5f;
             geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
         }
+
+        public void ResetSelection()
+        {
+            SelectionState = SelectionState.Default;
+        }
+
+        public void Focus(SelectionManager selectionManager)
+        {
+            SelectionState = SelectionState.Focused;
+        }
+
+        public void Select(SelectionManager selectionManager) {}
     }
 }

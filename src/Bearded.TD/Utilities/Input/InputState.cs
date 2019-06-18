@@ -11,10 +11,10 @@ namespace Bearded.TD.Utilities.Input
         public MouseInputState Mouse { get; }
         public KeyboardInputState Keyboard { get; }
 
-        public InputState(IReadOnlyList<char> pressedCharacters, InputManager inputManager)
+        public InputState(InputManager inputManager)
         {
             Mouse = new MouseInputState(inputManager);
-            Keyboard = new KeyboardInputState(inputManager, pressedCharacters);
+            Keyboard = new KeyboardInputState(inputManager);
         }
 
         public ActionState ForKey(Key key)
@@ -54,12 +54,10 @@ namespace Bearded.TD.Utilities.Input
         public class KeyboardInputState : CapturableInputState
         {
             private readonly InputManager inputManager;
-            private readonly IReadOnlyList<char> pressedCharacters;
 
-            public KeyboardInputState(InputManager inputManager, IReadOnlyList<char> pressedCharacters)
+            public KeyboardInputState(InputManager inputManager)
             {
                 this.inputManager = inputManager;
-                this.pressedCharacters = pressedCharacters;
             }
 
             public ActionState GetKeyState(Key key)
@@ -71,8 +69,6 @@ namespace Bearded.TD.Utilities.Input
             {
                 return GetState(InputAction.AnyOf(keys.Select(key => inputManager.Actions.Keyboard.FromKey(key))));
             }
-
-            public IReadOnlyList<char> PressedCharacters => IsCaptured ? new List<char>() : pressedCharacters;
         }
 
         internal abstract class CapturableInputState

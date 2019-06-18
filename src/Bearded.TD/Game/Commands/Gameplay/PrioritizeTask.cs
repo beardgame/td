@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -8,7 +9,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class PrioritizeTask
     {
-        public static IRequest<GameInstance> Request(Faction faction, IWorkerTask workerTask)
+        public static IRequest<Player, GameInstance> Request(Faction faction, IWorkerTask workerTask)
             => new Implementation(faction, workerTask);
 
         private class Implementation : UnifiedRequestCommand
@@ -22,7 +23,7 @@ namespace Bearded.TD.Game.Commands
                 this.workerTask = workerTask;
             }
 
-            public override bool CheckPreconditions() => faction.Workers != null;
+            public override bool CheckPreconditions(Player actor) => faction.SharesWorkersWith(actor.Faction);
 
             public override void Execute()
             {

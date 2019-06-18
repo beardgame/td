@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class MineTile
     {
-        public static IRequest<GameInstance> Request(GameInstance game, Faction faction, Tile tile)
+        public static IRequest<Player, GameInstance> Request(GameInstance game, Faction faction, Tile tile)
             => new Implementation(game, faction, tile, Id<IWorkerTask>.Invalid);
 
         private class Implementation : UnifiedRequestCommand
@@ -28,10 +29,11 @@ namespace Bearded.TD.Game.Commands
                 this.taskId = taskId;
             }
 
-            public override bool CheckPreconditions()
+            public override bool CheckPreconditions(Player actor)
             {
                 return game.State.Level.IsValid(tile)
-                       && game.State.GeometryLayer[tile].Type == TileType.Wall;
+                    && game.State.GeometryLayer[tile].Type == TileType.Wall
+                    && faction.SharesWorkersWith(actor.Faction);
             }
 
             public override ISerializableCommand<GameInstance> ToCommand()

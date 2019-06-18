@@ -138,21 +138,23 @@ namespace Bearded.TD.Game.Workers
             tasks.Remove(task);
             tasks.Insert(0, task);
 
-            if (workerAssignments.ContainsKey(task) || NumWorkers == 0)
-            {
-                TasksUpdated?.Invoke();
-            }
+            TasksUpdated?.Invoke();
 
-            // Look for the latest task with a worker assign. Force that worker to pick a new task to see if the
-            // task added on the top is picked up instead.
+            // Make sure the bumped task is picked up if possible.
+            if (!workerAssignments.ContainsKey(task) && NumWorkers > 0)
+            {
+                tickleLatestWorker();
+            }
+        }
+
+        private void tickleLatestWorker()
+        {
+            // Look for the latest task with a worker assigned. Force that worker to pick a new task in case there is a
+            // task that is now higher on the queue. If there isn't, we expect it to resume the same task straightaway.
             var lastAssignedTask = tasks.Where(workerAssignments.ContainsKey).LastOrDefault();
             if (lastAssignedTask != null)
             {
                 SuspendTask(lastAssignedTask);
-            }
-            else
-            {
-                TasksUpdated?.Invoke();
             }
         }
 

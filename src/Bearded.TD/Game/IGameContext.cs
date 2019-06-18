@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking;
 using Bearded.Utilities.IO;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game
     {
         Logger Logger { get; }
         IDispatcher<GameInstance> Dispatcher { get; }
-        IRequestDispatcher<GameInstance> RequestDispatcher { get; }
+        IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
         IGameSynchronizer GameSynchronizer { get; }
         Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
         Action<GameInstance> DataMessageHandlerInitializer { get; }
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game
     {
         public Logger Logger { get; }
         public IDispatcher<GameInstance> Dispatcher { get; }
-        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
+        public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
         public Action<GameInstance> DataMessageHandlerInitializer { get; }
@@ -31,8 +32,8 @@ namespace Bearded.TD.Game
         {
             Logger = logger;
 
-            var commandDispatcher = new ServerCommandDispatcher<GameInstance>(new DefaultCommandExecutor(), network);
-            RequestDispatcher = new ServerRequestDispatcher<GameInstance>(commandDispatcher, logger);
+            var commandDispatcher = new ServerCommandDispatcher<Player, GameInstance>(new DefaultCommandExecutor(), network);
+            RequestDispatcher = new ServerRequestDispatcher<Player, GameInstance>(commandDispatcher, logger);
             Dispatcher = new ServerDispatcher<GameInstance>(commandDispatcher);
             GameSynchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
             PlayerManagerFactory = game =>
@@ -50,7 +51,7 @@ namespace Bearded.TD.Game
     {
         public Logger Logger { get; }
         public IDispatcher<GameInstance> Dispatcher { get; }
-        public IRequestDispatcher<GameInstance> RequestDispatcher { get; }
+        public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
         public Action<GameInstance> DataMessageHandlerInitializer { get; }
@@ -60,7 +61,7 @@ namespace Bearded.TD.Game
         {
             Logger = logger;
 
-            RequestDispatcher = new ClientRequestDispatcher<GameInstance>(network, logger);
+            RequestDispatcher = new ClientRequestDispatcher<Player, GameInstance>(network, logger);
             Dispatcher = new ClientDispatcher<GameInstance>();
             GameSynchronizer = new ClientGameSynchronizer();
             PlayerManagerFactory = game => null;

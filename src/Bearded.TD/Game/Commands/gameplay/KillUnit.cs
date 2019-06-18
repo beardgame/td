@@ -9,7 +9,8 @@ namespace Bearded.TD.Game.Commands
 {
     static class KillUnit
     {
-        public static ISerializableCommand<GameInstance> Command(EnemyUnit unit, Faction faction) => new Implementation(unit, faction);
+        public static ISerializableCommand<GameInstance> Command(EnemyUnit unit, Faction faction) =>
+            new Implementation(unit, faction);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {

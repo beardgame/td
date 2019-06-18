@@ -7,20 +7,20 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Commands.Serialization
 {
-    sealed class Serializers<TObject>
+    sealed class Serializers<TActor, TObject>
     {
-        public static Serializers<TObject> Instance { get; private set; }
+        public static Serializers<TActor, TObject> Instance { get; private set; }
 
         private readonly Dictionary<Type, int> requestIds;
         private readonly Dictionary<Type, int> commandIds;
-        private readonly Dictionary<int, Func<IRequestSerializer<TObject>>> requestSerializers;
+        private readonly Dictionary<int, Func<IRequestSerializer<TActor, TObject>>> requestSerializers;
         private readonly Dictionary<int, Func<ICommandSerializer<TObject>>> commandSerializers;
         private readonly int firstCommandId;
         private readonly int maxId;
 
-        public int RequestId(IRequestSerializer<TObject> serializer) => requestIds[serializer.GetType()];
+        public int RequestId(IRequestSerializer<TActor, TObject> serializer) => requestIds[serializer.GetType()];
         public int CommandId(ICommandSerializer<TObject> serializer) => commandIds[serializer.GetType()];
-        public IRequestSerializer<TObject> RequestSerializer(int id) => requestSerializers[id]();
+        public IRequestSerializer<TActor, TObject> RequestSerializer(int id) => requestSerializers[id]();
         public ICommandSerializer<TObject> CommandSerializer(int id) => commandSerializers[id]();
         public bool IsRequestSerializer(int id) => id >= 0 && id < firstCommandId;
         public bool IsCommandSerializer(int id) => id >= firstCommandId && id < maxId;
@@ -28,7 +28,7 @@ namespace Bearded.TD.Commands.Serialization
 
         public static void Initialize()
         {
-            Instance = new Serializers<TObject>();
+            Instance = new Serializers<TActor, TObject>();
         }
 
         private Serializers()
@@ -50,7 +50,7 @@ namespace Bearded.TD.Commands.Serialization
         private static void init(
             out Dictionary<Type, int> rIds,
             out Dictionary<Type, int> cIds,
-            out Dictionary<int, Func<IRequestSerializer<TObject>>> rSerializers,
+            out Dictionary<int, Func<IRequestSerializer<TActor, TObject>>> rSerializers,
             out Dictionary<int, Func<ICommandSerializer<TObject>>> cSerializers,
             out int firstCId,
             out int maxId)
@@ -62,7 +62,7 @@ namespace Bearded.TD.Commands.Serialization
             cIds = getIds(commands, firstCId);
             maxId = firstCId + cIds.Count;
 
-            rSerializers = createConstructors<IRequestSerializer<TObject>>(requests, rIds);
+            rSerializers = createConstructors<IRequestSerializer<TActor, TObject>>(requests, rIds);
             cSerializers = createConstructors<ICommandSerializer<TObject>>(commands, cIds);
         }
 
@@ -71,7 +71,7 @@ namespace Bearded.TD.Commands.Serialization
             var requests = new List<Type>();
             var commands = new List<Type>();
 
-            var assembly = typeof(Serializers<TObject>).Assembly;
+            var assembly = typeof(Serializers<TActor, TObject>).Assembly;
             var types = assembly.GetTypes();
 
             foreach (var type in types)
@@ -79,7 +79,7 @@ namespace Bearded.TD.Commands.Serialization
                 if (!type.IsClass || type.IsAbstract)
                     continue;
 
-                var isRequestSerializer = type.Implements<IRequestSerializer<TObject>>();
+                var isRequestSerializer = type.Implements<IRequestSerializer<TActor, TObject>>();
                 var isCommandSerializer = type.Implements<ICommandSerializer<TObject>>();
 
                 if (!(isRequestSerializer || isCommandSerializer))

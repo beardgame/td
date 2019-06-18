@@ -1,11 +1,12 @@
 ﻿using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands.Debug
 {
     static class DebugGameOver
     {
-        public static IRequest<GameInstance> Request(GameState game)
+        public static IRequest<Player, GameInstance> Request(GameState game)
             => new Implementation(game);
 
         private class Implementation : UnifiedDebugRequestCommand

@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
     sealed class ActionBarControl : CompositeControl
     {
         private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
-        
+
         private readonly ActionBar model;
         private readonly Button[] buttons;
 
@@ -31,7 +31,7 @@ namespace Bearded.TD.UI.Controls
             model.ActionsChanged += updateButtonLabels;
             updateButtonLabels();
         }
-        
+
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
         private void updateButtonLabels()

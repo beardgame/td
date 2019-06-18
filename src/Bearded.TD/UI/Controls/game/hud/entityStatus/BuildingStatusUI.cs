@@ -44,7 +44,7 @@ namespace Bearded.TD.UI.Controls
             switch (Building)
             {
                 case BuildingPlaceholder placeholder:
-                    Game.RequestDispatcher.Dispatch(placeholder.CancelRequest());
+                    Game.Request(placeholder.CancelRequest());
                     break;
                 case Building b:
                     // TODO: implement

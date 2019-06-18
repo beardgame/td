@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class SendChatMessage
     {
-        public static IRequest<GameInstance> Request(GameInstance game, Player player, string message)
+        public static IRequest<Player, GameInstance> Request(GameInstance game, Player player, string message)
             => new Implementation(game, player, message);
 
         private class Implementation : UnifiedRequestCommand
@@ -24,8 +24,8 @@ namespace Bearded.TD.Game.Commands
                 this.message = message;
             }
 
-            public override bool CheckPreconditions()
-                => player != null && !string.IsNullOrWhiteSpace(message);
+            public override bool CheckPreconditions(Player actor)
+                => player == actor && !string.IsNullOrWhiteSpace(message);
 
             public override void Execute()
             {

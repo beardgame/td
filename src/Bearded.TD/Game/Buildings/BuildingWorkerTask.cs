@@ -20,14 +20,16 @@ namespace Bearded.TD.Game.Buildings
         private double resourcesConsumed;
         private int healthGiven = 1;
         private int maxHealth = 1;
-        private bool finished;
 
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {blueprint.Name}";
         public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
+        public Maybe<ISelectable> Selectable => placeholder != null
+            ? Maybe.Just<ISelectable>(placeholder)
+            : Maybe.Just<ISelectable>(building);
         public double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
         public bool CanAbort => placeholder != null;
-        public bool Finished => finished;
+        public bool Finished { get; private set; }
 
         public BuildingWorkerTask(Id<IWorkerTask> taskId, BuildingPlaceholder placeholder)
         {
@@ -60,7 +62,7 @@ namespace Bearded.TD.Game.Buildings
             var healthRemaining = maxHealth - healthGiven;
             building.SetBuildProgress(1, healthRemaining);
             building.Completing -= onBuildingCompleting;
-            finished = true;
+            Finished = true;
         }
 
         public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
@@ -72,7 +74,7 @@ namespace Bearded.TD.Game.Buildings
             if (building?.Deleted ?? false)
             {
                 building.Completing -= onBuildingCompleting;
-                finished = true;
+                Finished = true;
                 return;
             }
 
@@ -100,7 +102,7 @@ namespace Bearded.TD.Game.Buildings
             }
             if (grant.ReachedCapacity)
             {
-                finished = true;
+                Finished = true;
                 building?.Sync(FinishBuildingConstruction.Command);
             }
         }

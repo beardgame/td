@@ -19,19 +19,19 @@ namespace Bearded.TD.Game.Debug
         [Command("game.die")]
         private static void die(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
-            gameInstance.RequestDispatcher.Dispatch(DebugGameOver.Request(gameInstance.State));
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, DebugGameOver.Request(gameInstance.State));
         });
 
         [Command("game.killall")]
         private static void killAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
-            gameInstance.RequestDispatcher.Dispatch(KillAllEnemies.Request(gameInstance));
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, KillAllEnemies.Request(gameInstance));
         });
 
         [Command("game.repairall")]
         private static void repairAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
-            gameInstance.RequestDispatcher.Dispatch(RepairAllBuildings.Request(gameInstance));
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, RepairAllBuildings.Request(gameInstance));
         });
 
         [Command("game.resources")]
@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Debug
                 logger.Warning?.Log($"Cannot add resources: player is not part of a faction with resource management.");
             }
 
-            gameInstance.RequestDispatcher.Dispatch(GrantResources.Request(faction, amount));
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount));
         });
 #endif
 

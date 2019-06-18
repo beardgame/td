@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Commands.Debug
 {
     static class GrantResources
     {
-        public static IRequest<GameInstance> Request(Faction faction, double amount)
+        public static IRequest<Player, GameInstance> Request(Faction faction, double amount)
             => new Implementation(faction, amount);
 
         private class Implementation : UnifiedDebugRequestCommand
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game.Commands.Debug
                 this.amount = amount;
             }
 
-            protected override bool CheckPreconditionsDebug() => faction.HasResources;
+            protected override bool CheckPreconditionsDebug(Player _) => faction.HasResources;
 
             public override void Execute() => faction.Resources.ProvideOneTimeResource(amount);
 

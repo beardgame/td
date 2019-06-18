@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Commands
 {
     static class ChangePlayerState
     {
-        public static IRequest<GameInstance> Request(Player player, PlayerConnectionState state)
+        public static IRequest<Player, GameInstance> Request(Player player, PlayerConnectionState state)
             => new Implementation(player, state);
 
         private class Implementation : UnifiedRequestCommand
@@ -22,8 +22,10 @@ namespace Bearded.TD.Game.Commands
                 this.state = state;
             }
 
-            public override bool CheckPreconditions()
+            public override bool CheckPreconditions(Player actor)
             {
+                if (actor != player) return false;
+
                 switch (player.ConnectionState)
                 {
                     case PlayerConnectionState.Connecting:

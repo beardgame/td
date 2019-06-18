@@ -12,6 +12,7 @@ namespace Bearded.TD.UI.Controls
     {
         private GameInstance game;
         public Faction Faction { get; private set; }
+        public bool CanInteract { get; private set; }
 
         public int NumIdleWorkers => Faction.Workers.NumIdleWorkers;
         public int NumWorkers => Faction.Workers.NumWorkers;
@@ -23,6 +24,7 @@ namespace Bearded.TD.UI.Controls
         {
             game = dependencies.Resolve<GameInstance>();
             Faction = faction;
+            CanInteract = game.Me.Faction.Workers == Faction.Workers;
 
             Faction.Workers.WorkersUpdated += fireWorkerValuesUpdated;
             Faction.Workers.TasksUpdated += fireWorkerValuesUpdated;
@@ -41,14 +43,28 @@ namespace Bearded.TD.UI.Controls
             WorkerValuesUpdated?.Invoke();
         }
 
+        public void OnTaskHover(IWorkerTask task)
+        {
+            task.Selectable.Match(
+                onValue: selectable => game.SelectionManager.FocusObject(selectable),
+                onNothing: () => {});
+        }
+
+        public void OnTaskHoverLeave(IWorkerTask task)
+        {
+            task.Selectable.Match(
+                onValue: _ => game.SelectionManager.ResetFocus(),
+                onNothing: () => {});
+        }
+
         public void OnTaskCancelClicked(IWorkerTask task)
         {
-            game.RequestDispatcher.Dispatch(AbortTask.Request(Faction, task));
+            game.Request(AbortTask.Request(Faction, task));
         }
 
         public void OnTaskBumpClicked(IWorkerTask task)
         {
-            game.RequestDispatcher.Dispatch(PrioritizeTask.Request(Faction, task));
+            game.Request(PrioritizeTask.Request(Faction, task));
         }
 
         public void OnCloseClicked()

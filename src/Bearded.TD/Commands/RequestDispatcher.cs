@@ -5,12 +5,12 @@ using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Commands
 {
-    interface IRequestDispatcher<TObject>
+    interface IRequestDispatcher<TActor, TObject>
     {
-        void Dispatch(IRequest<TObject> request);
+        void Dispatch(TActor actor, IRequest<TActor, TObject> request);
     }
 
-    class ClientRequestDispatcher<TObject> : IRequestDispatcher<TObject>
+    class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
     {
         private readonly ClientNetworkInterface network;
         private readonly Logger logger;
@@ -21,17 +21,17 @@ namespace Bearded.TD.Commands
             this.logger = logger;
         }
 
-        public void Dispatch(IRequest<TObject> request)
+        public void Dispatch(TActor _, IRequest<TActor, TObject> request)
         {
             sendToServer(request);
         }
 
-        private void sendToServer(IRequest<TObject> request)
+        private void sendToServer(IRequest<TActor, TObject> request)
         {
             var message = network.CreateMessage();
 
             var serializer = request.Serializer;
-            var serializers = Serializers<TObject>.Instance;
+            var serializers = Serializers<TActor, TObject>.Instance;
             var id = serializers.RequestId(request.Serializer);
 
             message.Write(id);
@@ -41,7 +41,7 @@ namespace Bearded.TD.Commands
         }
     }
 
-    class ServerRequestDispatcher<TObject> : IRequestDispatcher<TObject>
+    class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
     {
         private readonly ICommandDispatcher<TObject> commandDispatcher;
         private readonly Logger logger;
@@ -52,21 +52,21 @@ namespace Bearded.TD.Commands
             this.logger = logger;
         }
 
-        public void Dispatch(IRequest<TObject> request)
+        public void Dispatch(TActor actor, IRequest<TActor, TObject> request)
         {
-            var command = request.CheckPreconditions()
+            var command = request.CheckPreconditions(actor)
                 ? execute(request)
                 : cancel(request);
 
             commandDispatcher.Dispatch(command);
         }
 
-        private ISerializableCommand<TObject> cancel(IRequest<TObject> request)
+        private ISerializableCommand<TObject> cancel(IRequest<TActor, TObject> request)
         {
             return null;
         }
 
-        private ISerializableCommand<TObject> execute(IRequest<TObject> request)
+        private ISerializableCommand<TObject> execute(IRequest<TActor, TObject> request)
         {
             return request.ToCommand();
         }

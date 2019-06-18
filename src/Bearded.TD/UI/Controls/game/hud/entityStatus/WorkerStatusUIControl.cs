@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
@@ -70,18 +72,23 @@ namespace Bearded.TD.UI.Controls
 
         private class WorkerTaskControl : CompositeControl
         {
+            private readonly WorkerStatusUI workerStatus;
             private readonly IWorkerTask task;
             private readonly BackgroundBox progressBar;
             private readonly Button cancelButton;
+            private bool hasMouseEntered;
 
             public WorkerTaskControl(WorkerStatusUI workerStatus, IWorkerTask task)
             {
+                this.workerStatus = workerStatus;
                 this.task = task;
 
                 progressBar = new BackgroundBox { Color = Color.White * 0.25f };
                 Add(progressBar);
 
                 Add(new Label {FontSize = 16, Text = task.Name});
+
+                if (!workerStatus.CanInteract) return;
 
                 cancelButton = Default.Button("x");
                 cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
@@ -97,9 +104,34 @@ namespace Bearded.TD.UI.Controls
                 var percentage = task.PercentCompleted;
                 progressBar.Anchor(a => a.Right(relativePercentage: percentage));
 
-                cancelButton.IsVisible = percentage == 0;
+                if (cancelButton != null)
+                {
+                    cancelButton.IsVisible = percentage == 0;
+                }
 
                 base.Render(r);
+            }
+
+            public override void MouseMoved(MouseEventArgs eventArgs)
+            {
+                base.MouseMoved(eventArgs);
+
+                if (hasMouseEntered) return;
+
+                Console.WriteLine("Mouse entered");
+
+                workerStatus.OnTaskHover(task);
+                hasMouseEntered = true;
+            }
+
+            public override void MouseExited(MouseEventArgs eventArgs)
+            {
+                base.MouseExited(eventArgs);
+
+                Console.WriteLine("Mouse exited");
+
+                workerStatus.OnTaskHoverLeave(task);
+                hasMouseEntered = false;
             }
         }
     }
