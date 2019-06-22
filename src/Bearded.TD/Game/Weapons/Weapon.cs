@@ -8,6 +8,7 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Weapons
 {
@@ -45,7 +46,7 @@ namespace Bearded.TD.Game.Weapons
 
         public void AimIn(Direction2 direction)
         {
-            AimDirection = Maybe.Just(direction);
+            AimDirection = Just(direction);
         }
         
         public void ShootThisFrame()
@@ -67,7 +68,7 @@ namespace Bearded.TD.Game.Weapons
             // this needs a proper solution (event/subscription based system?) to handle communication between components
             // and it has to work no matter what order components are ordered in
             ShootingThisFrame = false;
-            AimDirection = Maybe.Nothing<Direction2>();
+            AimDirection = Nothing;
 
             components.Update(elapsedTime);
         }

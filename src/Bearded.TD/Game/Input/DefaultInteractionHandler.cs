@@ -4,6 +4,7 @@ using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Input
 {
@@ -38,10 +39,10 @@ namespace Bearded.TD.Game.Input
         private Maybe<ISelectable> getSelectableForTile(Tile tile, bool forClick)
         {
             var building = Game.State.BuildingLayer.GetBuildingFor(tile);
-            if (building != null) return Maybe.Just<ISelectable>(building);
+            if (building != null) return Just<ISelectable>(building);
 
             // The following calculations may expensive and if we can't focus these on hover anyway, might as well skip.
-            if (!forClick) return Maybe.Nothing<ISelectable>();
+            if (!forClick) return Nothing;
 
             return Game.State.Enumerate<Worker>()
                 .Where(w => w.CurrentTile == tile)

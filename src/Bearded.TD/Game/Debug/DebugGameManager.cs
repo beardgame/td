@@ -1,6 +1,7 @@
 using System;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Debug
 {
@@ -16,14 +17,14 @@ namespace Bearded.TD.Game.Debug
         {
             Game.Match(
                 onValue: _ => throw new InvalidOperationException("Cannot register a game if there is already one."),
-                onNothing: () => Game = Maybe.Just(game)
+                onNothing: () => Game = Just(game)
             );
         }
 
         public void UnregisterGame()
         {
             Game.Match(
-                onValue: _ => Game = Maybe.Nothing<GameInstance>(),
+                onValue: _ => Game = Nothing,
                 onNothing: () => throw new InvalidOperationException("Cannot unregister a game if there is none.")
             );
         }

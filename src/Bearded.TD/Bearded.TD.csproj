@@ -30,7 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Bearded.UI" Version="0.1.8-dev" />
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.200-dev" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.276-dev" />
     <PackageReference Include="Fody" Version="3.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

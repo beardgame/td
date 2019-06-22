@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bearded.Utilities;
+using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Utilities
 {
@@ -13,17 +14,17 @@ namespace Bearded.TD.Utilities
                 case null:
                     throw new ArgumentNullException(nameof(enumerable));
                 case IList<T> sourceList:
-                    if (sourceList.Count > 0) return Maybe.Just(sourceList[0]);
+                    if (sourceList.Count > 0) return Just(sourceList[0]);
                     break;
                 default:
                     using (var enumerator = enumerable.GetEnumerator())
                     {
-                        if (enumerator.MoveNext()) return Maybe.Just(enumerator.Current);
+                        if (enumerator.MoveNext()) return Just(enumerator.Current);
                     }
                     break;
             }
 
-            return Maybe.Nothing<T>();
+            return Nothing;
         }
     }
 }
