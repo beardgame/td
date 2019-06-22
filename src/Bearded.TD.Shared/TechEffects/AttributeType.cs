@@ -12,6 +12,7 @@
         Health,
         MovementSpeed,
         ResourceIncome,
-        Range
+        Range,
+        TurnSpeed
     }
 }

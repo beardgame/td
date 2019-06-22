@@ -8,7 +8,11 @@
             }
         },
         {
-            "id" : "instantAim"
+            "id" : "linearAccelerationAim",
+            "parameters" : {
+                "acceleration" : 360,
+                "dragInverse" : 0
+            }
         },
         {
             "id" : "beamEmitter",
