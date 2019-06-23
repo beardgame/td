@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Update(TimeSpan elapsedTime)
         {
-            Owner.AimDirection.Match(aimIn, () => { });
+            Owner.AimDirection.Match(aimIn);
         }
 
         private void aimIn(Direction2 direction)

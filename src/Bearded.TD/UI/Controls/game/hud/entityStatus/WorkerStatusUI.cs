@@ -45,16 +45,12 @@ namespace Bearded.TD.UI.Controls
 
         public void OnTaskHover(IWorkerTask task)
         {
-            task.Selectable.Match(
-                onValue: selectable => game.SelectionManager.FocusObject(selectable),
-                onNothing: () => {});
+            task.Selectable.Match(selectable => game.SelectionManager.FocusObject(selectable));
         }
 
         public void OnTaskHoverLeave(IWorkerTask task)
         {
-            task.Selectable.Match(
-                onValue: _ => game.SelectionManager.ResetFocus(),
-                onNothing: () => {});
+            task.Selectable.Match(_ => game.SelectionManager.ResetFocus());
         }
 
         public void OnTaskCancelClicked(IWorkerTask task)
