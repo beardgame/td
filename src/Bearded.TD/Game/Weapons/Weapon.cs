@@ -58,8 +58,10 @@ namespace Bearded.TD.Game.Weapons
         {
             var newDirection = CurrentDirection + angle;
             var newAngleOffset = newDirection - turret.NeutralDirection;
-            
-            currentDirectionOffset = newAngleOffset;
+
+            currentDirectionOffset = turret.MaximumTurningAngle
+                .Select(max => newAngleOffset.Clamped(-max, max))
+                .ValueOrDefault(newAngleOffset);
         }
 
         public void Update(TimeSpan elapsedTime)

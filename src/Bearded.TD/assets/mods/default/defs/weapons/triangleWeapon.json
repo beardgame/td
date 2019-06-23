@@ -14,7 +14,8 @@
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "boringProjectile",
-                "muzzleVelocity" : 15
+                "muzzleVelocity" : 20,
+                "fireRate" : 8
             }
         }
     ]

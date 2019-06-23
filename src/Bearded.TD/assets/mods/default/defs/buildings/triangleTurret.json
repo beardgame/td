@@ -12,7 +12,8 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 90,
-        "offset" : [0, 0.5]
+        "offset" : [0, 0.5],
+        "maximumTurningAngle" : 90
       }
     },
     {
@@ -22,7 +23,8 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 210,
-        "offset" : [-0.405, -0.29]
+        "offset" : [-0.405, -0.29],
+        "maximumTurningAngle" : 90
       }
     },
     {
@@ -32,7 +34,8 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 330,
-        "offset" : [0.405, -0.29]
+        "offset" : [0.405, -0.29],
+        "maximumTurningAngle" : 90
       }
     }
   ]
