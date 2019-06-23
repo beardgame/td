@@ -12,7 +12,7 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 90,
-        "offset" : [0, 1]
+        "offset" : [0, 0.5]
       }
     },
     {
@@ -22,7 +22,7 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 210,
-        "offset" : [-0.81, -0.58]
+        "offset" : [-0.405, -0.29]
       }
     },
     {
@@ -32,7 +32,7 @@
       "parameters" : {
         "weapon" : "triangleWeapon",
         "neutralDirection" : 330,
-        "offset" : [0.81, -0.58]
+        "offset" : [0.405, -0.29]
       }
     }
   ]

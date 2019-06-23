@@ -5,8 +5,10 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 
 namespace Bearded.TD.Game.Components.Generic
 {
@@ -23,9 +25,10 @@ namespace Bearded.TD.Game.Components.Generic
     {
         private Weapon weapon;
 
-        public Position2 Position => Owner.Position + Parameters.Offset;
+        public Position2 Position =>
+            Owner.Position + Owner.LocalCoordinateTransform.Transform(Parameters.Offset);
 
-        public Direction2 NeutralDirection => Parameters.NeutralDirection;
+        public Direction2 NeutralDirection => Parameters.NeutralDirection + Owner.LocalOrientationTransform;
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 

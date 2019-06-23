@@ -6,8 +6,10 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
+using OpenTK.Graphics.ES30;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
@@ -30,11 +32,15 @@ namespace Bearded.TD.Game.Buildings
             {
                 footprint = value;
                 Position = footprint.CenterPosition;
+                recalculateLocalTransform();
             }
         }
 
         public Faction Faction { get; }
         public Position2 Position { get; private set; }
+        
+        public Matrix2 LocalCoordinateTransform { get; private set; }
+        public Angle LocalOrientationTransform => Footprint.Orientation;
 
         public IEnumerable<Tile> OccupiedTiles => Footprint.OccupiedTiles;
 
@@ -46,6 +52,11 @@ namespace Bearded.TD.Game.Buildings
             Blueprint = blueprint;
             Faction = faction;
             Footprint = footprint;
+        }
+
+        private void recalculateLocalTransform()
+        {
+            LocalCoordinateTransform = footprint.Orientation.Transformation;
         }
 
         public abstract void ResetSelection();

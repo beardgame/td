@@ -21,7 +21,8 @@ namespace Bearded.TD.Game.Weapons
         private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
 
         public Maybe<Direction2> AimDirection { get; private set; }
-        public Direction2 CurrentDirection { get; private set; }
+        private Angle currentDirectionOffset;
+        public Direction2 CurrentDirection => turret.NeutralDirection + currentDirectionOffset;
         public bool ShootingThisFrame { get; private set; }
 
         public GameObject Owner => turret.Owner;
@@ -32,7 +33,6 @@ namespace Bearded.TD.Game.Weapons
         {
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
-            CurrentDirection = turret.NeutralDirection;
 
             components.Add(this, blueprint.GetComponents());
         }
@@ -56,7 +56,10 @@ namespace Bearded.TD.Game.Weapons
 
         public void Turn(Angle angle)
         {
-            CurrentDirection += angle;
+            var newDirection = CurrentDirection + angle;
+            var newAngleOffset = newDirection - turret.NeutralDirection;
+            
+            currentDirectionOffset = newAngleOffset;
         }
 
         public void Update(TimeSpan elapsedTime)
