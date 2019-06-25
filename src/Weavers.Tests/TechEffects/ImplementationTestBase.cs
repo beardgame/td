@@ -10,7 +10,7 @@ namespace Weavers.Tests.TechEffects
     public abstract class ImplementationTestBase
     {
         #region Helpers
-        
+
         protected static readonly Type TemplateType = GetAssemblyType("DummyParametersTemplate");
         protected static readonly Type ModifiableType = GetAssemblyType("DummyParametersModifiable");
         protected static readonly Type InterfaceType = GetAssemblyType(nameof(IDummyParametersTemplate));
@@ -41,7 +41,7 @@ namespace Weavers.Tests.TechEffects
                 return cs.Length == 1 ? cs[0] : null;
             }
         }
-        
+
         protected abstract Type ImplementationType { get; }
 
         protected static object ConstructTemplate(params object[] constructorParams)
@@ -49,15 +49,15 @@ namespace Weavers.Tests.TechEffects
 
         protected static object ConstructModifiable(object template)
             => ModifiableConstructorInfo.Invoke(new[] { template });
-        
+
         protected static object ConstructWrappedInt(int val)
             // ReSharper disable once PossibleNullReferenceException
             => WrappedIntType.GetConstructor(new[] { typeof(int) }).Invoke(new object[] { val });
 
         #endregion
-        
+
         #region Tests
-        
+
         [Fact]
         public void InjectsTemplateType()
         {
@@ -75,7 +75,7 @@ namespace Weavers.Tests.TechEffects
         {
             ImplementationType.Should().NotBeNull();
         }
-        
+
         #endregion
     }
 }

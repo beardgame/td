@@ -13,7 +13,7 @@ namespace Weavers.Tests.TechEffects
     public sealed class TemplateImplementationTest : ImplementationTestBase
     {
         protected override Type ImplementationType => TemplateType;
-        
+
         [Fact]
         public void RemembersSimpleValues()
         {

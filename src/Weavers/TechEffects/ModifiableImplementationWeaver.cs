@@ -5,19 +5,24 @@ using Bearded.TD.Shared.TechEffects;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
-using Mono.Collections.Generic;
 using TypeSystem = Fody.TypeSystem;
 
 namespace Weavers.TechEffects
 {
     sealed class ModifiableImplementationWeaver : BaseImplementationWeaver
     {
+        private readonly AttributeConverters attributeConverters;
+
         public ModifiableImplementationWeaver(
                 ModuleDefinition moduleDefinition,
                 TypeSystem typeSystem,
                 ILogger logger,
-                ReferenceFinder referenceFinder)
-            : base(moduleDefinition, typeSystem, logger, referenceFinder) {}
+                ReferenceFinder referenceFinder,
+                AttributeConverters attributeConverters)
+            : base(moduleDefinition, typeSystem, logger, referenceFinder)
+        {
+            this.attributeConverters = attributeConverters;
+        }
 
         public TypeDefinition WeaveImplementation(
             TypeReference interfaceToImplement,
@@ -29,9 +34,9 @@ namespace Weavers.TechEffects
                 TypeSystem.ObjectReference);
             modifiableType.BaseType =
                 ReferenceFinder.GetTypeReference(Constants.ModifiableBase).MakeGenericInstanceType(modifiableType);
-            
+
             var (fieldsByProperty, templateField) = addConstructor(modifiableType, interfaceToImplement, properties);
-            
+
             foreach (var property in properties)
             {
                 if (fieldsByProperty.ContainsKey(property))
@@ -44,7 +49,7 @@ namespace Weavers.TechEffects
                     addTemplateBackedProperty(modifiableType, property, templateField);
                 }
             }
-            
+
             addStaticConstructor(modifiableType, fieldsByProperty);
 
             addCreateModifiableInstanceMethod(modifiableType, genericParameterInterface);
@@ -54,7 +59,7 @@ namespace Weavers.TechEffects
 
             return modifiableType;
         }
-        
+
         #region Constructor
         private (Dictionary<PropertyDefinition, FieldReference> fieldsByProperty, FieldReference templateField)
             addConstructor(
@@ -78,12 +83,13 @@ namespace Weavers.TechEffects
                 FieldAttributes.Private | FieldAttributes.InitOnly,
                 interfaceToImplement);
             type.Fields.Add(templateField);
-            
+
             var fieldsByProperty = new Dictionary<PropertyDefinition, FieldReference>();
             var fields = new List<(
                 FieldReference field,
                 TypeReference innerFieldType,
-                MethodReference conversionLambda)>();
+                FieldReference fieldContainingConversionMethod,
+                MethodReference conversionMethod)>();
 
             var attributeWithModificationsType =
                 ReferenceFinder.GetTypeReference(Constants.AttributeWithModificationsType);
@@ -97,21 +103,25 @@ namespace Weavers.TechEffects
                 {
                     continue;
                 }
-                
+
                 var fieldType = attributeWithModificationsType.MakeGenericInstanceType(property.PropertyType);
 
                 var fieldDef = new FieldDefinition(
                     property.Name.ToCamelCase(),
                     FieldAttributes.Private | FieldAttributes.InitOnly,
                     fieldType);
-                var lambdaMethod = createLambdaMethod(lambdas, fieldDef.Name, property.PropertyType);
+
+                var (fieldContainingConversionMethod, conversionMethod) = property.PropertyType.IsPrimitive
+                    ? (lambdaInstance, createLambdaMethod(lambdas, fieldDef.Name, property.PropertyType))
+                    : toWrappedConverterTupleForProperty(property);
 
                 type.Fields.Add(fieldDef);
                 fieldsByProperty.Add(property, fieldDef);
                 fields.Add((
                     field: fieldDef,
                     innerFieldType: property.PropertyType,
-                    conversionLambda: lambdaMethod));
+                    fieldContainingConversionMethod: fieldContainingConversionMethod,
+                    conversionMethod: conversionMethod));
             }
 
             var baseConstructor = ReferenceFinder.GetConstructorReference(type.BaseType);
@@ -126,7 +136,7 @@ namespace Weavers.TechEffects
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Ldarg_1);
             processor.Emit(OpCodes.Stfld, templateField);
-            
+
             var funcCtor = ReferenceFinder.GetConstructorReference(typeof(Func<,>));
             var hasLocals = false;
 
@@ -145,42 +155,34 @@ namespace Weavers.TechEffects
                 processor.Emit(OpCodes.Callvirt, propertyGetter);
 
                 // unwrap a nested type
-                var typeOnStack = fieldInfo.innerFieldType;
-                if (!typeOnStack.IsPrimitive)
+                if (!fieldInfo.innerFieldType.IsPrimitive)
                 {
-                    var fieldType = ModuleDefinition
-                        .ImportReference(fieldInfo.innerFieldType);
-                    var innerProperty = fieldType
-                        .Resolve()
-                        .Properties[0]
-                        .Resolve();
+                    // push to local variable since we need the attribute converter below it on the stack
+                    var localVar = new VariableDefinition(fieldInfo.innerFieldType);
+                    method.Body.Variables.Add(localVar);
+                    hasLocals = true;
+                    processor.Emit(OpCodes.Stloc, localVar);
 
-                    if (fieldType.IsValueType)
-                    {
-                        var localVar = new VariableDefinition(fieldType);
-                        method.Body.Variables.Add(localVar);
-                        hasLocals = true;
-                        // Turn the object into an address using a local variable
-                        processor.Emit(OpCodes.Stloc, localVar);
-                        processor.Emit(OpCodes.Ldloca, localVar);
-                    }
-                    
-                    processor.Emit(OpCodes.Call, ModuleDefinition.ImportReference(innerProperty.GetMethod));
-                    typeOnStack = innerProperty.PropertyType;
+                    // load the static field
+                    var converterField = attributeConverters.FieldForConversion(fieldInfo.innerFieldType);
+                    processor.Emit(OpCodes.Ldsfld, converterField);
+                    // push local variable on stack
+                    processor.Emit(OpCodes.Ldloc, localVar);
+                    // call converter method
+                    processor.Emit(OpCodes.Callvirt, attributeConverters.MethodForConversionToRaw(converterField));
                 }
-
-                // cast to double if necessary
-                if (typeOnStack.FullName != TypeSystem.DoubleReference.FullName)
+                else if (fieldInfo.innerFieldType.FullName != TypeSystem.DoubleReference.FullName)
                 {
+                    // cast to double if necessary
                     processor.Emit(OpCodes.Conv_R8);
                 }
 
                 // load lambda instance on the stack
-                processor.Emit(OpCodes.Ldsfld, lambdaInstance);
+                processor.Emit(OpCodes.Ldsfld, fieldInfo.fieldContainingConversionMethod);
 
                 // load the function pointer on the stack
-                processor.Emit(OpCodes.Ldftn, fieldInfo.conversionLambda);
-                
+                processor.Emit(OpCodes.Ldftn, fieldInfo.conversionMethod);
+
                 // create a System.Func instance of the right type
                 var genericFuncCtor =
                     funcCtor.MakeHostInstanceGeneric(TypeSystem.DoubleReference, fieldInfo.innerFieldType);
@@ -201,6 +203,13 @@ namespace Weavers.TechEffects
 
             return (fieldsByProperty, templateField);
         }
+
+        private (FieldReference, MethodReference) toWrappedConverterTupleForProperty(PropertyReference property)
+        {
+            var fieldForConversion = attributeConverters.FieldForConversion(property.PropertyType);
+            return (fieldForConversion, attributeConverters.MethodForConversionToWrapped(fieldForConversion));
+        }
+
         #endregion
 
         #region Lambdas
@@ -285,7 +294,7 @@ namespace Weavers.TechEffects
             return lambdaMethod;
         }
         #endregion
-        
+
         #region Static constructor
 
         private void addStaticConstructor(
@@ -296,7 +305,7 @@ namespace Weavers.TechEffects
                 MethodAttributes.Private | MethodAttributes.SpecialName
                 | MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Static,
                 TypeSystem.VoidReference);
-            
+
             var fieldsWithAttributes = getFieldsWithAttributes(fieldsByProperty);
 
             var processor = cctor.Body.GetILProcessor();
@@ -323,10 +332,10 @@ namespace Weavers.TechEffects
                     ReferenceFinder.GetTypeReference(typeof(List<>)),
                     nameof(List<int>.Add))
                 .MakeHostInstanceGeneric(keyValueType);
-            
+
             // create new list
             processor.Emit(OpCodes.Newobj, keyValueListCtor);
-            
+
             foreach (var (field, attributeType) in fieldsWithAttributes)
             {
                 if (attributeType == AttributeType.None)
@@ -343,7 +352,7 @@ namespace Weavers.TechEffects
                 // load static function
                 var getAttributeMethod =
                     ReferenceFinder.GetMethodReference(type, getStaticAttributeGetMethodName(field));
-                
+
                 processor.Emit(OpCodes.Ldnull);
                 processor.Emit(OpCodes.Ldftn, getAttributeMethod);
                 processor.Emit(OpCodes.Newobj, funcTypeCtor);
@@ -358,9 +367,9 @@ namespace Weavers.TechEffects
             var methodReference =
                 ReferenceFinder.GetMethodReference(type.BaseType, Constants.ModifiableBaseInitializeMethod);
             processor.Emit(OpCodes.Call, methodReference);
-            
+
             processor.Emit(OpCodes.Ret);
-            
+
             type.Methods.Add(cctor);
         }
 
@@ -424,7 +433,7 @@ namespace Weavers.TechEffects
             type.Properties.Add(propertyImpl);
             type.Methods.Add(getMethodImpl);
         }
-        
+
         private void addStaticAttributeGetMethod(TypeDefinition type, FieldReference attributeField)
         {
             var method = new MethodDefinition(
@@ -434,11 +443,11 @@ namespace Weavers.TechEffects
             method.Parameters.Add(new ParameterDefinition("instance", ParameterAttributes.None, type));
 
             var processor = method.Body.GetILProcessor();
-            
+
             processor.Emit(OpCodes.Ldarg_0);
             processor.Emit(OpCodes.Ldfld, attributeField);
             processor.Emit(OpCodes.Ret);
-            
+
             type.Methods.Add(method);
         }
 
@@ -452,7 +461,7 @@ namespace Weavers.TechEffects
         {
             var propertyImpl = MethodHelpers.CreatePropertyImplementation(ModuleDefinition, property);
             var getMethodImpl = propertyImpl.GetMethod;
-            
+
             var templateProperty = ModuleDefinition.ImportReference(templateField.FieldType)
                 .Resolve()
                 .Properties
@@ -480,7 +489,7 @@ namespace Weavers.TechEffects
             TypeDefinition type, TypeReference interfaceType)
         {
             var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, Constants.HasAttributeOfTypeMethod);
-            
+
             AddVirtualMethodImplementation(interfaceType, type, baseMethod);
         }
 
@@ -489,7 +498,7 @@ namespace Weavers.TechEffects
             foreach (var methodName in Constants.ModificationMethods)
             {
                 var baseMethod = ReferenceFinder.GetMethodReference(type.BaseType, methodName);
-            
+
                 AddVirtualMethodImplementation(interfaceType, type, baseMethod);
             }
         }

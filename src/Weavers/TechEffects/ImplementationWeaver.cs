@@ -15,6 +15,7 @@ namespace Weavers.TechEffects
         private readonly ILogger logger;
         private readonly ReferenceFinder referenceFinder;
 
+        private readonly AttributeConverters attributeConverters;
         private readonly ModifiableImplementationWeaver modifiableWeaver;
         private readonly TemplateImplementationWeaver templateWeaver;
 
@@ -30,7 +31,9 @@ namespace Weavers.TechEffects
             this.logger = logger;
             this.referenceFinder = referenceFinder;
 
-            modifiableWeaver = new ModifiableImplementationWeaver(moduleDefinition, typeSystem, logger, referenceFinder);
+            attributeConverters = AttributeConverters.Create(moduleDefinition, referenceFinder);
+            modifiableWeaver = new ModifiableImplementationWeaver(
+                moduleDefinition, typeSystem, logger, referenceFinder, attributeConverters);
             templateWeaver = new TemplateImplementationWeaver(moduleDefinition, typeSystem, logger, referenceFinder);
 
             var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(ParametersTemplateLibrary<>));

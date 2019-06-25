@@ -13,7 +13,7 @@
     <OutputPath>../../bin/Bearded.TD.MasterServer/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.200-dev" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.280-dev" />
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
     <PackageReference Include="Google.Protobuf" Version="3.4.1" />
     <PackageReference Include="OpenTK" Version="2.0.0" targetFramework="net45" />
