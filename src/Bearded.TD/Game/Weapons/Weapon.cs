@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
@@ -13,7 +14,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Weapons
 {
     [ComponentOwner]
-    class Weapon : IPositionable, IFactioned
+    class Weapon : IPositionable, IFactioned, IComponentOwner<Weapon>
     {
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
@@ -92,5 +93,9 @@ namespace Bearded.TD.Game.Weapons
 
             components.Draw(geometries);
         }
+
+        IEnumerable<TComponent> IComponentOwner<Weapon>.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
     }
 }

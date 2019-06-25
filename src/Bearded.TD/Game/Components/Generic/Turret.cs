@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Components.Generic
 {
     interface ITurret : IPositionable
     {
+        Weapon Weapon { get; }
         GameObject Owner { get; }
         Faction OwnerFaction { get; }
         Direction2 NeutralDirection { get; }
@@ -56,6 +57,7 @@ namespace Bearded.TD.Game.Components.Generic
             weapon.Draw(geometries);
         }
 
+        Weapon ITurret.Weapon => weapon;
         GameObject ITurret.Owner => Owner;
         Faction ITurret.OwnerFaction => Owner.Faction;
 

@@ -4,16 +4,20 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components
 {
-    interface IComponent<TOwner>
+    interface IComponent
     {
-        TOwner Owner { get; }
-
-        void OnAdded(TOwner owner);
         void Update(TimeSpan elapsedTime);
         void Draw(GeometryManager geometries);
 
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);
         void ApplyUpgradeEffect(IUpgradeEffect effect);
         bool RemoveUpgradeEffect(IUpgradeEffect effect);
+    }
+    
+    interface IComponent<TOwner> : IComponent
+    {
+        TOwner Owner { get; }
+
+        void OnAdded(TOwner owner);
     }
 }

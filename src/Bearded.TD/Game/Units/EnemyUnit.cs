@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -65,9 +67,9 @@ namespace Bearded.TD.Game.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(this, blueprint.GetComponents());
-            health = components.Get<Health<EnemyUnit>>()
+            health = components.Get<Health<EnemyUnit>>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
-            enemyMovement = components.Get<IEnemyMovement>()
+            enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
         }
 
@@ -76,9 +78,6 @@ namespace Bearded.TD.Game.Units
             base.OnDelete();
             Game.UnitLayer.RemoveEnemyFromTile(CurrentTile, this);
         }
-
-        public TComponent GetComponent<TComponent>() where TComponent : IComponent<EnemyUnit>
-            => components.Get<TComponent>();
 
         public override void Update(TimeSpan elapsedTime)
         {
@@ -153,5 +152,9 @@ namespace Bearded.TD.Game.Units
             if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
             if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
         }
+        
+        IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
     }
 }

@@ -74,11 +74,11 @@ namespace Bearded.TD.Game.Buildings
         }
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
 
-        public TComponent GetComponent<TComponent>()
-            where TComponent : IComponent<T>
-        {
-            return Components.Get<TComponent>();
-        }
+        public IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent => Components.Get<TComponent>();
+        
+        IEnumerable<TComponent> IComponentOwner<T>.GetComponents<TComponent>() => GetComponents<TComponent>();
+
+        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => Components.Get<TComponent>();
 
         public override void Update(TimeSpan elapsedTime)
         {
