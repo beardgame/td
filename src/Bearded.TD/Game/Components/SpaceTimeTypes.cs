@@ -7,6 +7,11 @@ namespace Bearded.TD.Game.Components
     static class SpaceTimeTypes
     {
         [ConvertsAttribute]
+        public static AttributeConverter<AngularAcceleration> AngularAccelerationConverter =
+            new AttributeConverter<AngularAcceleration>(
+                d => AngularAcceleration.FromDegrees((float) d), a => a.AngleValue.Degrees);
+
+        [ConvertsAttribute]
         public static AttributeConverter<Frequency> FrequencyConverter =
             new AttributeConverter<Frequency>(d => new Frequency(d), f => f.NumericValue);
 
