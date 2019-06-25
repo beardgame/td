@@ -16,7 +16,7 @@ namespace Weavers
 
         internal FieldReference GetFieldReference(TypeReference typeReference, string name)
             => GetFieldReference(typeReference, field => field.Name == name);
-        
+
         internal FieldReference GetFieldReference(TypeReference typeReference, Func<FieldDefinition, bool> predicate)
         {
             var typeDefinition = typeReference.Resolve();
@@ -33,7 +33,7 @@ namespace Weavers
 
         internal PropertyReference GetPropertyReference(TypeReference typeReference, string name)
             => GetPropertyReference(typeReference, field => field.Name == name);
-        
+
         internal PropertyReference GetPropertyReference(TypeReference typeReference, Func<PropertyDefinition, bool> predicate)
         {
             var typeDefinition = typeReference.Resolve();

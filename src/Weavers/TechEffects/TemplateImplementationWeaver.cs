@@ -72,7 +72,7 @@ namespace Weavers.TechEffects
                         ? property.PropertyType
                         : nullableReference.MakeGenericInstanceType(property.PropertyType);
                 }
-                
+
                 method.Parameters.Add(
                     new ParameterDefinition(
                         property.Name.ToCamelCase(), ParameterAttributes.None, parameterType));
@@ -173,7 +173,7 @@ namespace Weavers.TechEffects
         {
             ImplementCreateModifiableInstanceMethod(type, genericParameterInterface, modifiableType, null);
         }
-        
+
         private void addHasAttributeOfTypeMethod(
             TypeDefinition type, TypeReference genericParameterInterface, TypeReference modifiableType)
         {

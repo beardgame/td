@@ -10,7 +10,7 @@ namespace Weavers.Tests.TechEffects
     public sealed class ModifiableImplementationTest : ImplementationTestBase
     {
         protected override Type ImplementationType => ModifiableType;
-        
+
         [Fact]
         public void RemembersSimpleValues()
         {
@@ -26,7 +26,7 @@ namespace Weavers.Tests.TechEffects
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
-        
+
         [Fact]
         public void RemembersModifiableWrappedValues()
         {
@@ -53,7 +53,7 @@ namespace Weavers.Tests.TechEffects
 
             ((bool) modifiable.CallMethod(HasAttributeOfTypeMethodName, AttributeType.DroneCount)).Should().BeFalse();
         }
-        
+
         [Fact]
         public void AddModification_ModifiesSimpleValue()
         {
@@ -64,7 +64,7 @@ namespace Weavers.Tests.TechEffects
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(20);
         }
-        
+
         [Fact]
         public void AddModification_ModifiesWrappedValues()
         {
@@ -78,7 +78,7 @@ namespace Weavers.Tests.TechEffects
                 .GetPropertyValue<int>(nameof(WrappedInt.Val))
                 .Should().Be(36);
         }
-        
+
         [Fact]
         public void AddModification_IgnoresMissingAttributeType()
         {
@@ -118,14 +118,14 @@ namespace Weavers.Tests.TechEffects
                 .GetPropertyValue<int>(nameof(WrappedInt.Val))
                 .Should().Be(36);
         }
-        
+
         [Fact]
         public void AddModificationWithId_IgnoresMissingAttributeType()
         {
             var modifiable = ConstructModifiable(ConstructTemplate(0, 10, null));
             
             modifiable
-                .Invoking(obj => 
+                .Invoking(obj =>
                     obj.CallMethod(
                         AddModificationWithIdMethodName, AttributeType.DroneCount,
                         new ModificationWithId(new Id<Modification>(1), Modification.AddFractionOfBase(1))))
@@ -133,7 +133,7 @@ namespace Weavers.Tests.TechEffects
                 .NotThrow();
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
-        
+
         [Fact]
         public void UpdateModification_ModifiesSimpleValue()
         {
@@ -181,7 +181,7 @@ namespace Weavers.Tests.TechEffects
                 .NotThrow();
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
-        
+
         [Fact]
         public void UpdateModification_ThrowsIfModificationNotFound()
         {
@@ -196,7 +196,7 @@ namespace Weavers.Tests.TechEffects
                 .Throw<Exception>() // Reflection wrapper
                 .WithInnerException<InvalidOperationException>();
         }
-        
+
         [Fact]
         public void RemoveModification_RestoresModifiedSimpleValue()
         {
@@ -210,7 +210,7 @@ namespace Weavers.Tests.TechEffects
 
             modifiable.GetPropertyValue<int>(nameof(IDummyParametersTemplate.IntPropertyWithDefault)).Should().Be(10);
         }
-        
+
         [Fact]
         public void RemoveModification_RestoresModifiedWrappedValues()
         {
@@ -234,7 +234,7 @@ namespace Weavers.Tests.TechEffects
             var modifiable = ConstructModifiable(ConstructTemplate(0, 10, null));
             
             modifiable
-                .Invoking(obj => 
+                .Invoking(obj =>
                     obj.CallMethod(
                         RemoveModificationMethodName, AttributeType.DroneCount, new Id<Modification>(1)))
                 .Should()
