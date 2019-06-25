@@ -49,6 +49,18 @@ namespace Bearded.TD.Game.World
         private int currentIntervalIndex;
         private Position2 origin;
 
+        public LevelVisibilityChecker InDirection(Direction2 centerDirection, Angle openRadius)
+        {
+            initialiseIntervalsBlockedList();
+
+            var blockedStart = centerDirection + openRadius;
+            var blockedWidth = Angle.FromDegrees(360) - openRadius * 2;
+            
+            intervalsBlocked.Add((blockedStart, blockedWidth));
+            
+            return this;
+        }
+
         public IEnumerable<(Tile tile, TileVisibility visibility)> EnumerateVisibleTiles(
             Level level, Position2 origin, Unit radius, Func<Tile, bool> blocksVisibility)
         {
@@ -57,7 +69,8 @@ namespace Bearded.TD.Game.World
             if (!level.IsValid(startTile) || blocksVisibility(startTile))
                 yield break;
 
-            intervalsBlocked = new List<(Direction2, Angle)>(10);
+            if (intervalsBlocked == null)
+                initialiseIntervalsBlockedList();
 
             tiles = Tilemap.GetSpiralCenteredAt(startTile, tileRadius);
 
@@ -240,6 +253,11 @@ namespace Bearded.TD.Game.World
             this.origin = origin;
             tileRadius = (int)(radius.NumericValue * (1 / HexagonWidth) + HexagonWidth);
             startTile = Level.GetTile(origin);
+        }
+
+        private void initialiseIntervalsBlockedList()
+        {
+            intervalsBlocked = new List<(Direction2, Angle)>(10);
         }
     }
 }
