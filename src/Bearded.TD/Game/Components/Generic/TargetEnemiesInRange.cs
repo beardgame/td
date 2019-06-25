@@ -90,9 +90,11 @@ namespace Bearded.TD.Game.Components.Generic
 
             var level = game.Level;
             var navigator = game.Navigator;
-
-            tilesInRange = new LevelVisibilityChecker()
-                .EnumerateVisibleTiles(
+            
+            tilesInRange = Owner.MaximumTurningAngle.Match(
+                max => new LevelVisibilityChecker().InDirection(Owner.NeutralDirection, max),
+                () => new LevelVisibilityChecker()
+                ).EnumerateVisibleTiles(
                     level,
                     position,
                     currentRange,
