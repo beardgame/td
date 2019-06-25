@@ -8,16 +8,13 @@ namespace Weavers.TechEffects
 {
     sealed class AttributeConverters
     {
-        private readonly ModuleDefinition moduleDefinition;
         private readonly ReferenceFinder referenceFinder;
         private readonly IReadOnlyDictionary<string, FieldReference> converters;
 
         private AttributeConverters(
-            ModuleDefinition moduleDefinition,
             ReferenceFinder referenceFinder,
             IReadOnlyDictionary<string, FieldReference> converters)
         {
-            this.moduleDefinition = moduleDefinition;
             this.referenceFinder = referenceFinder;
             this.converters = converters;
         }
@@ -80,7 +77,7 @@ namespace Weavers.TechEffects
                 dict.Add(genericFieldType.GenericArguments[0].FullName, converter);
             }
 
-            return new AttributeConverters(moduleDefinition, referenceFinder, dict);
+            return new AttributeConverters(referenceFinder, dict);
         }
 
         private static bool isCustomAttributeOfType(CustomAttribute customAttribute, MemberReference desiredType)
