@@ -25,7 +25,7 @@ namespace Bearded.TD.Rendering.UI
 
             if (label.Parent is Button button && !button.IsEnabled)
                 argb *= 0.5f;
-            
+
             geometry.Color = argb;
 
             var textAnchor = label.TextAnchor;
