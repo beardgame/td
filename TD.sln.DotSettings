@@ -246,4 +246,9 @@ namespace $NAMESPACE$
         }
     }
 }
-</s:String></wpf:ResourceDictionary>
+</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=passability/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Syncable/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=syncables/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=synchronizers/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Teleport/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
