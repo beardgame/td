@@ -7,6 +7,8 @@ namespace Bearded.TD.Networking.Serialization
 {
     interface INetBufferStream
     {
+        void Serialize(ref byte[] bytes);
+
         void Serialize(ref int i);
         void Serialize(ref byte b);
         void Serialize(ref string s);
@@ -21,7 +23,7 @@ namespace Bearded.TD.Networking.Serialization
         void Serialize(ref Color? color, uint nullValue = 0);
 
         void SerializeArrayCount<T>(ref T[] array);
-        
+
         void Serialize(ref Unit unit);
     }
 }

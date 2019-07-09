@@ -16,6 +16,12 @@ namespace Bearded.TD.Networking.Serialization
             this.buffer = buffer;
         }
 
+        public void Serialize(ref byte[] bytes)
+        {
+            SerializeArrayCount(ref bytes);
+            buffer.Write(bytes);
+        }
+
         public void Serialize(ref int i) => buffer.Write(i);
         public void Serialize(ref byte b) => buffer.Write(b);
 

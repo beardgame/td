@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
@@ -28,7 +29,7 @@ namespace Bearded.TD.Game.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        ISyncable<EnemyUnitState>
+        ISyncable
     {
         public Id<EnemyUnit> Id { get; }
 
@@ -36,6 +37,7 @@ namespace Bearded.TD.Game.Units
         private IEnemyMovement enemyMovement;
 
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
+        private ImmutableList<ISyncable> syncables;
         private Health<EnemyUnit> health;
         private bool isDead;
 
@@ -53,7 +55,7 @@ namespace Bearded.TD.Game.Units
         {
             Id = id;
             this.blueprint = blueprint;
-            
+
             enemyMovement = new EnemyMovementDummy(this, currentTile);
         }
 
@@ -71,6 +73,8 @@ namespace Bearded.TD.Game.Units
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
+
+            syncables = components.Get<ISyncable>().ToImmutableList();
         }
 
         protected override void OnDelete()
@@ -133,28 +137,10 @@ namespace Bearded.TD.Game.Units
 
         public void Execute() => Delete();
 
-        public EnemyUnitState GetCurrentState()
-        {
-            return new EnemyUnitState(
-                Position.X.NumericValue,
-                Position.Y.NumericValue,
-                enemyMovement.GoalTile.X,
-                enemyMovement.GoalTile.Y,
-                health.CurrentHealth);
-        }
-
-        public void SyncFrom(EnemyUnitState state)
-        {
-            enemyMovement.Teleport(
-                new Position2(state.X, state.Y),
-                new Tile(state.GoalTileX, state.GoalTileY));
-
-            if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
-            if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
-        }
-        
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        public IStateToSync GetCurrentStateToSync() => new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }
