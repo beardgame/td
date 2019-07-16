@@ -8,11 +8,7 @@
             }
         },
         {
-            "id" : "linearAccelerationAim",
-            "parameters" : {
-                "acceleration" : 720,
-                "dragInverse" : 0
-            }
+            "id" : "instantAim"
         },
         {
             "id" : "projectileEmitter",
