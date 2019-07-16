@@ -82,25 +82,27 @@ namespace Bearded.TD.Game.Components.Generic
             }
         }
 
-        public IStateToSync GetCurrentStateToSync() => new StateToSync<Health<T>>(this, new HealthSynchronizedState(this));
+        public IStateToSync GetCurrentStateToSync() => new HealthSynchronizedState(this);
 
-        private class HealthSynchronizedState : ISynchronizedState<Health<T>>
+        private class HealthSynchronizedState : IStateToSync
         {
+            private readonly Health<T> source;
             private int currentHealth;
 
             public HealthSynchronizedState(Health<T> source)
             {
+                this.source = source;
                 currentHealth = source.CurrentHealth;
-            }
-
-            public void ApplyTo(Health<T> subject)
-            {
-                subject.CurrentHealth = currentHealth;
             }
 
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref currentHealth);
+            }
+
+            public void Apply()
+            {
+                source.CurrentHealth = currentHealth;
             }
         }
     }
