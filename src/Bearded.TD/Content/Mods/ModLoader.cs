@@ -155,6 +155,7 @@ namespace Bearded.TD.Content.Mods
                 serializer.Converters.Add(new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()));
                 serializer.Converters.Add(new SpaceTime1Converter<Direction2>(Direction2.FromDegrees));
                 serializer.Converters.Add(new SpaceTime1Converter<Angle>(Angle.FromDegrees));
+                serializer.Converters.Add(new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees));
                 serializer.Converters.Add(new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)));
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
