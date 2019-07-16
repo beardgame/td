@@ -88,8 +88,8 @@ namespace Bearded.TD.Game.Units
             var alpha = Math.Max(0, (part.Timeout - Game.Time) / trailTimeout);
 
             return (
-                Left: (center - offset).WithZ(),
-                Right: (center + offset).WithZ(),
+                Left: (center - offset).WithZ(0.3f),
+                Right: (center + offset).WithZ(0.3f),
                 Color: Color.Orange.WithAlpha(0) * (float)alpha
                 );
         }
