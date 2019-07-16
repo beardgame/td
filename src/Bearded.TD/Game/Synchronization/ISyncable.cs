@@ -1,9 +1,7 @@
 namespace Bearded.TD.Game.Synchronization
 {
-    interface ISyncable<TState>
+    interface ISyncable
     {
-        TState GetCurrentState();
-
-        void SyncFrom(TState state);
+        IStateToSync GetCurrentStateToSync();
     }
 }

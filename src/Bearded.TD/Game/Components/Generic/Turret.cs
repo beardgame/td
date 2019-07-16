@@ -5,6 +5,8 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -12,9 +14,11 @@ namespace Bearded.TD.Game.Components.Generic
 {
     interface ITurret : IPositionable
     {
+        Weapon Weapon { get; }
         GameObject Owner { get; }
         Faction OwnerFaction { get; }
         Direction2 NeutralDirection { get; }
+        Maybe<Angle> MaximumTurningAngle { get; }
     }
 
     [Component("turret")]
@@ -23,9 +27,11 @@ namespace Bearded.TD.Game.Components.Generic
     {
         private Weapon weapon;
 
-        public Position2 Position => Owner.Position + Parameters.Offset;
+        public Position2 Position =>
+            Owner.Position + Owner.LocalCoordinateTransform.Transform(Parameters.Offset);
 
-        public Direction2 NeutralDirection => Parameters.NeutralDirection;
+        public Direction2 NeutralDirection => Parameters.NeutralDirection + Owner.LocalOrientationTransform;
+        public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 
@@ -51,6 +57,7 @@ namespace Bearded.TD.Game.Components.Generic
             weapon.Draw(geometries);
         }
 
+        Weapon ITurret.Weapon => weapon;
         GameObject ITurret.Owner => Owner;
         Faction ITurret.OwnerFaction => Owner.Faction;
 

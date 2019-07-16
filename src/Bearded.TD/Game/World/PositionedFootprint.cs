@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.World
@@ -20,6 +21,7 @@ namespace Bearded.TD.Game.World
             FootprintIndex = index;
         }
 
+        public Angle Orientation => Footprint.Orientations[FootprintIndex];
         public IEnumerable<Tile> OccupiedTiles => Footprint?.Footprints[FootprintIndex].OccupiedTiles(RootTile);
         public bool IsValid => OccupiedTiles?.All(level.IsValid) ?? false;
         public Position2 CenterPosition => Footprint?.Footprints[FootprintIndex].Center(RootTile) ?? new Position2();

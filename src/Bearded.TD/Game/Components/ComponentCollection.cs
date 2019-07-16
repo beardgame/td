@@ -28,10 +28,9 @@ namespace Bearded.TD.Game.Components
             component.OnAdded(owner);
         }
 
-        public T Get<T>()
-            where T : IComponent<TOwner>
+        public IEnumerable<T> Get<T>()
         {
-            return components.OfType<T>().FirstOrDefault();
+            return components.OfType<T>();
         }
 
         public void Update(TimeSpan elapsedTime)

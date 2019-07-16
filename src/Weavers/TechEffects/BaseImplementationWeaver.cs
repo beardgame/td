@@ -13,7 +13,7 @@ namespace Weavers.TechEffects
         protected ReferenceFinder ReferenceFinder { get; }
 
         protected TypeReference ParametersTemplateInterface { get; }
-        
+
         protected BaseImplementationWeaver(
             ModuleDefinition moduleDefinition,
             TypeSystem typeSystem,
@@ -27,7 +27,7 @@ namespace Weavers.TechEffects
 
             ParametersTemplateInterface = ReferenceFinder.GetTypeReference(Constants.Interface);
         }
-        
+
         protected (TypeDefinition implementedType, GenericInstanceType genericParameterInterface) PrepareImplementation(
             TypeReference interfaceToImplement, string name, TypeReference baseClass)
         {
@@ -38,7 +38,7 @@ namespace Weavers.TechEffects
                 baseClass);
 
             var genericParameterInterface = ParametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);
-            
+
             implementedType.AddInterfaceImplementation(interfaceToImplement);
             implementedType.AddInterfaceImplementation(genericParameterInterface);
 

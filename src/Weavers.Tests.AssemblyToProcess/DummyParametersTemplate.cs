@@ -9,14 +9,14 @@ namespace Weavers.Tests.AssemblyToProcess
     public interface IDummyParametersTemplate : IParametersTemplate<IDummyParametersTemplate>
     {
         int IntProperty { get; }
-        
+
         [Modifiable(10, Type = AttributeType.Damage)]
         int IntPropertyWithDefault { get; }
-        
+
         [Modifiable(10, Type = AttributeType.Cooldown)]
         WrappedInt WrappedIntProperty { get; }
     }
-    
+
     public sealed class DummyParametersReference : IDummyParametersTemplate
     {
         public int IntProperty { get; }
@@ -33,7 +33,7 @@ namespace Weavers.Tests.AssemblyToProcess
 
         public bool HasAttributeOfType(AttributeType type) =>
             DummyParametersModifiableReference.AttributeIsKnown(type);
-        
+
         public bool AddModification(AttributeType type, Modification modification)
         {
             throw new InvalidOperationException("Cannot modify attributes on immutable template.");
@@ -74,11 +74,13 @@ namespace Weavers.Tests.AssemblyToProcess
             this.template = template;
 
             intPropertyWithDefault = new AttributeWithModifications<int>(template.IntPropertyWithDefault, i => (int) i);
-            wrappedIntProperty = new AttributeWithModifications<WrappedInt>(template.WrappedIntProperty.Val, i => new WrappedInt((int) i));
+            wrappedIntProperty = new AttributeWithModifications<WrappedInt>(
+                WrappedIntConverters.WrappedIntConverter.ToRaw(template.WrappedIntProperty),
+                WrappedIntConverters.WrappedIntConverter.ToWrapped);
         }
 
         public IDummyParametersTemplate CreateModifiableInstance() => new DummyParametersModifiableReference(template);
-        
+
         static DummyParametersModifiableReference()
         {
             InitializeAttributes(
@@ -99,7 +101,7 @@ namespace Weavers.Tests.AssemblyToProcess
 
         private static IAttributeWithModifications getIntPropertyWithDefault(DummyParametersModifiableReference instance)
             => instance.intPropertyWithDefault;
-            
+
         private static IAttributeWithModifications getWrappedIntProperty(DummyParametersModifiableReference instance)
             => instance.wrappedIntProperty;
     }
@@ -109,5 +111,13 @@ namespace Weavers.Tests.AssemblyToProcess
         public int Val { get; }
 
         public WrappedInt(int val) => Val = val;
+    }
+
+    [ContainsAttributeConverters]
+    public static class WrappedIntConverters
+    {
+        [ConvertsAttribute]
+        public static AttributeConverter<WrappedInt> WrappedIntConverter =
+            new AttributeConverter<WrappedInt>(d => new WrappedInt((int) d), w => w.Val);
     }
 }

@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Commands.Debug
 {
@@ -17,10 +18,9 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var building in Game.State.GameObjects.OfType<Building>())
                 {
-                    if (building.GetComponent<Health<Building>>() is var healthComponent)
-                    {
-                        building.Damage(-healthComponent.MaxHealth);
-                    }
+                    building.GetComponents<Health<Building>>()
+                        .MaybeSingle()
+                        .Match(health => building.Damage(-health.MaxHealth));
                 }
             }
         }

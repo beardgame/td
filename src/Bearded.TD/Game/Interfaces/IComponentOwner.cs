@@ -1,9 +1,15 @@
+using System.Collections.Generic;
 using Bearded.TD.Game.Components;
 
 namespace Bearded.TD.Game
 {
-    interface IComponentOwner<T> where T : IComponentOwner<T>
+    interface IComponentOwner
     {
-        TComponent GetComponent<TComponent>() where TComponent : IComponent<T>;
+        IEnumerable<T> GetComponents<T>();
+    }
+    
+    interface IComponentOwner<T> : IComponentOwner where T : IComponentOwner<T>
+    {
+        new IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent<T>;
     }
 }

@@ -6,6 +6,8 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
+using static Bearded.Utilities.Maybe;
 using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Components.utilities
@@ -14,26 +16,33 @@ namespace Bearded.TD.Game.Components.utilities
     {
         private readonly GameState game;
         private readonly ISelectable owner;
-        private readonly Func<IEnumerable<Tile>> getTilesInRange;
+        private readonly Func<Maybe<HashSet<Tile>>> getTilesInRange;
 
         public TileRangeDrawer(GameState game, ISelectable owner, Func<IEnumerable<Tile>> getTilesInRange)
+            : this(game, owner, () => Just(new HashSet<Tile>(getTilesInRange())))
+        {
+            
+        }
+        
+        public TileRangeDrawer(GameState game, ISelectable owner, Func<Maybe<HashSet<Tile>>> getTilesInRange)
         {
             this.game = game;
             this.owner = owner;
             this.getTilesInRange = getTilesInRange;
         }
         
-        public void Draw(GeometryManager geometries)
+        public void Draw()
         {
             if (owner.SelectionState == SelectionState.Default) return;
 
-            var tilesInRange = getTilesInRange();
+            getTilesInRange().Match(tiles =>
+            {
+                var border = TileAreaBorder.From(tiles);
 
-            var border = TileAreaBorder.From(tilesInRange);
-
-            TileAreaBorderRenderer.Render(game, border, 
-                Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.5f : 0.25f)
+                TileAreaBorderRenderer.Render(game, border,
+                    Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.5f : 0.25f)
                 );
+            });
         }
     }
 }

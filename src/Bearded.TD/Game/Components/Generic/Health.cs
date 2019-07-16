@@ -1,8 +1,10 @@
 using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
+using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -10,12 +12,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("health")]
-    class Health<T> : Component<T, IHealthComponentParameter> where T : IMortal
+    class Health<T> : Component<T, IHealthComponentParameter>, ISyncable where T : IMortal
     {
         public int CurrentHealth { get; private set; }
         public int MaxHealth { get; private set; }
         public double HealthPercentage => (double) CurrentHealth / MaxHealth;
-        
+
         public Health(IHealthComponentParameter parameters) : base(parameters)
         {
             CurrentHealth = parameters.InitialHealth ?? parameters.MaxHealth;
@@ -77,6 +79,30 @@ namespace Bearded.TD.Game.Components.Generic
             {
                 MaxHealth = Parameters.MaxHealth;
                 CurrentHealth = Math.Min(CurrentHealth, MaxHealth);
+            }
+        }
+
+        public IStateToSync GetCurrentStateToSync() => new HealthSynchronizedState(this);
+
+        private class HealthSynchronizedState : IStateToSync
+        {
+            private readonly Health<T> source;
+            private int currentHealth;
+
+            public HealthSynchronizedState(Health<T> source)
+            {
+                this.source = source;
+                currentHealth = source.CurrentHealth;
+            }
+
+            public void Serialize(INetBufferStream stream)
+            {
+                stream.Serialize(ref currentHealth);
+            }
+
+            public void Apply()
+            {
+                source.CurrentHealth = currentHealth;
             }
         }
     }

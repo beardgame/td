@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Input
             return Game.State.Enumerate<Worker>()
                 .Where(w => w.CurrentTile == tile)
                 .Cast<ISelectable>()
-                .FirstMaybe();
+                .MaybeFirst();
         }
     }
 }

@@ -111,7 +111,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Draw(GeometryManager geometries)
         {
-            tileRangeDrawer.Draw(geometries);
+            tileRangeDrawer.Draw();
         }
 
         private void recalculateTilesInRange()

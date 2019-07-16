@@ -19,6 +19,8 @@ namespace Weavers.TechEffects
         internal const string UpdateModificationMethod = "UpdateModification";
         internal const string RemoveModificationMethod = "RemoveModification";
         internal const string AttributeIsKnownMethod = "AttributeIsKnown";
+        internal const string ToWrappedMethod = "ToWrapped";
+        internal const string ToRawMethod = "ToRaw";
 
         internal static readonly string[] ModificationMethods = new[]
         {

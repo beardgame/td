@@ -75,7 +75,7 @@ namespace Bearded.TD.Game.Workers
         public void RequestTask(Worker worker)
         {
             DebugAssert.Argument.Satisfies(() => allWorkers.Contains(worker));
-            tasks.Where(isUnassignedTaskInAntennaRange).FirstMaybe().Match(
+            tasks.Where(isUnassignedTaskInAntennaRange).MaybeFirst().Match(
                 task => assignTask(worker, task),
                 () => idleWorkers.Enqueue(worker));
         }

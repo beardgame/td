@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.Collections.Generic;
+using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Generic;
@@ -13,7 +14,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Weapons
 {
     [ComponentOwner]
-    class Weapon : IPositionable, IFactioned
+    class Weapon : IPositionable, IFactioned, IComponentOwner<Weapon>
     {
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
@@ -21,8 +22,12 @@ namespace Bearded.TD.Game.Weapons
         private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
 
         public Maybe<Direction2> AimDirection { get; private set; }
-        public Direction2 CurrentDirection { get; private set; }
+        private Angle currentDirectionOffset;
+        public Direction2 CurrentDirection => turret.NeutralDirection + currentDirectionOffset;
         public bool ShootingThisFrame { get; private set; }
+
+        public Direction2 NeutralDirection => turret.NeutralDirection;
+        public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
 
         public GameObject Owner => turret.Owner;
         public Position2 Position => turret.Position;
@@ -32,7 +37,6 @@ namespace Bearded.TD.Game.Weapons
         {
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
-            CurrentDirection = turret.NeutralDirection;
 
             components.Add(this, blueprint.GetComponents());
         }
@@ -56,7 +60,12 @@ namespace Bearded.TD.Game.Weapons
 
         public void Turn(Angle angle)
         {
-            CurrentDirection += angle;
+            var newDirection = CurrentDirection + angle;
+            var newAngleOffset = newDirection - turret.NeutralDirection;
+
+            currentDirectionOffset = MaximumTurningAngle
+                .Select(max => newAngleOffset.Clamped(-max, max))
+                .ValueOrDefault(newAngleOffset);
         }
 
         public void Update(TimeSpan elapsedTime)
@@ -84,5 +93,9 @@ namespace Bearded.TD.Game.Weapons
 
             components.Draw(geometries);
         }
+
+        IEnumerable<TComponent> IComponentOwner<Weapon>.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
     }
 }

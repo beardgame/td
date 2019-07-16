@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
@@ -26,7 +29,7 @@ namespace Bearded.TD.Game.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        ISyncable<EnemyUnitState>
+        ISyncable
     {
         public Id<EnemyUnit> Id { get; }
 
@@ -34,6 +37,7 @@ namespace Bearded.TD.Game.Units
         private IEnemyMovement enemyMovement;
 
         private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
+        private ImmutableList<ISyncable> syncables;
         private Health<EnemyUnit> health;
         private bool isDead;
 
@@ -51,7 +55,7 @@ namespace Bearded.TD.Game.Units
         {
             Id = id;
             this.blueprint = blueprint;
-            
+
             enemyMovement = new EnemyMovementDummy(this, currentTile);
         }
 
@@ -65,10 +69,12 @@ namespace Bearded.TD.Game.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(this, blueprint.GetComponents());
-            health = components.Get<Health<EnemyUnit>>()
+            health = components.Get<Health<EnemyUnit>>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
-            enemyMovement = components.Get<IEnemyMovement>()
+            enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
+
+            syncables = components.Get<ISyncable>().ToImmutableList();
         }
 
         protected override void OnDelete()
@@ -76,9 +82,6 @@ namespace Bearded.TD.Game.Units
             base.OnDelete();
             Game.UnitLayer.RemoveEnemyFromTile(CurrentTile, this);
         }
-
-        public TComponent GetComponent<TComponent>() where TComponent : IComponent<EnemyUnit>
-            => components.Get<TComponent>();
 
         public override void Update(TimeSpan elapsedTime)
         {
@@ -134,24 +137,10 @@ namespace Bearded.TD.Game.Units
 
         public void Execute() => Delete();
 
-        public EnemyUnitState GetCurrentState()
-        {
-            return new EnemyUnitState(
-                Position.X.NumericValue,
-                Position.Y.NumericValue,
-                enemyMovement.GoalTile.X,
-                enemyMovement.GoalTile.Y,
-                health.CurrentHealth);
-        }
+        IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
-        public void SyncFrom(EnemyUnitState state)
-        {
-            enemyMovement.Teleport(
-                new Position2(state.X, state.Y),
-                new Tile(state.GoalTileX, state.GoalTileY));
+        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
 
-            if (state.Health > health.CurrentHealth) Healed?.Invoke(state.Health - health.CurrentHealth);
-            if (state.Health < health.CurrentHealth) Damaged?.Invoke(health.CurrentHealth - state.Health);
-        }
+        public IStateToSync GetCurrentStateToSync() => new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }
