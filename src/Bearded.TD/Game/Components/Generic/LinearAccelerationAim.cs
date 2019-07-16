@@ -35,8 +35,7 @@ namespace Bearded.TD.Game.Components.Generic
                     var acceleration = Parameters.Acceleration * angularDirection;
 
                     angularVelocity += acceleration * elapsedTime;
-                },
-                () => { }
+                }
             );
         }
         

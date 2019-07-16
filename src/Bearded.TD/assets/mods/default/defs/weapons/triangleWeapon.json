@@ -10,8 +10,8 @@
         {
             "id" : "linearAccelerationAim",
             "parameters" : {
-                "acceleration" : 180,
-                "dragInverse" : 2
+                "acceleration" : 360,
+                "dragInverse" : 0.5
             }
         },
         {
