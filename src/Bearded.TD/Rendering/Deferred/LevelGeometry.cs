@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Security.Cryptography;
 using amulware.Graphics;
 using Bearded.TD.Game.World;
 using Bearded.Utilities;
 using OpenTK;
+using static System.Math;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Rendering.Deferred
@@ -20,7 +21,8 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void DrawTile(Vector2 position,
             DrawableTileGeometry tile, DrawableTileGeometry rightTile,
-            DrawableTileGeometry upRightTile, DrawableTileGeometry downRightTile)
+            DrawableTileGeometry upRightTile, DrawableTileGeometry downRightTile,
+            float fallOffDistance)
         {
             var (selfZ, selfScale) = getHeightAndScale(tile);
             var (rightZ, rightScale) = getHeightAndScale(rightTile);
@@ -39,7 +41,7 @@ namespace Bearded.TD.Rendering.Deferred
             var n = Vector3.UnitZ;
             var c = openColor;
             
-            addHex(topV, topRightV, bottomRightV, bottomV, bottomLeftV, topLeftV, n, c);
+            addHex(topV, topRightV, bottomRightV, bottomV, bottomLeftV, topLeftV, n, c, fallOffDistance);
 
             var rightCorners = cornerOffsetsWithScale(rightScale);
             var downCorners = cornerOffsetsWithScale(downScale);
@@ -54,7 +56,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             if (upRightTile.HasKnownType)
             {
-                addQuad(topV, upBottomLeftV, upBottomV, topRightV, c);
+                addQuad(topV, upBottomLeftV, upBottomV, topRightV, c, fallOffDistance);
             }
 
             var downTopV = (downPosition + new Vector2(0, downCorners.topY)).WithZ(downZ);
@@ -62,7 +64,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             if (downRightTile.HasKnownType)
             {
-                addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c);
+                addQuad(bottomV, bottomRightV, downTopV, downTopLeftV, c, fallOffDistance);
             }
 
             var rightTopLeftV = (rightPosition + new Vector2(-rightCorners.sideX, rightCorners.sideY)).WithZ(rightZ);
@@ -70,17 +72,17 @@ namespace Bearded.TD.Rendering.Deferred
 
             if (rightTile.HasKnownType)
             {
-                addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c);
+                addQuad(topRightV, rightTopLeftV, rightBottomLeftV, bottomRightV, c, fallOffDistance);
             }
 
             if (rightTile.HasKnownType && upRightTile.HasKnownType)
             {
-                addTriangle(topRightV, upBottomV, rightTopLeftV, c);
+                addTriangle(topRightV, upBottomV, rightTopLeftV, c, fallOffDistance);
             }
             
             if (rightTile.HasKnownType && downRightTile.HasKnownType)
             {
-                addTriangle(bottomRightV, rightBottomLeftV, downTopV, c);
+                addTriangle(bottomRightV, rightBottomLeftV, downTopV, c, fallOffDistance);
             }
         }
 
@@ -93,47 +95,47 @@ namespace Bearded.TD.Rendering.Deferred
         private static (float topY, float sideY, float sideX) cornerOffsetsWithScale(float scale)
             => (HexagonSide * scale, HexagonSide / 2 * scale, HexagonWidth / 2 * scale);
 
-        private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Color c)
+        private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Color c, float fallOffDistance)
         {
             var normal = -Vector3.Cross(v1 - v0, v2 - v0).Normalized();
-            addTriangle(v0, v1, v2, normal, c);
+            addTriangle(v0, v1, v2, normal, c, fallOffDistance);
         }
 
-        private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n, Color c)
+        private void addTriangle(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n, Color c, float fallOffDistance)
         {
             surface.AddTriangle(
-                vertex(v0, n, Vector2.Zero, c),
-                vertex(v1, n, Vector2.Zero, c),
-                vertex(v2, n, Vector2.Zero, c)
+                vertex(v0, n, Vector2.Zero, c, fallOffDistance),
+                vertex(v1, n, Vector2.Zero, c, fallOffDistance),
+                vertex(v2, n, Vector2.Zero, c, fallOffDistance)
             );
         }
 
-        private void addQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Color c)
+        private void addQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Color c, float fallOffDistance)
         {
             var normal = -Vector3.Cross(v1 - v0, v3 - v0).Normalized();
-            addQuad(v0, v1, v2, v3, normal, c);
+            addQuad(v0, v1, v2, v3, normal, c, fallOffDistance);
         }
 
-        private void addQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 n, Color c)
+        private void addQuad(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 n, Color c, float fallOffDistance)
         {
             surface.AddQuad(
-                vertex(v0, n, Vector2.Zero, c),
-                vertex(v1, n, Vector2.Zero, c),
-                vertex(v2, n, Vector2.Zero, c),
-                vertex(v3, n, Vector2.Zero, c)
+                vertex(v0, n, Vector2.Zero, c, fallOffDistance),
+                vertex(v1, n, Vector2.Zero, c, fallOffDistance),
+                vertex(v2, n, Vector2.Zero, c, fallOffDistance),
+                vertex(v3, n, Vector2.Zero, c, fallOffDistance)
             );
         }
 
-        private void addHex(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Vector3 v5, Vector3 n, Color c)
+        private void addHex(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Vector3 v5, Vector3 n, Color c, float fallOffDistance)
         {
             var vertices = surface.WriteVerticesDirectly(6, out var vOffset);
 
-            vertices[vOffset] = vertex(v0, n, Vector2.Zero, c);
-            vertices[vOffset + 1] = vertex(v1, n, Vector2.Zero, c);
-            vertices[vOffset + 2] = vertex(v2, n, Vector2.Zero, c);
-            vertices[vOffset + 3] = vertex(v3, n, Vector2.Zero, c);
-            vertices[vOffset + 4] = vertex(v4, n, Vector2.Zero, c);
-            vertices[vOffset + 5] = vertex(v5, n, Vector2.Zero, c);
+            vertices[vOffset] = vertex(v0, n, Vector2.Zero, c, fallOffDistance);
+            vertices[vOffset + 1] = vertex(v1, n, Vector2.Zero, c, fallOffDistance);
+            vertices[vOffset + 2] = vertex(v2, n, Vector2.Zero, c, fallOffDistance);
+            vertices[vOffset + 3] = vertex(v3, n, Vector2.Zero, c, fallOffDistance);
+            vertices[vOffset + 4] = vertex(v4, n, Vector2.Zero, c, fallOffDistance);
+            vertices[vOffset + 5] = vertex(v5, n, Vector2.Zero, c, fallOffDistance);
 
             var indices = surface.WriteIndicesDirectly(12, out var iOffset);
 
@@ -154,11 +156,26 @@ namespace Bearded.TD.Rendering.Deferred
             indices[iOffset] = (ushort) (vOffset + 5);
         }
 
-        private static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
+        private static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c, float fallOffDistance)
         {
-            var a = (1 - Math.Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
+            var a = (1 - Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
+
+            var distanceFalloff = ((fallOffDistance - hexagonalDistanceToOrigin(v.Xy)) * 0.3f)
+                .Clamped(0f, 1f).Squared();
+
+            a *= distanceFalloff;
 
             return new LevelVertex(v, n, uv, new Color(c * a, c.A));
+        }
+
+        private static float hexagonalDistanceToOrigin(Vector2 xy)
+        {
+            var yf = xy.Y * (1 / HexagonDistanceY);
+            var xf = xy.X * (1 / HexagonWidth) - yf * 0.5f;
+            var x = Abs(xf);
+            var y = Abs(yf);
+            var reduction = Sign(xf) != Sign(yf) ? Min(x, y) : 0f;
+            return x + y - reduction;
         }
     }
 }

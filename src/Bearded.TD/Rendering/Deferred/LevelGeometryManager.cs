@@ -188,7 +188,8 @@ namespace Bearded.TD.Rendering.Deferred
                             geometryLayer[tile],
                             neighbourInfoOrDummy(tile, Direction.Right),
                             neighbourInfoOrDummy(tile, Direction.UpRight),
-                            neighbourInfoOrDummy(tile, Direction.DownRight)
+                            neighbourInfoOrDummy(tile, Direction.DownRight),
+                            (level.Radius - 0.25f) * Constants.Game.World.HexagonWidth
                         );
                     }
 
