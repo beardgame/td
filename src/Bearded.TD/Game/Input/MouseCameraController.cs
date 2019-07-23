@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Input
         private readonly GameCamera camera;
         private readonly float levelRadius;
 
-        private float maxCameraRadius => levelRadius;
+        private float maxCameraRadius => levelRadius - 3;
         private float maxCameraDistance => levelRadius;
         private float zoomSpeed => Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
 
