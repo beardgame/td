@@ -17,34 +17,42 @@ namespace Bearded.TD
             Directory.SetCurrentDirectory(exeDir ?? throw new InvalidOperationException());
 
             using (Toolkit.Init(new ToolkitOptions {Backend = PlatformBackend.PreferNative}))
-            using (var writer = new StreamWriter(new FileStream(Constants.Paths.LogFile, FileMode.Create,
-                FileAccess.ReadWrite, FileShare.ReadWrite)) {AutoFlush = true})
+            using (var stream = new FileStream(
+                Constants.Paths.LogFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (var writer = new StreamWriter(stream))
             {
-                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
-                var logger = new Logger {MirrorToConsole = true};
-
-#if DEBUG
-                // ReSharper disable once AccessToDisposedClosure
-                logger.Logged += entry =>
+                try
                 {
-                    if (entry.Severity == Logger.Severity.Trace) return;
-                    writer.WriteLine(entry.Text);
-                };
-#endif
+                    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                    Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-                logger.Debug?.Log("Creating component factories");
-                ComponentFactories.Initialize();
+                    var logger = new Logger {MirrorToConsole = true};
 
-                logger.Info?.Log("");
-                logger.Info?.Log("Creating game");
-                var game = new TheGame(logger);
+                    // ReSharper disable once AccessToDisposedClosure
+                    logger.Logged += entry =>
+                    {
+                        if (entry.Severity == Logger.Severity.Trace) return;
+                        writer.WriteLine(entry.Text);
+                    };
 
-                logger.Info?.Log("Running game");
-                game.Run(60);
+                    logger.Debug?.Log("Creating component factories");
+                    ComponentFactories.Initialize();
 
-                logger.Info?.Log("Safely exited game");
+                    logger.Info?.Log("");
+                    logger.Info?.Log("Creating game");
+                    var game = new TheGame(logger);
+
+                    logger.Info?.Log("Running game");
+                    game.Run(60);
+
+                    logger.Info?.Log("Safely exited game");
+                }
+                catch (Exception e)
+                {
+                    writer.WriteLine("Bearded.TD ended abruptly");
+                    writer.WriteLine(e);
+                    throw;
+                }
             }
         }
     }
