@@ -125,7 +125,7 @@ namespace Bearded.TD.Rendering.Deferred
                 this.baseTile = baseTile;
                 surface = createSurface(context, material);
                 
-                geometry = new LevelGeometry(surface);
+                geometry = new LevelGeometry(surface, level.Radius);
             }
 
             private static IndexedSurface<LevelVertex> createSurface(RenderContext context, Material material)
@@ -188,8 +188,7 @@ namespace Bearded.TD.Rendering.Deferred
                             geometryLayer[tile],
                             neighbourInfoOrDummy(tile, Direction.Right),
                             neighbourInfoOrDummy(tile, Direction.UpRight),
-                            neighbourInfoOrDummy(tile, Direction.DownRight),
-                            (level.Radius - 0.25f) * Constants.Game.World.HexagonWidth
+                            neighbourInfoOrDummy(tile, Direction.DownRight)
                         );
                     }
 
