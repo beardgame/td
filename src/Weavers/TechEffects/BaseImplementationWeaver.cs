@@ -34,7 +34,7 @@ namespace Weavers.TechEffects
             var implementedType = new TypeDefinition(
                 interfaceToImplement.Namespace,
                 name,
-                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit,
+                TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed,
                 baseClass);
 
             var genericParameterInterface = ParametersTemplateInterface.MakeGenericInstanceType(interfaceToImplement);

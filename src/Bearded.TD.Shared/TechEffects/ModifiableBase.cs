@@ -14,15 +14,15 @@ namespace Bearded.TD.Shared.TechEffects
         {
             if (attributeGettersByType != null)
                 throw new InvalidOperationException("Do not initialise attributes multiple times.");
-            
+
             attributeGettersByType = attributes
                 .GroupBy(kvp => kvp.Key)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Select(kvp => kvp.Value).ToList()
                 );
         }
-        
+
         public virtual bool HasAttributeOfType(AttributeType type) => AttributeIsKnown(type);
 
         public virtual bool AddModification(AttributeType type, Modification modification)
@@ -71,7 +71,7 @@ namespace Bearded.TD.Shared.TechEffects
                 return false;
 
             var result = false;
-            
+
             foreach (var attributeGetter in attributeGetters)
             {
                 var attribute = attributeGetter(instance);
