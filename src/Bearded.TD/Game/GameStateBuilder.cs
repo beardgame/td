@@ -32,6 +32,7 @@ namespace Bearded.TD.Game
             yield return CreateGameState.Command(game, gameSettings);
             yield return AddFaction.Command(game, new Faction(
                 game.Ids.GetNext<Faction>(),
+                name: "All players",
                 parent: null,
                 hasResources: true,
                 hasWorkerNetwork: true,
