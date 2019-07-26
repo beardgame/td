@@ -5,6 +5,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -117,7 +118,7 @@ namespace Bearded.TD.UI.Controls
             private Control createAvailableUpgradeButton(int index)
             {
                 var upgrade = availableUpgrades[index];
-                var ctrl = new UpgradeButton(building, upgrade);
+                var ctrl = new UpgradeButton(game.Me.Faction, building, upgrade);
                 ctrl.Clicked += () => game.Request(UpgradeBuilding.Request, building, upgrade);
                 return ctrl;
             }
@@ -143,12 +144,14 @@ namespace Bearded.TD.UI.Controls
 
         private class UpgradeButton : Button
         {
+            private readonly Faction myFaction;
             private readonly Building building;
             private readonly UpgradeBlueprint upgrade;
             private readonly BackgroundBox progressBar;
 
-            public UpgradeButton(Building building, UpgradeBlueprint upgrade)
+            public UpgradeButton(Faction myFaction, Building building, UpgradeBlueprint upgrade)
             {
+                this.myFaction = myFaction;
                 this.building = building;
                 this.upgrade = upgrade;
                 this.WithDefaultStyle(upgrade.Name);
@@ -158,6 +161,14 @@ namespace Bearded.TD.UI.Controls
 
             public override void Render(IRendererRouter r)
             {
+                if (!building.CanBeUpgradedBy(myFaction))
+                {
+                    IsEnabled = false;
+                    progressBar.IsVisible = false;
+                    base.Render(r);
+                    return;
+                }
+
                 var activeUpgrade = building.UpgradesInProgress.FirstOrDefault(task => task.Upgrade == upgrade);
                 var upgradeIsActive = activeUpgrade != null;
 
