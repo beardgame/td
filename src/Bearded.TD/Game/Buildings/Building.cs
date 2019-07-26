@@ -85,6 +85,8 @@ namespace Bearded.TD.Game.Buildings
             IsCompleted = true;
         }
 
+        public bool CanBeUpgradedBy(Faction faction) => faction.SharesWorkersWith(Faction);
+
         public bool CanApplyUpgrade(UpgradeBlueprint upgrade)
         {
             return upgrade.CanApplyTo(Components);

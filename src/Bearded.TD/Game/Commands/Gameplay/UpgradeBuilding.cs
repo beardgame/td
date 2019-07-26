@@ -27,8 +27,7 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions(Player actor) =>
-                building.CanApplyUpgrade(upgrade)
-                && building.Faction.IsAncestorOf(actor.Faction);
+                building.CanApplyUpgrade(upgrade) && building.CanBeUpgradedBy(actor.Faction);
 
             public override void Execute()
             {
