@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.UI;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
@@ -6,8 +7,9 @@ namespace Bearded.TD.UI.Controls
     sealed class GameUIControl : CompositeControl
     {
         private readonly GameUI gameUI;
-        private readonly GamePausedControl gamePausedControl;
         private readonly GameWorldControl gameWorldControl;
+        private readonly GamePausedControl gamePausedControl;
+        private readonly TechnologyUIControl technologyUIControl;
 
         public GameUIControl(GameUI gameUI, RenderContext renderContext)
         {
@@ -38,8 +40,19 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked);
             Add(gamePausedControl);
 
+            technologyUIControl = new TechnologyUIControl(gameUI.TechnologyUI) {IsVisible = false}
+                .Anchor(a => a
+                    .Top(margin: 80)
+                    .Bottom(margin: 80)
+                    .Right(margin: 80)
+                    .Left(margin: 80)
+                );
+            Add(technologyUIControl);
+
             gameUI.GameMenuOpened += onGameMenuOpened;
             gameUI.GameMenuClosed += onGameMenuClosed;
+            gameUI.TechnologyScreenOpened += onTechnologyOpened;
+            gameUI.TechnologyScreenClosed += onTechnologyClosed;
             gameUI.GameOverTriggered += onGameOver;
             gameUI.GameLeft += gameWorldControl.CleanUp;
         }
@@ -52,6 +65,16 @@ namespace Bearded.TD.UI.Controls
         private void onGameMenuClosed()
         {
             gamePausedControl.IsVisible = false;
+        }
+
+        private void onTechnologyOpened()
+        {
+            technologyUIControl.IsVisible = true;
+        }
+
+        private void onTechnologyClosed()
+        {
+            technologyUIControl.IsVisible = false;
         }
 
         private void onGameOver()

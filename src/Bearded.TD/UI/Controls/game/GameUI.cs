@@ -15,7 +15,7 @@ using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+    sealed class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
         IListener<GameOverTriggered>, IListener<BuildingConstructionStarted>
     {
         public GameInstance Game { get; private set; }
@@ -24,13 +24,17 @@ namespace Bearded.TD.UI.Controls
 
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
+        public TechnologyUI TechnologyUI { get; }
 
         private bool isGameMenuOpen = false;
+        private bool isTechnologyScreenOpen = false;
 
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
         public event VoidEventHandler EntityStatusClosed;
         public event VoidEventHandler GameMenuOpened;
         public event VoidEventHandler GameMenuClosed;
+        public event VoidEventHandler TechnologyScreenOpened;
+        public event VoidEventHandler TechnologyScreenClosed;
         public event VoidEventHandler GameOverTriggered;
         public event VoidEventHandler GameLeft;
 
@@ -40,6 +44,7 @@ namespace Bearded.TD.UI.Controls
         {
             ActionBar = new ActionBar();
             GameStatusUI = new GameStatusUI();
+            TechnologyUI = new TechnologyUI();
         }
 
         protected override void Initialize(
@@ -54,11 +59,18 @@ namespace Bearded.TD.UI.Controls
 
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
+            TechnologyUI.Initialize(Game);
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
             Game.Meta.Events.Subscribe<GameOverTriggered>(this);
             Game.Meta.Events.Subscribe<BuildingConstructionStarted>(this);
+        }
+
+        public override void Terminate()
+        {
+            TechnologyUI.Terminate();
+            base.Terminate();
         }
 
         public override void Update(UpdateEventArgs args)
@@ -137,15 +149,28 @@ namespace Bearded.TD.UI.Controls
 
         private void updateGameMenuVisibility()
         {
-            if (!inputManager.IsKeyHit(Key.Escape)) return;
-
-            if (isGameMenuOpen)
+            if (inputManager.IsKeyHit(Key.Escape))
             {
-                closeGameMenu();
+                if (isGameMenuOpen)
+                {
+                    closeGameMenu();
+                }
+                else
+                {
+                    openGameMenu();
+                }
             }
-            else
+
+            if (inputManager.IsKeyHit(Key.T))
             {
-                openGameMenu();
+                if (isTechnologyScreenOpen)
+                {
+                    closeTechnologyScreen();
+                }
+                else
+                {
+                    openTechnologyScreen();
+                }
             }
         }
 
@@ -164,6 +189,18 @@ namespace Bearded.TD.UI.Controls
         {
             isGameMenuOpen = false;
             GameMenuClosed?.Invoke();
+        }
+
+        private void openTechnologyScreen()
+        {
+            TechnologyScreenOpened?.Invoke();
+            isTechnologyScreenOpen = true;
+        }
+
+        private void closeTechnologyScreen()
+        {
+            isTechnologyScreenOpen = false;
+            TechnologyScreenClosed?.Invoke();
         }
 
         public void OnReturnToMainMenuButtonClicked()
