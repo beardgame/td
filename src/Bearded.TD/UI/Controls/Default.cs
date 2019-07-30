@@ -9,7 +9,7 @@ namespace Bearded.TD.UI.Controls
         {
             return new Button().WithDefaultStyle(title, fontSize);
         }
-        
+
         public static Button Button(Func<string> titleProvider, double fontSize = 24)
         {
             return new Button().WithDefaultStyle(titleProvider, fontSize);
