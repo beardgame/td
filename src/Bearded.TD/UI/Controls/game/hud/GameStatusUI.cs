@@ -11,6 +11,7 @@ namespace Bearded.TD.UI.Controls
 
         public long FactionResources => game.Me.Faction.Resources.CurrentResources;
         public int FactionResourceIncome => game.Me.Faction.Resources.CurrentIncome;
+        public long FactionTechPoints => game.State.Technology.TechPoints;
 
         public void Initialize(GameInstance game)
         {

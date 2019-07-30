@@ -4,7 +4,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Resources
 {
-    class ResourceManager
+    sealed class ResourceManager
     {
         private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
         private double totalResourcesRequested;
@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Resources
             {
                 distributedAtLimitedRates(elapsedTime, resourceOut);
             }
-            
+
             resetForFrame();
         }
 
@@ -63,14 +63,14 @@ namespace Bearded.TD.Game.Resources
         {
             var sortedRequests = requestedResources.OrderBy(consumer => consumer.Maximum / consumer.RatePerS);
             var resourceRatio = currentResources / resourceOut;
-            
+
             foreach (var request in sortedRequests)
             {
                 var grantedResources = request.RatePerS * resourceRatio * elapsedTime.NumericValue;
 
                 var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
                 currentResources -= consumedResources;
-                
+
                 if (!grantFullyConsumed)
                 {
                     resourceOut -= consumedResources;
@@ -99,7 +99,7 @@ namespace Bearded.TD.Game.Resources
                 RatePerS = ratePerS;
                 Maximum = maximum;
             }
-            
+
             public bool TryGrant(double resourcesAvailable, out double grantedResources)
             {
                 if (resourcesAvailable >= Maximum)

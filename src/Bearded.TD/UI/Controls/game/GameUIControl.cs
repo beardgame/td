@@ -21,7 +21,7 @@ namespace Bearded.TD.UI.Controls
             Add(new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
-                    .Top(margin: 0, height: 40)));
+                    .Top(margin: 0, height: 64)));
             Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)
@@ -48,7 +48,7 @@ namespace Bearded.TD.UI.Controls
         {
             gamePausedControl.IsVisible = true;
         }
-        
+
         private void onGameMenuClosed()
         {
             gamePausedControl.IsVisible = false;

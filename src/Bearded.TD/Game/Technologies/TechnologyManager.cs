@@ -12,11 +12,13 @@ namespace Bearded.TD.Game.Technologies
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
         private readonly List<UpgradeBlueprint> unlockedUpgrades = new List<UpgradeBlueprint>();
 
+        public int TechPoints { get; private set; }
+
         public TechnologyManager(GameEvents events)
         {
             this.events = events;
         }
-        
+
         // The following 2 methods should probably be "unlock technology" or something like that, but we don't have the
         // concept of technology yet.
 
