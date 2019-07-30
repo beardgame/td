@@ -28,11 +28,6 @@ namespace Bearded.TD.Game.Commands
                 {
                     faction.Technology.UnlockBuilding(blueprint);
                 }
-
-                foreach (var upgrade in game.Blueprints.Upgrades.Values)
-                {
-                    faction.Technology.UnlockUpgrade(upgrade);
-                }
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(faction);
