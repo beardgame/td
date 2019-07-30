@@ -142,5 +142,8 @@ namespace Bearded.TD.Game.Buildings
 
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Coral * 0.75f);
         }
+
+        public IEnumerable<UpgradeBlueprint> GetApplicableUpgrades() =>
+            Faction.Technology.GetApplicableUpgradesFor(this);
     }
 }

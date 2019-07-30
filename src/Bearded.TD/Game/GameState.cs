@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.World.Fluids;
@@ -36,18 +34,17 @@ namespace Bearded.TD.Game
         public GameSettings GameSettings { get; }
         public Level Level { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
-        public TechnologyManager Technology { get; }
-        
+
         // Should only be used to communicate between game objects internally.
         public IdManager GamePlayIds { get; } = new IdManager();
-        
+
         public GeometryLayer GeometryLayer { get; }
         public FluidLayer FluidLayer { get; }
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
         public PassabilityManager PassabilityManager { get; }
-        
+
         private bool isLoading = true;
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
@@ -59,8 +56,7 @@ namespace Bearded.TD.Game
             Meta = meta;
             GameSettings = gameSettings;
             Level = new Level(GameSettings.LevelSize);
-            Technology = new TechnologyManager(Meta.Events);
-            
+
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
             UnitLayer = new UnitLayer();

@@ -4,6 +4,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Content.Mods
 
         public Blueprints Blueprints { get; }
         public IDictionary<string, UpgradeTag> Tags { get; }
-        
+
         public Mod(string id,
             string name,
             ReadonlyBlueprintCollection<Shader> shaders,
@@ -31,14 +32,13 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades,
+            ImmutableDictionary<Id<Technology>, Technology> technologies,
             IDictionary<string, UpgradeTag> tags)
         {
             Id = id;
             Name = name;
             Blueprints = new Blueprints(
-                shaders, materials, sprites,
-                footprints, buildings, units,
-                weapons, projectiles, upgrades
+                shaders, materials, sprites, footprints, buildings, units, weapons, projectiles, upgrades, technologies
                 );
             Tags = tags;
         }

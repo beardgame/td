@@ -22,19 +22,7 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                var state = new GameState(game.Meta, gameSettings);
-
-                foreach (var blueprint in game.Blueprints.Buildings.All)
-                {
-                    state.Technology.UnlockBlueprint(blueprint);
-                }
-
-                foreach (var upgrade in game.Blueprints.Upgrades.Values)
-                {
-                    state.Technology.UnlockUpgrade(upgrade);
-                }
-
-                game.InitialiseState(state);
+                game.InitialiseState(new GameState(game.Meta, gameSettings));
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);

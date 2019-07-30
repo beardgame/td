@@ -45,6 +45,7 @@ namespace Bearded.TD.Game.Units
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
         public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
+        public long Value => (long) blueprint.Value;
 
         private Faction lastDamageSource;
 
@@ -132,6 +133,7 @@ namespace Bearded.TD.Game.Units
 
         public void OnDeath()
         {
+            Game.Meta.Events.Send(new EnemyKilled(this, lastDamageSource));
             isDead = true;
         }
 

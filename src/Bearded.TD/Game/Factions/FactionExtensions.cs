@@ -17,6 +17,9 @@ namespace Bearded.TD.Game.Factions
         public static bool SharesResourcesWith(this Faction thisFaction, Faction thatFaction) =>
             thisFaction.Resources != null && thisFaction.Resources == thatFaction.Resources;
 
+        public static bool SharesTechnologyWith(this Faction thisFaction, Faction thatFaction) =>
+            thisFaction.Technology != null && thisFaction.Technology == thatFaction.Technology;
+
         public static bool SharesWorkersWith(this Faction thisFaction, Faction thatFaction) =>
             thisFaction.Workers != null && thisFaction.Workers == thatFaction.Workers;
     }

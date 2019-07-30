@@ -17,7 +17,7 @@ namespace Bearded.TD.UI.Controls
 
         public IEnumerable<UpgradeBlueprint> UpgradesForBuilding
             => Building is Building b
-                ? Game.State.Technology.GetApplicableUpgradesFor(b)
+                ? b.GetApplicableUpgrades()
                 : Enumerable.Empty<UpgradeBlueprint>();
 
         protected override void Initialize(DependencyResolver dependencies, IPlacedBuilding building)

@@ -12,6 +12,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
@@ -66,9 +67,9 @@ namespace Bearded.TD.Content.Mods
                 var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
 
                 configureSerializer();
-                
+
                 var shaders = loadShaders();
-                
+
                 configureSerializerDependency(shaders, m => m.Blueprints.Shaders);
 
                 var materials = loadMaterials(shaders);
@@ -101,6 +102,7 @@ namespace Bearded.TD.Content.Mods
                     weapons,
                     projectiles,
                     ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
+                    ImmutableDictionary<Id<Technology>, Technology>.Empty,
                     tags.GetForCurrentMod());
             }
 
@@ -116,7 +118,7 @@ namespace Bearded.TD.Content.Mods
                 var loader = new MaterialLoader(context);
                 return loadBlueprintsDependingOnJsonFile<Material, MaterialJson, MaterialLoader>("gfx/materials", loader);
             }
-            
+
             private ReadonlyBlueprintCollection<SpriteSet> loadSprites()
             {
                 var loader = new SpriteSetLoader(context);
@@ -184,7 +186,7 @@ namespace Bearded.TD.Content.Mods
                     meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
                 serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
             }
-            
+
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprintsDependingOnJsonFile
                 <TBlueprint, TJsonModel, TResolvers>(string path, TResolvers resolvers)
                 where TBlueprint : IBlueprint
@@ -202,7 +204,7 @@ namespace Bearded.TD.Content.Mods
                 where TBlueprint : IBlueprint
                 where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
                 => loadBlueprints<TBlueprint, TJsonModel, TResolvers>(path, _ => resolvers);
-            
+
             private ReadonlyBlueprintCollection<TBlueprint> loadBlueprints
                 <TBlueprint, TJsonModel, TResolvers>(string path, Func<FileInfo, TResolvers> buildResolvers)
                 where TBlueprint : IBlueprint
