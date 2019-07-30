@@ -54,6 +54,13 @@ namespace Bearded.TD.UI.Controls
                     .Right(margin: 8));
             Add(techPointsLabel);
 
+            Add(Default.Button("Research", 16)
+                .Anchor(a => a
+                    .Top(margin: 60, height: 24)
+                    .Left(margin: 16)
+                    .Right(margin: 16))
+                .Subscribe(btn => btn.Clicked += model.OnTechnologyButtonClicked));
+
             model.StatusChanged += updateLabels;
         }
 

@@ -27,7 +27,10 @@ namespace Bearded.TD.UI.Controls
             technologyDetails = new TechnologyDetailsControl(model.Game);
 
             Add(new BackgroundBox());
-            Add(new Label { FontSize = 36, Text = "Technology"}.Anchor(a => a.Top(margin: 8, height: 40)));
+            Add(new Label { FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
+            Add(Default.Button("close", 16)
+                .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
+                .Subscribe(btn => btn.Clicked += model.OnCloseClicked));
 
             Add(technologyList.Anchor(a =>
                 a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16).Right(relativePercentage: .33, margin: 8)));

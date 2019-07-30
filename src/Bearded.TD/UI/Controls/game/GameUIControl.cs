@@ -23,7 +23,7 @@ namespace Bearded.TD.UI.Controls
             Add(new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
-                    .Top(margin: 0, height: 64)));
+                    .Top(margin: 0, height: 92)));
             Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)

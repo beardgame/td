@@ -9,6 +9,7 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game { get; private set; }
 
         public event VoidEventHandler TechnologiesUpdated;
+        public event VoidEventHandler CloseButtonClicked;
 
         public void Initialize(GameInstance game)
         {
@@ -24,6 +25,11 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(TechnologyUnlocked @event)
         {
             TechnologiesUpdated?.Invoke();
+        }
+
+        public void OnCloseClicked()
+        {
+            CloseButtonClicked?.Invoke();
         }
     }
 }
