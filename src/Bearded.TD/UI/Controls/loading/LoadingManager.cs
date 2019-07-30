@@ -8,6 +8,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking;
 using Bearded.TD.Shared.TechEffects;
@@ -85,6 +86,9 @@ namespace Bearded.TD.UI.Controls
 
         private static Blueprints getHardcodedBlueprints()
         {
+            var upgrades = getHardcodedUpgrades();
+            var techs = getHardcodedTechnologies(upgrades);
+
             return new Blueprints(
                 ReadonlyBlueprintCollection.Empty,
                 ReadonlyBlueprintCollection.Empty,
@@ -94,7 +98,8 @@ namespace Bearded.TD.UI.Controls
                 ReadonlyBlueprintCollection.Empty,
                 ReadonlyBlueprintCollection.Empty,
                 ReadonlyBlueprintCollection.Empty,
-                getHardcodedUpgrades());
+                upgrades,
+                techs);
         }
 
         private static ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> getHardcodedUpgrades()
@@ -126,6 +131,20 @@ namespace Bearded.TD.UI.Controls
                 var id = idManager.GetNext<UpgradeBlueprint>();
                 builder.Add(id, blueprintFactory(id));
             }
+        }
+
+        private static ImmutableDictionary<Id<Technology>, Technology> getHardcodedTechnologies(
+            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades)
+        {
+            var idManager = new IdManager();
+
+            return upgrades.Values
+                .Select(u =>
+                    new Technology(
+                        idManager.GetNext<Technology>(),
+                        20,
+                        ImmutableList.Create<ITechnologyEffect>(new UnlockUpgradeEffect(u))))
+                .ToImmutableDictionary(t => t.Id);
         }
     }
 }

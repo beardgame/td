@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
@@ -25,6 +26,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IWeaponBlueprint> Weapons { get; }
         public ReadonlyBlueprintCollection<IProjectileBlueprint> Projectiles { get; }
         public ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> Upgrades { get; }
+        public ImmutableDictionary<Id<Technology>, Technology> Technologies { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
             ReadonlyBlueprintCollection<Material> materials,
@@ -34,7 +36,8 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
-            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades)
+            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades,
+            ImmutableDictionary<Id<Technology>, Technology> technologies)
         {
             Shaders = shaders;
             Materials = materials;
@@ -45,6 +48,7 @@ namespace Bearded.TD.Game
             Weapons = weapons;
             Projectiles = projectiles;
             Upgrades = upgrades;
+            Technologies = technologies;
         }
 
         public static Blueprints Merge(IEnumerable<Blueprints> blueprints)
@@ -59,7 +63,8 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.Units),
                 flatten(list, b => b.Weapons),
                 flatten(list, b => b.Projectiles),
-                flatten(list, b => b.Upgrades)
+                flatten(list, b => b.Upgrades),
+                flatten(list, b => b.Technologies)
                 );
         }
 

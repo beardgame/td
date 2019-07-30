@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Commands
             {
                 foreach (var blueprint in game.Blueprints.Buildings.All)
                 {
-                    faction.Technology.UnlockBlueprint(blueprint);
+                    faction.Technology.UnlockBuilding(blueprint);
                 }
 
                 foreach (var upgrade in game.Blueprints.Upgrades.Values)
