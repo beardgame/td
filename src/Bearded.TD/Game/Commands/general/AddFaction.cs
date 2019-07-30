@@ -62,6 +62,7 @@ namespace Bearded.TD.Game.Commands
                     game,
                     new Faction(
                         id,
+                        game.State,
                         parent.IsValid ? game.State.FactionFor(parent) : null,
                         hasResources: hasResources,
                         hasWorkerNetwork: hasWorkerNetwork,

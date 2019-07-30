@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -11,6 +12,7 @@ namespace Bearded.TD.Game.Factions
     {
         private readonly Color? color;
         private readonly ResourceManager resources;
+        private readonly TechnologyManager technology;
         private readonly WorkerNetwork workerNetwork;
         private readonly WorkerManager workers;
 
@@ -22,11 +24,13 @@ namespace Bearded.TD.Game.Factions
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
         public ResourceManager Resources => resources ?? Parent?.Resources;
+        public TechnologyManager Technology => technology ?? Parent?.Technology;
         public WorkerNetwork WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
         public WorkerManager Workers => workers ?? Parent?.Workers;
 
         public Faction(
             Id<Faction> id,
+            GameState gameState,
             Faction parent,
             bool hasResources,
             bool hasWorkerNetwork,
@@ -45,6 +49,7 @@ namespace Bearded.TD.Game.Factions
             if (hasResources)
             {
                 resources = new ResourceManager();
+                technology = new TechnologyManager(gameState.Meta.Events);
             }
             if (hasWorkerNetwork)
             {

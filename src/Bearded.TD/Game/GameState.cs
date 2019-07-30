@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
@@ -34,7 +33,6 @@ namespace Bearded.TD.Game
         public GameSettings GameSettings { get; }
         public Level Level { get; }
         public MultipleSinkNavigationSystem Navigator { get; }
-        public TechnologyManager Technology { get; }
 
         // Should only be used to communicate between game objects internally.
         public IdManager GamePlayIds { get; } = new IdManager();
@@ -56,7 +54,6 @@ namespace Bearded.TD.Game
             Meta = meta;
             GameSettings = gameSettings;
             Level = new Level(GameSettings.LevelSize);
-            Technology = new TechnologyManager(Meta.Events);
 
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             UnitLayer = new UnitLayer();

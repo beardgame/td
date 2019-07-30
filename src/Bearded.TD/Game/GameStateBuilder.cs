@@ -14,7 +14,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
-    class GameStateBuilder
+    sealed class GameStateBuilder
     {
         private readonly GameInstance game;
         private readonly GameSettings gameSettings;
@@ -32,11 +32,13 @@ namespace Bearded.TD.Game
             yield return CreateGameState.Command(game, gameSettings);
             yield return AddFaction.Command(game, new Faction(
                 game.Ids.GetNext<Faction>(),
+                game.State,
                 name: "All players",
                 parent: null,
                 hasResources: true,
                 hasWorkerNetwork: true,
                 hasWorkers: true));
+            yield return UnlockInitialTechnologies.Command(game, game.State.RootFaction);
 
             foreach (var command in setupFactions())
                 yield return command;
@@ -62,6 +64,7 @@ namespace Bearded.TD.Game
                 var factionColor = Color.FromHSVA(i * Mathf.TwoPi / 6, 1, 1f);
                 var playerFaction = new Faction(
                     game.Ids.GetNext<Faction>(),
+                    game.State,
                     parent: game.State.RootFaction,
                     hasResources: false,
                     hasWorkerNetwork: false,
