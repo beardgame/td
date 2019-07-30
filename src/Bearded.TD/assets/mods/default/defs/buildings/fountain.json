@@ -1,0 +1,13 @@
+{
+  "id" : "fountain",
+  "name" : "Small Fountain",
+  "footprint" : "single",
+  "cost" : 5,
+  "components" : [
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 200 } },
+    {
+      "id" : "waterGenerator",
+      "parameters" : { "volumePerSecond" : 1 }
+    }
+  ]
+}
