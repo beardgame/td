@@ -142,6 +142,7 @@ namespace Bearded.TD.UI.Controls
                 .Select(u =>
                     new Technology(
                         idManager.GetNext<Technology>(),
+                        u.Name,
                         20,
                         ImmutableList.Create<ITechnologyEffect>(new UnlockUpgradeEffect(u))))
                 .ToImmutableDictionary(t => t.Id);
