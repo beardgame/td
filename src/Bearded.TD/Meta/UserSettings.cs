@@ -64,6 +64,7 @@ namespace Bearded.TD.Meta
             public bool InvulnerableBuildings = false;
             public double GameSpeed = 1;
             public bool RenderUIFallBack = false;
+            public bool SimpleFluid = false;
         }
     }
 }

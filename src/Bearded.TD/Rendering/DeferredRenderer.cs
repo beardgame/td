@@ -122,6 +122,8 @@ namespace Bearded.TD.Rendering
 
             compositeLightsAndGBuffers();
 
+            renderFluidsToComposition(contentSurfaces);
+
             renderPostLightDrawGroupsToComposition(contentSurfaces);
 
             copyCompositionTo(target);
@@ -168,11 +170,19 @@ namespace Bearded.TD.Rendering
             compositeSurface.Render();
         }
 
-        private void renderPostLightDrawGroupsToComposition(ContentSurfaceManager contentSurfaces)
+        private void renderFluidsToComposition(ContentSurfaceManager contentSurfaces)
         {
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
-            
+
+            foreach (var fluid in contentSurfaces.FluidGeometries)
+            {
+                fluid.Render();
+            }
+        }
+
+        private void renderPostLightDrawGroupsToComposition(ContentSurfaceManager contentSurfaces)
+        {
             renderDrawGroups(contentSurfaces, postLightGroups);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
@@ -14,14 +15,17 @@ namespace Bearded.TD.Rendering
     class ContentSurfaceManager
     {
         public LevelGeometryManager LevelGeometry { get; }
+        public ImmutableList<FluidGeometry> FluidGeometries { get; }
         private static readonly ReadOnlyCollection<Surface> emptySurfaceList = new List<Surface>().AsReadOnly();
 
         private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
 
         public ContentSurfaceManager(LevelGeometryManager levelGeometry,
-            ReadonlyBlueprintCollection<SpriteSet> spriteSets)
+            ReadonlyBlueprintCollection<SpriteSet> spriteSets,
+            IEnumerable<FluidGeometry> fluidGeometries)
         {
             LevelGeometry = levelGeometry;
+            FluidGeometries = fluidGeometries.ToImmutableList();
             groupedAndSortedSpriteSets = spriteSets.All
                 .GroupBy(sprites => sprites.DrawGroup)
                 .ToDictionary(

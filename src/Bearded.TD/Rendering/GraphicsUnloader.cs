@@ -5,9 +5,9 @@ using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Rendering
 {
-    class GraphicsUnloader
+    static class GraphicsUnloader
     {
-        public void CleanUp(Blueprints blueprints)
+        public static void CleanUp(Blueprints blueprints)
         {
             cleanUp(blueprints.Materials);
             cleanUp(blueprints.Sprites);
