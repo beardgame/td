@@ -15,6 +15,7 @@ namespace Bearded.TD.UI.Controls
             "slowEmitter",
             "mine",
             "workerAntenna",
+            "fountain",
         };
 
         public event VoidEventHandler ActionsChanged;

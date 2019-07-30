@@ -6,6 +6,7 @@ using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
+using Bearded.TD.Game.World.Fluids;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -38,6 +39,7 @@ namespace Bearded.TD.Game
         public IdManager GamePlayIds { get; } = new IdManager();
 
         public GeometryLayer GeometryLayer { get; }
+        public FluidLayer FluidLayer { get; }
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
@@ -56,6 +58,7 @@ namespace Bearded.TD.Game
             Level = new Level(GameSettings.LevelSize);
 
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
+            FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
@@ -187,6 +190,8 @@ namespace Bearded.TD.Game
             }
 
             Time += elapsedTime;
+            
+            FluidLayer.Update();
 
             foreach (var obj in gameObjects)
             {
