@@ -62,6 +62,36 @@ namespace Bearded.TD.Game.Debug
 
             gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount));
         });
+
+        [Command("game.techpoints")]
+        private static void giveTechPoints(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+        {
+            if (p.Args.Length != 1)
+            {
+                logger.Warning?.Log("Usage: \"game.techpoints <amount>\"");
+                return;
+            }
+
+            if (!long.TryParse(p.Args[0], out var number))
+            {
+                logger.Warning?.Log($"Invalid number: {number}");
+                return;
+            }
+
+            var faction = gameInstance.Me.Faction;
+            while (faction != null && !faction.HasResources)
+            {
+                faction = faction.Parent;
+            }
+
+            if (faction == null)
+            {
+                logger.Warning?.Log(
+                    "Cannot add tech points: player is not part of a faction with technology management.");
+            }
+
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechPoints.Request(faction, number));
+        });
 #endif
 
         private static void run(Logger logger, Action<GameInstance> command) =>

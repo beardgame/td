@@ -33,6 +33,7 @@ namespace Bearded.TD.Game.Technologies
             TechPoints -= technology.Cost;
             unlockedTechnologies.Add(technology);
             technology.Effects.ForEach(effect => effect.Unlock(this));
+            events.Send(new TechnologyUnlocked(technology));
         }
 
         public void UnlockBuilding(IBuildingBlueprint blueprint)
@@ -58,6 +59,11 @@ namespace Bearded.TD.Game.Technologies
             {
                 TechPoints += @event.Unit.Value;
             }
+        }
+
+        public void AddTechPoints(long number)
+        {
+            TechPoints += number;
         }
     }
 }
