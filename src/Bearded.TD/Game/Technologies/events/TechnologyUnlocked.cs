@@ -2,9 +2,9 @@ namespace Bearded.TD.Game.Technologies
 {
     sealed class TechnologyUnlocked : IEvent
     {
-        public Technology Technology { get; }
+        public ITechnologyBlueprint Technology { get; }
 
-        public TechnologyUnlocked(Technology technology)
+        public TechnologyUnlocked(ITechnologyBlueprint technology)
         {
             Technology = technology;
         }

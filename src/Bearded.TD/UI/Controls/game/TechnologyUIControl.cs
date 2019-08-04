@@ -52,19 +52,19 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class TechnologyListItemSource : IListItemSource
         {
-            private readonly Action<Technology> buttonClickCallback;
+            private readonly Action<ITechnologyBlueprint> buttonClickCallback;
             public int ItemCount { get; }
 
-            private readonly ImmutableList<Technology> lockedTechnologies;
-            private readonly ImmutableList<Technology> unlockedTechnologies;
+            private readonly ImmutableList<ITechnologyBlueprint> lockedTechnologies;
+            private readonly ImmutableList<ITechnologyBlueprint> unlockedTechnologies;
 
-            public TechnologyListItemSource(GameInstance game, Action<Technology> buttonClickCallback)
+            public TechnologyListItemSource(GameInstance game, Action<ITechnologyBlueprint> buttonClickCallback)
             {
                 this.buttonClickCallback = buttonClickCallback;
-                ItemCount = game.Blueprints.Technologies.Count;
+                var asList = game.Blueprints.Technologies.All.ToList();
+                ItemCount = asList.Count;
 
-                var lookup =
-                    game.Blueprints.Technologies.Values.ToLookup(game.Me.Faction.Technology.IsTechnologyLocked);
+                var lookup = asList.ToLookup(game.Me.Faction.Technology.IsTechnologyLocked);
                 lockedTechnologies = lookup[true].ToImmutableList();
                 unlockedTechnologies = lookup[false].ToImmutableList();
             }
@@ -79,7 +79,7 @@ namespace Bearded.TD.UI.Controls
                 return button;
             }
 
-            private Technology getTechnologyFor(int index) =>
+            private ITechnologyBlueprint getTechnologyFor(int index) =>
                 index < lockedTechnologies.Count
                     ? lockedTechnologies[index]
                     : unlockedTechnologies[index - lockedTechnologies.Count];
@@ -89,7 +89,7 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class TechnologyButton : Button
         {
-            public TechnologyButton(Technology technology, bool isLocked)
+            public TechnologyButton(ITechnologyBlueprint technology, bool isLocked)
             {
                 this.WithDefaultStyle(technology.Name);
                 Add(new BackgroundBox{Color= .25f * (isLocked ? Color.Red : Color.Green)});
@@ -105,7 +105,7 @@ namespace Bearded.TD.UI.Controls
             private readonly Label unlockButtonLabel = new Label {FontSize = 16};
             private readonly Button unlockButton;
 
-            private Maybe<Technology> technology;
+            private Maybe<ITechnologyBlueprint> technology;
 
             public TechnologyDetailsControl(GameInstance game)
             {
@@ -121,7 +121,7 @@ namespace Bearded.TD.UI.Controls
                 SetTechnologyToDisplay(Maybe.Nothing);
             }
 
-            public void SetTechnologyToDisplay(Maybe<Technology> technologyToDisplay)
+            public void SetTechnologyToDisplay(Maybe<ITechnologyBlueprint> technologyToDisplay)
             {
                 technology = technologyToDisplay;
                 technology.Match(
@@ -143,7 +143,7 @@ namespace Bearded.TD.UI.Controls
                 base.Render(r);
             }
 
-            private void updateForTechnology(Technology tech)
+            private void updateForTechnology(ITechnologyBlueprint tech)
             {
                 var myFactionTechManager = game.Me.Faction.Technology;
                 var isTechLocked = myFactionTechManager.IsTechnologyLocked(tech);

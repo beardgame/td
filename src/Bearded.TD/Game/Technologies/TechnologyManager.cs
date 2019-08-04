@@ -4,6 +4,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Technologies
 {
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Technologies
     {
         private readonly GameEvents events;
 
-        private readonly HashSet<Technology> unlockedTechnologies = new HashSet<Technology>();
+        private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new HashSet<ITechnologyBlueprint>();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
         private readonly List<UpgradeBlueprint> unlockedUpgrades = new List<UpgradeBlueprint>();
 
@@ -24,9 +25,9 @@ namespace Bearded.TD.Game.Technologies
             events.Subscribe(this);
         }
 
-        public bool IsTechnologyLocked(Technology technology) => !unlockedTechnologies.Contains(technology);
+        public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.Contains(technology);
 
-        public void UnlockTechnology(Technology technology)
+        public void UnlockTechnology(ITechnologyBlueprint technology)
         {
             DebugAssert.Argument.Satisfies(() => IsTechnologyLocked(technology));
             DebugAssert.Argument.Satisfies(() => TechPoints > technology.Cost);

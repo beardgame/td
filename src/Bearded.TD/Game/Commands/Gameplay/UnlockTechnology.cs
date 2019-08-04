@@ -9,15 +9,15 @@ namespace Bearded.TD.Game.Commands
 {
     static class UnlockTechnology
     {
-        public static IRequest<Player, GameInstance> Request(Faction faction, Technology technology)
+        public static IRequest<Player, GameInstance> Request(Faction faction, ITechnologyBlueprint technology)
             => new Implementation(faction, technology);
 
         private class Implementation : UnifiedRequestCommand
         {
             private readonly Faction faction;
-            private readonly Technology technology;
+            private readonly ITechnologyBlueprint technology;
 
-            public Implementation(Faction faction, Technology technology)
+            public Implementation(Faction faction, ITechnologyBlueprint technology)
             {
                 this.technology = technology;
                 this.faction = faction;
@@ -39,14 +39,14 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
-            private Id<Technology> technology;
+            private string technology;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()
             {
             }
 
-            public Serializer(Faction faction, Technology technology)
+            public Serializer(Faction faction, ITechnologyBlueprint technology)
             {
                 this.faction = faction.Id;
                 this.technology = technology.Id;

@@ -102,7 +102,7 @@ namespace Bearded.TD.Content.Mods
                     weapons,
                     projectiles,
                     ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
-                    ImmutableDictionary<Id<Technology>, Technology>.Empty,
+                    new BlueprintCollection<ITechnologyBlueprint>().AsReadonly(),
                     tags.GetForCurrentMod());
             }
 

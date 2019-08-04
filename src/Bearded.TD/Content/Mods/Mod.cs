@@ -32,7 +32,7 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades,
-            ImmutableDictionary<Id<Technology>, Technology> technologies,
+            ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
             IDictionary<string, UpgradeTag> tags)
         {
             Id = id;

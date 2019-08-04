@@ -133,19 +133,23 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private static ImmutableDictionary<Id<Technology>, Technology> getHardcodedTechnologies(
+        private static ReadonlyBlueprintCollection<ITechnologyBlueprint> getHardcodedTechnologies(
             ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades)
         {
             var idManager = new IdManager();
 
-            return upgrades.Values
+            var blueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
+
+            upgrades.Values
                 .Select(u =>
                     new Technology(
-                        idManager.GetNext<Technology>(),
+                        idManager.GetNext<Technology>().ToString(),
                         u.Name,
                         20,
                         ImmutableList.Create<ITechnologyEffect>(new UnlockUpgradeEffect(u))))
-                .ToImmutableDictionary(t => t.Id);
+                .ForEach(blueprintCollection.Add);
+
+            return blueprintCollection.AsReadonly();
         }
     }
 }
