@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
@@ -9,7 +8,6 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Content.Mods
 {
@@ -31,7 +29,7 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
-            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades,
+            ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
             IDictionary<string, UpgradeTag> tags)
         {

@@ -25,7 +25,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
         public ReadonlyBlueprintCollection<IWeaponBlueprint> Weapons { get; }
         public ReadonlyBlueprintCollection<IProjectileBlueprint> Projectiles { get; }
-        public ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> Upgrades { get; }
+        public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
-            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades,
+            ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies)
         {
             Shaders = shaders;

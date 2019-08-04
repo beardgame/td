@@ -1,6 +1,5 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
@@ -10,16 +9,17 @@ namespace Bearded.TD.Game.Commands
 {
     static class UpgradeBuilding
     {
-        public static IRequest<Player, GameInstance> Request(GameInstance game, Building building, UpgradeBlueprint upgrade)
+        public static IRequest<Player, GameInstance> Request(
+                GameInstance game, Building building, IUpgradeBlueprint upgrade)
             => new Implementation(game, building, upgrade);
 
         private class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Building building;
-            private readonly UpgradeBlueprint upgrade;
+            private readonly IUpgradeBlueprint upgrade;
 
-            public Implementation(GameInstance game, Building building, UpgradeBlueprint upgrade)
+            public Implementation(GameInstance game, Building building, IUpgradeBlueprint upgrade)
             {
                 this.game = game;
                 this.building = building;
@@ -41,12 +41,12 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Building> building;
-            private Id<UpgradeBlueprint> upgrade;
+            private string upgrade;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 
-            public Serializer(Building building, UpgradeBlueprint upgrade)
+            public Serializer(Building building, IUpgradeBlueprint upgrade)
             {
                 this.building = building.Id;
                 this.upgrade = upgrade.Id;

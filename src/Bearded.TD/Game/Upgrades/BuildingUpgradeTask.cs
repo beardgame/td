@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Upgrades
     sealed class BuildingUpgradeTask : GameObject, IResourceConsumer
     {
         private readonly Building building;
-        private readonly UpgradeBlueprint upgrade;
+        private readonly IUpgradeBlueprint upgrade;
 
         private double maximumResources => upgrade.Cost;
 
@@ -18,9 +18,9 @@ namespace Bearded.TD.Game.Upgrades
 
         public Building Building => building;
         public double ProgressPercentage => progress / maximumResources;
-        public UpgradeBlueprint Upgrade => upgrade;
+        public IUpgradeBlueprint Upgrade => upgrade;
 
-        public BuildingUpgradeTask(Building building, UpgradeBlueprint upgrade)
+        public BuildingUpgradeTask(Building building, IUpgradeBlueprint upgrade)
         {
             this.building = building;
             this.upgrade = upgrade;

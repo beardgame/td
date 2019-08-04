@@ -4,11 +4,11 @@ namespace Bearded.TD.Game.Technologies
 {
     sealed class UnlockUpgradeEffect : ITechnologyEffect
     {
-        private readonly UpgradeBlueprint upgradeBlueprint;
+        private readonly IUpgradeBlueprint upgradeBlueprint;
 
         public string Description => $"Unlock upgrade: {upgradeBlueprint.Name}";
 
-        public UnlockUpgradeEffect(UpgradeBlueprint upgradeBlueprint)
+        public UnlockUpgradeEffect(IUpgradeBlueprint upgradeBlueprint)
         {
             this.upgradeBlueprint = upgradeBlueprint;
         }

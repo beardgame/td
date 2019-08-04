@@ -3,6 +3,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -19,14 +20,14 @@ namespace Bearded.TD.Game.Projectiles
     {
         public event GenericEventHandler<EnemyUnit> HitEnemy;
         public Building DamageSource { get; }
-        
+
         private readonly IProjectileBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components = new ComponentCollection<Projectile>();
 
         public Position2 Position { get; private set; }
         public Velocity2 Velocity { get; private set; }
         public Tile CurrentTile { get; private set; }
-        
+
         public Projectile(IProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
         {
             this.blueprint = blueprint;
@@ -45,12 +46,12 @@ namespace Bearded.TD.Game.Projectiles
             CurrentTile = Level.GetTile(Position);
 
             components.Add(this, blueprint.GetComponents());
-            
+
             foreach (var upgrade in DamageSource.AppliedUpgrades)
             {
                 if (!upgrade.CanApplyTo(components))
                     continue;
-                
+
                 upgrade.ApplyTo(components);
             }
         }
@@ -62,7 +63,7 @@ namespace Bearded.TD.Game.Projectiles
 
             var (result, _, _, enemy) = Game.Level.CastRayAgainstEnemies(
                 ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile));
-            
+
             switch (result)
             {
                 case RayCastResult.HitNothing:

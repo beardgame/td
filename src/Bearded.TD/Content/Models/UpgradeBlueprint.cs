@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bearded.TD.Game.Upgrades;
 
-namespace Bearded.TD.Game.Upgrades
+namespace Bearded.TD.Content.Models
 {
     sealed class UpgradeBlueprint : IUpgradeBlueprint
     {
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Upgrades
             Id = id;
             Name = name;
             Cost = cost;
-            Effects = ImmutableList.CreateRange(effects);
+            Effects = effects?.ToImmutableList() ?? ImmutableList<IUpgradeEffect>.Empty;
         }
     }
 }

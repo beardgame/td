@@ -80,18 +80,18 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly GameInstance game;
             private readonly Building building;
-            private readonly List<UpgradeBlueprint> availableUpgrades;
-            private readonly List<UpgradeBlueprint> appliedUpgrades;
+            private readonly List<IUpgradeBlueprint> availableUpgrades;
+            private readonly List<IUpgradeBlueprint> appliedUpgrades;
 
             public int ItemCount { get; }
 
             public int AppliedUpgradesCount => appliedUpgrades.Count;
 
-            public UpgradeListItemSource(GameInstance game, Building building, IEnumerable<UpgradeBlueprint> upgrades)
+            public UpgradeListItemSource(GameInstance game, Building building, IEnumerable<IUpgradeBlueprint> upgrades)
             {
                 this.game = game;
                 this.building = building;
-                appliedUpgrades = building?.AppliedUpgrades.ToList() ?? new List<UpgradeBlueprint>();
+                appliedUpgrades = building?.AppliedUpgrades.ToList() ?? new List<IUpgradeBlueprint>();
                 availableUpgrades = upgrades.ToList();
                 ItemCount = availableUpgrades.Count + appliedUpgrades.Count;
             }
@@ -133,7 +133,7 @@ namespace Bearded.TD.UI.Controls
 
         private class AppliedUpgradeControl : Label
         {
-            public AppliedUpgradeControl(UpgradeBlueprint upgrade)
+            public AppliedUpgradeControl(IUpgradeBlueprint upgrade)
             {
                 Text = upgrade.Name;
                 FontSize = 16;
@@ -146,10 +146,10 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly Faction myFaction;
             private readonly Building building;
-            private readonly UpgradeBlueprint upgrade;
+            private readonly IUpgradeBlueprint upgrade;
             private readonly BackgroundBox progressBar;
 
-            public UpgradeButton(Faction myFaction, Building building, UpgradeBlueprint upgrade)
+            public UpgradeButton(Faction myFaction, Building building, IUpgradeBlueprint upgrade)
             {
                 this.myFaction = myFaction;
                 this.building = building;

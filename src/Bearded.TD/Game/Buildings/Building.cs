@@ -28,8 +28,8 @@ namespace Bearded.TD.Game.Buildings
 
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new List<BuildingUpgradeTask>();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
-        private readonly List<UpgradeBlueprint> appliedUpgrades = new List<UpgradeBlueprint>();
-        public ReadOnlyCollection<UpgradeBlueprint> AppliedUpgrades { get; }
+        private readonly List<IUpgradeBlueprint> appliedUpgrades = new List<IUpgradeBlueprint>();
+        public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
         public Id<Building> Id { get; }
 
@@ -87,12 +87,12 @@ namespace Bearded.TD.Game.Buildings
 
         public bool CanBeUpgradedBy(Faction faction) => faction.SharesWorkersWith(Faction);
 
-        public bool CanApplyUpgrade(UpgradeBlueprint upgrade)
+        public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {
             return upgrade.CanApplyTo(Components);
         }
 
-        public void ApplyUpgrade(UpgradeBlueprint upgrade)
+        public void ApplyUpgrade(IUpgradeBlueprint upgrade)
         {
             upgrade.ApplyTo(Components);
 
@@ -143,7 +143,7 @@ namespace Bearded.TD.Game.Buildings
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Coral * 0.75f);
         }
 
-        public IEnumerable<UpgradeBlueprint> GetApplicableUpgrades() =>
+        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
             Faction.Technology.GetApplicableUpgradesFor(this);
     }
 }

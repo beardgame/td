@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
@@ -101,11 +99,10 @@ namespace Bearded.TD.Content.Mods
                     units,
                     weapons,
                     projectiles,
-                    ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint>.Empty,
+                    new BlueprintCollection<IUpgradeBlueprint>().AsReadonly(),
                     new BlueprintCollection<ITechnologyBlueprint>().AsReadonly(),
                     tags.GetForCurrentMod());
             }
-
 
             private ReadonlyBlueprintCollection<Shader> loadShaders()
             {

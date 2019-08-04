@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Technologies
 
         private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new HashSet<ITechnologyBlueprint>();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
-        private readonly List<UpgradeBlueprint> unlockedUpgrades = new List<UpgradeBlueprint>();
+        private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new HashSet<IUpgradeBlueprint>();
 
         public long TechPoints { get; private set; }
 
@@ -43,13 +43,13 @@ namespace Bearded.TD.Game.Technologies
             events.Send(new BuildingTechnologyUnlocked(blueprint));
         }
 
-        public void UnlockUpgrade(UpgradeBlueprint blueprint)
+        public void UnlockUpgrade(IUpgradeBlueprint blueprint)
         {
             unlockedUpgrades.Add(blueprint);
             events.Send(new UpgradeTechnologyUnlocked(blueprint));
         }
 
-        public IEnumerable<UpgradeBlueprint> GetApplicableUpgradesFor(Building building)
+        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgradesFor(Building building)
         {
             return unlockedUpgrades.Where(building.CanApplyUpgrade);
         }

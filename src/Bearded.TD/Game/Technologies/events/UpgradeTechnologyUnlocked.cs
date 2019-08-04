@@ -4,9 +4,9 @@ namespace Bearded.TD.Game.Technologies
 {
     sealed class UpgradeTechnologyUnlocked : IEvent
     {
-        private readonly UpgradeBlueprint blueprint;
+        private readonly IUpgradeBlueprint blueprint;
 
-        public UpgradeTechnologyUnlocked(UpgradeBlueprint blueprint)
+        public UpgradeTechnologyUnlocked(IUpgradeBlueprint blueprint)
         {
             this.blueprint = blueprint;
         }

@@ -102,10 +102,10 @@ namespace Bearded.TD.UI.Controls
                 techs);
         }
 
-        private static ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> getHardcodedUpgrades()
+        private static ReadonlyBlueprintCollection<IUpgradeBlueprint> getHardcodedUpgrades()
         {
             var idManager = new IdManager();
-            var builder = ImmutableDictionary.CreateBuilder<Id<UpgradeBlueprint>, UpgradeBlueprint>();
+            var collection = new BlueprintCollection<IUpgradeBlueprint>();
 
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% damage", 50,
                 new[] {new ParameterModifiable(AttributeType.Damage, Modification.AddFractionOfBase(.25))}));
@@ -124,26 +124,25 @@ namespace Bearded.TD.UI.Controls
             addHardcodedUpgrade(id => new UpgradeBlueprint(id, "+25% rotation speed", 60,
                 new[] {new ParameterModifiable(AttributeType.TurnSpeed, Modification.AddFractionOfBase(.25))}));
 
-            return builder.ToImmutable();
+            return collection.AsReadonly();
 
-            void addHardcodedUpgrade(Func<Id<UpgradeBlueprint>, UpgradeBlueprint> blueprintFactory)
+            void addHardcodedUpgrade(Func<string, UpgradeBlueprint> blueprintFactory)
             {
-                var id = idManager.GetNext<UpgradeBlueprint>();
-                builder.Add(id, blueprintFactory(id));
+                collection.Add(blueprintFactory(idManager.GetNext<UpgradeBlueprint>().Value.ToString()));
             }
         }
 
         private static ReadonlyBlueprintCollection<ITechnologyBlueprint> getHardcodedTechnologies(
-            ImmutableDictionary<Id<UpgradeBlueprint>, UpgradeBlueprint> upgrades)
+            ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades)
         {
             var idManager = new IdManager();
 
             var blueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
 
-            upgrades.Values
+            upgrades.All
                 .Select(u =>
                     new Technology(
-                        idManager.GetNext<Technology>().ToString(),
+                        idManager.GetNext<Technology>().Value.ToString(),
                         u.Name,
                         20,
                         ImmutableList.Create<ITechnologyEffect>(new UnlockUpgradeEffect(u))))

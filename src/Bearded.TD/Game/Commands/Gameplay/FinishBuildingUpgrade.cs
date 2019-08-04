@@ -9,15 +9,15 @@ namespace Bearded.TD.Game.Commands
 {
     static class FinishBuildingUpgrade
     {
-        public static ISerializableCommand<GameInstance> Command(Building building, UpgradeBlueprint upgrade)
+        public static ISerializableCommand<GameInstance> Command(Building building, IUpgradeBlueprint upgrade)
             => new Implementation(building, upgrade);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Building building;
-            private readonly UpgradeBlueprint upgrade;
+            private readonly IUpgradeBlueprint upgrade;
 
-            public Implementation(Building building, UpgradeBlueprint upgrade)
+            public Implementation(Building building, IUpgradeBlueprint upgrade)
             {
                 this.building = building;
                 this.upgrade = upgrade;
@@ -31,12 +31,12 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> building;
-            private Id<UpgradeBlueprint> upgrade;
+            private string upgrade;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 
-            public Serializer(Building building, UpgradeBlueprint upgrade)
+            public Serializer(Building building, IUpgradeBlueprint upgrade)
             {
                 this.building = building.Id;
                 this.upgrade = upgrade.Id;

@@ -15,10 +15,10 @@ namespace Bearded.TD.UI.Controls
 
         public IPlacedBuilding Building { get; private set; }
 
-        public IEnumerable<UpgradeBlueprint> UpgradesForBuilding
+        public IEnumerable<IUpgradeBlueprint> UpgradesForBuilding
             => Building is Building b
                 ? b.GetApplicableUpgrades()
-                : Enumerable.Empty<UpgradeBlueprint>();
+                : Enumerable.Empty<IUpgradeBlueprint>();
 
         protected override void Initialize(DependencyResolver dependencies, IPlacedBuilding building)
         {
