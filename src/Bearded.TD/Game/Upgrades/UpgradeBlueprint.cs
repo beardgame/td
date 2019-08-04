@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace Bearded.TD.Game.Upgrades
 {
+    [Obsolete]
     sealed class UpgradeBlueprint : IUpgradeBlueprint
     {
         public string Id { get; }

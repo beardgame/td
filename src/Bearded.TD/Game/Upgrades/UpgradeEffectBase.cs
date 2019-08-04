@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Upgrades
     {
         public virtual bool CanApplyTo<T>(ComponentCollection<T> subject)
             => subject.Components.Any(c => c.CanApplyUpgradeEffect(this));
-        
+
         public virtual bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;
 
         public virtual void ApplyTo<T>(ComponentCollection<T> subject)

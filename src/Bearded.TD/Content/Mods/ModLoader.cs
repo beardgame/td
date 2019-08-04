@@ -180,6 +180,7 @@ namespace Bearded.TD.Content.Mods
                 serializer.Converters.Add(Converters.ColorContainerConverter);
                 serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
                 serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
+                serializer.Converters.Add(new UpgradeEffectConverter());
                 foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
                     serializer.Converters.Add(new TechEffectTemplateConverter(key, value));
             }

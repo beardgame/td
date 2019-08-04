@@ -37,7 +37,7 @@ namespace Bearded.TD.Content.Serialization.Converters
 
             if (id == null)
                 throw new InvalidDataException("Component must have an id.");
-            
+
             if (!componentTypes.TryGetValue(id, out var componentType))
                 throw new InvalidDataException($"Unknown component id '{id}'.");
 
