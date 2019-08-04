@@ -1,0 +1,11 @@
+{
+    "id" : "extra_range",
+    "name" : "+20% range",
+    "cost" : 30,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attribute_type" : "range", "mode" : "base_fraction", "value" : 0.25 }
+        }
+    ]
+}

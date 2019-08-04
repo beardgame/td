@@ -1,0 +1,8 @@
+{
+    "id" : "extra_worker",
+    "name" : "Extra worker",
+    "cost" : 20,
+    "effects": [
+        { "type" : "upgrade", "parameters" : { "attribute_type" : "drone_count" } }
+    ]
+}

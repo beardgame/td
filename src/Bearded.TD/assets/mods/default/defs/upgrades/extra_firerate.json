@@ -1,0 +1,11 @@
+{
+    "id" : "extra_firerate",
+    "name" : "+50% fire rate",
+    "cost" : 100,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attribute_type" : "firerate", "mode" : "base_fraction", "value" : 0.5 }
+        }
+    ]
+}
