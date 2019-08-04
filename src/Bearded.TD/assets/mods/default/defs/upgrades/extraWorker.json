@@ -1,0 +1,11 @@
+{
+    "id" : "extraWorker",
+    "name" : "+1 worker",
+    "cost" : 100,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attributeType" : "droneCount", "mode" : "constant", "value" : 1 }
+        }
+    ]
+}

@@ -1,11 +1,11 @@
 {
-    "id" : "extra_potency",
+    "id" : "extraPotency",
     "name" : "x1.5 potency",
     "cost" : 100,
     "effects": [
         {
             "type" : "modification",
-            "parameters" : { "attribute_type" : "effectstrength", "mode" : "multiply", "value" : 1.5 }
+            "parameters" : { "attributeType" : "effectStrength", "mode" : "multiply", "value" : 1.5 }
         }
     ]
 }

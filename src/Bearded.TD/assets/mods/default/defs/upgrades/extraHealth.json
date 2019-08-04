@@ -1,11 +1,11 @@
 {
-    "id" : "extra_health",
+    "id" : "extraHealth",
     "name" : "+25% health",
     "cost" : 80,
     "effects": [
         {
             "type" : "modification",
-            "parameters" : { "attribute_type" : "health", "mode" : "base_fraction", "value" : 0.25 }
+            "parameters" : { "attributeType" : "health", "mode" : "fractionOfBase", "value" : 0.25 }
         }
     ]
 }
