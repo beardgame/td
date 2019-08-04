@@ -30,7 +30,9 @@ using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using Shader = Bearded.TD.Content.Models.Shader;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
+using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
+using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
 using WeaponBlueprintJson = Bearded.TD.Content.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
 
@@ -86,7 +88,16 @@ namespace Bearded.TD.Content.Mods
 
                 var footprints = loadFootprints();
                 var buildings = loadBuildings(footprints, tags);
+
+                configureSerializerDependency(buildings, m => m.Blueprints.Buildings);
+
                 var units = loadUnits();
+
+                var upgrades = loadUpgrades();
+
+                configureSerializerDependency(upgrades, m => m.Blueprints.Upgrades);
+
+                var technologies = loadTechnologies();
 
                 return new Mod(
                     meta.Id,
@@ -99,8 +110,8 @@ namespace Bearded.TD.Content.Mods
                     units,
                     weapons,
                     projectiles,
-                    new BlueprintCollection<IUpgradeBlueprint>().AsReadonly(),
-                    new BlueprintCollection<ITechnologyBlueprint>().AsReadonly(),
+                    upgrades,
+                    technologies,
                     tags.GetForCurrentMod());
             }
 
@@ -144,6 +155,12 @@ namespace Bearded.TD.Content.Mods
 
             private ReadonlyBlueprintCollection<IWeaponBlueprint> loadWeapons()
                 => loadBlueprints<IWeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
+
+            private ReadonlyBlueprintCollection<IUpgradeBlueprint> loadUpgrades()
+                => loadBlueprints<IUpgradeBlueprint, UpgradeBlueprintJson>("defs/upgrades");
+
+            private ReadonlyBlueprintCollection<ITechnologyBlueprint> loadTechnologies()
+                => loadBlueprints<ITechnologyBlueprint, TechnologyBlueprintJson>("defs/technologies");
 
             private void configureSerializer()
             {
