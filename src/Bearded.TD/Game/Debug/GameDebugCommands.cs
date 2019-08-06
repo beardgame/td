@@ -25,7 +25,8 @@ namespace Bearded.TD.Game.Debug
         [Command("game.killall")]
         private static void killAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
-            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, KillAllEnemies.Request(gameInstance));
+            gameInstance.RequestDispatcher.Dispatch(
+                gameInstance.Me, KillAllEnemies.Request(gameInstance, gameInstance.Me.Faction));
         });
 
         [Command("game.repairall")]
