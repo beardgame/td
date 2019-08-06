@@ -20,6 +20,7 @@ namespace Bearded.TD.UI.Controls
                 .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
                 .Add<LobbyList, Void>(m => new LobbyListControl(m))
                 .Add<MainMenu, Void>(m => new MainMenuControl(m))
+                .Add<UIDebugOverlay, Void>(m => new UIDebugOverlayControl(m))
                 .Add<VersionOverlay, Void>(m => new VersionOverlayControl(m))
                 .ToDictionaries();
         }

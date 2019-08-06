@@ -30,6 +30,8 @@ namespace Bearded.TD
 {
     sealed class TheGame : Program
     {
+        private static TheGame instance;
+        
         private readonly Logger logger;
         private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
 
@@ -41,6 +43,7 @@ namespace Bearded.TD
 
         private ContentManager contentManager;
         private CachedRendererRouter rendererRouter;
+        private NavigationController navigationController;
 
         public TheGame(Logger logger)
          : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
@@ -48,6 +51,8 @@ namespace Bearded.TD
              3, 2, GraphicsContextFlags.Default)
         {
             this.logger = logger;
+
+            instance = this;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -67,6 +72,7 @@ namespace Bearded.TD
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {
+                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                     (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
@@ -91,7 +97,7 @@ namespace Bearded.TD
             var shortcuts = new ShortcutManager();
             eventManager = new EventManager(rootControl, inputManager, shortcuts);
             var (models, views) = UILibrary.CreateFactories(renderContext);
-            var navigationController =
+            navigationController =
                 new NavigationController(rootControl, dependencyResolver, models, views);
             navigationController.Push<MainMenu>();
             var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
@@ -157,6 +163,12 @@ namespace Bearded.TD
         {
             UserSettings.Save(logger);
             base.OnClosing(e);
+        }
+
+        [Command("debug.ui")]
+        private static void openUIDebugOverlay(Logger logger, CommandParameters p)
+        {
+            instance.navigationController.Push<UIDebugOverlay>();
         }
     }
 }
