@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
@@ -105,6 +106,8 @@ namespace Bearded.TD.UI.Controls
             private readonly Label unlockButtonLabel = new Label {FontSize = 16};
             private readonly Button unlockButton;
 
+            private readonly ListControl unlocksList;
+
             private Maybe<ITechnologyBlueprint> technology;
 
             public TechnologyDetailsControl(GameInstance game)
@@ -112,11 +115,16 @@ namespace Bearded.TD.UI.Controls
                 this.game = game;
 
                 Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
+                Add(new Label("Unlocks:") { FontSize = 24, TextAnchor = new Vector2d(0, .5) }
+                    .Anchor(a => a.Top(margin: 48, height: 32)));
 
                 unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
                 Add(unlockButton.Anchor(a => a.Top(height: 32, margin: 4).Right(margin: 8, width: 200)));
                 unlockButton.Clicked += () =>
                     game.Request(UnlockTechnology.Request(game.Me.Faction, technology.ValueOrDefault(null)));
+
+                unlocksList = new ListControl().Anchor(a => a.Top(margin: 80));
+                Add(unlocksList);
 
                 SetTechnologyToDisplay(Maybe.Nothing);
             }
@@ -129,11 +137,14 @@ namespace Bearded.TD.UI.Controls
                     {
                         headerLabel.Text = tech.Name;
                         unlockButton.IsVisible = true;
+                        unlocksList.ItemSource = new TechnologyUnlocksListItemSource(tech.Unlocks);
                     },
                     onNothing: () =>
                     {
                         headerLabel.Text = "Select a technology from the list";
                         unlockButton.IsVisible = false;
+                        unlocksList.ItemSource =
+                            new TechnologyUnlocksListItemSource(Enumerable.Empty<ITechnologyUnlock>());
                     });
             }
 
@@ -154,6 +165,25 @@ namespace Bearded.TD.UI.Controls
             private void updateForEmpty() {}
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+
+            private sealed class TechnologyUnlocksListItemSource : IListItemSource
+            {
+                private readonly ImmutableList<ITechnologyUnlock> unlocks;
+
+                public int ItemCount => unlocks.Count;
+
+                public TechnologyUnlocksListItemSource(IEnumerable<ITechnologyUnlock> unlocks)
+                {
+                    this.unlocks = ImmutableList.CreateRange(unlocks);
+                }
+
+                public double HeightOfItemAt(int index) => 24;
+
+                public Control CreateItemControlFor(int index) =>
+                    new Label($"- {unlocks[index].Description}") { FontSize = 20, TextAnchor = new Vector2d(0, .5) };
+
+                public void DestroyItemControlAt(int index, Control control) {}
+            }
         }
     }
 }
