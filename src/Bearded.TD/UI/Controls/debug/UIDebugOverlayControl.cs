@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.UI.Layers;
 using Bearded.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
@@ -10,14 +12,15 @@ using static Bearded.TD.UI.Controls.Default;
 
 namespace Bearded.TD.UI.Controls
 {
-    class UIDebugOverlayControl : CompositeControl
+    class UIDebugOverlayControl : DefaultRenderLayerControl
     {
         public class Highlight : Control
         {
             public string Name { get; private set; }
             public float Alpha { get; private set; }
+            public double TextY { get; private set; }
 
-            public void Bind(Control control, int number, int totalNumber)
+            public double Bind(Control control, int number, int totalNumber, double previousTextY)
             {
                 var frame = control.Frame;
                 this.Anchor(a => a.Left(frame.X.Start, frame.X.Size).Top(frame.Y.Start, frame.Y.Size));
@@ -25,6 +28,10 @@ namespace Bearded.TD.UI.Controls
                 Name = control.GetType().Name;
 
                 Alpha = (float) (number + totalNumber) / (totalNumber * 2);
+
+                TextY = Math.Max(previousTextY + 10, frame.Y.Start);
+
+                return TextY;
             }
             
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
@@ -67,6 +74,16 @@ namespace Bearded.TD.UI.Controls
             
             Add(controlBox.Anchor(a => a.Bottom(margin, controlBoxHeight).Left(margin, controlBoxWidth)));
         }
+        
+        protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
+        {
+            SkipNextRender();
+        }
+        
+        protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
+        {
+            RenderAsLayer(router);
+        }
 
         public override void PreviewMouseMoved(MouseEventArgs eventArgs)
         {
@@ -103,7 +120,7 @@ namespace Bearded.TD.UI.Controls
             while (current is IControlParent parent)
             {
                 var child = parent.Children
-                    .FirstOrDefault(c => c != this && c.IsVisible && frameContainsPoint(c.Frame, point));
+                    .LastOrDefault(c => c != this && c.IsVisible && frameContainsPoint(c.Frame, point));
 
                 if (child == null)
                     break;
@@ -135,10 +152,11 @@ namespace Bearded.TD.UI.Controls
         {
             setHighlightCountTo(controlChain.Count);
 
-            int i = 0;
+            var i = 0;
+            var previousTextY = double.NegativeInfinity;
             foreach (var (control, highlight) in controlChain.Zip(highlights, (c, h) => (c, h)))
             {
-                highlight.Bind(control, i, controlChain.Count);
+                previousTextY = highlight.Bind(control, i, controlChain.Count, previousTextY);
                 i++;
             }
         }

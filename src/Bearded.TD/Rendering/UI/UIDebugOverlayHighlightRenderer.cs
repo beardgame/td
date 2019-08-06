@@ -30,7 +30,7 @@ namespace Bearded.TD.Rendering.UI
             background.DrawRectangle((Vector2)control.Frame.TopLeft, (Vector2)control.Frame.Size, false);
 
             text.Color = argb;
-            text.DrawString((Vector2)control.Frame.TopLeft, control.Name);
+            text.DrawString((Vector2)new Vector2d(control.Frame.X.Start, control.TextY), control.Name);
         }
     }
 }
