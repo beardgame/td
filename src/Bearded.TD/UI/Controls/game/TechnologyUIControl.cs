@@ -34,9 +34,9 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(btn => btn.Clicked += model.OnCloseClicked));
 
             Add(technologyList.Anchor(a =>
-                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16).Right(relativePercentage: .33, margin: 8)));
+                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));
             Add(technologyDetails.Anchor(a =>
-                a.Top(margin: 56).Bottom(margin: 16).Left(relativePercentage: .33, margin: 8).Right(margin: 16)));
+                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 332).Right(margin: 16)));
 
             model.TechnologiesUpdated += updateTechnologiesList;
 
@@ -66,8 +66,8 @@ namespace Bearded.TD.UI.Controls
                 ItemCount = asList.Count;
 
                 var lookup = asList.ToLookup(game.Me.Faction.Technology.IsTechnologyLocked);
-                lockedTechnologies = lookup[true].ToImmutableList();
-                unlockedTechnologies = lookup[false].ToImmutableList();
+                lockedTechnologies = lookup[true].OrderBy(t => t.Name).ToImmutableList();
+                unlockedTechnologies = lookup[false].OrderBy(t => t.Name).ToImmutableList();
             }
 
             public double HeightOfItemAt(int index) => 32;
@@ -92,7 +92,7 @@ namespace Bearded.TD.UI.Controls
         {
             public TechnologyButton(ITechnologyBlueprint technology, bool isLocked)
             {
-                this.WithDefaultStyle(technology.Name);
+                this.WithDefaultStyle(technology.Name, fontSize: 20);
                 Add(new BackgroundBox{Color= .25f * (isLocked ? Color.Red : Color.Green)});
             }
         }
