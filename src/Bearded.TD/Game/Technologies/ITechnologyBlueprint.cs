@@ -6,6 +6,6 @@ namespace Bearded.TD.Game.Technologies
     {
         string Name { get; }
         int Cost { get; }
-        IEnumerable<ITechnologyEffect> Effects { get; }
+        IEnumerable<ITechnologyUnlock> Unlocks { get; }
     }
 }

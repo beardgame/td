@@ -45,6 +45,7 @@ namespace Bearded.TD.Game.Commands
             public override bool CheckPreconditions(Player actor) =>
                 blueprint.FootprintGroup == footprint.Footprint
                 && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
+                && faction.Technology.IsBuildingUnlocked(blueprint)
                 && faction.SharesWorkersWith(actor.Faction);
 
             public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(

@@ -1,0 +1,8 @@
+{
+    "id" : "unlockSniperTurret",
+    "name" : "In scope",
+    "cost" : 40,
+    "unlocks": [
+        { "type" : "building", "blueprint" : "sniperTurret" }
+    ]
+}

@@ -37,9 +37,9 @@ namespace Bearded.TD.Game.Input
 
         public void HandleInput(UpdateEventArgs args, InputState input)
         {
-            cursor.Update(args, input);
             if (IsMouseFocused)
             {
+                cursor.Update(args, input);
                 interactionHandler.Update(args, cursor);
             }
         }

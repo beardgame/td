@@ -1,6 +1,6 @@
 {
     "id" : "beamTurret",
-    "name" : "Imma CHARGING",
+    "name" : "Beam Turret",
     "footprint" : "triangle",
     "cost" : 75,
     "components" : [

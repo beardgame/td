@@ -24,10 +24,8 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                foreach (var blueprint in game.Blueprints.Buildings.All)
-                {
-                    faction.Technology.UnlockBuilding(blueprint);
-                }
+                faction.Technology.UnlockBuilding(game.Blueprints.Buildings["wall"]);
+                faction.Technology.UnlockBuilding(game.Blueprints.Buildings["triangleTurret"]);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(faction);

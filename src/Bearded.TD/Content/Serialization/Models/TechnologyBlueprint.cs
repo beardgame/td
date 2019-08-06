@@ -1,4 +1,5 @@
-using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Game.Technologies;
 using Bearded.Utilities;
 
@@ -11,10 +12,11 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public int Cost { get; set; }
+        public List<ITechnologyUnlock> Unlocks { get; set; }
 
         public Content.Models.TechnologyBlueprint ToGameModel(Void resolvers)
         {
-            return new Content.Models.TechnologyBlueprint(Id, Name, Cost, Enumerable.Empty<ITechnologyEffect>());
+            return new Content.Models.TechnologyBlueprint(Id, Name, Cost, ImmutableList.CreateRange(Unlocks));
         }
     }
 }

@@ -1,9 +1,9 @@
 namespace Bearded.TD.Game.Technologies
 {
-    interface ITechnologyEffect
+    interface ITechnologyUnlock
     {
         string Description { get; }
 
-        void Unlock(TechnologyManager technologyManager);
+        void Apply(TechnologyManager technologyManager);
     }
 }

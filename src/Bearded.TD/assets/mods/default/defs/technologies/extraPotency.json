@@ -1,0 +1,8 @@
+{
+    "id" : "extraPotency",
+    "name" : "Augmentor",
+    "cost" : 20,
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "extraPotency" }
+    ]
+}
