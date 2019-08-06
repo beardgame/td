@@ -27,7 +27,9 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions(Player actor) =>
-                building.CanApplyUpgrade(upgrade) && building.CanBeUpgradedBy(actor.Faction);
+                actor.Faction.Technology.IsUpgradeUnlocked(upgrade)
+                && building.CanApplyUpgrade(upgrade)
+                && building.CanBeUpgradedBy(actor.Faction);
 
             public override void Execute()
             {

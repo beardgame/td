@@ -43,11 +43,15 @@ namespace Bearded.TD.Game.Technologies
             events.Send(new BuildingTechnologyUnlocked(blueprint));
         }
 
+        public bool IsBuildingUnlocked(IBuildingBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
+
         public void UnlockUpgrade(IUpgradeBlueprint blueprint)
         {
             unlockedUpgrades.Add(blueprint);
             events.Send(new UpgradeTechnologyUnlocked(blueprint));
         }
+
+        public bool IsUpgradeUnlocked(IUpgradeBlueprint blueprint) => unlockedUpgrades.Contains(blueprint);
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgradesFor(Building building)
         {
