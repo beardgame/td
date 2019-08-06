@@ -41,11 +41,9 @@ namespace Bearded.TD.UI.Controls
         private const double margin = 4;
         private const double buttonDimension = 20;
         private const double fontSize = 16;
-        private const double controlBoxWidth = 100;
-        private const double controlBoxHeight = 100;
-        
-        private readonly UIDebugOverlay model;
-        
+        private const double controlBoxWidth = 200;
+        private const double controlBoxHeight = 400;
+
         private readonly CompositeControl highlightParent;
         private readonly List<Highlight> highlights = new List<Highlight>();
         private readonly CompositeControl controlBox;
@@ -54,8 +52,6 @@ namespace Bearded.TD.UI.Controls
 
         public UIDebugOverlayControl(UIDebugOverlay model)
         {
-            this.model = model;
-            
             Add(new BackgroundBox { Color = Color.DarkCyan * 0.2f });
             
             Add(highlightParent = new CompositeControl());

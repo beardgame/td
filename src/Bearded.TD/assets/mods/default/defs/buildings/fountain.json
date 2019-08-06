@@ -7,7 +7,7 @@
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 200 } },
     {
       "id" : "waterGenerator",
-      "parameters" : { "volumePerSecond" : 1 }
+      "parameters" : { "volumePerSecond" : 0.5 }
     }
   ]
 }
