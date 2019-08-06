@@ -9,14 +9,14 @@ namespace Bearded.TD.Content.Models
         public string Id { get; }
         public string Name { get; }
         public int Cost { get; }
-        public IEnumerable<ITechnologyEffect> Effects { get; }
+        public IEnumerable<ITechnologyUnlock> Unlocks { get; }
 
-        public TechnologyBlueprint(string id, string name, int cost, IEnumerable<ITechnologyEffect> effects)
+        public TechnologyBlueprint(string id, string name, int cost, IEnumerable<ITechnologyUnlock> unlocks)
         {
             Id = id;
             Name = name;
             Cost = cost;
-            Effects = effects?.ToImmutableList() ?? ImmutableList<ITechnologyEffect>.Empty;
+            Unlocks = unlocks?.ToImmutableList() ?? ImmutableList<ITechnologyUnlock>.Empty;
         }
     }
 }

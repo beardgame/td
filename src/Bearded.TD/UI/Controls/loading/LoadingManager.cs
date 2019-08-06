@@ -145,7 +145,7 @@ namespace Bearded.TD.UI.Controls
                         idManager.GetNext<Technology>().Value.ToString(),
                         u.Name,
                         20,
-                        ImmutableList.Create<ITechnologyEffect>(new UnlockUpgradeEffect(u))))
+                        ImmutableList.Create<ITechnologyUnlock>(new UpgradeUnlock(u))))
                 .ForEach(blueprintCollection.Add);
 
             return blueprintCollection.AsReadonly();

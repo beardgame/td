@@ -10,14 +10,14 @@ namespace Bearded.TD.Game.Technologies
         public string Id { get; }
         public string Name { get; }
         public int Cost { get; }
-        public IEnumerable<ITechnologyEffect> Effects { get; }
+        public IEnumerable<ITechnologyUnlock> Unlocks { get; }
 
-        public Technology(string id, string name, int cost, ImmutableList<ITechnologyEffect> effects)
+        public Technology(string id, string name, int cost, ImmutableList<ITechnologyUnlock> effects)
         {
             Id = id;
             Name = name;
             Cost = cost;
-            Effects = effects;
+            Unlocks = effects;
         }
     }
 }

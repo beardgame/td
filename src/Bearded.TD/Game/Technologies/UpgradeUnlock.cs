@@ -2,18 +2,18 @@ using Bearded.TD.Game.Upgrades;
 
 namespace Bearded.TD.Game.Technologies
 {
-    sealed class UnlockUpgradeEffect : ITechnologyEffect
+    sealed class UpgradeUnlock : ITechnologyUnlock
     {
         private readonly IUpgradeBlueprint upgradeBlueprint;
 
         public string Description => $"Unlock upgrade: {upgradeBlueprint.Name}";
 
-        public UnlockUpgradeEffect(IUpgradeBlueprint upgradeBlueprint)
+        public UpgradeUnlock(IUpgradeBlueprint upgradeBlueprint)
         {
             this.upgradeBlueprint = upgradeBlueprint;
         }
 
-        public void Unlock(TechnologyManager technologyManager)
+        public void Apply(TechnologyManager technologyManager)
         {
             technologyManager.UnlockUpgrade(upgradeBlueprint);
         }

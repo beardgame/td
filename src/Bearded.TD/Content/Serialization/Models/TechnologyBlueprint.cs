@@ -14,7 +14,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public Content.Models.TechnologyBlueprint ToGameModel(Void resolvers)
         {
-            return new Content.Models.TechnologyBlueprint(Id, Name, Cost, Enumerable.Empty<ITechnologyEffect>());
+            return new Content.Models.TechnologyBlueprint(Id, Name, Cost, Enumerable.Empty<ITechnologyUnlock>());
         }
     }
 }

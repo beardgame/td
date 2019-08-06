@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Technologies
             DebugAssert.Argument.Satisfies(() => TechPoints > technology.Cost);
             TechPoints -= technology.Cost;
             unlockedTechnologies.Add(technology);
-            technology.Effects.ForEach(effect => effect.Unlock(this));
+            technology.Unlocks.ForEach(unlock => unlock.Apply(this));
             events.Send(new TechnologyUnlocked(technology));
         }
 

@@ -2,18 +2,18 @@ using Bearded.TD.Game.Buildings;
 
 namespace Bearded.TD.Game.Technologies
 {
-    sealed class UnlockBuildingEffect : ITechnologyEffect
+    sealed class BuildingUnlock : ITechnologyUnlock
     {
         private readonly IBuildingBlueprint buildingBlueprint;
 
         public string Description => $"Unlock building: {buildingBlueprint.Name}";
 
-        public UnlockBuildingEffect(IBuildingBlueprint buildingBlueprint)
+        public BuildingUnlock(IBuildingBlueprint buildingBlueprint)
         {
             this.buildingBlueprint = buildingBlueprint;
         }
 
-        public void Unlock(TechnologyManager technologyManager)
+        public void Apply(TechnologyManager technologyManager)
         {
             technologyManager.UnlockBuilding(buildingBlueprint);
         }
