@@ -66,8 +66,8 @@ namespace Bearded.TD.UI.Controls
                 ItemCount = asList.Count;
 
                 var lookup = asList.ToLookup(game.Me.Faction.Technology.IsTechnologyLocked);
-                lockedTechnologies = lookup[true].ToImmutableList();
-                unlockedTechnologies = lookup[false].ToImmutableList();
+                lockedTechnologies = lookup[true].OrderBy(t => t.Name).ToImmutableList();
+                unlockedTechnologies = lookup[false].OrderBy(t => t.Name).ToImmutableList();
             }
 
             public double HeightOfItemAt(int index) => 32;
