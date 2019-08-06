@@ -92,7 +92,7 @@ namespace Bearded.TD.UI.Controls
         {
             public TechnologyButton(ITechnologyBlueprint technology, bool isLocked)
             {
-                this.WithDefaultStyle(technology.Name);
+                this.WithDefaultStyle(technology.Name, fontSize: 20);
                 Add(new BackgroundBox{Color= .25f * (isLocked ? Color.Red : Color.Green)});
             }
         }
