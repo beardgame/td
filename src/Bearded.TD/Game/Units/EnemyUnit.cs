@@ -133,11 +133,14 @@ namespace Bearded.TD.Game.Units
 
         public void OnDeath()
         {
-            Game.Meta.Events.Send(new EnemyKilled(this, lastDamageSource));
             isDead = true;
         }
 
-        public void Execute() => Delete();
+        public void Execute(Faction killingBlowFaction)
+        {
+            Game.Meta.Events.Send(new EnemyKilled(this, killingBlowFaction));
+            Delete();
+        }
 
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
