@@ -1,5 +1,5 @@
 {
-  "id" : "triangle",
+  "id" : "triangleTurret",
   "name" : "Triangular Turret",
   "footprint" : "triangle",
   "cost" : 75,

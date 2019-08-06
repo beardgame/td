@@ -4,11 +4,13 @@ namespace Bearded.TD.Game.Technologies
 {
     sealed class UpgradeTechnologyUnlocked : IEvent
     {
-        private readonly IUpgradeBlueprint blueprint;
+        public TechnologyManager TechnologyManager { get; }
+        public IUpgradeBlueprint Blueprint { get; }
 
-        public UpgradeTechnologyUnlocked(IUpgradeBlueprint blueprint)
+        public UpgradeTechnologyUnlocked(TechnologyManager technologyManager, IUpgradeBlueprint blueprint)
         {
-            this.blueprint = blueprint;
+            TechnologyManager = technologyManager;
+            Blueprint = blueprint;
         }
     }
 }

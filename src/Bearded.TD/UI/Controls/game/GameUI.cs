@@ -72,6 +72,7 @@ namespace Bearded.TD.UI.Controls
 
         public override void Terminate()
         {
+            ActionBar.Terminate();
             TechnologyUI.Terminate();
             base.Terminate();
         }

@@ -18,6 +18,8 @@ namespace Bearded.TD.Game.Technologies
 
         public long TechPoints { get; private set; }
 
+        public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
+
         public TechnologyManager(GameEvents events)
         {
             this.events = events;
@@ -39,16 +41,20 @@ namespace Bearded.TD.Game.Technologies
 
         public void UnlockBuilding(IBuildingBlueprint blueprint)
         {
-            unlockedBuildings.Add(blueprint);
-            events.Send(new BuildingTechnologyUnlocked(blueprint));
+            if (unlockedBuildings.Add(blueprint))
+            {
+                events.Send(new BuildingTechnologyUnlocked(this, blueprint));
+            }
         }
 
         public bool IsBuildingUnlocked(IBuildingBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
 
         public void UnlockUpgrade(IUpgradeBlueprint blueprint)
         {
-            unlockedUpgrades.Add(blueprint);
-            events.Send(new UpgradeTechnologyUnlocked(blueprint));
+            if (unlockedUpgrades.Add(blueprint))
+            {
+                events.Send(new UpgradeTechnologyUnlocked(this, blueprint));
+            }
         }
 
         public bool IsUpgradeUnlocked(IUpgradeBlueprint blueprint) => unlockedUpgrades.Contains(blueprint);

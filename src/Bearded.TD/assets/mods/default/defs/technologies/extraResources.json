@@ -1,8 +1,9 @@
 {
     "id" : "extraResources",
-    "name" : "Diamond-tipped drills",
-    "cost" : 20,
+    "name" : "Diggy diggy hole",
+    "cost" : 60,
     "unlocks": [
+        { "type" : "building", "blueprint" : "mine" },
         { "type" : "upgrade", "blueprint" : "extraResources" }
     ]
 }

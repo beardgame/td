@@ -1,0 +1,8 @@
+{
+    "id" : "unlockSlowEmitter",
+    "name" : "Slow motion",
+    "cost" : 40,
+    "unlocks": [
+        { "type" : "building", "blueprint" : "slowEmitter" }
+    ]
+}
