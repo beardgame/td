@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.UI.Layers;
 using Bearded.UI;
 using Bearded.UI.Controls;
-using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 using OpenTK;
+using OpenTK.Input;
 using static Bearded.TD.UI.Controls.Default;
+using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
+using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -47,6 +50,7 @@ namespace Bearded.TD.UI.Controls
         private readonly CompositeControl highlightParent;
         private readonly List<Highlight> highlights = new List<Highlight>();
         private readonly CompositeControl controlBox;
+        private readonly ListControl highlightList  = new ListControl();
         
         private bool moveControlBox;
 
@@ -64,7 +68,8 @@ namespace Bearded.TD.UI.Controls
                     .Subscribe(b => b.Clicked += toggleMoveControlBox),
                 Button("x", fontSize)
                     .Anchor(a => a.Top(margin, buttonDimension).Right(margin, buttonDimension))
-                    .Subscribe(b => b.Clicked += model.Close)
+                    .Subscribe(b => b.Clicked += model.Close),
+                highlightList.Anchor(a => a.Top(margin + buttonDimension + margin).Bottom(margin).Left(margin).Right(margin))
             };
             controlBox.MouseMove += args => args.Handled = true;
             
@@ -94,6 +99,17 @@ namespace Bearded.TD.UI.Controls
             eventArgs.Handled = true;
         }
 
+        public override void MouseButtonReleased(MouseButtonEventArgs eventArgs)
+        {
+            if (eventArgs.MouseButton == MouseButton.Left)
+            {
+                eventArgs.Handled = true;
+                var currentControlChain = getControlsAt(eventArgs.MousePosition);
+                var currentControl = currentControlChain.LastOrDefault();
+                Debugger.Break();
+            }
+        }
+
         public override void MouseMoved(MouseEventArgs eventArgs)
         {
             renderControlChainFor(eventArgs.MousePosition);
@@ -103,8 +119,9 @@ namespace Bearded.TD.UI.Controls
         {
             var controlChain = getControlsAt(point);
             showControlChain(controlChain);
+            listControlChain(controlChain);
         }
-        
+
         private List<Control> getControlsAt(Vector2d point)
         {
             var root = getRootControl();
@@ -171,6 +188,37 @@ namespace Bearded.TD.UI.Controls
                 highlights[i].RemoveFromParent();
             }
             highlights.RemoveRange(controlChainCount, highlights.Count - controlChainCount);
+        }
+
+        private void listControlChain(List<Control> controlChain)
+        {
+            highlightList.ItemSource = new HighlightListItemSource(controlChain);
+        }
+
+        private class HighlightListItemSource : IListItemSource
+        {
+            private readonly List<Control> controls;
+
+            public HighlightListItemSource(List<Control> controls)
+            {
+                this.controls = controls;
+            }
+
+            public double HeightOfItemAt(int index) => 14;
+
+            public Control CreateItemControlFor(int index)
+                => new Label(controls[index].GetType().Name)
+                {
+                    Color = Color.IndianRed,
+                    FontSize = 14,
+                    TextAnchor = new Vector2d(0, 0.5)
+                };
+
+            public void DestroyItemControlAt(int index, Control control)
+            {
+            }
+
+            public int ItemCount => controls.Count;
         }
 
 
