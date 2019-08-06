@@ -34,9 +34,9 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(btn => btn.Clicked += model.OnCloseClicked));
 
             Add(technologyList.Anchor(a =>
-                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16).Right(relativePercentage: .33, margin: 8)));
+                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));
             Add(technologyDetails.Anchor(a =>
-                a.Top(margin: 56).Bottom(margin: 16).Left(relativePercentage: .33, margin: 8).Right(margin: 16)));
+                a.Top(margin: 56).Bottom(margin: 16).Left(margin: 332).Right(margin: 16)));
 
             model.TechnologiesUpdated += updateTechnologiesList;
 
