@@ -1,0 +1,8 @@
+{
+    "id" : "extraWorker",
+    "name" : "Extra worker",
+    "cost" : 20,
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "extraWorker" }
+    ]
+}
