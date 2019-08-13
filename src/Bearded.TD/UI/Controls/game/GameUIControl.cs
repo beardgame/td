@@ -1,29 +1,34 @@
 ﻿using Bearded.TD.Rendering;
-using Bearded.UI;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
+using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
     sealed class GameUIControl : CompositeControl
     {
         private readonly GameUI gameUI;
-        private readonly GameWorldControl gameWorldControl;
         private readonly GamePausedControl gamePausedControl;
         private readonly TechnologyUIControl technologyUIControl;
 
         public GameUIControl(GameUI gameUI, RenderContext renderContext)
         {
+            GameWorldControl gameWorldControl;
             this.gameUI = gameUI;
+
+            CanBeFocused = true;
 
             Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
                     .Top(margin: -200, height: 400, relativePercentage: .5)));
-            Add(new GameStatusUIControl(gameUI.GameStatusUI)
+            var gameStatusControl = new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
-                    .Top(margin: 0, height: 92)));
+                    .Top(margin: 0, height: 92))
+                .Subscribe(ctrl => ctrl.TechnologyButtonClicked += () => technologyUIControl.IsVisible = true);
+            Add(gameStatusControl);
             Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)
@@ -36,7 +41,7 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Top(margin: 0, height: 96)
                     .Left(relativePercentage: .5, margin: -120, width: 240))
-                .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnCloseGameMenuButtonClicked)
+                .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked);
             Add(gamePausedControl);
 
@@ -45,36 +50,34 @@ namespace Bearded.TD.UI.Controls
                     .Top(margin: 80)
                     .Bottom(margin: 80)
                     .Right(margin: 80)
-                    .Left(margin: 80)
-                );
+                    .Left(margin: 80))
+                .Subscribe(ctrl => ctrl.CloseButtonClicked += () => ctrl.IsVisible = false);
             Add(technologyUIControl);
 
-            gameUI.GameMenuOpened += onGameMenuOpened;
-            gameUI.GameMenuClosed += onGameMenuClosed;
-            gameUI.TechnologyScreenOpened += onTechnologyOpened;
-            gameUI.TechnologyScreenClosed += onTechnologyClosed;
+            gameUI.FocusReset += Focus;
             gameUI.GameOverTriggered += onGameOver;
             gameUI.GameLeft += gameWorldControl.CleanUp;
         }
 
-        private void onGameMenuOpened()
+        public override void KeyHit(KeyEventArgs keyEventArgs)
         {
-            gamePausedControl.IsVisible = true;
+            keyEventArgs.Handled = tryHandleKeyHit(keyEventArgs.Key);
         }
 
-        private void onGameMenuClosed()
+        private bool tryHandleKeyHit(Key key)
         {
-            gamePausedControl.IsVisible = false;
-        }
-
-        private void onTechnologyOpened()
-        {
-            technologyUIControl.IsVisible = true;
-        }
-
-        private void onTechnologyClosed()
-        {
-            technologyUIControl.IsVisible = false;
+            switch (key)
+            {
+                case Key.T:
+                    technologyUIControl.IsVisible = !technologyUIControl.IsVisible;
+                    break;
+                case Key.Escape:
+                    gamePausedControl.IsVisible = !gamePausedControl.IsVisible;
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         }
 
         private void onGameOver()

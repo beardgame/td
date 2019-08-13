@@ -1,5 +1,6 @@
 ﻿using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 using OpenTK;
 
 namespace Bearded.TD.UI.Controls
@@ -9,6 +10,8 @@ namespace Bearded.TD.UI.Controls
         private readonly GameStatusUI model;
         private readonly Label resourcesLabel;
         private readonly Label techPointsLabel;
+
+        public event VoidEventHandler TechnologyButtonClicked;
 
         public GameStatusUIControl(GameStatusUI model)
         {
@@ -59,7 +62,7 @@ namespace Bearded.TD.UI.Controls
                     .Top(margin: 60, height: 24)
                     .Left(margin: 16)
                     .Right(margin: 16))
-                .Subscribe(btn => btn.Clicked += model.OnTechnologyButtonClicked));
+                .Subscribe(btn => btn.Clicked += () => TechnologyButtonClicked?.Invoke()));
 
             model.StatusChanged += updateLabels;
         }

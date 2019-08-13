@@ -85,7 +85,7 @@ namespace Bearded.TD.Game.Buildings
             IsCompleted = true;
         }
 
-        public bool CanBeUpgradedBy(Faction faction) => faction.SharesWorkersWith(Faction);
+        public bool CanBeUpgradedBy(Faction faction) => faction.SharesResourcesWith(Faction);
 
         public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {

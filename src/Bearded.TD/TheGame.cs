@@ -90,6 +90,7 @@ namespace Bearded.TD
             dependencyResolver.Add(inputManager);
 
             rootControl = new RootControl(new DefaultRenderLayerControl());
+            dependencyResolver.Add(rootControl.FocusManager);
 
             uiUpdater = new UIUpdater();
             dependencyResolver.Add(uiUpdater);
