@@ -67,5 +67,10 @@ namespace Bearded.TD.Tiles
                 (tile.X + tile.Y * 0.5f) * HexagonDistanceX,
                 tile.Y * HexagonDistanceY
             );
+
+        public static IEnumerable<Tile> TilesInCircle(Position2 center, Unit radius)
+        {
+            return Tilemap.GetSpiralCenteredAt(GetTile(center), (int) Ceiling(radius.NumericValue / HexagonWidth));
+        }
     }
 }

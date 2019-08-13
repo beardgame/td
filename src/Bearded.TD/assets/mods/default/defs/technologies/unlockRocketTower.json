@@ -1,0 +1,8 @@
+{
+    "id" : "unlockRocketTower",
+    "name" : "To The Moon",
+    "cost" : 40,
+    "unlocks": [
+        { "type" : "building", "blueprint" : "rocketTower" }
+    ]
+}

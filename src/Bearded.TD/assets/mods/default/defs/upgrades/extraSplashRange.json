@@ -1,0 +1,11 @@
+{
+    "id" : "extraSplashRange",
+    "name" : "+15% splash size",
+    "cost" : 50,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attributeType" : "splashRange", "mode" : "fractionOfBase", "value" : 0.15 }
+        }
+    ]
+}
