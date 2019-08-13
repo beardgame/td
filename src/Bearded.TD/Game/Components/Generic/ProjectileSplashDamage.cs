@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Projectiles;
