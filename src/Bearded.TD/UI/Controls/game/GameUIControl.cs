@@ -19,6 +19,8 @@ namespace Bearded.TD.UI.Controls
             CanBeFocused = true;
 
             Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
+            Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
+                .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)

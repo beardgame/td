@@ -2,11 +2,11 @@
 {
     struct BuildingCreated : IEvent
     {
-        public Building Builder { get; }
+        public Building Building { get; }
 
         public BuildingCreated(Building building)
         {
-            Builder = building;
+            Building = building;
         }
     }
 }

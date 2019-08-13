@@ -31,6 +31,9 @@ namespace Bearded.TD
             public static class GameUI
             {
                 public const int ActionBarSize = 10;
+                public static readonly TimeSpan NotificationDuration = 5.S();
+                public static readonly TimeSpan NotificationFadeOutTime = 1.S();
+                public const int MaxNotifications = 4;
             }
 
             public static class EnemyGeneration

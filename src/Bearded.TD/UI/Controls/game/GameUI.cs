@@ -22,6 +22,7 @@ namespace Bearded.TD.UI.Controls
         private InputManager inputManager;
         private FocusManager focusManager;
 
+        public GameNotificationsUI NotificationsUI { get; }
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
         public TechnologyUI TechnologyUI { get; }
@@ -36,6 +37,7 @@ namespace Bearded.TD.UI.Controls
 
         public GameUI()
         {
+            NotificationsUI = new GameNotificationsUI();
             ActionBar = new ActionBar();
             GameStatusUI = new GameStatusUI();
             TechnologyUI = new TechnologyUI();
@@ -52,6 +54,7 @@ namespace Bearded.TD.UI.Controls
             inputManager = dependencies.Resolve<InputManager>();
             focusManager = dependencies.Resolve<FocusManager>();
 
+            NotificationsUI.Initialize(Game);
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
             TechnologyUI.Initialize(Game);
@@ -64,6 +67,7 @@ namespace Bearded.TD.UI.Controls
 
         public override void Terminate()
         {
+            NotificationsUI.Terminate();
             ActionBar.Terminate();
             TechnologyUI.Terminate();
             base.Terminate();
@@ -81,6 +85,7 @@ namespace Bearded.TD.UI.Controls
             runner.HandleInput(args, inputState);
             runner.Update(args);
 
+            NotificationsUI.Update();
             GameStatusUI.Update();
         }
 
