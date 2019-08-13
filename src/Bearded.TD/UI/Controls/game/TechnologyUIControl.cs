@@ -33,7 +33,7 @@ namespace Bearded.TD.UI.Controls
             Add(new Label { FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
             Add(Default.Button("close", 16)
                 .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
-                .Subscribe(btn => btn.Clicked += CloseButtonClicked));
+                .Subscribe(btn => btn.Clicked += () => CloseButtonClicked?.Invoke()));
 
             Add(technologyList.Anchor(a =>
                 a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));
@@ -58,6 +58,7 @@ namespace Bearded.TD.UI.Controls
             private readonly Action<ITechnologyBlueprint> buttonClickCallback;
             public int ItemCount { get; }
 
+            private readonly TechnologyManager factionTechnology;
             private readonly ImmutableList<ITechnologyBlueprint> lockedTechnologies;
             private readonly ImmutableList<ITechnologyBlueprint> unlockedTechnologies;
 
@@ -67,7 +68,8 @@ namespace Bearded.TD.UI.Controls
                 var asList = game.Blueprints.Technologies.All.ToList();
                 ItemCount = asList.Count;
 
-                var lookup = asList.ToLookup(game.Me.Faction.Technology.IsTechnologyLocked);
+                factionTechnology = game.Me.Faction.Technology;
+                var lookup = asList.ToLookup(factionTechnology.IsTechnologyLocked);
                 lockedTechnologies = lookup[true].OrderBy(t => t.Name).ToImmutableList();
                 unlockedTechnologies = lookup[false].OrderBy(t => t.Name).ToImmutableList();
             }
@@ -77,7 +79,10 @@ namespace Bearded.TD.UI.Controls
             public Control CreateItemControlFor(int index)
             {
                 var technology = getTechnologyFor(index);
-                var button = new TechnologyButton(technology, index < lockedTechnologies.Count);
+                var button = new TechnologyButton(
+                    technology,
+                    index < lockedTechnologies.Count,
+                    () => technology.Cost <= factionTechnology.TechPoints);
                 button.Clicked += () => buttonClickCallback(technology);
                 return button;
             }
@@ -92,10 +97,36 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class TechnologyButton : Button
         {
-            public TechnologyButton(ITechnologyBlueprint technology, bool isLocked)
+            private readonly bool isLocked;
+            private readonly Func<bool> canBeUnlocked;
+            private readonly BackgroundBox backgroundBox;
+
+            public TechnologyButton(ITechnologyBlueprint technology, bool isLocked, Func<bool> canBeUnlocked)
             {
+                this.isLocked = isLocked;
+                this.canBeUnlocked = canBeUnlocked;
+
                 this.WithDefaultStyle(technology.Name, fontSize: 20);
-                Add(new BackgroundBox{Color= .25f * (isLocked ? Color.Red : Color.Green)});
+                backgroundBox = new BackgroundBox();
+                Add(backgroundBox);
+            }
+
+            public override void Render(IRendererRouter r)
+            {
+                if (!isLocked)
+                {
+                    backgroundBox.Color = .25f * Color.Green;
+                }
+                else if (canBeUnlocked())
+                {
+                    backgroundBox.Color = .25f * Color.Yellow;
+                }
+                else
+                {
+                    backgroundBox.Color = .25f * Color.Red;
+                }
+
+                base.Render(r);
             }
         }
 

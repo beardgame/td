@@ -41,7 +41,7 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a
                     .Top(margin: 0, height: 96)
                     .Left(relativePercentage: .5, margin: -120, width: 240))
-                .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => gamePausedControl.IsVisible = false)
+                .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked);
             Add(gamePausedControl);
 
@@ -51,7 +51,7 @@ namespace Bearded.TD.UI.Controls
                     .Bottom(margin: 80)
                     .Right(margin: 80)
                     .Left(margin: 80))
-                .Subscribe(ctrl => ctrl.CloseButtonClicked += () => technologyUIControl.IsVisible = false);
+                .Subscribe(ctrl => ctrl.CloseButtonClicked += () => ctrl.IsVisible = false);
             Add(technologyUIControl);
 
             gameUI.FocusReset += Focus;
