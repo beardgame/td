@@ -33,12 +33,12 @@ namespace Bearded.TD.Game.Weapons
         public Position2 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
 
-        public Weapon(IWeaponBlueprint blueprint, ITurret turret)
+        public Weapon(IComponentOwnerBlueprint blueprint, ITurret turret)
         {
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
 
-            components.Add(this, blueprint.GetComponents());
+            components.Add(this, blueprint.GetComponents<Weapon>());
         }
 
         public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(components);

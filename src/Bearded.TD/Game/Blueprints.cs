@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
@@ -23,7 +24,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
         public ReadonlyBlueprintCollection<IBuildingBlueprint> Buildings { get; }
         public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
-        public ReadonlyBlueprintCollection<IWeaponBlueprint> Weapons { get; }
+        public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
         public ReadonlyBlueprintCollection<IProjectileBlueprint> Projectiles { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
-            ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
+            ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies)
@@ -45,7 +46,7 @@ namespace Bearded.TD.Game
             Footprints = footprints;
             Buildings = buildings;
             Units = units;
-            Weapons = weapons;
+            ComponentOwners = componentOwners;
             Projectiles = projectiles;
             Upgrades = upgrades;
             Technologies = technologies;
@@ -61,7 +62,7 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.Footprints),
                 flatten(list, b => b.Buildings),
                 flatten(list, b => b.Units),
-                flatten(list, b => b.Weapons),
+                flatten(list, b => b.ComponentOwners),
                 flatten(list, b => b.Projectiles),
                 flatten(list, b => b.Upgrades),
                 flatten(list, b => b.Technologies)

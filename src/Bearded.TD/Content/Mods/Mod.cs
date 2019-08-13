@@ -2,11 +2,11 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Content.Mods
@@ -27,7 +27,7 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
-            ReadonlyBlueprintCollection<IWeaponBlueprint> weapons,
+            ReadonlyBlueprintCollection<IComponentOwnerBlueprint> weapons,
             ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,

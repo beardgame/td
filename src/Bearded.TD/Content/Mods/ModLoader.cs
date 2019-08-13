@@ -33,7 +33,6 @@ using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
 using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
-using WeaponBlueprintJson = Bearded.TD.Content.Serialization.Models.WeaponBlueprint;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods
@@ -84,7 +83,7 @@ namespace Bearded.TD.Content.Mods
 
                 var weapons = loadWeapons();
 
-                configureSerializerDependency(weapons, m => m.Blueprints.Weapons);
+                configureSerializerDependency(weapons, m => m.Blueprints.ComponentOwners);
 
                 var footprints = loadFootprints();
                 var buildings = loadBuildings(footprints, tags);
@@ -153,8 +152,8 @@ namespace Bearded.TD.Content.Mods
             private ReadonlyBlueprintCollection<IUnitBlueprint> loadUnits()
                 => loadBlueprints<IUnitBlueprint, UnitBlueprintJson>("defs/units");
 
-            private ReadonlyBlueprintCollection<IWeaponBlueprint> loadWeapons()
-                => loadBlueprints<IWeaponBlueprint, WeaponBlueprintJson>("defs/weapons");
+            private ReadonlyBlueprintCollection<IComponentOwnerBlueprint> loadWeapons()
+                => loadBlueprints<IComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint<Weapon>>("defs/blueprints");
 
             private ReadonlyBlueprintCollection<IUpgradeBlueprint> loadUpgrades()
                 => loadBlueprints<IUpgradeBlueprint, UpgradeBlueprintJson>("defs/upgrades");

@@ -21,6 +21,12 @@
                 "muzzleVelocity" : 20,
                 "fireRate" : 8
             }
+        },
+        {
+            "id" : "damageOnHit",
+            "parameters" : {
+                "damage" : 4
+            }
         }
     ]
 }
