@@ -1,6 +1,5 @@
 {
     "id" : "boringProjectile",
-    "speed" : 20,
     "color" : "Yellow",
     "sprite" : "particle.star",
     "components" : [

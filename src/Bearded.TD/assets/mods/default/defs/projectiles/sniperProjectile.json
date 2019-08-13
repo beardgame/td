@@ -1,6 +1,5 @@
 {
     "id" : "sniperProjectile",
-    "speed" : 50,
     "color" : "LightBlue",
     "sprite" : "particle.star",
     "components" : [
