@@ -11,7 +11,6 @@ using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
-using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -21,17 +20,15 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game { get; private set; }
         private GameRunner runner;
         private InputManager inputManager;
+        private FocusManager focusManager;
 
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
         public TechnologyUI TechnologyUI { get; }
 
-        private bool isGameMenuOpen;
-
+        public event VoidEventHandler FocusReset;
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
         public event VoidEventHandler EntityStatusClosed;
-        public event VoidEventHandler GameMenuOpened;
-        public event VoidEventHandler GameMenuClosed;
         public event VoidEventHandler GameOverTriggered;
         public event VoidEventHandler GameLeft;
 
@@ -53,6 +50,7 @@ namespace Bearded.TD.UI.Controls
             runner = parameters.runner;
 
             inputManager = dependencies.Resolve<InputManager>();
+            focusManager = dependencies.Resolve<FocusManager>();
 
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
@@ -73,7 +71,10 @@ namespace Bearded.TD.UI.Controls
 
         public override void Update(UpdateEventArgs args)
         {
-            updateGameMenuVisibility();
+            if (focusManager.FocusedControl == null)
+            {
+                FocusReset?.Invoke();
+            }
 
             var inputState = new InputState(inputManager);
 
@@ -143,38 +144,6 @@ namespace Bearded.TD.UI.Controls
                     Game.SelectionManager.SelectObject(@event.Building);
                     break;
             }
-        }
-
-        private void updateGameMenuVisibility()
-        {
-            if (inputManager.IsKeyHit(Key.Escape))
-            {
-                if (isGameMenuOpen)
-                {
-                    closeGameMenu();
-                }
-                else
-                {
-                    openGameMenu();
-                }
-            }
-        }
-
-        public void OnCloseGameMenuButtonClicked()
-        {
-            closeGameMenu();
-        }
-
-        private void openGameMenu()
-        {
-            GameMenuOpened?.Invoke();
-            isGameMenuOpen = true;
-        }
-
-        private void closeGameMenu()
-        {
-            isGameMenuOpen = false;
-            GameMenuClosed?.Invoke();
         }
 
         public void OnReturnToMainMenuButtonClicked()
