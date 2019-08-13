@@ -26,15 +26,12 @@ namespace Bearded.TD.UI.Controls
         public GameStatusUI GameStatusUI { get; }
         public TechnologyUI TechnologyUI { get; }
 
-        private bool isGameMenuOpen = false;
-        private bool isTechnologyScreenOpen = false;
+        private bool isGameMenuOpen;
 
         public event GenericEventHandler<ISelectable> EntityStatusOpened;
         public event VoidEventHandler EntityStatusClosed;
         public event VoidEventHandler GameMenuOpened;
         public event VoidEventHandler GameMenuClosed;
-        public event VoidEventHandler TechnologyScreenOpened;
-        public event VoidEventHandler TechnologyScreenClosed;
         public event VoidEventHandler GameOverTriggered;
         public event VoidEventHandler GameLeft;
 
@@ -60,9 +57,6 @@ namespace Bearded.TD.UI.Controls
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
             TechnologyUI.Initialize(Game);
-
-            GameStatusUI.TechnologyButtonClicked += openTechnologyScreen;
-            TechnologyUI.CloseButtonClicked += closeTechnologyScreen;
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
@@ -181,22 +175,6 @@ namespace Bearded.TD.UI.Controls
         {
             isGameMenuOpen = false;
             GameMenuClosed?.Invoke();
-        }
-
-        private void openTechnologyScreen()
-        {
-            if (isTechnologyScreenOpen) return;
-
-            TechnologyScreenOpened?.Invoke();
-            isTechnologyScreenOpen = true;
-        }
-
-        private void closeTechnologyScreen()
-        {
-            if (!isTechnologyScreenOpen) return;
-
-            isTechnologyScreenOpen = false;
-            TechnologyScreenClosed?.Invoke();
         }
 
         public void OnReturnToMainMenuButtonClicked()

@@ -6,7 +6,6 @@ namespace Bearded.TD.UI.Controls
     sealed class GameStatusUI
     {
         public event VoidEventHandler StatusChanged;
-        public event VoidEventHandler TechnologyButtonClicked;
 
         private GameInstance game;
 
@@ -22,11 +21,6 @@ namespace Bearded.TD.UI.Controls
         public void Update()
         {
             StatusChanged?.Invoke();
-        }
-
-        public void OnTechnologyButtonClicked()
-        {
-            TechnologyButtonClicked?.Invoke();
         }
     }
 }
