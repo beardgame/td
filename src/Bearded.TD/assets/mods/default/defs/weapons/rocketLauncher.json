@@ -1,0 +1,26 @@
+{
+    "id": "rocketLauncher",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 6
+            }
+        },
+        {
+            "id" : "linearAccelerationAim",
+            "parameters" : {
+                "acceleration" : 720,
+                "dragInverse" : 0.01
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "rocket",
+                "muzzleVelocity" : 5,
+                "fireRate" : 1
+            }
+        }
+    ]
+}

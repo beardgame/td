@@ -19,6 +19,8 @@ namespace Bearded.TD.Game.Projectiles
     class Projectile : GameObject
     {
         public event GenericEventHandler<EnemyUnit> HitEnemy;
+        public event VoidEventHandler HitLevel;
+        
         public Building DamageSource { get; }
 
         private readonly IProjectileBlueprint blueprint;
@@ -61,14 +63,17 @@ namespace Bearded.TD.Game.Projectiles
             var step = Velocity * elapsedTime;
             var ray = new Ray(Position, step);
 
-            var (result, _, _, enemy) = Game.Level.CastRayAgainstEnemies(
+            var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(
                 ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile));
+
+            Position = point;
 
             switch (result)
             {
                 case RayCastResult.HitNothing:
                     break;
                 case RayCastResult.HitLevel:
+                    HitLevel?.Invoke();
                     Delete();
                     break;
                 case RayCastResult.HitEnemy:
@@ -81,8 +86,6 @@ namespace Bearded.TD.Game.Projectiles
 
             if (Deleted)
                 return;
-
-            Position += step;
 
             components.Update(elapsedTime);
         }

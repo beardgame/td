@@ -13,6 +13,7 @@
         MovementSpeed,
         ResourceIncome,
         Range,
-        TurnSpeed
+        SplashRange,
+        TurnSpeed,
     }
 }
