@@ -83,6 +83,7 @@ namespace Bearded.TD.Game.Buildings
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot complete building more than once.");
             Completing?.Invoke();
             IsCompleted = true;
+            Game.Meta.Events.Send(new BuildingConstructionFinished(this));
         }
 
         public bool CanBeUpgradedBy(Faction faction) => faction.SharesResourcesWith(Faction);
@@ -97,6 +98,7 @@ namespace Bearded.TD.Game.Buildings
             upgrade.ApplyTo(Components);
 
             appliedUpgrades.Add(upgrade);
+            Game.Meta.Events.Send(new BuildingUpgradeFinished(this, upgrade));
         }
 
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
