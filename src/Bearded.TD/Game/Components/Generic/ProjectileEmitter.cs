@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Components.Generic
     sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters>
     {
         private Instant nextPossibleShootTime;
-        private bool wasShootingLastFrame;
+        private bool firstShotInBurst;
 
         public ProjectileEmitter(IProjectileEmitterParameters parameters)
             : base(parameters)
@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {
-            wasShootingLastFrame = false;
+            firstShotInBurst = true;
         }
 
         protected override void UpdateShooting(TimeSpan elapsedTime)
@@ -33,15 +33,16 @@ namespace Bearded.TD.Game.Components.Generic
             {
                 emitProjectile();
 
-                if (!wasShootingLastFrame)
+                if (firstShotInBurst)
                 {
                     nextPossibleShootTime = currentTime + 1 / Parameters.FireRate;
-                    break;
+                    firstShotInBurst = false;
                 }
-
-                nextPossibleShootTime += 1 / Parameters.FireRate;
+                else
+                {
+                    nextPossibleShootTime += 1 / Parameters.FireRate;   
+                }
             }
-            wasShootingLastFrame = true;
         }
 
         private void emitProjectile()
