@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game.Technologies
 {
-    sealed class TechnologyUnlocked : IEvent
+    struct TechnologyUnlocked : IEvent
     {
         public ITechnologyBlueprint Technology { get; }
 
