@@ -16,6 +16,13 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class TechnologyUIControl : CompositeControl
     {
+        private enum TechnologyState
+        {
+            Locked,
+            Queued,
+            Unlocked
+        }
+
         private readonly TechnologyUI model;
 
         private readonly ListControl technologyList = new ListControl(new ViewportClippingLayerControl());
@@ -61,6 +68,7 @@ namespace Bearded.TD.UI.Controls
             private readonly TechnologyManager factionTechnology;
             private readonly ImmutableList<ITechnologyBlueprint> lockedTechnologies;
             private readonly ImmutableList<ITechnologyBlueprint> unlockedTechnologies;
+            private readonly ImmutableHashSet<ITechnologyBlueprint> queuedTechnologies;
 
             public TechnologyListItemSource(GameInstance game, Action<ITechnologyBlueprint> buttonClickCallback)
             {
@@ -72,6 +80,8 @@ namespace Bearded.TD.UI.Controls
                 var lookup = asList.ToLookup(factionTechnology.IsTechnologyLocked);
                 lockedTechnologies = lookup[true].OrderBy(t => t.Name).ToImmutableList();
                 unlockedTechnologies = lookup[false].OrderBy(t => t.Name).ToImmutableList();
+                queuedTechnologies =
+                    lockedTechnologies.Where(factionTechnology.IsTechnologyQueued).ToImmutableHashSet();
             }
 
             public double HeightOfItemAt(int index) => 32;
@@ -81,10 +91,21 @@ namespace Bearded.TD.UI.Controls
                 var technology = getTechnologyFor(index);
                 var button = new TechnologyButton(
                     technology,
-                    index < lockedTechnologies.Count,
+                    stateFor(index),
                     () => technology.Cost <= factionTechnology.TechPoints);
                 button.Clicked += () => buttonClickCallback(technology);
                 return button;
+            }
+
+            private TechnologyState stateFor(int index)
+            {
+                if (index >= lockedTechnologies.Count)
+                {
+                    return TechnologyState.Unlocked;
+                }
+                return queuedTechnologies.Contains(getTechnologyFor(index))
+                    ? TechnologyState.Queued
+                    : TechnologyState.Locked;
             }
 
             private ITechnologyBlueprint getTechnologyFor(int index) =>
@@ -97,13 +118,13 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class TechnologyButton : Button
         {
-            private readonly bool isLocked;
+            private readonly TechnologyState state;
             private readonly Func<bool> canBeUnlocked;
             private readonly BackgroundBox backgroundBox;
 
-            public TechnologyButton(ITechnologyBlueprint technology, bool isLocked, Func<bool> canBeUnlocked)
+            public TechnologyButton(ITechnologyBlueprint technology, TechnologyState state, Func<bool> canBeUnlocked)
             {
-                this.isLocked = isLocked;
+                this.state = state;
                 this.canBeUnlocked = canBeUnlocked;
 
                 this.WithDefaultStyle(technology.Name, fontSize: 20);
@@ -113,17 +134,26 @@ namespace Bearded.TD.UI.Controls
 
             public override void Render(IRendererRouter r)
             {
-                if (!isLocked)
+                switch (state)
                 {
-                    backgroundBox.Color = .25f * Color.Green;
-                }
-                else if (canBeUnlocked())
-                {
-                    backgroundBox.Color = .25f * Color.Yellow;
-                }
-                else
-                {
-                    backgroundBox.Color = .25f * Color.Red;
+                    case TechnologyState.Locked:
+                        if (canBeUnlocked())
+                        {
+                            backgroundBox.Color = .25f * Color.Yellow;
+                        }
+                        else
+                        {
+                            backgroundBox.Color = .25f * Color.Red;
+                        }
+                        break;
+                    case TechnologyState.Queued:
+                        backgroundBox.Color = .25f * Color.Aqua;
+                        break;
+                    case TechnologyState.Unlocked:
+                        backgroundBox.Color = .25f * Color.Green;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 base.Render(r);
@@ -153,13 +183,22 @@ namespace Bearded.TD.UI.Controls
 
                 unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
                 Add(unlockButton.Anchor(a => a.Top(height: 32, margin: 4).Right(margin: 8, width: 200)));
-                unlockButton.Clicked += () =>
-                    game.Request(UnlockTechnology.Request(game.Me.Faction, technology.ValueOrDefault(null)));
+                unlockButton.Clicked += onUnlockButtonClicked;
 
                 unlocksList = new ListControl().Anchor(a => a.Top(margin: 80));
                 Add(unlocksList);
 
                 SetTechnologyToDisplay(Maybe.Nothing);
+            }
+
+            private void onUnlockButtonClicked()
+            {
+                var tech = technology.ValueOrDefault(null);
+                var factionTechnology = game.Me.Faction.Technology;
+
+                game.Request(factionTechnology.TechPoints >= tech.Cost
+                    ? UnlockTechnology.Request(game.Me.Faction, tech)
+                    : QueueTechnology.Request(game.Me.Faction, tech));
             }
 
             public void SetTechnologyToDisplay(Maybe<ITechnologyBlueprint> technologyToDisplay)
@@ -191,8 +230,23 @@ namespace Bearded.TD.UI.Controls
             {
                 var myFactionTechManager = game.Me.Faction.Technology;
                 var isTechLocked = myFactionTechManager.IsTechnologyLocked(tech);
-                unlockButton.IsEnabled = myFactionTechManager.TechPoints >= tech.Cost && isTechLocked;
-                unlockButtonLabel.Text = isTechLocked ? $"Unlock for {tech.Cost} smarts" : "Unlocked";
+                if (!isTechLocked)
+                {
+                    unlockButtonLabel.Text = "Unlocked";
+                }
+                else
+                {
+                    if (myFactionTechManager.IsTechnologyQueued(tech))
+                    {
+                        unlockButtonLabel.Text = $"Queued ({myFactionTechManager.QueuePositionFor(tech)})";
+                    }
+                    else
+                    {
+                        unlockButtonLabel.Text = myFactionTechManager.TechPoints >= tech.Cost
+                            ? $"Unlock ({tech.Cost} smarts)"
+                            : $"Queue ({tech.Cost} smarts)";
+                    }
+                }
             }
 
             private void updateForEmpty() {}
