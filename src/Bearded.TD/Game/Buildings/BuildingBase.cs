@@ -9,7 +9,6 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
-using OpenTK.Graphics.ES30;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
@@ -19,7 +18,7 @@ namespace Bearded.TD.Game.Buildings
     {
         private PositionedFootprint footprint;
 
-        protected ComponentCollection<T> Components { get; } = new ComponentCollection<T>();
+        protected ComponentCollection<T> Components { get; }
 
         public abstract SelectionState SelectionState { get; }
 
@@ -38,7 +37,7 @@ namespace Bearded.TD.Game.Buildings
 
         public Faction Faction { get; }
         public Position2 Position { get; private set; }
-        
+
         public Matrix2 LocalCoordinateTransform { get; private set; }
         public Angle LocalOrientationTransform => Footprint.Orientation;
 
@@ -52,6 +51,7 @@ namespace Bearded.TD.Game.Buildings
             Blueprint = blueprint;
             Faction = faction;
             Footprint = footprint;
+            Components = new ComponentCollection<T>((T)this);
         }
 
         private void recalculateLocalTransform()
@@ -70,7 +70,7 @@ namespace Bearded.TD.Game.Buildings
         {
             base.OnAdded();
 
-            Components.Add((T)this, InitialiseComponents());
+            Components.Add(InitialiseComponents());
         }
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
 
