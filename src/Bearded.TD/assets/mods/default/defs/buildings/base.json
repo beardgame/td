@@ -19,7 +19,7 @@
         },
         {
             "id" : "incomeOverTime",
-            "parameters" : { "incomePerSecond" : 5 }
+            "parameters" : { "incomePerSecond" : 0 }
         }
     ]
 }
