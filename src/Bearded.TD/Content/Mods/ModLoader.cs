@@ -204,23 +204,25 @@ namespace Bearded.TD.Content.Mods
             private void configureSerializer()
             {
                 serializer = new JsonSerializer();
-                serializer.Converters.Add(new StepConverter());
-                serializer.Converters.Add(new SpaceTime1Converter<Unit>(v => v.U()));
-                serializer.Converters.Add(new SpaceTime1Converter<Speed>(SpaceTimeExtensions.UnitsPerSecond));
-                serializer.Converters.Add(new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()));
-                serializer.Converters.Add(new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()));
-                serializer.Converters.Add(new SpaceTime1Converter<Direction2>(Direction2.FromDegrees));
-                serializer.Converters.Add(new SpaceTime1Converter<Angle>(Angle.FromDegrees));
-                serializer.Converters.Add(new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees));
-                serializer.Converters.Add(new SpaceTime1Converter<Volume>(v => new Volume(v)));
-                serializer.Converters.Add(new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)));
-                serializer.Converters.Add(new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees));
-                serializer.Converters.Add(new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)));
-                serializer.Converters.Add(Converters.ColorContainerConverter);
-                serializer.Converters.Add(ComponentConverterFactory.ForBuildingComponents());
-                serializer.Converters.Add(ComponentConverterFactory.ForBaseComponent());
-                serializer.Converters.Add(new TechnologyUnlockConverter());
-                serializer.Converters.Add(new UpgradeEffectConverter());
+                serializer.Converters.AddRange(
+                    new StepConverter(),
+                    new SpaceTime1Converter<Unit>(v => v.U()),
+                    new SpaceTime1Converter<Speed>(SpaceTimeExtensions.UnitsPerSecond),
+                    new SpaceTime1Converter<Bearded.Utilities.SpaceTime.TimeSpan>(v => ((double) v).S()),
+                    new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()),
+                    new SpaceTime1Converter<Direction2>(Direction2.FromDegrees),
+                    new SpaceTime1Converter<Angle>(Angle.FromDegrees),
+                    new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
+                    new SpaceTime1Converter<Volume>(v => new Volume(v)),
+                    new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)),
+                    new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
+                    new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
+                    Converters.ColorContainerConverter,
+                    ComponentConverterFactory.ForBuildingComponents(),
+                    ComponentConverterFactory.ForBaseComponent(),
+                    new TechnologyUnlockConverter(),
+                    new UpgradeEffectConverter()
+                );
                 foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
                     serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
             }
