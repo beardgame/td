@@ -164,7 +164,14 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly GameInstance game;
 
-            private readonly Label headerLabel = new Label {FontSize = 32, TextAnchor = new Vector2d(0, .5)};
+            private readonly Label headerLabel = new Label
+            {
+                FontSize = 32, TextAnchor = Label.TextAnchorLeft
+            };
+            private readonly Label costLabel = new Label
+            {
+                Color = Constants.Game.GameUI.TechPointsColor, FontSize = 18, TextAnchor = Label.TextAnchorLeft
+            };
 
             private readonly Label unlockButtonLabel = new Label {FontSize = 16};
             private readonly Button unlockButton;
@@ -178,14 +185,15 @@ namespace Bearded.TD.UI.Controls
                 this.game = game;
 
                 Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
-                Add(new Label("Unlocks:") { FontSize = 24, TextAnchor = new Vector2d(0, .5) }
-                    .Anchor(a => a.Top(margin: 48, height: 32)));
+                Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
+                Add(new Label("Unlocks:") { FontSize = 24, TextAnchor = Label.TextAnchorLeft }
+                    .Anchor(a => a.Top(margin: 80, height: 32)));
 
                 unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
                 Add(unlockButton.Anchor(a => a.Top(height: 32, margin: 4).Right(margin: 8, width: 200)));
                 unlockButton.Clicked += onUnlockButtonClicked;
 
-                unlocksList = new ListControl().Anchor(a => a.Top(margin: 80));
+                unlocksList = new ListControl().Anchor(a => a.Top(margin: 120));
                 Add(unlocksList);
 
                 SetTechnologyToDisplay(Maybe.Nothing);
@@ -208,12 +216,14 @@ namespace Bearded.TD.UI.Controls
                     onValue: tech =>
                     {
                         headerLabel.Text = tech.Name;
+                        costLabel.Text = $"{tech.Cost} tech points";
                         unlockButton.IsVisible = true;
                         unlocksList.ItemSource = new TechnologyUnlocksListItemSource(tech.Unlocks);
                     },
                     onNothing: () =>
                     {
                         headerLabel.Text = "Select a technology from the list";
+                        costLabel.Text = "";
                         unlockButton.IsVisible = false;
                         unlocksList.ItemSource =
                             new TechnologyUnlocksListItemSource(Enumerable.Empty<ITechnologyUnlock>());
@@ -242,14 +252,12 @@ namespace Bearded.TD.UI.Controls
                     }
                     else
                     {
-                        unlockButtonLabel.Text = myFactionTechManager.TechPoints >= tech.Cost
-                            ? $"Unlock ({tech.Cost} smarts)"
-                            : $"Queue ({tech.Cost} smarts)";
+                        unlockButtonLabel.Text = myFactionTechManager.TechPoints >= tech.Cost ? "Unlock" : "Queue";
                     }
                 }
             }
 
-            private void updateForEmpty() {}
+            private static void updateForEmpty() {}
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
