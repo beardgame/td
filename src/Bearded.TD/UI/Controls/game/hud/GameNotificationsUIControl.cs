@@ -2,7 +2,10 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Game;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 using OpenTK;
+using OpenTK.Input;
+using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -64,6 +67,19 @@ namespace Bearded.TD.UI.Controls
                 Add(new BackgroundBox().Anchor(a => a.MarginAllSides(margin)));
                 Add(new Label { Text = notification.Text, TextAnchor = new Vector2d(0, .5), FontSize = 14 }
                     .Anchor(a => a.MarginAllSides(margin * 2)));
+            }
+
+            public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
+            {
+                if (eventArgs.MouseButton == MouseButton.Left)
+                {
+                    notification.Subject
+                        .SelectMany(gameObject => Maybe.FromNullable(gameObject as IPositionable))
+                        .Match(positionable => game.Camera.Position = positionable.Position.NumericValue);
+                    eventArgs.Handled = true;
+                    return;
+                }
+                base.MouseButtonHit(eventArgs);
             }
         }
     }

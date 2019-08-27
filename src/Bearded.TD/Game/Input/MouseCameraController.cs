@@ -59,7 +59,7 @@ namespace Bearded.TD.Game.Input
             if (!isDragging)
                 constrictCameraToLevel(args);
         }
-        
+
         private void updateScrolling(UpdateEventArgs args, InputState input)
         {
             var scrollSpeed = Constants.Camera.BaseScrollSpeed * camera.Distance;

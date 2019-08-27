@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
                 recalculateViewMatrix();
             }
         }
-        
+
         public Matrix4 ViewMatrix { get; private set; }
 
         public GameCamera()
