@@ -31,12 +31,22 @@ namespace Bearded.TD.Game.Workers
 
             task = new MiningTask(taskId, this, tile, Game.GeometryLayer);
             faction.Workers.RegisterTask(task);
+            Game.MiningLayer.MarkTileForMining(tile);
+        }
+
+        protected override void OnDelete()
+        {
+            Game.MiningLayer.CancelTileForMining(tile);
+
+            base.OnDelete();
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (task.Finished)
-                Delete();
+            if (!task.Finished) return;
+
+            Game.Meta.Events.Send(new TileMined(faction, tile));
+            Delete();
         }
 
         public override void Draw(GeometryManager geometries)
