@@ -3,12 +3,12 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    sealed class TechEffectTemplateConverter : JsonConverter
+    sealed class ComponentParameterTemplateConverter : JsonConverter
     {
         private readonly Type interfaceType;
         private readonly Type templateType;
 
-        public TechEffectTemplateConverter(Type interfaceType, Type templateType)
+        public ComponentParameterTemplateConverter(Type interfaceType, Type templateType)
         {
             this.interfaceType = interfaceType;
             this.templateType = templateType;
