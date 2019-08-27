@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
@@ -12,7 +13,8 @@ namespace Bearded.TD.Content.Mods
         private readonly ReadonlyBlueprintCollection<SpriteSet> thisModsSpriteSets;
         private readonly Dictionary<string, Mod> mods;
 
-        public SpriteResolver(ModMetadata thisMod, ReadonlyBlueprintCollection<SpriteSet> thisModsSpriteSets, IEnumerable<Mod> otherMods)
+        public SpriteResolver(ModMetadata thisMod, ReadonlyBlueprintCollection<SpriteSet> thisModsSpriteSets,
+            IEnumerable<Mod> otherMods)
         {
             this.thisMod = thisMod;
             this.thisModsSpriteSets = thisModsSpriteSets;
@@ -24,16 +26,25 @@ namespace Bearded.TD.Content.Mods
 
         public ISprite Resolve(ModAwareSpriteId id)
         {
+            // TODO: consider extracting shared branching from ModAwareDependencyResolver
+            // (but note that it is using a different id type)
             var modId = id.SpriteSet.ModId;
 
-            if (modId == thisMod.Id)
+            try
             {
-                return spriteFrom(thisModsSpriteSets, id);
-            }
+                if (modId == thisMod.Id)
+                {
+                    return spriteFrom(thisModsSpriteSets, id);
+                }
 
-            if (mods.TryGetValue(modId, out var mod))
+                if (mods.TryGetValue(modId, out var mod))
+                {
+                    return spriteFrom(mod.Blueprints.Sprites, id);
+                }
+            }
+            catch (Exception e)
             {
-                return spriteFrom(mod.Blueprints.Sprites, id);
+                throw new InvalidDataException($"Failed to find sprite with id \"{id}\".", e);
             }
 
             throw new InvalidDataException($"Unknown mod in identifier {id}");

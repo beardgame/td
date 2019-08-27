@@ -1,13 +1,18 @@
 {
     "id" : "rocket",
-    "color" : "Orange",
-    "sprite" : "particle.orb-soft",
     "components" : [
         {
             "id" : "splashDamageOnHit",
             "parameters" : {
                 "damage" : 25,
                 "range" : 1.5
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "color" : "Orange",
+                "sprite" : "particle.orb-soft"
             }
         }
     ]

@@ -10,22 +10,20 @@ using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
 using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBlueprint;
+using ComponentOwnerBlueprint = Bearded.TD.Content.Models.ComponentOwnerBlueprint;
 using FootprintGroup = Bearded.TD.Game.World.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Content.Serialization.Models.FootprintGroup;
 using Material = Bearded.TD.Content.Models.Material;
 using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
-using ProjectileBlueprintJson = Bearded.TD.Content.Serialization.Models.ProjectileBlueprint;
 using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using Shader = Bearded.TD.Content.Models.Shader;
@@ -71,19 +69,15 @@ namespace Bearded.TD.Content.Mods
 
                 configureSerializerDependency(shaders, m => m.Blueprints.Shaders);
 
-                var materials = loadMaterials(shaders);
+                var materials = loadMaterials();
 
                 var sprites = loadSprites();
 
                 configureSpriteSerializerDependency(sprites);
+                
+                var componentOwners = loadComponentOwners();
 
-                var projectiles = loadProjectiles();
-
-                configureSerializerDependency(projectiles, m => m.Blueprints.Projectiles);
-
-                var weapons = loadWeapons();
-
-                configureSerializerDependency(weapons, m => m.Blueprints.ComponentOwners);
+                configureSerializerDependency(componentOwners, m => m.Blueprints.ComponentOwners);
 
                 var footprints = loadFootprints();
                 var buildings = loadBuildings(footprints, tags);
@@ -107,8 +101,7 @@ namespace Bearded.TD.Content.Mods
                     footprints,
                     buildings,
                     units,
-                    weapons,
-                    projectiles,
+                    componentOwners,
                     upgrades,
                     technologies,
                     tags.GetForCurrentMod());
@@ -120,7 +113,7 @@ namespace Bearded.TD.Content.Mods
                 return loadBlueprintsDependingOnJsonFile<Shader, ShaderJson, ShaderLoader>("gfx/shaders", loader);
             }
 
-            private ReadonlyBlueprintCollection<Material> loadMaterials(ReadonlyBlueprintCollection<Shader> shaders)
+            private ReadonlyBlueprintCollection<Material> loadMaterials()
             {
                 var loader = new MaterialLoader(context);
                 return loadBlueprintsDependingOnJsonFile<Material, MaterialJson, MaterialLoader>("gfx/materials", loader);
@@ -133,10 +126,10 @@ namespace Bearded.TD.Content.Mods
             }
 
             private ReadonlyBlueprintCollection<IBuildingBlueprint> loadBuildings(ReadonlyBlueprintCollection<FootprintGroup> footprints, UpgradeTagResolver tagResolver)
-                => loadBlueprints<IBuildingBlueprint, BuildingBlueprintJson, (DependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
+                => loadBlueprints<IBuildingBlueprint, BuildingBlueprintJson, (BlueprintDependencyResolver<FootprintGroup> footprints, UpgradeTagResolver tags)>(
                 "defs/buildings",
                 (
-                    new DependencyResolver<FootprintGroup>(
+                    new BlueprintDependencyResolver<FootprintGroup>(
                         meta, footprints, Enumerable.Empty<Mod>(),
                         m => m.Blueprints.Footprints
                         ),
@@ -146,14 +139,61 @@ namespace Bearded.TD.Content.Mods
             private ReadonlyBlueprintCollection<FootprintGroup> loadFootprints()
                 => loadBlueprints<FootprintGroup, FootprintGroupJson>("defs/footprints");
 
-            private ReadonlyBlueprintCollection<IProjectileBlueprint> loadProjectiles()
-                => loadBlueprints<IProjectileBlueprint, ProjectileBlueprintJson>("defs/projectiles");
-
             private ReadonlyBlueprintCollection<IUnitBlueprint> loadUnits()
                 => loadBlueprints<IUnitBlueprint, UnitBlueprintJson>("defs/units");
 
-            private ReadonlyBlueprintCollection<IComponentOwnerBlueprint> loadWeapons()
-                => loadBlueprints<IComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint<Weapon>>("defs/blueprints");
+            private ReadonlyBlueprintCollection<IComponentOwnerBlueprint> loadComponentOwners()
+            {
+                var componentOwnerProxyBlueprintCollector = new ComponentOwnerProxyBlueprintResolver(meta, Enumerable.Empty<Mod>());
+                var dependencyConverter = new DependencyConverter<IComponentOwnerBlueprint>(componentOwnerProxyBlueprintCollector);
+                
+                var dependenciesByBlueprintId = new Dictionary<string, (ComponentOwnerBlueprint Blueprint, FileInfo File, List<ComponentOwnerBlueprintProxy> Dependencies)>();
+                
+                serializer.Converters.Add(dependencyConverter);
+
+                var path = "defs/blueprints";
+                
+                var files = jsonFilesIn(path);
+                
+                if (files.IsNullOrEmpty())
+                    return new ReadonlyBlueprintCollection<IComponentOwnerBlueprint>(Enumerable.Empty<IComponentOwnerBlueprint>());
+
+                var blueprints = loadBlueprintsFromFiles<ComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint, Void>
+                        (path, files, postDeserializationAction: recordBlueprintDependencies)
+                        .ToList();
+                
+                serializer.Converters.Remove(dependencyConverter);
+                
+                var validBlueprints = blueprints.Where(resolveDependencies);
+
+                return new ReadonlyBlueprintCollection<IComponentOwnerBlueprint>(validBlueprints);
+
+                void recordBlueprintDependencies(FileInfo file, ComponentOwnerBlueprint blueprint)
+                {
+                    var proxies = componentOwnerProxyBlueprintCollector.GetAndResetCurrentProxies();
+
+                    dependenciesByBlueprintId[blueprint.Id] = (blueprint, file, proxies);
+                }
+
+                bool resolveDependencies(IComponentOwnerBlueprint blueprint)
+                {
+                    var (_, file, proxies) = dependenciesByBlueprintId[blueprint.Id];
+
+                    foreach (var proxy in proxies)
+                    {
+                        if (!dependenciesByBlueprintId.TryGetValue(proxy.Id, out var dependency))
+                        {
+                            context.Logger.Error?.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': Could not find reference '{proxy.Id}'");
+                            
+                            return false;
+                        }
+                        
+                        proxy.InjectActualBlueprint(dependency.Blueprint);
+                    }
+
+                    return true;
+                }
+            }
 
             private ReadonlyBlueprintCollection<IUpgradeBlueprint> loadUpgrades()
                 => loadBlueprints<IUpgradeBlueprint, UpgradeBlueprintJson>("defs/upgrades");
@@ -197,7 +237,7 @@ namespace Bearded.TD.Content.Mods
                     Func<Mod, ReadonlyBlueprintCollection<TBlueprint>> blueprintSelector)
                     where TBlueprint : IBlueprint
             {
-                var dependencyResolver = new DependencyResolver<TBlueprint>(
+                var dependencyResolver = new BlueprintDependencyResolver<TBlueprint>(
                     meta, blueprints, Enumerable.Empty<Mod>(), blueprintSelector);
                 serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
             }
@@ -234,8 +274,9 @@ namespace Bearded.TD.Content.Mods
                     );
             }
 
-            private List<TBlueprint> loadBlueprintsFromFiles
-                <TBlueprint, TJsonModel, TResolvers>(string path, FileInfo[] files, Func<FileInfo, TResolvers> buildResolvers)
+            private List<TBlueprint> loadBlueprintsFromFiles<TBlueprint, TJsonModel, TResolvers>
+                (string path, FileInfo[] files, Func<FileInfo, TResolvers> buildResolvers = null, 
+                    Action<FileInfo, TBlueprint> postDeserializationAction = null)
                 where TBlueprint : IBlueprint
                 where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
             {
@@ -248,7 +289,7 @@ namespace Bearded.TD.Content.Mods
                         var text = file.OpenText();
                         var reader = new JsonTextReader(text);
                         var jsonModel = serializer.Deserialize<TJsonModel>(reader);
-                        var finalResolvers = buildResolvers(file);
+                        var finalResolvers = buildResolvers == null ? default(TResolvers) : buildResolvers(file);
                         var gameModel = jsonModel.ToGameModel(finalResolvers);
 
                         if (Path.GetFileNameWithoutExtension(file.FullName) != gameModel.Id)
@@ -257,11 +298,14 @@ namespace Bearded.TD.Content.Mods
                                     $"Loaded blueprint {meta.Id}.{gameModel.Id} with mismatching filename {file.Name}");
                         }
 
+                        postDeserializationAction?.Invoke(file, gameModel);
+
                         blueprints.Add(gameModel);
                     }
                     catch (Exception e)
                     {
                         context.Logger.Error?.Log($"Error loading '{meta.Id}/{path}/../{file.Name}': {e.Message}");
+                        context.Logger.Debug?.Log(e.StackTrace);
                     }
                 }
 

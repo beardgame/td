@@ -9,7 +9,7 @@ namespace Bearded.TD.Content.Serialization.Models
     // ReSharper disable once ClassNeverInstantiated.Global
     sealed class BuildingBlueprint
         : IConvertsTo<Content.Models.BuildingBlueprint,
-                (DependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags)>
+                (BlueprintDependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags)>
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -19,7 +19,7 @@ namespace Bearded.TD.Content.Serialization.Models
         public List<IBuildingComponent> Components { get; set; }
 
         public Content.Models.BuildingBlueprint ToGameModel(
-            (DependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
+            (BlueprintDependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
         {
             return new Content.Models.BuildingBlueprint(
                 Id,

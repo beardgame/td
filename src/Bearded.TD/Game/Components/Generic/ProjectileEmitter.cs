@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
             => base.CanApplyUpgradeEffect(effect)
-               || Parameters.Projectile.CanApplyUpgradeEffect(effect);
+               || Parameters.Projectile.CanApplyUpgradeEffect<Projectile>(effect);
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {

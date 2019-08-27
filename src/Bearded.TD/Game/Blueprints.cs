@@ -25,7 +25,6 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IBuildingBlueprint> Buildings { get; }
         public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
         public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
-        public ReadonlyBlueprintCollection<IProjectileBlueprint> Projectiles { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
 
@@ -36,7 +35,6 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
-            ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies)
         {
@@ -47,7 +45,6 @@ namespace Bearded.TD.Game
             Buildings = buildings;
             Units = units;
             ComponentOwners = componentOwners;
-            Projectiles = projectiles;
             Upgrades = upgrades;
             Technologies = technologies;
         }
@@ -63,7 +60,6 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.Buildings),
                 flatten(list, b => b.Units),
                 flatten(list, b => b.ComponentOwners),
-                flatten(list, b => b.Projectiles),
                 flatten(list, b => b.Upgrades),
                 flatten(list, b => b.Technologies)
                 );

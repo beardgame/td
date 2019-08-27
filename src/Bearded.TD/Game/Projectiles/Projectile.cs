@@ -16,21 +16,21 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject
+    class Projectile : GameObject, IPositionable
     {
         public event GenericEventHandler<EnemyUnit> HitEnemy;
         public event VoidEventHandler HitLevel;
         
         public Building DamageSource { get; }
 
-        private readonly IProjectileBlueprint blueprint;
+        private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components = new ComponentCollection<Projectile>();
 
         public Position2 Position { get; private set; }
         public Velocity2 Velocity { get; private set; }
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IProjectileBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
         {
             this.blueprint = blueprint;
             DamageSource = damageSource;
@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Projectiles
             Velocity = velocity;
         }
 
-        public Projectile(IProjectileBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
             : this(blueprint, position, direction * speed, damageSource)
         {
         }
@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Projectiles
         {
             CurrentTile = Level.GetTile(Position);
 
-            components.Add(this, blueprint.GetComponents());
+            components.Add(this, blueprint.GetComponents<Projectile>());
 
             foreach (var upgrade in DamageSource.AppliedUpgrades)
             {
@@ -92,8 +92,6 @@ namespace Bearded.TD.Game.Projectiles
 
         public override void Draw(GeometryManager geometries)
         {
-            blueprint.Sprite.Draw(Position.NumericValue.WithZ(0.2f), blueprint.Color, 0.1f);
-
             components.Draw(geometries);
         }
     }

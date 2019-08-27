@@ -3,7 +3,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
@@ -28,7 +27,6 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IComponentOwnerBlueprint> weapons,
-            ReadonlyBlueprintCollection<IProjectileBlueprint> projectiles,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
             IDictionary<string, UpgradeTag> tags)
@@ -36,7 +34,7 @@ namespace Bearded.TD.Content.Mods
             Id = id;
             Name = name;
             Blueprints = new Blueprints(
-                shaders, materials, sprites, footprints, buildings, units, weapons, projectiles, upgrades, technologies
+                shaders, materials, sprites, footprints, buildings, units, weapons, upgrades, technologies
                 );
             Tags = tags;
         }

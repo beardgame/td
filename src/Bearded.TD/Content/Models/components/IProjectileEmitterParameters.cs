@@ -1,11 +1,12 @@
-﻿using Bearded.TD.Shared.TechEffects;
+﻿using Bearded.TD.Game.Components;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Content.Models
 {
     interface IProjectileEmitterParameters : IParametersTemplate<IProjectileEmitterParameters>
     {
-        ProjectileBlueprint Projectile { get; }
+        IComponentOwnerBlueprint Projectile { get; }
 
         [Modifiable(6.6, Type = AttributeType.FireRate)]
         Frequency FireRate { get; }

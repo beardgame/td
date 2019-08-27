@@ -1,12 +1,17 @@
 {
     "id" : "boringProjectile",
-    "color" : "Yellow",
-    "sprite" : "particle.star",
     "components" : [
         {
             "id" : "damageOnHit",
             "parameters" : {
                 "damage" : 4
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "particle.star",
+                "color" : "Yellow"
             }
         }
     ]
