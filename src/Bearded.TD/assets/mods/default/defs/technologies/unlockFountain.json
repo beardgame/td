@@ -3,6 +3,7 @@
     "name" : "Flow Like Water",
     "cost" : 40,
     "unlocks": [
-        { "type" : "building", "blueprint" : "fountain" }
+        { "type" : "building", "blueprint" : "fountain" },
+        { "type" : "upgrade", "blueprint" : "generateWater" }
     ]
 }

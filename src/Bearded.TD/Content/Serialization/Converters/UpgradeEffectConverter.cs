@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace Bearded.TD.Content.Serialization.Converters
         {
             Unknown = 0,
             Modification = 1,
+            Component = 2,
         }
 
         protected override IUpgradeEffect ReadJson(JsonReader reader, JsonSerializer serializer)
@@ -29,6 +31,9 @@ namespace Bearded.TD.Content.Serialization.Converters
                     var parameters = new ModificationParameters();
                     serializer.Populate(json.GetValue("parameters").CreateReader(), parameters);
                     return new ParameterModifiable(parameters.AttributeType, getModification(parameters));
+                case UpgradeEffectType.Component:
+                    var component = serializer.Deserialize<IComponent>(json.GetValue("parameters").CreateReader());
+                    return new ComponentModifiable(component);
                 default:
                     throw new InvalidDataException("Upgrade effect must have a valid type.");
             }

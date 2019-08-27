@@ -1,23 +1,29 @@
+using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Shared.TechEffects;
+using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Game.Upgrades
 {
-    sealed class ComponentModifiable<TComponentOwner, TComponentParameters> : UpgradeEffectBase
-        where TComponentParameters : IParametersTemplate<TComponentParameters>
+    sealed class ComponentModifiable : UpgradeEffectBase
     {
-        private readonly ComponentFactory<TComponentOwner, TComponentParameters> componentFactory;
+        private readonly IComponent component;
 
-        public ComponentModifiable(ComponentFactory<TComponentOwner, TComponentParameters> componentFactory)
+        public ComponentModifiable(IComponent component)
         {
-            this.componentFactory = componentFactory;
+            this.component = component;
         }
 
-        public override bool CanApplyTo<T>(ComponentCollection<T> subject) => typeof(T) == typeof(TComponentOwner);
+        public override bool CanApplyTo<T>(ComponentCollection<T> subject) =>
+            tryCreateComponentFactory<T>() != null;
 
         public override void ApplyTo<T>(ComponentCollection<T> subject)
         {
-            subject.Add((IComponent<T>) componentFactory.Create());
+            subject.Add(tryCreateComponentFactory<T>().Create());
+        }
+
+        private IComponentFactory<T> tryCreateComponentFactory<T>()
+        {
+            return ComponentFactories.CreateComponentFactory<T>(component);
         }
     }
 }
