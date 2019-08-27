@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Weapons
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
 
-        private readonly ComponentCollection<Weapon> components = new ComponentCollection<Weapon>();
+        private readonly ComponentCollection<Weapon> components;
 
         public Maybe<Direction2> AimDirection { get; private set; }
         private Angle currentDirectionOffset;
@@ -38,7 +38,8 @@ namespace Bearded.TD.Game.Weapons
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
 
-            components.Add(this, blueprint.GetComponents<Weapon>());
+            components = new ComponentCollection<Weapon>(this);
+            components.Add(blueprint.GetComponents<Weapon>());
         }
 
         public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(components);
@@ -52,7 +53,7 @@ namespace Bearded.TD.Game.Weapons
         {
             AimDirection = Just(direction);
         }
-        
+
         public void ShootThisFrame()
         {
             ShootingThisFrame = true;

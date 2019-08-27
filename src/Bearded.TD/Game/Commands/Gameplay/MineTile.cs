@@ -2,7 +2,6 @@
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
-using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -29,15 +28,12 @@ namespace Bearded.TD.Game.Commands
                 this.taskId = taskId;
             }
 
-            public override bool CheckPreconditions(Player actor)
-            {
-                return game.State.Level.IsValid(tile)
-                    && game.State.GeometryLayer[tile].Type == TileType.Wall
-                    && faction.SharesWorkersWith(actor.Faction);
-            }
+            public override bool CheckPreconditions(Player actor) =>
+                game.State.MiningLayer.CanTileBeMined(tile)
+                && faction.SharesWorkersWith(actor.Faction);
 
-            public override ISerializableCommand<GameInstance> ToCommand()
-                => new Implementation(game, faction, tile, game.Meta.Ids.GetNext<IWorkerTask>());
+            public override ISerializableCommand<GameInstance> ToCommand() =>
+                new Implementation(game, faction, tile, game.Meta.Ids.GetNext<IWorkerTask>());
 
             public override void Execute()
             {

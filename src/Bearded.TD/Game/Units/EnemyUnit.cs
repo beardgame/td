@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Units
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
 
-        private readonly ComponentCollection<EnemyUnit> components = new ComponentCollection<EnemyUnit>();
+        private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableList<ISyncable> syncables;
         private Health<EnemyUnit> health;
         private bool isDead;
@@ -57,6 +57,7 @@ namespace Bearded.TD.Game.Units
             Id = id;
             this.blueprint = blueprint;
 
+            components = new ComponentCollection<EnemyUnit>(this);
             enemyMovement = new EnemyMovementDummy(this, currentTile);
         }
 
@@ -69,7 +70,7 @@ namespace Bearded.TD.Game.Units
 
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
-            components.Add(this, blueprint.GetComponents());
+            components.Add(blueprint.GetComponents());
             health = components.Get<Health<EnemyUnit>>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()

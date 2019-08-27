@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Utilities;
+﻿using amulware.Graphics;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD
@@ -34,6 +35,9 @@ namespace Bearded.TD
                 public static readonly TimeSpan NotificationDuration = 5.S();
                 public static readonly TimeSpan NotificationFadeOutTime = 1.S();
                 public const int MaxNotifications = 4;
+
+                public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
+                public static readonly Color TechPointsColor = Color.Turquoise;
             }
 
             public static class EnemyGeneration
@@ -55,13 +59,15 @@ namespace Bearded.TD
 
             public static class Worker
             {
-                public static readonly Acceleration Acceleration = 10.UnitsPerSecondSquared();
-                public const float Friction = .1f;
-
-                public static readonly Squared<Unit> WorkRadiusSquared = World.HexagonOuterRadiusSquared;
                 public const double WorkerSpeed = 15;
-                
-                public const double TotalMiningProgressRequired = 6 * WorkerSpeed;
+
+                public const double TotalMiningProgressRequired = 8 * WorkerSpeed;
+            }
+
+            public static class Resources
+            {
+                public const long InitialResources = 0;
+                public const double ResourcesOnKillFactor = 0;
             }
 
             public static class Enemy

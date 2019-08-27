@@ -12,7 +12,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler ActionsChanged;
 
         private readonly InteractionHandler[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
-        private readonly string[] labels = new string[Constants.Game.GameUI.ActionBarSize];
+        private readonly (string, string)[] labels = new (string, string)[Constants.Game.GameUI.ActionBarSize];
         private GameInstance game;
         private int lastFilledIndex = -1;
 
@@ -21,7 +21,7 @@ namespace Bearded.TD.UI.Controls
             this.game = game;
 
             handlers[Constants.Game.GameUI.ActionBarSize - 1] = new MiningInteractionHandler(game, game.Me.Faction);
-            labels[Constants.Game.GameUI.ActionBarSize - 1] = "Mine tile";
+            labels[Constants.Game.GameUI.ActionBarSize - 1] = ("Mine tile", null);
 
             if (game.Me.Faction.Technology != null)
             {
@@ -40,7 +40,7 @@ namespace Bearded.TD.UI.Controls
             game.Meta.Events.Unsubscribe(this);
         }
 
-        public string ActionLabelForIndex(int i) => labels[i];
+        public (string actionLabel, string cost) ActionLabelForIndex(int i) => labels[i];
 
         public void OnActionClicked(int actionIndex)
         {
@@ -65,7 +65,7 @@ namespace Bearded.TD.UI.Controls
 
             lastFilledIndex++;
             handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-            labels[lastFilledIndex] = blueprint.Name;
+            labels[lastFilledIndex] = (blueprint.Name, $"{blueprint.ResourceCost}");
         }
     }
 }

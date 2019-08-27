@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Projectiles
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
-        private readonly ComponentCollection<Projectile> components = new ComponentCollection<Projectile>();
+        private readonly ComponentCollection<Projectile> components;
 
         public Position2 Position { get; private set; }
         public Velocity2 Velocity { get; private set; }
@@ -36,6 +36,8 @@ namespace Bearded.TD.Game.Projectiles
             DamageSource = damageSource;
             Position = position;
             Velocity = velocity;
+
+            components = new ComponentCollection<Projectile>(this);
         }
 
         public Projectile(IComponentOwnerBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
@@ -47,7 +49,7 @@ namespace Bearded.TD.Game.Projectiles
         {
             CurrentTile = Level.GetTile(Position);
 
-            components.Add(this, blueprint.GetComponents<Projectile>());
+            components.Add(blueprint.GetComponents<Projectile>());
 
             foreach (var upgrade in DamageSource.AppliedUpgrades)
             {

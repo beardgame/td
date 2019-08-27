@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game;
+﻿using amulware.Graphics;
+using Bearded.TD.Game;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
@@ -9,6 +10,8 @@ namespace Bearded.TD.UI.Controls
 
         private GameInstance game;
 
+        public string FactionName => game.Me.Faction.Name;
+        public Color FactionColor => game.Me.Faction.Color;
         public long FactionResources => game.Me.Faction.Resources.CurrentResources;
         public int FactionResourceIncome => game.Me.Faction.Resources.CurrentIncome;
         public long FactionTechPoints => game.Me.Faction.Technology.TechPoints;

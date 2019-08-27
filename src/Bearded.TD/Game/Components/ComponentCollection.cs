@@ -7,22 +7,24 @@ namespace Bearded.TD.Game.Components
 {
     class ComponentCollection<TOwner>
     {
+        private readonly TOwner owner;
         private readonly List<IComponent<TOwner>> components = new List<IComponent<TOwner>>();
 
         public IReadOnlyCollection<IComponent<TOwner>> Components { get; }
 
-        public ComponentCollection()
+        public ComponentCollection(TOwner owner)
         {
+            this.owner = owner;
             Components = components.AsReadOnly();
         }
 
-        public void Add(TOwner owner, IEnumerable<IComponent<TOwner>> newComponents)
+        public void Add(IEnumerable<IComponent<TOwner>> newComponents)
         {
             foreach (var component in newComponents)
-                Add(owner, component);
+                Add(component);
         }
 
-        public void Add(TOwner owner, IComponent<TOwner> component)
+        public void Add(IComponent<TOwner> component)
         {
             components.Add(component);
             component.OnAdded(owner);

@@ -15,6 +15,7 @@ namespace Bearded.TD.Game.Technologies
         private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new HashSet<ITechnologyBlueprint>();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
         private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new HashSet<IUpgradeBlueprint>();
+        private readonly List<ITechnologyBlueprint> queuedTechnologies = new List<ITechnologyBlueprint>();
 
         public long TechPoints { get; private set; }
 
@@ -29,13 +30,34 @@ namespace Bearded.TD.Game.Technologies
 
         public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.Contains(technology);
 
+        public bool IsTechnologyQueued(ITechnologyBlueprint technology) => queuedTechnologies.Contains(technology);
+
+        public int QueuePositionFor(ITechnologyBlueprint technologyBlueprint)
+        {
+            DebugAssert.Argument.Satisfies(() => IsTechnologyQueued(technologyBlueprint));
+            return queuedTechnologies.FindIndex(t => t == technologyBlueprint) + 1;
+        }
+
+        public bool CanQueueTechnology(ITechnologyBlueprint technology) =>
+            IsTechnologyLocked(technology) && !IsTechnologyQueued(technology) && TechPoints < technology.Cost;
+
+        public void QueueTechnology(ITechnologyBlueprint technology)
+        {
+            DebugAssert.Argument.Satisfies(() => CanQueueTechnology(technology));
+            queuedTechnologies.Add(technology);
+            events.Send(new TechnologyQueued(technology));
+        }
+
+        public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
+            IsTechnologyLocked(technology) && TechPoints >= technology.Cost;
+
         public void UnlockTechnology(ITechnologyBlueprint technology)
         {
-            DebugAssert.Argument.Satisfies(() => IsTechnologyLocked(technology));
-            DebugAssert.Argument.Satisfies(() => TechPoints > technology.Cost);
+            DebugAssert.Argument.Satisfies(() => CanUnlockTechnology(technology));
             TechPoints -= technology.Cost;
             unlockedTechnologies.Add(technology);
             technology.Unlocks.ForEach(unlock => unlock.Apply(this));
+            queuedTechnologies.RemoveAll(t => t == technology);
             events.Send(new TechnologyUnlocked(technology));
         }
 
@@ -68,13 +90,17 @@ namespace Bearded.TD.Game.Technologies
         {
             if (@event.KillingFaction.Technology == this)
             {
-                TechPoints += @event.Unit.Value;
+                AddTechPoints(@event.Unit.Value);
             }
         }
 
         public void AddTechPoints(long number)
         {
             TechPoints += number;
+            while (queuedTechnologies.Count > 0 && queuedTechnologies[0].Cost <= TechPoints)
+            {
+                UnlockTechnology(queuedTechnologies[0]);
+            }
         }
     }
 }

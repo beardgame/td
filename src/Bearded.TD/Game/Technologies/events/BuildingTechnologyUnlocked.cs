@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Technologies
 {
-    sealed class BuildingTechnologyUnlocked : IEvent
+    struct BuildingTechnologyUnlocked : IEvent
     {
         public TechnologyManager TechnologyManager { get; }
         public IBuildingBlueprint Blueprint { get; }

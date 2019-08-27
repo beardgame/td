@@ -5,6 +5,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
+using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.World.Fluids;
 using Bearded.TD.Tiles;
@@ -43,6 +44,7 @@ namespace Bearded.TD.Game
         public UnitLayer UnitLayer { get; }
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
+        public MiningLayer MiningLayer { get; }
         public PassabilityManager PassabilityManager { get; }
 
         private bool isLoading = true;
@@ -62,6 +64,7 @@ namespace Bearded.TD.Game
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
+            MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         }

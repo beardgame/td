@@ -222,7 +222,7 @@ namespace Bearded.TD.Content.Mods
                 serializer.Converters.Add(new TechnologyUnlockConverter());
                 serializer.Converters.Add(new UpgradeEffectConverter());
                 foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
-                    serializer.Converters.Add(new TechEffectTemplateConverter(key, value));
+                    serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
             }
 
             private void configureSpriteSerializerDependency(

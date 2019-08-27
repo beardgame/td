@@ -19,22 +19,32 @@ namespace Bearded.TD.UI.Controls
 
             Add(new BackgroundBox());
 
+            Add(new Label($"{model.FactionName}")
+                {
+                    Color = model.FactionColor,
+                    FontSize = 16,
+                }.Anchor(a => a
+                    .Top(margin: 8, height: 24)
+                    .Left(margin: 8)
+                    .Right(margin: 8)));
+
             Add(new Label("Resources:")
                 {
                     FontSize = 16,
                     TextAnchor = new Vector2d(0, .5)
                 }
                 .Anchor(a => a
-                    .Top(margin: 8, height: 24)
+                    .Top(margin: 32, height: 24)
                     .Left(margin: 8)));
 
             resourcesLabel = new Label
                 {
+                    Color = Constants.Game.GameUI.ResourcesColor,
                     FontSize = 16,
                     TextAnchor = new Vector2d(1, .5)
                 }
                 .Anchor(a => a
-                    .Top(margin: 8, height: 24)
+                    .Top(margin: 32, height: 24)
                     .Right(margin: 8));
             Add(resourcesLabel);
 
@@ -44,22 +54,23 @@ namespace Bearded.TD.UI.Controls
                     TextAnchor = new Vector2d(0, .5)
                 }
                 .Anchor(a => a
-                    .Top(margin: 32, height: 24)
+                    .Top(margin: 56, height: 24)
                     .Left(margin: 8)));
 
             techPointsLabel = new Label
                 {
+                    Color = Constants.Game.GameUI.TechPointsColor,
                     FontSize = 16,
                     TextAnchor = new Vector2d(1, .5)
                 }
                 .Anchor(a => a
-                    .Top(margin: 32, height: 24)
+                    .Top(margin: 56, height: 24)
                     .Right(margin: 8));
             Add(techPointsLabel);
 
             Add(Default.Button("Research", 16)
                 .Anchor(a => a
-                    .Top(margin: 60, height: 24)
+                    .Top(margin: 84, height: 24)
                     .Left(margin: 16)
                     .Right(margin: 16))
                 .Subscribe(btn => btn.Clicked += () => TechnologyButtonClicked?.Invoke()));

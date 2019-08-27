@@ -1,10 +1,10 @@
 namespace Bearded.TD.Game.Technologies
 {
-    struct TechnologyUnlocked : IEvent
+    struct TechnologyQueued : IEvent
     {
         public ITechnologyBlueprint Technology { get; }
 
-        public TechnologyUnlocked(ITechnologyBlueprint technology)
+        public TechnologyQueued(ITechnologyBlueprint technology)
         {
             Technology = technology;
         }

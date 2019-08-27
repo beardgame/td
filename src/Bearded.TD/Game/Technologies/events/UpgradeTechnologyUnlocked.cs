@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Technologies
 {
-    sealed class UpgradeTechnologyUnlocked : IEvent
+    struct UpgradeTechnologyUnlocked : IEvent
     {
         public TechnologyManager TechnologyManager { get; }
         public IUpgradeBlueprint Blueprint { get; }
