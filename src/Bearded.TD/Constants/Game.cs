@@ -63,6 +63,7 @@ namespace Bearded.TD
             public static class Resources
             {
                 public const long InitialResources = 0;
+                public const double ResourcesOnKillFactor = 0;
             }
 
             public static class Enemy

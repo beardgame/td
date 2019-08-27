@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Factions
 
             if (hasResources)
             {
-                resources = new ResourceManager(Constants.Game.Resources.InitialResources);
+                resources = new ResourceManager(gameState.Meta.Events);
                 technology = new TechnologyManager(gameState.Meta.Events);
             }
             if (hasWorkerNetwork)

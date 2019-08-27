@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Units;
+using static Bearded.TD.Constants.Game.Resources;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Resources
 {
-    sealed class ResourceManager
+    sealed class ResourceManager : IListener<EnemyKilled>
     {
         private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
         private double totalResourcesRequested;
@@ -16,9 +18,18 @@ namespace Bearded.TD.Game.Resources
         public long CurrentResources => (long) currentResources;
         public int CurrentIncome => (int) currentIncome;
 
-        public ResourceManager(long initialResources)
+        public ResourceManager(GameEvents events)
         {
-            currentResources = initialResources;
+            currentResources = InitialResources;
+            events.Subscribe(this);
+        }
+
+        public void HandleEvent(EnemyKilled @event)
+        {
+            if (@event.KillingFaction.Resources == this)
+            {
+                ProvideOneTimeResource(ResourcesOnKillFactor * @event.Unit.Value);
+            }
         }
 
         public void ProvideOneTimeResource(double amount)
