@@ -55,13 +55,14 @@ namespace Bearded.TD
 
             public static class Worker
             {
-                public static readonly Acceleration Acceleration = 10.UnitsPerSecondSquared();
-                public const float Friction = .1f;
-
-                public static readonly Squared<Unit> WorkRadiusSquared = World.HexagonOuterRadiusSquared;
                 public const double WorkerSpeed = 15;
-                
-                public const double TotalMiningProgressRequired = 6 * WorkerSpeed;
+
+                public const double TotalMiningProgressRequired = 8 * WorkerSpeed;
+            }
+
+            public static class Resources
+            {
+                public const long InitialResources = 0;
             }
 
             public static class Enemy

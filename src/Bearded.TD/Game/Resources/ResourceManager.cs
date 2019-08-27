@@ -16,6 +16,11 @@ namespace Bearded.TD.Game.Resources
         public long CurrentResources => (long) currentResources;
         public int CurrentIncome => (int) currentIncome;
 
+        public ResourceManager(long initialResources)
+        {
+            currentResources = initialResources;
+        }
+
         public void ProvideOneTimeResource(double amount)
         {
             currentResources += amount;
