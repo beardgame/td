@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.UI.Controls;
+﻿using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls
@@ -21,7 +20,7 @@ namespace Bearded.TD.UI.Controls
             for (var i = 0; i < buttons.Length; i++)
             {
                 var i1 = i;
-                buttons[i] = new Button().WithDefaultStyle(new ActionBarButtonLabel())
+                buttons[i] = new Button().WithDefaultStyle(new ButtonLabelWithCost())
                     .Anchor(a => a
                         .Top(relativePercentage: i1 * buttonHeightPercentage)
                         .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
@@ -40,29 +39,10 @@ namespace Bearded.TD.UI.Controls
             for (var i = 0; i < buttons.Length; i++)
             {
                 var (actionName, cost) = model.ActionLabelForIndex(i);
-                buttons[i].FirstChildOfType<ActionBarButtonLabel>().SetLabelText(actionName, cost);
+                var labelWithCost = buttons[i].FirstChildOfType<ButtonLabelWithCost>();
+                labelWithCost.Name = actionName;
+                labelWithCost.Cost = cost;
                 buttons[i].IsEnabled = actionName != null;
-            }
-        }
-
-        private class ActionBarButtonLabel : CompositeControl
-        {
-            private readonly Label nameLabel;
-            private readonly Label costLabel;
-
-            public ActionBarButtonLabel()
-            {
-                nameLabel = new Label { Color = Color.White, FontSize = 16 };
-                Add(nameLabel.Anchor(a => a.Bottom(relativePercentage: .6)));
-
-                costLabel = new Label { Color = Constants.Game.GameUI.ResourcesColor, FontSize = 12 };
-                Add(costLabel.Anchor(a => a.Top(relativePercentage: .4)));
-            }
-
-            public void SetLabelText(string actionName, string cost)
-            {
-                nameLabel.Text = actionName ?? "";
-                costLabel.Text = cost ?? "";
             }
         }
     }
