@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
@@ -26,7 +25,7 @@ namespace Bearded.TD.Game.Input
             Game.State.Add(ghost);
         }
 
-        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        public override void Update(ICursorHandler cursor)
         {
             var footprint = cursor.CurrentFootprint;
             ghost.SetFootprint(footprint);

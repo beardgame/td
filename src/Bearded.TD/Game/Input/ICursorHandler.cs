@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
@@ -11,7 +10,7 @@ namespace Bearded.TD.Game.Input
         ActionState Cancel { get; }
         Position2 CursorPosition { get; }
         PositionedFootprint CurrentFootprint { get; }
-        void Update(UpdateEventArgs args, InputState inputContext);
+        void HandleInput(InputState inputContext);
         void SetTileSelection(TileSelection tileSelection);
     }
 }

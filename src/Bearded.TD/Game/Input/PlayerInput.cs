@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Utilities;
+﻿using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
@@ -16,7 +15,7 @@ namespace Bearded.TD.Game.Input
 
         public PlayerInput(GameInstance game)
         {
-            cursor = new MouseCursorHandler(game.Camera, game.State.Level);
+            cursor = new MouseCursorHandler(game.Camera, game.CameraController, game.State.Level);
             defaultInteractionHandler = new DefaultInteractionHandler(game);
             ResetInteractionHandler();
         }
@@ -35,12 +34,12 @@ namespace Bearded.TD.Game.Input
             interactionHandler?.End(cursor);
         }
 
-        public void HandleInput(UpdateEventArgs args, InputState input)
+        public void HandleInput(InputState input)
         {
             if (IsMouseFocused)
             {
-                cursor.Update(args, input);
-                interactionHandler.Update(args, cursor);
+                cursor.HandleInput(input);
+                interactionHandler.Update(cursor);
             }
         }
 

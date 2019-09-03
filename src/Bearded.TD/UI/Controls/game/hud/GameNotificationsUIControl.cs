@@ -75,7 +75,7 @@ namespace Bearded.TD.UI.Controls
                 {
                     notification.Subject
                         .SelectMany(gameObject => Maybe.FromNullable(gameObject as IPositionable))
-                        .Match(positionable => game.Camera.Position = positionable.Position.NumericValue);
+                        .Match(positionable => game.CameraController.ScrollToWorldPos(positionable.Position));
                     eventArgs.Handled = true;
                     return;
                 }

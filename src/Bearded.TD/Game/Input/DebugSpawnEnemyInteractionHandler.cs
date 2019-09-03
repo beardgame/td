@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Input
             this.enemyBlueprintName = enemyBlueprintName;
         }
 
-        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        public override void Update(ICursorHandler cursor)
         {
             if (cursor.Click.Hit)
                 cursor.CurrentFootprint.OccupiedTiles

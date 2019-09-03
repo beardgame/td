@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static Bearded.TD.Constants.Camera;
 
@@ -9,10 +10,10 @@ namespace Bearded.TD.Game
     {
         private ViewportSize viewportSize;
 
-        private Vector2 position;
+        private Position2 position;
         private float distance;
 
-        public Vector2 Position
+        public Position2 Position
         {
             get => position;
             set
@@ -42,15 +43,15 @@ namespace Bearded.TD.Game
 
         private void resetCameraPosition()
         {
-            position = Vector2.Zero;
+            position = Position2.Zero;
             distance = ZDefault;
             recalculateViewMatrix();
         }
 
         private void recalculateViewMatrix()
         {
-            var eye = position.WithZ(distance);
-            var target = position.WithZ();
+            var eye = position.NumericValue.WithZ(distance);
+            var target = position.NumericValue.WithZ();
             ViewMatrix = Matrix4.LookAt(eye, target, Vector3.UnitY);
         }
 
@@ -59,7 +60,7 @@ namespace Bearded.TD.Game
             this.viewportSize = viewportSize;
         }
 
-        public Vector2 TransformScreenToWorldPos(Vector2 screenPos)
+        public Position2 TransformScreenToWorldPos(Vector2 screenPos)
         {
             // This is simple right now under the assumptions:
             // * The camera always looks straight down. That is, the camera eye and target both lie
@@ -68,14 +69,14 @@ namespace Bearded.TD.Game
             return position + distance * getNormalisedScreenPosition(screenPos);
         }
 
-        private Vector2 getNormalisedScreenPosition(Vector2 screenPos)
+        private Difference2 getNormalisedScreenPosition(Vector2 screenPos)
         {
             var ret = new Vector2(
                 2 * screenPos.X / viewportSize.Width - 1,
                 1 - 2 * screenPos.Y / viewportSize.Height
             );
             ret.X *= viewportSize.AspectRatio;
-            return ret;
+            return new Difference2(ret);
         }
     }
 }
