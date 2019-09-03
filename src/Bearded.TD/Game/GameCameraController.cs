@@ -57,9 +57,19 @@ namespace Bearded.TD.Game
 
         private void moveToGoalPosition(UpdateEventArgs args, Position2 goalPos)
         {
-            // TODO: implement smoothing
-            camera.Position = goalPos;
-            goalPosition = Maybe.Nothing;
+            var maxEpsilonSquared = .01f.U().Squared;
+
+            var error = (camera.Position - goalPos);
+            var distanceSquared = error.LengthSquared;
+
+            if (distanceSquared <= maxEpsilonSquared)
+            {
+                camera.Position = goalPos;
+                goalPosition = Maybe.Nothing;
+            }
+
+            var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
+            camera.Position -= snapFactor * error;
         }
 
         private void updatePositionFromAggregatedOffset(UpdateEventArgs args)
