@@ -104,7 +104,8 @@ namespace Weavers.TechEffects
         {
             var @typeOf = referenceFinder.GetMethodReference<Type>(
                 // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                type => Type.GetTypeFromHandle(default));
+                // ReSharper disable once RedundantTypeSpecificationInDefaultExpression
+                type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
 
             var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
