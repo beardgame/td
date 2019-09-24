@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
-using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Game
 {
@@ -71,15 +66,6 @@ namespace Bearded.TD.Game
             where T : IBlueprint
         {
             return new ReadonlyBlueprintCollection<T>(blueprints.SelectMany(b => selector(b).All));
-        }
-
-        private static ImmutableDictionary<Id<T>, T> flatten<T>(
-            IEnumerable<Blueprints> blueprints,
-            Func<Blueprints, ImmutableDictionary<Id<T>, T>> selector)
-        {
-            var builder = ImmutableDictionary.CreateBuilder<Id<T>, T>();
-            blueprints.ForEach(b => builder.AddRange(selector(b)));
-            return builder.ToImmutable();
         }
     }
 }

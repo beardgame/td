@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
@@ -8,8 +7,8 @@ namespace Bearded.TD.Game.Input
 {
     sealed class MouseCursorHandler : ICursorHandler
     {
-        private readonly MouseCameraController cameraController;
         private readonly GameCamera camera;
+        private readonly MouseCameraController cameraController;
         private readonly Level level;
         private TileSelection tileSelection;
 
@@ -19,18 +18,18 @@ namespace Bearded.TD.Game.Input
 
         public PositionedFootprint CurrentFootprint { get; private set; }
 
-        public MouseCursorHandler(GameCamera camera, Level level)
+        public MouseCursorHandler(GameCamera camera, GameCameraController cameraController, Level level)
         {
-            cameraController = new MouseCameraController(camera, level.Radius);
             this.camera = camera;
+            this.cameraController = new MouseCameraController(cameraController);
             this.level = level;
             tileSelection = TileSelection.FromFootprints(FootprintGroup.Single);
         }
 
-        public void Update(UpdateEventArgs args, InputState input)
+        public void HandleInput(InputState input)
         {
-            cameraController.HandleInput(args, input);
-            CursorPosition = new Position2(camera.TransformScreenToWorldPos(input.Mouse.Position));
+            cameraController.HandleInput(input);
+            CursorPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
             Click = input.Mouse.Click;
             Cancel = input.Mouse.Cancel;
             updateFootprint();

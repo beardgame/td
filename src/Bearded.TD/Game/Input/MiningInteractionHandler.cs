@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.World;
@@ -15,7 +14,7 @@ namespace Bearded.TD.Game.Input
             this.faction = faction;
         }
 
-        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        public override void Update(ICursorHandler cursor)
         {
             var currentTile = cursor.CurrentFootprint;
             if (!currentTile.IsValid) return;

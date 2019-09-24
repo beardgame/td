@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -12,7 +11,7 @@ namespace Bearded.TD.Game.Input
     {
         public DefaultInteractionHandler(GameInstance game) : base(game) { }
 
-        public override void Update(UpdateEventArgs args, ICursorHandler cursor)
+        public override void Update(ICursorHandler cursor)
         {
             var currentFootprint = cursor.CurrentFootprint;
             if (!currentFootprint.IsValid)

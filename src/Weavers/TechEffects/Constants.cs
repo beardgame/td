@@ -1,6 +1,5 @@
 ﻿using System;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities.SpaceTime;
 
 namespace Weavers.TechEffects
 {

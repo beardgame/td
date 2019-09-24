@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Utilities.Input;
-using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using OpenTK.Input;
 
@@ -11,32 +10,23 @@ namespace Bearded.TD.Game.Input
 {
     sealed class MouseCameraController
     {
-        private readonly GameCamera camera;
-        private readonly float levelRadius;
+        private readonly GameCameraController cameraController;
 
-        private float maxCameraRadius => levelRadius - 3;
-        private float maxCameraDistance => levelRadius;
-        private float zoomSpeed => Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
-
-        private readonly Dictionary<Func<InputState, ActionState>, Vector2> scrollActions;
+        private readonly Dictionary<Func<InputState, ActionState>, Difference2> scrollActions;
         private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
 
         private bool isDragging;
-        private float cameraGoalDistance;
-        private Vector2 mousePosInWorldSpace;
 
-        public MouseCameraController(GameCamera camera, float levelRadius)
+        public MouseCameraController(GameCameraController cameraController)
         {
-            this.camera = camera;
-            this.levelRadius = levelRadius;
-            cameraGoalDistance = camera.Distance;
+            this.cameraController = cameraController;
 
-            scrollActions = new Dictionary<Func<InputState, ActionState>, Vector2>
+            scrollActions = new Dictionary<Func<InputState, ActionState>, Difference2>
             {
-                { actionFunc(Key.Left, Key.A), -Vector2.UnitX },
-                { actionFunc(Key.Right, Key.D), Vector2.UnitX },
-                { actionFunc(Key.Up, Key.W), Vector2.UnitY },
-                { actionFunc(Key.Down, Key.S), -Vector2.UnitY },
+                { actionFunc(Key.Left, Key.A), new Difference2(-Vector2.UnitX) },
+                { actionFunc(Key.Right, Key.D), new Difference2(Vector2.UnitX) },
+                { actionFunc(Key.Up, Key.W), new Difference2(Vector2.UnitY) },
+                { actionFunc(Key.Down, Key.S), new Difference2(-Vector2.UnitY) },
             };
             zoomActions = new Dictionary<Func<InputState, ActionState>, float>
             {
@@ -50,67 +40,28 @@ namespace Bearded.TD.Game.Input
             return input => input.ForAnyKey(keys);
         }
 
-        public void HandleInput(UpdateEventArgs args, InputState input)
+        public void HandleInput(InputState input)
         {
-            updateScrolling(args, input);
-            updateZoom(args, input);
+            updateScrolling(input);
+            updateZoom(input);
             updateDragging(input);
-
-            if (!isDragging)
-                constrictCameraToLevel(args);
-        }
-        
-        private void updateScrolling(UpdateEventArgs args, InputState input)
-        {
-            var scrollSpeed = Constants.Camera.BaseScrollSpeed * camera.Distance;
-            var velocity = scrollActions.Aggregate(Vector2.Zero, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
-            camera.Position += velocity * scrollSpeed * args.ElapsedTimeInSf;
         }
 
-        private void updateZoom(UpdateEventArgs args, InputState input)
+        private void updateScrolling(InputState input)
         {
-            updateCameraGoalDistance(args, input);
-            updateCameraDistance(args, input);
+            var velocity = scrollActions.Aggregate(Difference2.Zero, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
+            cameraController.Scroll(velocity);
         }
 
-        private void updateCameraGoalDistance(UpdateEventArgs args, InputState input)
+        private void updateZoom(InputState input)
         {
-            var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue * zoomSpeed;
+            cameraController.SetZoomAnchor(input.Mouse.Position);
+
+            var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue;
+            cameraController.ConstantZoom(mouseScroll);
 
             var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
-
-            var newCameraDistance = cameraGoalDistance + mouseScroll + velocity * zoomSpeed * args.ElapsedTimeInSf;
-
-            newCameraDistance = newCameraDistance.Clamped(Constants.Camera.ZMin * 0.9f, maxCameraDistance * 1.1f);
-
-            float error = 0;
-
-            if (newCameraDistance < Constants.Camera.ZMin)
-            {
-                error = newCameraDistance - Constants.Camera.ZMin;
-            }
-            else if (newCameraDistance > maxCameraDistance)
-            {
-                error = newCameraDistance - maxCameraDistance;
-            }
-
-            var snapFactor = 1 - Mathf.Pow(1e-8f, args.ElapsedTimeInSf);
-
-            newCameraDistance -= error * snapFactor;
-
-            cameraGoalDistance = newCameraDistance;
-        }
-
-        private void updateCameraDistance(UpdateEventArgs args, InputState input)
-        {
-            var error = camera.Distance - cameraGoalDistance;
-            var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
-            var oldMouseWorldPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
-            camera.Distance -= error * snapFactor;
-
-            var newMouseWorldPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
-            var positionError = newMouseWorldPosition - oldMouseWorldPosition;
-            camera.Position -= positionError;
+            cameraController.Zoom(velocity);
         }
 
         private void updateDragging(InputState input)
@@ -126,34 +77,20 @@ namespace Bearded.TD.Game.Input
 
         private void startDragging(Vector2 mousePos)
         {
-            mousePosInWorldSpace = camera.TransformScreenToWorldPos(mousePos);
+            cameraController.SetScrollAnchor(mousePos);
+            cameraController.Grab();
             isDragging = true;
         }
 
         private void continueDragging(Vector2 mousePos)
         {
-            var currMousePos = camera.TransformScreenToWorldPos(mousePos);
-            var error = currMousePos - mousePosInWorldSpace;
-            camera.Position -= error;
+            cameraController.MoveScrollAnchor(mousePos);
         }
 
         private void stopDragging()
         {
             isDragging = false;
-        }
-
-        private void constrictCameraToLevel(UpdateEventArgs args)
-        {
-            var currentMaxCameraRadiusNormalised = 1 - (camera.Distance / maxCameraDistance).Squared().Clamped(0, 1);
-            var currentMaxCameraRadius = maxCameraRadius * currentMaxCameraRadiusNormalised;
-
-            if (camera.Position.LengthSquared <= currentMaxCameraRadius.Squared())
-                return;
-
-            var snapBackFactor = 1 - Mathf.Pow(0.01f, args.ElapsedTimeInSf);
-            var goalPosition = camera.Position.Normalized() * currentMaxCameraRadius;
-            var error = goalPosition - camera.Position;
-            camera.Position += error * snapBackFactor;
+            cameraController.Release();
         }
     }
 }

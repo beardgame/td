@@ -82,7 +82,7 @@ namespace Bearded.TD.UI.Controls
 
             var inputState = new InputState(inputManager);
 
-            runner.HandleInput(args, inputState);
+            runner.HandleInput(inputState);
             runner.Update(args);
 
             NotificationsUI.Update();

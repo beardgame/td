@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using Fody;
 using Weavers.TechEffects;
 #pragma warning disable 618 // Disable obsolete warnings

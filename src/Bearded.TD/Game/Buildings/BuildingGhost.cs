@@ -8,7 +8,6 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.Utilities.SpaceTime;
-using Google.Protobuf.WellKnownTypes;
 
 namespace Bearded.TD.Game.Buildings
 {

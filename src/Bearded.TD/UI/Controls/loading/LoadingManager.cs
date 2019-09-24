@@ -71,9 +71,7 @@ namespace Bearded.TD.UI.Controls
 
         public void IntegrateUI()
         {
-            var camera = new GameCamera();
-
-            Game.IntegrateUI(camera);
+            Game.IntegrateUI();
         }
     }
 }

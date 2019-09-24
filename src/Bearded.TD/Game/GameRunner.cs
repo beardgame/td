@@ -19,14 +19,16 @@ namespace Bearded.TD.Game
             DebugGameManager.Instance.RegisterGame(game);
         }
 
-        public void HandleInput(UpdateEventArgs args, InputState inputState)
+        public void HandleInput(InputState inputState)
         {
-            game.PlayerInput.HandleInput(args, inputState);
+            game.PlayerInput.HandleInput(inputState);
             game.PlayerCursors.Update();
         }
 
         public void Update(UpdateEventArgs args)
         {
+            game.CameraController.Update(args);
+
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
 
             game.Controller.Update(elapsedTime);
@@ -35,7 +37,7 @@ namespace Bearded.TD.Game
             game.UpdatePlayers(args);
 
             if (game.State.Meta.GameOver) return;
-            
+
             foreach (var f in game.State.Factions)
                 if (f.HasResources)
                     f.Resources.DistributeResources(elapsedTime);

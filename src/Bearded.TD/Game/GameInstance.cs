@@ -29,6 +29,7 @@ namespace Bearded.TD.Game
         public GameState State { get; private set; }
         public PlayerInput PlayerInput { get; private set; }
         public GameCamera Camera { get; private set; }
+        public GameCameraController CameraController { get; private set; }
         public SelectionManager SelectionManager { get; private set; }
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
@@ -140,21 +141,25 @@ namespace Bearded.TD.Game
                 p.ConnectionState = PlayerConnectionState.Playing;
         }
 
-        public void IntegrateUI(GameCamera camera)
-        {
-            if (Camera != null)
-                throw new InvalidOperationException("Cannot override the camera once set.");
-            Camera = camera;
-            SelectionManager = new SelectionManager();
-            PlayerInput = new PlayerInput(this);
-        }
-
         public void InitialiseState(GameState state)
         {
             if (State != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");
             State = state;
             GameStateInitialized?.Invoke(State);
+        }
+
+        public void IntegrateUI()
+        {
+            if (Camera != null)
+                throw new InvalidOperationException("Cannot override the camera once set.");
+            if (State == null)
+                throw new InvalidOperationException("UI should be integrated after the game state is initialised.");
+
+            Camera = new GameCamera();
+            CameraController = new GameCameraController(Camera, State.Level.Radius);
+            SelectionManager = new SelectionManager();
+            PlayerInput = new PlayerInput(this);
         }
     }
 }

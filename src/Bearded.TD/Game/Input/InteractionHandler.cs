@@ -1,5 +1,4 @@
-﻿using amulware.Graphics;
-using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.World;
 
 namespace Bearded.TD.Game.Input
 {
@@ -27,6 +26,6 @@ namespace Bearded.TD.Game.Input
         }
         protected virtual void OnEnd(ICursorHandler cursor) { }
 
-        public abstract void Update(UpdateEventArgs args, ICursorHandler cursor);
+        public abstract void Update(ICursorHandler cursor);
     }
 }

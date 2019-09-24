@@ -120,8 +120,8 @@ namespace Weavers.TechEffects
                 fields.Add((
                     field: fieldDef,
                     innerFieldType: property.PropertyType,
-                    fieldContainingConversionMethod: fieldContainingConversionMethod,
-                    conversionMethod: conversionMethod));
+                    fieldContainingConversionMethod,
+                    conversionMethod));
             }
 
             var baseConstructor = ReferenceFinder.GetConstructorReference(type.BaseType);
