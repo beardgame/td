@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Bearded.TD.Game.Workers;
 
 // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Global
 

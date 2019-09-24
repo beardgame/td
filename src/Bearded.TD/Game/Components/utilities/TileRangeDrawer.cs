@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using static Bearded.Utilities.Maybe;
-using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Components.utilities
 {
