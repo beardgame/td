@@ -103,7 +103,8 @@ namespace Weavers.TechEffects
         private void registerInterfaceImplementation(TypeReference interfaceToImplement, TypeReference templateType)
         {
             var @typeOf = referenceFinder.GetMethodReference<Type>(
-                type => Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+                type => Type.GetTypeFromHandle(default));
 
             var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
