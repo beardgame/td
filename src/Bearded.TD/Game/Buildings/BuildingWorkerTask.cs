@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Resources;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
