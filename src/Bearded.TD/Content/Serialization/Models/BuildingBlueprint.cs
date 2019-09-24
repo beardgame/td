@@ -8,25 +8,23 @@ namespace Bearded.TD.Content.Serialization.Models
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     sealed class BuildingBlueprint
-        : IConvertsTo<Content.Models.BuildingBlueprint,
-                (BlueprintDependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags)>
+        : IConvertsTo<Content.Models.BuildingBlueprint, UpgradeTagResolver>
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Footprint { get; set; }
+        public Game.World.FootprintGroup Footprint { get; set; }
         public int Cost { get; set; }
         public List<string> Tags { get; set; }
         public List<IBuildingComponent> Components { get; set; }
 
-        public Content.Models.BuildingBlueprint ToGameModel(
-            (BlueprintDependencyResolver<Game.World.FootprintGroup> footprints, UpgradeTagResolver tags) dependencies)
+        public Content.Models.BuildingBlueprint ToGameModel(UpgradeTagResolver tags)
         {
             return new Content.Models.BuildingBlueprint(
                 Id,
                 Name,
-                dependencies.footprints.Resolve(Footprint),
+                Footprint,
                 Cost,
-                Tags?.Select(dependencies.tags.Resolve),
+                Tags?.Select(tags.Resolve),
                 Components?.Select(ComponentFactories.CreateBuildingComponentFactory)
             );
         }
