@@ -10,7 +10,7 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.BuildingUpgrades
 {
     [Component("health")]
     class Health<T> : Component<T, IHealthComponentParameter>, ISyncable where T : IMortal

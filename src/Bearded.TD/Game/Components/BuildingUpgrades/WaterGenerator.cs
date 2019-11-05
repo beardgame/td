@@ -3,7 +3,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.BuildingUpgrades
 {
     [Component("waterGenerator")]
     class WaterGenerator<T> : Component<T, IWaterGeneratorParameters>

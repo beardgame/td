@@ -5,7 +5,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.ProjectileBehavior
 {
     [Component("damageOnHit")]
     class ProjectileDamage : Component<Projectile, IProjectileDamageComponentParameters>
@@ -13,12 +13,12 @@ namespace Bearded.TD.Game.Components.Generic
         public ProjectileDamage(IProjectileDamageComponentParameters parameters) : base(parameters)
         {
         }
-        
+
         protected override void Initialise()
         {
             Owner.HitEnemy += onHitEnemy;
         }
-        
+
         private void onHitEnemy(EnemyUnit enemy)
         {
             enemy.Damage(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource);

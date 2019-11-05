@@ -3,7 +3,7 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.Graphical
 {
     [Component("sprite")]
     class Sprite<T> : Component<T, ISpriteParameters>

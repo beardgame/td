@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Components.BuildingUpgrades;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;

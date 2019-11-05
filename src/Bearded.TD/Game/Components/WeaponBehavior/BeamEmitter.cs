@@ -11,7 +11,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.WeaponBehavior
 {
     [Component("beamEmitter")]
     sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>

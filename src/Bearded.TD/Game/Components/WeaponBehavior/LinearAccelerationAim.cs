@@ -6,13 +6,13 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.WeaponBehavior
 {
     [Component("linearAccelerationAim")]
     class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>
     {
         private AngularVelocity angularVelocity;
-        
+
         public LinearAccelerationAim(ILinearAccelerationAimParameters parameters) : base(parameters) { }
 
         protected override void Initialise()
@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Components.Generic
             applyVelocity(elapsedTime);
             dampVelocity(elapsedTime);
         }
-        
+
         private void accelerateTowardsGoal(TimeSpan elapsedTime)
         {
             Owner.AimDirection.Match(
@@ -38,12 +38,12 @@ namespace Bearded.TD.Game.Components.Generic
                 }
             );
         }
-        
+
         private void applyVelocity(TimeSpan elapsedTime)
         {
             Owner.Turn(angularVelocity * elapsedTime);
         }
-        
+
         private void dampVelocity(TimeSpan elapsedTime)
         {
             var damping = 1 - 1 / (Parameters.DragInverse + 1);

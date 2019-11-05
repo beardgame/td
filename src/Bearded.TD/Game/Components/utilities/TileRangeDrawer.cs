@@ -8,7 +8,7 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using static Bearded.Utilities.Maybe;
 
-namespace Bearded.TD.Game.Components.utilities
+namespace Bearded.TD.Game.Components
 {
     sealed class TileRangeDrawer
     {
@@ -19,16 +19,15 @@ namespace Bearded.TD.Game.Components.utilities
         public TileRangeDrawer(GameState game, ISelectable owner, Func<IEnumerable<Tile>> getTilesInRange)
             : this(game, owner, () => Just(new HashSet<Tile>(getTilesInRange())))
         {
-            
         }
-        
+
         public TileRangeDrawer(GameState game, ISelectable owner, Func<Maybe<HashSet<Tile>>> getTilesInRange)
         {
             this.game = game;
             this.owner = owner;
             this.getTilesInRange = getTilesInRange;
         }
-        
+
         public void Draw()
         {
             if (owner.SelectionState == SelectionState.Default) return;

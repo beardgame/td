@@ -3,15 +3,15 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("damageBuildings")]
     sealed class DamageBuildingsInRange : Component<EnemyUnit, IDamageBuildingsInRangeParameters>
     {
         private Instant nextAttack;
-        
+
         public DamageBuildingsInRange(IDamageBuildingsInRangeParameters parameters) : base(parameters) { }
-        
+
         protected override void Initialise()
         {
             resetAttackTime();
@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Components.Generic
             }
             else
             {
-                tryAttack();  
+                tryAttack();
             }
         }
 

@@ -3,7 +3,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.BuildingUpgrades
 {
     [Component("incomeOverTime")]
     class IncomeOverTime : Component<Building, IIncomeOverTimeParameters>

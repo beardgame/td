@@ -10,7 +10,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.BuildingUpgrades
 {
     interface ITurret : IPositionable
     {

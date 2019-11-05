@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.utilities;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
@@ -13,7 +12,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.BuildingUpgrades
 {
     /*
      * Open questions:

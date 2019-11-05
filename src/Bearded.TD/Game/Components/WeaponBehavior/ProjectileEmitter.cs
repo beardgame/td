@@ -4,7 +4,7 @@ using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Upgrades;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.WeaponBehavior
 {
     [Component("projectileEmitter")]
     sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters>

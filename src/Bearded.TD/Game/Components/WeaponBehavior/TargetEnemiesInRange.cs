@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Components.utilities;
+using Bearded.TD.Game.Components.BuildingUpgrades;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Weapons;
@@ -14,14 +14,14 @@ using Bearded.Utilities.SpaceTime;
 using static Bearded.Utilities.Maybe;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.WeaponBehavior
 {
     [Component("targetEnemiesInRange")]
     class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer
     {
         private PassabilityLayer passabilityLayer;
         private TileRangeDrawer tileRangeDrawer;
-    
+
         // mutable state
         private Instant endOfIdleTime;
         private Instant nextTileInRangeRecalculationTime;
@@ -78,7 +78,7 @@ namespace Bearded.TD.Game.Components.Generic
         {
             endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
         }
-        
+
         private void ensureTilesInRangeList()
         {
             if (currentRange == Parameters.Range
@@ -97,7 +97,7 @@ namespace Bearded.TD.Game.Components.Generic
 
             var level = game.Level;
             var navigator = game.Navigator;
-            
+
             tilesInRange = Owner.MaximumTurningAngle.Match(
                 max => new LevelVisibilityChecker().InDirection(Owner.NeutralDirection, max),
                 () => new LevelVisibilityChecker()
@@ -148,7 +148,7 @@ namespace Bearded.TD.Game.Components.Generic
                 dontDrawThisFrame = false;
                 return Nothing;
             }
-            
+
 
             if (Owner.Owner is IComponentOwner componentOwner)
             {

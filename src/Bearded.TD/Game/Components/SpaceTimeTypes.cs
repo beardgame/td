@@ -23,11 +23,11 @@ namespace Bearded.TD.Game.Components
         [ConvertsAttribute]
         public static AttributeConverter<Unit> UnitConverter =
             new AttributeConverter<Unit>(d => new Unit((float) d), u => u.NumericValue);
-        
+
         [ConvertsAttribute]
         public static AttributeConverter<Volume> VolumeConverter =
             new AttributeConverter<Volume>(d => new Volume((float) d), v => v.NumericValue);
-        
+
         [ConvertsAttribute]
         public static AttributeConverter<FlowRate> FlowRateConverter =
             new AttributeConverter<FlowRate>(d => new FlowRate((float) d), r => r.NumericValue);

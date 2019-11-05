@@ -6,7 +6,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.ProjectileBehavior
 {
     [Component("splashDamageOnHit")]
     class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>
@@ -14,13 +14,13 @@ namespace Bearded.TD.Game.Components.Generic
         public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters)
         {
         }
-        
+
         protected override void Initialise()
         {
             Owner.HitEnemy += _ => onHit();
             Owner.HitLevel += onHit;
         }
-        
+
         private void onHit()
         {
             var center = Owner.Position;
@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Components.Generic
             {
                 if ((enemy.Position - center).LengthSquared > distanceSquared)
                     continue;
-                
+
                 enemy.Damage(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource);
             }
         }
