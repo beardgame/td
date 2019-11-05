@@ -39,8 +39,19 @@ namespace Bearded.TD.Rendering
                 .WithShader(material.Shader.SurfaceShader)
                 .AndSettings(
                     context.Surfaces.ViewMatrix,
-                    context.Surfaces.ProjectionMatrix
+                    context.Surfaces.ProjectionMatrix,
+                    context.Surfaces.Time,
+                    context.Surfaces.FarPlaneBaseCorner,
+                    context.Surfaces.FarPlaneUnitX,
+                    context.Surfaces.FarPlaneUnitY,
+                    context.Surfaces.CameraPosition,
+                    context.Surfaces.DepthBuffer
                     );
+
+            foreach (var texture in material.ArrayTextures)
+            {
+                surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture));
+            }
         }
 
         public void Render()

@@ -14,6 +14,7 @@ namespace Bearded.TD.UI.Layers
     interface IDeferredRenderLayer : IRenderLayer
     {
         float FarPlaneDistance { get; }
+        float Time { get; }
         ContentSurfaceManager DeferredSurfaces { get; }
     }
 }

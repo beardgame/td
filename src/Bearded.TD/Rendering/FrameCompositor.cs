@@ -121,6 +121,7 @@ namespace Bearded.TD.Rendering
         private void setUniformsFrom(IDeferredRenderLayer deferredRenderLayer)
         {
             surfaces.FarPlaneDistance.Float = deferredRenderLayer.FarPlaneDistance;
+            surfaces.Time.Float = deferredRenderLayer.Time;
 
             setFarPlaneParameters(deferredRenderLayer);
         }

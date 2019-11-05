@@ -18,6 +18,10 @@ namespace Bearded.TD.Rendering
         public Vector3Uniform FarPlaneUnitX { get; } = new Vector3Uniform("farPlaneUnitX");
         public Vector3Uniform FarPlaneUnitY { get; } = new Vector3Uniform("farPlaneUnitY");
         public Vector3Uniform CameraPosition { get; } = new Vector3Uniform("cameraPosition");
+        
+        public FloatUniform Time { get; } = new FloatUniform("time");
+
+        public TextureUniform DepthBuffer { get; set; }
 
         public IndexedSurface<PrimitiveVertexData> Primitives { get; }
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
@@ -75,9 +79,9 @@ namespace Bearded.TD.Rendering
         public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
         {
             var normalUniform = new TextureUniform("normalBuffer", normalBuffer, TextureUnit.Texture0);
-            var depthUniform = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
+            DepthBuffer = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
             
-            PointLights.AddSettings(normalUniform, depthUniform);
+            PointLights.AddSettings(normalUniform, DepthBuffer);
         }
 
         private static string asset(string path) => "assets/" + path;
