@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -11,6 +12,18 @@ namespace Bearded.TD.Game.Components
         public static AttributeConverter<AngularAcceleration> AngularAccelerationConverter =
             new AttributeConverter<AngularAcceleration>(
                 d => AngularAcceleration.FromDegrees((float) d), a => a.AngleValue.Degrees);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<Energy> EnergyConverter =
+            new AttributeConverter<Energy>(d => new Energy(d), e => e.NumericValue);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<EnergyConsumptionRate> EnergyConsumptionRateConverter =
+            new AttributeConverter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d), e => e.NumericValue);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<FlowRate> FlowRateConverter =
+            new AttributeConverter<FlowRate>(d => new FlowRate((float) d), r => r.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Frequency> FrequencyConverter =
@@ -27,9 +40,5 @@ namespace Bearded.TD.Game.Components
         [ConvertsAttribute]
         public static AttributeConverter<Volume> VolumeConverter =
             new AttributeConverter<Volume>(d => new Volume((float) d), v => v.NumericValue);
-
-        [ConvertsAttribute]
-        public static AttributeConverter<FlowRate> FlowRateConverter =
-            new AttributeConverter<FlowRate>(d => new FlowRate((float) d), r => r.NumericValue);
     }
 }

@@ -5,6 +5,11 @@ namespace Bearded.TD.Game.Elements
         DivineIntervention, // Used for cheats/debugging only
 
         Kinetic,
-        Energy
+        Energy,
+
+        Fire,
+        Frost,
+        Alchemy,
+        Electricity,
     }
 }

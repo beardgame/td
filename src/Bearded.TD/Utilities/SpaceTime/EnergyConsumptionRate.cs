@@ -1,6 +1,6 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Elements
+namespace Bearded.TD.Utilities.SpaceTime
 {
     struct EnergyConsumptionRate
     {

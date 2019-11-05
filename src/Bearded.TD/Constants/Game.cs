@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD
@@ -79,6 +80,14 @@ namespace Bearded.TD
             public static class Navigation
             {
                 public const int StepsPerFrame = 100;
+            }
+
+            public static class Elements
+            {
+                public static readonly EnergyConsumptionRate DefaultBurnSpeed = new EnergyConsumptionRate(1);
+                public static readonly double DefaultDamagePerFuelBurned = 1;
+                public static readonly Energy EnergyPerEnergyDamage = new Energy(0.05);
+                public static readonly Energy EnergyPerFireDamage = new Energy(0.2);
             }
         }
     }
