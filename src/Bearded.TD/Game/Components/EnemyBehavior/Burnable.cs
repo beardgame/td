@@ -32,7 +32,6 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 Parameters.BurnSpeed ?? new EnergyConsumptionRate(1));
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
             Owner.Damaged += onDamaged;
-            combustable.Ignited += () => Console.WriteLine("ignition!");
         }
 
         private void onDamaged(DamageInfo damage)
