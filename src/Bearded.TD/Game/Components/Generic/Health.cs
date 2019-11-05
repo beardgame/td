@@ -1,6 +1,7 @@
 using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
@@ -30,7 +31,7 @@ namespace Bearded.TD.Game.Components.Generic
             Owner.Healed += onHealed;
         }
 
-        private void onDamaged(int damage)
+        private void onDamaged(int damage, DamageType _)
         {
             if (damage > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
                 return;

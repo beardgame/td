@@ -1,10 +1,11 @@
+using Bearded.TD.Game.Elements;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game
 {
     interface IMortal
     {
-        event GenericEventHandler<int> Damaged;
+        event GenericEventHandler<int, DamageType> Damaged;
         event GenericEventHandler<int> Healed;
 
         void OnDeath();

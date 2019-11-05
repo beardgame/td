@@ -1,4 +1,5 @@
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
@@ -20,7 +21,7 @@ namespace Bearded.TD.Game.Components.Generic
         
         private void onHitEnemy(EnemyUnit enemy)
         {
-            enemy.Damage(Parameters.Damage, Owner.DamageSource);
+            enemy.Damage(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource);
         }
 
         public override void Update(TimeSpan elapsedTime) { }

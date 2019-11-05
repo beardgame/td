@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
@@ -66,6 +67,7 @@ namespace Bearded.TD.Game.Components.Generic
                 StaticRandom.Discretise(
                     (float) (Parameters.DamagePerSecond * elapsedTime.NumericValue)
                 ),
+                DamageType.Energy,
                 Weapon.Owner as Building
             );
         }

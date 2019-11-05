@@ -1,5 +1,6 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -33,7 +34,7 @@ namespace Bearded.TD.Game.Components.Generic
                 if ((enemy.Position - center).LengthSquared > distanceSquared)
                     continue;
                 
-                enemy.Damage(Parameters.Damage, Owner.DamageSource);
+                enemy.Damage(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource);
             }
         }
 

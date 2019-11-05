@@ -8,6 +8,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
@@ -49,7 +50,7 @@ namespace Bearded.TD.Game.Units
 
         private Faction lastDamageSource;
 
-        public event GenericEventHandler<int> Damaged;
+        public event GenericEventHandler<int, DamageType> Damaged;
         public event GenericEventHandler<int> Healed;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
@@ -126,10 +127,10 @@ namespace Bearded.TD.Game.Units
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
-        public void Damage(int damage, Building damageSource)
+        public void Damage(int damage, DamageType damageType, Building damageSource)
         {
             lastDamageSource = damageSource.Faction;
-            Damaged?.Invoke(damage);
+            Damaged?.Invoke(damage, damageType);
         }
 
         public void OnDeath()
