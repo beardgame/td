@@ -9,7 +9,7 @@ namespace Bearded.TD.Utilities
 
         public static Speed UnitsPerSecond(this int val) => new Speed(val);
         public static Speed UnitsPerSecond(this float val) => new Speed(val);
-        
+
         public static Frequency PerSecond(this int val) => new Frequency(val);
         public static Frequency PerSecond(this double val) => new Frequency(val);
 

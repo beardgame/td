@@ -5,6 +5,7 @@
     "color" : "SandyBrown",
     "components" : [
         { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
+        { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 50, "attackRate" : 0.5 } },
         { "id" : "moveToBase", "parameters" : { "movementSpeed" : 0.8 } }
     ]
