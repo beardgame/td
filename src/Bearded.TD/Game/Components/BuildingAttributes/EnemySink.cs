@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.BuildingUpgrades;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;

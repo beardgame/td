@@ -1,5 +1,6 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Rendering;
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.Components.ProjectileBehavior
                 if ((enemy.Position - center).LengthSquared > distanceSquared)
                     continue;
 
-                enemy.Damage(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource);
+                enemy.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
             }
         }
 

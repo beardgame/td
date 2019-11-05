@@ -1,4 +1,4 @@
-namespace Bearded.TD.Game.Elements
+namespace Bearded.TD.Game.Damage
 {
     public enum DamageType
     {

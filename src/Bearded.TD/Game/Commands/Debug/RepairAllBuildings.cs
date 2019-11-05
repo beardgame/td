@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.BuildingUpgrades;
+using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Utilities;
 

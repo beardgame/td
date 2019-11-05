@@ -1,7 +1,7 @@
 using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Elements;
+using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
@@ -10,7 +10,7 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.BuildingUpgrades
+namespace Bearded.TD.Game.Components.Generic
 {
     [Component("health")]
     class Health<T> : Component<T, IHealthComponentParameter>, ISyncable where T : IMortal
@@ -31,12 +31,12 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
             Owner.Healed += onHealed;
         }
 
-        private void onDamaged(int damage, DamageType _)
+        private void onDamaged(DamageInfo damage)
         {
-            if (damage > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
+            if (damage.Amount > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
                 return;
 
-            changeHealth(-damage);
+            changeHealth(-damage.Amount);
         }
 
         private void onHealed(int health)

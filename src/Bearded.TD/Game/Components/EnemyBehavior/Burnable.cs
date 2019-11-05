@@ -1,5 +1,8 @@
+using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
@@ -13,6 +16,9 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
     [Component("burnable")]
     sealed class Burnable<T> : Component<T, IBurnableParameters> where T : EnemyUnit, IMortal, IPositionable
     {
+        private Building lastFireHitBuilding;
+        private Building damageSourceBuilding;
+
         private Combustable combustable;
         private double damagePerFuel;
 
@@ -26,42 +32,51 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 Parameters.BurnSpeed ?? new EnergyConsumptionRate(1));
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
             Owner.Damaged += onDamaged;
+            combustable.Ignited += () => Console.WriteLine("ignition!");
         }
 
-        private void onDamaged(int damage, DamageType damageType)
+        private void onDamaged(DamageInfo damage)
         {
-            switch (damageType)
+            switch (damage.Type)
             {
                 case DamageType.Energy:
-                    combustable.HitWithFire(damage * EnergyPerEnergyDamage);
+                    combustable.HitWithFire(damage.Amount * EnergyPerEnergyDamage);
                     break;
                 case DamageType.Fire:
-                    combustable.HitWithFire(damage * EnergyPerFireDamage);
+                    combustable.HitWithFire(damage.Amount * EnergyPerFireDamage);
                     break;
             }
+
+            damage.Source.Match(building => lastFireHitBuilding = building);
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
             combustable.Update(elapsedTime);
 
-            if (combustable.IsOnFire)
+            if (!combustable.IsOnFire) return;
+
+            if (damageSourceBuilding == null)
             {
-                Owner.Damage(
+                damageSourceBuilding = lastFireHitBuilding;
+            }
+
+            Owner.Damage(
+                new DamageInfo(
                     StaticRandom.Discretise(
                         (float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
                     DamageType.Fire,
-                    null);
-            }
+                    damageSourceBuilding));
         }
 
         public override void Draw(GeometryManager geometries)
         {
             if (!combustable.IsOnFire) return;
 
-            var primitives = geometries.Primitives;
-            primitives.Color = Color.OrangeRed;
-            primitives.DrawCircle(Owner.Position.NumericValue, Constants.Game.World.HexagonSide, false);
+            var geo = geometries.ConsoleBackground;
+            geo.Color = Color.OrangeRed * .8f;
+            geo.LineWidth = .1f;
+            geo.DrawCircle(Owner.Position.NumericValue, 1.5f, false);
         }
     }
 }
