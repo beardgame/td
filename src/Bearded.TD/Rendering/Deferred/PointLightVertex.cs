@@ -30,7 +30,5 @@ namespace Bearded.TD.Rendering.Deferred
                 MakeAttributeTemplate<float>("vertexLightRadiusSquared"),
                 MakeAttributeTemplate<Color>("vertexLightColor")
                 );
-
-        public int Size() => SizeOf<PointLightVertex>();
     }
 }

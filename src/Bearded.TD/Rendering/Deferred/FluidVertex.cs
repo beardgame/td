@@ -24,8 +24,5 @@ namespace Bearded.TD.Rendering.Deferred
                 MakeAttributeTemplate<Vector3>("vertexNormal"),
                 MakeAttributeTemplate<Vector2>("vertexFlow")
             );
-        
-
-        public int Size() => SizeOf<FluidVertex>();
     }
 }

@@ -1,5 +1,6 @@
 using amulware.Graphics;
 using OpenTK;
+using static amulware.Graphics.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred
 {
@@ -19,13 +20,11 @@ namespace Bearded.TD.Rendering.Deferred
         }
 
         public VertexAttribute[] VertexAttributes()
-            => VertexData.MakeAttributeArray(
-                VertexData.MakeAttributeTemplate<Vector3>("vertexPosition"),
-                VertexData.MakeAttributeTemplate<Vector3>("vertexNormal"),
-                VertexData.MakeAttributeTemplate<Vector2>("vertexUV"),
-                VertexData.MakeAttributeTemplate<Color>("vertexColor")
+            => MakeAttributeArray(
+                MakeAttributeTemplate<Vector3>("vertexPosition"),
+                MakeAttributeTemplate<Vector3>("vertexNormal"),
+                MakeAttributeTemplate<Vector2>("vertexUV"),
+                MakeAttributeTemplate<Color>("vertexColor")
             );
-
-        public int Size() => VertexData.SizeOf<LevelVertex>();
     }
 }
