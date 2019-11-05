@@ -24,9 +24,11 @@ namespace Bearded.TD.Game.Elements
         public bool IsDepleted => Fuel <= Energy.Zero;
 
         public Combustable(
+            Energy initialFuel,
             Energy flashPointThreshold,
             EnergyConsumptionRate burningSpeed)
         {
+            Fuel = initialFuel;
             FlashPointThreshold = flashPointThreshold;
             BurningSpeed = burningSpeed;
         }
