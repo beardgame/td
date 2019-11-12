@@ -13,6 +13,13 @@
                 "sprite" : "particle.star",
                 "color" : "Yellow"
             }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "FF222211",
+                "radius" : 1.5
+            }
         }
     ]
 }

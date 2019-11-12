@@ -13,6 +13,13 @@
                 "color" : "LightBlue",
                 "sprite" : "particle.star"
             }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "DodgerBlue",
+                "radius" : 3
+            }
         }
     ]
 }
