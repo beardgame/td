@@ -24,6 +24,9 @@ namespace Bearded.TD.Game.Elements
 
         public bool IsDepleted => Fuel <= Energy.Zero;
 
+        private bool isWetThisFrame;
+        private bool hasSparkThisFrame;
+
         public Combustable(
             Energy initialFuel,
             Energy flashPointThreshold,
@@ -36,24 +39,50 @@ namespace Bearded.TD.Game.Elements
 
         public void HitWithFire(Energy energy)
         {
+            hasSparkThisFrame = true;
+
             CurrentHeat += energy;
+        }
+
+        public void HitWithWater(Energy energy)
+        {
+            isWetThisFrame = true;
+
+            if (CurrentHeat > Energy.Zero)
+            {
+                CurrentHeat = SpaceTime1Math.Max(CurrentHeat - energy, Energy.Zero);
+            }
         }
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (!IsOnFire)
+            // State changes
+            if (IsOnFire)
             {
-                if (CurrentHeat < FlashPointThreshold) return;
-                IsOnFire = true;
-                Ignited?.Invoke();
+                if (isWetThisFrame || IsDepleted)
+                {
+                    IsOnFire = false;
+                    Extinguished?.Invoke();
+                }
+            }
+            else
+            {
+                if (hasSparkThisFrame && !isWetThisFrame && CurrentHeat >= FlashPointThreshold)
+                {
+                    IsOnFire = true;
+                    Ignited?.Invoke();
+                }
             }
 
-            Fuel -= elapsedTime * BurningSpeed;
-            if (!IsDepleted) return;
+            // Fuel burning
+            if (IsOnFire)
+            {
+                Fuel = SpaceTime1Math.Max(Fuel - elapsedTime * BurningSpeed, Energy.Zero);
+            }
 
-            Fuel = Energy.Zero;
-            IsOnFire = false;
-            Extinguished?.Invoke();
+            // Reset for next frame
+            isWetThisFrame = false;
+            hasSparkThisFrame = false;
         }
     }
 }

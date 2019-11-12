@@ -1,6 +1,6 @@
 namespace Bearded.TD.Utilities.SpaceTime
 {
-    struct Energy
+    struct Energy : IMeasure1
     {
         public static Energy Zero => new Energy(0);
 
