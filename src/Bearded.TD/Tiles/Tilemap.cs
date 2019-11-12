@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Bearded.TD.Tiles
 {
@@ -23,6 +24,35 @@ namespace Bearded.TD.Tiles
                 for (var x = xMin; x <= xMax; x++)
                 {
                     yield return new Tile(x, y);
+                }
+            }
+        }
+
+        public static IEnumerable<Tile> GetRingCenteredAt(Tile tile, int radius)
+        {
+            if (radius == 0)
+            {
+                yield return tile;
+                yield break;
+            }
+
+            var (centerX, centerY) = tile;
+
+            var x = 0;
+            var y = -radius;
+
+            // for each edge
+            for (var d = 1; d <= 6; d++)
+            {
+                var step = ((Direction)d).Step();
+
+                // for each tile
+                for (var t = 0; t < radius; t++)
+                {
+                    yield return new Tile(centerX + x, centerY + y);
+
+                    x += step.X;
+                    y += step.Y;
                 }
             }
         }
@@ -71,14 +101,14 @@ namespace Bearded.TD.Tiles
 
         /* Layout of array:
          * (radius 1)
-         *   
+         *
          *   /#/#/_/
          *  /#/0/#/
          * /_/#/#/
          *
          * > +x
          * ^ +y
-         * 
+         *
          * 0 = 0,0 origin tile
          * # = other tiles
          * _ = empty tiles (not used)

@@ -48,6 +48,12 @@ namespace Bearded.TD.Game.World.Fluids
             amount[tile] += volume.NumericValue;
         }
 
+        public void AddSink(Tile tile)
+        {
+            DebugAssert.Argument.Satisfies(amount.IsValidTile(tile), "tile must be valid");
+            sinks.Add(tile);
+        }
+
         public void Update(Instant currentTime)
         {
             while (nextUpdate <= currentTime)
@@ -65,6 +71,8 @@ namespace Bearded.TD.Game.World.Fluids
             swapStates();
 
             applyFlow();
+
+            zeroSinks();
         }
 
         private void updateFlow()
@@ -156,6 +164,14 @@ namespace Bearded.TD.Game.World.Fluids
             }
         }
 
+        private void zeroSinks()
+        {
+            foreach (var sink in sinks)
+            {
+                amount[sink] = 0;
+            }
+        }
+
         private float waterLevel(int x, int y)
         {
             return amount[x, y] + geometryLayer[new Tile(x, y)]
@@ -184,27 +200,6 @@ namespace Bearded.TD.Game.World.Fluids
 
             public Fluids.Flow Public => new Fluids.Flow(new FlowRate(FlowRight), new FlowRate(FlowUpRight),
                 new FlowRate(FlowUpLeft));
-        }
-    }
-
-    struct Flow
-    {
-        public FlowRate FlowRight { get; }
-        public FlowRate FlowUpRight { get; }
-        public FlowRate FlowUpLeft { get; }
-
-        public Flow(FlowRate flowRight, FlowRate flowUpRight, FlowRate flowUpLeft)
-        {
-            FlowRight = flowRight;
-            FlowUpRight = flowUpRight;
-            FlowUpLeft = flowUpLeft;
-        }
-
-        public void Deconstruct(out FlowRate flowRight, out FlowRate flowUpRight, out FlowRate flowUpLeft)
-        {
-            flowRight = FlowRight;
-            flowUpRight = FlowUpRight;
-            flowUpLeft = FlowUpLeft;
         }
     }
 }

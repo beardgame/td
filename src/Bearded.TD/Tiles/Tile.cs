@@ -66,5 +66,7 @@ namespace Bearded.TD.Tiles
         }
 
         public static Tile FromXYZ(int _, int y, int z) => new Tile(-y, -z);
+
+        public void Deconstruct(out int x, out int y) => (x, y) = (X, Y);
     }
 }

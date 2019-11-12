@@ -55,6 +55,8 @@ namespace Bearded.TD.Game
             yield return BlockTilesForBuilding.Command(
                     game,
                     Tilemap.GetSpiralCenteredAt(Tile.Origin, 3).ToList());
+            yield return TurnCrevicesIntoFluidSinks.Command(game);
+            yield return TurnEdgesIntoFluidSinks.Command(game);
         }
 
         private IEnumerable<ISerializableCommand<GameInstance>> setupFactions()

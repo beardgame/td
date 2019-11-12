@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Commands
                 game.MustBeLoading();
 
                 var geometry = game.State.GeometryLayer;
-                var tilemapForEnumeration = new Tilemap<Void>(game.State.Level.Radius);
+                var tilemapForEnumeration = Tilemap.EnumerateTilemapWith(game.State.Level.Radius);
 
                 foreach (var (tile, i) in tilemapForEnumeration.Select((t, i) => (t, i)))
                 {
