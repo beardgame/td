@@ -21,6 +21,9 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         private Combustable combustable;
         private double damagePerFuel;
+        
+        private float fireRenderStrengthGoal = 1;
+        private float fireRenderStrength = 0;
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}
 
@@ -66,16 +69,22 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                         (float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
                     DamageType.Fire,
                     damageSourceBuilding));
+
+            if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
+                fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
+
+            fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
         }
 
         public override void Draw(GeometryManager geometries)
         {
             if (!combustable.IsOnFire) return;
-
-            var geo = geometries.ConsoleBackground;
-            geo.Color = Color.OrangeRed * .8f;
-            geo.LineWidth = .1f;
-            geo.DrawCircle(Owner.Position.NumericValue, 1.5f, false);
+            
+            geometries.PointLight.Draw(
+                Owner.Position.NumericValue.WithZ(0.5f),
+                1.5f * fireRenderStrength,
+                Color.OrangeRed * fireRenderStrength
+            );
         }
     }
 }
