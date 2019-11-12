@@ -14,12 +14,12 @@ namespace Bearded.TD.Game.World.Fluids
         private static readonly Step stepR = Direction.Right.Step();
         private static readonly Step stepUR = Direction.UpRight.Step();
         private static readonly Step stepUL = Direction.UpLeft.Step();
-        
+
         private readonly GeometryLayer geometryLayer;
         private readonly int radius;
         private readonly TimeSpan updateInterval;
         private Instant nextUpdate;
-        
+
         private readonly Tilemap<float> amount;
         private Tilemap<Flow> currentFlow;
         private Tilemap<Flow> nextFlow;
@@ -49,16 +49,16 @@ namespace Bearded.TD.Game.World.Fluids
         {
             updateFlow();
             clampFlow();
-            
+
             swapStates();
-            
+
             applyFlow();
         }
 
         private void updateFlow()
         {
-            var inverseViscosity = 1 / viscosity;
-            
+            const float inverseViscosity = 1 / viscosity;
+
             for (var y = -radius; y < radius; y++)
             {
                 var xMin = Math.Max(-radius + 1, -radius - y);
@@ -66,18 +66,18 @@ namespace Bearded.TD.Game.World.Fluids
 
                 for (var x = xMin; x < xMax; x++)
                 {
-                    var flow = currentFlow[x, y];
+                    var (flowRight, flowUpRight, flowUpLeft) = currentFlow[x, y];
 
-                    var tileAmount = waterlevel(x, y);
+                    var tileAmount = waterLevel(x, y);
 
-                    var deltaR = tileAmount - waterlevel(x + stepR.X, y + stepR.Y);
-                    var deltaUR = tileAmount - waterlevel(x + stepUR.X, y + stepUR.Y);
-                    var deltaUL = tileAmount - waterlevel(x + stepUL.X, y + stepUL.Y);
-                    
+                    var deltaR = tileAmount - waterLevel(x + stepR.X, y + stepR.Y);
+                    var deltaUR = tileAmount - waterLevel(x + stepUR.X, y + stepUR.Y);
+                    var deltaUL = tileAmount - waterLevel(x + stepUL.X, y + stepUL.Y);
+
                     var nextTileFlow = new Flow(
-                        flow.FlowRight + deltaR * inverseViscosity,
-                        flow.FlowUpRight + deltaUR * inverseViscosity,
-                        flow.FlowUpLeft + deltaUL * inverseViscosity
+                        flowRight + deltaR * inverseViscosity,
+                        flowUpRight + deltaUR * inverseViscosity,
+                        flowUpLeft + deltaUL * inverseViscosity
                         );
 
                     nextFlow[x, y] = nextTileFlow;
@@ -94,14 +94,14 @@ namespace Bearded.TD.Game.World.Fluids
 
                 for (var x = xMin; x < xMax; x++)
                 {
-                    var flow = nextFlow[x, y];
-                    
+                    var (flowRight, flowUpRight, flowUpLeft) = nextFlow[x, y];
+
                     var clampedFlow = new Flow(
-                        clampFlowComponent(flow.FlowRight, x, y, stepR),
-                        clampFlowComponent(flow.FlowUpRight, x, y, stepUR),
-                        clampFlowComponent(flow.FlowUpLeft, x, y, stepUL)
+                        clampFlowComponent(flowRight, x, y, stepR),
+                        clampFlowComponent(flowUpRight, x, y, stepUR),
+                        clampFlowComponent(flowUpLeft, x, y, stepUL)
                         );
-                    
+
                     nextFlow[x, y] = clampedFlow;
                 }
             }
@@ -133,18 +133,18 @@ namespace Bearded.TD.Game.World.Fluids
 
                 for (var x = xMin; x < xMax; x++)
                 {
-                    var flow = currentFlow[x, y];
+                    var (flowRight, flowUpRight, flowUpLeft) = currentFlow[x, y];
 
-                    amount[x, y] -= flow.FlowRight + flow.FlowUpRight + flow.FlowUpLeft;
-                    
-                    amount[x + stepR.X, y + stepR.Y] += flow.FlowRight;
-                    amount[x + stepUR.X, y + stepUR.Y] += flow.FlowUpRight;
-                    amount[x + stepUL.X, y + stepUL.Y] += flow.FlowUpLeft;
+                    amount[x, y] -= flowRight + flowUpRight + flowUpLeft;
+
+                    amount[x + stepR.X, y + stepR.Y] += flowRight;
+                    amount[x + stepUR.X, y + stepUR.Y] += flowUpRight;
+                    amount[x + stepUL.X, y + stepUL.Y] += flowUpLeft;
                 }
             }
         }
 
-        private float waterlevel(int x, int y)
+        private float waterLevel(int x, int y)
         {
             return amount[x, y] + geometryLayer[new Tile(x, y)]
                 .DrawInfo.Height.NumericValue;
@@ -155,7 +155,7 @@ namespace Bearded.TD.Game.World.Fluids
             public float FlowRight { get; }
             public float FlowUpRight { get; }
             public float FlowUpLeft { get; }
-            
+
             public Flow(float flowRight, float flowUpRight, float flowUpLeft)
             {
                 FlowRight = flowRight;
@@ -176,19 +176,19 @@ namespace Bearded.TD.Game.World.Fluids
         public void Add(Tile tile, Volume volume)
         {
             DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
-            
+
             amount[tile] += volume.NumericValue;
         }
 
         public (Volume Volume, Fluids.Flow Flow) this[Tile tile] => (new Volume(amount[tile]), currentFlow[tile].Public);
     }
-    
+
     struct Flow
     {
         public FlowRate FlowRight { get; }
         public FlowRate FlowUpRight { get; }
         public FlowRate FlowUpLeft { get; }
-                
+
         public Flow(FlowRate flowRight, FlowRate flowUpRight, FlowRate flowUpLeft)
         {
             FlowRight = flowRight;
