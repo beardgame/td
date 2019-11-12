@@ -1,14 +1,24 @@
 namespace Bearded.TD.Utilities.SpaceTime
 {
-    struct Volume
+    struct Volume : IMeasure1
     {
-        private readonly float value;
+        public static Volume Zero => new Volume(0);
 
-        public float NumericValue => value;
+        private readonly double value;
 
-        public Volume(float value)
+        public double NumericValue => value;
+
+        public Volume(double value)
         {
             this.value = value;
         }
+
+        public static bool operator <(Volume left, Volume right) => left.NumericValue < right.NumericValue;
+
+        public static bool operator <=(Volume left, Volume right) => left.NumericValue <= right.NumericValue;
+
+        public static bool operator >(Volume left, Volume right) => left.NumericValue > right.NumericValue;
+
+        public static bool operator >=(Volume left, Volume right) => left.NumericValue >= right.NumericValue;
     }
 }

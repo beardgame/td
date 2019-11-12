@@ -87,7 +87,8 @@ namespace Bearded.TD
                 public static readonly EnergyConsumptionRate DefaultBurnSpeed = new EnergyConsumptionRate(1);
                 public static readonly double DefaultDamagePerFuelBurned = 1;
                 public static readonly Energy EnergyPerEnergyDamage = new Energy(0.2);
-                public static readonly Energy EnergyPerFireDamage = new Energy(0.5);
+                public static readonly Energy EnergyPerFireDamage = new Energy(50);
+                public static readonly EnergyConsumptionRate EnergyPerSecondInWater = new EnergyConsumptionRate(15);
             }
         }
     }

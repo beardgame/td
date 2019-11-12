@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.World.Fluids
         public void Add(Tile tile, Volume volume)
         {
             DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
-            amount[tile] += volume.NumericValue;
+            amount[tile] += (float) volume.NumericValue;
         }
 
         public void AddSink(Tile tile)

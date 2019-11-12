@@ -6,6 +6,7 @@ using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Elements;
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         private Combustable combustable;
         private double damagePerFuel;
-        
+
         private float fireRenderStrengthGoal = 1;
         private float fireRenderStrength = 0;
 
@@ -54,6 +55,13 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         public override void Update(TimeSpan elapsedTime)
         {
+            var (volume, _) = Owner.Game.FluidLayer.Water[Level.GetTile(Owner.Position)];
+
+            if (volume > Volume.Zero)
+            {
+                combustable.HitWithWater(elapsedTime * EnergyPerSecondInWater);
+            }
+
             combustable.Update(elapsedTime);
 
             if (!combustable.IsOnFire) return;
