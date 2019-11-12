@@ -19,7 +19,8 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
             => base.CanApplyUpgradeEffect(effect)
-               || Parameters.Projectile.CanApplyUpgradeEffect<Projectile>(effect);
+                || Parameters.Projectile.CanApplyUpgradeEffect<Projectile>(effect)
+                || effect.CanApplyToComponentCollectionForType<Projectile>();
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {
@@ -40,7 +41,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
                 }
                 else
                 {
-                    nextPossibleShootTime += 1 / Parameters.FireRate;   
+                    nextPossibleShootTime += 1 / Parameters.FireRate;
                 }
             }
         }

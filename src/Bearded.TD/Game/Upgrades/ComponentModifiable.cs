@@ -13,17 +13,19 @@ namespace Bearded.TD.Game.Upgrades
             this.component = component;
         }
 
-        public override bool CanApplyTo<T>(ComponentCollection<T> subject) =>
-            tryCreateComponentFactory<T>() != null;
+        public override bool CanApplyToComponentCollectionForType<T>() => tryCreateComponentFactory<T>() != null;
 
         public override void ApplyTo<T>(ComponentCollection<T> subject)
         {
-            subject.Add(tryCreateComponentFactory<T>().Create());
+            var factory = tryCreateComponentFactory<T>();
+            if (factory != null)
+            {
+                subject.Add(factory.Create());
+            }
+            base.ApplyTo(subject);
         }
 
-        private IComponentFactory<T> tryCreateComponentFactory<T>()
-        {
-            return ComponentFactories.CreateComponentFactory<T>(component);
-        }
+        private IComponentFactory<T> tryCreateComponentFactory<T>() =>
+            ComponentFactories.CreateComponentFactory<T>(component);
     }
 }
