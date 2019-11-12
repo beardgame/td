@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -24,6 +25,8 @@ namespace Bearded.TD.Game.World.Fluids
         private Tilemap<Flow> currentFlow;
         private Tilemap<Flow> nextFlow;
 
+        private readonly List<Tile> sinks = new List<Tile>();
+
         public Fluid(GeometryLayer geometryLayer, int radius, int updatesPerSecond)
         {
             this.geometryLayer = geometryLayer;
@@ -33,7 +36,16 @@ namespace Bearded.TD.Game.World.Fluids
 
             amount = new Tilemap<float>(radius);
             currentFlow = new Tilemap<Flow>(radius);
-            nextFlow =  new Tilemap<Flow>(radius);
+            nextFlow = new Tilemap<Flow>(radius);
+        }
+
+        public (Volume Volume, Fluids.Flow Flow) this[Tile tile] =>
+            (new Volume(amount[tile]), currentFlow[tile].Public);
+
+        public void Add(Tile tile, Volume volume)
+        {
+            DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
+            amount[tile] += volume.NumericValue;
         }
 
         public void Update(Instant currentTime)
@@ -78,7 +90,7 @@ namespace Bearded.TD.Game.World.Fluids
                         flowRight + deltaR * inverseViscosity,
                         flowUpRight + deltaUR * inverseViscosity,
                         flowUpLeft + deltaUL * inverseViscosity
-                        );
+                    );
 
                     nextFlow[x, y] = nextTileFlow;
                 }
@@ -100,7 +112,7 @@ namespace Bearded.TD.Game.World.Fluids
                         clampFlowComponent(flowRight, x, y, stepR),
                         clampFlowComponent(flowUpRight, x, y, stepUR),
                         clampFlowComponent(flowUpLeft, x, y, stepUL)
-                        );
+                    );
 
                     nextFlow[x, y] = clampedFlow;
                 }
@@ -170,17 +182,9 @@ namespace Bearded.TD.Game.World.Fluids
                 flowUpLeft = FlowUpLeft;
             }
 
-            public Fluids.Flow Public => new Fluids.Flow(new FlowRate(FlowRight), new FlowRate(FlowUpRight), new FlowRate(FlowUpLeft));
+            public Fluids.Flow Public => new Fluids.Flow(new FlowRate(FlowRight), new FlowRate(FlowUpRight),
+                new FlowRate(FlowUpLeft));
         }
-
-        public void Add(Tile tile, Volume volume)
-        {
-            DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
-
-            amount[tile] += volume.NumericValue;
-        }
-
-        public (Volume Volume, Fluids.Flow Flow) this[Tile tile] => (new Volume(amount[tile]), currentFlow[tile].Public);
     }
 
     struct Flow
@@ -203,5 +207,4 @@ namespace Bearded.TD.Game.World.Fluids
             flowUpLeft = FlowUpLeft;
         }
     }
-
 }
