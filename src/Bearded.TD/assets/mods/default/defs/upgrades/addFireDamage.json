@@ -1,0 +1,17 @@
+{
+  "id" : "addFireDamage",
+  "name" : "Fire damage on impact",
+  "cost" : 50,
+  "effects": [
+    {
+      "type" : "component",
+      "parameters" : {
+        "id" : "damageOnHit",
+        "parameters" : {
+          "damage" : 2,
+          "type" : "fire"
+        }
+      }
+    }
+  ]
+}
