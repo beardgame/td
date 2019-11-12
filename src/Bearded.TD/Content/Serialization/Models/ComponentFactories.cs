@@ -67,13 +67,13 @@ namespace Bearded.TD.Content.Serialization.Models
             var componentOwners = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => CustomAttributeExtensions.GetCustomAttribute<ComponentOwnerAttribute>((MemberInfo) t) != null)
                 .ToList();
-            
+
             foreach (var component in knownComponents)
                 register(component, componentOwners);
 
             ParameterTypesForComponentsById = new ReadOnlyDictionary<string, Type>(parametersForComponentIds);
         }
-        
+
         private static void register((string id, Type type) component, List<Type> componentOwners)
             => register(component.id, component.type, componentOwners);
 
@@ -92,7 +92,7 @@ namespace Bearded.TD.Content.Serialization.Models
             if (!registeredComponent)
                 throw new Exception($"Failed to register component type '{componentType}'.");
         }
-        
+
         private static bool tryRegisterGenericComponent(string id, Type component, Type owner, Type parameters)
         {
             Type typedComponent = null;
@@ -139,9 +139,9 @@ namespace Bearded.TD.Content.Serialization.Models
         private static object makeFactoryFactory(Type component, Type owner, Type parameters)
         {
             var typedMaker = makeFactoryFactoryMethodInfo.MakeGenericMethod(owner, parameters);
-            
+
             var parameter = Expression.Parameter(parameters);
-            
+
             var constructorBody = parameters == emptyConstructorParameterType
                 ? Expression.New(constructorOf(component))
                 : Expression.New(constructorOf(component), parameter);
@@ -157,7 +157,7 @@ namespace Bearded.TD.Content.Serialization.Models
         {
             return (ComponentFactoryFactory<TOwner, TParameters>)(p => new ComponentFactory<TOwner, TParameters>(p, constructor));
         }
-        
+
         private static Type constructorParameterTypeOf(Type componentType)
         {
             var constructor = constructorOf(componentType);
@@ -175,7 +175,7 @@ namespace Bearded.TD.Content.Serialization.Models
             var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
             DebugAssert.State.Satisfies(constructors.Length == 1, "Components should have exactly one public constructor.");
-            
+
             return constructors[0];
         }
 

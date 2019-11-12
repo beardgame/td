@@ -14,7 +14,7 @@ namespace Bearded.TD.Content.Models
     {
         private ComponentOwnerBlueprint blueprint;
         public string Id { get; }
-        
+
         public ComponentOwnerBlueprintProxy(string id)
         {
             Id = id;
@@ -31,12 +31,12 @@ namespace Bearded.TD.Content.Models
         IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint.GetComponents<T>();
         bool IComponentOwnerBlueprint.CanApplyUpgradeEffect<T>(IUpgradeEffect effect) => blueprint.CanApplyUpgradeEffect<T>(effect);
     }
-    
+
     sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
     {
         public string Id { get; }
         private readonly IReadOnlyCollection<IComponent> componentParameters;
-        
+
         private readonly Dictionary<Type, object> componentFactoriesByOwnerType = new Dictionary<Type, object>();
 
         public IEnumerable<IComponent<T>> GetComponents<T>()
@@ -56,7 +56,7 @@ namespace Bearded.TD.Content.Models
         {
             var factories = componentParameters.Select(ComponentFactories.CreateComponentFactory<T>).NotNull()
                 .ToList().AsReadOnly();
-            
+
             componentFactoriesByOwnerType.Add(typeof(T), factories);
 
             return factories;
@@ -68,7 +68,7 @@ namespace Bearded.TD.Content.Models
 
             componentParameters = (components?.ToList() ?? new List<IComponent>()).AsReadOnly();
         }
-        
+
         public bool CanApplyUpgradeEffect<T>(IUpgradeEffect effect)
         {
             return getFactories<T>().Any(f => f.CanApplyUpgradeEffect(effect));

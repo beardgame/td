@@ -1,0 +1,8 @@
+{
+    "id" : "addFireDamage",
+    "name" : "Burn, Baby, Burn!",
+    "cost" : 60,
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "addFireDamage" }
+    ]
+}
