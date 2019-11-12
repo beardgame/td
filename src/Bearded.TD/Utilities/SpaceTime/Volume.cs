@@ -1,14 +1,14 @@
 namespace Bearded.TD.Utilities.SpaceTime
 {
-    struct Volume
+    struct Volume : IMeasure1
     {
         public static Volume Zero => new Volume(0);
 
-        private readonly float value;
+        private readonly double value;
 
-        public float NumericValue => value;
+        public double NumericValue => value;
 
-        public Volume(float value)
+        public Volume(double value)
         {
             this.value = value;
         }

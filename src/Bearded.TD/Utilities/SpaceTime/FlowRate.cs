@@ -2,20 +2,20 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Utilities.SpaceTime
 {
-    struct FlowRate
+    struct FlowRate : IMeasure1
     {
-        private readonly float value;
+        private readonly double value;
 
-        public float NumericValue => value;
+        public double NumericValue => value;
 
-        public FlowRate(float value)
+        public FlowRate(double value)
         {
             this.value = value;
         }
 
         public static Volume operator *(FlowRate flowRate, TimeSpan timeSpan)
         {
-            return new Volume((float)(flowRate.value * timeSpan.NumericValue));
+            return new Volume(flowRate.value * timeSpan.NumericValue);
         }
     }
 }

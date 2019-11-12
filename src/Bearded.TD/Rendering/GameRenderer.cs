@@ -103,16 +103,18 @@ namespace Bearded.TD.Rendering
             {
                 var (fluidLevel, _) = water[tile];
                 
-                if (fluidLevel.NumericValue <= 0.0001f)
+                if (fluidLevel.NumericValue <= 0.0001)
                     continue;
                 
                 var tilePos = Level.GetPosition(tile).NumericValue;
 
                 var groundHeight = ground[tile].DrawInfo.Height;
 
-                var alpha = Math.Min(fluidLevel.NumericValue * 10, 0.5f);
+                var numericFluidLevel = (float) fluidLevel.NumericValue;
+
+                var alpha = Math.Min(numericFluidLevel * 10, 0.5f);
                 geo.Color = Color.DodgerBlue * alpha;
-                geo.DrawCircle(tilePos.WithZ(fluidLevel.NumericValue + groundHeight.NumericValue), HexagonSide, true, 6);
+                geo.DrawCircle(tilePos.WithZ(numericFluidLevel + groundHeight.NumericValue), HexagonSide, true, 6);
             }
             
             geo.Color = Color.Aquamarine * 1f;
@@ -130,7 +132,7 @@ namespace Bearded.TD.Rendering
 
             void drawFlow(Vector2 tileP, Vector2 otherP, FlowRate flow)
             {
-                var f = flow.NumericValue;
+                var f = (float) flow.NumericValue;
                 
                 if (f == 0f) return;
 

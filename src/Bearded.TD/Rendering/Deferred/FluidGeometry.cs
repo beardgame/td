@@ -84,11 +84,11 @@ namespace Bearded.TD.Rendering
                     continue;
                 }
 
-                height[tile] = (groundHeight.NumericValue + fluidLevel.NumericValue, true);
+                height[tile] = ((float) (groundHeight.NumericValue + fluidLevel.NumericValue), true);
 
-                var flowRight = fluidFlow.FlowRight.NumericValue * rightVector;
-                var flowUpRight = fluidFlow.FlowUpRight.NumericValue * upRightVector;
-                var flowUpLeft = fluidFlow.FlowUpLeft.NumericValue * upLeftVector;
+                var flowRight = (float) fluidFlow.FlowRight.NumericValue * rightVector;
+                var flowUpRight = (float) fluidFlow.FlowUpRight.NumericValue * upRightVector;
+                var flowUpLeft = (float) fluidFlow.FlowUpLeft.NumericValue * upLeftVector;
 
                 flow[tile] += flowRight + flowUpRight + flowUpLeft;
                 flow[tile.Neighbour(Direction.Right)] -= flowRight;
