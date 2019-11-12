@@ -10,8 +10,8 @@ namespace Bearded.TD.Game.World.Fluids
 {
     class Fluid
     {
-        private const double viscosity = 3;
-        private const double maxFlowFraction = 1.0 / 6.0;
+        private const float viscosity = 3;
+        private const float maxFlowFraction = 1f / 6f;
         private static readonly Step stepR = Direction.Right.Step();
         private static readonly Step stepUR = Direction.UpRight.Step();
         private static readonly Step stepUL = Direction.UpLeft.Step();
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.World.Fluids
         private readonly TimeSpan updateInterval;
         private Instant nextUpdate;
 
-        private readonly Tilemap<double> amount;
+        private readonly Tilemap<float> amount;
         private Tilemap<Flow> currentFlow;
         private Tilemap<Flow> nextFlow;
 
@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.World.Fluids
             updateInterval = new TimeSpan(1.0 / updatesPerSecond);
             nextUpdate = Instant.Zero + updateInterval;
 
-            amount = new Tilemap<double>(radius);
+            amount = new Tilemap<float>(radius);
             currentFlow = new Tilemap<Flow>(radius);
             nextFlow = new Tilemap<Flow>(radius);
         }
@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.World.Fluids
         public void Add(Tile tile, Volume volume)
         {
             DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
-            amount[tile] += volume.NumericValue;
+            amount[tile] += (float) volume.NumericValue;
         }
 
         public void Update(Instant currentTime)
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.World.Fluids
 
         private void updateFlow()
         {
-            const double inverseViscosity = 1 / viscosity;
+            const float inverseViscosity = 1 / viscosity;
 
             for (var y = -radius; y < radius; y++)
             {
@@ -119,7 +119,7 @@ namespace Bearded.TD.Game.World.Fluids
             }
         }
 
-        private double clampFlowComponent(double flowCandidate, int x, int y, Step step)
+        private float clampFlowComponent(float flowCandidate, int x, int y, Step step)
         {
             if (flowCandidate > 0)
             {
@@ -156,7 +156,7 @@ namespace Bearded.TD.Game.World.Fluids
             }
         }
 
-        private double waterLevel(int x, int y)
+        private float waterLevel(int x, int y)
         {
             return amount[x, y] + geometryLayer[new Tile(x, y)]
                 .DrawInfo.Height.NumericValue;
@@ -164,18 +164,18 @@ namespace Bearded.TD.Game.World.Fluids
 
         struct Flow
         {
-            public double FlowRight { get; }
-            public double FlowUpRight { get; }
-            public double FlowUpLeft { get; }
+            public float FlowRight { get; }
+            public float FlowUpRight { get; }
+            public float FlowUpLeft { get; }
 
-            public Flow(double flowRight, double flowUpRight, double flowUpLeft)
+            public Flow(float flowRight, float flowUpRight, float flowUpLeft)
             {
                 FlowRight = flowRight;
                 FlowUpRight = flowUpRight;
                 FlowUpLeft = flowUpLeft;
             }
 
-            public void Deconstruct(out double flowRight, out double flowUpRight, out double flowUpLeft)
+            public void Deconstruct(out float flowRight, out float flowUpRight, out float flowUpLeft)
             {
                 flowRight = FlowRight;
                 flowUpRight = FlowUpRight;
