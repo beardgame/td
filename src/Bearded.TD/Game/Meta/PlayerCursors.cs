@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Meta
             geometries.PointLight.Draw(
                 game.PlayerInput.CursorPosition.NumericValue.WithZ(playerCursorLightHeight),
                 radius: playerCursorLightRadius,
-                color: Color.White
+                color: Color.White * 0.4f
             );
 
             foreach (var (player, tile) in latestKnownCursorPosition)

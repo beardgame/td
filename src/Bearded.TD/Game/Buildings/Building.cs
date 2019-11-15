@@ -142,8 +142,6 @@ namespace Bearded.TD.Game.Buildings
             DrawTiles(geometries, drawColors[SelectionState] * alpha);
             DrawBuildingName(geometries, Color.Black);
             base.Draw(geometries);
-
-            geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 3 + 2 * alpha, Color.Coral * 0.75f);
         }
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
