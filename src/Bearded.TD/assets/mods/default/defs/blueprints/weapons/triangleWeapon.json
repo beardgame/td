@@ -27,6 +27,14 @@
             "parameters" : {
                 "damage" : 4
             }
+        },
+        {
+            "id" : "spotlight",
+            "parameters" : {
+                "radius" : 6,
+                "color" : "White",
+                "angle" : 30
+            }
         }
     ]
 }

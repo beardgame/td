@@ -14,7 +14,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Weapons
 {
     [ComponentOwner]
-    class Weapon : IPositionable, IFactioned, IComponentOwner<Weapon>
+    class Weapon : IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>
     {
         private readonly ITurret turret;
         private readonly Building ownerAsBuilding;
@@ -24,6 +24,7 @@ namespace Bearded.TD.Game.Weapons
         public Maybe<Direction2> AimDirection { get; private set; }
         private Angle currentDirectionOffset;
         public Direction2 CurrentDirection => turret.NeutralDirection + currentDirectionOffset;
+
         public bool ShootingThisFrame { get; private set; }
 
         public Direction2 NeutralDirection => turret.NeutralDirection;
@@ -98,5 +99,7 @@ namespace Bearded.TD.Game.Weapons
         IEnumerable<TComponent> IComponentOwner<Weapon>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
+
+        Direction2 IDirected.Direction => CurrentDirection;
     }
 }

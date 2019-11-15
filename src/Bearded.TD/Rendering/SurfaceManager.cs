@@ -34,6 +34,7 @@ namespace Bearded.TD.Rendering
         public Font UIFont { get; }
 
         public IndexedSurface<PointLightVertex> PointLights { get; }
+        public IndexedSurface<SpotlightVertex> Spotlights { get; }
 
         public SurfaceManager()
         {
@@ -53,7 +54,8 @@ namespace Bearded.TD.Rendering
                 "deferred/debug",
                 "deferred/compose",
                 "deferred/copy",
-                "deferred/pointlight"
+                "deferred/pointlight",
+                "deferred/spotlight"
             }.ForEach(name => Shaders.MakeShaderProgram(name));
 
             Primitives = new IndexedSurface<PrimitiveVertexData>()
@@ -83,6 +85,11 @@ namespace Bearded.TD.Rendering
                 .WithShader(Shaders["deferred/pointlight"])
                 .AndSettings(ViewMatrix, ProjectionMatrix,
                     FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
+
+            Spotlights = new IndexedSurface<SpotlightVertex>()
+                .WithShader(Shaders["deferred/spotlight"])
+                .AndSettings(ViewMatrix, ProjectionMatrix,
+                    FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
         }
 
         public static string AdjustPathToReloadable(string file)
@@ -106,6 +113,7 @@ namespace Bearded.TD.Rendering
             DepthBuffer = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
 
             PointLights.AddSettings(normalUniform, DepthBuffer);
+            Spotlights.AddSettings(normalUniform, DepthBuffer);
         }
 
         private static string asset(string path) => workingDir + "assets/" + path;

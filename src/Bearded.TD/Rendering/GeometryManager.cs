@@ -13,8 +13,9 @@ namespace Bearded.TD.Rendering
         public PrimitiveGeometry ConsoleBackground { get; }
 
         public FontGeometry UIFont { get; }
-        
+
         public PointLightGeometry PointLight { get; }
+        public SpotlightGeometry Spotlight { get; }
 
         public GeometryManager(SurfaceManager surfaces)
         {
@@ -25,6 +26,7 @@ namespace Bearded.TD.Rendering
             ConsoleFont = new FontGeometry(surfaces.ConsoleFontSurface, surfaces.ConsoleFont);
             UIFont = new FontGeometry(surfaces.UIFontSurface, surfaces.UIFont);
             PointLight = new PointLightGeometry(surfaces.PointLights);
+            Spotlight = new SpotlightGeometry(surfaces.Spotlights);
         }
     }
 }
