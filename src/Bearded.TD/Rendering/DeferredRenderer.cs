@@ -19,14 +19,14 @@ namespace Bearded.TD.Rendering
             new [] {worldDrawGroups, postLightGroups}
                 .SelectMany(group => group)
                 .ToList().AsReadOnly();
-        
+
         private readonly SurfaceManager surfaces;
         private ViewportSize viewport;
         private bool needsResize;
 
         private readonly Texture diffuseBuffer = createTexture(); // rgba
         private readonly Texture normalBuffer = createTexture(); // xyz
-        private readonly Texture depthBuffer = createTexture(); // z
+        private readonly Texture depthBuffer = createTexture(); // z (0-1, camera space)
         private readonly Texture lightAccumBuffer = createTexture(); // rgb
         private readonly Texture depthMaskBuffer = createDepthTexture();
         private readonly Texture compositionBuffer = createTexture(); // rgba
@@ -59,7 +59,7 @@ namespace Bearded.TD.Rendering
             bind(null, (0, 0));
 
             lightAccumTarget.Attach(FramebufferAttachment.ColorAttachment0, lightAccumBuffer);
-            
+
             compositionTarget.Attach(FramebufferAttachment.ColorAttachment0, compositionBuffer);
             compositionTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
 
@@ -69,7 +69,7 @@ namespace Bearded.TD.Rendering
                     new TextureUniform("albedoTexture", diffuseBuffer, TextureUnit.Texture0),
                     new TextureUniform("lightTexture", lightAccumBuffer, TextureUnit.Texture1)
                 );
-            
+
             copyToTargetSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copy"])
                 .AndSettings(
@@ -78,7 +78,7 @@ namespace Bearded.TD.Rendering
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, lightAccumBuffer}
                 .Select(createDebugSurface).ToArray();
-            
+
             surfaces.InjectDeferredBuffer(normalBuffer, depthBuffer);
         }
 
@@ -105,13 +105,13 @@ namespace Bearded.TD.Rendering
                     new UVColorVertexData(u2, v2, 0, 1, 1, color),
                     new UVColorVertexData(u, v2, 0, 0, 1, color)
                 );
-                
+
                 u += width;
-                
+
                 surface.Render();
             }
         }
-        
+
         public void Render(ContentSurfaceManager contentSurfaces, RenderTarget target = null)
         {
             resizeIfNeeded();
@@ -158,15 +158,16 @@ namespace Bearded.TD.Rendering
             clearColor();
 
             surfaces.PointLights.Render();
+            surfaces.Spotlights.Render();
         }
 
         private void compositeLightsAndGBuffers()
         {
             bind(compositionTarget, (viewport.Width, viewport.Height));
-    
+
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
-            
+
             compositeSurface.Render();
         }
 
@@ -206,13 +207,13 @@ namespace Bearded.TD.Rendering
             GL.Viewport(0, 0, viewport.width, viewport.height);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);
         }
-        
+
         private static void clearColorAndDepth()
         {
             GL.ClearColor(0, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
-        
+
         private static void clearColor(float r = 0, float g = 0, float b = 0, float a = 0)
         {
             GL.ClearColor(r, g, b, a);
@@ -234,7 +235,7 @@ namespace Bearded.TD.Rendering
         public void OnResize(ViewportSize newViewport)
         {
             var bufferSizeFactor = 1 / UserSettings.Instance.Graphics.UpSample;
-            
+
             var w = (int) (newViewport.Width * bufferSizeFactor);
             var h = (int) (newViewport.Height * bufferSizeFactor);
 

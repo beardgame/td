@@ -20,7 +20,7 @@ namespace Bearded.TD.Rendering
         private readonly FluidGeometry waterGeometry;
 
         public ContentSurfaceManager DeferredSurfaces { get; }
-        
+
         public GameRenderer(GameInstance game, RenderContext renderContext)
         {
             this.game = game;
@@ -45,21 +45,19 @@ namespace Bearded.TD.Rendering
         {
             geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
 
-            var state = game.State;
-
             game.PlayerCursors.DrawCursors(geometries);
             drawAmbientLight();
             drawGameObjects();
             drawDebug();
         }
-        
+
         private void drawAmbientLight()
         {
             var radius = game.State.Level.Radius;
 
             geometries.PointLight.Draw(
                 new Vector3(-radius * 2, radius * 2, radius),
-                radius * 10, Color.White * 0.25f
+                radius * 10, Color.White * 0.2f
             );
         }
 
@@ -98,14 +96,14 @@ namespace Bearded.TD.Rendering
 
             var water = game.State.FluidLayer.Water;
             var ground = game.State.GeometryLayer;
-            
+
             foreach (var tile in Tilemap.EnumerateTilemapWith(game.State.Level.Radius))
             {
                 var (fluidLevel, _) = water[tile];
-                
+
                 if (fluidLevel.NumericValue <= 0.0001)
                     continue;
-                
+
                 var tilePos = Level.GetPosition(tile).NumericValue;
 
                 var groundHeight = ground[tile].DrawInfo.Height;
@@ -116,15 +114,15 @@ namespace Bearded.TD.Rendering
                 geo.Color = Color.DodgerBlue * alpha;
                 geo.DrawCircle(tilePos.WithZ(numericFluidLevel + groundHeight.NumericValue), HexagonSide, true, 6);
             }
-            
+
             geo.Color = Color.Aquamarine * 1f;
-            
+
             foreach (var tile in Tilemap.EnumerateTilemapWith(game.State.Level.Radius))
             {
                 var (_, flow) = water[tile];
-                
+
                 var tilePos = Level.GetPosition(tile).NumericValue;
-                
+
                 drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.Right)).NumericValue, flow.FlowRight);
                 drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.UpRight)).NumericValue, flow.FlowUpRight);
                 drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.UpLeft)).NumericValue, flow.FlowUpLeft);
@@ -133,7 +131,7 @@ namespace Bearded.TD.Rendering
             void drawFlow(Vector2 tileP, Vector2 otherP, FlowRate flow)
             {
                 var f = (float) flow.NumericValue;
-                
+
                 if (f == 0f) return;
 
                 f = Math.Sign(f) * Math.Abs(f).Sqrted() * 5;
@@ -141,7 +139,7 @@ namespace Bearded.TD.Rendering
                 var (p, q) = f > 0 ? (0f, f) : (1 + f, 1);
 
                 var d = otherP - tileP;
-                
+
                 geo.DrawLine(tileP + d * p, tileP + d * q);
             }
         }
