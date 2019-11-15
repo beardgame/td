@@ -41,7 +41,7 @@ namespace Bearded.TD.Rendering.Loading
 
             return builder.Build(context, shader, defaultTextureSampler, glActions);
         }
-        
+
         private static BinPacking.Rectangle<(Bitmap Image, string Name)>
             rectangle((Bitmap Image, string Name) sprite)
         {
@@ -59,7 +59,7 @@ namespace Bearded.TD.Rendering.Loading
 
             if (shadersToAdd.Count == 0 && shaderProgram != null)
                 return shaderProgram;
-            
+
             return glActions.RunAndReturn(glOperations);
 
             ISurfaceShader glOperations()
@@ -79,25 +79,19 @@ namespace Bearded.TD.Rendering.Loading
 #if DEBUG
                 file = adjustToReloadable(file);
 #endif
-                
+
                 return new ShaderFile(type, file, name);
             }
 
             string adjustToReloadable(string file)
             {
                 // point at shader files in the actual repo instead of the binary folder for easy live shader editing
-                
-                // C:\Users\amulware\git\td\
-                // \bin\Bearded.TD\Debug\ -> \src\Bearded.TD\
-                // assets\mods\default\gfx\shaders\default-terrain.vs
 
-                var newFile = file
-                    .Replace("\\", "/")
-                    .Replace("/bin/Bearded.TD/Debug/", "/src/Bearded.TD/");
+                var newFile = SurfaceManager.AdjustPathToReloadable(file);
 
                 if (File.Exists(newFile))
                     return newFile;
-                
+
                 return file;
             }
         }

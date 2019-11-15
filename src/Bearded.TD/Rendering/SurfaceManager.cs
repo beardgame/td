@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System.IO;
+using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
@@ -8,6 +9,8 @@ namespace Bearded.TD.Rendering
 {
     class SurfaceManager
     {
+        private static readonly string workingDir = Directory.GetCurrentDirectory() + "/";
+
         public ShaderManager Shaders { get; } = new ShaderManager();
 
         public Matrix4Uniform ViewMatrix { get; } = new Matrix4Uniform("view");
@@ -18,7 +21,7 @@ namespace Bearded.TD.Rendering
         public Vector3Uniform FarPlaneUnitX { get; } = new Vector3Uniform("farPlaneUnitX");
         public Vector3Uniform FarPlaneUnitY { get; } = new Vector3Uniform("farPlaneUnitY");
         public Vector3Uniform CameraPosition { get; } = new Vector3Uniform("cameraPosition");
-        
+
         public FloatUniform Time { get; } = new FloatUniform("time");
 
         public TextureUniform DepthBuffer { get; set; }
@@ -29,13 +32,19 @@ namespace Bearded.TD.Rendering
         public IndexedSurface<UVColorVertexData> UIFontSurface { get; }
         public Font ConsoleFont { get; }
         public Font UIFont { get; }
-        
+
         public IndexedSurface<PointLightVertex> PointLights { get; }
 
         public SurfaceManager()
         {
+            var shaderPath = asset("shaders/");
+
+#if DEBUG
+            shaderPath = AdjustPathToReloadable(shaderPath);
+#endif
+
             Shaders.Add(
-                ShaderFileLoader.CreateDefault(asset("shaders/")).Load(".")
+                ShaderFileLoader.CreateDefault(shaderPath).Load(".")
             );
             new[]
             {
@@ -69,22 +78,37 @@ namespace Bearded.TD.Rendering
                         ViewMatrix, ProjectionMatrix,
                         new TextureUniform("diffuse", new Texture(font("helveticaneue.png"), preMultiplyAlpha: true))
                     );
-            
+
             PointLights = new IndexedSurface<PointLightVertex>()
                 .WithShader(Shaders["deferred/pointlight"])
                 .AndSettings(ViewMatrix, ProjectionMatrix,
                     FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
         }
 
+        public static string AdjustPathToReloadable(string file)
+        {
+            // point at asset files in the actual repo instead of the binary folder for easy live editing
+
+            // your\td\path
+            // \bin\Bearded.TD\Debug\ -> \src\Bearded.TD\
+            // assets\file.ext
+
+            var newFile = file
+                .Replace("\\", "/")
+                .Replace("/bin/Bearded.TD/Debug/", "/src/Bearded.TD/");
+
+            return newFile;
+        }
+
         public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
         {
             var normalUniform = new TextureUniform("normalBuffer", normalBuffer, TextureUnit.Texture0);
             DepthBuffer = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
-            
+
             PointLights.AddSettings(normalUniform, DepthBuffer);
         }
 
-        private static string asset(string path) => "assets/" + path;
+        private static string asset(string path) => workingDir + "assets/" + path;
         private static string font(string path) => asset("font/" + path);
 
     }
