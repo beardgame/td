@@ -6,7 +6,7 @@ namespace Bearded.TD.Rendering.Deferred
 {
     class PointLightGeometry
     {
-        private IndexedSurface<PointLightVertex> surface;
+        private readonly IndexedSurface<PointLightVertex> surface;
 
         public PointLightGeometry(IndexedSurface<PointLightVertex> surface)
         {
@@ -21,11 +21,12 @@ namespace Bearded.TD.Rendering.Deferred
             var y1 = center.Y + radius;
 
             var rSquared = radius.Squared();
-            
+
+            // TODO: account for perspective to prevent light cutoff
             surface.AddQuad(
                 new PointLightVertex(new Vector3(x0, y0, 0), center, rSquared, color),
-                new PointLightVertex(new Vector3(x1, y0, 0), center, rSquared, color), 
-                new PointLightVertex(new Vector3(x1, y1, 0), center, rSquared, color), 
+                new PointLightVertex(new Vector3(x1, y0, 0), center, rSquared, color),
+                new PointLightVertex(new Vector3(x1, y1, 0), center, rSquared, color),
                 new PointLightVertex(new Vector3(x0, y1, 0), center, rSquared, color)
             );
         }
