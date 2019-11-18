@@ -14,14 +14,14 @@ namespace Bearded.TD.Rendering
     class FluidGeometry
     {
         private static Vector2 rightVector = Direction.Right.Vector();
-        
+
         private readonly int radius;
         private readonly GeometryLayer levelGeometry;
         private readonly Fluid fluid;
 
         private readonly Tilemap<(float SurfaceLevel, bool HasFluid)> height;
         private readonly Tilemap<Vector2> flow;
-        
+
         private readonly ExpandingVertexSurface<FluidVertex> surface;
         private static Vector2 upRightVector = Direction.UpRight.Vector();
         private static Vector2 upLeftVector = Direction.UpLeft.Vector();
@@ -31,7 +31,7 @@ namespace Bearded.TD.Rendering
             radius = game.State.Level.Radius;
             levelGeometry = game.State.GeometryLayer;
             this.fluid = fluid;
-            
+
             height = new Tilemap<(float, bool)>(radius + 1);
             flow = new Tilemap<Vector2>(radius + 1);
 
@@ -59,7 +59,7 @@ namespace Bearded.TD.Rendering
             resetFlow();
             prepareHeightAndFlow();
             createGeometry();
-            
+
             surface.Render();
         }
 
@@ -110,7 +110,7 @@ namespace Bearded.TD.Rendering
             var rightTile = tile.Neighbour(Direction.Right);
             var upRightTile = tile.Neighbour(Direction.UpRight);
             var upLeftTile = tile.Neighbour(Direction.UpLeft);
-            
+
             var current = height[tile];
             var right = height[rightTile];
             var upRight = height[upRightTile];
@@ -119,7 +119,6 @@ namespace Bearded.TD.Rendering
             if (current.HasFluid || right.HasFluid || upRight.HasFluid)
             {
                 addTriangle(tile, rightTile, upRightTile, current, right, upRight);
-                
             }
 
             if (current.HasFluid || upRight.HasFluid || upLeft.HasFluid)
@@ -135,7 +134,7 @@ namespace Bearded.TD.Rendering
             (float SurfaceLevel, bool HasFluid) h2)
         {
             var maxValidHeight = getMaxValidHeight(h0, h1, h2);
-            
+
             addTriangle(
                 Level.GetPosition(t0).NumericValue.WithZ(h0.HasFluid ? h0.SurfaceLevel : maxValidHeight),
                 Level.GetPosition(t1).NumericValue.WithZ(h1.HasFluid ? h1.SurfaceLevel : maxValidHeight),
