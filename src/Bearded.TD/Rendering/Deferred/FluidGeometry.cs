@@ -14,6 +14,8 @@ namespace Bearded.TD.Rendering
     class FluidGeometry
     {
         private static Vector2 rightVector = Direction.Right.Vector();
+        private static Vector2 upRightVector = Direction.UpRight.Vector();
+        private static Vector2 upLeftVector = Direction.UpLeft.Vector();
 
         private readonly int radius;
         private readonly GeometryLayer levelGeometry;
@@ -23,8 +25,6 @@ namespace Bearded.TD.Rendering
         private readonly Tilemap<Vector2> flow;
 
         private readonly ExpandingVertexSurface<FluidVertex> surface;
-        private static Vector2 upRightVector = Direction.UpRight.Vector();
-        private static Vector2 upLeftVector = Direction.UpLeft.Vector();
 
         public FluidGeometry(GameInstance game, Fluid fluid, RenderContext context, Material material)
         {
@@ -91,9 +91,9 @@ namespace Bearded.TD.Rendering
                 var flowUpLeft = (float) fluidFlow.FlowUpLeft.NumericValue * upLeftVector;
 
                 flow[tile] += flowRight + flowUpRight + flowUpLeft;
-                flow[tile.Neighbour(Direction.Right)] -= flowRight;
-                flow[tile.Neighbour(Direction.UpRight)] -= flowUpRight;
-                flow[tile.Neighbour(Direction.UpLeft)] -= flowUpLeft;
+                flow[tile.Neighbour(Direction.Right)] += flowRight;
+                flow[tile.Neighbour(Direction.UpRight)] += flowUpRight;
+                flow[tile.Neighbour(Direction.UpLeft)] += flowUpLeft;
             }
         }
 
@@ -107,6 +107,8 @@ namespace Bearded.TD.Rendering
 
         private void createGeometryForTile(Tile tile)
         {
+            const float oneThird = 1f / 3f;
+
             var rightTile = tile.Neighbour(Direction.Right);
             var upRightTile = tile.Neighbour(Direction.UpRight);
             var upLeftTile = tile.Neighbour(Direction.UpLeft);
@@ -116,14 +118,27 @@ namespace Bearded.TD.Rendering
             var upRight = height[upRightTile];
             var upLeft = height[upLeftTile];
 
+            var flowCurrent = flow[tile];
+            var flowRight = flow[rightTile];
+            var flowUpRight = flow[upRightTile];
+            var flowUpLeft = flow[upLeftTile];
+
             if (current.HasFluid || right.HasFluid || upRight.HasFluid)
             {
-                addTriangle(tile, rightTile, upRightTile, current, right, upRight);
+                addTriangle(
+                    tile, rightTile, upRightTile,
+                    current, right, upRight,
+                    flowCurrent, flowRight, flowUpRight
+                    );
             }
 
             if (current.HasFluid || upRight.HasFluid || upLeft.HasFluid)
             {
-                addTriangle(tile, upRightTile, upLeftTile, current, upRight, upLeft);
+                addTriangle(
+                    tile, upRightTile, upLeftTile,
+                    current, upRight, upLeft,
+                    flowCurrent, flowUpRight, flowUpLeft
+                    );
             }
         }
 
@@ -131,14 +146,16 @@ namespace Bearded.TD.Rendering
             Tile t0, Tile t1, Tile t2,
             (float SurfaceLevel, bool HasFluid) h0,
             (float SurfaceLevel, bool HasFluid) h1,
-            (float SurfaceLevel, bool HasFluid) h2)
+            (float SurfaceLevel, bool HasFluid) h2,
+            Vector2 f0, Vector2 f1, Vector2 f2)
         {
             var maxValidHeight = getMaxValidHeight(h0, h1, h2);
 
             addTriangle(
                 Level.GetPosition(t0).NumericValue.WithZ(h0.HasFluid ? h0.SurfaceLevel : maxValidHeight),
                 Level.GetPosition(t1).NumericValue.WithZ(h1.HasFluid ? h1.SurfaceLevel : maxValidHeight),
-                Level.GetPosition(t2).NumericValue.WithZ(h2.HasFluid ? h2.SurfaceLevel : maxValidHeight)
+                Level.GetPosition(t2).NumericValue.WithZ(h2.HasFluid ? h2.SurfaceLevel : maxValidHeight),
+                f0, f1, f2
             );
         }
 
@@ -155,12 +172,12 @@ namespace Bearded.TD.Rendering
             return max;
         }
 
-        private void addTriangle(Vector3 p0, Vector3 p1, Vector3 p2)
+        private void addTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Vector2 f0, Vector2 f1, Vector2 f2)
         {
             surface.AddVertices(
-                new FluidVertex(p0, Vector3.Zero, Vector2.Zero),
-                new FluidVertex(p1, Vector3.Zero, Vector2.Zero),
-                new FluidVertex(p2, Vector3.Zero, Vector2.Zero)
+                new FluidVertex(p0, Vector3.Zero, f0),
+                new FluidVertex(p1, Vector3.Zero, f1),
+                new FluidVertex(p2, Vector3.Zero, f2)
                 );
         }
 
