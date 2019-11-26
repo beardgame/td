@@ -16,11 +16,11 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
     {
         protected delegate ReadonlyBlueprintCollection<TBlueprint> DependencySelector(Mod mod);
-        
+
         protected BlueprintLoadingContext Context { get; }
-        
+
         protected abstract string RelativePath { get; }
-        
+
         protected virtual DependencySelector SelectDependency { get; }
 
         protected BaseBlueprintLoader(BlueprintLoadingContext context)
@@ -33,7 +33,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var files = GetJsonFiles();
 
             var blueprints = LoadBlueprintsFromFiles(files);
-            
+
             var blueprintCollection = new ReadonlyBlueprintCollection<TBlueprint>(blueprints);
 
             SetupDependencyResolver(blueprintCollection);
@@ -47,10 +47,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
             if (selector == null)
                 return;
-            
+
             var dependencyResolver = new BlueprintDependencyResolver<TBlueprint>(
                 Context.Meta, blueprintCollection, Enumerable.Empty<Mod>(), m => selector(m));
-            
+
             Context.Serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
         }
 
@@ -109,7 +109,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         protected virtual TResolvers GetDependencyResolvers(FileInfo file)
         {
             DebugAssert.State.Satisfies(typeof(TResolvers) == typeof(Void), "Override GetDependencyResolver!");
-            
+
             return default(TResolvers);
         }
 

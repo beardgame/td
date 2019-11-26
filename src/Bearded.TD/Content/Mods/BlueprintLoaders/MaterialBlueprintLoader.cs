@@ -7,7 +7,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
     class MaterialBlueprintLoader : BaseBlueprintLoader<Material, MaterialJson, (FileInfo, MaterialLoader)>
     {
         private readonly MaterialLoader materialLoader;
-        
+
         protected override string RelativePath => "gfx/materials";
 
         public MaterialBlueprintLoader(BlueprintLoadingContext context)

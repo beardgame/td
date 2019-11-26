@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
@@ -91,7 +92,7 @@ namespace Bearded.TD.Game.Buildings
 
         public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {
-            return upgrade.CanApplyTo(Components);
+            return !appliedUpgrades.Contains(upgrade) && upgrade.CanApplyTo(Components);
         }
 
         public void ApplyUpgrade(IUpgradeBlueprint upgrade)
@@ -105,7 +106,9 @@ namespace Bearded.TD.Game.Buildings
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
             DebugAssert.Argument.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
-            DebugAssert.Argument.Satisfies(!upgradesInProgress.Contains(task), "Can not add same task more than once.");
+            DebugAssert.Argument.Satisfies(
+                upgradesInProgress.All(t => t.Upgrade != task.Upgrade),
+                "Cannot queue an upgrade task for the same upgrade twice.");
             upgradesInProgress.Add(task);
         }
 

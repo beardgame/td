@@ -204,9 +204,17 @@ namespace Bearded.TD.UI.Controls
                 var tech = technology.ValueOrDefault(null);
                 var factionTechnology = game.Me.Faction.Technology;
 
-                game.Request(factionTechnology.TechPoints >= tech.Cost
-                    ? UnlockTechnology.Request(game.Me.Faction, tech)
-                    : QueueTechnology.Request(game.Me.Faction, tech));
+                if (factionTechnology.IsTechnologyQueued(tech))
+                {
+                    game.Meta.Logger.Debug?.Log("dequeue");
+                    game.Request(DequeueTechnology.Request(game.Me.Faction, tech));
+                }
+                else
+                {
+                    game.Request(factionTechnology.TechPoints >= tech.Cost
+                        ? UnlockTechnology.Request(game.Me.Faction, tech)
+                        : QueueTechnology.Request(game.Me.Faction, tech));
+                }
             }
 
             public void SetTechnologyToDisplay(Maybe<ITechnologyBlueprint> technologyToDisplay)

@@ -9,7 +9,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         where TJsonModel : IConvertsTo<TBlueprint, Void>
     {
         protected override string RelativePath { get; }
-        
+
         public SimpleBlueprintLoader(BlueprintLoadingContext context, string relativePath) : base(context)
         {
             RelativePath = relativePath;

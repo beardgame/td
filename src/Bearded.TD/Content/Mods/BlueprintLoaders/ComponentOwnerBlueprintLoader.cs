@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         private readonly DependencyConverter<IComponentOwnerBlueprint> dependencyConverter;
         private readonly Dictionary<string, (ComponentOwnerBlueprint Blueprint, FileInfo File, List<ComponentOwnerBlueprintProxy> Dependencies)>
             dependenciesByBlueprintId = new Dictionary<string, (ComponentOwnerBlueprint, FileInfo, List<ComponentOwnerBlueprintProxy>)>();
-        
+
         protected override string RelativePath => "defs/blueprints";
 
         protected override DependencySelector SelectDependency => m => m.Blueprints.ComponentOwners;
@@ -33,9 +33,9 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var validBlueprints = blueprints.Where(resolveDependencies);
 
             var blueprintCollection = new ReadonlyBlueprintCollection<IComponentOwnerBlueprint>(validBlueprints);
-            
+
             SetupDependencyResolver(blueprintCollection);
-            
+
             return blueprintCollection;
         }
 
@@ -48,7 +48,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var blueprints = LoadBlueprintsFromFiles(files);
 
             Context.Serializer.Converters.Remove(dependencyConverter);
-            
+
             return blueprints;
         }
 
@@ -78,7 +78,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var proxies = componentOwnerProxyBlueprintCollector.GetAndResetCurrentProxies();
 
             dependenciesByBlueprintId[blueprint.Id] = ((ComponentOwnerBlueprint) blueprint, file, proxies);
-            
+
             return blueprint;
         }
     }

@@ -12,7 +12,6 @@ namespace Bearded.TD.Content.Models
         [Modifiable(Type = AttributeType.Range)]
         Unit Range { get; }
 
-        [Modifiable(0xFFFFA500 /* orange */)]
         Color Color { get; }
     }
 }

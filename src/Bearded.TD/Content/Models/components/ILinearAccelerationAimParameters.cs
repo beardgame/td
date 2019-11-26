@@ -7,7 +7,7 @@ namespace Bearded.TD.Content.Models
     {
         [Modifiable(180, Type = AttributeType.TurnSpeed)]
         AngularAcceleration Acceleration { get; }
-        
+
         double DragInverse { get; }
     }
 }

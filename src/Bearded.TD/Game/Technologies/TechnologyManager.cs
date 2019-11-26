@@ -48,6 +48,12 @@ namespace Bearded.TD.Game.Technologies
             events.Send(new TechnologyQueued(technology));
         }
 
+        public void DequeueTechnology(ITechnologyBlueprint technologyBlueprint)
+        {
+            DebugAssert.Argument.Satisfies(() => IsTechnologyQueued(technologyBlueprint));
+            queuedTechnologies.Remove(technologyBlueprint);
+        }
+
         public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
             IsTechnologyLocked(technology) && TechPoints >= technology.Cost;
 

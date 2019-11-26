@@ -34,6 +34,10 @@ namespace Bearded.TD.Game.Components
             new AttributeConverter<Speed>(d => new Speed((float) d), s => s.NumericValue);
 
         [ConvertsAttribute]
+        public static AttributeConverter<TimeSpan> TimeSpanConverter =
+            new AttributeConverter<TimeSpan>(d => new TimeSpan(d), t => t.NumericValue);
+
+        [ConvertsAttribute]
         public static AttributeConverter<Unit> UnitConverter =
             new AttributeConverter<Unit>(d => new Unit((float) d), u => u.NumericValue);
 
