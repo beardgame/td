@@ -1,0 +1,17 @@
+{
+  "id" : "flameTower",
+  "name" : "Flame Turret",
+  "footprint" : "triangle",
+  "cost" : 100,
+  "components" : [
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
+    {
+      "id" : "turret",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "flamer"
+      }
+    }
+  ]
+}

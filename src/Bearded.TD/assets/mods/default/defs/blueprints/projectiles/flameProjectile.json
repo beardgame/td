@@ -1,0 +1,27 @@
+{
+  "id" : "flameProjectile",
+  "components" : [
+    {
+      "id" : "damageOnHit",
+      "parameters" : {
+        "damage" : 1,
+        "damageType" : "fire"
+      }
+    },
+    {
+      "id" : "sprite",
+      "parameters" : {
+        "sprite" : "particle.mote",
+        "color" : "FFFFA533",
+        "size" : 0.5
+      }
+    },
+    {
+      "id" : "pointlight",
+      "parameters" : {
+        "color" : "FF442211",
+        "radius" : 2
+      }
+    }
+  ]
+}
