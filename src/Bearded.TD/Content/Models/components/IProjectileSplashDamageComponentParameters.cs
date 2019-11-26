@@ -7,7 +7,7 @@ namespace Bearded.TD.Content.Models
     {
         [Modifiable(Type = AttributeType.Damage)]
         int Damage { get; }
-        
+
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }
     }

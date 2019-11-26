@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -16,8 +17,12 @@ namespace Weavers.TechEffects
         private readonly TypeReference nullableReference;
 
         public TemplateImplementationWeaver(
-                ModuleDefinition moduleDefinition, TypeSystem typeSystem, ILogger logger, ReferenceFinder referenceFinder)
-            : base(moduleDefinition, typeSystem, logger, referenceFinder)
+                ModuleDefinition moduleDefinition,
+                TypeSystem typeSystem,
+                ILogger logger,
+                ReferenceFinder referenceFinder,
+                AttributeConverters attributeConverters)
+            : base(moduleDefinition, typeSystem, logger, referenceFinder, attributeConverters)
         {
             nullableReference = ReferenceFinder.GetTypeReference(typeof(Nullable<>));
         }
@@ -31,7 +36,7 @@ namespace Weavers.TechEffects
                 interfaceToImplement,
                 Constants.GetTemplateClassNameForInterface(interfaceToImplement.Name),
                 TypeSystem.ObjectReference);
-            
+
             var fieldsByProperty = addConstructor(templateType, properties);
 
             foreach (var entry in fieldsByProperty)
@@ -84,9 +89,16 @@ namespace Weavers.TechEffects
 
                 type.Fields.Add(fieldDef);
 
+                Maybe<VariableDefinition> localVar = Maybe.Nothing;
                 var processorCommands = attributeParameters.Count > 0
-                    ? getConstructorCommandsForProperty(property, modifiableAttribute)
+                    ? getConstructorCommandsForProperty(property, modifiableAttribute, out localVar)
                     : new List<Action<ILProcessor>>();
+
+                localVar.Match(varDef =>
+                {
+                    method.Body.Variables.Add(varDef);
+                    method.Body.InitLocals = true;
+                });
 
                 propertyFields.Add((fieldDef, processorCommands));
                 fieldsByProperty.Add(property, fieldDef);
@@ -122,8 +134,10 @@ namespace Weavers.TechEffects
         }
 
         private List<Action<ILProcessor>> getConstructorCommandsForProperty(
-            PropertyReference property, ICustomAttribute modifiableAttribute)
+            PropertyReference property, ICustomAttribute modifiableAttribute, out Maybe<VariableDefinition> localVarOut)
         {
+            localVarOut = Maybe.Nothing;
+
             var processorCommands = new List<Action<ILProcessor>>();
             var defaultValue = (CustomAttributeArgument) modifiableAttribute.ConstructorArguments[0].Value;
 
@@ -131,17 +145,19 @@ namespace Weavers.TechEffects
 
             if (!property.PropertyType.IsPrimitive)
             {
-                var expectedConstructorParamType = (Type) modifiableAttribute.Properties
-                    .FirstOrDefault(p => p.Name == nameof(ModifiableAttribute.DefaultValueType))
-                    .Argument
-                    .Value;
-                var resolvedType = ModuleDefinition.ImportReference(property.PropertyType);
-                var wrapperConstructor = resolvedType.Resolve().GetConstructors().FirstOrDefault(c =>
-                    c.Parameters.Count == 1 &&
-                    (expectedConstructorParamType == null ||
-                        c.Parameters[0].ParameterType.FullName == expectedConstructorParamType.FullName));
-                processorCommands.Add(p =>
-                    p.Emit(OpCodes.Newobj, ModuleDefinition.ImportReference(wrapperConstructor)));
+                // push to local variable since we need the attribute converter below it on the stack
+                var localVar = new VariableDefinition(property.PropertyType);
+                localVarOut = Maybe.Just(localVar);
+                processorCommands.Add(p => p.Emit(OpCodes.Stloc, localVar));
+
+                // load the static field
+                var converterField = AttributeConverters.FieldForConversion(property.PropertyType);
+                processorCommands.Add(p => p.Emit(OpCodes.Ldsfld, converterField));
+                // push local variable on stack
+                processorCommands.Add(p => p.Emit(OpCodes.Ldloc, localVar));
+                // call converter method
+                processorCommands.Add(p => p.Emit(
+                    OpCodes.Callvirt, AttributeConverters.MethodForConversionToRaw(converterField)));
             }
 
             var getOrDefault = ReferenceFinder.GetMethodReference(
@@ -183,7 +199,7 @@ namespace Weavers.TechEffects
 
             var attributeIsKnownMethod = ReferenceFinder
                 .GetMethodReference(modifiableType, Constants.AttributeIsKnownMethod);
-            
+
             var processor = method.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldarg_1);
             processor.Emit(OpCodes.Call, attributeIsKnownMethod);

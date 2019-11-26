@@ -11,18 +11,13 @@ namespace Weavers.TechEffects
 {
     sealed class ModifiableImplementationWeaver : BaseImplementationWeaver
     {
-        private readonly AttributeConverters attributeConverters;
-
         public ModifiableImplementationWeaver(
                 ModuleDefinition moduleDefinition,
                 TypeSystem typeSystem,
                 ILogger logger,
                 ReferenceFinder referenceFinder,
                 AttributeConverters attributeConverters)
-            : base(moduleDefinition, typeSystem, logger, referenceFinder)
-        {
-            this.attributeConverters = attributeConverters;
-        }
+            : base(moduleDefinition, typeSystem, logger, referenceFinder, attributeConverters) {}
 
         public TypeDefinition WeaveImplementation(
             TypeReference interfaceToImplement,
@@ -164,12 +159,12 @@ namespace Weavers.TechEffects
                     processor.Emit(OpCodes.Stloc, localVar);
 
                     // load the static field
-                    var converterField = attributeConverters.FieldForConversion(fieldInfo.innerFieldType);
+                    var converterField = AttributeConverters.FieldForConversion(fieldInfo.innerFieldType);
                     processor.Emit(OpCodes.Ldsfld, converterField);
                     // push local variable on stack
                     processor.Emit(OpCodes.Ldloc, localVar);
                     // call converter method
-                    processor.Emit(OpCodes.Callvirt, attributeConverters.MethodForConversionToRaw(converterField));
+                    processor.Emit(OpCodes.Callvirt, AttributeConverters.MethodForConversionToRaw(converterField));
                 }
                 else if (fieldInfo.innerFieldType.FullName != TypeSystem.DoubleReference.FullName)
                 {
@@ -206,8 +201,8 @@ namespace Weavers.TechEffects
 
         private (FieldReference, MethodReference) toWrappedConverterTupleForProperty(PropertyReference property)
         {
-            var fieldForConversion = attributeConverters.FieldForConversion(property.PropertyType);
-            return (fieldForConversion, attributeConverters.MethodForConversionToWrapped(fieldForConversion));
+            var fieldForConversion = AttributeConverters.FieldForConversion(property.PropertyType);
+            return (fieldForConversion, AttributeConverters.MethodForConversionToWrapped(fieldForConversion));
         }
 
         #endregion

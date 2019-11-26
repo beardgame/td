@@ -11,6 +11,7 @@ namespace Weavers.TechEffects
         protected TypeSystem TypeSystem { get; }
         protected ILogger Logger { get; }
         protected ReferenceFinder ReferenceFinder { get; }
+        protected AttributeConverters AttributeConverters { get; }
 
         protected TypeReference ParametersTemplateInterface { get; }
 
@@ -18,12 +19,14 @@ namespace Weavers.TechEffects
             ModuleDefinition moduleDefinition,
             TypeSystem typeSystem,
             ILogger logger,
-            ReferenceFinder referenceFinder)
+            ReferenceFinder referenceFinder,
+            AttributeConverters attributeConverters)
         {
             ModuleDefinition = moduleDefinition;
             TypeSystem = typeSystem;
             Logger = logger;
             ReferenceFinder = referenceFinder;
+            AttributeConverters = attributeConverters;
 
             ParametersTemplateInterface = ReferenceFinder.GetTypeReference(Constants.Interface);
         }

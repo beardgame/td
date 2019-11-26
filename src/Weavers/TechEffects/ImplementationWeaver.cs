@@ -34,7 +34,8 @@ namespace Weavers.TechEffects
             attributeConverters = AttributeConverters.Create(moduleDefinition, referenceFinder);
             modifiableWeaver = new ModifiableImplementationWeaver(
                 moduleDefinition, typeSystem, logger, referenceFinder, attributeConverters);
-            templateWeaver = new TemplateImplementationWeaver(moduleDefinition, typeSystem, logger, referenceFinder);
+            templateWeaver = new TemplateImplementationWeaver(
+                moduleDefinition, typeSystem, logger, referenceFinder, attributeConverters);
 
             var techEffectLibraryBase = this.moduleDefinition.ImportReference(typeof(ParametersTemplateLibrary<>));
             var techEffectLibrary =

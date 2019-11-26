@@ -6,7 +6,7 @@ namespace Bearded.TD.Content.Models
     interface ISpriteParameters : IParametersTemplate<ISpriteParameters>
     {
         Color Color { get; }
-        
+
         ISprite Sprite { get; }
     }
 }
