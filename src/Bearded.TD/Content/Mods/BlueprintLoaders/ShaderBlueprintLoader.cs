@@ -7,7 +7,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
     class ShaderBlueprintLoader : BaseBlueprintLoader<Shader, ShaderJson, (FileInfo, ShaderLoader)>
     {
         private readonly ShaderLoader shaderLoader;
-        
+
         protected override string RelativePath => "gfx/shaders";
 
         protected override DependencySelector SelectDependency => m => m.Blueprints.Shaders;
