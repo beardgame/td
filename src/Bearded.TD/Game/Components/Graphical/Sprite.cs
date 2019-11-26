@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Components.Graphical
 
         public override void Draw(GeometryManager geometries)
         {
-            Parameters.Sprite.Draw(Owner.Position.NumericValue.WithZ(0.2f), Parameters.Color, Parameters.Size.NumericValue);
+            Parameters.Sprite.Draw(Owner.Position.NumericValue, Parameters.Color, Parameters.Size.NumericValue);
         }
     }
 }

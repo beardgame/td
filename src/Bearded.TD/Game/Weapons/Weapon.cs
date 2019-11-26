@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Weapons
         public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
 
         public GameObject Owner => turret.Owner;
-        public Position2 Position => turret.Position;
+        public Position3 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
 
         public Weapon(IComponentOwnerBlueprint blueprint, ITurret turret)
@@ -90,7 +90,7 @@ namespace Bearded.TD.Game.Weapons
             geo.Color = Color.Red;
             geo.LineWidth = 0.15f;
 
-            var v = CurrentDirection.Vector * geo.LineWidth;
+            var v = (CurrentDirection.Vector * geo.LineWidth).WithZ();
             geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v * 2);
 
             components.Draw(geometries);

@@ -6,6 +6,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -30,13 +31,13 @@ namespace Bearded.TD.Game.Buildings
             private set
             {
                 footprint = value;
-                Position = footprint.CenterPosition;
+                Position = footprint.CenterPosition.WithZ();
                 recalculateLocalTransform();
             }
         }
 
         public Faction Faction { get; }
-        public Position2 Position { get; private set; }
+        public Position3 Position { get; private set; }
 
         public Matrix2 LocalCoordinateTransform { get; private set; }
         public Angle LocalOrientationTransform => Footprint.Orientation;
@@ -75,7 +76,7 @@ namespace Bearded.TD.Game.Buildings
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
 
         public IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent => Components.Get<TComponent>();
-        
+
         IEnumerable<TComponent> IComponentOwner<T>.GetComponents<TComponent>() => GetComponents<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => Components.Get<TComponent>();

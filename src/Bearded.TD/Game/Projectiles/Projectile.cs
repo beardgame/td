@@ -7,7 +7,9 @@ using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -20,17 +22,19 @@ namespace Bearded.TD.Game.Projectiles
     {
         public event GenericEventHandler<EnemyUnit> HitEnemy;
         public event VoidEventHandler HitLevel;
-        
+
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
 
-        public Position2 Position { get; private set; }
-        public Velocity2 Velocity { get; private set; }
+        public Position3 Position { get; private set; }
+
+        public Velocity3 Velocity { get; private set; }
+
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position2 position, Velocity2 velocity, Building damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building damageSource)
         {
             this.blueprint = blueprint;
             DamageSource = damageSource;
@@ -40,14 +44,14 @@ namespace Bearded.TD.Game.Projectiles
             components = new ComponentCollection<Projectile>(this);
         }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position2 position, Direction2 direction, Speed speed, Building damageSource)
-            : this(blueprint, position, direction * speed, damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction, Speed speed, Building damageSource)
+            : this(blueprint, position, (direction  * speed).WithZ(), damageSource)
         {
         }
 
         protected override void OnAdded()
         {
-            CurrentTile = Level.GetTile(Position);
+            CurrentTile = Level.GetTile(Position.XY());
 
             components.Add(blueprint.GetComponents<Projectile>());
 
@@ -62,17 +66,27 @@ namespace Bearded.TD.Game.Projectiles
 
         public override void Update(TimeSpan elapsedTime)
         {
-            var step = Velocity * elapsedTime;
-            var ray = new Ray(Position, step);
+            var forces = Constants.Game.Physics.Gravity3;
 
-            var (result, _, point, enemy) = Game.Level.CastRayAgainstEnemies(
+            Velocity +=  forces * elapsedTime;
+
+            var step = Velocity * elapsedTime;
+            var ray = new Ray(Position.XY(), step.XY());
+
+            var (result, rayFactor, _, enemy) = Game.Level.CastRayAgainstEnemies(
                 ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile));
 
-            Position = point;
+            Position += step * rayFactor;
+
 
             switch (result)
             {
                 case RayCastResult.HitNothing:
+                    if (Position.Z < Game.GeometryLayer[CurrentTile].DrawInfo.Height)
+                    {
+                        HitLevel?.Invoke();
+                        Delete();
+                    }
                     break;
                 case RayCastResult.HitLevel:
                     HitLevel?.Invoke();

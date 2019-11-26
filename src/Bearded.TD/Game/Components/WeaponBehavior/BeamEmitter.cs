@@ -7,7 +7,9 @@ using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -33,14 +35,14 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
         protected override void UpdateShooting(TimeSpan elapsedTime)
         {
             emitBeam(elapsedTime);
-            
+
             drawBeam = true;
         }
 
         private void emitBeam(TimeSpan elapsedTime)
         {
             var ray = new Ray(
-                Weapon.Position,
+                Weapon.Position.XY(),
                 Weapon.CurrentDirection * Parameters.Range
             );
 
@@ -82,7 +84,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
             geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.5f, 0.8f);
             geo.LineWidth = 0.1f;
 
-            geo.DrawLine(Weapon.Position.NumericValue.WithZ(0.2f), endPoint.NumericValue.WithZ(0.2f));
+            geo.DrawLine(Weapon.Position.NumericValue, endPoint.WithZ(Weapon.Position.Z).NumericValue);
         }
     }
 }

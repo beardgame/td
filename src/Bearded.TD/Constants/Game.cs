@@ -90,6 +90,12 @@ namespace Bearded.TD
                 public static readonly Energy EnergyPerFireDamage = new Energy(50);
                 public static readonly EnergyConsumptionRate EnergyPerSecondInWater = new EnergyConsumptionRate(15);
             }
+
+            public static class Physics
+            {
+                public static readonly Acceleration Gravity = new Acceleration(-1f);
+                public static readonly Acceleration3 Gravity3 = Acceleration2.Zero.WithZ(Gravity);
+            }
         }
     }
 }

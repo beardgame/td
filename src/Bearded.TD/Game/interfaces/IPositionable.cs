@@ -4,6 +4,6 @@ namespace Bearded.TD.Game
 {
     interface IPositionable
     {
-        Position2 Position { get; }
+        Position3 Position { get; }
     }
 }

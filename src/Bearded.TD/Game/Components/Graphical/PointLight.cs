@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Components.Graphical
         public override void Draw(GeometryManager geometries)
         {
             geometries.PointLight.Draw(
-                Owner.Position.NumericValue.WithZ(Parameters.Radius.NumericValue * 0.5f),
+                Owner.Position.NumericValue,
                 Parameters.Radius.NumericValue,
                 Parameters.Color
                 );

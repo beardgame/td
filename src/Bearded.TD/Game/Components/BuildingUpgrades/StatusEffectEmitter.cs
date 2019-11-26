@@ -8,6 +8,8 @@ using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
@@ -42,7 +44,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
         {
             modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
             unitLayer = Owner.Game.UnitLayer;
-            ownerTile = Level.GetTile(Owner.Position);
+            ownerTile = Level.GetTile(Owner.Position.XY());
             range = Parameters.Range;
             ownerAsBuilding = Owner as Building;
             recalculateTilesInRange();

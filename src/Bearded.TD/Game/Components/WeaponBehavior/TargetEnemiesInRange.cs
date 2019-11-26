@@ -8,6 +8,8 @@ using Bearded.TD.Game.Weapons;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -34,7 +36,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
         private bool dontDrawThisFrame;
 
         private GameState game => Owner.Owner.Game;
-        private Position2 position => Owner.Position;
+        private Position3 position => Owner.Position;
 
         public TargetEnemiesInRange(ITargetEnemiesInRange parameters) : base(parameters)
         {
@@ -68,7 +70,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
                 return;
             }
 
-            var direction = (target.Position - position).Direction;
+            var direction = (target.Position - position).XY().Direction;
             Owner.AimIn(direction);
             // TODO: this is ugly but necessary - see comment in Weapon about component order
             Owner.ShootThisFrame();
@@ -103,11 +105,11 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
                 () => new LevelVisibilityChecker()
                 ).EnumerateVisibleTiles(
                     level,
-                    position,
+                    position.XY(),
                     currentRange,
                     t => !level.IsValid(t) || !passabilityLayer[t].IsPassable)
                 .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                            (Level.GetPosition(t.tile) - position).LengthSquared < rangeSquared)
+                            (Level.GetPosition(t.tile) - position.XY()).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .OrderBy(navigator.GetDistanceToClosestSink)
                 .ToList();

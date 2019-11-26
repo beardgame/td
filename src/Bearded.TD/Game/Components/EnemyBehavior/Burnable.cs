@@ -7,6 +7,7 @@ using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Elements;
@@ -55,7 +56,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         public override void Update(TimeSpan elapsedTime)
         {
-            var (volume, _) = Owner.Game.FluidLayer.Water[Level.GetTile(Owner.Position)];
+            var (volume, _) = Owner.Game.FluidLayer.Water[Level.GetTile(Owner.Position.XY())];
 
             if (volume > Volume.Zero)
             {
@@ -87,9 +88,9 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
         public override void Draw(GeometryManager geometries)
         {
             if (!combustable.IsOnFire) return;
-            
+
             geometries.PointLight.Draw(
-                Owner.Position.NumericValue.WithZ(0.5f),
+                Owner.Position.NumericValue,
                 1.5f * fireRenderStrength,
                 Color.OrangeRed * fireRenderStrength
             );

@@ -13,7 +13,9 @@ using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -41,10 +43,10 @@ namespace Bearded.TD.Game.Units
         private Health<EnemyUnit> health;
         private bool isDead;
 
-        public Position2 Position => enemyMovement.Position;
+        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height);
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
-        public Circle CollisionCircle => new Circle(Position, HexagonSide.U() * 0.5f);
+        public Circle CollisionCircle => new Circle(Position.XY(), HexagonSide.U() * 0.5f);
         public long Value => (long) blueprint.Value;
 
         private Faction lastDamageSource;
@@ -104,9 +106,9 @@ namespace Bearded.TD.Game.Units
 
             var p = (float) health.HealthPercentage;
             geo.Color = Color.DarkGray;
-            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1, .1f));
+            geo.DrawRectangle(Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f));
             geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
-            geo.DrawRectangle(Position.NumericValue - new Vector2(.5f), new Vector2(1 * p, .1f));
+            geo.DrawRectangle(Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1 * p, .1f));
 
             components.Draw(geometries);
         }

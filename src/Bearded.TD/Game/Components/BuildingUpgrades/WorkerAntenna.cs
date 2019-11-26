@@ -8,6 +8,8 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.BuildingUpgrades
@@ -19,7 +21,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
         private Building ownerAsBuilding;
         private bool isInitialised;
 
-        public Position2 Position => Owner.Position;
+        public Position2 Position => Owner.Position.XY();
 
         public Unit WorkerRange { get; private set; }
 
@@ -68,7 +70,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
 
             var workerNetwork = Owner.Faction.WorkerNetwork;
             var networkBorder = TileAreaBorder.From(Owner.Game.Level, workerNetwork.IsInRange);
-            
+
             TileAreaBorderRenderer.Render(Owner.Game, networkBorder, Color.DodgerBlue * alpha);
 
             var localArea = Tilemap
@@ -76,7 +78,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
                 .Where(t => WorkerNetwork.IsTileInAntennaRange(this, Level.GetPosition(t)));
 
             var localBorder = TileAreaBorder.From(localArea);
-            
+
             TileAreaBorderRenderer.Render(Owner.Game, localBorder, Color.Orange * alpha);
         }
     }

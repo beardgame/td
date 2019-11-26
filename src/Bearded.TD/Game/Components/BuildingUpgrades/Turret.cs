@@ -6,6 +6,7 @@ using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -27,8 +28,9 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
     {
         private Weapon weapon;
 
-        public Position2 Position =>
-            Owner.Position + Owner.LocalCoordinateTransform.Transform(Parameters.Offset);
+        public Position3 Position =>
+            (Owner.Position.XY() + Owner.LocalCoordinateTransform.Transform(Parameters.Offset))
+            .WithZ(Owner.Position.Z);
 
         public Direction2 NeutralDirection => Parameters.NeutralDirection + Owner.LocalOrientationTransform;
         public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
@@ -44,16 +46,16 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
         {
             weapon.Update(elapsedTime);
         }
-        
+
         public override void Draw(GeometryManager geometries)
         {
             var geo = geometries.Primitives;
             geo.Color = Color.Green;
             geo.LineWidth = 0.2f;
 
-            var v = NeutralDirection.Vector * geo.LineWidth;
+            var v = (NeutralDirection.Vector * geo.LineWidth).WithZ();
             geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v);
-            
+
             weapon.Draw(geometries);
         }
 

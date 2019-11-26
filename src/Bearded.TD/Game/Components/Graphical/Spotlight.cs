@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Components.Graphical
         public override void Draw(GeometryManager geometries)
         {
             geometries.Spotlight.Draw(
-                Owner.Position.NumericValue.WithZ(0.25f),
+                Owner.Position.NumericValue,
                 Owner.Direction.Vector.WithZ(-0.5f / Parameters.Radius.NumericValue).Normalized(),
                 Parameters.Radius.NumericValue,
                 Parameters.Angle.Radians,

@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using Bearded.TD.Game;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
@@ -75,7 +77,7 @@ namespace Bearded.TD.UI.Controls
                 {
                     notification.Subject
                         .SelectMany(gameObject => Maybe.FromNullable(gameObject as IPositionable))
-                        .Match(positionable => game.CameraController.ScrollToWorldPos(positionable.Position));
+                        .Match(positionable => game.CameraController.ScrollToWorldPos(positionable.Position.XY()));
                     eventArgs.Handled = true;
                     return;
                 }

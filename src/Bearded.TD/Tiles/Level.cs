@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
@@ -38,6 +40,11 @@ namespace Bearded.TD.Tiles
         public IEnumerable<Tile> ValidNeighboursOf(Tile tile)
         {
             return ValidDirectionsFrom(tile).Select(tile.Neighbour);
+        }
+
+        public static Tile GetTile(Position3 position)
+        {
+            return GetTile(position.XY());
         }
 
         public static Tile GetTile(Position2 position)

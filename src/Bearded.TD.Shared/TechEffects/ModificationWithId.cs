@@ -6,7 +6,7 @@ namespace Bearded.TD.Shared.TechEffects
     {
         public Id<Modification> Id { get; }
         public Modification Modification { get; }
-        
+
         public ModificationWithId(Id<Modification> id, Modification modification)
         {
             Id = id;

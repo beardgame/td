@@ -7,6 +7,8 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Buildings
@@ -24,7 +26,7 @@ namespace Bearded.TD.Game.Buildings
         public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
 
         public override SelectionState SelectionState => SelectionState.Selected;
-        
+
         public override void ResetSelection()
             => throw new InvalidOperationException(selectionIsImmutable);
         public override void Focus(SelectionManager selectionManager)
@@ -38,7 +40,7 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             var anyTileOutsideWorkerNetwork = false;
-            
+
             var workerNetwork = Faction.WorkerNetwork;
             foreach (var tile in Footprint.OccupiedTiles)
             {
@@ -46,7 +48,7 @@ namespace Bearded.TD.Game.Buildings
 
                 var tileIsOutsideWorkerNetwork = Game.Level.IsValid(tile) && !workerNetwork.IsInRange(tile);
                 anyTileOutsideWorkerNetwork |= tileIsOutsideWorkerNetwork;
-                
+
                 if (!Game.BuildingPlacementLayer.IsTileValidForBuilding(tile))
                 {
                     baseColor = Color.Red;
@@ -68,22 +70,22 @@ namespace Bearded.TD.Game.Buildings
             {
                 renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
             }
-            
+
             base.Draw(geometries);
         }
 
         private void renderWorkerNetworkBorderCloseBy(Unit maxDistance, Color baseColor)
         {
             var maxDistanceSquared = maxDistance.Squared;
-            
+
             var workerNetwork = Faction.WorkerNetwork;
             var networkBorder = TileAreaBorder.From(Game.Level, workerNetwork.IsInRange);
-            
+
             TileAreaBorderRenderer.Render(Game, networkBorder, getLineColor);
 
             Color? getLineColor(Position2 point)
             {
-                var alpha = 1 - (point - Position).LengthSquared / maxDistanceSquared;
+                var alpha = 1 - (point - Position.XY()).LengthSquared / maxDistanceSquared;
 
                 return alpha < 0 ? (Color?)null : baseColor * alpha;
             }
