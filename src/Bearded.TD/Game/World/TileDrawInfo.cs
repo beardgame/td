@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.World
                 case TileType.Unknown:
                     return (0, 0);
                 case TileType.Floor:
-                    return (.3f + .3f * (float) geometry.Hardness, rnd(0.9f, 0.9f));
+                    return (-.15f + .5f * (float) geometry.Hardness, rnd(0.75f, 0.9f));
                 case TileType.Wall:
                     return (.4f + .4f * (float) geometry.Hardness, rnd(0.3f, 0.7f));
 //                    return (rnd(0.4f, 0.8f), rnd(0.3f, 0.7f));
