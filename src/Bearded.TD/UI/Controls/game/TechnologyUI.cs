@@ -4,7 +4,8 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class TechnologyUI : IListener<TechnologyQueued>, IListener<TechnologyUnlocked>
+    sealed class TechnologyUI
+        : IListener<TechnologyDequeued>, IListener<TechnologyQueued>, IListener<TechnologyUnlocked>
     {
         public GameInstance Game { get; private set; }
 
@@ -13,14 +14,21 @@ namespace Bearded.TD.UI.Controls
         public void Initialize(GameInstance game)
         {
             Game = game;
+            Game.State.Meta.Events.Subscribe<TechnologyDequeued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyQueued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyUnlocked>(this);
         }
 
         public void Terminate()
         {
+            Game.State.Meta.Events.Unsubscribe<TechnologyDequeued>(this);
             Game.State.Meta.Events.Unsubscribe<TechnologyQueued>(this);
             Game.State.Meta.Events.Unsubscribe<TechnologyUnlocked>(this);
+        }
+
+        public void HandleEvent(TechnologyDequeued @event)
+        {
+            TechnologiesUpdated?.Invoke();
         }
 
         public void HandleEvent(TechnologyQueued @event)
