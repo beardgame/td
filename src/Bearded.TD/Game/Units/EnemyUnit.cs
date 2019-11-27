@@ -43,10 +43,12 @@ namespace Bearded.TD.Game.Units
         private Health<EnemyUnit> health;
         private bool isDead;
 
-        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height);
+        private Unit radius => HexagonSide.U() * 0.5f;
+
+        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
-        public Circle CollisionCircle => new Circle(Position.XY(), HexagonSide.U() * 0.5f);
+        public Circle CollisionCircle => new Circle(Position.XY(), radius);
         public long Value => (long) blueprint.Value;
 
         private Faction lastDamageSource;
