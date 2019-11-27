@@ -7,6 +7,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -65,14 +66,28 @@ namespace Bearded.TD.Game.Buildings
         public abstract void Select(SelectionManager selectionManager);
 
         protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
-            => Footprint = newFootprint;
+        {
+            Footprint = newFootprint;
+
+            calculatePositionZ();
+        }
 
         protected override void OnAdded()
         {
             base.OnAdded();
 
             Components.Add(InitialiseComponents());
+
+            calculatePositionZ();
         }
+
+        private void calculatePositionZ()
+        {
+            var z = Game.GeometryLayer[footprint.RootTile].DrawInfo.Height;
+
+            Position = Position.XY().WithZ(z);
+        }
+
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
 
         public IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent => Components.Get<TComponent>();
@@ -103,7 +118,7 @@ namespace Bearded.TD.Game.Buildings
         {
             var geo = geometries.Primitives;
             geo.Color = color;
-            geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            geo.DrawCircle(Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, true, 6);
         }
 
         protected void DrawBuildingName(GeometryManager geometries, Color color)
