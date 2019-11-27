@@ -26,10 +26,10 @@ namespace Bearded.TD.Content.Mods
             var proxy = new ComponentOwnerBlueprintProxy(id);
 
             currentProxies.Add(proxy);
-            
+
             return proxy;
         }
-        
+
         protected override IComponentOwnerBlueprint getDependencyFromOtherMod(Mod mod, string id)
         {
             return mod.Blueprints.ComponentOwners[id];

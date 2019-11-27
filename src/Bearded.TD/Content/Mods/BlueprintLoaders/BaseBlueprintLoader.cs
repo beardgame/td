@@ -21,7 +21,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected abstract string RelativePath { get; }
 
-        protected virtual DependencySelector SelectDependency { get; }
+        protected virtual DependencySelector SelectDependency { get; } = null;
 
         protected BaseBlueprintLoader(BlueprintLoadingContext context)
         {
@@ -92,9 +92,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected virtual TBlueprint LoadBlueprint(FileInfo file)
         {
-            var text = file.OpenText();
-            var reader = new JsonTextReader(text);
-            var jsonBlueprint = Context.Serializer.Deserialize<TJsonModel>(reader);
+            var jsonBlueprint = ParseJsonModel(file);
             var dependencyResolvers = GetDependencyResolvers(file);
             var blueprint = jsonBlueprint.ToGameModel(dependencyResolvers);
 
@@ -104,6 +102,13 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             }
 
             return blueprint;
+        }
+
+        protected TJsonModel ParseJsonModel(FileInfo file)
+        {
+            var text = file.OpenText();
+            var reader = new JsonTextReader(text);
+            return Context.Serializer.Deserialize<TJsonModel>(reader);
         }
 
         protected virtual TResolvers GetDependencyResolvers(FileInfo file)
