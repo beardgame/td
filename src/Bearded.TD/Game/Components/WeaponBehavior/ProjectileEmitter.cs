@@ -51,7 +51,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
             Game.Add(
                 new Projectile(
                     Parameters.Projectile,
-                    Weapon.Position, Weapon.CurrentDirection,
+                    Weapon.Position, Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1),
                     Parameters.MuzzleVelocity,
                     Weapon.Owner as Building
                 )

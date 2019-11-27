@@ -14,6 +14,7 @@
         ResourceIncome,
         Range,
         SplashRange,
+        SpreadAngle,
         TurnSpeed,
     }
 }
