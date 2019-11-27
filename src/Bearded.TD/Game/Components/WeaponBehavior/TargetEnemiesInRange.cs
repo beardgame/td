@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.BuildingUpgrades;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
@@ -18,8 +19,9 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.WeaponBehavior
 {
+
     [Component("targetEnemiesInRange")]
-    class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer
+    class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer, IEnemyUnitTargeter
     {
         private PassabilityLayer passabilityLayer;
         private TileRangeDrawer tileRangeDrawer;
@@ -31,7 +33,8 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
         private Maybe<Angle> currentMaxTurningAngle;
         private Unit currentRange;
         private List<Tile> tilesInRange;
-        private EnemyUnit target;
+
+        public EnemyUnit Target { get; private set; }
 
         private bool dontDrawThisFrame;
 
@@ -64,13 +67,13 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
             ensureTilesInRangeList();
             ensureTargetingState();
 
-            if (target == null)
+            if (Target == null)
             {
                 goIdle();
                 return;
             }
 
-            var direction = (target.Position - position).XY().Direction;
+            var direction = (Target.Position - position).XY().Direction;
             Owner.AimIn(direction);
             // TODO: this is ugly but necessary - see comment in Weapon about component order
             Owner.ShootThisFrame();
@@ -119,13 +122,13 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
 
         private void ensureTargetingState()
         {
-            if (target?.Deleted == true)
-                target = null;
+            if (Target?.Deleted == true)
+                Target = null;
 
-            if (target != null && !tilesInRange.Contains(target.CurrentTile))
-                target = null;
+            if (Target != null && !tilesInRange.Contains(Target.CurrentTile))
+                Target = null;
 
-            if (target != null)
+            if (Target != null)
                 return;
 
             tryFindTarget();
@@ -133,7 +136,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
 
         private void tryFindTarget()
         {
-            target = tilesInRange
+            Target = tilesInRange
                 .SelectMany(game.UnitLayer.GetUnitsOnTile)
                 .FirstOrDefault();
         }

@@ -93,7 +93,7 @@ namespace Bearded.TD
 
             public static class Physics
             {
-                public static readonly Acceleration Gravity = new Acceleration(-10f);
+                public static readonly Acceleration Gravity = new Acceleration(-20f);
                 public static readonly Acceleration3 Gravity3 = Acceleration2.Zero.WithZ(Gravity);
             }
         }

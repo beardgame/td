@@ -47,11 +47,6 @@ namespace Bearded.TD.Game.Projectiles
             components = new ComponentCollection<Projectile>(this);
         }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction, Speed speed, Building damageSource)
-            : this(blueprint, position, (direction  * speed).WithZ(), damageSource)
-        {
-        }
-
         protected override void OnAdded()
         {
             CurrentTile = Level.GetTile(Position.XY());

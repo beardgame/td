@@ -2,6 +2,9 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.Weapons;
+using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.WeaponBehavior
@@ -10,11 +13,20 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
     sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters>
     {
         private Instant nextPossibleShootTime;
-        private bool firstShotInBurst;
+        private bool firstShotInBurst = true;
+
+        private Maybe<IEnemyUnitTargeter> targeter;
 
         public ProjectileEmitter(IProjectileEmitterParameters parameters)
             : base(parameters)
         {
+        }
+
+        protected override void Initialise()
+        {
+            base.Initialise();
+
+            targeter = ((IComponentOwner)Weapon).GetComponents<IEnemyUnitTargeter>().MaybeFirst();
         }
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
@@ -48,14 +60,35 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
 
         private void emitProjectile()
         {
+            var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
+
+            var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
+            var velocityXY = direction * Parameters.MuzzleVelocity;
+
             Game.Add(
                 new Projectile(
                     Parameters.Projectile,
-                    Weapon.Position, Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1),
-                    Parameters.MuzzleVelocity,
+                    Weapon.Position,
+                    velocityXY.WithZ(velocityZ),
                     Weapon.Owner as Building
                 )
             );
+        }
+
+        private Speed verticalSpeedCompensationToTarget(IEnemyUnitTargeter targeter)
+        {
+            var difference = targeter.Target.Position - Weapon.Position;
+            var distance = difference.Length;
+            // TODO: the division below should work in spacetime
+            var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleVelocity.NumericValue);
+            // TODO: TimeSpan.Squared would be nice to have
+            var expectedDrop = Constants.Game.Physics.Gravity * expectedTimeToTarget * expectedTimeToTarget * 0.5f;
+            var heightDifference = difference.Z;
+
+            var heightToCompensate = heightDifference - expectedDrop;
+            var verticalVelocityToCompensate = heightToCompensate / expectedTimeToTarget;
+
+            return verticalVelocityToCompensate;
         }
     }
 }
