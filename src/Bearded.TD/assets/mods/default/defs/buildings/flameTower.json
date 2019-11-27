@@ -10,7 +10,8 @@
       "onPlaceholder" :  true,
       "onGhost": true,
       "parameters" : {
-        "weapon" : "flamer"
+        "weapon" : "flamer",
+        "height" : 0.3
       }
     }
   ]

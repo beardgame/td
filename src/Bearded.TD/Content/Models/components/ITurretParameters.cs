@@ -9,6 +9,10 @@ namespace Bearded.TD.Content.Models
     {
         IComponentOwnerBlueprint Weapon { get; }
         Difference2 Offset { get; }
+
+        [Modifiable(0.25)]
+        Unit Height { get; }
+
         Direction2 NeutralDirection { get; }
         Angle? MaximumTurningAngle { get; }
     }

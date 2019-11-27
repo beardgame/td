@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
 
         public Position3 Position =>
             (Owner.Position.XY() + Owner.LocalCoordinateTransform.Transform(Parameters.Offset))
-            .WithZ(Owner.Position.Z);
+            .WithZ(Owner.Position.Z + Parameters.Height);
 
         public Direction2 NeutralDirection => Parameters.NeutralDirection + Owner.LocalOrientationTransform;
         public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
