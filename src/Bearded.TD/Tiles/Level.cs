@@ -27,7 +27,9 @@ namespace Bearded.TD.Tiles
 
         public bool IsValid(Tile tile)
         {
-            return tile.Radius <= Radius;
+            return tile.X >= -Radius && tile.X <= Radius
+                && tile.Y >= -Radius && tile.Y <= Radius
+                && (tile.X + tile.Y) >= -Radius && (tile.X + tile.Y) <= Radius;
         }
 
         public IEnumerable<Direction> ValidDirectionsFrom(Tile tile)

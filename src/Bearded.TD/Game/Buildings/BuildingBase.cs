@@ -83,7 +83,9 @@ namespace Bearded.TD.Game.Buildings
 
         private void calculatePositionZ()
         {
-            var z = Game.GeometryLayer[footprint.RootTile].DrawInfo.Height;
+            var z = Game.Level.IsValid(footprint.RootTile)
+                ? Game.GeometryLayer[footprint.RootTile].DrawInfo.Height
+                : Unit.Zero;
 
             Position = Position.XY().WithZ(z);
         }
