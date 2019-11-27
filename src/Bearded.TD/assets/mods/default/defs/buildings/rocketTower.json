@@ -10,7 +10,8 @@
       "onPlaceholder" :  true,
       "onGhost": true,
       "parameters" : {
-        "weapon" : "rocketLauncher"
+        "weapon" : "rocketLauncher",
+        "height" : 0.2
       }
     }
   ]
