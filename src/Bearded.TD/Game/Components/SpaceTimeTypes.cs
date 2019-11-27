@@ -1,6 +1,6 @@
-using Bearded.TD.Game.Elements;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components
@@ -8,6 +8,11 @@ namespace Bearded.TD.Game.Components
     [ContainsAttributeConverters]
     static class SpaceTimeTypes
     {
+        [ConvertsAttribute]
+        public static AttributeConverter<Angle> AngleConverter =
+            new AttributeConverter<Angle>(
+                d => Angle.FromDegrees((float) d), a => a.Degrees);
+
         [ConvertsAttribute]
         public static AttributeConverter<AngularAcceleration> AngularAccelerationConverter =
             new AttributeConverter<AngularAcceleration>(
