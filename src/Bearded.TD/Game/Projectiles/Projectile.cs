@@ -1,10 +1,12 @@
 ﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -13,6 +15,7 @@ using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Projectiles
@@ -109,6 +112,13 @@ namespace Bearded.TD.Game.Projectiles
         public override void Draw(GeometryManager geometries)
         {
             components.Draw(geometries);
+
+            if (!UserSettings.Instance.Debug.ProjectileDots)
+                return;
+
+            var geo = geometries.Primitives;
+            geo.Color = Color.Yellow;
+            geo.DrawRectangle(Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f));
         }
     }
 }
