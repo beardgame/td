@@ -16,7 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters> where T : EnemyUnit, IMortal, IPositionable
+    sealed class Burnable<T> : Component<T, IBurnableParameters> where T : GameObject, IMortal, IPositionable
     {
         private Building lastFireHitBuilding;
         private Building damageSourceBuilding;

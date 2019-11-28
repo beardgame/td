@@ -54,9 +54,9 @@ namespace Bearded.TD.Game.Buildings
         protected override IEnumerable<IComponent<Building>> InitialiseComponents()
             => Blueprint.GetComponentsForBuilding();
 
-        public void Damage(int damage)
+        public void Damage(DamageInfo damage)
         {
-            Damaged?.Invoke(new DamageInfo(damage, DamageType.Kinetic));
+            Damaged?.Invoke(damage);
         }
 
         public void OnDeath()

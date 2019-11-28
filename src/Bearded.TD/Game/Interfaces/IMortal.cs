@@ -5,6 +5,8 @@ namespace Bearded.TD.Game
 {
     interface IMortal
     {
+        void Damage(DamageInfo damageInfo);
+
         event GenericEventHandler<DamageInfo> Damaged;
         event GenericEventHandler<int> Healed;
 

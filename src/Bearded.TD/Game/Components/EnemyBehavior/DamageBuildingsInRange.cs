@@ -1,4 +1,5 @@
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
@@ -46,7 +47,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                     return;
                 }
 
-                target.Damage(Parameters.Damage);
+                target.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic));
                 nextAttack += 1 / Parameters.AttackRate;
             }
         }
