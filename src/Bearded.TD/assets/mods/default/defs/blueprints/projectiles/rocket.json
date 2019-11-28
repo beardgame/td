@@ -12,7 +12,8 @@
             "id" : "sprite",
             "parameters" : {
                 "color" : "Orange",
-                "sprite" : "particle.orb-soft"
+                "sprite" : "particle.orb-soft",
+                "size" : 0.3
             }
         }
     ]

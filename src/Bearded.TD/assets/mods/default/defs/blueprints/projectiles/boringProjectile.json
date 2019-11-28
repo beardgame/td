@@ -11,7 +11,8 @@
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "particle.star",
-                "color" : "Yellow"
+                "color" : "Yellow",
+                "size" : 0.2
             }
         },
         {

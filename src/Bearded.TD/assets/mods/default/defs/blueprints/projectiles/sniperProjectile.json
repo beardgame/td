@@ -11,7 +11,8 @@
             "id" : "sprite",
             "parameters" : {
                 "color" : "LightBlue",
-                "sprite" : "particle.star"
+                "sprite" : "particle.star",
+                "size" : 0.2
             }
         },
         {
