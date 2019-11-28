@@ -13,7 +13,7 @@
       "parameters" : {
         "sprite" : "particle.mote",
         "color" : "00FFAA55",
-        "size" : 0.5
+        "size" : 0.4
       }
     },
     {

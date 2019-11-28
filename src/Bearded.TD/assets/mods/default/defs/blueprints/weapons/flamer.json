@@ -18,7 +18,7 @@
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "flameProjectile",
-                "muzzleVelocity" : 10,
+                "muzzleVelocity" : 15,
                 "fireRate" : 100,
                 "spread" : 12
             }

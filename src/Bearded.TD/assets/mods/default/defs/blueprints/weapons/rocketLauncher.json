@@ -18,7 +18,7 @@
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "rocket",
-                "muzzleVelocity" : 5,
+                "muzzleVelocity" : 8,
                 "fireRate" : 1
             }
         }
