@@ -4,6 +4,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
@@ -40,7 +41,6 @@ namespace Bearded.TD.Game.Buildings
         private bool isDead;
 
         public event VoidEventHandler Completing;
-        public event GenericEventHandler<DamageInfo> Damaged;
         public event GenericEventHandler<int> Healed;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Buildings
 
         public void Damage(DamageInfo damage)
         {
-            Damaged?.Invoke(damage);
+            Events.Send(new TakeDamage(damage));
         }
 
         public void OnDeath()

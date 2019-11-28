@@ -7,7 +7,6 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -15,12 +14,14 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IFactioned, IPositionable, ISelectable
+    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IEventManager, IFactioned, IPositionable, ISelectable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
 
         protected ComponentCollection<T> Components { get; }
+
+        public GameEvents Events { get; } = new GameEvents();
 
         public abstract SelectionState SelectionState { get; }
 

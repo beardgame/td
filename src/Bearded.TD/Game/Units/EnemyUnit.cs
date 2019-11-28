@@ -6,6 +6,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.EnemyBehavior;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Factions;
@@ -28,6 +29,7 @@ namespace Bearded.TD.Game.Units
     [ComponentOwner]
     class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
+        IEventManager,
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
@@ -37,6 +39,8 @@ namespace Bearded.TD.Game.Units
 
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
+
+        public GameEvents Events { get; } = new GameEvents();
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableList<ISyncable> syncables;
@@ -53,7 +57,6 @@ namespace Bearded.TD.Game.Units
 
         private Faction lastDamageSource;
 
-        public event GenericEventHandler<DamageInfo> Damaged;
         public event GenericEventHandler<int> Healed;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
@@ -127,7 +130,8 @@ namespace Bearded.TD.Game.Units
         public void Damage(DamageInfo damageInfo)
         {
             damageInfo.Source.Select(building => building.Faction).Match(faction => lastDamageSource = faction);
-            Damaged?.Invoke(damageInfo);
+
+            Events.Send(new TakeDamage(damageInfo));
         }
 
         public void OnDeath()

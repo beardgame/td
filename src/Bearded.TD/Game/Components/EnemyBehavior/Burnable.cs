@@ -2,6 +2,7 @@ using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Units;
@@ -16,7 +17,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters> where T : GameObject, IMortal, IPositionable
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage> where T : GameObject, IEventManager, IPositionable
     {
         private Building lastFireHitBuilding;
         private Building damageSourceBuilding;
@@ -26,6 +27,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
         private float fireRenderStrengthGoal = 1;
         private float fireRenderStrength = 0;
+        private bool dealingDamageToOwner;
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}
 
@@ -36,7 +38,15 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 Parameters.FlashPointThreshold,
                 Parameters.BurnSpeed ?? new EnergyConsumptionRate(1));
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Owner.Damaged += onDamaged;
+            Owner.Events.Subscribe(this);
+        }
+
+        public void HandleEvent(TookDamage @event)
+        {
+            if (dealingDamageToOwner)
+                return;
+
+            onDamaged(@event.Damage);
         }
 
         private void onDamaged(DamageInfo damage)
@@ -72,12 +82,14 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 damageSourceBuilding = lastFireHitBuilding;
             }
 
-            Owner.Damage(
-                new DamageInfo(
-                    StaticRandom.Discretise(
-                        (float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
-                    DamageType.Fire,
-                    damageSourceBuilding));
+            var damage = new DamageInfo(
+                StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
+                DamageType.Fire,
+                damageSourceBuilding);
+
+            dealingDamageToOwner = true;
+            Owner.Events.Send(new TakeDamage(damage));
+            dealingDamageToOwner = false;
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
                 fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
