@@ -9,12 +9,11 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 
-namespace Bearded.TD.Game.Components.BuildingUpgrades
+namespace Bearded.TD.Game.Components.Generic
 {
     /*
      * Open questions:
