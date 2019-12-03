@@ -1,17 +1,18 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.ProjectileBehavior
 {
     [Component("splashDamageOnHit")]
-    class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>
+    class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,
+        IListener<HitLevel>, IListener<HitEnemy>
     {
         public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters)
         {
@@ -19,8 +20,18 @@ namespace Bearded.TD.Game.Components.ProjectileBehavior
 
         protected override void Initialise()
         {
-            Owner.HitEnemy += _ => onHit();
-            Owner.HitLevel += onHit;
+            Owner.Events.Subscribe<HitLevel>(this);
+            Owner.Events.Subscribe<HitEnemy>(this);
+        }
+
+        public void HandleEvent(HitLevel @event)
+        {
+            onHit();
+        }
+
+        public void HandleEvent(HitEnemy @event)
+        {
+            onHit();
         }
 
         private void onHit()

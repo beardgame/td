@@ -2,8 +2,8 @@
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
@@ -11,7 +11,6 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -19,15 +18,14 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable
+    class Projectile : GameObject, IPositionable, IEventManager
     {
-        public event GenericEventHandler<EnemyUnit> HitEnemy;
-        public event VoidEventHandler HitLevel;
-
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
+
+        public GameEvents Events { get; } = new GameEvents();
 
         public Position3 Position { get; private set; }
 
@@ -80,16 +78,16 @@ namespace Bearded.TD.Game.Projectiles
                 case RayCastResult.HitNothing:
                     if (Position.Z < Game.GeometryLayer[CurrentTile].DrawInfo.Height)
                     {
-                        HitLevel?.Invoke();
+                        Events.Send(new HitLevel());
                         Delete();
                     }
                     break;
                 case RayCastResult.HitLevel:
-                    HitLevel?.Invoke();
+                    Events.Send(new HitLevel());
                     Delete();
                     break;
                 case RayCastResult.HitEnemy:
-                    HitEnemy?.Invoke(enemy);
+                    Events.Send(new HitEnemy(enemy));
                     Delete();
                     break;
                 default:
