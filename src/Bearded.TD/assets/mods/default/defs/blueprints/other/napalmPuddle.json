@@ -28,6 +28,14 @@
     },
     {
       "id" : "deleteOnExtinguish"
+    },
+    {
+      "id" : "damageOverTimeArea",
+      "parameters" : {
+        "damagePerSecond" : 5,
+        "type" : "fire",
+        "range" : 1
+      }
     }
   ]
 }
