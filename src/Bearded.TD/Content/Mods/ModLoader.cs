@@ -46,11 +46,11 @@ namespace Bearded.TD.Content.Mods
             private Mod load()
             {
                 configureSerializer();
-                
+
                 var loadingContext = new BlueprintLoadingContext(context, meta, serializer);
-                
+
                 var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
-                
+
                 var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
                 var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
                 var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
@@ -75,7 +75,7 @@ namespace Bearded.TD.Content.Mods
                     technologies,
                     tags.GetForCurrentMod());
             }
-            
+
             private void configureSerializer()
             {
                 serializer = new JsonSerializer();
