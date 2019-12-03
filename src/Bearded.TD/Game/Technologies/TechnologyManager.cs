@@ -39,7 +39,9 @@ namespace Bearded.TD.Game.Technologies
         }
 
         public bool CanQueueTechnology(ITechnologyBlueprint technology) =>
-            IsTechnologyLocked(technology) && !IsTechnologyQueued(technology) && TechPoints < technology.Cost;
+            IsTechnologyLocked(technology)
+            && !IsTechnologyQueued(technology)
+            && (!canAfford(technology) || !hasAllRequiredTechs(technology));
 
         public void QueueTechnology(ITechnologyBlueprint technology)
         {
@@ -55,7 +57,14 @@ namespace Bearded.TD.Game.Technologies
         }
 
         public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
-            IsTechnologyLocked(technology) && TechPoints >= technology.Cost;
+            IsTechnologyLocked(technology)
+            && canAfford(technology)
+            && hasAllRequiredTechs(technology);
+
+        private bool canAfford(ITechnologyBlueprint technology) => TechPoints >= technology.Cost;
+
+        private bool hasAllRequiredTechs(ITechnologyBlueprint technology) =>
+            technology.RequiredTechs.All(unlockedTechnologies.Contains);
 
         public void UnlockTechnology(ITechnologyBlueprint technology)
         {
