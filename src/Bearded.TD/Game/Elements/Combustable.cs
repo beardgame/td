@@ -37,6 +37,11 @@ namespace Bearded.TD.Game.Elements
             BurningSpeed = burningSpeed;
         }
 
+        public void Spark()
+        {
+            hasSparkThisFrame = true;
+        }
+
         public void HitWithFire(Energy energy)
         {
             hasSparkThisFrame = true;

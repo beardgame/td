@@ -5,7 +5,6 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -17,7 +16,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage> where T : GameObject, IEventManager, IPositionable
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
+        where T : GameObject, IEventManager, IPositionable
     {
         private Building lastFireHitBuilding;
         private Building damageSourceBuilding;
@@ -37,8 +37,17 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 Parameters.FuelAmount,
                 Parameters.FlashPointThreshold,
                 Parameters.BurnSpeed ?? new EnergyConsumptionRate(1));
+
+            combustable.Extinguished += onExtinguished;
+
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Owner.Events.Subscribe(this);
+            Owner.Events.Subscribe<TookDamage>(this);
+            Owner.Events.Subscribe<Spark>(this);
+        }
+
+        private void onExtinguished()
+        {
+            Owner.Events.Send(new FireExtinguished());
         }
 
         public void HandleEvent(TookDamage @event)
@@ -47,6 +56,11 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 return;
 
             onDamaged(@event.Damage);
+        }
+
+        public void HandleEvent(Spark @event)
+        {
+            combustable.Spark();
         }
 
         private void onDamaged(DamageInfo damage)
