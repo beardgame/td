@@ -13,13 +13,13 @@
       "parameters" : {
         "sprite" : "particle.mote",
         "color" : "00FFAA55",
-        "size" : 0.4
+        "size" : 0.2
       }
     },
     {
       "id" : "pointlight",
       "parameters" : {
-        "color" : "FF442211",
+        "color" : "FF221108",
         "radius" : 2
       }
     }
