@@ -5,7 +5,7 @@ namespace Bearded.TD.Content.Models
 {
     interface IWaterGeneratorParameters : IParametersTemplate<IWaterGeneratorParameters>
     {
-        [Modifiable(0)]
+        [Modifiable]
         FlowRate VolumePerSecond { get; }
     }
 }

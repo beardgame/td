@@ -141,12 +141,16 @@ namespace Weavers.TechEffects
             var processorCommands = new List<Action<ILProcessor>>();
             var defaultValue = (CustomAttributeArgument) modifiableAttribute.ConstructorArguments[0].Value;
 
-            processorCommands.Add(p => ILHelpers.EmitLd(p, defaultValue.Type, defaultValue.Value));
-
-            if (!property.PropertyType.IsPrimitive)
+            if (property.PropertyType.IsPrimitive)
             {
+                processorCommands.Add(p => ILHelpers.EmitLd(p, defaultValue.Type, defaultValue.Value));
+            }
+            else
+            {
+                processorCommands.Add(p => ILHelpers.EmitLd(p, TypeSystem.DoubleReference, defaultValue.Value));
+
                 // push to local variable since we need the attribute converter below it on the stack
-                var localVar = new VariableDefinition(property.PropertyType);
+                var localVar = new VariableDefinition(TypeSystem.DoubleReference);
                 localVarOut = Maybe.Just(localVar);
                 processorCommands.Add(p => p.Emit(OpCodes.Stloc, localVar));
 
@@ -157,7 +161,7 @@ namespace Weavers.TechEffects
                 processorCommands.Add(p => p.Emit(OpCodes.Ldloc, localVar));
                 // call converter method
                 processorCommands.Add(p => p.Emit(
-                    OpCodes.Callvirt, AttributeConverters.MethodForConversionToRaw(converterField)));
+                    OpCodes.Callvirt, AttributeConverters.MethodForConversionToWrapped(converterField)));
             }
 
             var getOrDefault = ReferenceFinder.GetMethodReference(
