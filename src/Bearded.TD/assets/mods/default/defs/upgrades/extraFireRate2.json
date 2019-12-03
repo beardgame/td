@@ -1,7 +1,7 @@
 {
-    "id" : "extraFireRate",
+    "id" : "extraFireRate2",
     "name" : "+50% fire rate",
-    "cost" : 100,
+    "cost" : 150,
     "effects": [
         {
             "type" : "modification",

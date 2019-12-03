@@ -1,0 +1,9 @@
+{
+    "id" : "extraHealth2",
+    "name" : "Constitution II",
+    "cost" : 30,
+    "requiredTechs" : [ "extraHealth1" ],
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "extraHealth2" }
+    ]
+}

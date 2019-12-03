@@ -1,0 +1,11 @@
+{
+    "id" : "extraRotationSpeed3",
+    "name" : "+25% rotation speed",
+    "cost" : 60,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attributeType" : "turnSpeed", "mode" : "fractionOfBase", "value" : 0.25 }
+        }
+    ]
+}

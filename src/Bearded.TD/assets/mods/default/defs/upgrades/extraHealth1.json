@@ -1,0 +1,11 @@
+{
+    "id" : "extraHealth1",
+    "name" : "+25% health",
+    "cost" : 80,
+    "effects": [
+        {
+            "type" : "modification",
+            "parameters" : { "attributeType" : "health", "mode" : "fractionOfBase", "value" : 0.25 }
+        }
+    ]
+}

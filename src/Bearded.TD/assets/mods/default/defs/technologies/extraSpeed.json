@@ -1,9 +1,0 @@
-{
-    "id" : "extraSpeed",
-    "name" : "Must go faster",
-    "cost" : 40,
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraFireRate" },
-        { "type" : "upgrade", "blueprint" : "extraRotationSpeed" }
-    ]
-}
