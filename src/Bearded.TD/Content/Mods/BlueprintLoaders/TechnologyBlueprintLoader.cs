@@ -2,20 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities.Collections;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders
 {
     sealed class TechnologyBlueprintLoader
-        : BaseBlueprintLoader<ITechnologyBlueprint, TechnologyBlueprintJson, IDependencyResolver<ITechnologyBlueprint>>
+        : BaseBlueprintLoader<
+            ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>
     {
+        private readonly ReadonlyBlueprintCollection<IBuildingBlueprint> buildings;
+        private readonly ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades;
+
         protected override string RelativePath => "defs/technologies";
 
-        public TechnologyBlueprintLoader(BlueprintLoadingContext context) : base(context)
+        public TechnologyBlueprintLoader(BlueprintLoadingContext context,
+            ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
+            ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades) : base(context)
         {
+            this.buildings = buildings;
+            this.upgrades = upgrades;
         }
 
         protected override List<ITechnologyBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
@@ -37,10 +48,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
                 {
                     jsonModels.Add(ParseJsonModel(file));
                 }
-                // TODO: we should not be catching such a broad exception, but technology unlocks are trying to be smart
-                //     and will immediately try to resolve a building or upgrade, and that might not exist. Resolving
-                //     stuff like this should only be done on the JSON -> game conversion.
-                catch (Exception e)
+                catch (SerializationException e)
                 {
                     logLoadingException(e, file.Name);
                 }
@@ -53,21 +61,30 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         {
             var blueprints = new List<ITechnologyBlueprint>();
             var accumulatingBlueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
-            var dependencyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
+
+            var buildingResolver = new BlueprintDependencyResolver<IBuildingBlueprint>(
+                Context.Meta, buildings, Enumerable.Empty<Mod>(), m => m.Blueprints.Buildings);
+            var upgradeResolver = new BlueprintDependencyResolver<IUpgradeBlueprint>(
+                Context.Meta, upgrades, Enumerable.Empty<Mod>(), m => m.Blueprints.Upgrades);
+            var technologyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
                 Context.Meta, accumulatingBlueprintCollection, Enumerable.Empty<Mod>(), m => m.Blueprints.Technologies);
+
+            var dependencyResolvers =
+                new TechnologyBlueprintJson.DependencyResolvers(buildingResolver, upgradeResolver, technologyResolver);
 
             foreach (var jsonModel in sortedJsonModels)
             {
                 ITechnologyBlueprint blueprint;
                 try
                 {
-                    blueprint = jsonModel.ToGameModel(dependencyResolver);
+                    blueprint = jsonModel.ToGameModel(dependencyResolvers);
                 }
-                catch (Exception e)
+                catch (InvalidDataException e)
                 {
                     logLoadingException(e, jsonModel.Name);
                     continue;
                 }
+
                 blueprints.Add(blueprint);
                 accumulatingBlueprintCollection.Add(blueprint);
             }

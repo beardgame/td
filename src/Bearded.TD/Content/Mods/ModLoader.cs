@@ -59,7 +59,7 @@ namespace Bearded.TD.Content.Mods
                 var buildings = new BuildingBlueprintLoader(loadingContext, tags).LoadBlueprints();
                 var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
                 var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
-                var technologies = new TechnologyBlueprintLoader(loadingContext).LoadBlueprints();
+                var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
 
                 return new Mod(
                     meta.Id,
@@ -97,7 +97,6 @@ namespace Bearded.TD.Content.Mods
                     Converters.ColorContainerConverter,
                     ComponentConverterFactory.ForBuildingComponents(),
                     ComponentConverterFactory.ForBaseComponent(),
-                    new TechnologyUnlockConverter(),
                     new UpgradeEffectConverter()
                 );
                 foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
