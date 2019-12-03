@@ -7,6 +7,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
 
@@ -99,10 +100,36 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         private static IEnumerable<TechnologyBlueprintJson> topologicalSort(IEnumerable<TechnologyBlueprintJson> models)
         {
-            // TODO: https://en.wikipedia.org/wiki/Topological_sorting#Algorithms
-            // basically depth-first it
+            var modelsList = models.ToList();
+            var unvisitedModelsByName = modelsList.ToDictionary(model => model.Name);
+            var sortedModels = new List<TechnologyBlueprintJson>();
 
-            return models;
+            while (unvisitedModelsByName.Count > 0)
+            {
+                topologicalSortVisit(unvisitedModelsByName.Values.First(), unvisitedModelsByName, sortedModels);
+            }
+
+            DebugAssert.State.Satisfies(() => modelsList.Count == sortedModels.Count);
+
+            return sortedModels;
+        }
+
+        private static void topologicalSortVisit(
+            TechnologyBlueprintJson model,
+            IDictionary<string, TechnologyBlueprintJson> unvisitedModelsByName,
+            ICollection<TechnologyBlueprintJson> sortedModels)
+        {
+            unvisitedModelsByName.Remove(model.Name);
+
+            foreach (var requiredName in model.RequiredTechs)
+            {
+                if (unvisitedModelsByName.TryGetValue(requiredName, out var requiredModel))
+                {
+                    topologicalSortVisit(requiredModel, unvisitedModelsByName, sortedModels);
+                }
+            }
+
+            sortedModels.Add(model);
         }
     }
 }

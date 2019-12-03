@@ -1,7 +1,7 @@
 {
-    "id" : "extraHealth",
+    "id" : "extraHealth2",
     "name" : "+25% health",
-    "cost" : 80,
+    "cost" : 100,
     "effects": [
         {
             "type" : "modification",

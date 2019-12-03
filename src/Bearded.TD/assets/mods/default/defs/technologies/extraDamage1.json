@@ -1,0 +1,8 @@
+{
+    "id" : "extraDamage1",
+    "name" : "A big boom",
+    "cost" : 20,
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "extraDamage1" }
+    ]
+}

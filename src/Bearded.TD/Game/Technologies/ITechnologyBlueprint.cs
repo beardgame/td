@@ -7,5 +7,6 @@ namespace Bearded.TD.Game.Technologies
         string Name { get; }
         int Cost { get; }
         IEnumerable<ITechnologyUnlock> Unlocks { get; }
+        IEnumerable<ITechnologyBlueprint> RequiredTechs { get; }
     }
 }

@@ -60,6 +60,20 @@ namespace Bearded.TD.Utilities
                 if (!condition)
                     throw new InvalidOperationException(message);
             }
+
+            [Conditional("DEBUG")]
+            public static void Satisfies(Func<bool> condition)
+            {
+                if (!condition())
+                    throw new ArgumentException();
+            }
+
+            [Conditional("DEBUG")]
+            public static void Satisfies(Func<bool> condition, string message)
+            {
+                if (!condition())
+                    throw new ArgumentException(message);
+            }
         }
     }
 }
