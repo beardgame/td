@@ -1,0 +1,33 @@
+{
+  "id" : "napalmPuddle",
+  "components" : [
+    {
+      "id" : "sprite",
+      "parameters" : {
+        "sprite" : "particle.mote",
+        "color" : "00FFAA55",
+        "size" : 0.4
+      }
+    },
+    {
+      "id" : "pointlight",
+      "parameters" : {
+        "color" : "FF221108",
+        "radius" : 1
+      }
+    },
+    {
+      "id" : "burnable",
+      "parameters" : {
+        "fuelAmount" : 2,
+        "flashPointThreshold" : 0
+      }
+    },
+    {
+      "id" : "initialSpark"
+    },
+    {
+      "id" : "deleteOnExtinguish"
+    }
+  ]
+}
