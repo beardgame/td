@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                     return;
                 }
 
-                target.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic));
+                target.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner));
                 nextAttack += 1 / Parameters.AttackRate;
             }
         }

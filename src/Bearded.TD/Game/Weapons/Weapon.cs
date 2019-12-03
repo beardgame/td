@@ -30,6 +30,7 @@ namespace Bearded.TD.Game.Weapons
         public Direction2 NeutralDirection => turret.NeutralDirection;
         public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
 
+        public Maybe<IComponentOwner> Parent => Just((IComponentOwner)turret.Owner);
         public GameObject Owner => turret.Owner;
         public Position3 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;

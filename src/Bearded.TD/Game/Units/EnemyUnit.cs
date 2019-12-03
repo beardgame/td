@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
@@ -33,7 +34,8 @@ namespace Bearded.TD.Game.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        ISyncable
+        ISyncable,
+        IDamageOwner
     {
         public Id<EnemyUnit> Id { get; }
 
@@ -47,6 +49,10 @@ namespace Bearded.TD.Game.Units
         private Health<EnemyUnit> health;
         private bool isDead;
 
+
+        public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
+        public Faction Faction => Game.RootFaction;
+
         private Unit radius => HexagonSide.U() * 0.5f;
 
         public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
@@ -55,7 +61,7 @@ namespace Bearded.TD.Game.Units
         public Circle CollisionCircle => new Circle(Position.XY(), radius);
         public long Value => (long) blueprint.Value;
 
-        private Faction lastDamageSource;
+        private IDamageOwner lastDamageSource;
 
         public event GenericEventHandler<int> Healed;
 
@@ -98,7 +104,7 @@ namespace Bearded.TD.Game.Units
 
             if (isDead)
             {
-                this.Sync(KillUnit.Command, this, lastDamageSource);
+                this.Sync(KillUnit.Command, this, lastDamageSource.Faction);
             }
         }
 
@@ -129,8 +135,7 @@ namespace Bearded.TD.Game.Units
 
         public void Damage(DamageInfo damageInfo)
         {
-            damageInfo.Source.Select(building => building.Faction).Match(faction => lastDamageSource = faction);
-
+            lastDamageSource = damageInfo.Source;
             Events.Send(new TakeDamage(damageInfo));
         }
 

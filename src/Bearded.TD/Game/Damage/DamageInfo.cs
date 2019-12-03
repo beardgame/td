@@ -7,20 +7,13 @@ namespace Bearded.TD.Game.Damage
     {
         public int Amount { get; }
         public DamageType Type { get; }
-        public Maybe<Building> Source { get; }
+        public IDamageOwner Source { get; }
 
-        public DamageInfo(int amount, DamageType type, Building building)
+        public DamageInfo(int amount, DamageType type, IDamageOwner owner)
         {
             Amount = amount;
             Type = type;
-            Source = Maybe.Just(building);
-        }
-
-        public DamageInfo(int amount, DamageType type)
-        {
-            Amount = amount;
-            Type = type;
-            Source = Maybe.Nothing;
+            Source = owner;
         }
     }
 }

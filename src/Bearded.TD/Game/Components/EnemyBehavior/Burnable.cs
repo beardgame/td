@@ -19,8 +19,8 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
     sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
         where T : GameObject, IEventManager, IPositionable
     {
-        private Building lastFireHitBuilding;
-        private Building damageSourceBuilding;
+        private IDamageOwner lastFireHitOwner;
+        private IDamageOwner damageSource;
 
         private Combustable combustable;
         private double damagePerFuel;
@@ -75,7 +75,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                     break;
             }
 
-            damage.Source.Match(building => lastFireHitBuilding = building);
+            lastFireHitOwner = damage.Source;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -91,15 +91,15 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 
             if (!combustable.IsOnFire) return;
 
-            if (damageSourceBuilding == null)
+            if (damageSource == null)
             {
-                damageSourceBuilding = lastFireHitBuilding;
+                damageSource = lastFireHitOwner;
             }
 
             var damage = new DamageInfo(
                 StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
                 DamageType.Fire,
-                damageSourceBuilding);
+                damageSource);
 
             dealingDamageToOwner = true;
             Owner.Events.Send(new TakeDamage(damage));

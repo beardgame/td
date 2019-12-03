@@ -7,6 +7,7 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -20,6 +21,8 @@ namespace Bearded.TD.Game.Buildings
         private PositionedFootprint footprint;
 
         protected ComponentCollection<T> Components { get; }
+
+        public Maybe<IComponentOwner> Parent => Maybe.Nothing;
 
         public GameEvents Events { get; } = new GameEvents();
 
@@ -92,7 +95,6 @@ namespace Bearded.TD.Game.Buildings
         }
 
         protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
-
         public IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent => Components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner<T>.GetComponents<TComponent>() => GetComponents<TComponent>();

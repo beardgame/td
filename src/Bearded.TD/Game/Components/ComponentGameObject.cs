@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Bearded.TD.Rendering;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Components
 {
@@ -8,15 +10,17 @@ namespace Bearded.TD.Game.Components
     class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObject>, IEventManager, IPositionable
     {
         private readonly IComponentOwnerBlueprint blueprint;
+        public Maybe<IComponentOwner> Parent { get; }
         public Position3 Position { get; private set; }
 
         public GameEvents Events { get; } = new GameEvents();
 
         private readonly ComponentCollection<ComponentGameObject> components;
 
-        public ComponentGameObject(IComponentOwnerBlueprint blueprint, Position3 position)
+        public ComponentGameObject(IComponentOwnerBlueprint blueprint, IComponentOwner parent, Position3 position)
         {
             this.blueprint = blueprint;
+            Parent = Just(parent);
             Position = position;
             components = new ComponentCollection<ComponentGameObject>(this);
         }

@@ -20,7 +20,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Buildings
 {
     [ComponentOwner]
-    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal
+    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {

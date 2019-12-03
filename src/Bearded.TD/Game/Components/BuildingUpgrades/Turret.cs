@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Components.BuildingUpgrades
 
     [Component("turret")]
     class Turret<T> : Component<T, ITurretParameters>, ITurret
-        where T : BuildingBase<T>
+        where T : BuildingBase<T>, IComponentOwner
     {
         private Weapon weapon;
 

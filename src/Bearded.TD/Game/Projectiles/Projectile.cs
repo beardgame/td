@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
@@ -11,6 +12,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,12 +20,14 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable, IEventManager
+    class Projectile : GameObject, IPositionable, IEventManager, IComponentOwner<Projectile>
     {
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
+
+        public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
 
         public GameEvents Events { get; } = new GameEvents();
 
@@ -111,5 +115,9 @@ namespace Bearded.TD.Game.Projectiles
             geo.Color = Color.Yellow;
             geo.DrawRectangle(Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f));
         }
+
+        IEnumerable<TComponent> IComponentOwner<Projectile>.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
     }
 }
