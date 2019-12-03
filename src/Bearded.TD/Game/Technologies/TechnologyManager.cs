@@ -41,7 +41,10 @@ namespace Bearded.TD.Game.Technologies
         public bool CanQueueTechnology(ITechnologyBlueprint technology) =>
             IsTechnologyLocked(technology)
             && !IsTechnologyQueued(technology)
-            && (!canAfford(technology) || !hasAllRequiredTechs(technology));
+            && !canAfford(technology)
+            // TODO: we only allow queueing with all dependencies for now, because we're not smart enough yet to
+            //     automatically queue all the dependencies.
+            && hasAllRequiredTechs(technology);
 
         public void QueueTechnology(ITechnologyBlueprint technology)
         {

@@ -92,7 +92,7 @@ namespace Bearded.TD.UI.Controls
                 var button = new TechnologyButton(
                     technology,
                     stateFor(index),
-                    () => technology.Cost <= factionTechnology.TechPoints);
+                    () => factionTechnology.CanUnlockTechnology(technology));
                 button.Clicked += () => buttonClickCallback(technology);
                 return button;
             }
