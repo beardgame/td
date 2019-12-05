@@ -16,13 +16,6 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class TechnologyUIControl : CompositeControl
     {
-        private enum TechnologyState
-        {
-            Locked,
-            Queued,
-            Unlocked
-        }
-
         private readonly TechnologyUI model;
 
         private readonly ListControl technologyList = new ListControl(new ViewportClippingLayerControl());
@@ -37,7 +30,7 @@ namespace Bearded.TD.UI.Controls
             technologyDetails = new TechnologyDetailsControl(model.Game);
 
             Add(new BackgroundBox());
-            Add(new Label { FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
+            Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
             Add(Default.Button("close", 16)
                 .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
                 .Subscribe(btn => btn.Clicked += () => CloseButtonClicked?.Invoke()));
@@ -55,77 +48,65 @@ namespace Bearded.TD.UI.Controls
         private void updateTechnologiesList()
         {
             technologyList.ItemSource = new TechnologyListItemSource(
-                model.Game, tech => technologyDetails.SetTechnologyToDisplay(Maybe.Just(tech)));
+                model.Model, tech => technologyDetails.SetTechnologyToDisplay(Maybe.Just(tech)));
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
         private sealed class TechnologyListItemSource : IListItemSource
         {
+            private readonly TechnologyUIModel model;
             private readonly Action<ITechnologyBlueprint> buttonClickCallback;
+            private readonly ImmutableList<ITechnologyBlueprint> sortedTechnologies;
+
             public int ItemCount { get; }
 
-            private readonly TechnologyManager factionTechnology;
-            private readonly ImmutableList<ITechnologyBlueprint> lockedTechnologies;
-            private readonly ImmutableList<ITechnologyBlueprint> unlockedTechnologies;
-            private readonly ImmutableHashSet<ITechnologyBlueprint> queuedTechnologies;
-
-            public TechnologyListItemSource(GameInstance game, Action<ITechnologyBlueprint> buttonClickCallback)
+            public TechnologyListItemSource(TechnologyUIModel model, Action<ITechnologyBlueprint> buttonClickCallback)
             {
+                this.model = model;
                 this.buttonClickCallback = buttonClickCallback;
-                var asList = game.Blueprints.Technologies.All.ToList();
-                ItemCount = asList.Count;
 
-                factionTechnology = game.Me.Faction.Technology;
-                var lookup = asList.ToLookup(factionTechnology.IsTechnologyLocked);
-                lockedTechnologies = lookup[true].OrderBy(t => t.Name).ToImmutableList();
-                unlockedTechnologies = lookup[false].OrderBy(t => t.Name).ToImmutableList();
-                queuedTechnologies =
-                    lockedTechnologies.Where(factionTechnology.IsTechnologyQueued).ToImmutableHashSet();
+                sortedTechnologies = model.Technologies.Sort((left, right) =>
+                {
+                    var leftIsLockedAsInt =
+                        model.StatusFor(left) == TechnologyUIModel.TechnologyStatus.Unlocked ? 0 : 1;
+                    var rightIsLockedAsInt =
+                        model.StatusFor(right) == TechnologyUIModel.TechnologyStatus.Unlocked ? 0 : 1;
+
+                    return leftIsLockedAsInt == rightIsLockedAsInt
+                        ? string.Compare(left.Name, right.Name, StringComparison.Ordinal)
+                        : leftIsLockedAsInt.CompareTo(rightIsLockedAsInt);
+                });
+
+                ItemCount = model.Technologies.Count;
             }
 
             public double HeightOfItemAt(int index) => 32;
 
             public Control CreateItemControlFor(int index)
             {
-                var technology = getTechnologyFor(index);
+                var technology = sortedTechnologies[index];
                 var button = new TechnologyButton(
                     technology,
-                    stateFor(index),
-                    () => factionTechnology.CanUnlockTechnology(technology));
+                    () => model.StatusFor(technology));
                 button.Clicked += () => buttonClickCallback(technology);
                 return button;
             }
 
-            private TechnologyState stateFor(int index)
+            public void DestroyItemControlAt(int index, Control control)
             {
-                if (index >= lockedTechnologies.Count)
-                {
-                    return TechnologyState.Unlocked;
-                }
-                return queuedTechnologies.Contains(getTechnologyFor(index))
-                    ? TechnologyState.Queued
-                    : TechnologyState.Locked;
             }
-
-            private ITechnologyBlueprint getTechnologyFor(int index) =>
-                index < lockedTechnologies.Count
-                    ? lockedTechnologies[index]
-                    : unlockedTechnologies[index - lockedTechnologies.Count];
-
-            public void DestroyItemControlAt(int index, Control control) {}
         }
 
         private sealed class TechnologyButton : Button
         {
-            private readonly TechnologyState state;
-            private readonly Func<bool> canBeUnlocked;
+            private readonly Func<TechnologyUIModel.TechnologyStatus> statusGetter;
             private readonly BackgroundBox backgroundBox;
 
-            public TechnologyButton(ITechnologyBlueprint technology, TechnologyState state, Func<bool> canBeUnlocked)
+            public TechnologyButton(ITechnologyBlueprint technology,
+                Func<TechnologyUIModel.TechnologyStatus> statusGetter)
             {
-                this.state = state;
-                this.canBeUnlocked = canBeUnlocked;
+                this.statusGetter = statusGetter;
 
                 this.WithDefaultStyle(technology.Name, fontSize: 20);
                 backgroundBox = new BackgroundBox();
@@ -134,23 +115,23 @@ namespace Bearded.TD.UI.Controls
 
             public override void Render(IRendererRouter r)
             {
-                switch (state)
+                var status = statusGetter();
+                switch (status)
                 {
-                    case TechnologyState.Locked:
-                        if (canBeUnlocked())
-                        {
-                            backgroundBox.Color = .25f * Color.Yellow;
-                        }
-                        else
-                        {
-                            backgroundBox.Color = .25f * Color.Red;
-                        }
+                    case TechnologyUIModel.TechnologyStatus.Unlocked:
+                        backgroundBox.Color = .25f * Color.Green;
                         break;
-                    case TechnologyState.Queued:
+                    case TechnologyUIModel.TechnologyStatus.Queued:
                         backgroundBox.Color = .25f * Color.Aqua;
                         break;
-                    case TechnologyState.Unlocked:
-                        backgroundBox.Color = .25f * Color.Green;
+                    case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                        backgroundBox.Color = .25f * Color.Yellow;
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.MissingResources:
+                        backgroundBox.Color = .25f * Color.Red;
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.MissingDependencies:
+                        backgroundBox.Color = .25f * Color.Purple;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -168,6 +149,7 @@ namespace Bearded.TD.UI.Controls
             {
                 FontSize = 32, TextAnchor = Label.TextAnchorLeft
             };
+
             private readonly Label costLabel = new Label
             {
                 Color = Constants.Game.GameUI.TechPointsColor, FontSize = 18, TextAnchor = Label.TextAnchorLeft
@@ -186,7 +168,7 @@ namespace Bearded.TD.UI.Controls
 
                 Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
                 Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
-                Add(new Label("Unlocks:") { FontSize = 24, TextAnchor = Label.TextAnchorLeft }
+                Add(new Label("Unlocks:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
                     .Anchor(a => a.Top(margin: 80, height: 32)));
 
                 unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
@@ -265,7 +247,9 @@ namespace Bearded.TD.UI.Controls
                 }
             }
 
-            private static void updateForEmpty() {}
+            private static void updateForEmpty()
+            {
+            }
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
@@ -283,9 +267,11 @@ namespace Bearded.TD.UI.Controls
                 public double HeightOfItemAt(int index) => 24;
 
                 public Control CreateItemControlFor(int index) =>
-                    new Label($"- {unlocks[index].Description}") { FontSize = 20, TextAnchor = new Vector2d(0, .5) };
+                    new Label($"- {unlocks[index].Description}") {FontSize = 20, TextAnchor = new Vector2d(0, .5)};
 
-                public void DestroyItemControlAt(int index, Control control) {}
+                public void DestroyItemControlAt(int index, Control control)
+                {
+                }
             }
         }
     }

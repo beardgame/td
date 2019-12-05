@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Bearded.TD.Utilities.Collections
 {
-    sealed class MultiDictionary<TKey, TValue>
+    sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, IList<TValue>>>
     {
         private static readonly TValue[] empty = {};
 
@@ -35,5 +36,9 @@ namespace Bearded.TD.Utilities.Collections
         }
 
         public IEnumerable<TValue> this[TKey key] => Get(key);
+
+        public IEnumerator<KeyValuePair<TKey, IList<TValue>>> GetEnumerator() => inner.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

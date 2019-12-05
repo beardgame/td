@@ -87,6 +87,7 @@ namespace Bearded.TD.UI.Controls
 
             NotificationsUI.Update();
             GameStatusUI.Update();
+            TechnologyUI.Update();
         }
 
         public void SetEntityStatusContainer(IControlParent controlParent)

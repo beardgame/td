@@ -8,12 +8,14 @@ namespace Bearded.TD.UI.Controls
         : IListener<TechnologyDequeued>, IListener<TechnologyQueued>, IListener<TechnologyUnlocked>
     {
         public GameInstance Game { get; private set; }
+        public TechnologyUIModel Model { get; private set; }
 
         public event VoidEventHandler TechnologiesUpdated;
 
         public void Initialize(GameInstance game)
         {
             Game = game;
+            Model = new TechnologyUIModel(game.Blueprints.Technologies.All, game.Me.Faction.Technology);
             Game.State.Meta.Events.Subscribe<TechnologyDequeued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyQueued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyUnlocked>(this);
@@ -26,18 +28,26 @@ namespace Bearded.TD.UI.Controls
             Game.State.Meta.Events.Unsubscribe<TechnologyUnlocked>(this);
         }
 
+        public void Update()
+        {
+            Model.Update();
+        }
+
         public void HandleEvent(TechnologyDequeued @event)
         {
+            Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }
 
         public void HandleEvent(TechnologyQueued @event)
         {
+            Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }
 
         public void HandleEvent(TechnologyUnlocked @event)
         {
+            Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }
     }
