@@ -210,7 +210,8 @@ namespace Bearded.TD.UI.Controls
                         headerLabel.Text = tech.Name;
                         costLabel.Text = $"{tech.Cost} tech points";
                         unlockButton.IsVisible = true;
-                        unlocksList.ItemSource = new TechnologyUnlocksListItemSource(tech.Unlocks);
+                        unlocksList.ItemSource =
+                            new TechnologyUnlocksListItemSource(tech.Unlocks, model.DependentsFor(tech));
                     },
                     onNothing: () =>
                     {
@@ -218,7 +219,8 @@ namespace Bearded.TD.UI.Controls
                         costLabel.Text = "";
                         unlockButton.IsVisible = false;
                         unlocksList.ItemSource =
-                            new TechnologyUnlocksListItemSource(Enumerable.Empty<ITechnologyUnlock>());
+                            new TechnologyUnlocksListItemSource(
+                                Enumerable.Empty<ITechnologyUnlock>(), Enumerable.Empty<ITechnologyBlueprint>());
                     });
             }
 
@@ -259,22 +261,29 @@ namespace Bearded.TD.UI.Controls
             private sealed class TechnologyUnlocksListItemSource : IListItemSource
             {
                 private readonly ImmutableList<ITechnologyUnlock> unlocks;
+                private readonly ImmutableList<ITechnologyBlueprint> dependents;
 
-                public int ItemCount => unlocks.Count;
+                public int ItemCount => unlocks.Count + dependents.Count;
 
-                public TechnologyUnlocksListItemSource(IEnumerable<ITechnologyUnlock> unlocks)
+                public TechnologyUnlocksListItemSource(
+                    IEnumerable<ITechnologyUnlock> unlocks,
+                    IEnumerable<ITechnologyBlueprint> dependents)
                 {
                     this.unlocks = ImmutableList.CreateRange(unlocks);
+                    this.dependents = ImmutableList.CreateRange(dependents);
                 }
 
                 public double HeightOfItemAt(int index) => 24;
 
                 public Control CreateItemControlFor(int index) =>
-                    new Label($"- {unlocks[index].Description}") {FontSize = 20, TextAnchor = new Vector2d(0, .5)};
+                    new Label(labelFor(index)) {FontSize = 20, TextAnchor = new Vector2d(0, .5)};
 
-                public void DestroyItemControlAt(int index, Control control)
-                {
-                }
+                private string labelFor(int index) =>
+                    index < unlocks.Count
+                        ? $"- {unlocks[index].Description}"
+                        : $"- Required technology for: {dependents[index - unlocks.Count].Name}";
+
+                public void DestroyItemControlAt(int index, Control control) {}
             }
         }
     }
