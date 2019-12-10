@@ -113,28 +113,7 @@ namespace Bearded.TD.UI.Controls
 
             public override void Render(IRendererRouter r)
             {
-                var status = statusGetter();
-                switch (status)
-                {
-                    case TechnologyUIModel.TechnologyStatus.Unlocked:
-                        backgroundBox.Color = .25f * Color.Green;
-                        break;
-                    case TechnologyUIModel.TechnologyStatus.Queued:
-                        backgroundBox.Color = .25f * Color.Aqua;
-                        break;
-                    case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
-                        backgroundBox.Color = .25f * Color.Yellow;
-                        break;
-                    case TechnologyUIModel.TechnologyStatus.MissingResources:
-                        backgroundBox.Color = .25f * Color.Red;
-                        break;
-                    case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                        backgroundBox.Color = .25f * Color.Purple;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
+                backgroundBox.Color = .25f * colorForStatus(statusGetter());
                 base.Render(r);
             }
         }
@@ -157,6 +136,7 @@ namespace Bearded.TD.UI.Controls
             private readonly Button unlockButton;
 
             private readonly ListControl unlocksList;
+            private readonly ListControl dependenciesList;
 
             private Maybe<ITechnologyBlueprint> technology;
 
@@ -168,13 +148,17 @@ namespace Bearded.TD.UI.Controls
                 Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
                 Add(new Label("Unlocks:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
                     .Anchor(a => a.Top(margin: 80, height: 32)));
+                Add(new Label("Required technologies:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
+                    .Anchor(a => a.Bottom(margin: 128, height: 32)));
 
                 unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
                 Add(unlockButton.Anchor(a => a.Top(height: 32, margin: 4).Right(margin: 8, width: 200)));
                 unlockButton.Clicked += onUnlockButtonClicked;
 
-                unlocksList = new ListControl().Anchor(a => a.Top(margin: 120));
+                unlocksList = new ListControl().Anchor(a => a.Top(margin: 120).Bottom(margin: 180));
                 Add(unlocksList);
+                dependenciesList = new ListControl().Anchor(a => a.Bottom(height: 120));
+                Add(dependenciesList);
 
                 SetTechnologyToDisplay(Maybe.Nothing);
             }
@@ -212,6 +196,8 @@ namespace Bearded.TD.UI.Controls
                         unlockButton.IsVisible = true;
                         unlocksList.ItemSource =
                             new TechnologyUnlocksListItemSource(tech.Unlocks, model.DependentsFor(tech));
+                        dependenciesList.ItemSource =
+                            new TechnologyDependenciesListItemSource(tech.RequiredTechs, model.StatusFor);
                     },
                     onNothing: () =>
                     {
@@ -221,6 +207,9 @@ namespace Bearded.TD.UI.Controls
                         unlocksList.ItemSource =
                             new TechnologyUnlocksListItemSource(
                                 Enumerable.Empty<ITechnologyUnlock>(), Enumerable.Empty<ITechnologyBlueprint>());
+                        dependenciesList.ItemSource =
+                            new TechnologyDependenciesListItemSource(
+                                Enumerable.Empty<ITechnologyBlueprint>(), model.StatusFor);
                     });
             }
 
@@ -284,6 +273,55 @@ namespace Bearded.TD.UI.Controls
                         : $"- Required technology for: {dependents[index - unlocks.Count].Name}";
 
                 public void DestroyItemControlAt(int index, Control control) {}
+            }
+
+            private sealed class TechnologyDependenciesListItemSource : IListItemSource
+            {
+                private readonly ImmutableList<ITechnologyBlueprint> dependencies;
+                private readonly Func<ITechnologyBlueprint, TechnologyUIModel.TechnologyStatus> statusGetter;
+
+                public int ItemCount => dependencies.Count;
+
+                public TechnologyDependenciesListItemSource(
+                    IEnumerable<ITechnologyBlueprint> dependencies,
+                    Func<ITechnologyBlueprint, TechnologyUIModel.TechnologyStatus> statusGetter)
+                {
+                    this.dependencies = ImmutableList.CreateRange(dependencies);
+                    this.statusGetter = statusGetter;
+                }
+
+                public double HeightOfItemAt(int index) => 24;
+
+                public Control CreateItemControlFor(int index) =>
+                    new DynamicLabel(() => labelFor(index), () => colorFor(index))
+                    {
+                        FontSize = 20, TextAnchor = new Vector2d(0, .5)
+                    };
+
+                private string labelFor(int index) => $"- {dependencies[index].Name}";
+
+                private Color colorFor(int index) => colorForStatus(statusGetter(dependencies[index]));
+
+                public void DestroyItemControlAt(int index, Control control) {}
+            }
+        }
+
+        private static Color colorForStatus(TechnologyUIModel.TechnologyStatus status)
+        {
+            switch (status)
+            {
+                case TechnologyUIModel.TechnologyStatus.Unlocked:
+                    return Color.Green;
+                case TechnologyUIModel.TechnologyStatus.Queued:
+                    return Color.Aqua;
+                case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                    return Color.Yellow;
+                case TechnologyUIModel.TechnologyStatus.MissingResources:
+                    return Color.Red;
+                case TechnologyUIModel.TechnologyStatus.MissingDependencies:
+                    return Color.Purple;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }
