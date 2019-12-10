@@ -11,7 +11,6 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class TechnologyUIModel
     {
-
         public enum TechnologyStatus
         {
             Unlocked,
@@ -73,7 +72,8 @@ namespace Bearded.TD.UI.Controls
 
         public int QueuePositionFor(ITechnologyBlueprint tech) => technologyManager.QueuePositionFor(tech);
 
-        public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) => technologyDependents[tech];
+        public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) =>
+            technologyDependents.GetValueOrDefault(tech, ImmutableList<ITechnologyBlueprint>.Empty);
 
         private TechnologyStatus evaluateStatusForTech(ITechnologyBlueprint tech)
         {
