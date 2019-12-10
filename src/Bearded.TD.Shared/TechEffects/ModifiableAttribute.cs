@@ -11,7 +11,7 @@ namespace Bearded.TD.Shared.TechEffects
 
         // Important note: there is currently no constructor which takes Type as optional parameters.
         // The weaver is dependent on the Type being said through "Type = AttributeType.Something" for some reason.
-        
+
         public ModifiableAttribute()
         {
         }

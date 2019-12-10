@@ -36,12 +36,12 @@ namespace Bearded.TD.Shared.TechEffects
         private void recalculateCurrentValue()
         {
             var val = baseValue;
-            
+
             foreach (var mod in additiveModifications)
             {
                 val = applyAdditiveModification(val, mod.Modification);
             }
-            
+
             foreach (var mod in exponentialModifications)
             {
                 val = applyExponentialModification(val, mod.Modification);
@@ -64,7 +64,7 @@ namespace Bearded.TD.Shared.TechEffects
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         private double applyExponentialModification(double val, Modification modification)
         {
             // ReSharper disable once SwitchStatementMissingSomeCases
@@ -88,7 +88,7 @@ namespace Bearded.TD.Shared.TechEffects
 
         public void AddModification(Modification modification) =>
             AddModificationWithId(new ModificationWithId(Id<Modification>.Invalid, modification));
-        
+
         public void AddModificationWithId(ModificationWithId modification)
         {
             switch (modification.Modification.Type)
@@ -97,15 +97,15 @@ namespace Bearded.TD.Shared.TechEffects
                 case Modification.ModificationType.AdditiveRelative:
                     additiveModifications.Add(modification);
                     break;
-                
+
                 case Modification.ModificationType.Exponent:
                     exponentialModifications.Add(modification);
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             currentValueDirty = true;
         }
 

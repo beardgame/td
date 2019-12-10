@@ -14,7 +14,7 @@
             // Additive
             AdditiveAbsolute,
             AdditiveRelative,
-            
+
             // Exponential
             Exponent,
         }
