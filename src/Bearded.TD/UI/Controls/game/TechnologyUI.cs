@@ -15,7 +15,7 @@ namespace Bearded.TD.UI.Controls
         public void Initialize(GameInstance game)
         {
             Game = game;
-            Model = new TechnologyUIModel(game.Blueprints.Technologies.All, game.Me.Faction.Technology);
+            Model = new TechnologyUIModel(game);
             Game.State.Meta.Events.Subscribe<TechnologyDequeued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyQueued>(this);
             Game.State.Meta.Events.Subscribe<TechnologyUnlocked>(this);

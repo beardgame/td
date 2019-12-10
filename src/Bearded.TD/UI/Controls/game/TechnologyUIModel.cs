@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Utilities.Collections;
 
@@ -8,6 +11,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class TechnologyUIModel
     {
+
         public enum TechnologyStatus
         {
             Unlocked,
@@ -17,17 +21,22 @@ namespace Bearded.TD.UI.Controls
             MissingDependencies
         }
 
-        public ImmutableList<ITechnologyBlueprint> Technologies { get; }
+        private readonly GameInstance game;
+        private readonly Faction faction;
         private readonly TechnologyManager technologyManager;
 
         private readonly IDictionary<ITechnologyBlueprint, TechnologyStatus> technologyStatuses;
         private readonly ImmutableDictionary<ITechnologyBlueprint, IList<ITechnologyBlueprint>> technologyDependents;
 
-        public TechnologyUIModel(
-            IEnumerable<ITechnologyBlueprint> technologies, TechnologyManager technologyManager)
+        public ImmutableList<ITechnologyBlueprint> Technologies { get; }
+
+        public TechnologyUIModel(GameInstance game)
         {
-            Technologies = technologies.ToImmutableList();
-            this.technologyManager = technologyManager;
+            this.game = game;
+            Technologies = game.Blueprints.Technologies.All.ToImmutableList();
+            faction = game.Me.Faction;
+            technologyManager = faction.Technology;
+
             technologyStatuses = Technologies.ToDictionary(t => t, evaluateStatusForTech);
             technologyDependents = buildTechnologyDependents();
         }
@@ -45,7 +54,24 @@ namespace Bearded.TD.UI.Controls
             technologyStatuses[tech] = evaluateStatusForTech(tech);
         }
 
+        public void ReplaceTechnologyQueue(ITechnologyBlueprint tech)
+        {
+            game.Request(Game.Commands.ReplaceTechnologyQueue.Request(faction, tech));
+        }
+
+        public void AddToTechnologyQueue(ITechnologyBlueprint tech)
+        {
+            game.Request(Game.Commands.AddToTechnologyQueue.Request(faction, tech));
+        }
+
+        public void ClearTechnologyQueue()
+        {
+            game.Request(Game.Commands.ClearTechnologyQueue.Request(faction));
+        }
+
         public TechnologyStatus StatusFor(ITechnologyBlueprint tech) => technologyStatuses[tech];
+
+        public int QueuePositionFor(ITechnologyBlueprint tech) => technologyManager.QueuePositionFor(tech);
 
         public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) => technologyDependents[tech];
 

@@ -7,7 +7,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {
-    static class QueueTechnology
+    static class ReplaceTechnologyQueue
     {
         public static IRequest<Player, GameInstance> Request(Faction faction, ITechnologyBlueprint technology)
             => new Implementation(faction, technology);
@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Commands
 
             public override void Execute()
             {
-                faction.Technology.QueueTechnology(technology);
+                faction.Technology.ReplaceTechnologyQueue(technology);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, technology);
@@ -61,4 +61,3 @@ namespace Bearded.TD.Game.Commands
         }
     }
 }
-

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
@@ -27,7 +25,7 @@ namespace Bearded.TD.UI.Controls
         {
             this.model = model;
 
-            technologyDetails = new TechnologyDetailsControl(model.Game);
+            technologyDetails = new TechnologyDetailsControl(model.Model);
 
             Add(new BackgroundBox());
             Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
@@ -143,7 +141,7 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class TechnologyDetailsControl : CompositeControl
         {
-            private readonly GameInstance game;
+            private readonly TechnologyUIModel model;
 
             private readonly Label headerLabel = new Label
             {
@@ -162,9 +160,9 @@ namespace Bearded.TD.UI.Controls
 
             private Maybe<ITechnologyBlueprint> technology;
 
-            public TechnologyDetailsControl(GameInstance game)
+            public TechnologyDetailsControl(TechnologyUIModel model)
             {
-                this.game = game;
+                this.model = model;
 
                 Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
                 Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
@@ -184,18 +182,22 @@ namespace Bearded.TD.UI.Controls
             private void onUnlockButtonClicked()
             {
                 var tech = technology.ValueOrDefault(null);
-                var factionTechnology = game.Me.Faction.Technology;
+                var techStatus = model.StatusFor(tech);
 
-                if (factionTechnology.IsTechnologyQueued(tech))
+                switch (techStatus)
                 {
-                    game.Meta.Logger.Debug?.Log("dequeue");
-                    game.Request(DequeueTechnology.Request(game.Me.Faction, tech));
-                }
-                else
-                {
-                    game.Request(factionTechnology.TechPoints >= tech.Cost
-                        ? UnlockTechnology.Request(game.Me.Faction, tech)
-                        : QueueTechnology.Request(game.Me.Faction, tech));
+                    case TechnologyUIModel.TechnologyStatus.Unlocked:
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.Queued:
+                        model.ClearTechnologyQueue();
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                    case TechnologyUIModel.TechnologyStatus.MissingResources:
+                    case TechnologyUIModel.TechnologyStatus.MissingDependencies:
+                        model.ReplaceTechnologyQueue(tech);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -228,28 +230,29 @@ namespace Bearded.TD.UI.Controls
 
             private void updateForTechnology(ITechnologyBlueprint tech)
             {
-                var myFactionTechManager = game.Me.Faction.Technology;
-                var isTechLocked = myFactionTechManager.IsTechnologyLocked(tech);
-                if (!isTechLocked)
+                var technologyStatus = model.StatusFor(tech);
+
+                switch (technologyStatus)
                 {
-                    unlockButtonLabel.Text = "Unlocked";
-                }
-                else
-                {
-                    if (myFactionTechManager.IsTechnologyQueued(tech))
-                    {
-                        unlockButtonLabel.Text = $"Queued ({myFactionTechManager.QueuePositionFor(tech)})";
-                    }
-                    else
-                    {
-                        unlockButtonLabel.Text = myFactionTechManager.TechPoints >= tech.Cost ? "Unlock" : "Queue";
-                    }
+                    case TechnologyUIModel.TechnologyStatus.Unlocked:
+                        unlockButtonLabel.Text = "Unlocked";
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.Queued:
+                        unlockButtonLabel.Text = $"Queued ({model.QueuePositionFor(tech)})";
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                        unlockButtonLabel.Text = "Unlock";
+                        break;
+                    case TechnologyUIModel.TechnologyStatus.MissingResources:
+                    case TechnologyUIModel.TechnologyStatus.MissingDependencies:
+                        unlockButtonLabel.Text = "Queue";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            private static void updateForEmpty()
-            {
-            }
+            private static void updateForEmpty() {}
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 

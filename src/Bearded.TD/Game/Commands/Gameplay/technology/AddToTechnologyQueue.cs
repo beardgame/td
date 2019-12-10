@@ -7,7 +7,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands
 {
-    static class UnlockTechnology
+    static class AddToTechnologyQueue
     {
         public static IRequest<Player, GameInstance> Request(Faction faction, ITechnologyBlueprint technology)
             => new Implementation(faction, technology);
@@ -24,11 +24,13 @@ namespace Bearded.TD.Game.Commands
             }
 
             public override bool CheckPreconditions(Player actor) =>
-                faction.SharesTechnologyWith(actor.Faction) && faction.Technology.CanUnlockTechnology(technology);
+                faction.SharesTechnologyWith(actor.Faction)
+                && faction.Technology.CanQueueTechnology(technology)
+                && !faction.Technology.IsTechnologyQueued(technology);
 
             public override void Execute()
             {
-                faction.Technology.UnlockTechnology(technology);
+                faction.Technology.AddToTechnologyQueue(technology);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, technology);
@@ -61,4 +63,3 @@ namespace Bearded.TD.Game.Commands
         }
     }
 }
-
