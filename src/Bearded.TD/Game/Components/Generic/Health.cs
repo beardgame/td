@@ -3,6 +3,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Meta;
@@ -14,7 +15,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Components.Generic
 {
     [Component("health")]
-    class Health<T> : Component<T, IHealthComponentParameter>, ISyncable, IListener<TakeDamage> where T : IEventManager, IMortal
+    class Health<T> : Component<T, IHealthComponentParameter>, ISyncable, IListener<TakeDamage> where T : IComponentEventManager, IMortal
     {
         public int CurrentHealth { get; private set; }
         public int MaxHealth { get; private set; }

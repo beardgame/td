@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Technologies
 {
     sealed class TechnologyManager : IListener<EnemyKilled>
     {
-        private readonly GameEvents events;
+        private readonly GlobalGameEvents events;
 
         private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new HashSet<ITechnologyBlueprint>();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game.Technologies
 
         public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
-        public TechnologyManager(GameEvents events)
+        public TechnologyManager(GlobalGameEvents events)
         {
             this.events = events;
 

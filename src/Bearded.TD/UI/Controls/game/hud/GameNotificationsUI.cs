@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Technologies;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -74,13 +75,13 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor) where T : IEvent =>
+        private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor) where T : IGlobalEvent =>
             new NotificationListener<T>(
                 this,
                 @event => new Notification(textExtractor(@event), Maybe.Nothing, expirationTimeForNotification()));
 
         private NotificationListener<T> textAndGameObjectEventListener<T>(
-            Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor) where T : IEvent =>
+            Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor) where T : IGlobalEvent =>
                 new NotificationListener<T>(
                     this,
                     @event => new Notification(
@@ -117,11 +118,11 @@ namespace Bearded.TD.UI.Controls
 
         private interface INotificationListener
         {
-            void Subscribe(GameEvents events);
-            void Unsubscribe(GameEvents events);
+            void Subscribe(GlobalGameEvents events);
+            void Unsubscribe(GlobalGameEvents events);
         }
 
-        private class NotificationListener<T> : IListener<T>, INotificationListener where T : IEvent
+        private class NotificationListener<T> : IListener<T>, INotificationListener where T : IGlobalEvent
         {
             private readonly GameNotificationsUI parent;
             private readonly Func<T, Notification> eventTransformer;
@@ -134,12 +135,12 @@ namespace Bearded.TD.UI.Controls
                 this.eventTransformer = eventTransformer;
             }
 
-            public void Subscribe(GameEvents events)
+            public void Subscribe(GlobalGameEvents events)
             {
                 events.Subscribe(this);
             }
 
-            public void Unsubscribe(GameEvents events)
+            public void Unsubscribe(GlobalGameEvents events)
             {
                 events.Unsubscribe(this);
             }

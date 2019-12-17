@@ -20,7 +20,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable, IEventManager, IComponentOwner<Projectile>
+    class Projectile : GameObject, IPositionable, IComponentEventManager, IComponentOwner<Projectile>
     {
         public Building DamageSource { get; }
 
@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Projectiles
 
         public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
 
-        public GameEvents Events { get; } = new GameEvents();
+        public ComponentEvents Events { get; } = new ComponentEvents();
 
         public Position3 Position { get; private set; }
 

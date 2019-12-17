@@ -7,13 +7,13 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Components
 {
     [ComponentOwner]
-    class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObject>, IEventManager, IPositionable
+    class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObject>, IComponentEventManager, IPositionable
     {
         private readonly IComponentOwnerBlueprint blueprint;
         public Maybe<IComponentOwner> Parent { get; }
         public Position3 Position { get; private set; }
 
-        public GameEvents Events { get; } = new GameEvents();
+        public ComponentEvents Events { get; } = new ComponentEvents();
 
         private readonly ComponentCollection<ComponentGameObject> components;
 

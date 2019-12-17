@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Events;
+using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Constants.Game.World;
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Navigation
 {
     class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     {
-        private readonly GameEvents events;
+        private readonly GlobalGameEvents events;
         private readonly Level level;
         private readonly PassabilityLayer passability;
         private readonly Queue<Tile> updateFront = new Queue<Tile>();
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Navigation
 
         private readonly Tilemap<Node> graph;
 
-        public MultipleSinkNavigationSystem(GameEvents events, Level level, PassabilityLayer passability)
+        public MultipleSinkNavigationSystem(GlobalGameEvents events, Level level, PassabilityLayer passability)
         {
             this.events = events;
             this.level = level;

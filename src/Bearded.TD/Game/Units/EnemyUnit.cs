@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
@@ -17,7 +16,6 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -30,7 +28,7 @@ namespace Bearded.TD.Game.Units
     [ComponentOwner]
     class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
-        IEventManager,
+        IComponentEventManager,
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
@@ -42,7 +40,7 @@ namespace Bearded.TD.Game.Units
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
 
-        public GameEvents Events { get; } = new GameEvents();
+        public ComponentEvents Events { get; } = new ComponentEvents();
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableList<ISyncable> syncables;

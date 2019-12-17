@@ -1,8 +1,8 @@
-﻿using Bearded.TD.Game.Buildings;
+﻿using Bearded.TD.Game.Events;
 
-namespace Bearded.TD.Game.Events
+namespace Bearded.TD.Game.Buildings
 {
-    struct BuildingConstructionStarted : IEvent
+    struct BuildingConstructionStarted : IGlobalEvent
     {
         public BuildingPlaceholder Placeholder { get; }
         public Building Building { get; }

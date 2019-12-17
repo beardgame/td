@@ -15,7 +15,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IEventManager, IFactioned, IPositionable, ISelectable
+    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IComponentEventManager, IFactioned, IPositionable, ISelectable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Buildings
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
 
-        public GameEvents Events { get; } = new GameEvents();
+        public ComponentEvents Events { get; } = new ComponentEvents();
 
         public abstract SelectionState SelectionState { get; }
 

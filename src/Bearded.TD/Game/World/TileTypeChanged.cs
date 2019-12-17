@@ -1,9 +1,9 @@
-﻿using Bearded.TD.Game.World;
+﻿using Bearded.TD.Game.Events;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Events
+namespace Bearded.TD.Game.World
 {
-    struct TileTypeChanged : IEvent
+    struct TileTypeChanged : IGlobalEvent
     {
         public Tile Tile { get; }
         public TileType Type { get; }

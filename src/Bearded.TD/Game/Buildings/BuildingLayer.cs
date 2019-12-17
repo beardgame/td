@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 
@@ -14,10 +15,10 @@ namespace Bearded.TD.Game.Buildings
             FinishedBuilding
         }
 
-        private readonly GameEvents events;
+        private readonly GlobalGameEvents events;
         private readonly Dictionary<Tile, IPlacedBuilding> buildingLookup = new Dictionary<Tile, IPlacedBuilding>();
 
-        public BuildingLayer(GameEvents events)
+        public BuildingLayer(GlobalGameEvents events)
         {
             this.events = events;
         }

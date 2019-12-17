@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -6,7 +7,7 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("deleteOnExtinguish")]
     class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
-        where T : GameObject, IEventManager
+        where T : GameObject, IComponentEventManager
     {
         protected override void Initialise()
         {

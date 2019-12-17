@@ -23,14 +23,14 @@ namespace Bearded.TD.Game.Navigation
             };
         private static readonly Passabilities passabilityInBuilding = ~Passabilities.WalkingUnit;
 
-        private readonly GameEvents events;
+        private readonly GlobalGameEvents events;
         private readonly GeometryLayer geometryLayer;
         private readonly BuildingLayer buildingLayer;
 
         private readonly Dictionary<Passability, PassabilityLayer> passabilityLayers;
 
         public PassabilityManager(
-            GameEvents events, Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
+            GlobalGameEvents events, Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
         {
             this.events = events;
             this.geometryLayer = geometryLayer;
