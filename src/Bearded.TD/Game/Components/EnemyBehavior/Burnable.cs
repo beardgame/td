@@ -36,7 +36,8 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
             combustable = new Combustable(
                 Parameters.FuelAmount,
                 Parameters.FlashPointThreshold,
-                Parameters.BurnSpeed ?? new EnergyConsumptionRate(1));
+                Parameters.BurnSpeed ?? new EnergyConsumptionRate(1),
+                Parameters.StartsOnFire);
 
             combustable.Extinguished += onExtinguished;
 
