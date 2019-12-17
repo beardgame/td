@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.World;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Tests.Game.Generation
@@ -9,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation
 
         public DefaultTilemapGeneratorTests()
         {
-            Generator = new DefaultTilemapGenerator(new Logger());
+            Generator = new DefaultTilemapGenerator(new Logger(), new LevelDebugMetadata());
         }
     }
 }

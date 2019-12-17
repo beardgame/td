@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -19,10 +20,12 @@ namespace Bearded.TD.Game.Generation
     class DefaultTilemapGenerator : ITilemapGenerator
     {
         private readonly Logger logger;
+        private readonly LevelDebugMetadata levelDebugMetadata;
 
-        public DefaultTilemapGenerator(Logger logger)
+        public DefaultTilemapGenerator(Logger logger, LevelDebugMetadata levelDebugMetadata)
         {
             this.logger = logger;
+            this.levelDebugMetadata = levelDebugMetadata;
         }
 
         public Tilemap<TileGeometry> Generate(int radius, int seed)
@@ -30,7 +33,7 @@ namespace Bearded.TD.Game.Generation
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
             var typeTilemap = new Tilemap<TileType>(radius);
-            var gen = new Generator(typeTilemap, seed, logger);
+            var gen = new Generator(typeTilemap, seed, logger, levelDebugMetadata);
             logger.Trace?.Log("Filling tilemap");
             gen.FillAll();
             gen.ClearCenter(typeTilemap.Radius - 1, 0.1);
@@ -66,15 +69,17 @@ namespace Bearded.TD.Game.Generation
             private readonly Tilemap<TileType> tilemap;
             private readonly Random random;
             private readonly Logger logger;
+            private readonly LevelDebugMetadata levelDebugMetadata;
             private readonly Level level;
             private readonly List<Position2> intersections = new List<Position2>();
             private readonly List<Tuple<Position2, Position2>> tunnels = new List<Tuple<Position2, Position2>>();
 
-            public Generator(Tilemap<TileType> tilemap, int seed, Logger logger)
+            public Generator(Tilemap<TileType> tilemap, int seed, Logger logger, LevelDebugMetadata levelDebugMetadata)
             {
                 this.tilemap = tilemap;
                 random = new Random(seed);
                 this.logger = logger;
+                this.levelDebugMetadata = levelDebugMetadata;
                 level = new Level(tilemap.Radius);
             }
 
@@ -85,6 +90,10 @@ namespace Bearded.TD.Game.Generation
 
             private void clearTunnel(Tile start, Tile goal)
             {
+#if DEBUG
+                levelDebugMetadata.AddSegment(Level.GetPosition(start), Level.GetPosition(goal), Color.Aqua);
+#endif
+
                 var goalPosition = Level.GetPosition(goal);
                 var tile = start;
                 var currentDirection = (goalPosition - Level.GetPosition(tile)).Direction;
