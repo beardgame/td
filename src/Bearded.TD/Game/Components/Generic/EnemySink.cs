@@ -1,13 +1,12 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.BuildingUpgrades;
-using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Components.Damage;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.BuildingAttributes
+namespace Bearded.TD.Game.Components.Generic
 {
     [Component("sink")]
     class EnemySink : Component<Building>

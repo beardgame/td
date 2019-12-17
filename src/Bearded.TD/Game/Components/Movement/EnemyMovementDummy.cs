@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
@@ -7,7 +8,7 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.EnemyBehavior
+namespace Bearded.TD.Game.Components.Movement
 {
     class EnemyMovementDummy : IEnemyMovement
     {

@@ -13,7 +13,7 @@ using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Elements;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.EnemyBehavior
+namespace Bearded.TD.Game.Components.Fire
 {
     [Component("burnable")]
     sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>

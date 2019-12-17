@@ -6,7 +6,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.Damage
 {
     [Component("damageOverTimeArea")]
     class DamageOverTimeArea<T> : Component<T, IDamageOverTimeAreaParameters>

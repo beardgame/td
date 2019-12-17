@@ -6,7 +6,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
     [Component("linearAccelerationAim")]
     class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>

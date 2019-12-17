@@ -2,7 +2,7 @@
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.BuildingAttributes
+namespace Bearded.TD.Game.Components.Generic
 {
     [Component("gameOverOnDestroy")]
     class GameOverOnDestroy<T> : Component<T>

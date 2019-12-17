@@ -4,6 +4,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.BuildingUpgrades;
 using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Components.Weapons;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;

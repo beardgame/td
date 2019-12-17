@@ -5,9 +5,11 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Damage;
 using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Components.Generic;
+using Bearded.TD.Game.Components.Movement;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Synchronization;
@@ -50,12 +52,12 @@ namespace Bearded.TD.Game.Units
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
         public Faction Faction => Game.RootFaction;
 
-        private Unit radius => HexagonSide.U() * 0.5f;
+        public Unit Radius { get; private set; }
 
-        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
+        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + Radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
-        public Circle CollisionCircle => new Circle(Position.XY(), radius);
+        public Circle CollisionCircle => new Circle(Position.XY(), Radius);
         public long Value => (long) blueprint.Value;
 
         private IDamageOwner lastDamageSource;
@@ -87,6 +89,8 @@ namespace Bearded.TD.Game.Units
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
 
             syncables = components.Get<ISyncable>().ToImmutableList();
+
+            Radius = ((Mathf.Atan(.005f * (health.MaxHealth - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f).U();
         }
 
         protected override void OnDelete()
@@ -109,8 +113,7 @@ namespace Bearded.TD.Game.Units
         {
             var geo = geometries.ConsoleBackground;
             geo.Color = blueprint.Color;
-            var size = (Mathf.Atan(.005f * (health.MaxHealth - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f;
-            geo.DrawCircle(Position.NumericValue, size, true, 6);
+            geo.DrawCircle(Position.NumericValue, Radius.NumericValue, true, 6);
 
             var p = (float) health.HealthPercentage;
             geo.Color = Color.DarkGray;

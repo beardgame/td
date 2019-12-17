@@ -2,19 +2,17 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Damage;
-using Bearded.TD.Game.Elements;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
     [Component("beamEmitter")]
     sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>
@@ -42,7 +40,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
         private void emitBeam(TimeSpan elapsedTime)
         {
             var ray = new Ray(
-                Weapon.Position.XY(),
+                SpaceTimeExtensions.XY((Position3) Weapon.Position),
                 Weapon.CurrentDirection * Parameters.Range
             );
 
@@ -84,7 +82,7 @@ namespace Bearded.TD.Game.Components.WeaponBehavior
             geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.5f, 0.8f);
             geo.LineWidth = 0.1f;
 
-            geo.DrawLine(Weapon.Position.NumericValue, endPoint.WithZ(Weapon.Position.Z).NumericValue);
+            geo.DrawLine(Weapon.Position.NumericValue, AddDimensionExtensions.WithZ(endPoint, (Unit) Weapon.Position.Z).NumericValue);
         }
     }
 }
