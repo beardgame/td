@@ -2,12 +2,11 @@
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
     [Component("projectileEmitter")]
     sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters>

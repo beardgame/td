@@ -3,7 +3,7 @@ using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.Fire
 {
     [Component("deleteOnExtinguish")]
     class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>

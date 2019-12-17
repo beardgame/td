@@ -2,7 +2,7 @@ using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.Generic
+namespace Bearded.TD.Game.Components.Fire
 {
     [Component("initialSpark")]
     class InitialSpark<T> : Component<T>

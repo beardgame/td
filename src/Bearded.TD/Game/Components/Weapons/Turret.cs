@@ -6,12 +6,11 @@ using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.Weapons;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.BuildingUpgrades
+namespace Bearded.TD.Game.Components.Weapons
 {
     interface ITurret : IPositionable
     {

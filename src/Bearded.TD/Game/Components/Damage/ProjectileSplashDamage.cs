@@ -9,7 +9,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.ProjectileBehavior
+namespace Bearded.TD.Game.Components.Damage
 {
     [Component("splashDamageOnHit")]
     class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,

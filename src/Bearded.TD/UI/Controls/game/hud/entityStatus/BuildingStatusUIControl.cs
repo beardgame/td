@@ -5,6 +5,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.BuildingUpgrades;
+using Bearded.TD.Game.Components.Damage;
 using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;

@@ -9,10 +9,9 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.BuildingUpgrades
+namespace Bearded.TD.Game.Components.Workers
 {
     [Component("workerAntenna")]
     sealed class WorkerAntenna<T> : Component<T, IWorkerAntennaParameters>, IWorkerAntenna

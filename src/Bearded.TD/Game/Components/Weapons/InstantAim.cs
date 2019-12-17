@@ -3,7 +3,7 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
     [Component("instantAim")]
     class InstantAim : Component<Weapon>

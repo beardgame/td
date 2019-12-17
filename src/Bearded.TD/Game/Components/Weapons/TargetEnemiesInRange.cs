@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.BuildingUpgrades;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Weapons;
@@ -10,14 +8,13 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.Utilities.Maybe;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
 
     [Component("targetEnemiesInRange")]

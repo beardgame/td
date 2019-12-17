@@ -3,7 +3,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.WeaponBehavior
+namespace Bearded.TD.Game.Components.Weapons
 {
     abstract class WeaponCycleHandler<TParameters> : Component<Weapon, TParameters>
         where TParameters : IParametersTemplate<TParameters>

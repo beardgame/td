@@ -6,7 +6,7 @@ using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.ProjectileBehavior
+namespace Bearded.TD.Game.Components.Damage
 {
     [Component("damageOnHit")]
     class ProjectileDamage : Component<Projectile, IProjectileDamageComponentParameters>, IListener<HitEnemy>
