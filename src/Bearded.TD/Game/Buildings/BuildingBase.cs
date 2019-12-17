@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
@@ -15,16 +16,15 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IComponentEventManager, IFactioned, IPositionable, ISelectable
+    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IFactioned, IPositionable, ISelectable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
 
         protected ComponentCollection<T> Components { get; }
+        protected ComponentEvents Events { get; } = new ComponentEvents();
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
-
-        public ComponentEvents Events { get; } = new ComponentEvents();
 
         public abstract SelectionState SelectionState { get; }
 
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Buildings
             Blueprint = blueprint;
             Faction = faction;
             Footprint = footprint;
-            Components = new ComponentCollection<T>((T)this);
+            Components = new ComponentCollection<T>((T)this, Events);
         }
 
         private void recalculateLocalTransform()

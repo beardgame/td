@@ -20,16 +20,15 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable, IComponentEventManager, IComponentOwner<Projectile>
+    class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
     {
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
+        private readonly ComponentEvents events = new ComponentEvents();
 
         public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
-
-        public ComponentEvents Events { get; } = new ComponentEvents();
 
         public Position3 Position { get; private set; }
 
@@ -44,7 +43,7 @@ namespace Bearded.TD.Game.Projectiles
             Position = position;
             Velocity = velocity;
 
-            components = new ComponentCollection<Projectile>(this);
+            components = new ComponentCollection<Projectile>(this, events);
         }
 
         protected override void OnAdded()
@@ -82,16 +81,16 @@ namespace Bearded.TD.Game.Projectiles
                 case RayCastResult.HitNothing:
                     if (Position.Z < Game.GeometryLayer[CurrentTile].DrawInfo.Height)
                     {
-                        Events.Send(new HitLevel());
+                        events.Send(new HitLevel());
                         Delete();
                     }
                     break;
                 case RayCastResult.HitLevel:
-                    Events.Send(new HitLevel());
+                    events.Send(new HitLevel());
                     Delete();
                     break;
                 case RayCastResult.HitEnemy:
-                    Events.Send(new HitEnemy(enemy));
+                    events.Send(new HitEnemy(enemy));
                     Delete();
                     break;
                 default:

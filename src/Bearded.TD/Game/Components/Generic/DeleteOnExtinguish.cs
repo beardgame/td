@@ -7,11 +7,11 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("deleteOnExtinguish")]
     class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
-        where T : GameObject, IComponentEventManager
+        where T : GameObject
     {
         protected override void Initialise()
         {
-            Owner.Events.Subscribe(this);
+            Events.Subscribe(this);
         }
 
         public void HandleEvent(FireExtinguished @event)

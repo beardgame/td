@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Upgrades;
+﻿using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
@@ -16,11 +17,14 @@ namespace Bearded.TD.Game.Components
             Parameters = parameters.CreateModifiableInstance();
         }
 
-        public TOwner Owner { get; private set; }
+        protected TOwner Owner { get; private set; }
 
-        public void OnAdded(TOwner owner)
+        protected ComponentEvents Events { get; private set; }
+
+        public void OnAdded(TOwner owner, ComponentEvents events)
         {
             Owner = owner;
+            Events = events;
             Initialise();
         }
 
@@ -39,11 +43,14 @@ namespace Bearded.TD.Game.Components
 
     abstract class Component<TOwner> : IComponent<TOwner>
     {
-        public TOwner Owner { get; private set; }
+        protected TOwner Owner { get; private set; }
 
-        public void OnAdded(TOwner owner)
+        protected ComponentEvents Events { get; private set; }
+
+        public void OnAdded(TOwner owner, ComponentEvents events)
         {
             Owner = owner;
+            Events = Events;
             Initialise();
         }
 

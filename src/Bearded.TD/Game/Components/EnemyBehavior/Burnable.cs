@@ -1,7 +1,6 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
@@ -18,7 +17,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("burnable")]
     sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
-        where T : GameObject, IComponentEventManager, IPositionable
+        where T : GameObject, IPositionable
     {
         private IDamageOwner lastFireHitOwner;
         private IDamageOwner damageSource;
@@ -43,13 +42,13 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
             combustable.Extinguished += onExtinguished;
 
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Owner.Events.Subscribe<TookDamage>(this);
-            Owner.Events.Subscribe<Spark>(this);
+            Events.Subscribe<TookDamage>(this);
+            Events.Subscribe<Spark>(this);
         }
 
         private void onExtinguished()
         {
-            Owner.Events.Send(new FireExtinguished());
+            Events.Send(new FireExtinguished());
         }
 
         public void HandleEvent(TookDamage @event)
@@ -104,7 +103,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
                 damageSource);
 
             dealingDamageToOwner = true;
-            Owner.Events.Send(new TakeDamage(damage));
+            Events.Send(new TakeDamage(damage));
             dealingDamageToOwner = false;
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))

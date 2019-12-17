@@ -21,8 +21,8 @@ namespace Bearded.TD.Game.Components.ProjectileBehavior
 
         protected override void Initialise()
         {
-            Owner.Events.Subscribe<HitLevel>(this);
-            Owner.Events.Subscribe<HitEnemy>(this);
+            Events.Subscribe<HitLevel>(this);
+            Events.Subscribe<HitEnemy>(this);
         }
 
         public void HandleEvent(HitLevel @event)

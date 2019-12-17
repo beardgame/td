@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Upgrades;
+﻿using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -16,6 +17,6 @@ namespace Bearded.TD.Game.Components
 
     interface IComponent<in TOwner> : IComponent
     {
-        void OnAdded(TOwner owner);
+        void OnAdded(TOwner owner, ComponentEvents events);
     }
 }

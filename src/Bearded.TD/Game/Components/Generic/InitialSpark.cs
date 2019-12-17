@@ -6,7 +6,6 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("initialSpark")]
     class InitialSpark<T> : Component<T>
-        where T : IComponentEventManager
     {
         private bool sparked;
 
@@ -19,7 +18,7 @@ namespace Bearded.TD.Game.Components.Generic
             if (sparked)
                 return;
 
-            Owner.Events.Send(new Spark());
+            Events.Send(new Spark());
             sparked = true;
         }
 

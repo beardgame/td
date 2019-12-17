@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.BuildingUpgrades;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
@@ -20,6 +21,7 @@ namespace Bearded.TD.Game.Weapons
         private readonly Building ownerAsBuilding;
 
         private readonly ComponentCollection<Weapon> components;
+        private readonly ComponentEvents events = new ComponentEvents();
 
         public Maybe<Direction2> AimDirection { get; private set; }
         private Angle currentDirectionOffset;
@@ -40,7 +42,7 @@ namespace Bearded.TD.Game.Weapons
             this.turret = turret;
             ownerAsBuilding = turret.Owner as Building;
 
-            components = new ComponentCollection<Weapon>(this);
+            components = new ComponentCollection<Weapon>(this, events);
             components.Add(blueprint.GetComponents<Weapon>());
         }
 

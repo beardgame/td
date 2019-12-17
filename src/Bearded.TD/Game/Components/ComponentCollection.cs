@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components
 {
-    class ComponentCollection<TOwner>
+    sealed class ComponentCollection<TOwner>
     {
         private readonly TOwner owner;
+        private readonly ComponentEvents events;
         private readonly List<IComponent<TOwner>> components = new List<IComponent<TOwner>>();
 
         public IReadOnlyCollection<IComponent<TOwner>> Components { get; }
 
-        public ComponentCollection(TOwner owner)
+        public ComponentCollection(TOwner owner, ComponentEvents events)
         {
             this.owner = owner;
+            this.events = events;
             Components = components.AsReadOnly();
         }
 
@@ -27,7 +30,7 @@ namespace Bearded.TD.Game.Components
         public void Add(IComponent<TOwner> component)
         {
             components.Add(component);
-            component.OnAdded(owner);
+            component.OnAdded(owner, events);
         }
 
         public IEnumerable<T> Get<T>()

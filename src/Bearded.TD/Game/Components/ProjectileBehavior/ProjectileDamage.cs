@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Components.ProjectileBehavior
 
         protected override void Initialise()
         {
-            Owner.Events.Subscribe(this);
+            Events.Subscribe(this);
         }
 
         public void HandleEvent(HitEnemy @event)

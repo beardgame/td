@@ -28,7 +28,6 @@ namespace Bearded.TD.Game.Units
     [ComponentOwner]
     class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
-        IComponentEventManager,
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
@@ -40,7 +39,7 @@ namespace Bearded.TD.Game.Units
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
 
-        public ComponentEvents Events { get; } = new ComponentEvents();
+        private readonly ComponentEvents events = new ComponentEvents();
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableList<ISyncable> syncables;
@@ -68,8 +67,8 @@ namespace Bearded.TD.Game.Units
             Id = id;
             this.blueprint = blueprint;
 
-            components = new ComponentCollection<EnemyUnit>(this);
-            enemyMovement = new EnemyMovementDummy(this, currentTile);
+            components = new ComponentCollection<EnemyUnit>(this, events);
+            enemyMovement = new EnemyMovementDummy(currentTile);
         }
 
         protected override void OnAdded()
@@ -134,7 +133,7 @@ namespace Bearded.TD.Game.Units
         public void Damage(DamageInfo damageInfo)
         {
             lastDamageSource = damageInfo.Source;
-            Events.Send(new TakeDamage(damageInfo));
+            events.Send(new TakeDamage(damageInfo));
         }
 
         public void OnDeath()

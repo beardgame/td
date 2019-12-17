@@ -1,4 +1,5 @@
 using System;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
@@ -10,20 +11,19 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     class EnemyMovementDummy : IEnemyMovement
     {
-        public EnemyUnit Owner { get; }
         public Position2 Position { get; }
         public Tile CurrentTile { get; }
-        
+
         public Tile GoalTile => CurrentTile;
         public bool IsMoving => false;
-        
-        public EnemyMovementDummy(EnemyUnit owner, Tile currentTile)
+
+        public EnemyMovementDummy(Tile currentTile)
         {
-            Owner = owner;
             Position = Level.GetPosition(currentTile);
             CurrentTile = currentTile;
         }
-        public void OnAdded(EnemyUnit owner) => throw new NotImplementedException();
+
+        public void OnAdded(EnemyUnit owner, ComponentEvents events) => throw new NotImplementedException();
         public void Update(TimeSpan elapsedTime) => throw new NotImplementedException();
         public void Draw(GeometryManager geometries) => throw new NotImplementedException();
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => throw new NotImplementedException();

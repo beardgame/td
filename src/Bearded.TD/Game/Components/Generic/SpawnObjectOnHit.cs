@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("spawnObjectOnHit")]
     class SpawnObjectOnHit<T> : Component<T, ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
-        where T : GameObject, IPositionable, IComponentEventManager, IComponentOwner
+        where T : GameObject, IPositionable, IComponentOwner
     {
         public SpawnObjectOnHit(ISpawnObjectOnHitParameters parameters) : base(parameters)
         {
@@ -17,10 +17,10 @@ namespace Bearded.TD.Game.Components.Generic
         protected override void Initialise()
         {
             if(Parameters.OnHitEnemy)
-                Owner.Events.Subscribe<HitEnemy>(this);
+                Events.Subscribe<HitEnemy>(this);
 
             if(Parameters.OnHitLevel)
-                Owner.Events.Subscribe<HitLevel>(this);
+                Events.Subscribe<HitLevel>(this);
         }
 
         public void HandleEvent(HitLevel @event)

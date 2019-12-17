@@ -11,7 +11,7 @@ namespace Bearded.TD.Game
         IEnumerable<T> GetComponents<T>();
     }
 
-    interface IComponentOwner<T> : IComponentOwner where T : IComponentOwner<T>
+    interface IComponentOwner<out T> : IComponentOwner where T : IComponentOwner<T>
     {
         new IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent<T>;
     }
