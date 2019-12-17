@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using amulware.Graphics;
-using Bearded.TD.Game.Components.Effects;
+﻿using amulware.Graphics;
+using Bearded.TD.Game.Components.Graphical;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units
@@ -22,7 +18,7 @@ namespace Bearded.TD.Game.Units
         private readonly Tile startTile;
         private TileWalker tileWalker;
         private PassabilityLayer passabilityLayer;
-        private readonly Trail trail = new Trail(trailTimeout, newPartDistanceThreshold: 2.U());
+        private readonly TrailTracer trail = new TrailTracer(trailTimeout, newPartDistanceThreshold: 2.U());
 
         public Position2 Position => tileWalker?.Position ?? Level.GetPosition(CurrentTile);
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
@@ -37,7 +33,7 @@ namespace Bearded.TD.Game.Units
         protected override void OnAdded()
         {
             base.OnAdded();
-            
+
             tileWalker = new TileWalker(this, Game.Level, startTile);
 
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
@@ -54,44 +50,17 @@ namespace Bearded.TD.Game.Units
                 Delete();
             }
 
-            trail.Update(Game.Time, Position, deleteAt != null);
+            var h = Game.GeometryLayer[CurrentTile].DrawInfo.Height;
+
+            trail.Update(Game.Time, Position.WithZ(h + 0.1.U()), deleteAt != null);
         }
 
         public override void Draw(GeometryManager geometries)
         {
             var sprites = Game.Meta.Blueprints.Sprites["particle"];
             var sprite = sprites.Sprites.GetSprite("circle-soft");
-            
-            var leftUV = new Vector2(0.5f, 0);
-            var rightUV = new Vector2(0.5f, 1);
 
-            var previous = vertexLocationsFor(trail[0]);
-            foreach (var part in trail.Skip(1))
-            {
-                var current = vertexLocationsFor(part);
-
-                sprite.DrawQuad(
-                    previous.Left, current.Left, current.Right, previous.Right,
-                    leftUV, leftUV, rightUV, rightUV,
-                    previous.Color, current.Color, current.Color, previous.Color
-                    );
-
-                previous = current;
-            }
-        }
-
-        private (Vector3 Left, Vector3 Right, Color Color) vertexLocationsFor(Trail.Part part)
-        {
-            var center = part.Point.NumericValue;
-            var offset = part.Normal * renderSize;
-
-            var alpha = Math.Max(0, (part.Timeout - Game.Time) / trailTimeout);
-
-            return (
-                Left: (center - offset).WithZ(0.3f),
-                Right: (center + offset).WithZ(0.3f),
-                Color: Color.Orange.WithAlpha(0) * (float)alpha
-                );
+            TrailRenderer.DrawTrail(trail, sprite, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha(0));
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) { }

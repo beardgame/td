@@ -15,6 +15,16 @@
                 "sprite" : "particle.orb-soft",
                 "size" : 0.3
             }
+        },
+        {
+            "id" : "trail",
+            "parameters" : {
+                "color" : "CCFFA500",
+                "sprite" : "particle.orb-soft",
+                "width" : 0.3,
+                "timeout" : 0.3,
+                "surviveObjectDeletion" : true
+            }
         }
     ]
 }

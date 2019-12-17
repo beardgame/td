@@ -21,6 +21,16 @@
                 "color" : "FF222211",
                 "radius" : 1.5
             }
+        },
+        {
+            "id" : "trail",
+            "parameters" : {
+                "color" : "00888866",
+                "sprite" : "particle.orb-soft",
+                "width" : 0.05,
+                "timeout" : 0.1,
+                "surviveObjectDeletion" : true
+            }
         }
     ]
 }
