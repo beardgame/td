@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Projectiles;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;

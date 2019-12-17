@@ -1,6 +1,8 @@
-﻿namespace Bearded.TD.Game.Buildings
+﻿using Bearded.TD.Game.Events;
+
+namespace Bearded.TD.Game.Buildings
 {
-    struct BuildingDestroyed : IEvent
+    struct BuildingDestroyed : IGlobalEvent
     {
         public Building Builder { get; }
 

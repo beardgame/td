@@ -1,5 +1,6 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Components.Events;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("spawnObjectOnHit")]
     class SpawnObjectOnHit<T> : Component<T, ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
-        where T : GameObject, IPositionable, IEventManager, IComponentOwner
+        where T : GameObject, IPositionable, IComponentEventManager, IComponentOwner
     {
         public SpawnObjectOnHit(ISpawnObjectOnHitParameters parameters) : base(parameters)
         {

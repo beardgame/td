@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Components.Generic
 {
     [Component("initialSpark")]
     class InitialSpark<T> : Component<T>
-        where T : IEventManager
+        where T : IComponentEventManager
     {
         private bool sparked;
 

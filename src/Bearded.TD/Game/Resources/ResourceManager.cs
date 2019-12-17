@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Units;
 using static Bearded.TD.Constants.Game.Resources;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,7 +19,7 @@ namespace Bearded.TD.Game.Resources
         public long CurrentResources => (long) currentResources;
         public int CurrentIncome => (int) currentIncome;
 
-        public ResourceManager(GameEvents events)
+        public ResourceManager(GlobalGameEvents events)
         {
             currentResources = InitialResources;
             events.Subscribe(this);

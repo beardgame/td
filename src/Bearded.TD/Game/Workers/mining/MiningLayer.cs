@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.IO;
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Workers
         private readonly GeometryLayer geometryLayer;
         private readonly HashSet<Tile> tilesQueuedForMining = new HashSet<Tile>();
 
-        public MiningLayer(Logger logger, GameEvents events, Level level, GeometryLayer geometryLayer)
+        public MiningLayer(Logger logger, GlobalGameEvents events, Level level, GeometryLayer geometryLayer)
         {
             this.logger = logger;
             this.level = level;

@@ -1,8 +1,9 @@
-﻿using Bearded.TD.Tiles;
+﻿using Bearded.TD.Game.Events;
+using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Events
+namespace Bearded.TD.Game.World
 {
-    struct TilePassabilityChanged : IEvent
+    struct TilePassabilityChanged : IGlobalEvent
     {
         public Tile Tile { get; }
 

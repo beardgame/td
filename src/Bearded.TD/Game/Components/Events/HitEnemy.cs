@@ -2,7 +2,7 @@ using Bearded.TD.Game.Units;
 
 namespace Bearded.TD.Game.Components.Events
 {
-    struct HitEnemy : IEvent
+    struct HitEnemy : IComponentEvent
     {
         public EnemyUnit Enemy { get; }
 

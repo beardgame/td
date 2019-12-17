@@ -1,6 +1,8 @@
+using Bearded.TD.Game.Events;
+
 namespace Bearded.TD.Game.Technologies
 {
-    struct TechnologyDequeued : IEvent
+    struct TechnologyDequeued : IGlobalEvent
     {
         public ITechnologyBlueprint Technology { get; }
 

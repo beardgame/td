@@ -5,6 +5,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Elements;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -17,7 +18,7 @@ namespace Bearded.TD.Game.Components.EnemyBehavior
 {
     [Component("burnable")]
     sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
-        where T : GameObject, IEventManager, IPositionable
+        where T : GameObject, IComponentEventManager, IPositionable
     {
         private IDamageOwner lastFireHitOwner;
         private IDamageOwner damageSource;

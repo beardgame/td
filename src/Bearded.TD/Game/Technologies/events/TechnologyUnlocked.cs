@@ -1,6 +1,8 @@
+using Bearded.TD.Game.Events;
+
 namespace Bearded.TD.Game.Technologies
 {
-    struct TechnologyUnlocked : IEvent
+    struct TechnologyUnlocked : IGlobalEvent
     {
         public ITechnologyBlueprint Technology { get; }
 

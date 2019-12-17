@@ -14,10 +14,8 @@ namespace Bearded.TD.Game.Components
         bool RemoveUpgradeEffect(IUpgradeEffect effect);
     }
 
-    interface IComponent<TOwner> : IComponent
+    interface IComponent<in TOwner> : IComponent
     {
-        TOwner Owner { get; }
-
         void OnAdded(TOwner owner);
     }
 }
