@@ -9,5 +9,6 @@ namespace Bearded.TD.Content.Models
         Energy FlashPointThreshold { get; }
         EnergyConsumptionRate? BurnSpeed { get; }
         double? DamagePerFuel { get; }
+        bool StartsOnFire { get; }
     }
 }

@@ -20,11 +20,9 @@
       "id" : "burnable",
       "parameters" : {
         "fuelAmount" : 2,
-        "flashPointThreshold" : 0
+        "flashPointThreshold" : 0,
+        "startsOnFire" : true
       }
-    },
-    {
-      "id" : "initialSpark"
     },
     {
       "id" : "deleteOnExtinguish"

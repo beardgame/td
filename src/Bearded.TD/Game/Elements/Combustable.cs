@@ -30,11 +30,13 @@ namespace Bearded.TD.Game.Elements
         public Combustable(
             Energy initialFuel,
             Energy flashPointThreshold,
-            EnergyConsumptionRate burningSpeed)
+            EnergyConsumptionRate burningSpeed,
+            bool isOnFire)
         {
             Fuel = initialFuel;
             FlashPointThreshold = flashPointThreshold;
             BurningSpeed = burningSpeed;
+            IsOnFire = isOnFire;
         }
 
         public void Spark()
