@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using amulware.Graphics;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -21,10 +22,12 @@ namespace Bearded.TD.Game.Generation
         private const int hardnessRampDistance = 5;
 
         private readonly Logger logger;
+        private readonly LevelDebugMetadata debugMetadata;
 
-        public PerlinTilemapGenerator(Logger logger)
+        public PerlinTilemapGenerator(Logger logger, LevelDebugMetadata debugMetadata)
         {
             this.logger = logger;
+            this.debugMetadata = debugMetadata;
         }
 
         public Tilemap<TileGeometry> Generate(int radius, int seed)
@@ -34,7 +37,7 @@ namespace Bearded.TD.Game.Generation
 
             var typeTilemap = new Tilemap<TileType>(radius, _ => TileType.Wall);
             var hardnessTilemap = new Tilemap<double>(radius);
-            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger);
+            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger, debugMetadata);
 
             gen.GenerateTilemap();
 
@@ -56,6 +59,7 @@ namespace Bearded.TD.Game.Generation
             private readonly Tilemap<TileType> typeTilemap;
             private readonly Tilemap<double> hardnessTilemap;
             private readonly Logger logger;
+            private readonly LevelDebugMetadata levelDebugMetadata;
             private readonly Level level;
             private readonly Random random;
             private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
@@ -65,11 +69,13 @@ namespace Bearded.TD.Game.Generation
                 Tilemap<TileType> typeTilemap,
                 Tilemap<double> hardnessTilemap,
                 int seed,
-                Logger logger)
+                Logger logger,
+                LevelDebugMetadata levelDebugMetadata)
             {
                 this.typeTilemap = typeTilemap;
                 this.hardnessTilemap = hardnessTilemap;
                 this.logger = logger;
+                this.levelDebugMetadata = levelDebugMetadata;
                 level = new Level(typeTilemap.Radius);
                 random = new Random(seed);
                 perlinSourcemapGenerator = new PerlinSourcemapGenerator(random);
@@ -134,10 +140,37 @@ namespace Bearded.TD.Game.Generation
 
             private void createTunnels()
             {
-                var paths = graphGenerator.GenerateEdgesForConnectedGraph(getTilesForTunnelGraph().ToList());
+                // Start by creating a V-shape around the base of impassable segments that tunnels won't cross.
+                // This will heavily bias maps generated with only directions of the base open to one or two directions.
+                const int impassableSegmentRadius = 6;
+                var hardestTile =
+                    Tilemap.GetRingCenteredAt(level.Center, impassableSegmentRadius).MaxBy(t => hardnessTilemap[t]);
+                var thirdClockwise = hardestTile
+                    .RotatedClockwiseAroundOrigin()
+                    .RotatedClockwiseAroundOrigin();
+                var thirdCounterClockwise = hardestTile
+                    .RotatedCounterClockwiseAroundOrigin()
+                    .RotatedCounterClockwiseAroundOrigin();
+                var impassableSegments = new List<(Tile, Tile)>()
+                {
+                    (hardestTile, thirdClockwise),
+                    (hardestTile, thirdCounterClockwise)
+                };
+#if DEBUG
+                foreach (var (from, to) in impassableSegments)
+                {
+                    levelDebugMetadata.AddSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Red);
+                }
+#endif
+
+                var paths = graphGenerator.GenerateEdgesForConnectedGraph(
+                    getTilesForTunnelGraph().ToList(), impassableSegments);
 
                 foreach (var (from, to) in paths)
                 {
+#if DEBUG
+                    levelDebugMetadata.AddSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua);
+#endif
                     var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableList.Create(from));
                     digAlongShortestPath(from, to, pathFindingResult);
                 }

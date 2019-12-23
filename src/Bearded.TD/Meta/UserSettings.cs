@@ -66,6 +66,7 @@ namespace Bearded.TD.Meta
             public bool RenderUIFallBack = false;
             public bool SimpleFluid = false;
             public bool ProjectileDots = false;
+            public bool LevelMetadata = false;
             public bool GameDebugScreen = false;
         }
     }

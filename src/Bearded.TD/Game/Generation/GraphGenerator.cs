@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -26,7 +27,7 @@ namespace Bearded.TD.Game.Generation
             // * minimises the number of intersecting edges.
 
             var vertices = GenerateVerticesAlongConcentricRings(tilemapRadius).ToList();
-            var edges = GenerateEdgesForConnectedGraph(vertices);
+            var edges = GenerateEdgesForConnectedGraph(vertices, new List<(Tile, Tile)>());
 
             return (vertices, edges);
         }
@@ -39,10 +40,12 @@ namespace Bearded.TD.Game.Generation
             return generateTilesOnRings(level, rings);
         }
 
-        public IEnumerable<(Tile, Tile)> GenerateEdgesForConnectedGraph(List<Tile> vertices)
+        public IEnumerable<(Tile, Tile)> GenerateEdgesForConnectedGraph(
+            List<Tile> vertices,
+            List<(Tile, Tile)> impassableSegments)
         {
-            var treeEdges = createSpanningTree(vertices);
-            return expandEdgesWithRandomEdges(vertices, treeEdges, .2);
+            var treeEdges = createSpanningTree(vertices, impassableSegments);
+            return expandEdgesWithRandomEdges(vertices, treeEdges, impassableSegments, .2);
         }
 
         private static IEnumerable<(float Radius, int NumPoints)> generateRings(int tilemapRadius)
@@ -87,7 +90,8 @@ namespace Bearded.TD.Game.Generation
             }
         }
 
-        private IEnumerable<(Tile, Tile)> createSpanningTree(IEnumerable<Tile> tiles)
+        private IEnumerable<(Tile, Tile)> createSpanningTree(
+            IEnumerable<Tile> tiles, IReadOnlyCollection<(Tile From, Tile To)> impassableSegments)
         {
             // Greedily builds a spanner tree by linking a tile to its closest neighbour.
 
@@ -102,14 +106,13 @@ namespace Bearded.TD.Game.Generation
                 var tilePos = Level.GetPosition(tile);
                 var addedTilesByDistance =
                     addedTiles.OrderBy(t => (Level.GetPosition(t) - tilePos).LengthSquared).ToList();
-                var closestWithoutIntersection = addedTilesByDistance.FirstOrDefault(t => hasNoIntersection(t, tile));
+                var closestWithoutIntersection = addedTilesByDistance
+                    .Where(t => hasNoIntersection(t, tile))
+                    .MaybeFirst()
+                    // Just pick the closest if there is no tile that leads to no intersection.
+                    .ValueOrDefault(addedTilesByDistance.First());
 
-                // Just pick the closest if there is no tile that leads to no intersection.
-                if (closestWithoutIntersection == default(Tile))
-                {
-                    closestWithoutIntersection = addedTilesByDistance.First();
-                }
-
+                addedTiles.Add(tile);
                 edges.Add((tile, closestWithoutIntersection));
             }
 
@@ -118,15 +121,18 @@ namespace Bearded.TD.Game.Generation
             bool hasNoIntersection(Tile from, Tile to)
             {
                 var segment = lineSegmentBetween(from, to);
-                return !edges.Any(edge => lineSegmentBetween(edge.From, edge.To).IntersectsAsSegments(segment));
+                return !edges.Concat(impassableSegments)
+                    .Any(edge => lineSegmentBetween(edge.From, edge.To).IntersectsAsSegments(segment));
             }
         }
 
         private IEnumerable<(Tile, Tile)> expandEdgesWithRandomEdges(
-            List<Tile> vertices, IEnumerable<(Tile From, Tile To)> existingEdges, double probabilityOfConnecting)
+            IReadOnlyCollection<Tile> vertices,
+            IEnumerable<(Tile From, Tile To)> existingEdges,
+            IReadOnlyCollection<(Tile From, Tile To)> impassableSegments,
+            double probabilityOfConnecting)
         {
             // Returns all existing edges, including an approximate fraction of other edges.
-
             var edgeList = existingEdges.ToList();
 
             foreach (var edge in edgeList)
@@ -140,6 +146,7 @@ namespace Bearded.TD.Game.Generation
                 {
                     if (random.NextBool(probabilityOfConnecting) && isValidEdge(v1, v2))
                     {
+                        edgeList.Add((v1, v2));
                         yield return (v1, v2);
                     }
                 }
@@ -155,6 +162,11 @@ namespace Bearded.TD.Game.Generation
                 {
                     if (from == v1 && to == v2) return false;
                     if (from == v2 && to == v1) return false;
+                    if (lineSegmentBetween(from, to).IntersectsAsSegments(segment)) return false;
+                }
+
+                foreach (var (from, to) in impassableSegments)
+                {
                     if (lineSegmentBetween(from, to).IntersectsAsSegments(segment)) return false;
                 }
 

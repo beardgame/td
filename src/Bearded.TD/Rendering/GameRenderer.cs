@@ -87,6 +87,11 @@ namespace Bearded.TD.Rendering
             {
                 drawDebugFluids();
             }
+
+            if (settings.LevelMetadata)
+            {
+                drawDebugLevelMetadata();
+            }
         }
 
         private void drawDebugFluids()
@@ -141,6 +146,17 @@ namespace Bearded.TD.Rendering
                 var d = otherP - tileP;
 
                 geo.DrawLine(tileP + d * p, tileP + d * q);
+            }
+        }
+
+        private void drawDebugLevelMetadata()
+        {
+            var geo = geometries.Primitives;
+            geo.LineWidth = .1f;
+            foreach (var segment in game.LevelDebugMetadata.Segments)
+            {
+                geo.Color = segment.Color;
+                geo.DrawLine(segment.From.NumericValue, segment.To.NumericValue);
             }
         }
 

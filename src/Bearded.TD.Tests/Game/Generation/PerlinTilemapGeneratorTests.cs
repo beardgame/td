@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.World;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Tests.Game.Generation
@@ -9,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation
 
         public PerlinTilemapGeneratorTests()
         {
-            Generator = new PerlinTilemapGenerator(new Logger());
+            Generator = new PerlinTilemapGenerator(new Logger(), new LevelDebugMetadata());
         }
     }
 }

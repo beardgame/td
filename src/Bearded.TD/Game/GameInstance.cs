@@ -7,6 +7,7 @@ using Bearded.TD.Content;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -24,6 +25,7 @@ namespace Bearded.TD.Game
         public ChatLog ChatLog { get; } = new ChatLog();
         public PlayerCursors PlayerCursors { get; }
         public IdManager Ids { get; }
+        public LevelDebugMetadata LevelDebugMetadata { get; }
 
         public GameSettings GameSettings { get; private set; } = new GameSettings.Builder().Build();
         public GameState State { get; private set; }
@@ -73,6 +75,7 @@ namespace Bearded.TD.Game
             ContentManager = contentManager;
             Me = me;
             Ids = ids;
+            LevelDebugMetadata = new LevelDebugMetadata();
 
             AddPlayer(me);
 
