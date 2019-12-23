@@ -11,6 +11,7 @@ namespace Bearded.TD.Meta
 {
     sealed partial class UserSettings
     {
+        private const string settingParameterCompletionName = "allSettingStrings";
         private static readonly Assembly thisAssembly = typeof(UserSettings).Assembly;
         private static readonly char[] lineEndingChars = {'\n', '\r'};
 
@@ -18,7 +19,7 @@ namespace Bearded.TD.Meta
         {
             var allParameters = getFieldsOf(typeof(UserSettings)).ToList();
 
-            ConsoleCommands.AddParameterCompletion("allSettingStrings", allParameters);
+            ConsoleCommands.AddParameterCompletion(settingParameterCompletionName, allParameters);
         }
 
         private static IEnumerable<string> getFieldsOf(Type type)
@@ -37,7 +38,7 @@ namespace Bearded.TD.Meta
                 });
         }
 
-        [Command("setting", "allSettingStrings")]
+        [Command("setting", settingParameterCompletionName)]
         private static void settingCommand(Logger logger, CommandParameters p)
         {
             switch (p.Args.Length)
