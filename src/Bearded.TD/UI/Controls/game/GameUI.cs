@@ -1,10 +1,12 @@
-﻿using amulware.Graphics;
+﻿using System.Diagnostics;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Workers;
+using Bearded.TD.Meta;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
@@ -34,6 +36,8 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler GameLeft;
 
         private NavigationController entityStatusNavigation;
+
+        private GameDebugOverlay debugOverlay;
 
         public GameUI()
         {
@@ -70,6 +74,11 @@ namespace Bearded.TD.UI.Controls
             NotificationsUI.Terminate();
             ActionBar.Terminate();
             TechnologyUI.Terminate();
+            if (debugOverlay != null)
+            {
+                debugOverlay.Terminate();
+                Navigation.Close(debugOverlay);
+            }
             base.Terminate();
         }
 
@@ -88,6 +97,28 @@ namespace Bearded.TD.UI.Controls
             NotificationsUI.Update();
             GameStatusUI.Update();
             TechnologyUI.Update();
+
+            updateGameDebugOverlayState();
+        }
+
+        [Conditional("DEBUG")]
+        private void updateGameDebugOverlayState()
+        {
+            switch (UserSettings.Instance.Debug.GameDebugScreen)
+            {
+                case true when debugOverlay == null:
+                {
+                    debugOverlay = Navigation.Push<GameDebugOverlay>();
+                    break;
+                }
+                case false when debugOverlay != null:
+                {
+                    debugOverlay.Terminate();
+                    Navigation.Close(debugOverlay);
+                    debugOverlay = null;
+                    break;
+                }
+            }
         }
 
         public void SetEntityStatusContainer(IControlParent controlParent)
