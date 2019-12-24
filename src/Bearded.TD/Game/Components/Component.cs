@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Components
         public void OnAdded(TOwner owner, ComponentEvents events)
         {
             Owner = owner;
-            Events = Events;
+            Events = events;
             Initialise();
         }
 
