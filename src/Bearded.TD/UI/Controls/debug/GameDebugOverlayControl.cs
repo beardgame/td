@@ -15,7 +15,7 @@ namespace Bearded.TD.UI.Controls
 {
     class GameDebugOverlayControl : DefaultRenderLayerControl
     {
-        private bool minimized = true;
+        private bool minimized = false;
 
         public GameDebugOverlayControl(GameDebugOverlay model)
         {
