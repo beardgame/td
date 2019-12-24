@@ -5,7 +5,7 @@
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
     <TargetFramework>net462</TargetFramework>
-    <LangVersion>7</LangVersion>
+    <LangVersion>8</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
