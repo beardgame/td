@@ -58,19 +58,25 @@ namespace Bearded.TD.Meta
 
         public class DebugSettings
         {
-            public bool Deferred = false;
+            public bool GameDebugScreen = false;
+
+            // most useful game debug settings
+            [SettingOptions(0.1, 0.5, 1, 2, 10)]
+            public double GameSpeed = 1;
+            public bool InvulnerableBuildings = false;
+
+            // debug rendering for more complex systems
+            public bool LevelMetadata = false;
             [SettingOptions(0, 1, 2)]
             public int Coordinates = 0;
             [SettingOptions(0, 1, 2)]
             public int Pathfinding = 0;
-            public bool InvulnerableBuildings = false;
-            [SettingOptions(0.1, 0.5, 1, 2, 10)]
-            public double GameSpeed = 1;
+
+            // simple debug rendering
+            public bool Deferred = false;
             public bool RenderUIFallBack = false;
             public bool SimpleFluid = false;
             public bool ProjectileDots = false;
-            public bool LevelMetadata = false;
-            public bool GameDebugScreen = false;
         }
     }
 }
