@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
@@ -16,13 +19,97 @@ namespace Bearded.TD.UI.Controls
 
         public ReadOnlyCollection<Item> Items { get; }
 
+        public event VoidEventHandler ItemsChanged;
+
         public GameDebugOverlay()
         {
             Items = items.AsReadOnly();
         }
 
-        public class Item
+        protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
+            logger = dependencies.Resolve<Logger>();
+
+            UserSettings.SettingsChanged += resetItems;
+
+            resetItems();
+        }
+
+        private void resetItems()
+        {
+            items.Clear();
+
+            items.Add(new Header("COMMANDS"));
+
+            addCommands(
+                "game.techpoints 1000",
+                "game.resources 1000",
+                "game.killall",
+                "game.repairall",
+                "game.die"
+            );
+
+            items.Add(new Header("SETTINGS"));
+
+            items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(
+                    field =>
+                    {
+                        if (field.Name == nameof(UserSettings.DebugSettings.GameDebugScreen))
+                            return (Item)null;
+
+                        if (field.FieldType == typeof(bool))
+                            return new BoolSetting(field.Name, logger);
+
+                        if (field.GetCustomAttributes(typeof(SettingOptionsAttribute), false).FirstOrDefault()
+                            is SettingOptionsAttribute attribute)
+                            return new OptionsSetting(field.Name, attribute.Options, logger);
+
+                        return null;
+                    }
+                ).NotNull()
+            );
+
+
+            ItemsChanged?.Invoke();
+
+            void addCommands(params string[] commands)
+            {
+                items.AddRange(commands.Select(c => new Command(c, logger)));
+            }
+        }
+
+        public void Close()
+        {
+            UserSettings.Instance.Debug.GameDebugScreen = false;
+            UserSettings.Save(logger);
+        }
+
+        public override void Terminate()
+        {
+            base.Terminate();
+
+            UserSettings.SettingsChanged -= resetItems;
+        }
+
+        public abstract class Item
+        {
+            protected void RunCommand(string command, Logger logger)
+            {
+                logger.Debug.Log($"Debug UI runs: {command}");
+                var splitCommand = command.Split(' ');
+                ConsoleCommands.TryRun(splitCommand[0], logger,
+                    new CommandParameters(splitCommand.Skip(1).ToArray()));
+            }
+        }
+
+        public sealed class Header : Item
+        {
+            public string Name { get; }
+
+            public Header(string name)
+            {
+                Name = name;
+            }
         }
 
         public sealed class Command : Item
@@ -40,46 +127,60 @@ namespace Bearded.TD.UI.Controls
 
             public void Call()
             {
-                var splitCommand = command.Split(' ');
-                ConsoleCommands.TryRun(splitCommand[0], logger,
-                    new CommandParameters(splitCommand.Skip(1).ToArray()));
+                RunCommand(command, logger);
             }
         }
 
-        protected override void Initialize(DependencyResolver dependencies, Void parameters)
+        public abstract class Setting<T> : Item
         {
-            logger = dependencies.Resolve<Logger>();
+            private readonly Logger logger;
+            private readonly string setting;
 
-            resetItems();
-        }
+            public string Name => setting;
+            public T Value { get; }
 
-        private void resetItems()
-        {
-            items.Clear();
-
-            addCommands(
-                "game.techpoints 1000",
-                "game.resources 1000",
-                "game.killall",
-                "game.repairall",
-                "game.die"
-                );
-
-            // extract debug settings from UserSettings
-
-            void addCommands(params string[] commands)
+            public Setting(string setting, Logger logger)
             {
-                foreach (var command in commands)
-                {
-                    items.Add(new Command(command, logger));
-                }
+                this.setting = setting;
+                this.logger = logger;
+
+                Value = (T)
+                    typeof(UserSettings.DebugSettings)
+                        .GetField(setting)
+                        .GetValue(UserSettings.Instance.Debug);
+            }
+
+            protected void Set(T value)
+            {
+                RunCommand($"setting debug.{setting} {value.ToString().ToLower()}", logger);
             }
         }
 
-        public void Close()
+        public sealed class BoolSetting : Setting<bool>
         {
-            UserSettings.Instance.Debug.GameDebugScreen = false;
-            UserSettings.Save(logger);
+            public BoolSetting(string setting, Logger logger) : base(setting, logger)
+            {
+            }
+
+            public void Toggle()
+            {
+                Set(!Value);
+            }
+        }
+
+        public sealed class OptionsSetting : Setting<object>
+        {
+            public ImmutableList<object> Options { get; }
+
+            public OptionsSetting(string setting, object[] options, Logger logger) : base(setting, logger)
+            {
+                Options = ImmutableList.Create(options);
+            }
+
+            public void Set(int index)
+            {
+                Set(Options[index]);
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Bearded.TD
     sealed class TheGame : Program
     {
         private static TheGame instance;
-        
+
         private readonly Logger logger;
         private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
 
@@ -78,6 +78,7 @@ namespace Bearded.TD
                     (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(Button), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
+                    (typeof(Border), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
                     (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
                     (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(surfaces.ConsoleBackground)),
                     (typeof(Control), new FallbackBoxRenderer(surfaces.ConsoleBackground)),

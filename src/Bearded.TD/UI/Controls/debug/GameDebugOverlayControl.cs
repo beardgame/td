@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
 using static Bearded.TD.UI.Controls.DefaultControls;
+using static Bearded.TD.UI.Controls.GameDebugOverlay;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -15,7 +19,7 @@ namespace Bearded.TD.UI.Controls
 
         public GameDebugOverlayControl(GameDebugOverlay model)
         {
-            Add(new BackgroundBox {Color = Color.Purple * 0.25f});
+            Add(new BackgroundBox {Color = Color.Purple * 0.5f});
 
             Add(new Label {Text = "Debug", FontSize = 16, TextAnchor = new Vector2d(0, 0.5)}
                 .Anchor(a => a.Top(4, 16).Left(4, 16)));
@@ -28,11 +32,14 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a.Top(4, 16).Right(4 + 16 + 4, 16))
                 .Subscribe(b => b.Clicked += toggleMinimized));
 
-            Add(new ListControl(new ViewportClippingLayerControl())
+            var itemList = new ListControl(new ViewportClippingLayerControl())
                     {ItemSource = new ActionListItemSource(model.Items)}
-                .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4)));
+                .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
+            Add(itemList);
 
             toggleMinimized();
+
+            model.ItemsChanged += itemList.Reload;
         }
 
         private void toggleMinimized()
@@ -55,34 +62,91 @@ namespace Bearded.TD.UI.Controls
 
         private class ActionListItemSource : IListItemSource
         {
-            private readonly ReadOnlyCollection<GameDebugOverlay.Item> items;
+            private readonly ReadOnlyCollection<Item> items;
 
-            public ActionListItemSource(ReadOnlyCollection<GameDebugOverlay.Item> items)
+            public ActionListItemSource(ReadOnlyCollection<Item> items)
             {
                 this.items = items;
             }
 
-            public double HeightOfItemAt(int index) => 20;
+            public double HeightOfItemAt(int index) => items[index] switch
+            {
+                OptionsSetting _ => 40,
+                _ => 20
+            };
 
             public Control CreateItemControlFor(int index)
             {
-                var item = items[index];
-
-                switch (item)
+                return items[index] switch
                 {
-                    case GameDebugOverlay.Command command:
-                        return Button(command.Name)
-                            .Subscribe(b => b.Clicked += command.Call)
-                            .Subscribe(b =>
-                            {
-                                var label = b.FirstChildOfType<Label>();
-                                label.TextAnchor = new Vector2d(0, 0.5);
-                                label.FontSize = 16;
-                            });
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(item));
-                }
+                    Header header => new Label {Text = header.Name, FontSize = 16},
+                    Command command => button(command.Name, command.Call),
+                    BoolSetting boolSetting => checkbox(boolSetting.Name, boolSetting.Value, boolSetting.Toggle),
+                    OptionsSetting optionsSetting => multiSelect(optionsSetting),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
             }
+
+            private static Control multiSelect(OptionsSetting setting)
+            {
+                var optionWidthPercentage = 1.0 / setting.Options.Count;
+
+                var container = new CompositeControl
+                {
+                    new Border(),
+                    new Label($"{setting.Name}: {setting.Value}")
+                    {
+                        TextAnchor = new Vector2d(0, 0.5),
+                        FontSize = 16
+                    }.Anchor(a => a.Left(4).Bottom(relativePercentage: 0.5))
+                };
+                setting.Options
+                    .Select((o, i) => Button(o.ToString()).Subscribe(
+                            b =>
+                            {
+                                b.FirstChildOfType<Label>().FontSize = 16;
+                                b.Clicked += () => setting.Set(i);
+
+                                if (setting.Value.ToString() == o.ToString())
+                                {
+                                    b.IsEnabled = false;
+                                    b.Add(new BackgroundBox(Color.White * 0.5f));
+                                }
+                            }).Anchor(a => a
+                            .Top(relativePercentage: 0.5)
+                            .Left(relativePercentage: i * optionWidthPercentage)
+                            .Right(relativePercentage: (i + 1) * optionWidthPercentage))
+                    ).ForEach(container.Add);
+
+                return container;
+            }
+
+            private static Button checkbox(string text, bool value, Action onClick)
+                => Button(text).Subscribe(b =>
+                {
+                    var label = b.FirstChildOfType<Label>();
+                    label.TextAnchor = new Vector2d(0, 0.5);
+                    label.FontSize = 16;
+                    label.Anchor(a => a.Left(4 + 16));
+
+                    b.Add(
+                        new BackgroundBox(Color.White * (value ? 0.75f : 0)) {new Border()}
+                            .Anchor(a => a.Left(3, 20 - 3 - 3).Top(3).Bottom(3))
+                    );
+
+                    b.Clicked += () => onClick();
+                });
+
+            private static Button button(string text, Action onClick)
+                => Button(text).Subscribe(b =>
+                {
+                    var label = b.FirstChildOfType<Label>();
+                    label.TextAnchor = new Vector2d(0, 0.5);
+                    label.FontSize = 16;
+                    label.Anchor(a => a.Left(4));
+
+                    b.Clicked += () => onClick();
+                });
 
             public void DestroyItemControlAt(int index, Control control)
             {

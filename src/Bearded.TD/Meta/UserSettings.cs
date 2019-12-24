@@ -59,9 +59,12 @@ namespace Bearded.TD.Meta
         public class DebugSettings
         {
             public bool Deferred = false;
+            [SettingOptions(0, 1, 2)]
             public int Coordinates = 0;
+            [SettingOptions(0, 1, 2)]
             public int Pathfinding = 0;
             public bool InvulnerableBuildings = false;
+            [SettingOptions(0.1, 0.5, 1, 2, 10)]
             public double GameSpeed = 1;
             public bool RenderUIFallBack = false;
             public bool SimpleFluid = false;
