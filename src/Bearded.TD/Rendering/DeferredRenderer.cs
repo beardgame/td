@@ -163,7 +163,7 @@ namespace Bearded.TD.Rendering
 
         private void compositeLightsAndGBuffers()
         {
-            bind(compositionTarget, (viewport.Width, viewport.Height));
+            bind(compositionTarget, bufferSize);
 
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
@@ -189,7 +189,7 @@ namespace Bearded.TD.Rendering
 
         private void copyCompositionTo(RenderTarget target)
         {
-            bind(target, bufferSize);
+            bind(target, (viewport.Width, viewport.Height));
 
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
@@ -234,7 +234,7 @@ namespace Bearded.TD.Rendering
 
         public void OnResize(ViewportSize newViewport)
         {
-            var bufferSizeFactor = 1 / UserSettings.Instance.Graphics.UpSample;
+            var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
 
             var w = (int) (newViewport.Width * bufferSizeFactor);
             var h = (int) (newViewport.Height * bufferSizeFactor);

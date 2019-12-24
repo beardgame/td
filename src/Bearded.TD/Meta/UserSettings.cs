@@ -53,7 +53,7 @@ namespace Bearded.TD.Meta
 
         public class GraphicsSettings
         {
-            public float UpSample = 1f;
+            public float SuperSample = 1f;
         }
 
         public class DebugSettings
