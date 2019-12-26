@@ -38,7 +38,8 @@ namespace Bearded.TD.Game.Generation
 
             var typeTilemap = new Tilemap<TileType>(radius, _ => TileType.Wall);
             var hardnessTilemap = new Tilemap<double>(radius);
-            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger, debugMetadata);
+            var heightTilemap = new Tilemap<double>(radius);
+            var gen = new Generator(typeTilemap, hardnessTilemap, heightTilemap, seed, logger, debugMetadata);
 
             gen.GenerateTilemap();
 
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game.Generation
             var tilemap = new Tilemap<TileGeometry>(radius);
             foreach (var t in tilemap)
             {
-                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t], Unit.Zero);
+                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t], heightTilemap[t].U());
             }
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
@@ -60,6 +61,7 @@ namespace Bearded.TD.Game.Generation
             private readonly int radius;
             private readonly Tilemap<TileType> typeTilemap;
             private readonly Tilemap<double> hardnessTilemap;
+            private readonly Tilemap<double> heightTilemap;
             private readonly Logger logger;
             private readonly LevelDebugMetadata levelDebugMetadata;
             private readonly Level level;
@@ -70,6 +72,7 @@ namespace Bearded.TD.Game.Generation
             public Generator(
                 Tilemap<TileType> typeTilemap,
                 Tilemap<double> hardnessTilemap,
+                Tilemap<double> heightTilemap,
                 int seed,
                 Logger logger,
                 LevelDebugMetadata levelDebugMetadata)
@@ -77,6 +80,7 @@ namespace Bearded.TD.Game.Generation
                 radius = typeTilemap.Radius;
                 this.typeTilemap = typeTilemap;
                 this.hardnessTilemap = hardnessTilemap;
+                this.heightTilemap = heightTilemap;
                 this.logger = logger;
                 this.levelDebugMetadata = levelDebugMetadata;
                 level = new Level(radius);
@@ -88,6 +92,7 @@ namespace Bearded.TD.Game.Generation
             public void GenerateTilemap()
             {
                 generateHardness();
+                generateHeights();
 
                 //createPathsToCorners();
                 createTunnels();
@@ -134,8 +139,58 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
+            private void generateHeights()
+            {
+                var plateauMap = new Tilemap<double>(radius);
+                var noiseMap = new Tilemap<double>(radius);
+                var gradientMap = new Tilemap<double>(radius);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    plateauMap, 8, (tilemap, tile) => tilemap[tile]);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    noiseMap, 5, (tilemap, tile) => tilemap[tile.RotatedCounterClockwiseAroundOrigin()]);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    gradientMap, 20, (tilemap, tile) => tilemap[tile.RotatedClockwiseAroundOrigin()]);
+
+                foreach (var tile in heightTilemap)
+                {
+                    var height = plateauMap[tile];
+
+                    height = Math.Round(height * 3).Clamped(-1, 1) * 0.6;
+
+                    height += 0.5 * noiseMap[tile];
+
+                    height += gradientMap[tile];
+
+                    heightTilemap[tile] = height;// (height - 0.5) * 0.75;
+                }
 
 
+                var smoothness = new Tilemap<double>(radius);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    smoothness, 8, (tilemap, tile) =>  (1 - Math.Abs(tilemap[tile] * 2)).Powed(4));
+
+                foreach (var _ in Enumerable.Range(0, 2))
+                {
+                    foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(radius))
+                    {
+                        var smoothFactor = smoothness[tile];
+
+                        var averageNeighbour = Tilemap
+                            .GetRingCenteredAt(tile, 1)
+                            .Where(heightTilemap.IsValidTile)
+                            .Average(t => heightTilemap[t]);
+
+                        var height = heightTilemap[tile];
+
+                        height += (averageNeighbour - height) * smoothFactor;
+
+                        heightTilemap[tile] = height;
+                    }
+                }
             }
 
             private void createPathsToCorners()
