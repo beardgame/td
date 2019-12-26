@@ -114,10 +114,12 @@ namespace Bearded.TD.Rendering
             {
                 var p = Level.GetPosition(tile).NumericValue;
                 var tileGeometry = geometryLayer[tile];
-                var height = tileGeometry.DrawInfo.Height.NumericValue;
+                var height = tileGeometry.Geometry.FloorHeight.NumericValue;
                 var hardness = tileGeometry.Geometry.Hardness;
 
-                shapes.Color = Color.Lerp(Color.Green, Color.Red, (float) hardness);
+                shapes.Color = Color.Lerp(Color.Green, Color.Red,
+                    (float) (UserSettings.Instance.Debug.LevelGeometryShowHeights ? (height + 0.5f) : hardness))
+                    * 0.75f;
                 shapes.DrawCircle(p.WithZ(height), HexagonSide, true, 6);
 
                 font.DrawString(p.WithZ(height),
