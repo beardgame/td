@@ -1,5 +1,6 @@
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation
 {
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Generation
     {
         public Tilemap<TileGeometry> Generate(int radius, int seed)
         {
-            return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1));
+            return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
         }
     }
 }

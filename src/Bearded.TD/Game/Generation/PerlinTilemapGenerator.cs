@@ -13,6 +13,7 @@ using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Generation
@@ -46,7 +47,7 @@ namespace Bearded.TD.Game.Generation
             var tilemap = new Tilemap<TileGeometry>(radius);
             foreach (var t in tilemap)
             {
-                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t]);
+                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t], Unit.Zero);
             }
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
