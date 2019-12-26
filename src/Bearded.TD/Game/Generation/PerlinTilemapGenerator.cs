@@ -383,7 +383,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var maxDeviationFromCenter = (tilemap.Radius + 1) * Constants.Game.World.HexagonDiameter;
 
-                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 1;
+                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 2;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
                 var sourceMap = new Tilemap<double>(tilemap.Radius);
