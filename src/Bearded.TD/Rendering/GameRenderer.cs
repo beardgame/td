@@ -72,6 +72,12 @@ namespace Bearded.TD.Rendering
         private void drawDebug()
         {
             var settings = UserSettings.Instance.Debug;
+
+            if (settings.LevelGeometry)
+            {
+                drawDebugLevelGeometry();
+            }
+
             if (settings.Coordinates > 0)
             {
                 drawDebugCoordinates();
@@ -91,6 +97,36 @@ namespace Bearded.TD.Rendering
             if (settings.LevelMetadata)
             {
                 drawDebugLevelMetadata();
+            }
+        }
+
+        private void drawDebugLevelGeometry()
+        {
+            var font = geometries.ConsoleFont;
+            font.Height = .3f * HexagonSide;
+            font.Color = Color.Orange;
+
+            var shapes = geometries.Primitives;
+
+            var geometryLayer = game.State.GeometryLayer;
+
+            foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
+            {
+                var p = Level.GetPosition(tile).NumericValue;
+                var tileGeometry = geometryLayer[tile];
+                var height = tileGeometry.DrawInfo.Height.NumericValue;
+                var hardness = tileGeometry.Geometry.Hardness;
+
+                shapes.Color = Color.Lerp(Color.Green, Color.Red, (float) hardness);
+                shapes.DrawCircle(p.WithZ(height), HexagonSide, true, 6);
+
+                font.DrawString(p.WithZ(height),
+                    $"{height:#.#}",
+                    .5f, 1f);
+
+                font.DrawString(p.WithZ(height),
+                    $"{hardness:#.#}",
+                    .5f, 0f);
             }
         }
 

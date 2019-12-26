@@ -251,7 +251,13 @@ namespace Bearded.TD.Game.Generation
                 while (curr != target)
                 {
                     typeTilemap[curr] = TileType.Floor;
-                    curr = paths[curr].Parent;
+                    var parent = paths[curr].Parent;
+
+#if DEBUG
+                    levelDebugMetadata.AddSegment(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
+#endif
+
+                    curr = parent;
                 }
                 typeTilemap[target] = TileType.Floor;
             }

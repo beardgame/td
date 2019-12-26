@@ -67,6 +67,7 @@ namespace Bearded.TD.Meta
 
             // debug rendering for more complex systems
             public bool LevelMetadata = false;
+            public bool LevelGeometry = false;
             [SettingOptions(0, 1, 2)]
             public int Coordinates = 0;
             [SettingOptions(0, 1, 2)]
