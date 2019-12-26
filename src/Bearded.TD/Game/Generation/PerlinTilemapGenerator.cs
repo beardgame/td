@@ -57,6 +57,7 @@ namespace Bearded.TD.Game.Generation
 
         private class Generator
         {
+            private readonly int radius;
             private readonly Tilemap<TileType> typeTilemap;
             private readonly Tilemap<double> hardnessTilemap;
             private readonly Logger logger;
@@ -73,11 +74,12 @@ namespace Bearded.TD.Game.Generation
                 Logger logger,
                 LevelDebugMetadata levelDebugMetadata)
             {
+                radius = typeTilemap.Radius;
                 this.typeTilemap = typeTilemap;
                 this.hardnessTilemap = hardnessTilemap;
                 this.logger = logger;
                 this.levelDebugMetadata = levelDebugMetadata;
-                level = new Level(typeTilemap.Radius);
+                level = new Level(radius);
                 random = new Random(seed);
                 perlinSourcemapGenerator = new PerlinSourcemapGenerator(random);
                 graphGenerator = new GraphGenerator(random);
@@ -85,9 +87,23 @@ namespace Bearded.TD.Game.Generation
 
             public void GenerateTilemap()
             {
-                var sourceMap1 = new Tilemap<double>(hardnessTilemap.Radius);
-                var sourceMap2 = new Tilemap<double>(hardnessTilemap.Radius);
-                var sourceMap3 = new Tilemap<double>(hardnessTilemap.Radius);
+                generateHardness();
+
+                //createPathsToCorners();
+                createTunnels();
+                clearCenter(4);
+                clearCorners(2);
+
+                carve();
+
+                createCrevices();
+            }
+
+            private void generateHardness()
+            {
+                var sourceMap1 = new Tilemap<double>(radius);
+                var sourceMap2 = new Tilemap<double>(radius);
+                var sourceMap3 = new Tilemap<double>(radius);
 
                 // Generate three different perlin noise maps with different grid sizes (= 1 / frequency). We rotate
                 // each of them by 60% relative to each other to hide the
@@ -105,7 +121,7 @@ namespace Bearded.TD.Game.Generation
                 foreach (var tile in hardnessTilemap)
                 {
                     double hardnessOverride = 0;
-                    var distanceFromEdge = hardnessTilemap.Radius - tile.Radius;
+                    var distanceFromEdge = radius - tile.Radius;
 
                     // Make the hardness artificially high near the map edges to direct paths to the interior.
                     if (distanceFromEdge < hardnessRampDistance)
@@ -116,15 +132,10 @@ namespace Bearded.TD.Game.Generation
                     var desiredHardness = (sourceMap1[tile] + sourceMap2[tile] + sourceMap3[tile]).Clamped(0, 1);
                     hardnessTilemap[tile] = Math.Max(desiredHardness, hardnessOverride);
                 }
+            }
 
-                //createPathsToCorners();
-                createTunnels();
-                clearCenter(4);
-                clearCorners(2);
 
-                carve();
 
-                createCrevices();
             }
 
             private void createPathsToCorners()
