@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Bearded.TD.Utilities
 {
-    struct UnorderedPair<T> : IEquatable<UnorderedPair<T>>
+    struct UnorderedPair<T> : IEquatable<UnorderedPair<T>>, IEnumerable<T>
         where T : struct
     {
         public T Item1 { get; }
@@ -32,12 +33,23 @@ namespace Bearded.TD.Utilities
                 || Item1.Equals(other.Item2) && Item2.Equals(other.Item1);
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            yield return Item1;
+            yield return Item2;
+        }
+
         public override bool Equals(object obj) => obj is UnorderedPair<T> other && Equals(other);
 
         public override int GetHashCode()
         {
             return EqualityComparer<T>.Default.GetHashCode(Item1)
                 ^ EqualityComparer<T>.Default.GetHashCode(Item2);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public static bool operator ==(UnorderedPair<T> left, UnorderedPair<T> right) => left.Equals(right);

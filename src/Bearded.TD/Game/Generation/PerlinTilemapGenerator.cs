@@ -197,11 +197,9 @@ namespace Bearded.TD.Game.Generation
 
             private void ensurePathWalkability()
             {
-                var tilesAndConnections =
-                    tilesOnPaths.Select(p => p.Item1).Union(tilesOnPaths.Select(p => p.Item2))
-                        .Select(t => (t,
-                            tilesOnPaths.Where(p => p.Contains(t)).Select(p => p.Other(t)).ToList()
-                            ))
+                var tilesAndConnections = tilesOnPaths
+                    .SelectMany(t => t).Distinct()
+                    .Select(t => (t, tilesConnectedTo(t)))
                     .ToList();
 
                 var changedTiles = 0;
@@ -228,6 +226,11 @@ namespace Bearded.TD.Game.Generation
                             return true;
                         }, () => false);
                 }
+
+                List<Tile> tilesConnectedTo(Tile t) => tilesOnPaths
+                    .Where(p => p.Contains(t))
+                    .Select(p => p.Other(t))
+                    .ToList();
 
                 bool isWalkable(Tile t0, Tile t1) =>
                     Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue;
