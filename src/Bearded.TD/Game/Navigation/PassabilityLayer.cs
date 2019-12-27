@@ -1,4 +1,8 @@
-﻿using Bearded.TD.Tiles;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Navigation
 {
@@ -6,15 +10,17 @@ namespace Bearded.TD.Game.Navigation
     {
         private readonly Level level;
         private readonly Tilemap<TilePassability> tilemap;
+        private readonly ImmutableList<Func<Tile, Tile, bool>> extraConditions;
 
-        public PassabilityLayer(Level level)
+        public PassabilityLayer(Level level, IEnumerable<Func<Tile, Tile, bool>> extraConditions)
         {
             this.level = level;
+            this.extraConditions = ImmutableList.CreateRange(extraConditions);
             tilemap = new Tilemap<TilePassability>(level.Radius);
         }
 
         // TODO: take buildings into account
-        
+
         public bool HandleTilePassabilityChanged(Tile tile, bool isPassable)
         {
             var currentPassability = tilemap[tile];
@@ -28,10 +34,24 @@ namespace Bearded.TD.Game.Navigation
             foreach (var dir in level.ValidDirectionsFrom(tile))
             {
                 var neighbour = tile.Neighbour(dir);
-                if (isPassable)
+                if (isPassable && extraConditions.All(c => c(tile, neighbour)))
+                {
                     openDirection(neighbour, dir.Opposite());
+                }
                 else
+                {
                     closeDirection(neighbour, dir.Opposite());
+                }
+
+                var neighbourIsPassable = tilemap[neighbour].IsPassable;
+                if (neighbourIsPassable && extraConditions.All(c => c(neighbour, tile)))
+                {
+                    openDirection(tile, dir);
+                }
+                else
+                {
+                    closeDirection(tile, dir);
+                }
             }
 
             return true;
