@@ -74,6 +74,7 @@ namespace Bearded.TD.Meta
             public int Coordinates = 0;
             [SettingOptions(0, 1, 2)]
             public int Pathfinding = 0;
+            public bool Passability = false;
 
             // simple debug rendering
             public bool Deferred = false;
