@@ -68,7 +68,7 @@ namespace Bearded.TD.Game.Generation
             private readonly Random random;
             private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
             private readonly GraphGenerator graphGenerator;
-            private readonly HashSet<Tile> tilesOnPaths = new HashSet<Tile>();
+            private readonly HashSet<UnorderedPair<Tile>> tilesOnPaths = new HashSet<UnorderedPair<Tile>>();
 
             public Generator(
                 Tilemap<TileType> typeTilemap,
@@ -197,8 +197,11 @@ namespace Bearded.TD.Game.Generation
 
             private void ensurePathWalkability()
             {
-                var tilesAndConnections = tilesOnPaths
-                    .Select(t => (t, t.PossibleNeighbours().Where(tilesOnPaths.Contains).ToList()))
+                var tilesAndConnections =
+                    tilesOnPaths.Select(p => p.Item1).Union(tilesOnPaths.Select(p => p.Item2))
+                        .Select(t => (t,
+                            tilesOnPaths.Where(p => p.Contains(t)).Select(p => p.Other(t)).ToList()
+                            ))
                     .ToList();
 
                 var changedTiles = 0;
@@ -364,9 +367,10 @@ namespace Bearded.TD.Game.Generation
                 var curr = source;
                 while (curr != target)
                 {
-                    tilesOnPaths.Add(curr);
                     typeTilemap[curr] = TileType.Floor;
                     var parent = paths[curr].Parent;
+
+                    tilesOnPaths.Add(new UnorderedPair<Tile>(curr, parent));
 
 #if DEBUG
                     levelDebugMetadata.AddSegment(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
@@ -374,7 +378,6 @@ namespace Bearded.TD.Game.Generation
 
                     curr = parent;
                 }
-                tilesOnPaths.Add(target);
                 typeTilemap[target] = TileType.Floor;
             }
 
