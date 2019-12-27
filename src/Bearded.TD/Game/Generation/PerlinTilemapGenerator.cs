@@ -226,7 +226,8 @@ namespace Bearded.TD.Game.Generation
                         }, () => false);
                 }
 
-                bool isWalkable(Tile t0, Tile t1) => Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < maxWalkableHeightDifference;
+                bool isWalkable(Tile t0, Tile t1) =>
+                    Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < Constants.Game.Navigation.MaxWalkableHeightDifference;
             }
 
             private void createPathsToCorners()
@@ -352,7 +353,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var heightDifference = Math.Abs(heightTilemap[from] - heightTilemap[to]);
 
-                if (heightDifference < maxWalkableHeightDifference)
+                if (heightDifference < Constants.Game.Navigation.MaxWalkableHeightDifference)
                     return 0;
 
                 return 10 + heightDifference * 5;
@@ -473,8 +474,7 @@ namespace Bearded.TD.Game.Generation
             private int numCrevices => typeTilemap.Radius * typeTilemap.Radius / 15;
             private const int minCreviceSize = 3;
             private const int minTargetCreviceSize = 8;
-            private const double heightPlateauStep = 0.6;
-            private const double maxWalkableHeightDifference = heightPlateauStep * 0.25;
+            private const double heightPlateauStep = Constants.Game.Navigation.MaxWalkableHeightDifference * 4;
             private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
