@@ -158,7 +158,7 @@ namespace Bearded.TD.Game.Generation
                 {
                     var height = plateauMap[tile];
 
-                    height = Math.Round(height * 3).Clamped(-1, 1) * 0.6;
+                    height = Math.Round(height * 3).Clamped(-1, 1) * heightPlateauStep;
 
                     height += 0.5 * noiseMap[tile];
 
@@ -292,7 +292,7 @@ namespace Bearded.TD.Game.Generation
                     foreach (var neighbor in level.ValidNeighboursOf(currTile))
                     {
                         var costToNeighbor = result[neighbor].Cost;
-                        var candidateCost = currPriority + hardnessTilemap[neighbor];
+                        var candidateCost = currPriority + hardnessTilemap[neighbor] + heightStepCost(currTile, neighbor);
 
                         if (candidateCost >= costToNeighbor) continue;
 
@@ -310,6 +310,16 @@ namespace Bearded.TD.Game.Generation
                 }
 
                 return result;
+            }
+
+            private double heightStepCost(Tile from, Tile to)
+            {
+                var heightDifference = Math.Abs(heightTilemap[from] - heightTilemap[to]);
+
+                if (heightDifference < heightPlateauStep * 0.25)
+                    return 0;
+
+                return 10 + heightDifference * 5;
             }
 
             private void digAlongShortestPath(Tile source, Tile target, Tilemap<(Tile Parent, double Cost)> paths)
@@ -425,6 +435,7 @@ namespace Bearded.TD.Game.Generation
             private int numCrevices => typeTilemap.Radius * typeTilemap.Radius / 15;
             private const int minCreviceSize = 3;
             private const int minTargetCreviceSize = 8;
+            private const double heightPlateauStep = 0.6;
             private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
