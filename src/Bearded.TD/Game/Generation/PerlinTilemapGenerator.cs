@@ -166,7 +166,7 @@ namespace Bearded.TD.Game.Generation
 
                     height += gradientMap[tile];
 
-                    heightTilemap[tile] = height;// (height - 0.5) * 0.75;
+                    heightTilemap[tile] = height;
                 }
 
 
