@@ -68,6 +68,7 @@ namespace Bearded.TD.Game.Generation
             private readonly Random random;
             private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
             private readonly GraphGenerator graphGenerator;
+            private readonly HashSet<Tile> tilesOnPaths = new HashSet<Tile>();
 
             public Generator(
                 Tilemap<TileType> typeTilemap,
@@ -96,6 +97,7 @@ namespace Bearded.TD.Game.Generation
 
                 //createPathsToCorners();
                 createTunnels();
+                ensurePathWalkability();
                 clearCenter(4);
                 clearCorners(2);
 
@@ -191,6 +193,40 @@ namespace Bearded.TD.Game.Generation
                         heightTilemap[tile] = height;
                     }
                 }
+            }
+
+            private void ensurePathWalkability()
+            {
+                var tilesAndConnections = tilesOnPaths
+                    .Select(t => (t, t.PossibleNeighbours().Where(tilesOnPaths.Contains).ToList()))
+                    .ToList();
+
+                var changedTiles = 0;
+                var pass = 0;
+
+                do
+                {
+                    pass++;
+                    changedTiles = tilesAndConnections.Count(smoothIfNeeded);
+                    logger.Debug?.Log($"Walkability pass {pass}: smoothed {changedTiles} tile{(changedTiles == 1 ? "" : "s")}");
+                } while (changedTiles != 0);
+
+                bool smoothIfNeeded((Tile, List<Tile>) tileAndConnections)
+                {
+                    var (tile, connectedNeighbors) = tileAndConnections;
+
+                    return connectedNeighbors
+                        .WhereNot(neighbor => isWalkable(tile, neighbor))
+                        .Average(t => (double?)heightTilemap[t])
+                        .ToMaybe()
+                        .Match(average =>
+                        {
+                            heightTilemap[tile] = (average + heightTilemap[tile]) / 2;
+                            return true;
+                        }, () => false);
+                }
+
+                bool isWalkable(Tile t0, Tile t1) => Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < maxWalkableHeightDifference;
             }
 
             private void createPathsToCorners()
@@ -316,7 +352,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var heightDifference = Math.Abs(heightTilemap[from] - heightTilemap[to]);
 
-                if (heightDifference < heightPlateauStep * 0.25)
+                if (heightDifference < maxWalkableHeightDifference)
                     return 0;
 
                 return 10 + heightDifference * 5;
@@ -327,6 +363,7 @@ namespace Bearded.TD.Game.Generation
                 var curr = source;
                 while (curr != target)
                 {
+                    tilesOnPaths.Add(curr);
                     typeTilemap[curr] = TileType.Floor;
                     var parent = paths[curr].Parent;
 
@@ -336,6 +373,7 @@ namespace Bearded.TD.Game.Generation
 
                     curr = parent;
                 }
+                tilesOnPaths.Add(target);
                 typeTilemap[target] = TileType.Floor;
             }
 
@@ -436,6 +474,7 @@ namespace Bearded.TD.Game.Generation
             private const int minCreviceSize = 3;
             private const int minTargetCreviceSize = 8;
             private const double heightPlateauStep = 0.6;
+            private const double maxWalkableHeightDifference = heightPlateauStep * 0.25;
             private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
