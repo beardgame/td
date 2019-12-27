@@ -69,6 +69,7 @@ namespace Bearded.TD.Meta
             public bool LevelMetadata = false;
             public bool LevelGeometry = false;
             public bool LevelGeometryShowHeights = false;
+            public bool LevelGeometryLabels = false;
             [SettingOptions(0, 1, 2)]
             public int Coordinates = 0;
             [SettingOptions(0, 1, 2)]

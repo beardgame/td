@@ -122,13 +122,16 @@ namespace Bearded.TD.Rendering
                     * 0.75f;
                 shapes.DrawCircle(p.WithZ(height), HexagonSide, true, 6);
 
-                font.DrawString(p.WithZ(height),
-                    $"{height:#.#}",
-                    .5f, 1f);
+                if (UserSettings.Instance.Debug.LevelGeometryLabels)
+                {
+                    font.DrawString(p.WithZ(height),
+                        $"{height:#.#}",
+                        .5f, 1f);
 
-                font.DrawString(p.WithZ(height),
-                    $"{hardness:#.#}",
-                    .5f, 0f);
+                    font.DrawString(p.WithZ(height),
+                        $"{hardness:#.#}",
+                        .5f, 0f);
+                }
             }
         }
 
