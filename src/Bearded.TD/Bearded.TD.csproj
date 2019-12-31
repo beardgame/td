@@ -17,7 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Bearded.UI" Version="0.1.11-dev" />
+    <PackageReference Include="Bearded.UI" Version="0.1.19-dev" />
     <PackageReference Include="Bearded.Utilities" Version="0.2.0.301-dev" />
     <PackageReference Include="Fody" Version="3.2.1">
       <PrivateAssets>all</PrivateAssets>
