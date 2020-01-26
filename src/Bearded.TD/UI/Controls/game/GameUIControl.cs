@@ -64,6 +64,7 @@ namespace Bearded.TD.UI.Controls
         public override void KeyHit(KeyEventArgs keyEventArgs)
         {
             keyEventArgs.Handled = tryHandleKeyHit(keyEventArgs.Key);
+            base.KeyHit(keyEventArgs);
         }
 
         private bool tryHandleKeyHit(Key key)

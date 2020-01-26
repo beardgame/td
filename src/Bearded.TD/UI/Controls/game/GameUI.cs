@@ -67,6 +67,8 @@ namespace Bearded.TD.UI.Controls
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
             Game.Meta.Events.Subscribe<GameOverTriggered>(this);
             Game.Meta.Events.Subscribe<BuildingConstructionStarted>(this);
+
+            FocusReset?.Invoke();
         }
 
         public override void Terminate()
