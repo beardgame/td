@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Content.Mods
 {
@@ -12,7 +13,7 @@ namespace Bearded.TD.Content.Mods
         private Exception exception;
 
         public bool IsDone { get; private set; }
-        public bool DidLoadSuccessfully => IsDone && exception != null;
+        public bool DidLoadSuccessfully => IsDone && exception == null;
 
         public ModForLoading(ModMetadata modMetadata)
         {
@@ -56,6 +57,13 @@ namespace Bearded.TD.Content.Mods
                 throw new Exception($"Something went wrong loading mod '{modMetadata.Id}'", exception);
 
             return mod;
+        }
+
+        public void Rethrow()
+        {
+            DebugAssert.State.Satisfies(exception != null);
+            // ReSharper disable once PossibleNullReferenceException
+            throw exception;
         }
     }
 }

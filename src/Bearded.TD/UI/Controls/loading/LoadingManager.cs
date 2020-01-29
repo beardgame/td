@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
@@ -6,6 +7,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -15,14 +17,21 @@ namespace Bearded.TD.UI.Controls
 {
     abstract class LoadingManager
     {
+        private enum Stage
+        {
+            Initial,
+            LoadingMods,
+            Paused,
+            Finished
+        }
+
         public GameInstance Game { get; }
         public NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
         protected Logger Logger => Game.Meta.Logger;
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
 
-        private bool hasModsQueuedForLoading => modsForLoading.Count > 0;
-        private bool haveModsFinishedLoading;
+        private Stage stage = Stage.Initial;
 
         protected LoadingManager(GameInstance game, NetworkInterface networkInterface)
         {
@@ -37,15 +46,62 @@ namespace Bearded.TD.UI.Controls
             Game.UpdatePlayers(args);
 
             // Mod loading.
-            if (!hasModsQueuedForLoading)
+            switch (stage)
             {
-                DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
-                Game.ContentManager.Mods.ForEach(loadMod);
+                case Stage.Initial:
+                    DebugAssert.State.Satisfies(modsForLoading.Count == 0);
+                    DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
+                    Game.ContentManager.Mods.ForEach(loadMod);
+                    stage = Stage.LoadingMods;
+                    break;
+                case Stage.LoadingMods:
+                    if (modsForLoading.All(mod => mod.IsDone))
+                    {
+                        onModsFinishedLoading();
+                    }
+                    break;
+                case Stage.Paused:
+                    break;
+                case Stage.Finished:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
 
-            if (!haveModsFinishedLoading && modsForLoading.All(mod => mod.IsDone))
+        private void onModsFinishedLoading()
+        {
+            var hasErrors = modsForLoading.Any(m => !m.DidLoadSuccessfully);
+            switch (UserSettings.Instance.Misc.ModLoadFinishBehavior)
             {
-                gatherModBlueprints();
+                case ModLoadFinishBehavior.DoNothing:
+                    gatherModBlueprints();
+                    break;
+                case ModLoadFinishBehavior.ThrowOnError:
+                    if (hasErrors)
+                    {
+                        modsForLoading.First(m => !m.DidLoadSuccessfully).Rethrow();
+                    }
+                    else
+                    {
+                        gatherModBlueprints();
+                    }
+                    break;
+                case ModLoadFinishBehavior.PauseOnError:
+                    if (hasErrors)
+                    {
+                        stage = Stage.Paused;
+                    }
+                    else
+                    {
+                        gatherModBlueprints();
+                    }
+                    break;
+                case ModLoadFinishBehavior.AlwaysPause:
+                    stage = Stage.Paused;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -66,12 +122,18 @@ namespace Bearded.TD.UI.Controls
 
             Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.AwaitingLoadingData));
 
-            haveModsFinishedLoading = true;
+            stage = Stage.Finished;
         }
 
         public void IntegrateUI()
         {
             Game.IntegrateUI();
+        }
+
+        public void Unpause()
+        {
+            if (stage != Stage.Paused) return;
+            gatherModBlueprints();
         }
     }
 }

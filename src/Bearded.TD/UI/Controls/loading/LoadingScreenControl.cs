@@ -6,7 +6,6 @@ namespace Bearded.TD.UI.Controls
     {
         public LoadingScreenControl(LoadingScreen model)
         {
-
         }
     }
 }

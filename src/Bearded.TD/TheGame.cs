@@ -97,6 +97,8 @@ namespace Bearded.TD
             dependencyResolver.Add(uiUpdater);
 
             var shortcuts = new ShortcutManager();
+            dependencyResolver.Add(shortcuts);
+
             eventManager = new EventManager(rootControl, inputManager, shortcuts);
             var (models, views) = UILibrary.CreateFactories(renderContext);
             navigationController =
