@@ -15,24 +15,34 @@ namespace Bearded.TD.Content.Mods
 
         public struct BlueprintLoadingProfile
         {
+            public string Path { get; }
             public TimeSpan LoadingTime { get; }
             public LoadingResult LoadingResult { get; }
 
-            public BlueprintLoadingProfile(TimeSpan loadingTime, LoadingResult loadingResult)
+            public BlueprintLoadingProfile(string path, TimeSpan loadingTime, LoadingResult loadingResult)
             {
+                Path = path;
                 LoadingTime = loadingTime;
                 LoadingResult = loadingResult;
             }
         }
 
         private readonly Stopwatch stopwatch = new Stopwatch();
+        private readonly Dictionary<string, TimeSpan> blueprintsLoadingStartTimes = new Dictionary<string, TimeSpan>();
+        private readonly List<string> blueprintsLoading = new List<string>();
+        private readonly List<BlueprintLoadingProfile> blueprintsLoaded =
+            new List<BlueprintLoadingProfile>();
 
-        private readonly Dictionary<string, TimeSpan> blueprintsLoading = new Dictionary<string, TimeSpan>();
-
-        private readonly Dictionary<string, BlueprintLoadingProfile> blueprintsLoaded =
-            new Dictionary<string, BlueprintLoadingProfile>();
+        public IReadOnlyList<string> LoadingBlueprints { get; }
+        public IReadOnlyList<BlueprintLoadingProfile> LoadedBlueprints { get; }
 
         public TimeSpan TotalElapsedTime => stopwatch.Elapsed;
+
+        public ModLoadingProfiler()
+        {
+            LoadingBlueprints = blueprintsLoading.AsReadOnly();
+            LoadedBlueprints = blueprintsLoaded.AsReadOnly();
+        }
 
         [Conditional("DEBUG")]
         public void StartLoading()
@@ -60,7 +70,8 @@ namespace Bearded.TD.Content.Mods
         public void StartLoadingBlueprint(string path)
         {
             checkStopwatchRunning();
-            blueprintsLoading.Add(path, stopwatch.Elapsed);
+            blueprintsLoading.Add(path);
+            blueprintsLoadingStartTimes.Add(path, stopwatch.Elapsed);
         }
 
         [Conditional("DEBUG")]
@@ -78,7 +89,7 @@ namespace Bearded.TD.Content.Mods
         [Conditional("DEBUG")]
         public void CleanUpLoadingBlueprint(string path)
         {
-            if (blueprintsLoading.ContainsKey(path))
+            if (blueprintsLoadingStartTimes.ContainsKey(path))
             {
                 finishLoadingBlueprint(path, LoadingResult.HasError);
             }
@@ -87,11 +98,12 @@ namespace Bearded.TD.Content.Mods
         private void finishLoadingBlueprint(string path, LoadingResult result)
         {
             checkStopwatchRunning();
-            var startTime = blueprintsLoading[path];
+            var startTime = blueprintsLoadingStartTimes[path];
             var now = stopwatch.Elapsed;
             var elapsed = now - startTime;
             blueprintsLoading.Remove(path);
-            blueprintsLoaded.Add(path, new BlueprintLoadingProfile(elapsed, result));
+            blueprintsLoadingStartTimes.Remove(path);
+            blueprintsLoaded.Add(new BlueprintLoadingProfile(path, elapsed, result));
         }
 
         private void checkStopwatchRunning()

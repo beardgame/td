@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities;
 using Bearded.UI.Navigation;
@@ -16,6 +17,13 @@ namespace Bearded.TD.UI.Controls
 
         private readonly Dictionary<Key, Id<ShortcutManager.Shortcut>> registeredShortcuts =
             new Dictionary<Key, Id<ShortcutManager.Shortcut>>();
+
+        public event VoidEventHandler ModLoadingUpdated;
+
+        public IReadOnlyList<ModLoadingProfiler.BlueprintLoadingProfile> LoadedBlueprints =>
+            loadingManager.LoadedBlueprints;
+
+        public IReadOnlyList<string> LoadingBlueprints => loadingManager.LoadingBlueprints;
 
         protected override void Initialize(DependencyResolver dependencies, LoadingManager loadingManager)
         {
@@ -43,6 +51,7 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             loadingManager.Update(args);
+            ModLoadingUpdated?.Invoke();
         }
 
         private void onGameStatusChanged(GameStatus gameStatus)

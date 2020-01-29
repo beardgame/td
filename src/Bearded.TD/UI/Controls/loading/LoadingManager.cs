@@ -33,6 +33,10 @@ namespace Bearded.TD.UI.Controls
 
         private Stage stage = Stage.Initial;
 
+        public IReadOnlyList<ModLoadingProfiler.BlueprintLoadingProfile> LoadedBlueprints { get; private set; } =
+            new ModLoadingProfiler.BlueprintLoadingProfile[] { };
+        public IReadOnlyList<string> LoadingBlueprints { get; private set; } = new string[] { };
+
         protected LoadingManager(GameInstance game, NetworkInterface networkInterface)
         {
             Game = game;
@@ -109,6 +113,8 @@ namespace Bearded.TD.UI.Controls
         {
             var modForLoading = modMetadata.PrepareForLoading();
             var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
+            LoadedBlueprints = context.Profiler.LoadedBlueprints;
+            LoadingBlueprints = context.Profiler.LoadingBlueprints;
             modForLoading.StartLoading(context);
             modsForLoading.Add(modForLoading);
         }

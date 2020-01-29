@@ -21,7 +21,7 @@ namespace Bearded.TD.UI.Controls
         private int commandHistoryIndex = -1;
 
         private Logger logger;
-        
+
         public bool IsEnabled { get; private set; }
 
         public VoidEventHandler Enabled;
