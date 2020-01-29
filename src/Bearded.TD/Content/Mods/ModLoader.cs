@@ -45,6 +45,8 @@ namespace Bearded.TD.Content.Mods
 
             private Mod load()
             {
+                context.Profiler.StartLoading();
+
                 configureSerializer();
 
                 var loadingContext = new BlueprintLoadingContext(context, meta, serializer);
@@ -60,6 +62,9 @@ namespace Bearded.TD.Content.Mods
                 var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
                 var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
                 var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
+
+                context.Profiler.FinishLoading();
+                context.Logger.Debug?.Log($"Mod finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
 
                 return new Mod(
                     meta.Id,

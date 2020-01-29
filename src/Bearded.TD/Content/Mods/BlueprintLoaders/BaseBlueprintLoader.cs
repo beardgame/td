@@ -85,6 +85,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
                 {
                     LogException(e, $"Error loading '{Context.Meta.Id}/{RelativePath}/../{file.Name}': {e.Message}");
                 }
+                finally
+                {
+                    Context.Context.Profiler.CleanUpLoadingBlueprint(path(file));
+                }
             }
 
             return blueprints;
@@ -92,6 +96,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected virtual TBlueprint LoadBlueprint(FileInfo file)
         {
+            var filePath = path(file);
+            Context.Context.Profiler.StartLoadingBlueprint(filePath);
+            var hasWarnings = false;
+
             var jsonBlueprint = ParseJsonModel(file);
             var dependencyResolvers = GetDependencyResolvers(file);
             var blueprint = jsonBlueprint.ToGameModel(dependencyResolvers);
@@ -99,10 +107,22 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             if (Path.GetFileNameWithoutExtension(file.FullName) != blueprint.Id)
             {
                 LogWarning($"Loaded blueprint {Context.Meta.Id}.{blueprint.Id} with mismatching filename {file.Name}");
+                hasWarnings = true;
+            }
+
+            if (hasWarnings)
+            {
+                Context.Context.Profiler.FinishLoadingBlueprintWithWarnings(filePath);
+            }
+            else
+            {
+                Context.Context.Profiler.FinishLoadingBlueprintSuccessfully(filePath);
             }
 
             return blueprint;
         }
+
+        private string path(FileSystemInfo file) => $"{Context.Meta.Id}/{RelativePath}/../{file.Name}";
 
         protected TJsonModel ParseJsonModel(FileInfo file)
         {
@@ -115,7 +135,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         {
             DebugAssert.State.Satisfies(typeof(TResolvers) == typeof(Void), "Override GetDependencyResolver!");
 
-            return default(TResolvers);
+            return default;
         }
 
         protected void LogException(Exception exception, string customMessage)

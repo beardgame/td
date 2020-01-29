@@ -19,7 +19,7 @@ namespace Bearded.TD.Content.Mods
                 throw new InvalidDataException("Id may not be null, empty or whitespace.");
 
             var components = name.Split('.');
-            
+
             switch (components.Length)
             {
                 case 1:
@@ -30,7 +30,7 @@ namespace Bearded.TD.Content.Mods
                     throw new InvalidDataException($"Id may not contain more than one . ({name})");
             }
         }
-        
+
         public override string ToString()
             => $"{ModId}.{Id}";
     }
