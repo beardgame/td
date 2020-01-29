@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Bearded.TD.Utilities.Collections
 {
@@ -28,6 +30,30 @@ namespace Bearded.TD.Utilities.Collections
         public bool Remove(TKey key, TValue value)
         {
             return ContainsKey(key) && inner[key].Remove(value);
+        }
+
+        public int RemoveWhere(TKey key, Predicate<TValue> match)
+        {
+            if (!ContainsKey(key)) return 0;
+            var list = inner[key];
+            if (list.Count == 0) return 0;
+            if (list is List<TValue> listImpl)
+            {
+                return listImpl.RemoveAll(match);
+            }
+
+            var toRemove = list.Where(elmt => match(elmt)).ToList();
+            foreach (var value in toRemove)
+            {
+                list.Remove(value);
+            }
+            return toRemove.Count;
+        }
+
+        public bool TryGetValue(TKey key, out IEnumerable<TValue> list)
+        {
+            list = Get(key);
+            return ContainsKey(key);
         }
 
         public IEnumerable<TValue> Get(TKey key)
