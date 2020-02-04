@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Bearded.TD.Content.Mods
@@ -33,16 +34,10 @@ namespace Bearded.TD.Content.Mods
         private readonly List<BlueprintLoadingProfile> blueprintsLoaded =
             new List<BlueprintLoadingProfile>();
 
-        public IReadOnlyList<string> LoadingBlueprints { get; }
-        public IReadOnlyList<BlueprintLoadingProfile> LoadedBlueprints { get; }
+        public ImmutableList<string> LoadingBlueprints => ImmutableList.CreateRange(blueprintsLoading);
+        public ImmutableList<BlueprintLoadingProfile> LoadedBlueprints => ImmutableList.CreateRange(blueprintsLoaded);
 
         public TimeSpan TotalElapsedTime => stopwatch.Elapsed;
-
-        public ModLoadingProfiler()
-        {
-            LoadingBlueprints = blueprintsLoading.AsReadOnly();
-            LoadedBlueprints = blueprintsLoaded.AsReadOnly();
-        }
 
         [Conditional("DEBUG")]
         public void StartLoading()

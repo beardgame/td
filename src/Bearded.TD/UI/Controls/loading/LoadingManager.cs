@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
@@ -30,12 +31,14 @@ namespace Bearded.TD.UI.Controls
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
         protected Logger Logger => Game.Meta.Logger;
         private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
+        private ModLoadingProfiler profiler;
 
         private Stage stage = Stage.Initial;
 
-        public IReadOnlyList<ModLoadingProfiler.BlueprintLoadingProfile> LoadedBlueprints { get; private set; } =
-            new ModLoadingProfiler.BlueprintLoadingProfile[] { };
-        public IReadOnlyList<string> LoadingBlueprints { get; private set; } = new string[] { };
+        public ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile> LoadedBlueprints =>
+            profiler?.LoadedBlueprints ?? ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile>.Empty;
+
+        public ImmutableList<string> LoadingBlueprints => profiler?.LoadingBlueprints ?? ImmutableList<string>.Empty;
 
         protected LoadingManager(GameInstance game, NetworkInterface networkInterface)
         {
@@ -113,8 +116,7 @@ namespace Bearded.TD.UI.Controls
         {
             var modForLoading = modMetadata.PrepareForLoading();
             var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
-            LoadedBlueprints = context.Profiler.LoadedBlueprints;
-            LoadingBlueprints = context.Profiler.LoadingBlueprints;
+            profiler = context.Profiler;
             modForLoading.StartLoading(context);
             modsForLoading.Add(modForLoading);
         }
