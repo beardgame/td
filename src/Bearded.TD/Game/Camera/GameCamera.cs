@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Utilities;
+﻿using System;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
@@ -8,6 +9,10 @@ namespace Bearded.TD.Game.Camera
 {
     sealed class GameCamera
     {
+        private const float fovy = Mathf.PiOver2;
+        private const float lowestZToRender = -10;
+        private const float highestZToRender = 5;
+
         private ViewportSize viewportSize;
 
         private Position2 position;
@@ -19,7 +24,7 @@ namespace Bearded.TD.Game.Camera
             set
             {
                 position = value;
-                recalculateViewMatrix();
+                recalculateMatrices();
             }
         }
 
@@ -29,11 +34,17 @@ namespace Bearded.TD.Game.Camera
             set
             {
                 distance = value;
-                recalculateViewMatrix();
+                recalculateMatrices();
             }
         }
 
+        private float nearPlaneDistance => Math.Max(Distance - highestZToRender, 0.1f);
+
+        public float FarPlaneDistance => Distance - lowestZToRender;
+
         public Matrix4 ViewMatrix { get; private set; }
+
+        public Matrix4 ProjectionMatrix { get; private set; }
 
         public GameCamera()
         {
@@ -45,14 +56,32 @@ namespace Bearded.TD.Game.Camera
         {
             position = Position2.Zero;
             distance = ZDefault;
-            recalculateViewMatrix();
+            recalculateMatrices();
         }
 
-        private void recalculateViewMatrix()
+        private void recalculateMatrices()
+        {
+            ViewMatrix = calculateViewMatrix();
+            ProjectionMatrix = calculateProjectionMatrix();
+        }
+
+        private Matrix4 calculateViewMatrix()
         {
             var eye = position.NumericValue.WithZ(distance);
             var target = position.NumericValue.WithZ();
-            ViewMatrix = Matrix4.LookAt(eye, target, Vector3.UnitY);
+            return Matrix4.LookAt(eye, target, Vector3.UnitY);
+        }
+
+        private Matrix4 calculateProjectionMatrix()
+        {
+            var zNear = nearPlaneDistance;
+            var zFar = FarPlaneDistance;
+
+            var yMax = zNear * Mathf.Tan(.5f * fovy);
+            var yMin = -yMax;
+            var xMax = yMax * viewportSize.AspectRatio;
+            var xMin = yMin * viewportSize.AspectRatio;
+            return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
         }
 
         public void OnViewportSizeChanged(ViewportSize viewportSize)
