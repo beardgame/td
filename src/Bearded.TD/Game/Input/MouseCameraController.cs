@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Camera;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;

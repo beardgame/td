@@ -4,9 +4,9 @@ using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using static Bearded.TD.Constants.Camera;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game.Camera
 {
-    class GameCamera
+    sealed class GameCamera
     {
         private ViewportSize viewportSize;
 

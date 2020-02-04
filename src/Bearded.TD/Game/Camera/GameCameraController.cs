@@ -4,7 +4,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game.Camera
 {
     sealed class GameCameraController
     {
