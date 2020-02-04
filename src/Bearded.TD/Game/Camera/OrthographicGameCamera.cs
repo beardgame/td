@@ -1,10 +1,10 @@
-﻿using Bearded.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Camera
 {
-    sealed class PerspectiveGameCamera : GameCamera
+    sealed class OrthographicGameCamera : GameCamera
     {
         private const float fovy = Mathf.PiOver2;
 
@@ -17,7 +17,8 @@ namespace Bearded.TD.Game.Camera
             var yMin = -yMax;
             var xMax = yMax * ViewportSize.AspectRatio;
             var xMin = yMin * ViewportSize.AspectRatio;
-            return Matrix4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
+
+            return Matrix4.CreateOrthographicOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
         }
 
         public override Position2 TransformScreenToWorldPos(Vector2 screenPos)

@@ -161,6 +161,7 @@ namespace Bearded.TD.Game
                 throw new InvalidOperationException("UI should be integrated after the game state is initialised.");
 
             Camera = new PerspectiveGameCamera();
+            //Camera = new OrthographicGameCamera();
             CameraController = new GameCameraController(Camera, State.Level.Radius);
             SelectionManager = new SelectionManager();
             PlayerInput = new PlayerInput(this);
