@@ -76,21 +76,28 @@ namespace Bearded.TD.Game.Camera
 
         public Position2 TransformScreenToWorldPos(Vector2 screenPos)
         {
-            // This is simple right now under the assumptions:
-            // * The camera always looks straight down. That is, the camera eye and target both lie
-            //   along the infinite extension of cameraPosition in the Z axis.
-            // * The FoV is Pi/2
-            return position + distance * getNormalizedScreenPosition(screenPos);
-        }
+            // screenPos = new Vector2(ViewportSize.Width, ViewportSize.Height) / 2;
 
-        private Difference2 getNormalizedScreenPosition(Vector2 screenPos)
-        {
-            var ret = new Vector2(
-                2 * screenPos.X / ViewportSize.Width - 1,
-                1 - 2 * screenPos.Y / ViewportSize.Height
-            );
-            ret.X *= ViewportSize.AspectRatio;
-            return new Difference2(ret);
+            var projectionView = ProjectionMatrix * ViewMatrix;
+            var projectionViewInverse = Matrix4.Invert(projectionView);
+
+            var normalizedScreenPos = new Vector4(
+                2 * screenPos.X / ViewportSize.Width - 1, // window x scaled to [-1, 1]
+                1 - 2 * screenPos.Y / ViewportSize.Height, // window y scaled to [-1, 1]
+                0, // target z scaled to [-1, 1] where -1 = zNear and 1 = zFar
+                1);
+
+            var rawWorldPos = projectionViewInverse * normalizedScreenPos;
+            var worldPos = rawWorldPos.Xyz / rawWorldPos.W;
+
+            // Ray-tracing with the z=0 plane means we can take a shortcut.
+            var eye = position.WithZ(Distance).NumericValue;
+            var diff = worldPos - eye;
+            var diffNormalized = diff / diff.Length;
+            var t = Distance / diffNormalized.Z;
+            var result = eye - t * diffNormalized;
+            Console.WriteLine(result);
+            return new Position2(result.Xy);
         }
     }
 }
