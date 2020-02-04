@@ -160,7 +160,7 @@ namespace Bearded.TD.Game
             if (State == null)
                 throw new InvalidOperationException("UI should be integrated after the game state is initialised.");
 
-            Camera = new GameCamera();
+            Camera = new PerspectiveGameCamera();
             CameraController = new GameCameraController(Camera, State.Level.Radius);
             SelectionManager = new SelectionManager();
             PlayerInput = new PlayerInput(this);
