@@ -162,7 +162,7 @@ namespace Bearded.TD.Game.Generation
 
                     height = Math.Round(height * 3).Clamped(-1, 1) * heightPlateauStep;
 
-                    height += 0.5 * noiseMap[tile];
+                    height += 0.3 * noiseMap[tile];
 
                     height += gradientMap[tile];
 
@@ -175,7 +175,7 @@ namespace Bearded.TD.Game.Generation
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     smoothness, 8, (tilemap, tile) =>  (1 - Math.Abs(tilemap[tile] * 2)).Powed(4));
 
-                foreach (var _ in Enumerable.Range(0, 2))
+                foreach (var _ in Enumerable.Range(0, 1))
                 {
                     foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(radius))
                     {
@@ -409,7 +409,7 @@ namespace Bearded.TD.Game.Generation
             private void carve()
             {
                 // The value here has been chosen based on experimentation on what looks good.
-                carveEverythingBelowHardness(0.1);
+                carveEverythingBelowHardness(0.3);
 
                 var q = new Queue<Tile>(typeTilemap.Where(isType(TileType.Floor)));
 
@@ -480,7 +480,7 @@ namespace Bearded.TD.Game.Generation
             private int numCrevices => typeTilemap.Radius * typeTilemap.Radius / 15;
             private const int minCreviceSize = 3;
             private const int minTargetCreviceSize = 8;
-            private static readonly double heightPlateauStep = Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue * 4;
+            private static readonly double heightPlateauStep = Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue * 2;
             private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
