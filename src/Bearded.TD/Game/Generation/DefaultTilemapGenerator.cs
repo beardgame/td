@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Generation
             logger.Trace?.Log("Copy data to final tilemap");
             var tilemap = new Tilemap<TileGeometry>(radius);
             foreach (var t in tilemap)
-                tilemap[t] = new TileGeometry(typeTilemap[t], gen.RandomHardness());
+                tilemap[t] = new TileGeometry(typeTilemap[t], gen.RandomHardness(), Unit.Zero);
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 

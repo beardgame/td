@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Navigation
 {
@@ -41,7 +43,29 @@ namespace Bearded.TD.Game.Navigation
             events.Subscribe<BuildingDestroyed>(this);
 
             passabilityLayers = ((Passability[]) Enum.GetValues(typeof(Passability)))
-                .ToDictionary(p => p, _ => new PassabilityLayer(level));
+                .ToDictionary(
+                    p => p,
+                    p => new PassabilityLayer(level, extraConditionsFor(p))
+                    );
+        }
+
+        private IEnumerable<Func<Tile, Tile, bool>> extraConditionsFor(Passability p)
+        {
+            switch (p)
+            {
+                case Passability.WalkingUnit:
+                    yield return tileHeightDifferenceIsWalkable;
+                    break;
+            }
+        }
+
+        private bool tileHeightDifferenceIsWalkable(Tile t0, Tile t1)
+        {
+            var h0 = geometryLayer[t0].Geometry.FloorHeight;
+            var h1 = geometryLayer[t1].Geometry.FloorHeight;
+            var heightDifference = Math.Abs((h0 - h1).NumericValue).U();
+
+            return heightDifference < Constants.Game.Navigation.MaxWalkableHeightDifference;
         }
 
         public void HandleEvent(TileTypeChanged @event) => updatePassabilityForTile(@event.Tile);

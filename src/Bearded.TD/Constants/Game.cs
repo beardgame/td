@@ -80,6 +80,8 @@ namespace Bearded.TD
             public static class Navigation
             {
                 public const int StepsPerFrame = 100;
+
+                public static readonly Unit MaxWalkableHeightDifference = 0.05.U();
             }
 
             public static class Elements

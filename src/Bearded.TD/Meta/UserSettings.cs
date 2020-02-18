@@ -74,10 +74,13 @@ namespace Bearded.TD.Meta
             // debug rendering for more complex systems
             public bool LevelMetadata = false;
             public bool LevelGeometry = false;
+            public bool LevelGeometryShowHeights = false;
+            public bool LevelGeometryLabels = false;
             [SettingOptions(0, 1, 2)]
             public int Coordinates = 0;
             [SettingOptions(0, 1, 2)]
             public int Pathfinding = 0;
+            public bool Passability = false;
 
             // simple debug rendering
             public bool Deferred = false;

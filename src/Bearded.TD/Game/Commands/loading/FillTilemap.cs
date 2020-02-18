@@ -55,6 +55,7 @@ namespace Bearded.TD.Game.Commands
         {
             private byte[] types;
             private double[] hardnesses;
+            private Unit[] heights;
             private Unit[] drawHeights;
             private float[] drawSizeFactors;
 
@@ -62,6 +63,7 @@ namespace Bearded.TD.Game.Commands
             {
                 types = tileGeometries.Select(t => (byte) t.Type).ToArray();
                 hardnesses = tileGeometries.Select(t => t.Hardness).ToArray();
+                heights = tileGeometries.Select(t => t.FloorHeight).ToArray();
                 drawHeights = drawInfos.Select(i => i.Height).ToArray();
                 drawSizeFactors = drawInfos.Select(i => i.HexScale).ToArray();
             }
@@ -74,7 +76,7 @@ namespace Bearded.TD.Game.Commands
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game,
                     Enumerable.Range(0, types.Length)
-                        .Select(i => new TileGeometry((TileType) types[i], hardnesses[i]))
+                        .Select(i => new TileGeometry((TileType) types[i], hardnesses[i], heights[i]))
                         .ToList(),
                     Enumerable.Range(0, types.Length)
                         .Select(i => new TileDrawInfo(drawHeights[i], drawSizeFactors[i]))
@@ -84,13 +86,15 @@ namespace Bearded.TD.Game.Commands
             public void Serialize(INetBufferStream stream)
             {
                 stream.SerializeArrayCount(ref types);
-                hardnesses = hardnesses ?? new double[types.Length];
-                drawHeights = drawHeights ?? new Unit[types.Length];
-                drawSizeFactors = drawSizeFactors ?? new float[types.Length];
+                hardnesses ??= new double[types.Length];
+                heights ??= new Unit[types.Length];
+                drawHeights ??= new Unit[types.Length];
+                drawSizeFactors ??= new float[types.Length];
                 foreach (var i in Enumerable.Range(0, types.Length))
                 {
                     stream.Serialize(ref types[i]);
                     stream.Serialize(ref hardnesses[i]);
+                    stream.Serialize(ref heights[i]);
                     stream.Serialize(ref drawHeights[i]);
                     stream.Serialize(ref drawSizeFactors[i]);
                 }

@@ -1,6 +1,7 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Tiles;
@@ -78,6 +79,11 @@ namespace Bearded.TD.Rendering
                 drawDebugLevelGeometry();
             }
 
+            if (settings.Passability)
+            {
+                drawDebugPassabilityLayer();
+            }
+
             if (settings.Coordinates > 0)
             {
                 drawDebugCoordinates();
@@ -100,6 +106,36 @@ namespace Bearded.TD.Rendering
             }
         }
 
+        private void drawDebugPassabilityLayer()
+        {
+            var shapes = geometries.Primitives;
+            shapes.LineWidth = HexagonSide * 0.1f;
+
+            var passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
+
+            foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
+            {
+                var p = Level.GetPosition(tile).NumericValue;
+
+                var passability = passabilityLayer[tile];
+
+                foreach (var direction in Directions.All.Enumerate())
+                {
+                    if (passability.PassableDirections.Includes(direction))
+                    {
+                        var v = direction.Vector() * HexagonWidth * 0.5f;
+
+                        shapes.Color = Color.Green;
+                        shapes.DrawLine(p + v, p + v + v);
+                    }
+
+                    shapes.Color = passability.IsPassable ? Color.Green : Color.Red;
+
+                    shapes.DrawCircle(p, HexagonSide * 0.25f, true, 3);
+                }
+            }
+        }
+
         private void drawDebugLevelGeometry()
         {
             var font = geometries.ConsoleFont;
@@ -114,19 +150,24 @@ namespace Bearded.TD.Rendering
             {
                 var p = Level.GetPosition(tile).NumericValue;
                 var tileGeometry = geometryLayer[tile];
-                var height = tileGeometry.DrawInfo.Height.NumericValue;
+                var height = tileGeometry.Geometry.FloorHeight.NumericValue;
                 var hardness = tileGeometry.Geometry.Hardness;
 
-                shapes.Color = Color.Lerp(Color.Green, Color.Red, (float) hardness);
+                shapes.Color = Color.Lerp(Color.Green, Color.Red,
+                    (float) (UserSettings.Instance.Debug.LevelGeometryShowHeights ? (height + 0.5f) : hardness))
+                    * 0.75f;
                 shapes.DrawCircle(p.WithZ(height), HexagonSide, true, 6);
 
-                font.DrawString(p.WithZ(height),
-                    $"{height:#.#}",
-                    .5f, 1f);
+                if (UserSettings.Instance.Debug.LevelGeometryLabels)
+                {
+                    font.DrawString(p.WithZ(height),
+                        $"{height:#.#}",
+                        .5f, 1f);
 
-                font.DrawString(p.WithZ(height),
-                    $"{hardness:#.#}",
-                    .5f, 0f);
+                    font.DrawString(p.WithZ(height),
+                        $"{hardness:#.#}",
+                        .5f, 0f);
+                }
             }
         }
 

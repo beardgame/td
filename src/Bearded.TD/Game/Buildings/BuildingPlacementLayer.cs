@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
 
@@ -10,16 +12,25 @@ namespace Bearded.TD.Game.Buildings
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
         private readonly BuildingLayer buildingLayer;
+        private readonly Lazy<PassabilityLayer> walkablePassability;
         private readonly HashSet<Tile> blockedTiles = new HashSet<Tile>();
 
-        public BuildingPlacementLayer(Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
+        public BuildingPlacementLayer(
+            Level level,
+            GeometryLayer geometryLayer,
+            BuildingLayer buildingLayer,
+            Lazy<PassabilityLayer> walkablePassability)
         {
             this.level = level;
             this.geometryLayer = geometryLayer;
             this.buildingLayer = buildingLayer;
+            this.walkablePassability = walkablePassability;
         }
 
         public void BlockTileForBuilding(Tile tile) => blockedTiles.Add(tile);
+
+        public bool IsFootprintValidForBuilding(PositionedFootprint footprint)
+            => footprint.OccupiedTiles.All(IsTileValidForBuilding) && allAdjacentTilesAreWalkable(footprint.OccupiedTiles);
 
         public bool IsTileValidForBuilding(Tile tile)
         {
@@ -29,7 +40,30 @@ namespace Bearded.TD.Game.Buildings
                 && buildingLayer[tile] == null;
         }
 
-        public bool IsFootprintValidForBuilding(PositionedFootprint footprint)
-            => footprint.OccupiedTiles.All(IsTileValidForBuilding);
+        private bool allAdjacentTilesAreWalkable(IEnumerable<Tile> tiles)
+        {
+            var tilesSet = new HashSet<Tile>(tiles);
+
+            foreach (var tile in tilesSet)
+            {
+                if (tile.PossibleNeighbours().Where(tilesSet.Contains)
+                    .Any(t => !IsTileCombinationValidForBuilding(tile, t)))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool IsTileCombinationValidForBuilding(Tile t0, Tile t1)
+        {
+            var tileDistance = t0.DistanceTo(t1);
+            if (tileDistance != 1)
+                throw new InvalidOperationException("Tiles must be adjacent.");
+
+            var direction = Directions.All.Enumerate().First(d => t0.Neighbour(d) == t1);
+
+            return walkablePassability.Value[t0].PassableDirections.Includes(direction)
+                && walkablePassability.Value[t1].PassableDirections.Includes(direction.Opposite());
+        }
     }
 }

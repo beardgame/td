@@ -63,7 +63,8 @@ namespace Bearded.TD.Game
             FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
-            BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer);
+            BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
+                new Lazy<PassabilityLayer>(() => PassabilityManager.GetLayer(Passability.WalkingUnit)));
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
@@ -193,7 +194,7 @@ namespace Bearded.TD.Game
             }
 
             Time += elapsedTime;
-            
+
             FluidLayer.Update();
 
             foreach (var obj in gameObjects)

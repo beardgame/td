@@ -13,6 +13,7 @@ using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.SpaceTime;
 using OpenTK;
 
 namespace Bearded.TD.Game.Generation
@@ -37,7 +38,8 @@ namespace Bearded.TD.Game.Generation
 
             var typeTilemap = new Tilemap<TileType>(radius, _ => TileType.Wall);
             var hardnessTilemap = new Tilemap<double>(radius);
-            var gen = new Generator(typeTilemap, hardnessTilemap, seed, logger, debugMetadata);
+            var heightTilemap = new Tilemap<double>(radius);
+            var gen = new Generator(typeTilemap, hardnessTilemap, heightTilemap, seed, logger, debugMetadata);
 
             gen.GenerateTilemap();
 
@@ -46,7 +48,7 @@ namespace Bearded.TD.Game.Generation
             var tilemap = new Tilemap<TileGeometry>(radius);
             foreach (var t in tilemap)
             {
-                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t]);
+                tilemap[t] = new TileGeometry(typeTilemap[t], hardnessTilemap[t], heightTilemap[t].U());
             }
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
@@ -56,27 +58,33 @@ namespace Bearded.TD.Game.Generation
 
         private class Generator
         {
+            private readonly int radius;
             private readonly Tilemap<TileType> typeTilemap;
             private readonly Tilemap<double> hardnessTilemap;
+            private readonly Tilemap<double> heightTilemap;
             private readonly Logger logger;
             private readonly LevelDebugMetadata levelDebugMetadata;
             private readonly Level level;
             private readonly Random random;
             private readonly PerlinSourcemapGenerator perlinSourcemapGenerator;
             private readonly GraphGenerator graphGenerator;
+            private readonly HashSet<UnorderedPair<Tile>> tilesOnPaths = new HashSet<UnorderedPair<Tile>>();
 
             public Generator(
                 Tilemap<TileType> typeTilemap,
                 Tilemap<double> hardnessTilemap,
+                Tilemap<double> heightTilemap,
                 int seed,
                 Logger logger,
                 LevelDebugMetadata levelDebugMetadata)
             {
+                radius = typeTilemap.Radius;
                 this.typeTilemap = typeTilemap;
                 this.hardnessTilemap = hardnessTilemap;
+                this.heightTilemap = heightTilemap;
                 this.logger = logger;
                 this.levelDebugMetadata = levelDebugMetadata;
-                level = new Level(typeTilemap.Radius);
+                level = new Level(radius);
                 random = new Random(seed);
                 perlinSourcemapGenerator = new PerlinSourcemapGenerator(random);
                 graphGenerator = new GraphGenerator(random);
@@ -84,9 +92,25 @@ namespace Bearded.TD.Game.Generation
 
             public void GenerateTilemap()
             {
-                var sourceMap1 = new Tilemap<double>(hardnessTilemap.Radius);
-                var sourceMap2 = new Tilemap<double>(hardnessTilemap.Radius);
-                var sourceMap3 = new Tilemap<double>(hardnessTilemap.Radius);
+                generateHardness();
+                generateHeights();
+
+                //createPathsToCorners();
+                createTunnels();
+                ensurePathWalkability();
+                clearCenter(4);
+                clearCorners(2);
+
+                carve();
+
+                createCrevices();
+            }
+
+            private void generateHardness()
+            {
+                var sourceMap1 = new Tilemap<double>(radius);
+                var sourceMap2 = new Tilemap<double>(radius);
+                var sourceMap3 = new Tilemap<double>(radius);
 
                 // Generate three different perlin noise maps with different grid sizes (= 1 / frequency). We rotate
                 // each of them by 60% relative to each other to hide the
@@ -104,7 +128,7 @@ namespace Bearded.TD.Game.Generation
                 foreach (var tile in hardnessTilemap)
                 {
                     double hardnessOverride = 0;
-                    var distanceFromEdge = hardnessTilemap.Radius - tile.Radius;
+                    var distanceFromEdge = radius - tile.Radius;
 
                     // Make the hardness artificially high near the map edges to direct paths to the interior.
                     if (distanceFromEdge < hardnessRampDistance)
@@ -115,15 +139,101 @@ namespace Bearded.TD.Game.Generation
                     var desiredHardness = (sourceMap1[tile] + sourceMap2[tile] + sourceMap3[tile]).Clamped(0, 1);
                     hardnessTilemap[tile] = Math.Max(desiredHardness, hardnessOverride);
                 }
+            }
 
-                //createPathsToCorners();
-                createTunnels();
-                clearCenter(4);
-                clearCorners(2);
+            private void generateHeights()
+            {
+                var plateauMap = new Tilemap<double>(radius);
+                var noiseMap = new Tilemap<double>(radius);
+                var gradientMap = new Tilemap<double>(radius);
 
-                carve();
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    plateauMap, 8, (tilemap, tile) => tilemap[tile]);
 
-                createCrevices();
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    noiseMap, 5, (tilemap, tile) => tilemap[tile.RotatedCounterClockwiseAroundOrigin()]);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    gradientMap, 20, (tilemap, tile) => tilemap[tile.RotatedClockwiseAroundOrigin()]);
+
+                foreach (var tile in heightTilemap)
+                {
+                    var height = plateauMap[tile];
+
+                    height = Math.Round(height * 3).Clamped(-1, 1) * heightPlateauStep;
+
+                    //height += 0.3 * noiseMap[tile];
+
+                    //height += gradientMap[tile];
+
+                    heightTilemap[tile] = height;
+                }
+
+
+                var smoothness = new Tilemap<double>(radius);
+
+                perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
+                    smoothness, 8, (tilemap, tile) =>  (1 - Math.Abs(tilemap[tile] * 2)).Powed(4));
+
+                foreach (var _ in Enumerable.Range(0, 1))
+                {
+                    foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(radius))
+                    {
+                        var smoothFactor = smoothness[tile];
+
+                        var averageNeighbour = Tilemap
+                            .GetRingCenteredAt(tile, 1)
+                            .Where(heightTilemap.IsValidTile)
+                            .Average(t => heightTilemap[t]);
+
+                        var height = heightTilemap[tile];
+
+                        height += (averageNeighbour - height) * smoothFactor;
+
+                        heightTilemap[tile] = height;
+                    }
+                }
+            }
+
+            private void ensurePathWalkability()
+            {
+                var tilesAndConnections = tilesOnPaths
+                    .SelectMany(t => t).Distinct()
+                    .Select(t => (t, tilesConnectedTo(t)))
+                    .ToList();
+
+                var changedTiles = 0;
+                var pass = 0;
+
+                do
+                {
+                    pass++;
+                    changedTiles = tilesAndConnections.Count(smoothIfNeeded);
+                    logger.Debug?.Log($"Walkability pass {pass}: smoothed {changedTiles} tile{(changedTiles == 1 ? "" : "s")}");
+                } while (changedTiles != 0);
+
+                bool smoothIfNeeded((Tile, List<Tile>) tileAndConnections)
+                {
+                    var (tile, connectedNeighbors) = tileAndConnections;
+
+                    return connectedNeighbors
+                        .WhereNot(neighbor => isWalkable(tile, neighbor))
+                        .Average(t => (double?)heightTilemap[t])
+                        .ToMaybe()
+                        .Match(average =>
+                        {
+                            heightTilemap[tile] = (average + heightTilemap[tile]) / 2;
+                            return true;
+                        }, () => false);
+                }
+
+                List<Tile> tilesConnectedTo(Tile t) => tilesOnPaths
+                    .Where(p => p.Contains(t))
+                    .Select(p => p.Other(t))
+                    .ToList();
+
+                bool isWalkable(Tile t0, Tile t1) =>
+                    Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue;
             }
 
             private void createPathsToCorners()
@@ -225,7 +335,7 @@ namespace Bearded.TD.Game.Generation
                     foreach (var neighbor in level.ValidNeighboursOf(currTile))
                     {
                         var costToNeighbor = result[neighbor].Cost;
-                        var candidateCost = currPriority + hardnessTilemap[neighbor];
+                        var candidateCost = currPriority + hardnessTilemap[neighbor] + heightStepCost(currTile, neighbor);
 
                         if (candidateCost >= costToNeighbor) continue;
 
@@ -245,6 +355,16 @@ namespace Bearded.TD.Game.Generation
                 return result;
             }
 
+            private double heightStepCost(Tile from, Tile to)
+            {
+                var heightDifference = Math.Abs(heightTilemap[from] - heightTilemap[to]);
+
+                if (heightDifference < Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue)
+                    return 0;
+
+                return 10 + heightDifference * 5;
+            }
+
             private void digAlongShortestPath(Tile source, Tile target, Tilemap<(Tile Parent, double Cost)> paths)
             {
                 var curr = source;
@@ -252,6 +372,8 @@ namespace Bearded.TD.Game.Generation
                 {
                     typeTilemap[curr] = TileType.Floor;
                     var parent = paths[curr].Parent;
+
+                    tilesOnPaths.Add(new UnorderedPair<Tile>(curr, parent));
 
 #if DEBUG
                     levelDebugMetadata.AddSegment(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
@@ -287,7 +409,7 @@ namespace Bearded.TD.Game.Generation
             private void carve()
             {
                 // The value here has been chosen based on experimentation on what looks good.
-                carveEverythingBelowHardness(0.1);
+                carveEverythingBelowHardness(0.3);
 
                 var q = new Queue<Tile>(typeTilemap.Where(isType(TileType.Floor)));
 
@@ -358,6 +480,7 @@ namespace Bearded.TD.Game.Generation
             private int numCrevices => typeTilemap.Radius * typeTilemap.Radius / 15;
             private const int minCreviceSize = 3;
             private const int minTargetCreviceSize = 8;
+            private static readonly double heightPlateauStep = Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue * 2;
             private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
         }
 
@@ -382,7 +505,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var maxDeviationFromCenter = (tilemap.Radius + 1) * Constants.Game.World.HexagonDiameter;
 
-                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 1;
+                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 2;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
                 var sourceMap = new Tilemap<double>(tilemap.Radius);

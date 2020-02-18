@@ -7,6 +7,10 @@ namespace Bearded.TD.Utilities
 {
     static class MaybeExtensions
     {
+        public static Maybe<T> ToMaybe<T>(this T? nullable)
+            where T : struct
+            => FromNullable(nullable);
+
         public static Maybe<T> MaybeFirst<T>(this IEnumerable<T> enumerable, Predicate<T> predicate)
         {
             switch (enumerable)
