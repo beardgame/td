@@ -29,11 +29,11 @@ namespace Bearded.TD.Game.World
                 case TileType.Unknown:
                     return (Unit.Zero, 0);
                 case TileType.Floor:
-                    return (geometry.FloorHeight, rnd(0.75f, 0.9f));
+                    return (geometry.FloorHeight, 1);
                 case TileType.Wall:
-                    return (geometry.FloorHeight + 1.U(), rnd(0.3f, 0.7f));
+                    return (geometry.FloorHeight + 1.U(), 0.2f);
                 case TileType.Crevice:
-                    return (geometry.FloorHeight - 3.U(), rnd(0.1f, 0.5f));
+                    return (geometry.FloorHeight - 3.U(), 1);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(geometry.Type), geometry.Type, null);
             }
