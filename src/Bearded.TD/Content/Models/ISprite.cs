@@ -5,6 +5,8 @@ namespace Bearded.TD.Content.Models
 {
     interface ISprite
     {
+        void Draw(Vector3 position, Color color, float size, float angle);
+
         void Draw(Vector3 position, Color color, float size);
 
         void DrawQuad(

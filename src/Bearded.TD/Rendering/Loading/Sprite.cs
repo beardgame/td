@@ -1,5 +1,8 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using OpenTK;
 
 namespace Bearded.TD.Rendering.Loading
@@ -21,6 +24,31 @@ namespace Bearded.TD.Rendering.Loading
             uvBase = uv.TopLeft;
             uUnit = uv.TopRight - uvBase;
             vUnit = uv.BottomLeft - uvBase;
+        }
+
+        public void Draw(Vector3 position, Color color, float size, float angle)
+        {
+            var unitX = new Vector2((float) Math.Cos(angle) , (float) Math.Sin(angle));
+            var unitY = new Vector2(unitX.Y, -unitX.X);
+
+            var v0 = (unitX * -size) + (unitY * -size);
+            var v1 = new Vector2(v0.Y, -v0.X);
+            var v2 = new Vector2(v1.Y, -v1.X);
+            var v3 = new Vector2(v2.Y, -v2.X);
+
+            v0 += position.Xy;
+            v1 += position.Xy;
+            v2 += position.Xy;
+            v3 += position.Xy;
+
+            var z = position.Z;
+
+            surface.AddQuad(
+                v(v0.WithZ(z), uv.TopLeft, color),
+                v(v1.WithZ(z), uv.TopRight, color),
+                v(v2.WithZ(z), uv.BottomRight, color),
+                v(v3.WithZ(z), uv.BottomLeft, color)
+            );
         }
 
         public void Draw(Vector3 position, Color color, float size)

@@ -12,5 +12,7 @@ namespace Bearded.TD.Content.Models
 
         [Modifiable(0.2)]
         Unit Size { get; }
+
+        Unit HeightOffset { get; }
     }
 }

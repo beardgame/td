@@ -1,7 +1,7 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using OpenTK;
 
 namespace Bearded.TD.Game.Components.Graphical
 {
@@ -9,12 +9,15 @@ namespace Bearded.TD.Game.Components.Graphical
     class Sprite<T> : Component<T, ISpriteParameters>
         where T : IPositionable
     {
+        private IDirected ownerAsDirected;
+
         public Sprite(ISpriteParameters parameters) : base(parameters)
         {
         }
 
         protected override void Initialise()
         {
+            ownerAsDirected = Owner as IDirected;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -23,7 +26,12 @@ namespace Bearded.TD.Game.Components.Graphical
 
         public override void Draw(GeometryManager geometries)
         {
-            Parameters.Sprite.Draw(Owner.Position.NumericValue, Parameters.Color, Parameters.Size.NumericValue);
+            var p = Owner.Position.NumericValue;
+            p.Z += Parameters.HeightOffset.NumericValue;
+
+            var angle = ownerAsDirected?.Direction.Radians ?? 0;
+
+            Parameters.Sprite.Draw(p, Parameters.Color, Parameters.Size.NumericValue, angle);
         }
     }
 }

@@ -142,7 +142,7 @@ namespace Bearded.TD.Game.Buildings
         public override void Draw(GeometryManager geometries)
         {
             var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
-            DrawTiles(geometries, drawColors[SelectionState] * alpha);
+            //DrawTiles(geometries, drawColors[SelectionState] * alpha);
             DrawBuildingName(geometries, Color.Black);
             base.Draw(geometries);
         }

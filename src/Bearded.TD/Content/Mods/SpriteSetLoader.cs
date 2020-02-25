@@ -29,7 +29,7 @@ namespace Bearded.TD.Content.Mods
 
             var bitmaps = files.Select(file => (new Bitmap(file.file.OpenRead()), file.name));
 
-            return modLoadingContext.GraphicsLoader.CreateSpriteSet(bitmaps, jsonModel.Shader, jsonModel.DefaultTextureSampler);
+            return modLoadingContext.GraphicsLoader.CreateSpriteSet(bitmaps, jsonModel.Shader, jsonModel.DefaultTextureSampler, jsonModel.Pixelate);
         }
 
         private static IEnumerable<(string name, FileInfo file)> annotatedPngFilesInRecursive(

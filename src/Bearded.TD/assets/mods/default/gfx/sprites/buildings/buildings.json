@@ -1,0 +1,7 @@
+﻿{
+    "id" : "buildings",
+    "drawGroup" : "building",
+    "shader" : "building",
+    "defaultTextureSampler" : "diffuse",
+    "pixelate" : true
+}

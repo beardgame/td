@@ -26,11 +26,11 @@ namespace Bearded.TD.Rendering.Loading
         }
 
         public PackedSpriteSet CreateSpriteSet(IEnumerable<(Bitmap Image, string Name)> sprites, Shader shader,
-            string defaultTextureSampler)
+            string defaultTextureSampler, bool pixelate)
         {
             var packedSprites = BinPacking.Pack(sprites.Select(rectangle));
 
-            var builder = new PackedSpriteSetBuilder(packedSprites.Width, packedSprites.Height);
+            var builder = new PackedSpriteSetBuilder(packedSprites.Width, packedSprites.Height, pixelate);
 
             foreach (var rectangle in packedSprites.Rectangles)
             {

@@ -10,8 +10,8 @@ namespace Bearded.TD.Content
     interface IGraphicsLoader
     {
         PackedSpriteSet CreateSpriteSet(IEnumerable<(Bitmap Image, string Name)> sprites, Shader shader,
-            string defaultTextureSampler);
-        
+            string defaultTextureSampler, bool pixelate);
+
         ISurfaceShader CreateShaderProgram(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);
 

@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Components.Weapons
             geo.LineWidth = 0.2f;
 
             var v = (NeutralDirection.Vector * geo.LineWidth).WithZ();
-            geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v);
+            //geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v);
 
             weapon.Draw(geometries);
         }

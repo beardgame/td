@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.Utilities.Threading;
+using OpenTK.Graphics.OpenGL;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Loading
@@ -14,13 +16,15 @@ namespace Bearded.TD.Rendering.Loading
     {
         private readonly int width;
         private readonly int height;
+        private readonly bool pixelate;
         private readonly byte[] data;
         private readonly Dictionary<string, Rectangle> nameToRectangle = new Dictionary<string, Rectangle>();
 
-        public PackedSpriteSetBuilder(int width, int height)
+        public PackedSpriteSetBuilder(int width, int height, bool pixelate)
         {
             this.width = width;
             this.height = height;
+            this.pixelate = pixelate;
             data = new byte[width * height * 4];
         }
 
@@ -59,11 +63,12 @@ namespace Bearded.TD.Rendering.Loading
 
             var (texture, surface) = glActions.RunAndReturn(() => createGlEntities(shader));
             var sprites = createSprites(surface);
-            
+
             surface.AddSettings(
                 new TextureUniform(defaultTextureSampler, texture),
                 context.Surfaces.ProjectionMatrix,
-                context.Surfaces.ViewMatrix
+                context.Surfaces.ViewMatrix,
+                context.Surfaces.FarPlaneDistance
             );
 
             return new PackedSpriteSet(
@@ -99,10 +104,18 @@ namespace Bearded.TD.Rendering.Loading
         {
             var texture = new Texture(data, width, height);
 
+            if (pixelate)
+            {
+                texture.SetParameters(
+                    TextureMinFilter.Nearest, TextureMagFilter.Nearest,
+                    TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
+                );
+            }
+
             var surface = new IndexedSurface<UVColorVertexData>();
-            
+
             shader.SurfaceShader.UseOnSurface(surface);
-            
+
             return (texture, surface);
         }
     }

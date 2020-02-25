@@ -1,9 +1,24 @@
 {
-    "id" : "wall",
-    "name" : "Wall",
-    "footprint" : "single",
-    "cost" : 15,
-    "components" : [
-        { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } }
-    ]
+  "id": "wall",
+  "name": "Wall",
+  "footprint": "single",
+  "cost": 15,
+  "components": [
+    {
+      "id": "health",
+      "parameters": {
+        "initialHealth": 1,
+        "maxHealth": 100
+      }
+    },
+    {
+      "id": "sprite",
+      "parameters": {
+        "sprite": "buildings.base-32px",
+        "color": "White",
+        "size": 0.4,
+        "heightOffset": 0.1
+      }
+    }
+  ]
 }

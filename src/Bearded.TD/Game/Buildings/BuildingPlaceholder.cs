@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
-            DrawTiles(geometries, Color.Cyan * 0.25f);
+            //DrawTiles(geometries, Color.Cyan * 0.25f);
             base.Draw(geometries);
         }
     }
