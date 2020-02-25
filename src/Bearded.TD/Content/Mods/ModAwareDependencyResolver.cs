@@ -14,7 +14,7 @@ namespace Bearded.TD.Content.Mods
         protected ModAwareDependencyResolver(ModMetadata thisMod, IEnumerable<Mod> otherMods)
         {
             this.thisMod = thisMod;
-            this.mods = otherMods.ToDictionary(m => m.Id);
+            mods = otherMods.ToDictionary(m => m.Id);
         }
 
         public T Resolve(string id)
@@ -38,7 +38,7 @@ namespace Bearded.TD.Content.Mods
             {
                 throw new InvalidDataException($"Failed to find {typeof(T).Name} with id \"{id}\".", e);
             }
-            
+
             throw new InvalidDataException($"Unknown mod in identifier {id}");
         }
 

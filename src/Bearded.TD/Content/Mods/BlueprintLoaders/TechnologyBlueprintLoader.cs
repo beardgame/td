@@ -64,11 +64,11 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var accumulatingBlueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
 
             var buildingResolver = new BlueprintDependencyResolver<IBuildingBlueprint>(
-                Context.Meta, buildings, Enumerable.Empty<Mod>(), m => m.Blueprints.Buildings);
+                Context.Meta, buildings, Context.LoadedDependencies, m => m.Blueprints.Buildings);
             var upgradeResolver = new BlueprintDependencyResolver<IUpgradeBlueprint>(
-                Context.Meta, upgrades, Enumerable.Empty<Mod>(), m => m.Blueprints.Upgrades);
+                Context.Meta, upgrades, Context.LoadedDependencies, m => m.Blueprints.Upgrades);
             var technologyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
-                Context.Meta, accumulatingBlueprintCollection, Enumerable.Empty<Mod>(), m => m.Blueprints.Technologies);
+                Context.Meta, accumulatingBlueprintCollection, Context.LoadedDependencies, m => m.Blueprints.Technologies);
 
             var dependencyResolvers =
                 new TechnologyBlueprintJson.DependencyResolvers(buildingResolver, upgradeResolver, technologyResolver);

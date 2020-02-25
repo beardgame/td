@@ -1,11 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Technologies;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
@@ -21,26 +19,28 @@ namespace Bearded.TD.Content.Mods
 {
     static class ModLoader
     {
-        public static async Task<Mod> Load(ModLoadingContext context, ModMetadata mod)
+        public static async Task<Mod> Load(ModLoadingContext context, ModMetadata mod, ReadOnlyCollection<Mod> loadedDependencies)
         {
-            return await new Loader(context, mod).Load();
+            return await new Loader(context, mod, loadedDependencies).Load();
         }
 
         private sealed class Loader
         {
             private readonly ModLoadingContext context;
             private readonly ModMetadata meta;
+            private readonly ReadOnlyCollection<Mod> loadedDependencies;
             private JsonSerializer serializer;
 
-            public Loader(ModLoadingContext context, ModMetadata meta)
+            public Loader(ModLoadingContext context, ModMetadata meta, ReadOnlyCollection<Mod> loadedDependencies)
             {
                 this.context = context;
                 this.meta = meta;
+                this.loadedDependencies = loadedDependencies;
             }
 
             public async Task<Mod> Load()
             {
-                return await Task.Run(() => load());
+                return await Task.Run(load);
             }
 
             private Mod load()
@@ -49,9 +49,9 @@ namespace Bearded.TD.Content.Mods
 
                 configureSerializer();
 
-                var loadingContext = new BlueprintLoadingContext(context, meta, serializer);
+                var loadingContext = new BlueprintLoadingContext(context, meta, serializer, loadedDependencies);
 
-                var tags = new UpgradeTagResolver(meta, Enumerable.Empty<Mod>());
+                var tags = new UpgradeTagResolver(meta, loadedDependencies);
 
                 var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
                 var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
@@ -64,7 +64,8 @@ namespace Bearded.TD.Content.Mods
                 var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
 
                 context.Profiler.FinishLoading();
-                context.Logger.Debug?.Log($"Mod finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
+                context.Logger.Debug?.Log(
+                    $"Mod {meta.Id} finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
 
                 return new Mod(
                     meta.Id,

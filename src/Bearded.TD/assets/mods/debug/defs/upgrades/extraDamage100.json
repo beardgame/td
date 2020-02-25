@@ -1,0 +1,11 @@
+{
+  "id" : "extraDamage100",
+  "name" : "+10,000% damage",
+  "cost" : 10,
+  "effects": [
+    {
+      "type" : "modification",
+      "parameters" : { "attributeType" : "damage", "mode" : "fractionOfBase", "value" : 100 }
+    }
+  ]
+}
