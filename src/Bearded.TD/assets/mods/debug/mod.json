@@ -1,0 +1,5 @@
+﻿{
+	"name" : "Debugging",
+	"id" :  "debug",
+	"dependencies" : [{"id": "default"}]
+}

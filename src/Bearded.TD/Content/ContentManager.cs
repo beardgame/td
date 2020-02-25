@@ -11,7 +11,7 @@ namespace Bearded.TD.Content
         public ContentManager(IGraphicsLoader graphicsLoader)
         {
             GraphicsLoader = graphicsLoader;
-            Mods = new ModLister().GetAll().AsReadOnly();
+            Mods = new ModSorter().SortByDependency(new ModLister().GetAll()).AsReadOnly();
         }
     }
 }

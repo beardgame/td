@@ -49,7 +49,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
                 return;
 
             var dependencyResolver = new BlueprintDependencyResolver<TBlueprint>(
-                Context.Meta, blueprintCollection, Enumerable.Empty<Mod>(), m => selector(m));
+                Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m));
 
             Context.Serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
         }

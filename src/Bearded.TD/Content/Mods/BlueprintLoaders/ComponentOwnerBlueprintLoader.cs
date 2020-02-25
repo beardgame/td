@@ -23,7 +23,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         public ComponentOwnerBlueprintLoader(BlueprintLoadingContext context) : base(context)
         {
-            componentOwnerProxyBlueprintCollector = new ComponentOwnerProxyBlueprintResolver(Context.Meta, Enumerable.Empty<Mod>());
+            componentOwnerProxyBlueprintCollector = new ComponentOwnerProxyBlueprintResolver(Context.Meta, Context.LoadedDependencies);
             dependencyConverter = new DependencyConverter<IComponentOwnerBlueprint>(componentOwnerProxyBlueprintCollector);
         }
 

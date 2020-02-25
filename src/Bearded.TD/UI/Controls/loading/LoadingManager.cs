@@ -30,8 +30,10 @@ namespace Bearded.TD.UI.Controls
         public NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
         protected Logger Logger => Game.Meta.Logger;
-        private readonly List<ModForLoading> modsForLoading = new List<ModForLoading>();
         private ModLoadingProfiler profiler;
+
+        private readonly Dictionary<string, ModForLoading> modsByModId = new Dictionary<string, ModForLoading>();
+        private readonly Queue<ModMetadata> modLoadingQueue = new Queue<ModMetadata>();
 
         private Stage stage = Stage.Initial;
 
@@ -56,13 +58,16 @@ namespace Bearded.TD.UI.Controls
             switch (stage)
             {
                 case Stage.Initial:
-                    DebugAssert.State.Satisfies(modsForLoading.Count == 0);
+                    DebugAssert.State.Satisfies(modsByModId.Count == 0);
+                    DebugAssert.State.Satisfies(modLoadingQueue.Count == 0);
                     DebugAssert.State.Satisfies(Game.Me.ConnectionState == PlayerConnectionState.LoadingMods);
-                    Game.ContentManager.Mods.ForEach(loadMod);
+                    Game.ContentManager.Mods.ForEach(modLoadingQueue.Enqueue);
+                    startLoadingFromQueue();
                     stage = Stage.LoadingMods;
                     break;
                 case Stage.LoadingMods:
-                    if (modsForLoading.All(mod => mod.IsDone))
+                    startLoadingFromQueue();
+                    if (modLoadingQueue.Count == 0 && modsByModId.Values.All(mod => mod.IsDone))
                     {
                         onModsFinishedLoading();
                     }
@@ -76,9 +81,31 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
+        private void startLoadingFromQueue()
+        {
+            while (modLoadingQueue.Count > 0 &&
+                   modLoadingQueue.Peek().Dependencies.All(dependency => isModDoneLoading(dependency.Id)))
+            {
+                loadMod(modLoadingQueue.Dequeue());
+            }
+        }
+
+        private bool isModDoneLoading(string modId) => modsByModId.ContainsKey(modId) && modsByModId[modId].IsDone;
+
+        private void loadMod(ModMetadata modMetadata)
+        {
+            var modForLoading = modMetadata.PrepareForLoading();
+            var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
+            profiler = context.Profiler;
+            var loadedDependencies = modMetadata.Dependencies
+                .Select(dependency => modsByModId[dependency.Id].GetLoadedMod()).ToList().AsReadOnly();
+            modForLoading.StartLoading(context, loadedDependencies);
+            modsByModId[modMetadata.Id] = modForLoading;
+        }
+
         private void onModsFinishedLoading()
         {
-            var hasErrors = modsForLoading.Any(m => !m.DidLoadSuccessfully);
+            var hasErrors = modsByModId.Values.Any(m => !m.DidLoadSuccessfully);
             switch (UserSettings.Instance.Misc.ModLoadFinishBehavior)
             {
                 case ModLoadFinishBehavior.DoNothing:
@@ -87,7 +114,7 @@ namespace Bearded.TD.UI.Controls
                 case ModLoadFinishBehavior.ThrowOnError:
                     if (hasErrors)
                     {
-                        modsForLoading.First(m => !m.DidLoadSuccessfully).Rethrow();
+                        modsByModId.Values.First(m => !m.DidLoadSuccessfully).Rethrow();
                     }
                     else
                     {
@@ -112,19 +139,10 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private void loadMod(ModMetadata modMetadata)
-        {
-            var modForLoading = modMetadata.PrepareForLoading();
-            var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
-            profiler = context.Profiler;
-            modForLoading.StartLoading(context);
-            modsForLoading.Add(modForLoading);
-        }
-
         private void gatherModBlueprints()
         {
             Game.SetBlueprints(Blueprints.Merge(
-                modsForLoading
+                modsByModId.Values
                     .Select(modForLoading => modForLoading.GetLoadedMod())
                     .Select(mod => mod.Blueprints)));
 

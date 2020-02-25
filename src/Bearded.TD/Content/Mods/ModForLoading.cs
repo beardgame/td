@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Utilities;
 
@@ -11,6 +12,7 @@ namespace Bearded.TD.Content.Mods
         private bool isLoading;
         private ModLoadingContext context;
         private Exception exception;
+        private ReadOnlyCollection<Mod> loadedDependencies;
 
         public bool IsDone { get; private set; }
         public bool DidLoadSuccessfully => IsDone && exception == null;
@@ -20,22 +22,23 @@ namespace Bearded.TD.Content.Mods
             this.modMetadata = modMetadata;
         }
 
-        public void StartLoading(ModLoadingContext context)
+        public void StartLoading(ModLoadingContext context, ReadOnlyCollection<Mod> loadedDependencies)
         {
             if (isLoading)
                 throw new InvalidOperationException("Cannot load mod more than once.");
 
             isLoading = true;
             this.context = context;
+            this.loadedDependencies = loadedDependencies;
 
             Task.Run(load);
         }
 
-        private async Task load()
+        private async Task<Mod> load()
         {
             try
             {
-                mod = await ModLoader.Load(context, modMetadata);
+                mod = await ModLoader.Load(context, modMetadata, loadedDependencies);
             }
             catch (Exception e)
             {
@@ -46,6 +49,7 @@ namespace Bearded.TD.Content.Mods
             {
                 IsDone = true;
             }
+            return mod;
         }
 
         public Mod GetLoadedMod()
