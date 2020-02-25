@@ -118,6 +118,10 @@ namespace Bearded.TD.Game.Camera
         {
             var error = camera.Distance - goalDistance;
             var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
+            if (Math.Abs(error) < 0.02f)
+            {
+                snapFactor = 1;
+            }
             var oldZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
             camera.Distance -= error * snapFactor;
 

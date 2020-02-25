@@ -62,8 +62,17 @@ namespace Bearded.TD.Game.Camera
 
         private Matrix4 calculateViewMatrix()
         {
-            var eye = position.NumericValue.WithZ(distance);
-            var target = position.NumericValue.WithZ();
+            var pixelStep = 1f / Constants.Rendering.PixelsPerTile;
+
+            var p = position.NumericValue;
+
+            p = new Vector2(
+                Mathf.FloorToInt(p.X / pixelStep) * pixelStep,
+                Mathf.FloorToInt(p.Y / pixelStep) * pixelStep
+                );
+
+            var eye = p.WithZ(distance);
+            var target = p.WithZ();
             return Matrix4.LookAt(eye, target, Vector3.UnitY);
         }
 

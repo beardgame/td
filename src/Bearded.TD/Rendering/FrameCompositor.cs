@@ -15,7 +15,7 @@ namespace Bearded.TD.Rendering
         private readonly Logger logger;
         private readonly SurfaceManager surfaces;
         private readonly DeferredRenderer deferredRenderer;
-        
+
         private DateTime nextShaderReloadTime = DateTime.UtcNow;
         public ViewportSize ViewPort { get; private set; }
 
@@ -60,7 +60,7 @@ namespace Bearded.TD.Rendering
                 return;
 
             nextShaderReloadTime = now + TimeSpan.FromSeconds(1);
-            
+
             var report = surfaces.Shaders.TryReloadAll();
 
             logShaderReloadReport(report);
@@ -70,10 +70,10 @@ namespace Bearded.TD.Rendering
         {
             if (!report.TriedReloadingAnything)
                 return;
-            
+
             if (report.ReloadedShaderCount > 0)
                 logger.Debug?.Log($"Reloaded {report.ReloadedShaderCount} shaders.");
-            
+
             if (report.ReloadedProgramCount > 0)
                 logger.Debug?.Log($"Reloaded {report.ReloadedProgramCount} shader programs.");
 
@@ -171,15 +171,15 @@ namespace Bearded.TD.Rendering
         {
             if (layer is IDeferredRenderLayer deferredLayer)
             {
-                renderDeferred(deferredLayer.DeferredSurfaces);
+                renderDeferred(deferredLayer);
             }
 
             renderConsoleSurfaces();
         }
 
-        private void renderDeferred(ContentSurfaceManager contentSurfaces)
+        private void renderDeferred(IDeferredRenderLayer deferredLayer)
         {
-            deferredRenderer.Render(contentSurfaces);
+            deferredRenderer.Render(deferredLayer);
 
             if (UserSettings.Instance.Debug.Deferred)
                 deferredRenderer.RenderDebug();

@@ -4,6 +4,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
+using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
@@ -22,6 +23,8 @@ namespace Bearded.TD.Rendering
 
         private readonly SurfaceManager surfaces;
         private ViewportSize viewport;
+        private (int width, int height) bufferSize;
+        private float cameraDistance;
         private bool needsResize;
 
         private readonly Texture diffuseBuffer = createTexture(); // rgba
@@ -39,7 +42,6 @@ namespace Bearded.TD.Rendering
 
         private readonly PostProcessSurface compositeSurface;
         private readonly PostProcessSurface copyToTargetSurface;
-        private (int width, int height) bufferSize;
 
         public DeferredRenderer(SurfaceManager surfaces)
         {
@@ -112,19 +114,21 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        public void Render(ContentSurfaceManager contentSurfaces, RenderTarget target = null)
+        public void Render(IDeferredRenderLayer deferredLayer, RenderTarget target = null)
         {
+            resizeForCameraDistance(deferredLayer.CameraDistance);
+
             resizeIfNeeded();
 
-            renderWorldToGBuffers(contentSurfaces);
+            renderWorldToGBuffers(deferredLayer.DeferredSurfaces);
 
             renderLightsToAccumBuffer();
 
             compositeLightsAndGBuffers();
 
-            renderFluidsToComposition(contentSurfaces);
+            renderFluidsToComposition(deferredLayer.DeferredSurfaces);
 
-            renderPostLightDrawGroupsToComposition(contentSurfaces);
+            renderPostLightDrawGroupsToComposition(deferredLayer.DeferredSurfaces);
 
             copyCompositionTo(target);
 
@@ -231,7 +235,6 @@ namespace Bearded.TD.Rendering
             }
         }
 
-
         public void OnResize(ViewportSize newViewport)
         {
             var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
@@ -245,6 +248,24 @@ namespace Bearded.TD.Rendering
             bufferSize = (w, h);
 
             viewport = newViewport;
+            needsResize = true;
+        }
+
+        private void resizeForCameraDistance(float cameraDistance)
+        {
+            var screenPixelsPerTile = viewport.Height * 0.5f / cameraDistance;
+
+            var scale = Math.Min(1, Constants.Rendering.PixelsPerTile / screenPixelsPerTile);
+
+            var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
+
+            var w = (int) (viewport.Width * bufferSizeFactor * scale);
+            var h = (int) (viewport.Height * bufferSizeFactor * scale);
+
+            if ((w, h).Equals(bufferSize))
+                return;
+
+            bufferSize = (w, h);
             needsResize = true;
         }
 
@@ -277,7 +298,7 @@ namespace Bearded.TD.Rendering
         private static Texture createTexture()
         {
             var texture = new Texture(1, 1);
-            texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Linear,
+            texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Nearest,
                 TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
             return texture;
         }

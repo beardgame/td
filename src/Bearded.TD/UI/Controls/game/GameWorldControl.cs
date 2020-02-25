@@ -17,6 +17,7 @@ namespace Bearded.TD.UI.Controls
         public override Matrix4 ProjectionMatrix => game.Camera.ProjectionMatrix;
         public override RenderOptions RenderOptions => RenderOptions.Default;
 
+        public float CameraDistance => game.Camera.Distance;
         public float FarPlaneDistance => game.Camera.FarPlaneDistance;
 
         public float Time => (float)game.State.Time.NumericValue;

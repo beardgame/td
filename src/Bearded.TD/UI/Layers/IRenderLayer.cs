@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Rendering;
 using OpenTK;
+using OpenTK.Platform.MacOS;
 
 namespace Bearded.TD.UI.Layers
 {
@@ -13,6 +14,7 @@ namespace Bearded.TD.UI.Layers
 
     interface IDeferredRenderLayer : IRenderLayer
     {
+        float CameraDistance { get; }
         float FarPlaneDistance { get; }
         float Time { get; }
         ContentSurfaceManager DeferredSurfaces { get; }
