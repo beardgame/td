@@ -62,7 +62,7 @@ namespace Bearded.TD.Game.Camera
 
         private Matrix4 calculateViewMatrix()
         {
-            var pixelStep = 1f / Constants.Rendering.PixelsPerTile;
+            var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
 
             var p = position.NumericValue;
 

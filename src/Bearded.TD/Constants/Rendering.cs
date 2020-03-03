@@ -4,7 +4,8 @@ namespace Bearded.TD
     {
         public static class Rendering
         {
-            public const float PixelsPerTile = 220;
+            public const float PixelsPerTileLevelResolution = 22;
+            public const float PixelsPerTileSpriteResolution = 100000;
         }
     }
 }
