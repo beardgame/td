@@ -52,8 +52,10 @@ namespace Bearded.TD.Rendering
                 "geometry", "uvcolor",
                 "deferred/gSprite",
                 "deferred/debug",
+                "deferred/debugDepth",
                 "deferred/compose",
                 "deferred/copy",
+                "deferred/copyDepth",
                 "deferred/pointlight",
                 "deferred/spotlight"
             }.ForEach(name => Shaders.MakeShaderProgram(name));

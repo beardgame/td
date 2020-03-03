@@ -30,14 +30,15 @@ namespace Bearded.TD.Rendering
         private readonly Texture diffuseBufferLowRes = createTexture(); // rgba
         private readonly Texture normalBufferLowRes = createTexture(); // xyz
         private readonly Texture depthBufferLowRes = createTexture(); // z (0-1, camera space)
+        private readonly Texture depthMaskBufferLowRes = createDepthTexture();
 
         private readonly Texture diffuseBuffer = createTexture(); // rgba
         private readonly Texture normalBuffer = createTexture(); // xyz
         private readonly Texture depthBuffer = createTexture(); // z (0-1, camera space)
+        private readonly Texture depthMaskBuffer = createDepthTexture();
 
 
         private readonly Texture lightAccumBuffer = createTexture(); // rgb
-        private readonly Texture depthMaskBuffer = createDepthTexture();
         private readonly Texture compositionBuffer = createTexture(); // rgba
 
         private readonly RenderTarget gTargetLowRes = new RenderTarget();
@@ -53,9 +54,11 @@ namespace Bearded.TD.Rendering
         private readonly RenderTarget copyDiffuseTarget = new RenderTarget();
         private readonly RenderTarget copyNormalTarget = new RenderTarget();
         private readonly RenderTarget copyDepthTarget = new RenderTarget();
+        private readonly RenderTarget copyDepthMaskTarget = new RenderTarget();
         private readonly PostProcessSurface copyDiffuseSurface;
         private readonly PostProcessSurface copyNormalSurface;
         private readonly PostProcessSurface copyDepthSurface;
+        private readonly PostProcessSurface copyDepthMaskSurface;
 
         public DeferredRenderer(SurfaceManager surfaces)
         {
@@ -64,7 +67,7 @@ namespace Bearded.TD.Rendering
             gTargetLowRes.Attach(FramebufferAttachment.ColorAttachment0, diffuseBufferLowRes);
             gTargetLowRes.Attach(FramebufferAttachment.ColorAttachment1, normalBufferLowRes);
             gTargetLowRes.Attach(FramebufferAttachment.ColorAttachment2, depthBufferLowRes);
-            gTargetLowRes.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
+            gTargetLowRes.Attach(FramebufferAttachment.DepthAttachment, depthMaskBufferLowRes);
             bind(gTargetLowRes, (0, 0));
             GL.DrawBuffers(3, new []
             {
@@ -77,6 +80,7 @@ namespace Bearded.TD.Rendering
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
+            gTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
             bind(gTarget, (0, 0));
             GL.DrawBuffers(3, new []
             {
@@ -88,17 +92,22 @@ namespace Bearded.TD.Rendering
 
             copyDiffuseTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             bind(copyDiffuseTarget, (0, 0));
-            GL.DrawBuffers(3, new [] {DrawBuffersEnum.ColorAttachment0});
+            GL.DrawBuffers(1, new [] {DrawBuffersEnum.ColorAttachment0});
             bind(null, (0, 0));
 
             copyNormalTarget.Attach(FramebufferAttachment.ColorAttachment0, normalBuffer);
             bind(copyNormalTarget, (0, 0));
-            GL.DrawBuffers(3, new [] {DrawBuffersEnum.ColorAttachment0});
+            GL.DrawBuffers(1, new [] {DrawBuffersEnum.ColorAttachment0});
             bind(null, (0, 0));
 
             copyDepthTarget.Attach(FramebufferAttachment.ColorAttachment0, depthBuffer);
             bind(copyDepthTarget, (0, 0));
-            GL.DrawBuffers(3, new [] {DrawBuffersEnum.ColorAttachment0});
+            GL.DrawBuffers(1, new [] {DrawBuffersEnum.ColorAttachment0});
+            bind(null, (0, 0));
+
+            copyDepthMaskTarget.Attach(FramebufferAttachment.DepthAttachment, depthMaskBuffer);
+            bind(copyDepthMaskTarget, (0, 0));
+            GL.DrawBuffer(DrawBufferMode.None);
             bind(null, (0, 0));
 
             lightAccumTarget.Attach(FramebufferAttachment.ColorAttachment0, lightAccumBuffer);
@@ -135,10 +144,16 @@ namespace Bearded.TD.Rendering
                 .AndSettings(
                     new TextureUniform("inputTexture", depthBufferLowRes, TextureUnit.Texture0)
                 );
-
+            copyDepthMaskSurface = new PostProcessSurface()
+                .WithShader(surfaces.Shaders["deferred/copyDepth"])
+                .AndSettings(
+                    new TextureUniform("inputTexture", depthMaskBufferLowRes, TextureUnit.Texture0)
+                );
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, lightAccumBuffer}
-                .Select(createDebugSurface).ToArray();
+                .Select(createDebugSurface)
+                .Concat( new [] {depthMaskBuffer, depthMaskBufferLowRes}.Select(createDebugDepthSurface))
+                .ToArray();
 
             surfaces.InjectDeferredBuffer(normalBuffer, depthBuffer);
         }
@@ -148,8 +163,14 @@ namespace Bearded.TD.Rendering
                 .WithShader(surfaces.Shaders["deferred/debug"])
                 .AndSettings(new TextureUniform("bufferTexture", buffer));
 
+        private IndexedSurface<UVColorVertexData> createDebugDepthSurface(Texture buffer)
+            => new IndexedSurface<UVColorVertexData>()
+                .WithShader(surfaces.Shaders["deferred/debugDepth"])
+                .AndSettings(new TextureUniform("bufferTexture", buffer));
+
         public void RenderDebug(RenderTarget target = null)
         {
+            bind(target, (viewport.Width, viewport.Height));
             var width = 2f / debugSurfaces.Length;
             var height = 2f / debugSurfaces.Length;
             var u = -1f;
@@ -207,9 +228,10 @@ namespace Bearded.TD.Rendering
 
             contentSurfaces.LevelGeometry.RenderAll();
 
+
+            GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
             GL.Disable(EnableCap.CullFace);
-
 
             bind(copyDiffuseTarget, bufferSize);
             copyDiffuseSurface.Render();
@@ -222,9 +244,20 @@ namespace Bearded.TD.Rendering
 
 
 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            GL.DepthFunc(DepthFunction.Always);
+
+            bind(copyDepthMaskTarget, bufferSize);
+            copyDepthMaskSurface.Render();
+
+            GL.DepthFunc(DepthFunction.Less);
+
+
 
             bind(gTarget, bufferSize);
 
+            GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
 
             renderDrawGroups(contentSurfaces, worldDrawGroups);
@@ -360,6 +393,7 @@ namespace Bearded.TD.Rendering
             diffuseBufferLowRes.Resize(w, h, PixelInternalFormat.Rgba);
             normalBufferLowRes.Resize(w, h, PixelInternalFormat.Rgba);
             depthBufferLowRes.Resize(w, h, PixelInternalFormat.R16f);
+            resizeDepthMask(depthMaskBufferLowRes, w, h);
 
             (w, h) = bufferSize;
             diffuseBuffer.Resize(w, h, PixelInternalFormat.Rgba);
@@ -367,13 +401,14 @@ namespace Bearded.TD.Rendering
             depthBuffer.Resize(w, h, PixelInternalFormat.R16f);
             lightAccumBuffer.Resize(w, h, PixelInternalFormat.Rgb16f);
             compositionBuffer.Resize(w, h, PixelInternalFormat.Rgba);
-            resizeDepthMask(w, h);
+            resizeDepthMask(depthMaskBuffer, w, h);
         }
 
-        private void resizeDepthMask(int w, int h)
+        private void resizeDepthMask(Texture maskBuffer, int w, int h)
         {
-            GL.BindTexture(TextureTarget.Texture2D, depthMaskBuffer);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, w, h, 0, PixelFormat.DepthComponent, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, maskBuffer);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32f, w, h, 0,
+                PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
@@ -388,10 +423,14 @@ namespace Bearded.TD.Rendering
         private static Texture createDepthTexture()
         {
             var texture = createTexture();
+
+            texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Nearest,
+                TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+
             GL.BindTexture(TextureTarget.Texture2D, texture);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.DepthTextureMode, (int)All.Intensity);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)TextureCompareMode.CompareRToTexture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
             return texture;
         }
