@@ -105,6 +105,7 @@ namespace Bearded.TD.UI.Controls
             {
                 eventArgs.Handled = true;
                 var currentControlChain = getControlsAt(eventArgs.MousePosition);
+                // ReSharper disable once UnusedVariable
                 var currentControl = currentControlChain.LastOrDefault();
                 Debugger.Break();
             }

@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Components.Weapons
         private void emitBeam(TimeSpan elapsedTime)
         {
             var ray = new Ray(
-                SpaceTimeExtensions.XY((Position3) Weapon.Position),
+                Weapon.Position.XY(),
                 Weapon.CurrentDirection * Parameters.Range
             );
 
@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Components.Weapons
             geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.5f, 0.8f);
             geo.LineWidth = 0.1f;
 
-            geo.DrawLine(Weapon.Position.NumericValue, AddDimensionExtensions.WithZ(endPoint, (Unit) Weapon.Position.Z).NumericValue);
+            geo.DrawLine(Weapon.Position.NumericValue, endPoint.WithZ(Weapon.Position.Z).NumericValue);
         }
     }
 }

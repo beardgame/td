@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Rendering;
 using OpenTK;
-using OpenTK.Platform.MacOS;
 
 namespace Bearded.TD.UI.Layers
 {

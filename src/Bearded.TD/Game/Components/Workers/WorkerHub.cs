@@ -7,7 +7,7 @@ using Bearded.TD.Game.Workers;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Components.BuildingUpgrades
+namespace Bearded.TD.Game.Components.Workers
 {
     [Component("workerHub")]
     sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>

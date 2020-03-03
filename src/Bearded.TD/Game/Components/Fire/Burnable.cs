@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Components.Fire
         private double damagePerFuel;
 
         private float fireRenderStrengthGoal = 1;
-        private float fireRenderStrength = 0;
+        private float fireRenderStrength;
         private bool dealingDamageToOwner;
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}

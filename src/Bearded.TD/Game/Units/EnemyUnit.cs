@@ -6,9 +6,7 @@ using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Damage;
-using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Components.Events;
-using Bearded.TD.Game.Components.Generic;
 using Bearded.TD.Game.Components.Movement;
 using Bearded.TD.Game.Damage;
 using Bearded.TD.Game.Factions;
@@ -22,7 +20,6 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
-using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Units

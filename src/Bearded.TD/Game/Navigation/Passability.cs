@@ -15,6 +15,7 @@ namespace Bearded.TD.Game.Navigation
     {
         None = 0,
 
+        // ReSharper disable once ShiftExpressionRealShiftCountIsZero
         WalkingUnit = 1 << (Passability.WalkingUnit - 1),
         FlyingUnit = 1 << (Passability.FlyingUnit - 1),
         Worker = 1 << (Passability.Worker - 1),

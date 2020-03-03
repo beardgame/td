@@ -3,7 +3,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.EnemyBehavior
+namespace Bearded.TD.Game.Components.Movement
 {
     sealed class EnemyMovementSynchronizedState : ISynchronizedState<IEnemyMovement>
     {

@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;

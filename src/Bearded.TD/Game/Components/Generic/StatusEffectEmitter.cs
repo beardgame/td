@@ -68,8 +68,6 @@ namespace Bearded.TD.Game.Components.Generic
 
         private void ensureRangeUpToDate()
         {
-            var level = Owner.Game.Level;
-
             if (range == Parameters.Range && Level.GetTile(Owner.Position) == ownerTile) return;
             range = Parameters.Range;
             recalculateTilesInRange();

@@ -1,6 +1,5 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Graphical

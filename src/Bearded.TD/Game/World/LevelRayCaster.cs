@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.World
 
         public void StartEnumeratingTiles(Level level, Ray ray)
         {
-            initialise(level, ray, Level.GetTile(ray.Start));
+            initialise(ray, Level.GetTile(ray.Start));
             firstMove = true;
         }
 
@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.World
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void initialise(Level level, Ray ray, Tile startTile)
+        private void initialise(Ray ray, Tile startTile)
         {
             var startTilePosition = Level.GetPosition(startTile);
             var relativeStartTilePosition = (ray.Start - startTilePosition).NumericValue;
@@ -75,7 +75,6 @@ namespace Bearded.TD.Game.World
             (nextCenterIntersection, centerFullStep, centerHalfStep) = getRayTraceParameters(relativeStartTilePosition, rayDirection, centerDirection);
             (nextLeftIntersection, leftFullStep, leftHalfStep) = getRayTraceParameters(relativeStartTilePosition, rayDirection, leftDirection);
             (nextRightIntersection, rightFullStep, rightHalfStep) = getRayTraceParameters(relativeStartTilePosition, rayDirection, rightDirection);
-            
             tile = startTile;
         }
 

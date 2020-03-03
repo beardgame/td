@@ -1,7 +1,6 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
 
 namespace Bearded.TD.Game.Components.Graphical
 {

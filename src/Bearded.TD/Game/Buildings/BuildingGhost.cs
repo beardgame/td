@@ -10,7 +10,6 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

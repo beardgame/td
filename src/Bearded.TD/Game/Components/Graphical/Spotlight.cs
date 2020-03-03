@@ -2,7 +2,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using Bearded.Utilities.Tilemaps.Rectangular;
 
 namespace Bearded.TD.Game.Components.Graphical
 {
