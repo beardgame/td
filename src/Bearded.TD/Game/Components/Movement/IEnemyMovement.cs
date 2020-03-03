@@ -2,7 +2,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Components.EnemyBehavior
+namespace Bearded.TD.Game.Components.Movement
 {
     interface IEnemyMovement : IComponent<EnemyUnit>
     {

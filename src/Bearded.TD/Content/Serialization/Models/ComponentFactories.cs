@@ -59,13 +59,13 @@ namespace Bearded.TD.Content.Serialization.Models
             initialised = true;
 
             var knownComponents = Assembly.GetExecutingAssembly().GetTypes()
-                .Select(t => (type: t, attribute: CustomAttributeExtensions.GetCustomAttribute<ComponentAttribute>((MemberInfo) t, false)))
+                .Select(t => (type: t, attribute: t.GetCustomAttribute<ComponentAttribute>(false)))
                 .Where(t => t.attribute != null)
                 .Select(t => (t.attribute.Id, t.type))
                 .ToList();
 
             var componentOwners = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => CustomAttributeExtensions.GetCustomAttribute<ComponentOwnerAttribute>((MemberInfo) t) != null)
+                .Where(t => t.GetCustomAttribute<ComponentOwnerAttribute>() != null)
                 .ToList();
 
             foreach (var component in knownComponents)

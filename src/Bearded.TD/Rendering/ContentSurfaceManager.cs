@@ -6,7 +6,6 @@ using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Deferred;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;
 

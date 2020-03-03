@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.World
         public RayHitResult WithNewPoint(Position2 point)
             => new RayHitResult(IsHit, RayFactor, point, Normal);
 
-        public TiledRayHitResult OnTile<TTileInfo>(Tile tile, Difference2 offset)
+        public TiledRayHitResult OnTile(Tile tile, Difference2 offset)
             => new TiledRayHitResult(tile, this, offset);
     }
 }

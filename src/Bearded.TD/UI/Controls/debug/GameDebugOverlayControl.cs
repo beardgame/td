@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
@@ -15,7 +14,7 @@ namespace Bearded.TD.UI.Controls
 {
     class GameDebugOverlayControl : DefaultRenderLayerControl
     {
-        private bool minimized = false;
+        private bool minimized;
 
         public GameDebugOverlayControl(GameDebugOverlay model)
         {

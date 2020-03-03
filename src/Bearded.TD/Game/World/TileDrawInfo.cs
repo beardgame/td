@@ -1,5 +1,4 @@
 using System;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.World
@@ -38,7 +37,5 @@ namespace Bearded.TD.Game.World
                     throw new ArgumentOutOfRangeException(nameof(geometry.Type), geometry.Type, null);
             }
         }
-
-        private static float rnd(float min, float max) => StaticRandom.Float(min, max);
     }
 }

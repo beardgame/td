@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.World
                         var bestRoot = f.RootTileClosestToWorldPosition(position);
                         var center = f.Center(bestRoot);
                         var distance = (center - position).LengthSquared;
-                        return (bestRoot: bestRoot, Distance: distance, index: i);
+                        return (bestRoot, Distance: distance, index: i);
                     })
                     .MinBy(r => r.Distance.NumericValue);
 

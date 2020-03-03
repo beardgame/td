@@ -9,7 +9,6 @@ namespace Bearded.TD.Game.World
     sealed class TileWalker
     {
         private readonly ITileWalkerOwner owner;
-        private readonly Level level;
 
         public Position2 Position { get; private set; }
         public Tile CurrentTile { get; private set; }
@@ -25,7 +24,6 @@ namespace Bearded.TD.Game.World
             if (!level.IsValid(startTile)) throw new ArgumentOutOfRangeException();
 
             this.owner = owner;
-            this.level = level;
 
             CurrentTile = startTile;
             goalTile = startTile;

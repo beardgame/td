@@ -7,7 +7,6 @@ using Bearded.TD.Game.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Game.Commands
 {

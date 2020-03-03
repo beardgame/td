@@ -17,6 +17,7 @@ namespace Bearded.TD.Tiles
     enum Directions : byte
     {
         None = 0,
+        // ReSharper disable once ShiftExpressionRealShiftCountIsZero
         Right = 1 << (Direction.Right - 1),
         UpRight = 1 << (Direction.UpRight - 1),
         UpLeft = 1 << (Direction.UpLeft - 1),

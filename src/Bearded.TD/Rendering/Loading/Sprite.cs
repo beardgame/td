@@ -1,7 +1,6 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using OpenTK;
 

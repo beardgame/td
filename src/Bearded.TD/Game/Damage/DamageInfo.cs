@@ -1,6 +1,3 @@
-using Bearded.TD.Game.Buildings;
-using Bearded.Utilities;
-
 namespace Bearded.TD.Game.Damage
 {
     struct DamageInfo

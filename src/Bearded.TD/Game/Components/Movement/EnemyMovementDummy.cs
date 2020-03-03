@@ -1,6 +1,5 @@
 using System;
 using Bearded.TD.Game.Components.Events;
-using Bearded.TD.Game.Components.EnemyBehavior;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;

@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;

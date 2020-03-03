@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class NumericInput : CompositeControl
     {
-        public event GenericEventHandler<int> ValueChanged; 
+        public event GenericEventHandler<int> ValueChanged;
 
         private readonly TextInput textInput;
         private readonly Button plusButton;
@@ -14,7 +14,7 @@ namespace Bearded.TD.UI.Controls
         private bool isEnabled;
         private int value = -1;
         private bool suppressTextChangedEvent;
-        private int minValue = 0;
+        private int minValue;
         private int maxValue = 100;
 
         public bool IsEnabled
