@@ -31,6 +31,11 @@ namespace Bearded.TD.UI.Controls
                     .Top(margin: 0, height: 116))
                 .Subscribe(ctrl => ctrl.TechnologyButtonClicked += () => technologyUIControl.IsVisible = true);
             Add(gameStatusControl);
+            var playerStatusControl = new PlayerStatusUIControl(gameUI.PlayerStatusUI)
+                .Anchor(a => a
+                    .Right(width: 200)
+                    .Below(gameStatusControl, height: 100));
+            Add(playerStatusControl);
             Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)

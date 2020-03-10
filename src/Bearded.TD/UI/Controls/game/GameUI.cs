@@ -27,6 +27,7 @@ namespace Bearded.TD.UI.Controls
         public GameNotificationsUI NotificationsUI { get; }
         public ActionBar ActionBar { get; }
         public GameStatusUI GameStatusUI { get; }
+        public PlayerStatusUI PlayerStatusUI { get; }
         public TechnologyUI TechnologyUI { get; }
 
         public event VoidEventHandler FocusReset;
@@ -44,6 +45,7 @@ namespace Bearded.TD.UI.Controls
             NotificationsUI = new GameNotificationsUI();
             ActionBar = new ActionBar();
             GameStatusUI = new GameStatusUI();
+            PlayerStatusUI = new PlayerStatusUI();
             TechnologyUI = new TechnologyUI();
         }
 
@@ -61,6 +63,7 @@ namespace Bearded.TD.UI.Controls
             NotificationsUI.Initialize(Game);
             ActionBar.Initialize(Game);
             GameStatusUI.Initialize(Game);
+            PlayerStatusUI.Initialize(Game);
             TechnologyUI.Initialize(Game);
 
             Game.SelectionManager.ObjectSelected += onObjectSelected;
@@ -98,6 +101,7 @@ namespace Bearded.TD.UI.Controls
 
             NotificationsUI.Update();
             GameStatusUI.Update();
+            PlayerStatusUI.Update();
             TechnologyUI.Update();
 
             updateGameDebugOverlayState();
