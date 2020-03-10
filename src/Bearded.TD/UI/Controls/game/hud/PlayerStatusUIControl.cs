@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.UI.Controls;

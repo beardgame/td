@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.Utilities;
-using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
