@@ -1,6 +1,9 @@
+using System;
 using System.Collections.ObjectModel;
+using amulware.Graphics;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -51,13 +54,26 @@ namespace Bearded.TD.UI.Controls
                 {
                     Color = player.Color, FontSize = 16, TextAnchor = Label.TextAnchorLeft
                 }.Anchor(a => a.Right(margin: 48)));
-                Add(new DynamicLabel(() => $"{player.Ping}")
+                Add(new DynamicLabel(
+                    () => $"{player.Ping}",
+                    () => pingToColor(player.Ping)
+                )
                 {
                     FontSize = 16, TextAnchor = Label.TextAnchorRight
                 });
             }
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+        }
+
+        private static Color pingToColor(int ping)
+        {
+            const float redHue = 0;
+            const float greenHue = 2 * Mathf.Pi / 3;
+
+            var t = ping.Clamped(0, 500) * 0.002f;
+
+            return Color.FromHSVA(greenHue + t * (redHue - greenHue), 1, 1);
         }
     }
 }
