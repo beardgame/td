@@ -124,7 +124,7 @@ namespace Bearded.TD.Rendering.Deferred
                 this.geometryLayer = geometryLayer;
                 this.baseTile = baseTile;
                 surface = createSurface(context, material);
-                
+
                 geometry = new LevelGeometry(surface, level.Radius);
             }
 
@@ -137,7 +137,7 @@ namespace Bearded.TD.Rendering.Deferred
                     }
                     .WithShader(material.Shader.SurfaceShader)
                     .AndSettings(
-                        context.Surfaces.ViewMatrix,
+                        context.Surfaces.ViewMatrixLevel,
                         context.Surfaces.ProjectionMatrix,
                         context.Surfaces.FarPlaneDistance
                     );
@@ -150,7 +150,7 @@ namespace Bearded.TD.Rendering.Deferred
 
                     textureUnit++;
                 }
-                
+
                 return surface;
             }
 
@@ -182,7 +182,7 @@ namespace Bearded.TD.Rendering.Deferred
 
                         if (!level.IsValid(tile))
                             continue;
-                        
+
                         geometry.DrawTile(
                             Level.GetPosition(tile).NumericValue,
                             geometryLayer[tile],
@@ -197,7 +197,7 @@ namespace Bearded.TD.Rendering.Deferred
                 // consider sharing a single level geometry instance across batches?
                 // (need to inject surface then and pass that around internally, yuck)
             }
-            
+
             private DrawableTileGeometry neighbourInfoOrDummy(Tile tile, Direction direction)
             {
                 var neighbour = tile.Neighbour(direction);

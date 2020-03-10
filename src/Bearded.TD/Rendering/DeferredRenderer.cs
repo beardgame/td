@@ -6,6 +6,8 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
@@ -51,6 +53,7 @@ namespace Bearded.TD.Rendering
         private readonly PostProcessSurface compositeSurface;
         private readonly PostProcessSurface copyToTargetSurface;
 
+        private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
         private readonly RenderTarget copyDiffuseTarget = new RenderTarget();
         private readonly RenderTarget copyNormalTarget = new RenderTarget();
         private readonly RenderTarget copyDepthTarget = new RenderTarget();
@@ -125,29 +128,34 @@ namespace Bearded.TD.Rendering
             copyToTargetSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copy"])
                 .AndSettings(
-                    new TextureUniform("inputTexture", compositionBuffer, TextureUnit.Texture0)
+                    new TextureUniform("inputTexture", compositionBuffer, TextureUnit.Texture0),
+                    new Vector2Uniform("uvOffset")
                 );
 
 
             copyDiffuseSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copy"])
                 .AndSettings(
-                    new TextureUniform("inputTexture", diffuseBufferLowRes, TextureUnit.Texture0)
+                    new TextureUniform("inputTexture", diffuseBufferLowRes, TextureUnit.Texture0),
+                    levelUpSampleUVOffset
                 );
             copyNormalSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copy"])
                 .AndSettings(
-                    new TextureUniform("inputTexture", normalBufferLowRes, TextureUnit.Texture0)
+                    new TextureUniform("inputTexture", normalBufferLowRes, TextureUnit.Texture0),
+                    levelUpSampleUVOffset
                 );
             copyDepthSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copy"])
                 .AndSettings(
-                    new TextureUniform("inputTexture", depthBufferLowRes, TextureUnit.Texture0)
+                    new TextureUniform("inputTexture", depthBufferLowRes, TextureUnit.Texture0),
+                    levelUpSampleUVOffset
                 );
             copyDepthMaskSurface = new PostProcessSurface()
                 .WithShader(surfaces.Shaders["deferred/copyDepth"])
                 .AndSettings(
-                    new TextureUniform("inputTexture", depthMaskBufferLowRes, TextureUnit.Texture0)
+                    new TextureUniform("inputTexture", depthMaskBufferLowRes, TextureUnit.Texture0),
+                    levelUpSampleUVOffset
                 );
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, lightAccumBuffer}
@@ -352,6 +360,28 @@ namespace Bearded.TD.Rendering
         {
             updateBufferSize(ref bufferSizeLowRes, cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
             updateBufferSize(ref bufferSize, cameraDistance, Constants.Rendering.PixelsPerTileSpriteResolution);
+
+            setLevelViewMatrix(cameraDistance);
+        }
+
+        private void setLevelViewMatrix(float cameraDistance)
+        {
+            var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
+
+            var viewMatrix = surfaces.ViewMatrix.Matrix;
+            var translation = viewMatrix.Row3;
+
+            var levelTranslation = new Vector2(
+                Mathf.RoundToInt(translation.X / pixelStep) * pixelStep,
+                Mathf.RoundToInt(translation.Y / pixelStep) * pixelStep
+            );
+
+            viewMatrix.Row3.Xy = levelTranslation;
+            surfaces.ViewMatrixLevel.Matrix = viewMatrix;
+
+            var offset = (levelTranslation - translation.Xy) / (cameraDistance * 2);
+            offset.X = offset.X / viewport.Width * viewport.Height;
+            levelUpSampleUVOffset.Vector = offset;
         }
 
         private void updateBufferSize(ref (int, int) size, float cameraDistance, float pixelsPerTile)
@@ -416,7 +446,7 @@ namespace Bearded.TD.Rendering
         {
             var texture = new Texture(1, 1);
             texture.SetParameters(TextureMinFilter.Linear, TextureMagFilter.Nearest,
-                TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+                TextureWrapMode.ClampToBorder, TextureWrapMode.ClampToBorder);
             return texture;
         }
 

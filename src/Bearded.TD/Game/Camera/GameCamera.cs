@@ -65,12 +65,6 @@ namespace Bearded.TD.Game.Camera
             var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
 
             var p = position.NumericValue;
-
-            p = new Vector2(
-                Mathf.FloorToInt(p.X / pixelStep) * pixelStep,
-                Mathf.FloorToInt(p.Y / pixelStep) * pixelStep
-                );
-
             var eye = p.WithZ(distance);
             var target = p.WithZ();
             return Matrix4.LookAt(eye, target, Vector3.UnitY);
