@@ -260,15 +260,13 @@ namespace Bearded.TD.Rendering
             copyDepthMaskSurface.Render();
 
             GL.DepthFunc(DepthFunction.Less);
-
-
+            GL.Enable(EnableCap.Blend);
 
             bind(gTarget, bufferSize);
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-
             renderDrawGroups(contentSurfaces, worldDrawGroups);
+
+            GL.DepthMask(false);
         }
 
         private void renderLightsToAccumBuffer()

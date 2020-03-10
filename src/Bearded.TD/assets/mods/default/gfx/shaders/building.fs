@@ -13,6 +13,10 @@ out vec4 outDepth;
 void main()
 {
 	vec4 rgba = fragmentColor * texture(diffuse, fragmentUV);
+
+	if (rgba.a < 0.01)
+		discard;
+
 	vec3 normal = normalize(vec3(0.5, 0.5, 1));
 
     outRGBA = rgba;
