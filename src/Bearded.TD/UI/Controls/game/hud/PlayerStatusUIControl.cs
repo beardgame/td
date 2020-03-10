@@ -6,13 +6,10 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class PlayerStatusUIControl : CompositeControl
     {
-        private readonly PlayerStatusUI model;
         private readonly ListControl listControl;
 
         public PlayerStatusUIControl(PlayerStatusUI model)
         {
-            this.model = model;
-
             Add(new BackgroundBox());
 
             listControl = new ListControl {ItemSource = new PlayerListItemSource(model.Players)};
@@ -48,12 +45,8 @@ namespace Bearded.TD.UI.Controls
 
         private class PlayerListRow : CompositeControl
         {
-            private readonly PlayerStatusUI.PlayerModel player;
-
             public PlayerListRow(PlayerStatusUI.PlayerModel player)
             {
-                this.player = player;
-
                 Add(new Label(player.Name)
                 {
                     Color = player.Color, FontSize = 16, TextAnchor = Label.TextAnchorLeft
