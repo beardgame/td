@@ -14,6 +14,7 @@ namespace Bearded.TD.Rendering
         public ShaderManager Shaders { get; } = new ShaderManager();
 
         public Matrix4Uniform ViewMatrix { get; } = new Matrix4Uniform("view");
+        public Matrix4Uniform ViewMatrixLevel { get; } = new Matrix4Uniform("view");
         public Matrix4Uniform ProjectionMatrix { get; } = new Matrix4Uniform("projection");
         public FloatUniform FarPlaneDistance { get; } = new FloatUniform("farPlaneDistance");
 
