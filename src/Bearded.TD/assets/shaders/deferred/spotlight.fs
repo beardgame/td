@@ -46,7 +46,7 @@ void main()
     if (angleToDirectionCos < lightAngleCos)
         discard;
 
-    float w = sqrt((angleToDirectionCos - lightAngleCos) / (1 - lightAngleCos));
+    float w = (angleToDirectionCos - lightAngleCos) / (1 - lightAngleCos);
 
     vec3 rgb = lightColor * (a * f * w);
 
