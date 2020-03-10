@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.World
                 case TileType.Unknown:
                     return (Unit.Zero, 0);
                 case TileType.Floor:
-                    return (geometry.FloorHeight, 1);
+                    return (geometry.FloorHeight, 0.8f);
                 case TileType.Wall:
                     return (geometry.FloorHeight + 1.U(), 0.2f);
                 case TileType.Crevice:

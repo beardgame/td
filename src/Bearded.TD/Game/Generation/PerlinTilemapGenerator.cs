@@ -148,13 +148,18 @@ namespace Bearded.TD.Game.Generation
                 var gradientMap = new Tilemap<double>(radius);
 
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
-                    plateauMap, 8, (tilemap, tile) => tilemap[tile]);
+                    plateauMap, 10, (tilemap, tile) => tilemap[tile]);
 
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     noiseMap, 5, (tilemap, tile) => tilemap[tile.RotatedCounterClockwiseAroundOrigin()]);
 
                 perlinSourcemapGenerator.FillTilemapWithPerlinNoise(
                     gradientMap, 20, (tilemap, tile) => tilemap[tile.RotatedClockwiseAroundOrigin()]);
+
+                foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(5))
+                {
+                    plateauMap[tile] = 0;
+                }
 
                 foreach (var tile in heightTilemap)
                 {
@@ -168,7 +173,6 @@ namespace Bearded.TD.Game.Generation
 
                     heightTilemap[tile] = height;
                 }
-
 
                 var smoothness = new Tilemap<double>(radius);
 
@@ -362,7 +366,7 @@ namespace Bearded.TD.Game.Generation
                 if (heightDifference < Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue)
                     return 0;
 
-                return 10 + heightDifference * 5;
+                return 5 + heightDifference * 5;
             }
 
             private void digAlongShortestPath(Tile source, Tile target, Tilemap<(Tile Parent, double Cost)> paths)

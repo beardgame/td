@@ -81,7 +81,7 @@ namespace Bearded.TD
             {
                 public const int StepsPerFrame = 100;
 
-                public static readonly Unit MaxWalkableHeightDifference = 0.05.U();
+                public static readonly Unit MaxWalkableHeightDifference = 0.1.U();
             }
 
             public static class Elements
