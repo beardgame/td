@@ -2,7 +2,7 @@
 {
     interface IComponent
     {
-        string Id { get; }
-        object Parameters { get; }
+        string? Id { get; }
+        object? Parameters { get; }
     }
 }

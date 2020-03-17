@@ -8,7 +8,7 @@ namespace Bearded.TD.Game
 {
     abstract class GameObject : IDeletable
     {
-        public GameState Game { get; private set; }
+        public GameState? Game { get; private set; }
 
         public bool Deleted { get; private set; }
         public event VoidEventHandler Deleting;

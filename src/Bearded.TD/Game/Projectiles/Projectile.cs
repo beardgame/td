@@ -22,13 +22,13 @@ namespace Bearded.TD.Game.Projectiles
     [ComponentOwner]
     class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
     {
-        public Building DamageSource { get; }
+        public Building? DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
         private readonly ComponentEvents events = new ComponentEvents();
 
-        public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
+        public Maybe<IComponentOwner> Parent => Maybe.FromNullable<IComponentOwner>(DamageSource);
 
         public Position3 Position { get; private set; }
 
@@ -36,7 +36,8 @@ namespace Bearded.TD.Game.Projectiles
 
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building damageSource)
+        public Projectile(
+            IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
         {
             this.blueprint = blueprint;
             DamageSource = damageSource;

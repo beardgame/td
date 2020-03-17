@@ -95,7 +95,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         private static bool tryRegisterGenericComponent(string id, Type component, Type owner, Type parameters)
         {
-            Type typedComponent = null;
+            Type? typedComponent = null;
 
             try
             {

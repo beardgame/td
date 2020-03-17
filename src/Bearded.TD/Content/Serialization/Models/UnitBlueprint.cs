@@ -11,21 +11,21 @@ namespace Bearded.TD.Content.Serialization.Models
 {
     class UnitBlueprint : IConvertsTo<Content.Models.UnitBlueprint, Void>
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        public string? Id { get; set; }
+        public string? Name { get; set; }
         public int Health { get; set; }
         public int Damage { get; set; }
         public TimeSpan TimeBetweenAttacks { get; set; }
         public Speed Speed { get; set; }
         public float Value { get; set; }
         public Color Color { get; set; }
-        public List<IComponent> Components { get; set; }
+        public List<IComponent>? Components { get; set; }
 
         public Content.Models.UnitBlueprint ToGameModel(Void _)
         {
             return new Content.Models.UnitBlueprint(
-                Id,
-                Name,
+                Id!,
+                Name!,
                 Health,
                 Damage,
                 TimeBetweenAttacks,

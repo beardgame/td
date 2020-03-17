@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Components.Graphical
     class Sprite<T> : Component<T, ISpriteParameters>
         where T : IPositionable
     {
-        private IDirected ownerAsDirected;
+        private IDirected? ownerAsDirected;
 
         public Sprite(ISpriteParameters parameters) : base(parameters)
         {

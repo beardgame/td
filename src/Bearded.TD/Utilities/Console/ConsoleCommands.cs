@@ -58,7 +58,7 @@ namespace Bearded.TD.Utilities.Console
             return true;
         }
 
-        public static PrefixTrie ParameterPrefixesFor(string command)
+        public static PrefixTrie? ParameterPrefixesFor(string command)
         {
             if (!dictionary.TryGetValue(command, out var c))
                 return null;

@@ -58,17 +58,14 @@ namespace Bearded.TD.Commands
                 ? execute(request)
                 : cancel(request);
 
-            commandDispatcher.Dispatch(command);
+            if (command != null)
+            {
+                commandDispatcher.Dispatch(command);
+            }
         }
 
-        private ISerializableCommand<TObject> cancel(IRequest<TActor, TObject> request)
-        {
-            return null;
-        }
+        private ISerializableCommand<TObject>? cancel(IRequest<TActor, TObject> request) => null;
 
-        private ISerializableCommand<TObject> execute(IRequest<TActor, TObject> request)
-        {
-            return request.ToCommand();
-        }
+        private ISerializableCommand<TObject>? execute(IRequest<TActor, TObject> request) => request.ToCommand();
     }
 }

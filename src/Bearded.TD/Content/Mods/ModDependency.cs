@@ -7,8 +7,8 @@
 
         public ModDependency(Serialization.Models.ModDependency dependency)
         {
-            Id = dependency.Id;
-            Alias = dependency.Alias;
+            Id = dependency.Id!;
+            Alias = dependency.Alias!;
         }
 
         public bool IsValid => !string.IsNullOrWhiteSpace(Id);

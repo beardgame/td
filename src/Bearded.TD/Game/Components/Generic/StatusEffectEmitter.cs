@@ -28,14 +28,14 @@ namespace Bearded.TD.Game.Components.Generic
         // TODO: allow this to affect other things than enemies as well
         private readonly HashSet<EnemyUnit> affectedUnits = new HashSet<EnemyUnit>();
 
-        private TileRangeDrawer tileRangeDrawer;
+        private TileRangeDrawer? tileRangeDrawer;
 
         private Id<Modification> modificationId;
-        private UnitLayer unitLayer;
+        private UnitLayer? unitLayer;
         private Tile ownerTile;
         private Unit range;
-        private Building ownerAsBuilding;
-        private ImmutableList<Tile> tilesInRange;
+        private Building? ownerAsBuilding;
+        private ImmutableList<Tile>? tilesInRange;
 
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
 
@@ -68,14 +68,14 @@ namespace Bearded.TD.Game.Components.Generic
 
         private void ensureRangeUpToDate()
         {
-            if (range == Parameters.Range && Level.GetTile(Owner.Position) == ownerTile) return;
+            if (range! == Parameters.Range && Level.GetTile(Owner.Position) == ownerTile!) return;
             range = Parameters.Range;
             recalculateTilesInRange();
         }
 
         private void removeModificationsFromUnitsOutOfRange()
         {
-            var unitsOutOfRange = affectedUnits.Where(unit => !tilesInRange.Contains(unit.CurrentTile));
+            var unitsOutOfRange = affectedUnits.Where(unit => !tilesInRange!.Contains(unit.CurrentTile));
             var upgradeEffect = createUpgradeEffect();
 
             foreach (var unit in unitsOutOfRange)
@@ -90,14 +90,14 @@ namespace Bearded.TD.Game.Components.Generic
                 Parameters.IsReduction ? 1 - Parameters.ModificationValue : Parameters.ModificationValue;
             return new ParameterModifiableWithId(
                 Parameters.AttributeAffected,
-                new ModificationWithId(modificationId, Modification.MultiplyWith(modificationFactor)));
+                new ModificationWithId(modificationId!, Modification.MultiplyWith(modificationFactor)));
         }
 
         private void addModificationsToNewUnitsInRange()
         {
-            foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
+            foreach (var unit in tilesInRange!.SelectMany(unitLayer!.GetUnitsOnTile))
             {
-                if (affectedUnits.Contains(unit)) continue;
+                if (affectedUnits!.Contains(unit)) continue;
 
                 var upgradeEffect = createUpgradeEffect();
                 if (!unit.CanApplyEffect(upgradeEffect)) continue;
@@ -109,7 +109,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         public override void Draw(GeometryManager geometries)
         {
-            tileRangeDrawer.Draw();
+            tileRangeDrawer!.Draw();
         }
 
         private void recalculateTilesInRange()

@@ -51,6 +51,7 @@ namespace Bearded.TD.Game
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
+
         public Faction RootFaction { get; private set; }
 
         public GameState(GameMeta meta, GameSettings gameSettings)

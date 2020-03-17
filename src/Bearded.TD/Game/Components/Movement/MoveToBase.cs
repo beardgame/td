@@ -18,8 +18,8 @@ namespace Bearded.TD.Game.Components.Movement
             ITileWalkerOwner,
             ISyncable
     {
-        private TileWalker tileWalker;
-        private PassabilityLayer passabilityLayer;
+        private TileWalker? tileWalker;
+        private PassabilityLayer? passabilityLayer;
 
         public Position2 Position => tileWalker.Position;
         public Tile CurrentTile => tileWalker.CurrentTile;
@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Components.Movement
 
         public override void Update(TimeSpan elapsedTime)
         {
-            tileWalker.Update(elapsedTime, Parameters.MovementSpeed);
+            tileWalker!.Update(elapsedTime, Parameters.MovementSpeed);
         }
 
         public override void Draw(GeometryManager geometries) { }
@@ -50,13 +50,13 @@ namespace Bearded.TD.Game.Components.Movement
         {
             var desiredDirection = Owner.Game.Navigator.GetDirections(CurrentTile);
 
-            if (desiredDirection == Direction.Unknown && !passabilityLayer[CurrentTile].IsPassable)
+            if (desiredDirection == Direction.Unknown && !passabilityLayer![CurrentTile].IsPassable)
             {
                 // this accounts for getting stuck in building or other changes to level
                 desiredDirection = tryToGetUnstuck();
             }
 
-            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            var isPassable = passabilityLayer![CurrentTile.Neighbour(desiredDirection)].IsPassable;
             return !isPassable
                 ? Direction.Unknown
                 : desiredDirection;
@@ -67,7 +67,7 @@ namespace Bearded.TD.Game.Components.Movement
             return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(CurrentTile);
         }
 
-        public void Teleport(Position2 pos, Tile tile) => tileWalker.Teleport(pos, tile);
+        public void Teleport(Position2 pos, Tile tile) => tileWalker!.Teleport(pos, tile);
 
         public IStateToSync GetCurrentStateToSync() =>
             new StateToSync<MoveToBase>(this, new EnemyMovementSynchronizedState(this));

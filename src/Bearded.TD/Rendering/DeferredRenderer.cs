@@ -176,7 +176,7 @@ namespace Bearded.TD.Rendering
                 .WithShader(surfaces.Shaders["deferred/debugDepth"])
                 .AndSettings(new TextureUniform("bufferTexture", buffer));
 
-        public void RenderDebug(RenderTarget target = null)
+        public void RenderDebug(RenderTarget? target = null)
         {
             bind(target, (viewport.Width, viewport.Height));
             var width = 2f / debugSurfaces.Length;
@@ -202,7 +202,7 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        public void Render(IDeferredRenderLayer deferredLayer, RenderTarget target = null)
+        public void Render(IDeferredRenderLayer deferredLayer, RenderTarget? target = null)
         {
             resizeForCameraDistance(deferredLayer.CameraDistance);
 
@@ -305,7 +305,7 @@ namespace Bearded.TD.Rendering
             renderDrawGroups(contentSurfaces, postLightGroups);
         }
 
-        private void copyCompositionTo(RenderTarget target)
+        private void copyCompositionTo(RenderTarget? target)
         {
             bind(target, (viewport.Width, viewport.Height));
 
@@ -320,7 +320,7 @@ namespace Bearded.TD.Rendering
             GL.Enable(EnableCap.Blend);
         }
 
-        private static void bind(RenderTarget target, (int width, int height) viewport)
+        private static void bind(RenderTarget? target, (int width, int height) viewport)
         {
             GL.Viewport(0, 0, viewport.width, viewport.height);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, target);

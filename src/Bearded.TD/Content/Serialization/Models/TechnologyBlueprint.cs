@@ -13,17 +13,17 @@ namespace Bearded.TD.Content.Serialization.Models
     sealed class TechnologyBlueprint
         : IConvertsTo<Content.Models.TechnologyBlueprint, TechnologyBlueprint.DependencyResolvers>
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        public string? Id { get; set; }
+        public string? Name { get; set; }
         public int Cost { get; set; }
-        public List<TechnologyUnlock> Unlocks { get; set; }
+        public List<TechnologyUnlock> Unlocks { get; set; } = new List<TechnologyUnlock>();
         public List<string> RequiredTechs { get; set; } = new List<string>();
 
         public Content.Models.TechnologyBlueprint ToGameModel(DependencyResolvers resolvers)
         {
             return new Content.Models.TechnologyBlueprint(
-                Id,
-                Name,
+                Id!,
+                Name!,
                 Cost,
                 ImmutableList.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers))),
                 RequiredTechs.Select(resolvers.TechnologyResolver.Resolve));
@@ -56,16 +56,16 @@ namespace Bearded.TD.Content.Serialization.Models
             }
 
             public UnlockType Type { get; set; }
-            public string Blueprint { get; set; }
+            public string? Blueprint { get; set; }
 
             public ITechnologyUnlock ToGameModel(DependencyResolvers resolvers)
             {
                 switch (Type)
                 {
                     case UnlockType.Building:
-                        return new BuildingUnlock(resolvers.BuildingResolver.Resolve(Blueprint));
+                        return new BuildingUnlock(resolvers.BuildingResolver.Resolve(Blueprint!));
                     case UnlockType.Upgrade:
-                        return new UpgradeUnlock(resolvers.UpgradeResolver.Resolve(Blueprint));
+                        return new UpgradeUnlock(resolvers.UpgradeResolver.Resolve(Blueprint!));
                     default:
                         // Use an InvalidDataException to make it clear this is a problem with the JSON data.
                         throw new InvalidDataException($"Invalid unlock type: {Type}");

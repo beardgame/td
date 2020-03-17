@@ -14,8 +14,8 @@ namespace Bearded.TD.Game.Buildings
     {
         private readonly IBuildingBlueprint blueprint;
 
-        private BuildingPlaceholder placeholder;
-        private Building building;
+        private BuildingPlaceholder? placeholder;
+        private Building? building;
 
         private double resourcesConsumed;
         private int healthGiven = 1;

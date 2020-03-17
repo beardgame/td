@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.World
 
     static class RayCastingHelpers
     {
-        public static (RayCastResult Result, float RayFactor, Position2 Point, EnemyUnit Enemy)
+        public static (RayCastResult Result, float RayFactor, Position2 Point, EnemyUnit? Enemy)
             CastRayAgainstEnemies(this Level level, Ray ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
         {
             level.Cast(ray, out var rayCaster);
@@ -30,10 +30,10 @@ namespace Bearded.TD.Game.World
                 }
 
                 var enemies = unitLayer.GetUnitsOnTile(tile);
-                
+
                 var closestHit = default((EnemyUnit unit, float factor, Position2 point));
                 closestHit.factor = float.PositiveInfinity;
-                   
+
                 foreach (var enemy in enemies)
                 {
                     if (enemy.CollisionCircle.TryHit(ray, out var f, out var point, out _)

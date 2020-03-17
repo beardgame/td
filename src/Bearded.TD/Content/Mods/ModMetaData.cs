@@ -14,8 +14,8 @@ namespace Bearded.TD.Content.Mods
 
         public ModMetadata(Metadata meta, DirectoryInfo directory)
         {
-            Name = meta.Name;
-            Id = meta.Id;
+            Name = meta.Name!;
+            Id = meta.Id!;
             Dependencies = (meta.Dependencies?.Select(d => new ModDependency(d)).ToList() ?? new List<ModDependency>()).AsReadOnly();
             Directory = directory;
         }
