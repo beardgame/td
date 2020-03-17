@@ -7,36 +7,61 @@ using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    class InputAction
+    class KeyBindings
     {
+        public static IBinding OpenTechnology;
+    }
 
+    class ControlScheme
+    {
+        public Maybe<IBinding> BindingForEvent(InputEvent inputEvent)
+        {
+            return Maybe.Nothing;
+        }
     }
 
     abstract class InputManagingControl : CompositeControl
     {
-        private IEnumerable<(IBindingInput, BindingInputState)> states;
+        private readonly ControlScheme controlScheme;
+        private readonly Dictionary<IBinding, BindingState> states = new Dictionary<IBinding, BindingState>();
 
-        protected InputManagingControl()
+        protected InputManagingControl(ControlScheme controlScheme)
         {
+            this.controlScheme = controlScheme;
+        }
 
+        public void AdvanceFrame()
+        {
+            foreach (var (_, entry) in states)
+            {
+                entry.AdvanceFrame();
+            }
         }
 
         public override void KeyHit(KeyEventArgs eventArgs)
         {
             var e = InputEvent.ForKey(eventArgs.Key);
-            states.MaybeFirst(tuple => tuple.Item1.Matches(e)).Match(tuple => tuple.Item2.Trigger());
+            controlScheme.BindingForEvent(e).Match(bindingTriggered);
         }
 
         public override void KeyReleased(KeyEventArgs eventArgs)
         {
-            // Don't consider modifier keys for release. The modifier keys may have been released already.
             var e = InputEvent.ForKey(eventArgs.Key);
-            states.MaybeFirst(tuple => tuple.Item1.Matches(e)).Match(tuple => tuple.Item2.Release());
+            controlScheme.BindingForEvent(e).Match(bindingReleased);
         }
 
-        public static InputManagingControl ForBindings(IEnumerable<IBinding> bindings)
+        private void bindingTriggered(IBinding binding)
         {
-            return null;
+            if (!states.ContainsKey(binding))
+            {
+                states[binding] = new BindingState();
+            }
+            states[binding].Trigger();
+        }
+
+        private void bindingReleased(IBinding binding)
+        {
+            states[binding].Release();
         }
     }
 
@@ -52,7 +77,7 @@ namespace Bearded.TD.UI.Controls
         public static InputEvent ForKey(Key key) => new InputEvent(Maybe.Just(key));
     }
 
-    class BindingInputState
+    class BindingState
     {
         public bool IsActive { get; private set; }
         public bool IsHit { get; private set; }
@@ -79,7 +104,7 @@ namespace Bearded.TD.UI.Controls
 
     interface IBinding
     {
-
+        IBindingInput Input { get; }
     }
 
     interface IBindingInput
