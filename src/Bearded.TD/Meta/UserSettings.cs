@@ -35,6 +35,11 @@ namespace Bearded.TD.Meta
         public DebugSettings Debug = new DebugSettings();
         public GameSettings.Builder LastGameSettings = new GameSettings.Builder();
 
+        public class InputSettings
+        {
+
+        }
+
         public class MiscSettings
         {
             public string Username = "";
