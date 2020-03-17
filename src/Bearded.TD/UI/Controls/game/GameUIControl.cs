@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Rendering;
+﻿using System.Diagnostics;
+using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using OpenTK.Input;
@@ -62,6 +63,7 @@ namespace Bearded.TD.UI.Controls
             Add(technologyUIControl);
 
             gameUI.FocusReset += Focus;
+            gameUI.GameLeft += Unfocus;
             gameUI.GameOverTriggered += onGameOver;
             gameUI.GameLeft += gameWorldControl.CleanUp;
         }
