@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
@@ -9,8 +10,11 @@ namespace Bearded.TD.Content
 {
     interface IGraphicsLoader
     {
-        PackedSpriteSet CreateSpriteSet(IEnumerable<(Bitmap Image, string Name)> sprites, Shader shader,
-            string defaultTextureSampler, bool pixelate);
+        PackedSpriteSet CreateSpriteSet(
+            IEnumerable<string> samplers,
+            IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
+            Shader shader,
+            bool pixelate);
 
         ISurfaceShader CreateShaderProgram(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);

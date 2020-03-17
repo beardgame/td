@@ -18,9 +18,9 @@ namespace Bearded.TD.Rendering
             Surfaces = new SurfaceManager();
             Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(logger, Surfaces);
-            GraphicsLoader = new GraphicsLoader(this, glActionQueue);
+            GraphicsLoader = new GraphicsLoader(this, glActionQueue, logger);
         }
-        
+
         public void OnResize(ViewportSize viewportSize)
         {
             Compositor.SetViewportSize(viewportSize);

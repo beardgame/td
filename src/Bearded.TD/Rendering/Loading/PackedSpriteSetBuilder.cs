@@ -5,6 +5,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
@@ -16,31 +19,34 @@ namespace Bearded.TD.Rendering.Loading
     {
         private readonly int width;
         private readonly int height;
-        private readonly bool pixelate;
-        private readonly byte[] data;
+        private readonly Dictionary<string, byte[]> samplerData = new Dictionary<string, byte[]>();
         private readonly Dictionary<string, Rectangle> nameToRectangle = new Dictionary<string, Rectangle>();
 
-        public PackedSpriteSetBuilder(int width, int height, bool pixelate)
+        public PackedSpriteSetBuilder(List<string> samplers, int width, int height)
         {
             this.width = width;
             this.height = height;
-            this.pixelate = pixelate;
-            data = new byte[width * height * 4];
+            foreach (var sampler in samplers)
+            {
+                samplerData[sampler] = new byte[width * height * 4];
+            }
         }
 
-        public void CopyBitmap((Bitmap Image, string Name) tuple, int x, int y)
+        public void CopyBitmap(string sprite, string sampler, Bitmap bitmap, int x, int y)
         {
-            nameToRectangle.Add(tuple.Name, new Rectangle(x, y, tuple.Image.Width, tuple.Image.Height));
+            nameToRectangle[sprite] = new Rectangle(x, y, bitmap.Width, bitmap.Height);
 
-            var bitmapData = tuple.Image.LockBits(
-                new Rectangle(0, 0, tuple.Image.Width, tuple.Image.Height),
+            var data = samplerData[sampler];
+
+            var bitmapData = bitmap.LockBits(
+                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 ImageLockMode.ReadOnly,
                 PixelFormat.Format32bppArgb);
 
             var scan0 = bitmapData.Scan0;
             var stride = bitmapData.Stride;
 
-            for (var i = 0; i < tuple.Image.Height; i++)
+            for (var i = 0; i < bitmap.Height; i++)
             {
                 var start = scan0 + stride * i;
                 Marshal.Copy(
@@ -50,29 +56,30 @@ namespace Bearded.TD.Rendering.Loading
                     stride);
             }
 
-            tuple.Image.UnlockBits(bitmapData);
+            bitmap.UnlockBits(bitmapData);
         }
 
         private int flatCoordinate(int x, int y)
             => 4 * (y * width + x);
 
-
-        public PackedSpriteSet Build(RenderContext context, Shader shader, string defaultTextureSampler, IActionQueue glActions)
+        public PackedSpriteSet Build(RenderContext context, IActionQueue glActions, Shader shader, bool pixelate)
         {
-            Texture.PreMultipleArgbArray(data);
+            samplerData.Values.ForEach(Texture.PreMultipleArgbArray);
 
-            var (texture, surface) = glActions.RunAndReturn(() => createGlEntities(shader));
+            var (textureUniforms, surface) = glActions.RunAndReturn(() => createGlEntities(shader, pixelate));
             var sprites = createSprites(surface);
 
             surface.AddSettings(
-                new TextureUniform(defaultTextureSampler, texture),
                 context.Surfaces.ProjectionMatrix,
                 context.Surfaces.ViewMatrix,
                 context.Surfaces.FarPlaneDistance
             );
+            surface.AddSettings(
+                textureUniforms
+            );
 
             return new PackedSpriteSet(
-                texture,
+                textureUniforms.Select(u => u.Texture),
                 surface,
                 sprites
             );
@@ -100,23 +107,30 @@ namespace Bearded.TD.Rendering.Loading
                 (float)rect.Top / height, (float)rect.Bottom / height);
         }
 
-        private (Texture, IndexedSurface<UVColorVertexData>) createGlEntities(Shader shader)
+        private (List<TextureUniform>, IndexedSurface<UVColorVertexData>) createGlEntities(Shader shader, bool pixelate)
         {
-            var texture = new Texture(data, width, height);
+            var textureUniforms = samplerData.Select(
+                (kvp, i) =>
+                {
+                    var (name, data) = kvp;
+                    var texture = new Texture(data, width, height);
+                    if (pixelate)
+                    {
+                        texture.SetParameters(
+                            TextureMinFilter.Nearest, TextureMagFilter.Nearest,
+                            TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
+                        );
+                    }
 
-            if (pixelate)
-            {
-                texture.SetParameters(
-                    TextureMinFilter.Nearest, TextureMagFilter.Nearest,
-                    TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
-                );
-            }
+                    return new TextureUniform(name, texture, TextureUnit.Texture0 + i);
+                }
+            ).ToList();
 
             var surface = new IndexedSurface<UVColorVertexData>();
 
             shader.SurfaceShader.UseOnSurface(surface);
 
-            return (texture, surface);
+            return (textureUniforms, surface);
         }
     }
 }

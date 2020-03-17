@@ -1,7 +1,19 @@
 ﻿{
-    "id" : "buildings",
-    "drawGroup" : "building",
-    "shader" : "building",
-    "defaultTextureSampler" : "diffuse",
-    "pixelate" : true
+  "id" : "buildings",
+  "drawGroup" : "building",
+  "shader" : "building",
+  "pixelate" : true,
+  "textureSamplers" :
+  [
+    {
+      "sampler" : "diffuse",
+      "prefix" : "",
+      "suffix" : ""
+    },
+    {
+      "sampler" : "normal",
+      "prefix" : "",
+      "suffix" : "-normal"
+    }
+  ]
 }

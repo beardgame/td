@@ -19,13 +19,13 @@ namespace Bearded.TD.Rendering
                 .SelectMany(m => m.ArrayTextures)
                 .ForEach(textureUniform => textureUniform.Texture.Dispose());
         }
-        
+
         private static void cleanUp(ReadonlyBlueprintCollection<SpriteSet> spriteSets)
         {
             spriteSets.All
                 .ForEach(spriteSet =>
                     {
-                        spriteSet.Sprites.Texture.Dispose();
+                        spriteSet.Sprites.Textures.ForEach(t => t.Dispose());
                         spriteSet.Sprites.Surface.Dispose();
                     }
                 );

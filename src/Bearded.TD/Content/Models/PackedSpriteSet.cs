@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
 
@@ -6,16 +7,16 @@ namespace Bearded.TD.Content.Models
 {
     sealed class PackedSpriteSet
     {
-        public Texture Texture { get; }
+        public ReadOnlyCollection<Texture> Textures { get; }
         public IndexedSurface<UVColorVertexData> Surface { get; }
         private readonly IDictionary<string, ISprite> sprites;
 
         public IEnumerable<(string Id, ISprite Sprite)> All => sprites.Select(kvp => (kvp.Key, kvp.Value));
 
-        public PackedSpriteSet(Texture texture, IndexedSurface<UVColorVertexData> surface,
+        public PackedSpriteSet(IEnumerable<Texture> textures, IndexedSurface<UVColorVertexData> surface,
             IDictionary<string, ISprite> sprites)
         {
-            Texture = texture;
+            Textures = textures.ToList().AsReadOnly();
             Surface = surface;
             this.sprites = sprites;
         }
