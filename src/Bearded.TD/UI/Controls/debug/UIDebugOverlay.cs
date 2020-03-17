@@ -5,10 +5,10 @@ namespace Bearded.TD.UI.Controls
 {
     class UIDebugOverlay : UpdateableNavigationNode<Void>
     {
-        
+
         public override void Update(UpdateEventArgs args)
         {
-            
+
         }
 
         public void Close()

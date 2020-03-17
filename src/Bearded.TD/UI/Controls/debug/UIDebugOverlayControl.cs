@@ -36,7 +36,7 @@ namespace Bearded.TD.UI.Controls
 
                 return TextY;
             }
-            
+
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
         }
@@ -51,13 +51,13 @@ namespace Bearded.TD.UI.Controls
         private readonly List<Highlight> highlights = new List<Highlight>();
         private readonly CompositeControl controlBox;
         private readonly ListControl highlightList  = new ListControl();
-        
+
         private bool moveControlBox;
 
         public UIDebugOverlayControl(UIDebugOverlay model)
         {
             Add(new BackgroundBox { Color = Color.DarkCyan * 0.2f });
-            
+
             Add(highlightParent = new CompositeControl());
 
             controlBox = new CompositeControl
@@ -72,15 +72,15 @@ namespace Bearded.TD.UI.Controls
                 highlightList.Anchor(a => a.Top(margin + buttonDimension + margin).Bottom(margin).Left(margin).Right(margin))
             };
             controlBox.MouseMove += args => args.Handled = true;
-            
+
             Add(controlBox.Anchor(a => a.Bottom(margin, controlBoxHeight).Left(margin, controlBoxWidth)));
         }
-        
+
         protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
         {
             SkipNextRender();
         }
-        
+
         protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
         {
             RenderAsLayer(router);
@@ -90,12 +90,12 @@ namespace Bearded.TD.UI.Controls
         {
             if (!moveControlBox)
                 return;
-            
+
             var p = eventArgs.MousePosition;
             var newX = p.X - controlBox.Frame.X.Size / 2;
             var newY = p.Y - margin - buttonDimension / 2;
             controlBox.Anchor(a => a.Top(newY, controlBoxHeight).Left(newX, controlBoxWidth));
-                
+
             eventArgs.Handled = true;
         }
 
@@ -126,7 +126,7 @@ namespace Bearded.TD.UI.Controls
         private List<Control> getControlsAt(Vector2d point)
         {
             var root = getRootControl();
-            
+
             var chain = new List<Control>();
 
             object current = root;
