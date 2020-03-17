@@ -46,7 +46,8 @@ namespace Bearded.TD.UI.Controls
                 "game.resources 1000",
                 "game.killall",
                 "game.repairall",
-                "game.die"
+                "game.die",
+                "debug.ui"
             );
 
             items.Add(new Header("SETTINGS"));
