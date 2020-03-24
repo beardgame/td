@@ -6,12 +6,13 @@ namespace Bearded.TD.Content.Mods
     {
         public Logger Logger { get; }
         public IGraphicsLoader GraphicsLoader { get; }
-        public ModLoadingProfiler Profiler { get; } = new ModLoadingProfiler();
+        public ModLoadingProfiler Profiler { get; }
 
-        public ModLoadingContext(Logger logger, IGraphicsLoader graphicsLoader)
+        public ModLoadingContext(Logger logger, IGraphicsLoader graphicsLoader, ModLoadingProfiler profiler)
         {
             Logger = logger;
             GraphicsLoader = graphicsLoader;
+            Profiler = profiler;
         }
     }
 }

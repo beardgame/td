@@ -7,6 +7,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
@@ -30,12 +31,13 @@ namespace Bearded.TD.UI.Controls
         public NetworkInterface Network { get; }
         protected IDispatcher<GameInstance> Dispatcher => Game.Meta.Dispatcher;
         protected Logger Logger => Game.Meta.Logger;
-        private ModLoadingProfiler profiler;
 
+        private readonly ModLoadingProfiler profiler = new ModLoadingProfiler();
         private readonly Dictionary<string, ModForLoading> modsByModId = new Dictionary<string, ModForLoading>();
         private readonly Queue<ModMetadata> modLoadingQueue = new Queue<ModMetadata>();
 
         private Stage stage = Stage.Initial;
+        private int numBlueprintsWithErrors;
 
         public ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile> LoadedBlueprints =>
             profiler?.LoadedBlueprints ?? ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile>.Empty;
@@ -95,8 +97,7 @@ namespace Bearded.TD.UI.Controls
         private void loadMod(ModMetadata modMetadata)
         {
             var modForLoading = modMetadata.PrepareForLoading();
-            var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader);
-            profiler = context.Profiler;
+            var context = new ModLoadingContext(Logger, Game.ContentManager.GraphicsLoader, profiler);
             var loadedDependencies = modMetadata.Dependencies
                 .Select(dependency => modsByModId[dependency.Id].GetLoadedMod()).ToList().AsReadOnly();
             modForLoading.StartLoading(context, loadedDependencies);
@@ -105,14 +106,17 @@ namespace Bearded.TD.UI.Controls
 
         private void onModsFinishedLoading()
         {
-            var hasErrors = modsByModId.Values.Any(m => !m.DidLoadSuccessfully);
+            var hasModWithTerminalFailure = modsByModId.Values.Any(m => !m.DidLoadSuccessfully);
+            numBlueprintsWithErrors =
+                profiler.LoadedBlueprints.Count(b => b.LoadingResult == ModLoadingProfiler.LoadingResult.HasError);
+
             switch (UserSettings.Instance.Misc.ModLoadFinishBehavior)
             {
                 case ModLoadFinishBehavior.DoNothing:
                     gatherModBlueprints();
                     break;
                 case ModLoadFinishBehavior.ThrowOnError:
-                    if (hasErrors)
+                    if (hasModWithTerminalFailure)
                     {
                         modsByModId.Values.First(m => !m.DidLoadSuccessfully).Rethrow();
                     }
@@ -120,9 +124,10 @@ namespace Bearded.TD.UI.Controls
                     {
                         gatherModBlueprints();
                     }
+
                     break;
                 case ModLoadFinishBehavior.PauseOnError:
-                    if (hasErrors)
+                    if (hasModWithTerminalFailure)
                     {
                         stage = Stage.Paused;
                     }
@@ -151,9 +156,17 @@ namespace Bearded.TD.UI.Controls
             stage = Stage.Finished;
         }
 
-        public void IntegrateUI()
+        public void PrepareUI()
         {
-            Game.IntegrateUI();
+            Game.PrepareUI();
+        }
+
+        public void FinalizeUI()
+        {
+            if (numBlueprintsWithErrors > 0)
+            {
+                Game.Meta.Events.Send(new ModFilesFailedLoading(numBlueprintsWithErrors));
+            }
         }
 
         public void Unpause()

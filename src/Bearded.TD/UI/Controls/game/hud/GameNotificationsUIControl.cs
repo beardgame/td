@@ -65,7 +65,8 @@ namespace Bearded.TD.UI.Controls
                 this.game = game;
                 this.notification = notification;
 
-                Add(new BackgroundBox().Anchor(a => a.MarginAllSides(margin)));
+                Add(new BackgroundBox(notification.Background.ValueOrDefault(BackgroundBox.DefaultColor))
+                    .Anchor(a => a.MarginAllSides(margin)));
                 Add(new Label { Text = notification.Text, TextAnchor = new Vector2d(0, .5), FontSize = 14 }
                     .Anchor(a => a.MarginAllSides(margin * 2)));
             }

@@ -62,9 +62,10 @@ namespace Bearded.TD.UI.Controls
 
         private void startGame()
         {
-            loadingManager.IntegrateUI();
+            loadingManager.PrepareUI();
             Navigation.Replace<GameUI, (GameInstance, GameRunner)>(
                 (loadingManager.Game, new GameRunner(loadingManager.Game, loadingManager.Network)), this);
+            loadingManager.FinalizeUI();
         }
 
         public void Unpause()
