@@ -9,6 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.Threading;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Shader = Bearded.TD.Content.Models.Shader;
@@ -97,7 +98,7 @@ namespace Bearded.TD.Rendering.Loading
         {
             var uv = toUvRectangle(rectangle);
 
-            return new Sprite(surface, uv);
+            return new Sprite(surface, uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
         }
 
         private UVRectangle toUvRectangle(Rectangle rect)

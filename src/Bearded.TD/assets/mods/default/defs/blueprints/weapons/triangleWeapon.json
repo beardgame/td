@@ -33,9 +33,9 @@
         {
             "id": "sprite",
             "parameters": {
-                "sprite": "buildings.turret01-24px",
+                "sprite": "buildings.gun-turret",
                 "color": "White",
-                "size": 0.4
+                "size" : 0.5
             }
         }
     ]
