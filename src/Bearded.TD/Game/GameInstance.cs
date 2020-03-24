@@ -153,7 +153,7 @@ namespace Bearded.TD.Game
             GameStateInitialized?.Invoke(State);
         }
 
-        public void IntegrateUI()
+        public void PrepareUI()
         {
             if (Camera != null)
                 throw new InvalidOperationException("Cannot override the camera once set.");

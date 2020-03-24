@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using amulware.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
@@ -36,8 +37,10 @@ namespace Bearded.TD.UI.Controls
                     @event => $"Upgraded {@event.Building.Blueprint.Name} with {@event.Upgrade.Name}",
                     @event => @event.Building),
                 textOnlyEventListener<TechnologyUnlocked>(
-                    @event => $"Unlocked {@event.Technology.Name}")
-                );
+                    @event => $"Unlocked {@event.Technology.Name}"),
+                textOnlyEventListener<ModFilesFailedLoading>(
+                    @event =>
+                        $"{@event.NumBlueprintsWithErrors} mod file{(@event.NumBlueprintsWithErrors != 1 ? "s" : "")} failed loading"));
 
         public void Initialize(GameInstance game)
         {
@@ -75,10 +78,15 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor) where T : IGlobalEvent =>
+        private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
+            where T : IGlobalEvent =>
             new NotificationListener<T>(
                 this,
-                @event => new Notification(textExtractor(@event), Maybe.Nothing, expirationTimeForNotification()));
+                @event => new Notification(
+                    textExtractor(@event),
+                    Maybe.Nothing,
+                    expirationTimeForNotification(),
+                    isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
 
         private NotificationListener<T> textAndGameObjectEventListener<T>(
             Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor) where T : IGlobalEvent =>
@@ -87,7 +95,8 @@ namespace Bearded.TD.UI.Controls
                     @event => new Notification(
                         textExtractor(@event),
                         Maybe.Just(gameObjectExtractor(@event)),
-                        expirationTimeForNotification()));
+                        expirationTimeForNotification(),
+                        Maybe.Nothing));
 
         private void addNotification(Notification notification)
         {
@@ -100,19 +109,24 @@ namespace Bearded.TD.UI.Controls
             NotificationsChanged?.Invoke();
         }
 
-        private Instant expirationTimeForNotification() => Game.State.Time + Constants.Game.GameUI.NotificationDuration;
+        private Instant expirationTimeForNotification(bool isSevere = false) =>
+            Game.State.Time + (isSevere
+                ? Constants.Game.GameUI.SevereNotificationDuration
+                : Constants.Game.GameUI.NotificationDuration);
 
         public class Notification
         {
             public string Text { get; }
             public Maybe<GameObject> Subject { get; }
             public Instant ExpirationTime { get; }
+            public Maybe<Color> Background { get; }
 
-            public Notification(string text, Maybe<GameObject> subject, Instant expirationTime)
+            public Notification(string text, Maybe<GameObject> subject, Instant expirationTime, Maybe<Color> background)
             {
                 Text = text;
                 Subject = subject;
                 ExpirationTime = expirationTime;
+                Background = background;
             }
         }
 
