@@ -16,7 +16,16 @@
       "parameters": {
         "sprite": "buildings.base-32px",
         "color": "White",
-        "heightOffset": 0.1
+        "heightOffset": 0.01
+      }
+    },
+    {
+      "id": "sprite",
+      "parameters": {
+        "sprite": "buildings.base-32px",
+        "color": "White",
+        "heightOffset": 0.1,
+        "size" : 0.9
       }
     }
   ]

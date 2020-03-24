@@ -143,7 +143,7 @@ namespace Bearded.TD.Game.Buildings
         {
             var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
             //DrawTiles(geometries, drawColors[SelectionState] * alpha);
-            DrawBuildingName(geometries, Color.Black);
+            //DrawBuildingName(geometries, Color.Black);
             base.Draw(geometries);
         }
 
