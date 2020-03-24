@@ -7,5 +7,7 @@ namespace Bearded.TD.Utilities.SpaceTime
 
         public static T Max<T>(T left, T right) where T : IMeasure1 =>
             left.NumericValue >= right.NumericValue ? left : right;
+
+        public static T Clamp<T>(T val, T min, T max) where T : IMeasure1 => Min(Max(min, val), max);
     }
 }
