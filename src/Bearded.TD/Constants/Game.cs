@@ -91,6 +91,18 @@ namespace Bearded.TD
                 public static readonly Energy EnergyPerEnergyDamage = new Energy(0.2);
                 public static readonly Energy EnergyPerFireDamage = new Energy(50);
                 public static readonly EnergyConsumptionRate EnergyPerSecondInWater = new EnergyConsumptionRate(15);
+
+                public static readonly Energy InstantEvaporationThreshold = new Energy(0.8);
+                public static readonly Energy FrozenThreshold = new Energy(-0.8);
+
+                public const double WaterToWetnessRatio = 0.1;
+                public const double WaterEvaporatedPerSecond = 0.5;
+                public const double MinWetness = -1;
+                public const double MaxWetness = 1;
+                public static readonly Energy EnergyPerUnitWaterEvaporated = new Energy(0.05);
+
+                public static readonly Energy MinHeat = new Energy(-1);
+                public static readonly Energy MaxHeat = new Energy(1);
             }
 
             public static class Physics
