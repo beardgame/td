@@ -160,7 +160,7 @@ namespace Bearded.TD.Rendering
 
             debugSurfaces = new[] {diffuseBuffer, normalBuffer, depthBuffer, lightAccumBuffer}
                 .Select(createDebugSurface)
-                .Concat( new [] {depthMaskBuffer, depthMaskBufferLowRes}.Select(createDebugDepthSurface))
+                //.Concat( new [] {depthMaskBuffer, depthMaskBufferLowRes}.Select(createDebugDepthSurface))
                 .ToArray();
 
             surfaces.InjectDeferredBuffer(normalBuffer, depthBuffer);

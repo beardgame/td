@@ -6,6 +6,9 @@ namespace Bearded.TD
         {
             public const float PixelsPerTileLevelResolution = 22;
             public const float PixelsPerTileSpriteResolution = 100000;
+
+            public const float PixelSize = Game.World.HexagonWidth / PixelsPerTileLevelResolution;
+
         }
     }
 }

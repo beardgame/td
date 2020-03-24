@@ -16,7 +16,6 @@
       "parameters": {
         "sprite": "buildings.base-32px",
         "color": "White",
-        "size": 0.4,
         "heightOffset": 0.1
       }
     }

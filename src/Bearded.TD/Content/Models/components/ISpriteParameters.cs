@@ -10,7 +10,7 @@ namespace Bearded.TD.Content.Models
 
         ISprite Sprite { get; }
 
-        [Modifiable(0.2)]
+        [Modifiable(1)]
         Unit Size { get; }
 
         Unit HeightOffset { get; }

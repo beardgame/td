@@ -10,30 +10,39 @@ namespace Bearded.TD.Rendering.Loading
     {
         private readonly IndexedSurface<UVColorVertexData> surface;
         private readonly UVRectangle uv;
+        private readonly Vector2 halfBaseSize;
 
         private readonly Vector2 uvBase;
         private readonly Vector2 uUnit;
         private readonly Vector2 vUnit;
 
-        public Sprite(IndexedSurface<UVColorVertexData> surface, UVRectangle uv)
+        public Vector2 BaseSize { get; }
+
+        public Sprite(IndexedSurface<UVColorVertexData> surface, UVRectangle uv, Vector2 baseSize)
         {
             this.surface = surface;
             this.uv = uv;
+            BaseSize = baseSize;
+            halfBaseSize = baseSize * 0.5f;
 
             uvBase = uv.TopLeft;
             uUnit = uv.TopRight - uvBase;
             vUnit = uv.BottomLeft - uvBase;
         }
 
+
         public void Draw(Vector3 position, Color color, float size, float angle)
         {
-            var unitX = new Vector2((float) Math.Cos(angle) , (float) Math.Sin(angle));
-            var unitY = new Vector2(unitX.Y, -unitX.X);
+            var unitX = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+            var unitY = new Vector2(-unitX.Y, unitX.X);
 
-            var v0 = (unitX * -size) + (unitY * -size);
-            var v1 = new Vector2(v0.Y, -v0.X);
-            var v2 = new Vector2(v1.Y, -v1.X);
-            var v3 = new Vector2(v2.Y, -v2.X);
+            //var scaledUnitX =
+
+            var v0 = (-unitX * halfBaseSize.X * size) + (unitY * halfBaseSize.Y * size);
+            var v1 = (unitX * halfBaseSize.X  * size) + (unitY * halfBaseSize.Y * size);
+
+            var v2 = -v0;
+            var v3 = -v1;
 
             v0 += position.Xy;
             v1 += position.Xy;
@@ -52,11 +61,11 @@ namespace Bearded.TD.Rendering.Loading
 
         public void Draw(Vector3 position, Color color, float size)
         {
-            var left = position.X - size;
-            var right = position.X + size;
+            var left = position.X - size * halfBaseSize.X;
+            var right = position.X + size * halfBaseSize.X;
 
-            var top = position.Y - size;
-            var bottom = position.Y + size;
+            var top = position.Y - size * halfBaseSize.Y;
+            var bottom = position.Y + size * halfBaseSize.Y;
 
             var z = position.Z;
 

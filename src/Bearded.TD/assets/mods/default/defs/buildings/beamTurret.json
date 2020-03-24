@@ -10,7 +10,8 @@
             "onPlaceholder" :  true,
             "onGhost": true,
             "parameters" : {
-                "weapon" : "beamWeapon"
+                "weapon" : "beamWeapon",
+                "height" : 0.2
             }
         }
     ]
