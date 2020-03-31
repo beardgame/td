@@ -1,6 +1,9 @@
+using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
-using Bearded.Utilities.SpaceTime;
+using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.Graphical
 {
@@ -28,9 +31,15 @@ namespace Bearded.TD.Game.Components.Graphical
             var p = Owner.Position.NumericValue;
             p.Z += Parameters.HeightOffset.NumericValue;
 
-            var angle = ownerAsDirected?.Direction.Radians ?? 0;
+            var angle = Maybe
+                .FromNullable(ownerAsDirected)
+                .Select(adjustSpriteAngleToDirection)
+                .ValueOrDefault(0);
 
             Parameters.Sprite.Draw(p, Parameters.Color, Parameters.Size.NumericValue, angle);
         }
+
+        private static readonly Func<IDirected, float> adjustSpriteAngleToDirection =
+            directed => (directed.Direction - 90.Degrees()).Radians;
     }
 }

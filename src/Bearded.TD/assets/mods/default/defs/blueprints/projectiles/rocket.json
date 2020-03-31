@@ -13,15 +13,22 @@
             "parameters" : {
                 "color" : "Orange",
                 "sprite" : "particle.orb-soft",
-                "size" : 0.3
+                "size" : 0.15
+            }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "FFFFA533",
+                "radius" : 1
             }
         },
         {
             "id" : "trail",
             "parameters" : {
-                "color" : "CCFFA500",
+                "color" : "CCFFA33",
                 "sprite" : "particle.orb-soft",
-                "width" : 0.3,
+                "width" : 0.1,
                 "timeout" : 0.3,
                 "surviveObjectDeletion" : true
             }
