@@ -21,6 +21,14 @@
                 "muzzleVelocity" : 8,
                 "fireRate" : 1
             }
+        },
+        {
+            "id": "sprite",
+            "parameters": {
+                "sprite": "buildings.rocket-turret",
+                "color": "White",
+                "size" : 0.5
+            }
         }
     ]
 }
