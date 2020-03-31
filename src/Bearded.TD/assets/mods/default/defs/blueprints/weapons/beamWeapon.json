@@ -21,14 +21,6 @@
                 "damagePerSecond" : 50,
                 "range" : 5
             }
-        },
-        {
-            "id" : "sprite",
-            "parameters": {
-                "sprite": "buildings.turret01-24px",
-                "color": "White",
-                "size" : 1
-            },
         }
     ]
 }
