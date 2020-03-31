@@ -75,22 +75,21 @@ namespace Bearded.TD.Game.Projectiles
 
             Position += step * rayFactor;
 
-
             switch (result)
             {
-                case RayCastResult.HitNothing:
+                case RayCastResultType.HitNothing:
                     if (Position.Z < Game.GeometryLayer[CurrentTile].DrawInfo.Height)
                     {
                         events.Send(new HitLevel());
                         Delete();
                     }
                     break;
-                case RayCastResult.HitLevel:
+                case RayCastResultType.HitLevel:
                     events.Send(new HitLevel());
                     Delete();
                     break;
-                case RayCastResult.HitEnemy:
-                    events.Send(new HitEnemy(enemy));
+                case RayCastResultType.HitEnemy:
+                    enemy.Match(e => events.Send(new HitEnemy(e)), () => throw new InvalidOperationException());
                     Delete();
                     break;
                 default:

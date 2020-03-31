@@ -51,11 +51,11 @@ namespace Bearded.TD.Game.Components.Weapons
 
             switch (result)
             {
-                case RayCastResult.HitNothing:
-                case RayCastResult.HitLevel:
+                case RayCastResultType.HitNothing:
+                case RayCastResultType.HitLevel:
                     break;
-                case RayCastResult.HitEnemy:
-                    damageEnemy(enemy, elapsedTime);
+                case RayCastResultType.HitEnemy:
+                    enemy.Match(e => damageEnemy(e, elapsedTime), () => throw new InvalidOperationException());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
