@@ -12,6 +12,9 @@ namespace Bearded.TD.Content.Models
         [Modifiable(Type = AttributeType.Range)]
         Unit Range { get; }
 
+        [Modifiable(0.0f, Type = AttributeType.PiercingFactor)]
+        float PiercingFactor { get; }
+
         Color Color { get; }
     }
 }
