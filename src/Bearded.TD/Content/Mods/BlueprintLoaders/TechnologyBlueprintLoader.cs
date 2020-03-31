@@ -101,7 +101,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         private static IEnumerable<TechnologyBlueprintJson> topologicalSort(IEnumerable<TechnologyBlueprintJson> models)
         {
             var modelsList = models.ToList();
-            var unvisitedModelsByName = modelsList.ToDictionary(model => model.Name);
+            var unvisitedModelsByName = modelsList.ToDictionary(model => model.Id);
             var sortedModels = new List<TechnologyBlueprintJson>();
 
             while (unvisitedModelsByName.Count > 0)
@@ -119,7 +119,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             IDictionary<string, TechnologyBlueprintJson> unvisitedModelsByName,
             ICollection<TechnologyBlueprintJson> sortedModels)
         {
-            unvisitedModelsByName.Remove(model.Name);
+            unvisitedModelsByName.Remove(model.Id);
 
             foreach (var requiredName in model.RequiredTechs)
             {

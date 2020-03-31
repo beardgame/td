@@ -5,6 +5,9 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Players
 {
+    /// <summary>
+    /// In the context of TD, a Player is a connected client.
+    /// </summary>
     sealed class Player : IIdable<Player>
     {
         public Id<Player> Id { get; }

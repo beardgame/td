@@ -11,6 +11,7 @@
         FireRate,
         Health,
         MovementSpeed,
+        PiercingFactor,
         ResourceIncome,
         Range,
         SplashRange,
