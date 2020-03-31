@@ -17,9 +17,19 @@
         {
             "id" : "beamEmitter",
             "parameters" : {
-                "color" : "cyan",
+                "color" : "red",
                 "damagePerSecond" : 50,
-                "range" : 5
+                "range" : 5,
+                "width" : 1.5,
+                "coreWidth" : 0.5
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters": {
+                "sprite": "buildings.laser-turret",
+                "color": "White",
+                "size" : 0.5
             }
         }
     ]

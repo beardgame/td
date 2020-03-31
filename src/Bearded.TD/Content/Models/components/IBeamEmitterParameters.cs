@@ -13,5 +13,11 @@ namespace Bearded.TD.Content.Models
         Unit Range { get; }
 
         Color Color { get; }
+
+        [Modifiable(3)]
+        Unit Width { get; }
+
+        [Modifiable(1)]
+        Unit CoreWidth { get; }
     }
 }

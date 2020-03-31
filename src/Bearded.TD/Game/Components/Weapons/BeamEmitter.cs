@@ -1,4 +1,5 @@
 ﻿using System;
+using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Damage;
@@ -10,6 +11,7 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Constants.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components.Weapons
@@ -79,8 +81,13 @@ namespace Bearded.TD.Game.Components.Weapons
                 return;
 
             var geo = geometries.ConsoleBackground;
-            geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.5f, 0.8f);
-            geo.LineWidth = Constants.Rendering.PixelSize;
+            geo.Color = Parameters.Color.WithAlpha() * StaticRandom.Float(0.3f, 0.7f);
+            geo.LineWidth = Parameters.Width.NumericValue * PixelSize * 0.5f;
+
+            geo.DrawLine(Weapon.Position.NumericValue, endPoint.WithZ(Weapon.Position.Z).NumericValue);
+
+            geo.Color = Color.White.WithAlpha();
+            geo.LineWidth = Parameters.CoreWidth.NumericValue * PixelSize * 0.5f;
 
             geo.DrawLine(Weapon.Position.NumericValue, endPoint.WithZ(Weapon.Position.Z).NumericValue);
         }
