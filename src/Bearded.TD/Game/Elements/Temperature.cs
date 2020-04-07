@@ -6,49 +6,31 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Elements
 {
-    // TODO: do we deal with a certain amount of fuel?
-
     sealed class Temperature
     {
         public double Wetness { get; private set; }
         public Energy Heat { get; private set; }
 
-        public bool IsFrozen => Heat <= FrozenThreshold;
-        private bool instantlyEvaporatesWater => Heat >= InstantEvaporationThreshold;
-
         private Energy energyThisFrame;
         private double amountOfWaterThisFrame;
 
-        // TODO: is there a different about fire and energy?
-        // TODO: should there be a way to spark?
-        public void HitWithEnergy(Energy energy)
+        public void AddEnergy(Energy energy)
         {
             energyThisFrame += energy;
         }
 
-        public void HitWithWater(double amountOfWater)
+        public void AddWater(double amountOfWater)
         {
             amountOfWaterThisFrame += amountOfWater;
         }
 
-        public void Simulate(TimeSpan elapsedTime)
+        public void AdvanceSimulation(TimeSpan elapsedTime)
         {
-            Heat = Min(Heat + energyThisFrame, MaxHeat);
+            Heat += energyThisFrame;
+            Wetness += amountOfWaterThisFrame;
 
-            if (instantlyEvaporatesWater)
-            {
-                simulateEvaporatedWater(amountOfWaterThisFrame);
-            }
-            else
-            {
-                Wetness = Min(Wetness + WaterToWetnessRatio * amountOfWaterThisFrame, MaxWetness);
-            }
-
+            approachAmbientHeat(elapsedTime);
             evaporateWater(elapsedTime);
-
-            // TODO: freeze
-            // TODO: ignite
-
             resetForNextFrame();
         }
 
@@ -58,17 +40,23 @@ namespace Bearded.TD.Game.Elements
             amountOfWaterThisFrame = 0;
         }
 
+        private void approachAmbientHeat(TimeSpan elapsedTime)
+        {
+            Heat = AmbientHeat + (Heat - AmbientHeat) * Pow(.5, elapsedTime / AmbientHeatApproachHalfTime);
+        }
+
         private void evaporateWater(TimeSpan elapsedTime)
         {
             if (Wetness <= MinWetness)
             {
+                Wetness = MinWetness;
                 return;
             }
 
-            // TODO: is evaporation temperature dependent?
-            var maxPossibleEvaporation = (Wetness - MinWetness) / WaterEvaporatedPerSecond;
-            var amountEvaporated = Min(maxPossibleEvaporation, elapsedTime.NumericValue * WaterEvaporatedPerSecond);
-            Wetness -= amountEvaporated;
+            // TODO: make half-life heat dependent.
+            var newWetness = Wetness * Pow(.5, elapsedTime / WaterEvaporationHalfTime);
+            var amountEvaporated = Wetness - newWetness;
+            Wetness = newWetness;
             simulateEvaporatedWater(amountEvaporated);
         }
 
