@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD
@@ -93,17 +94,13 @@ namespace Bearded.TD
                 public static readonly Energy EnergyPerFireDamage = new Energy(50);
                 public static readonly EnergyConsumptionRate EnergyPerSecondInWater = new EnergyConsumptionRate(15);
 
-                public static readonly Energy InstantEvaporationThreshold = new Energy(0.8);
-                public static readonly Energy FrozenThreshold = new Energy(-0.8);
-
-                public const double WaterToWetnessRatio = 0.1;
-                public const double WaterEvaporatedPerSecond = 0.5;
-                public const double MinWetness = -1;
-                public const double MaxWetness = 1;
+                public const double MinWetness = 0;
+                public static readonly TimeSpan WaterEvaporationHalfTime = .5.S();
                 public static readonly Energy EnergyPerUnitWaterEvaporated = new Energy(0.05);
 
-                public static readonly Energy MinHeat = new Energy(-1);
-                public static readonly Energy MaxHeat = new Energy(1);
+                public static readonly Energy MinHeat = new Energy(0);
+                public static readonly Energy AmbientHeat = new Energy(100);
+                public static readonly TimeSpan AmbientHeatApproachHalfTime = 1.S();
             }
 
             public static class Physics
