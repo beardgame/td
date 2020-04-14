@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Rules;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
@@ -18,17 +20,21 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game
 {
-    class GameState
+    [ComponentOwner]
+    sealed class GameState : IComponentOwner<GameState>
     {
         private readonly Stack<GameObject> objectsBeingAdded = new Stack<GameObject>();
         public GameObject ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
 
         private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
+        private readonly ComponentCollection<GameState> components;
         private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> dictionaries = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> singletons = new Dictionary<Type, object>();
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
+
+        public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
 
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
@@ -52,12 +58,16 @@ namespace Bearded.TD.Game
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
         public Faction RootFaction { get; private set; }
+        public IReadOnlyCollection<IComponent<GameState>> Rules { get; }
 
         public GameState(GameMeta meta, GameSettings gameSettings)
         {
             Meta = meta;
             GameSettings = gameSettings;
             Level = new Level(GameSettings.LevelSize);
+            // Use null as component events object, since we want to force game rules to use global game events.
+            components = new ComponentCollection<GameState>(this, null);
+            Rules = components.Components;
 
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
@@ -94,6 +104,11 @@ namespace Bearded.TD.Game
             var sameObj = objectsBeingAdded.Pop();
             DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
+        }
+
+        public void Add(GameRule rule)
+        {
+            components.Add(rule);
         }
 
         public void RegisterSingleton<T>(T obj)
@@ -159,7 +174,6 @@ namespace Bearded.TD.Game
             return l;
         }
 
-
         private IdDictionary<T> getDictionary<T>()
             where T : class, IIdable<T>
         {
@@ -170,6 +184,10 @@ namespace Bearded.TD.Game
             dictionaries.Add(typeof(T), d);
             return d;
         }
+
+        IEnumerable<TComponent> IComponentOwner<GameState>.GetComponents<TComponent>() => components.Get<TComponent>();
+
+        IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
 
         public Faction FactionFor(Id<Faction> id) => factions[id];
 
@@ -196,6 +214,7 @@ namespace Bearded.TD.Game
             Time += elapsedTime;
 
             FluidLayer.Update();
+            components.Update(elapsedTime);
 
             foreach (var obj in gameObjects)
             {
