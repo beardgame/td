@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Serialization.Models
             public List<Step> Tiles { get; set; }
             public Angle Orientation { get; set; }
         }
-        
+
         public string Id { get; set; }
         public List<Footprint> Footprints { get; set; }
 
