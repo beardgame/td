@@ -5,6 +5,7 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.Rules;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Game.World;
@@ -57,6 +58,7 @@ namespace Bearded.TD.Game
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
         public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
         public Faction RootFaction { get; private set; }
+        public IReadOnlyCollection<IComponent<GameState>> Rules { get; }
 
         public GameState(GameMeta meta, GameSettings gameSettings)
         {
@@ -65,6 +67,7 @@ namespace Bearded.TD.Game
             Level = new Level(GameSettings.LevelSize);
             // Use null as component events object, since we want to force game rules to use global game events.
             components = new ComponentCollection<GameState>(this, null);
+            Rules = components.Components;
 
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
@@ -101,6 +104,11 @@ namespace Bearded.TD.Game
             var sameObj = objectsBeingAdded.Pop();
             DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
+        }
+
+        public void Add(GameRule rule)
+        {
+            components.Add(rule);
         }
 
         public void RegisterSingleton<T>(T obj)
@@ -206,6 +214,7 @@ namespace Bearded.TD.Game
             Time += elapsedTime;
 
             FluidLayer.Update();
+            components.Update(elapsedTime);
 
             foreach (var obj in gameObjects)
             {
