@@ -15,7 +15,7 @@ namespace Bearded.TD.Rendering
 {
     class DeferredRenderer
     {
-        private static readonly SpriteDrawGroup[] worldDrawGroups = { Building, Unit };
+        private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
         private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
 
         public static readonly ReadOnlyCollection<SpriteDrawGroup> AllDrawGroups =

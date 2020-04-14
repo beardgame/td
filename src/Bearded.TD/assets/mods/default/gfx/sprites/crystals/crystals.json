@@ -1,0 +1,19 @@
+﻿{
+  "id" : "crystals",
+  "drawGroup" : "leveldetail",
+  "shader" : "building",
+  "pixelate" : true,
+  "textureSamplers" :
+  [
+    {
+      "sampler" : "diffuse",
+      "prefix" : "",
+      "suffix" : ""
+    },
+    {
+      "sampler" : "normal",
+      "prefix" : "",
+      "suffix" : "-normal"
+    }
+  ]
+}

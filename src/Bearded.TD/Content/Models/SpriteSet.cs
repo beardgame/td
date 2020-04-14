@@ -5,6 +5,7 @@ namespace Bearded.TD.Content.Models
     enum SpriteDrawGroup
     {
         // When adding new groups, make sure the DeferredRenderer knows about them, or they won't render
+        LevelDetail,
         Building,
         Unit,
         Particle,
