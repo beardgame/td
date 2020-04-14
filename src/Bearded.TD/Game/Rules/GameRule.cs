@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Rules
 {
     abstract class GameRule : IComponent<GameState>
     {
-        public void OnAdded(GameState owner, ComponentEvents _) => OnAdded(owner, owner.Meta.Events;
+        public void OnAdded(GameState owner, ComponentEvents _) => OnAdded(owner, owner.Meta.Events);
 
         protected void OnAdded(GameState owner, GlobalGameEvents events)
         {
