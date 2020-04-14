@@ -2,6 +2,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components.Generic
@@ -35,7 +36,7 @@ namespace Bearded.TD.Game.Components.Generic
 
         private void onHit()
         {
-            var obj = new ComponentGameObject(Parameters.Object, Owner, Owner.Position);
+            var obj = new ComponentGameObject(Parameters.Object, Owner, Owner.Position, Direction2.Zero);
             Owner.Game.Add(obj);
         }
 

@@ -8,5 +8,7 @@ namespace Bearded.TD.Content.Models
     {
         Color Color { get; }
         Unit Radius { get; }
+
+        Unit Height { get; }
     }
 }

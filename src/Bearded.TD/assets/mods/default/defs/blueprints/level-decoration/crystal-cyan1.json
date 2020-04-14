@@ -1,0 +1,21 @@
+{
+    "id" : "crystal-cyan1",
+    "components" : [
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "crystals.1",
+                "color" : "FF40E0D0",
+                "size" : 0.5
+            }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "103935",
+                "radius" : 1.5,
+                "height" : 0.2
+            }
+        }
+    ]
+}

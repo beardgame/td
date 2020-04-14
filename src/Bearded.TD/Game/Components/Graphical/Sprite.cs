@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Components.Graphical
     class Sprite<T> : Component<T, ISpriteParameters>
         where T : IPositionable
     {
-        private IDirected ownerAsDirected;
+        private Maybe<IDirected> ownerAsDirected;
 
         public Sprite(ISpriteParameters parameters) : base(parameters)
         {
@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Components.Graphical
 
         protected override void Initialise()
         {
-            ownerAsDirected = Owner as IDirected;
+            ownerAsDirected = Maybe.FromNullable(Owner as IDirected);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -31,8 +31,7 @@ namespace Bearded.TD.Game.Components.Graphical
             var p = Owner.Position.NumericValue;
             p.Z += Parameters.HeightOffset.NumericValue;
 
-            var angle = Maybe
-                .FromNullable(ownerAsDirected)
+            var angle = ownerAsDirected
                 .Select(adjustSpriteAngleToDirection)
                 .ValueOrDefault(0);
 
