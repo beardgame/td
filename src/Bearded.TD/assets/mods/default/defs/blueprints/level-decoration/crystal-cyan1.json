@@ -5,14 +5,13 @@
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "crystals.1",
-                "color" : "FF40E0D0",
-                "size" : 0.5
+                "color" : "FF40E0D0"
             }
         },
         {
             "id" : "pointlight",
             "parameters" : {
-                "color" : "103935",
+                "color" : "aa103935",
                 "radius" : 1.5,
                 "height" : 0.2
             }

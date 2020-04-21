@@ -12,7 +12,7 @@ in vec3 vertexLightPosition;
 in vec3 vertexLightDirection;
 in float vertexLightAngle;
 in float vertexLightRadiusSquared;
-in vec3 vertexLightColor;
+in vec4 vertexLightColor;
 
 out vec2 fragmentUV;
 out vec2 fragmentXY;
@@ -20,7 +20,7 @@ out vec3 lightPosition;
 out vec3 lightDirection;
 out float lightAngleCos;
 out float lightRadiusSquared;
-out vec3 lightColor;
+out vec4 lightColor;
 out vec3 pointOnFarPlane;
 
 void main()

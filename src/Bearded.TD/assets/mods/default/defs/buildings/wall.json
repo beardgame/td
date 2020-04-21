@@ -16,7 +16,8 @@
       "parameters": {
         "sprite": "buildings.base-32px",
         "color": "White",
-        "heightOffset": 0.01
+        "heightOffset": 0.01,
+        "size" : 2
       }
     },
     {
@@ -25,7 +26,7 @@
         "sprite": "buildings.base-32px",
         "color": "White",
         "heightOffset": 0.1,
-        "size" : 0.9
+        "size" : 1.8
       }
     }
   ]

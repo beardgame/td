@@ -357,7 +357,7 @@ namespace Bearded.TD.Rendering
         private void resizeForCameraDistance(float cameraDistance)
         {
             updateBufferSize(ref bufferSizeLowRes, cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
-            updateBufferSize(ref bufferSize, cameraDistance, Constants.Rendering.PixelsPerTileSpriteResolution);
+            updateBufferSize(ref bufferSize, cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
 
             setLevelViewMatrix(cameraDistance);
         }

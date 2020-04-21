@@ -10,13 +10,13 @@ uniform vec3 farPlaneUnitY;
 in vec3 vertexPosition;
 in vec3 vertexLightPosition;
 in float vertexLightRadiusSquared;
-in vec3 vertexLightColor;
+in vec4 vertexLightColor;
 
 out vec2 fragmentUV;
 out vec2 fragmentXY;
 out vec3 lightPosition;
 out float lightRadiusSquared;
-out vec3 lightColor;
+out vec4 lightColor;
 out vec3 pointOnFarPlane;
 
 void main()

@@ -26,8 +26,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.rocket-turret",
-                "color": "White",
-                "size" : 0.5
+                "color": "White"
             }
         }
     ]

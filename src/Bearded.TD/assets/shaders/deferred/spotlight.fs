@@ -11,7 +11,7 @@ in vec3 lightPosition;
 in vec3 lightDirection;
 in float lightAngleCos;
 in float lightRadiusSquared;
-in vec3 lightColor;
+in vec4 lightColor;
 in vec3 pointOnFarPlane;
 
 out vec4 outRGB;
@@ -48,7 +48,7 @@ void main()
 
     float w = (angleToDirectionCos - lightAngleCos) / (1 - lightAngleCos);
 
-    vec3 rgb = lightColor * (a * f * w);
+    vec3 rgb = lightColor.rgb * lightColor.a * (a * f * w);
 
     outRGB = vec4(rgb, 0);
 }

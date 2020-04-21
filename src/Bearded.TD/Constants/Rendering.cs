@@ -4,10 +4,12 @@ namespace Bearded.TD
     {
         public static class Rendering
         {
-            public const float PixelsPerTileLevelResolution = 22;
-            public const float PixelsPerTileSpriteResolution = 100000;
+            private const float pixelsPerTileSpriteResolution = 44;
 
-            public const float PixelSize = Game.World.HexagonWidth / PixelsPerTileLevelResolution;
+            public const float PixelsPerTileLevelResolution = pixelsPerTileSpriteResolution / 2;
+            public const float PixelsPerTileCompositeResolution = 10000;
+
+            public const float PixelSize = Game.World.HexagonWidth / pixelsPerTileSpriteResolution;
 
         }
     }

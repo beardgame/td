@@ -9,7 +9,7 @@ in vec2 fragmentUV;
 in vec2 fragmentXY;
 in vec3 lightPosition;
 in float lightRadiusSquared;
-in vec3 lightColor;
+in vec4 lightColor;
 in vec3 pointOnFarPlane;
 
 out vec4 outRGB;
@@ -40,7 +40,7 @@ void main()
     if (f < 0)
         discard;
 
-    vec3 rgb = lightColor * (a * f);
+    vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
 
     outRGB = vec4(rgb, 0);
 }

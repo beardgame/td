@@ -77,11 +77,30 @@ namespace Bearded.TD.Game
             foreach (var tile in Tilemap.EnumerateTilemapWith(level.Radius - 1))
             {
                 var centerGeometry = geometry[tile];
-
                 var height = centerGeometry.DrawInfo.Height;
 
                 if (centerGeometry.Type == TileType.Wall)
                     continue;
+
+                if (centerGeometry.Type == TileType.Floor && StaticRandom.Bool(0.1f))
+                {
+                    var position = Level.GetPosition(tile)
+                        + Direction2.FromDegrees(StaticRandom.Float(360))
+                        * StaticRandom.Float(0, Constants.Game.World.HexagonSide * centerGeometry.DrawInfo.HexScale * 0.8f).U();
+                    var z = height + 0.01.U();
+                    var count = StaticRandom.Int(3, 7);
+                    foreach (var _ in Enumerable.Range(0, count))
+                    {
+                        var direction = Direction2.FromDegrees(StaticRandom.Float(360));
+                        var offset = direction * (StaticRandom.Float(2f, 5f) * Constants.Rendering.PixelSize).U();
+
+                        yield return PlopComponentGameObject.Command(game,
+                            crystalBlueprints.RandomElement(),
+                            (position + offset).WithZ(z),
+                            direction
+                        );
+                    }
+                }
 
                 foreach (var direction in Directions.All.Enumerate())
                 {

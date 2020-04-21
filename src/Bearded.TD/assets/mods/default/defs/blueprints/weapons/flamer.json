@@ -35,8 +35,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.flamer",
-                "color": "White",
-                "size" : 0.5
+                "color": "White"
             }
         }
     ]

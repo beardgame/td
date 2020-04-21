@@ -20,16 +20,15 @@
                 "color" : "red",
                 "damagePerSecond" : 50,
                 "range" : 5,
-                "width" : 1.5,
-                "coreWidth" : 0.5
+                "width" : 3,
+                "coreWidth" : 1
             }
         },
         {
             "id" : "sprite",
             "parameters": {
                 "sprite": "buildings.laser-turret",
-                "color": "White",
-                "size" : 0.5
+                "color": "White"
             }
         }
     ]
