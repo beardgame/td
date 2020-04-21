@@ -16,6 +16,25 @@ in vec3 pointOnFarPlane;
 
 out vec4 outRGB;
 
+float diffuseLightAmount(vec3 surfaceNormal, vec3 vectorToLight)
+{
+    vec3 lightNormal = normalize(vectorToLight);
+
+    float f = dot(lightNormal, surfaceNormal);
+
+    if (f < 0)
+        return 0;
+
+    float angleToDirectionCos = dot(-lightNormal, lightDirection);
+
+    if (angleToDirectionCos < lightAngleCos)
+        return 0;
+
+    float w = (angleToDirectionCos - lightAngleCos) / (1 - lightAngleCos);
+
+    return f * w;
+}
+
 void main()
 {
     vec3 normal = texture(normalBuffer, fragmentUV).xyz;
@@ -34,21 +53,12 @@ void main()
     if (a < 0)
         discard;
 
-    vec3 lightNormal = normalize(vectorToLight);
+    vec3 color = lightColor.rgb * lightColor.a * a;
+    
+    float diffuse = diffuseLightAmount(normal, vectorToLight);
 
-    float f = dot(lightNormal, normal);
-
-    if (f < 0)
+    if (diffuse == 0)
         discard;
 
-    float angleToDirectionCos = dot(-lightNormal, lightDirection);
-
-    if (angleToDirectionCos < lightAngleCos)
-        discard;
-
-    float w = (angleToDirectionCos - lightAngleCos) / (1 - lightAngleCos);
-
-    vec3 rgb = lightColor.rgb * lightColor.a * (a * f * w);
-
-    outRGB = vec4(rgb, 0);
+    outRGB = vec4(color * diffuse, 0);
 }
