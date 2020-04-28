@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Content.Behaviors;
 using Bearded.TD.Content.Serialization.Models;
 using JetBrains.Annotations;
 

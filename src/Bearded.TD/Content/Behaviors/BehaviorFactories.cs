@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Content.Serialization.Models
+namespace Bearded.TD.Content.Behaviors
 {
     sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttribute, TEmptyConstructorParameters>
         where TBehaviorTemplate : IBehaviorTemplate

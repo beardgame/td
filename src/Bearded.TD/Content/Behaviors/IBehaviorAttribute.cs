@@ -1,4 +1,4 @@
-namespace Bearded.TD.Content.Serialization.Models
+namespace Bearded.TD.Content.Behaviors
 {
     interface IBehaviorAttribute
     {
