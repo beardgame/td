@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Components.Events;
+﻿using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
