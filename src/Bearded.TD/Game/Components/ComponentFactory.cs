@@ -29,24 +29,24 @@ namespace Bearded.TD.Game.Components
         public IComponent<BuildingPlaceholder> TryCreateForPlaceholder() => placeholderFactory?.Create();
     }
 
-    class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>
+    sealed class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>
         where TComponentParameters : IParametersTemplate<TComponentParameters>
     {
         private readonly TComponentParameters parameters;
-        private readonly Func<TComponentParameters, IComponent<TOwner>> factory;
+        private readonly Func<TComponentParameters, object> factory;
 
-        public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent<TOwner>> factory)
+        public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, object> factory)
         {
             this.parameters = parameters;
             this.factory = factory;
         }
 
-        public IComponent<TOwner> Create() => factory(parameters);
+        public IComponent<TOwner> Create() => (IComponent<TOwner>) factory(parameters);
 
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(parameters);
     }
 
-    interface IComponentFactory<TOwner>
+    interface IComponentFactory<in TOwner>
     {
         IComponent<TOwner> Create();
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);

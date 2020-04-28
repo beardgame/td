@@ -1,8 +1,6 @@
-﻿namespace Bearded.TD.Content.Serialization.Models
+﻿using Bearded.TD.Content.Behaviors;
+
+namespace Bearded.TD.Content.Serialization.Models
 {
-    interface IComponent
-    {
-        string Id { get; }
-        object Parameters { get; }
-    }
+    interface IComponent : IBehaviorTemplate {}
 }
