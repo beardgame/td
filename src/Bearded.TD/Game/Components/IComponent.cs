@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Components.Events;
+﻿using Bearded.TD.Content.Serialization.Models;
+using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Components
         bool RemoveUpgradeEffect(IUpgradeEffect effect);
     }
 
-    interface IComponent<in TOwner> : IComponent
+    interface IComponent<TOwner> : IBehavior<TOwner>, IComponent
     {
         void OnAdded(TOwner owner, ComponentEvents events);
     }

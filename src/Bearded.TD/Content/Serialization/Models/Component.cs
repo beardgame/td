@@ -6,6 +6,6 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Id { get; set; }
         public TParameters Parameters { get; set; }
 
-        object IComponent.Parameters => Parameters;
+        object IBehaviorTemplate.Parameters => Parameters;
     }
 }
