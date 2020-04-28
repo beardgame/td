@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Bearded.TD.Content.Serialization.Models;
+using Bearded.TD.Game.Rules;
 using Bearded.Utilities.IO;
 using OpenTK;
 
@@ -35,8 +36,9 @@ namespace Bearded.TD
                         writer.WriteLine(entry.Text);
                     };
 
-                    logger.Debug?.Log("Creating component factories");
+                    logger.Debug?.Log("Creating behavior factories");
                     ComponentFactories.Initialize();
+                    GameRuleFactories.Initialize();
 
                     logger.Info?.Log("");
                     logger.Info?.Log("Creating game");
