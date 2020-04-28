@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Components
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(parameters);
     }
 
-    interface IComponentFactory<TOwner>
+    interface IComponentFactory<in TOwner>
     {
         IComponent<TOwner> Create();
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);

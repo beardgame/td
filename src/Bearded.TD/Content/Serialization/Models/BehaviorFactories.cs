@@ -4,19 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Bearded.TD.Game.Components;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    // TDomainSpecificFactory -> TDomainSpecificBehavior -> TOwner
-
-    // TDomainSpecificFactory<TOwner, TParameters>
-    // - parameters
-    // - a way to go from parameters to TDomainSpecificBehavior
-
-    sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttribute>
+    sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttribute, TEmptyConstructorParameters>
         where TBehaviorTemplate : IBehaviorTemplate
         where TBehaviorAttribute : Attribute, IBehaviorAttribute
         where TOwnerAttribute : Attribute
@@ -25,23 +17,28 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public IDictionary<string, Type> ParameterTypesById { get; private set; }
 
-        public IBehaviorFactory<TOwner> CreateBehaviorFactory<TOwner>(TBehaviorTemplate template)
+        public object CreateBehaviorFactory<TOwner>(TBehaviorTemplate template)
             => tryMakeBehaviorFactory<TOwner>(template);
 
-        public BehaviorFactories(Type behaviorInterface)
+        public BehaviorFactories(Type behaviorInterface, MethodInfo factoryFactoryMethodInfo)
         {
             this.behaviorInterface = behaviorInterface;
+            this.factoryFactoryMethodInfo = factoryFactoryMethodInfo;
         }
 
         #endregion
 
         #region Private permanent storage
 
-        private static Type thisType =>
-            typeof(BehaviorFactories<,,>)
-                .MakeGenericType(typeof(TBehaviorTemplate), typeof(TBehaviorAttribute), typeof(TOwnerAttribute));
+        private static Type thisType => typeof(BehaviorFactories<,,,>).MakeGenericType(
+            typeof(TBehaviorTemplate),
+            typeof(TBehaviorAttribute),
+            typeof(TOwnerAttribute),
+            typeof(TEmptyConstructorParameters));
 
         private readonly Type behaviorInterface;
+        private readonly Type emptyConstructorParameterType = typeof(TEmptyConstructorParameters);
+        private readonly MethodInfo factoryFactoryMethodInfo;
 
         private bool initialized;
 
@@ -56,9 +53,6 @@ namespace Bearded.TD.Content.Serialization.Models
         #region Implementation
 
         #region Initialisation
-
-        private delegate BehaviorFactory<TBehaviorInterface, TParameters>
-            BehaviorFactoryFactory<TBehaviorInterface, TParameters>(TParameters parameters);
 
         public void Initialize()
         {
@@ -151,14 +145,9 @@ namespace Bearded.TD.Content.Serialization.Models
             factoryFactoriesByOwnerForId.Add(owner, factoryFactory);
         }
 
-        private readonly MethodInfo makeFactoryFactoryMethodInfo = thisType
-            .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static);
-
-        private readonly Type emptyConstructorParameterType = typeof(VoidParameters);
-
         private object makeFactoryFactory(Type behavior, Type owner, Type parameters)
         {
-            var typedMaker = makeFactoryFactoryMethodInfo.MakeGenericMethod(owner, parameters);
+            var typedMaker = factoryFactoryMethodInfo.MakeGenericMethod(owner, parameters);
 
             var parameter = Expression.Parameter(parameters);
 
@@ -168,16 +157,8 @@ namespace Bearded.TD.Content.Serialization.Models
             var constructor = Expression.Lambda(constructorBody, parameter);
             var compiledConstructor = constructor.Compile();
 
-            // returns BehaviorFactoryFactory<TOwner, TParameters>
+            // returns Func<TParameters, object>
             return typedMaker.Invoke(null, new object[] {compiledConstructor});
-        }
-
-        private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
-            Func<TParameters, IBehavior<TOwner>> constructor)
-            where TParameters : IParametersTemplate<TParameters>
-        {
-            return (BehaviorFactoryFactory<TOwner, TParameters>) (p =>
-                new BehaviorFactory<TOwner, TParameters>(p, constructor));
         }
 
         private Type constructorParameterTypeOf(Type behaviorType)
@@ -210,7 +191,7 @@ namespace Bearded.TD.Content.Serialization.Models
         private readonly MethodInfo tryMakeBehaviorFactoryMethodInfo = thisType
             .GetMethod(nameof(tryMakeBehaviorFactoryGeneric), BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private IBehaviorFactory<TOwner> tryMakeBehaviorFactory<TOwner>(TBehaviorTemplate template)
+        private object tryMakeBehaviorFactory<TOwner>(TBehaviorTemplate template)
         {
             var id = template.Id;
             var parameterData = template.Parameters;
@@ -219,7 +200,7 @@ namespace Bearded.TD.Content.Serialization.Models
             if (parameterType == emptyConstructorParameterType)
             {
                 DebugAssert.State.Satisfies(parameterData == null);
-                parameterData = VoidParameters.Instance;
+                parameterData = default(TEmptyConstructorParameters);
             }
             else
             {
@@ -228,17 +209,16 @@ namespace Bearded.TD.Content.Serialization.Models
 
             var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
 
-            return (IBehaviorFactory<TOwner>)tryMakeFactory.Invoke(this, new[] { id, parameterData });
+            return tryMakeFactory.Invoke(this, new[] { id, parameterData });
         }
 
         private object tryMakeBehaviorFactoryGeneric<TOwner, TParameters>(string id, TParameters parameters)
-            where TParameters : IParametersTemplate<TParameters>
         {
             var factoryFactories = factoryFactoriesById[id];
 
             factoryFactories.TryGetValue(typeof(TOwner), out var factoryFactory);
 
-            var typedFactoryFactory = (BehaviorFactoryFactory<TOwner, TParameters>) factoryFactory;
+            var typedFactoryFactory = (Func<TParameters, object>) factoryFactory;
 
             return typedFactoryFactory?.Invoke(parameters);
         }
@@ -246,44 +226,5 @@ namespace Bearded.TD.Content.Serialization.Models
         #endregion
 
         #endregion
-
-    }
-
-    interface IBehavior<TOwner>
-    {
-
-    }
-
-    interface IBehaviorAttribute
-    {
-        string Id { get; }
-    }
-
-    interface IBehaviorTemplate
-    {
-        string Id { get; }
-        object Parameters { get; }
-    }
-
-    interface IBehaviorFactory<TOwner>
-    {
-        IBehavior<TOwner> Create();
-    }
-
-    sealed class BehaviorFactory<TOwner, TParameters> : IBehaviorFactory<TOwner>
-    {
-        private readonly TParameters parameters;
-        private readonly Func<TParameters, IBehavior<TOwner>> factory;
-
-        public BehaviorFactory(TParameters parameters, Func<TParameters, IBehavior<TOwner>> factory)
-        {
-            this.parameters = parameters;
-            this.factory = factory;
-        }
-
-        public IBehavior<TOwner> Create() => factory(parameters);
-
-        // TODO(Tom): remove the need for this
-        public TParameters UglyWayToAccessParameters => parameters;
     }
 }

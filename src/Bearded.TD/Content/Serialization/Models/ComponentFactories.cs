@@ -9,15 +9,19 @@ namespace Bearded.TD.Content.Serialization.Models
 {
     static class ComponentFactories
     {
-        private static readonly BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute> factories =
-            new BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute>(typeof(IComponent<>));
+        private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(ComponentFactories)
+            .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static);
+
+        private static readonly BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute, VoidParameters> factories =
+            new BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute, VoidParameters>(typeof(IComponent<>),
+                makeFactoryFactoryMethodInfo);
 
         public static void Initialize() => factories.Initialize();
 
         public static IDictionary<string, Type> ParameterTypesForComponentsById => factories.ParameterTypesById;
 
-        public static IComponentFactory<TOwner> CreateComponentFactory<TOwner>(IComponent parameters)
-            => wrapFactory(factories.CreateBehaviorFactory<TOwner>(parameters));
+        public static IComponentFactory<TOwner> CreateComponentFactory<TOwner>(IComponent parameters) =>
+            factories.CreateBehaviorFactory<TOwner>(parameters) as IComponentFactory<TOwner>;
 
         public static BuildingComponentFactory CreateBuildingComponentFactory(IBuildingComponent parameters)
         {
@@ -26,31 +30,16 @@ namespace Bearded.TD.Content.Serialization.Models
             var forPlaceholder = factories.CreateBehaviorFactory<BuildingPlaceholder>(parameters);
 
             return new BuildingComponentFactory(
-                parameters, wrapFactory(forBuilding), wrapFactory(forGhost), wrapFactory(forPlaceholder));
+                parameters, forBuilding as IComponentFactory<Building>, forGhost as IComponentFactory<BuildingGhost>,
+                forPlaceholder as IComponentFactory<BuildingPlaceholder>);
         }
 
-        public static void Initialise()
+        private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
+            Func<TParameters, IComponent<TOwner>> constructor)
+            where TParameters : IParametersTemplate<TParameters>
         {
-            factories.Initialize();
-        }
-
-        private static IComponentFactory<TOwner> wrapFactory<TOwner>(IBehaviorFactory<TOwner> behaviorFactory)
-        {
-            if (behaviorFactory == null) return null;
-
-            var args = behaviorFactory.GetType().GetGenericArguments();
-            var methodInfo = typeof(ComponentFactories)
-                .GetMethod(nameof(wrapFactoryGeneric), BindingFlags.Static | BindingFlags.NonPublic);
-            var genericMethod = methodInfo.MakeGenericMethod(args);
-
-            return (IComponentFactory<TOwner>) genericMethod.Invoke(null, new object[] {behaviorFactory});
-        }
-
-        private static IComponentFactory<TOwner> wrapFactoryGeneric<TOwner, TParameters>(
-            IBehaviorFactory<TOwner> behaviorFactory) where TParameters : IParametersTemplate<TParameters>
-        {
-            var concreteFactory = (BehaviorFactory<TOwner, TParameters>) behaviorFactory;
-            return new ComponentFactory<TOwner, TParameters>(concreteFactory.UglyWayToAccessParameters, _ => concreteFactory.Create());
+            return (Func<TParameters, object>) (p =>
+                new ComponentFactory<TOwner, TParameters>(p, constructor));
         }
     }
 }
