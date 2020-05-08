@@ -77,7 +77,7 @@ Task("Test")
                     .Append("-nobuild")
                     .Append($"-xml {xmlOutFile.FullPath}")
             );
-            Information($"Should now have test output in ${xmlOutFile}");
+            Information($"Should now have test output in {xmlOutFile.FullPath}");
         }
     });
 
