@@ -75,7 +75,8 @@ Task("Test")
                 arguments: new ProcessArgumentBuilder() 
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
-                    .Append($"-xml {xmlOutFile.FullPath}.xml"),
+                    .Append($"-xml {xmlOutFile.Path}")
+            Information($"Should now have test output in ${xmlOutFile}");
             );
         }
     });
