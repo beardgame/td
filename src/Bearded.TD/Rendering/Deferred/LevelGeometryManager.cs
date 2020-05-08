@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
@@ -17,6 +18,24 @@ using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
+    /* TODO: implement sprite->heightmap rendering
+     *     - take 'wall' as default
+     *     - render open areas (floors < or > crevices?)
+     *     - use simple generated sprites for testing
+     *     - add sprites to mod later, and experiment with what's possible
+     * TODO: once reasonably satisfied, move implementation to GPU
+     *     - keep CPU renderer as alternative as long as possible
+     * TODO: try tessellation on long triangles on GPU
+     *     - could even replace some of the existing detail, to render less geometry if camera is far away
+     * TODO: try using heightmaps for materials to apply vertex offsets in normal direction
+     *     - might mess with normals, but could make great use of tessellation
+     * TODO: ceilings (maybe GPU only?)
+     *     - can probably be generated from the same heightmaps
+     *     - stop rendering current wall-tops, replace by cross-section of rock
+     *         - cross sections could later give hints at what's 'in' the walls?
+     *     - try rendering front faces with regular level shaders, and back faces (separate pass) with special shader
+     */
+
     class LevelGeometryManager : IListener<TileDrawInfoChanged>
     {
         private const float heightMapScale = 4;
@@ -29,6 +48,8 @@ namespace Bearded.TD.Rendering.Deferred
             new[] {DownRight, Right, UpRight, UpLeft, Left, DownLeft}
                 .Select(d => (d.Vector() * gridToWorld, d.Step()))
                 .ToArray();
+
+        private readonly HashSet<Tile> dirtyTiles = new HashSet<Tile>();
 
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
@@ -44,7 +65,7 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly Tilemap<float> sampledHeight;
         private readonly Tilemap<Vector3> normals;
 
-        private bool isHeightMapDirty = true;
+        private bool regenerateEntireHeightMap = true;
 
         public LevelGeometryManager(GameInstance game, RenderContext context, Material material)
         {
@@ -92,16 +113,53 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void HandleEvent(TileDrawInfoChanged @event)
         {
-            isHeightMapDirty = true;
-            // TODO: regenerate only area around change
+            var tile = @event.Tile;
+            dirtyTiles.Add(tile);
         }
 
         public void RenderAll()
         {
-            if (isHeightMapDirty)
+            if (regenerateEntireHeightMap)
                 regenerateHeightMap();
 
+            if (dirtyTiles.Count > 0)
+                regenerateDirtyTiles();
+
             renderHeightMap();
+        }
+
+        private void regenerateDirtyTiles()
+        {
+            var dirtyGridTiles = new HashSet<Tile>();
+
+            foreach (var tile in dirtyTiles)
+            {
+                var gridCenter = Level.GetTile(new Position2(Level.GetPosition(tile).NumericValue * worldToGrid));
+
+                foreach (var gridTile in Tilemap
+                    .GetSpiralCenteredAt(gridCenter, (int) gridScale)
+                    .Where(t => t.Radius < gridRadius))
+                {
+                    dirtyGridTiles.Add(gridTile);
+                }
+            }
+
+            dirtyTiles.Clear();
+
+            regenerate(dirtyGridTiles);
+        }
+
+        private void regenerate(HashSet<Tile> dirtyGridTiles)
+        {
+            // TODO: don't sample entire world
+            sampleWorldToHeightmap();
+
+            sampleHeightmapToHeights(dirtyGridTiles);
+
+            calculateNormals(dirtyGridTiles);
+
+            // TODO: batch height map? (could draw entire map as one list of triangles actually, but batching helps performance when zoomed in)
+            populateHeightMapSurface();
         }
 
         private void renderHeightMap()
@@ -123,15 +181,15 @@ namespace Bearded.TD.Rendering.Deferred
         {
             sampleWorldToHeightmap();
 
-            sampleHeightmapToHeights();
+            sampleHeightmapToHeights(Tilemap.EnumerateTilemapWith(gridRadius));
 
-            calculateNormals();
+            calculateNormals(Tilemap.EnumerateTilemapWith(gridRadius - 1));
 
             populateHeightMapSurface();
 
-            isHeightMapDirty = false;
+            regenerateEntireHeightMap = false;
+            dirtyTiles.Clear();
         }
-
 
         private void sampleWorldToHeightmap()
         {
@@ -157,9 +215,9 @@ namespace Bearded.TD.Rendering.Deferred
             }
         }
 
-        private void sampleHeightmapToHeights()
+        private void sampleHeightmapToHeights(IEnumerable<Tile> tiles)
         {
-            foreach (var tile in sampledHeight)
+            foreach (var tile in tiles)
             {
                 var p = Level.GetPosition(tile).NumericValue * gridToWorld;
 
@@ -169,9 +227,9 @@ namespace Bearded.TD.Rendering.Deferred
             }
         }
 
-        private void calculateNormals()
+        private void calculateNormals(IEnumerable<Tile> tiles)
         {
-            foreach (var tile in Tilemap.EnumerateTilemapWith(gridRadius - 1))
+            foreach (var tile in tiles)
             {
                 var height = sampledHeight[tile];
 
@@ -325,8 +383,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             return height;
         }
-
-
+        
         public void CleanUp()
         {
             heightMapSurface.Dispose();
