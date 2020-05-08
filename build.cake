@@ -68,15 +68,19 @@ Task("Test")
         foreach (var projectPath in testProjects)
         {
             Information($"Running tests for {projectPath.FullPath}");
+            var xmlOutFile = artifactDir.CombineWithFilePath(projectPath.GetFilenameWithoutExtension());
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
                 command: "xunit",
-                arguments: $"-configuration {releaseConfig} -diagnostics -stoponfail"
+                arguments: new ProcessArgumentBuilder() 
+                    .Append($"-configuration {releaseConfig}")
+                    .Append("-nobuild")
+                    .Append($"-xml {xmlOutDir.FullPath}.xml"),
             );
         }
     });
 
-Task("Archive")
+Task("Pack")
     .IsDependentOn("Test")
     .Does(() =>
     {
@@ -100,6 +104,6 @@ Task("Default")
     .IsDependentOn("Test");
 
 Task("Release")
-    .IsDependentOn("Archive");
+    .IsDependentOn("Pack");
 
 RunTarget(target);
