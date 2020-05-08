@@ -74,7 +74,6 @@ Task("Test")
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
             );
-            Information($"Test results should now be available at {((DirectoryPath) projectTestResultsDir).FullPath}");
         }
     });
 
