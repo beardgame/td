@@ -1,63 +1,56 @@
-using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Rules;
-using Bearded.TD.Game.Rules.Buildings;
-using Bearded.TD.Game.Rules.Technologies;
-using Bearded.TD.Game.Technologies;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Commands
 {
     static class ApplyGameRules
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game)
-            => new Implementation(game);
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, IGameModeBlueprint gameMode)
+            => new Implementation(game, gameMode);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
+            private readonly IGameModeBlueprint gameMode;
 
-            public Implementation(GameInstance game)
+            public Implementation(GameInstance game, IGameModeBlueprint gameMode)
             {
                 this.game = game;
+                this.gameMode = gameMode;
             }
 
             public void Execute()
             {
-                foreach (var rule in hardCodedGameRules(game))
+                foreach (var ruleFactory in gameMode.Rules)
                 {
-                    rule.OnAdded(game.State, game.Meta.Events);
+                    ruleFactory.Create().OnAdded(game.State, game.Meta.Events);
                 }
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer();
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(gameMode);
         }
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
+            private string gameModeId;
+
+            public Serializer(IGameModeBlueprint gameModeBlueprint)
+            {
+                gameModeId = gameModeBlueprint.Id;
+            }
+
             // ReSharper disable once UnusedMember.Local
             public Serializer() {}
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => new Implementation(game);
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
+                new Implementation(game, game.Blueprints.GameModes[gameModeId]);
 
-            public void Serialize(INetBufferStream stream) {}
-        }
-
-        private static IEnumerable<IGameRule<GameState>> hardCodedGameRules(GameInstance game)
-        {
-            var blueprints = game.Blueprints;
-
-            yield return new UnlockTechnology(new UnlockTechnology.Parameters(new List<ITechnologyUnlock>
+            public void Serialize(INetBufferStream stream)
             {
-                new BuildingUnlock(blueprints.Buildings["wall"]),
-                new BuildingUnlock(blueprints.Buildings["triangleTurret"])
-            }));
-
-            yield return new PlaceBuildingRule(new PlaceBuildingRule.Parameters(
-                blueprints.Buildings["base"],
-                blueprints.Footprints["seven"].Positioned(0, Tile.Origin)));
+                stream.Serialize(ref gameModeId);
+            }
         }
     }
 }
