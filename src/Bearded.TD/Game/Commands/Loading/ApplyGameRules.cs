@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.Commands
         {
             var blueprints = game.Blueprints;
 
-            yield return new UnlockTechnologiesRule(new UnlockTechnologiesRule.Parameters(new List<ITechnologyUnlock>
+            yield return new UnlockTechnology(new UnlockTechnology.Parameters(new List<ITechnologyUnlock>
             {
                 new BuildingUnlock(blueprints.Buildings["wall"]),
                 new BuildingUnlock(blueprints.Buildings["triangleTurret"])

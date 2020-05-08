@@ -2,19 +2,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Rules;
 
 namespace Bearded.TD.Content.Models
 {
-    sealed class GameModeBlueprint : IBlueprint
+    sealed class GameModeBlueprint : IGameModeBlueprint
     {
         public string Id { get; }
-        public ReadOnlyCollection<IComponentFactory<GameState>> Rules { get; }
+        public string Name { get; }
+        public ReadOnlyCollection<IGameRuleFactory<GameState>> Rules { get; }
 
-        public GameModeBlueprint(string id, IEnumerable<IComponentFactory<GameState>> rules)
+        public GameModeBlueprint(string id, string name, IEnumerable<IGameRuleFactory<GameState>> rules)
         {
             Id = id;
-            Rules = (rules?.ToList() ?? new List<IComponentFactory<GameState>>()).AsReadOnly();
+            Name = name;
+            Rules = (rules?.ToList() ?? new List<IGameRuleFactory<GameState>>()).AsReadOnly();
         }
     }
 }

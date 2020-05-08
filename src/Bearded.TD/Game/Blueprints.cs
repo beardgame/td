@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Rules;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
@@ -22,6 +23,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
+        public ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
             ReadonlyBlueprintCollection<Material> materials,
@@ -31,7 +33,8 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
-            ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies)
+            ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
+            ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes)
         {
             Shaders = shaders;
             Materials = materials;
@@ -42,6 +45,7 @@ namespace Bearded.TD.Game
             ComponentOwners = componentOwners;
             Upgrades = upgrades;
             Technologies = technologies;
+            GameModes = gameModes;
         }
 
         public static Blueprints Merge(IEnumerable<Blueprints> blueprints)
@@ -56,7 +60,8 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.Units),
                 flatten(list, b => b.ComponentOwners),
                 flatten(list, b => b.Upgrades),
-                flatten(list, b => b.Technologies)
+                flatten(list, b => b.Technologies),
+                flatten(list, b => b.GameModes)
                 );
         }
 

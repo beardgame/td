@@ -20,6 +20,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         private readonly ReadonlyBlueprintCollection<IBuildingBlueprint> buildings;
         private readonly ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades;
 
+        protected override DependencySelector SelectDependency { get; } = m => m.Blueprints.Technologies;
+
         protected override string RelativePath => "defs/technologies";
 
         public TechnologyBlueprintLoader(BlueprintLoadingContext context,

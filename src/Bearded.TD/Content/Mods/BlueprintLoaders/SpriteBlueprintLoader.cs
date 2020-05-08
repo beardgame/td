@@ -20,8 +20,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<SpriteSet> blueprintCollection)
         {
-            var dependencyResolver = new SpriteResolver(Context.Meta, blueprintCollection, Context.LoadedDependencies);
-            Context.Serializer.Converters.Add(new DependencyConverter<ISprite>(dependencyResolver));
+            Context.AddDependencyResolver(
+                new SpriteResolver(Context.Meta, blueprintCollection, Context.LoadedDependencies));
         }
 
         protected override (FileInfo, SpriteSetLoader) GetDependencyResolvers(FileInfo file)

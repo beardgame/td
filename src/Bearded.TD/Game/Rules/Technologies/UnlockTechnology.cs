@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Rules.Technologies
 {
-    [GameRule("unlockTechnologies")]
-    sealed class UnlockTechnologiesRule : GameRule<UnlockTechnologiesRule.Parameters>
+    [GameRule("unlockTechnology")]
+    sealed class UnlockTechnology : GameRule<UnlockTechnology.Parameters>
     {
-        public UnlockTechnologiesRule(Parameters parameters) : base(parameters) {}
+        public UnlockTechnology(Parameters parameters) : base(parameters) {}
 
         protected override void Execute(GameState gameState, Parameters parameters)
         {

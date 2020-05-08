@@ -25,7 +25,7 @@ namespace Bearded.TD.Content.Serialization.Models
                 Id,
                 Name,
                 Cost,
-                ImmutableList.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers))),
+                ImmutableList.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))),
                 RequiredTechs.Select(resolvers.TechnologyResolver.Resolve));
         }
 
@@ -58,16 +58,17 @@ namespace Bearded.TD.Content.Serialization.Models
             public UnlockType Type { get; set; }
             public string Blueprint { get; set; }
 
-            public ITechnologyUnlock ToGameModel(DependencyResolvers resolvers)
+            public ITechnologyUnlock ToGameModel(
+                IDependencyResolver<IBuildingBlueprint> buildingResolver,
+                IDependencyResolver<IUpgradeBlueprint> upgradeResolver)
             {
                 switch (Type)
                 {
                     case UnlockType.Building:
-                        return new BuildingUnlock(resolvers.BuildingResolver.Resolve(Blueprint));
+                        return new BuildingUnlock(buildingResolver.Resolve(Blueprint));
                     case UnlockType.Upgrade:
-                        return new UpgradeUnlock(resolvers.UpgradeResolver.Resolve(Blueprint));
+                        return new UpgradeUnlock(upgradeResolver.Resolve(Blueprint));
                     default:
-                        // Use an InvalidDataException to make it clear this is a problem with the JSON data.
                         throw new InvalidDataException($"Invalid unlock type: {Type}");
                 }
             }
