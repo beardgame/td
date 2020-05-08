@@ -44,6 +44,9 @@ string getTDVersionFromBinary(string config)
     return (string)versionProperty.GetValue(null);
 }
 
+Task("PrepareDirectories")
+    .Does(() => CreateDirectory(artifactDir));
+
 Task("Clean")
     .Does(() => CleanDirectory(buildDir));
 
@@ -52,6 +55,7 @@ Task("NuGet.Restore")
     .Does(() => NuGetRestore(solutionFile));
 
 Task("Build")
+    .IsDependentOn("PrepareDirectories")
     .IsDependentOn("NuGet.Restore")
     .Does(() =>
     {
@@ -64,11 +68,20 @@ Task("Test")
     .Does(() =>
     {
         var testProjects = GetFiles("./**/*.Tests.csproj");
+        var testResultsDir = Directory(EnvironmentVariable("BITRISE_TEST_RESULT_DIR"));
 
         foreach (var projectPath in testProjects)
         {
             Information($"Running tests for {projectPath.FullPath}");
-            var xmlOutFile = (FilePath) (artifactDir + File($"{projectPath.GetFilenameWithoutExtension()}.xml"));
+
+            var testName = projectPath.GetFilenameWithoutExtension();
+            var projectTestResultsDir = testResultsDir + Directory(testName);
+
+            CreateDirectory(projectTestResultsDir);
+            FileWriteText(projectTestResultsDir + File("test-info.json"), $"{{ \"test-name\" : \"{testName}\" }}");
+
+            var xmlOutFile = (FilePath) (projectTestResultsDir + File("results.xml"));
+
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
                 command: "xunit",
@@ -77,7 +90,7 @@ Task("Test")
                     .Append("-nobuild")
                     .Append($"-xml {xmlOutFile.FullPath}")
             );
-            Information($"Should now have test output in {xmlOutFile.FullPath}");
+            Debug($"Test results should now be available at {projectTestResultsDir.FullPath}");
         }
     });
 
@@ -102,9 +115,7 @@ Task("Pack")
     });
 
 Task("Default")
-    .IsDependentOn("Test");
-
-Task("Release")
     .IsDependentOn("Pack");
+    .IsDependentOn("Test");
 
 RunTarget(target);
