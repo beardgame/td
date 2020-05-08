@@ -88,7 +88,7 @@ Task("Test")
 
             Debug($"xUnit test results should be stored at {xunitXmlOutFile.FullPath}");
 
-            Debug($"Formatting tests results for ${testName}")
+            Debug($"Formatting tests results for ${testName}");
 
             var projectTestResultsDir = testResultsDir + Directory(testName);
             var junitXmlOutFile = (FilePath) (projectTestResultsDir + File("results.xml"));
