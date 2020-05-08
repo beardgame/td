@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
@@ -62,6 +64,7 @@ namespace Bearded.TD.Content.Mods
                 var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
                 var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
                 var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
+                var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
                 context.Profiler.FinishLoading();
                 context.Logger.Debug?.Log(
@@ -79,6 +82,7 @@ namespace Bearded.TD.Content.Mods
                     componentOwners,
                     upgrades,
                     technologies,
+                    gameModes,
                     tags.GetForCurrentMod());
             }
 
@@ -101,8 +105,9 @@ namespace Bearded.TD.Content.Mods
                     new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
                     new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
                     Converters.ColorContainerConverter,
-                    ComponentConverterFactory.ForBuildingComponents(),
-                    ComponentConverterFactory.ForBaseComponent(),
+                    BehaviorConverterFactory.ForBuildingComponents(),
+                    BehaviorConverterFactory.ForBaseComponents(),
+                    BehaviorConverterFactory.ForGameRules(),
                     new UpgradeEffectConverter()
                 );
                 foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
@@ -41,14 +39,10 @@ namespace Bearded.TD.Game
                 hasResources: true,
                 hasWorkerNetwork: true,
                 hasWorkers: true));
-            yield return UnlockInitialTechnologies.Command(game, game.State.RootFaction);
-
             foreach (var command in setupFactions())
                 yield return command;
 
-            var baseBlueprint = game.Blueprints.Buildings[Constants.Mods.BaseBuildingId];
-            var footprint = baseBlueprint.FootprintGroup.Positioned(0, game.State.Level, new Position2(0, 0));
-            yield return PlopBuilding.Command(game, game.State.RootFaction, game.Meta.Ids.GetNext<Building>(), baseBlueprint, footprint);
+            yield return ApplyGameRules.Command(game);
 
             var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 

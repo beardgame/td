@@ -48,10 +48,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             if (selector == null)
                 return;
 
-            var dependencyResolver = new BlueprintDependencyResolver<TBlueprint>(
-                Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m));
-
-            Context.Serializer.Converters.Add(new DependencyConverter<TBlueprint>(dependencyResolver));
+            Context.AddDependencyResolver(new BlueprintDependencyResolver<TBlueprint>(
+                Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m)));
         }
 
         protected virtual FileInfo[] GetJsonFiles()

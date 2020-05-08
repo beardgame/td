@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Mods
             var dir = new DirectoryInfo(path);
             if (!dir.Exists)
                 throw new ArgumentException($"Mod path '{path}' does not exist.");
-            
+
             return dir
                 .EnumerateDirectories()
                 .Select(d => d.GetFiles("mod.json").SingleOrDefault())

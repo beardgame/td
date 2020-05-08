@@ -7,6 +7,8 @@ var releaseConfig = "Release";
 var solutionFile = File("TD.sln");
 var tdProjectName = "Bearded.TD";
 var tdBinaryFile = File($"{tdProjectName}.exe");
+var tdTestProjectName = "Bearded.TD.Tests";
+var weaverTeastProjectName = "Bearded.TD.Weavers.Tests";
 var artifactDir = Directory(EnvironmentVariable("ARTIFACT_OUT_DIR") ?? "./bin/artifacts");
 
 void build(string config)
@@ -47,13 +49,39 @@ Task("NuGet.Restore")
     .IsDependentOn("Clean")
     .Does(() => NuGetRestore(solutionFile));
 
-Task("Build.Release")
+Task("Build")
     .IsDependentOn("NuGet.Restore")
     .Does(() =>
     {
         Information($"Building solution with {releaseConfig} config...");
         build(releaseConfig);
+    });
 
+Task("Test")
+    .IsDependentOn("Build")
+    .Does(() =>
+    {
+        var testProjects = GetFiles("./**/*.Tests.csproj");
+
+        foreach (var projectPath in testProjects)
+        {
+            Information($"Running tests for {projectPath.FullPath}");
+
+            DotNetCoreTool(
+                projectPath: projectPath.FullPath,
+                command: "xunit",
+                arguments: new ProcessArgumentBuilder() 
+                    .Append($"-configuration {releaseConfig}")
+                    .Append("-nobuild")
+            );
+            Information($"Test results should now be available at {((DirectoryPath) projectTestResultsDir).FullPath}");
+        }
+    });
+
+Task("Pack")
+    .IsDependentOn("Build")
+    .Does(() =>
+    {
         var tdBinDir = getOutDir(tdProjectName, releaseConfig);
         Debug($"{tdProjectName} should now be available at '{tdBinDir}'.");
 
@@ -70,8 +98,8 @@ Task("Build.Release")
         Information($"Done archiving! Find your artifact at '{tdZipFile}'.");
     });
 
-
 Task("Default")
-    .IsDependentOn("Build.Release");
+    .IsDependentOn("Pack")
+    .IsDependentOn("Test");
 
 RunTarget(target);

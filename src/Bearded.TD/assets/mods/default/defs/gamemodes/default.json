@@ -1,6 +1,25 @@
 {
-  "id" : "default",
-  "rules" : [
-
-  ]
+    "id" : "default",
+    "name" : "Classic TD experience",
+    "rules" : [
+        {
+            "id" : "placeBuilding",
+            "parameters" : {
+                "building" : "base",
+                "footprint" : {
+                    "group" : "seven",
+                    "rootPosition" : [0, 0]
+                }
+            }
+        },
+        {
+            "id" : "unlockTechnology",
+            "parameters" : {
+                "unlocks" : [
+                    { "type" : "building", "blueprint" : "wall" },
+                    { "type" : "building", "blueprint" : "triangleTurret" }
+                ]
+            }
+        }
+    ]
 }

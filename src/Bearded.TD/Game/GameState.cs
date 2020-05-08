@@ -26,13 +26,11 @@ namespace Bearded.TD.Game
         public GameObject ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
 
         private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
-        private readonly List<IGameRule<GameState>> gameRules = new List<IGameRule<GameState>>();
         private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> dictionaries = new Dictionary<Type, object>();
         private readonly Dictionary<Type, object> singletons = new Dictionary<Type, object>();
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
-        public ReadOnlyCollection<IGameRule<GameState>> Rules;
 
         public Instant Time { get; private set; } = Instant.Zero;
         public GameMeta Meta { get; }
@@ -62,7 +60,6 @@ namespace Bearded.TD.Game
             Meta = meta;
             GameSettings = gameSettings;
             Level = new Level(GameSettings.LevelSize);
-            Rules = gameRules.AsReadOnly();
 
             GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
             FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
@@ -99,12 +96,6 @@ namespace Bearded.TD.Game
             var sameObj = objectsBeingAdded.Pop();
             DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
-        }
-
-        public void Add(IGameRule<GameState> rule)
-        {
-            gameRules.Add(rule);
-            rule.OnAdded(this, Meta.Events);
         }
 
         public void RegisterSingleton<T>(T obj)
@@ -206,11 +197,6 @@ namespace Bearded.TD.Game
             Time += elapsedTime;
 
             FluidLayer.Update();
-
-            foreach (var rule in gameRules)
-            {
-                rule.Update(elapsedTime);
-            }
 
             foreach (var obj in gameObjects)
             {
