@@ -1,4 +1,4 @@
-#tool "nuget:?package=xunit.runner.console"
+#addin "Cake.FileHelpers"
 
 using System.Reflection;
 using static System.Reflection.BindingFlags;
@@ -74,7 +74,7 @@ Task("Test")
         {
             Information($"Running tests for {projectPath.FullPath}");
 
-            var testName = projectPath.GetFilenameWithoutExtension();
+            var testName = projectPath.GetFilenameWithoutExtension().FullPath;
             var projectTestResultsDir = testResultsDir + Directory(testName);
 
             CreateDirectory(projectTestResultsDir);
@@ -115,7 +115,7 @@ Task("Pack")
     });
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Pack")
     .IsDependentOn("Test");
 
 RunTarget(target);
