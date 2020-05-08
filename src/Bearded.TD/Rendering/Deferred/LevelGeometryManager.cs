@@ -23,6 +23,7 @@ namespace Bearded.TD.Rendering.Deferred
      *     - render open areas (floors < or > crevices?)
      *     - use simple generated sprites for testing
      *     - add sprites to mod later, and experiment with what's possible
+     * TODO: See if dedicated cliff rendering is necessary
      * TODO: once reasonably satisfied, move implementation to GPU
      *     - keep CPU renderer as alternative as long as possible
      * TODO: try tessellation on long triangles on GPU
@@ -383,7 +384,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             return height;
         }
-        
+
         public void CleanUp()
         {
             heightMapSurface.Dispose();
