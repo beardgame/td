@@ -1,10 +1,10 @@
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Rules;
 using Bearded.TD.Game.World;
 using Newtonsoft.Json;
 
-namespace Bearded.TD.Game.Buildings.rules
+namespace Bearded.TD.Game.Rules.Buildings
 {
     [GameRule("placeBuilding")]
     sealed class PlaceBuildingRule : GameRule<PlaceBuildingRule.Parameters>
