@@ -65,7 +65,7 @@ Task("Test")
     .Does(() =>
     {
         Information("Run all tests");
-        XUnit2(buildDir + "/**/*.Tests.dll");
+        XUnit2(".bin/**/*.Tests.dll");
     });
 
 Task("Archive")
