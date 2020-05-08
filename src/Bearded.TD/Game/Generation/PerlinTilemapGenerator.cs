@@ -167,9 +167,9 @@ namespace Bearded.TD.Game.Generation
 
                     height = Math.Round(height * 3).Clamped(-1, 1) * heightPlateauStep;
 
-                    //height += 0.3 * noiseMap[tile];
+                    height += 0.3 * noiseMap[tile];
 
-                    //height += gradientMap[tile];
+                    height += 0.5 * gradientMap[tile];
 
                     heightTilemap[tile] = height;
                 }
