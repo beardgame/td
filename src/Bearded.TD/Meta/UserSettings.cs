@@ -88,6 +88,8 @@ namespace Bearded.TD.Meta
             public bool SimpleFluid = false;
             public bool ProjectileDots = false;
             public bool WireframeLevel = false;
+            [SettingOptions(0.5, 1, 2, 10)]
+            public float TerrainDetail = 1;
         }
     }
 }

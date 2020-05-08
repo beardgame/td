@@ -1,3 +1,5 @@
+using Bearded.TD.Meta;
+
 namespace Bearded.TD
 {
     static partial class Constants
@@ -6,7 +8,7 @@ namespace Bearded.TD
         {
             private const float pixelsPerTileSpriteResolution = 44;
 
-            public const float PixelsPerTileLevelResolution = pixelsPerTileSpriteResolution;
+            public static float PixelsPerTileLevelResolution => pixelsPerTileSpriteResolution * UserSettings.Instance.Debug.TerrainDetail;
             public const float PixelsPerTileCompositeResolution = 10000;
 
             public const float PixelSize = Game.World.HexagonWidth / pixelsPerTileSpriteResolution;
