@@ -1,5 +1,3 @@
-#addin "Cake.FileHelpers"
-
 using System.Reflection;
 using static System.Reflection.BindingFlags;
 
@@ -64,19 +62,10 @@ Task("Test")
     .Does(() =>
     {
         var testProjects = GetFiles("./**/*.Tests.csproj");
-        var testResultsDir = Directory(EnvironmentVariable("BITRISE_TEST_RESULT_DIR"));
 
         foreach (var projectPath in testProjects)
         {
             Information($"Running tests for {projectPath.FullPath}");
-
-            var testName = projectPath.GetFilenameWithoutExtension().FullPath;
-            var projectTestResultsDir = testResultsDir + Directory(testName);
-
-            CreateDirectory(projectTestResultsDir);
-            FileWriteText(projectTestResultsDir + File("test-info.json"), $"{{ \"test-name\" : \"{testName}\" }}");
-
-            var xmlOutFile = (FilePath) (projectTestResultsDir + File("results.xml"));
 
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
@@ -84,7 +73,6 @@ Task("Test")
                 arguments: new ProcessArgumentBuilder() 
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
-                    .Append($"-xml {xmlOutFile.FullPath}")
             );
             Information($"Test results should now be available at {((DirectoryPath) projectTestResultsDir).FullPath}");
         }
