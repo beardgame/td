@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation
 
         public DefaultTilemapGeneratorTests()
         {
-            Generator = new DefaultTilemapGenerator(new Logger(), new LevelDebugMetadata());
+            Generator = new DefaultTilemapGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
         }
     }
 }

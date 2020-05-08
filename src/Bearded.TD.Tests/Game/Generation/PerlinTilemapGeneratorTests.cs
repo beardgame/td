@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation
 
         public PerlinTilemapGeneratorTests()
         {
-            Generator = new PerlinTilemapGenerator(new Logger(), new LevelDebugMetadata());
+            Generator = new PerlinTilemapGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
         }
     }
 }
