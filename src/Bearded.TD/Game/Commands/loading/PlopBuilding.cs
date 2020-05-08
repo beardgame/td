@@ -13,20 +13,25 @@ namespace Bearded.TD.Game.Commands
 {
     static class PlopBuilding
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
-            => new Implementation(game, faction, id, blueprint, footprint);
+        public static ISerializableCommand<GameInstance> Command(
+                GameState gameState,
+                Faction faction,
+                Id<Building> id,
+                IBuildingBlueprint blueprint,
+                PositionedFootprint footprint)
+            => new Implementation(gameState, faction, id, blueprint, footprint);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameInstance game;
+            private readonly GameState gameState;
             private readonly Faction faction;
             private readonly Id<Building> id;
             private readonly IBuildingBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameInstance game, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameState gameState, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
             {
-                this.game = game;
+                this.gameState = gameState;
                 this.faction = faction;
                 this.id = id;
                 this.blueprint = blueprint;
@@ -36,7 +41,7 @@ namespace Bearded.TD.Game.Commands
             public void Execute()
             {
                 var building = new Building(id, blueprint, faction, footprint);
-                game.State.Add(building);
+                gameState.Add(building);
                 building.GetComponents<Health<Building>>()
                     .MaybeSingle()
                     .Match(health => building.SetBuildProgress(1, health.MaxHealth - 1));
@@ -74,7 +79,7 @@ namespace Bearded.TD.Game.Commands
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
             {
                 return new Implementation(
-                    game,
+                    game.State,
                     game.State.FactionFor(faction),
                     id,
                     game.Blueprints.Buildings[blueprint],
