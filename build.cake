@@ -68,14 +68,14 @@ Task("Test")
         foreach (var projectPath in testProjects)
         {
             Information($"Running tests for {projectPath.FullPath}");
-            var xmlOutFile = artifactDir.CombineWithFilePath(projectPath.GetFilenameWithoutExtension());
+            var xmlOutFile = artifactDir + File($"{projectPath.GetFilenameWithoutExtension()}.xml");
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
                 command: "xunit",
                 arguments: new ProcessArgumentBuilder() 
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
-                    .Append($"-xml {xmlOutDir.FullPath}.xml"),
+                    .Append($"-xml {xmlOutFile.FullPath}.xml"),
             );
         }
     });
