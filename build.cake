@@ -68,14 +68,15 @@ Task("Test")
 
         foreach (var projectPath in testProjects)
         {
+            Information($"Running tests for {projectPath.FullPath}");
+
             var testName = projectPath.GetFilenameWithoutExtension().FullPath;
+            var projectTestResultsDir = testResultsDir + Directory(testName);
 
-            Information($"Running tests for {testName}");
+            CreateDirectory(projectTestResultsDir);
+            FileWriteText(projectTestResultsDir + File("test-info.json"), $"{{ \"test-name\" : \"{testName}\" }}");
 
-            Debug($"Running xUnit tool for {testName}");
-
-            var binDir = getOutDir(testName, releaseConfig);
-            var xunitXmlOutFile = (FilePath) (binDir + File("results.xml"));
+            var xmlOutFile = (FilePath) (projectTestResultsDir + File("results.xml"));
 
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
@@ -83,29 +84,8 @@ Task("Test")
                 arguments: new ProcessArgumentBuilder() 
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
-                    .Append($"-xml {xunitXmlOutFile.FullPath}")
+                    .Append($"-xml {xmlOutFile.FullPath}")
             );
-
-            Debug($"xUnit test results should be stored at {xunitXmlOutFile.FullPath}");
-
-            Debug($"Formatting tests results for ${testName}");
-
-            var projectTestResultsDir = testResultsDir + Directory(testName);
-            var junitXmlOutFile = (FilePath) (projectTestResultsDir + File("results.xml"));
-            
-            CreateDirectory(projectTestResultsDir);
-            FileWriteText(projectTestResultsDir + File("test-info.json"), $"{{ \"test-name\" : \"{testName}\" }}");
-
-            Debug($"Converting xUnit xml format to JUnit format for {testName}");
-
-            DotNetCoreTool(
-                projectPath: projectPath.FullPath,
-                command: "xunit-to-junit",
-                arguments: new ProcessArgumentBuilder() 
-                    .Append(xunitXmlOutFile.FullPath)
-                    .Append(junitXmlOutFile.FullPath)
-            );
-
             Information($"Test results should now be available at {((DirectoryPath) projectTestResultsDir).FullPath}");
         }
     });
