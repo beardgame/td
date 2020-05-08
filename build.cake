@@ -75,14 +75,14 @@ Task("Test")
                 arguments: new ProcessArgumentBuilder() 
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
-                    .Append($"-xml {xmlOutFile.Path}")
+                    .Append($"-xml {xmlOutFile.FullPath}")
             );
             Information($"Should now have test output in ${xmlOutFile}");
         }
     });
 
 Task("Pack")
-    .IsDependentOn("Test")
+    .IsDependentOn("Build")
     .Does(() =>
     {
         var tdBinDir = getOutDir(tdProjectName, releaseConfig);
