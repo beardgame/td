@@ -76,8 +76,8 @@ Task("Test")
                     .Append($"-configuration {releaseConfig}")
                     .Append("-nobuild")
                     .Append($"-xml {xmlOutFile.Path}")
-            Information($"Should now have test output in ${xmlOutFile}");
             );
+            Information($"Should now have test output in ${xmlOutFile}");
         }
     });
 
