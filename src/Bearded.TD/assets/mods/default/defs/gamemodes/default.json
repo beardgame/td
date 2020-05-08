@@ -8,7 +8,7 @@
                 "building" : "base",
                 "footprint" : {
                     "group" : "seven",
-                    "rootPosition" : [0, 0]
+                    "rootTile" : [0, 0]
                 }
             }
         },

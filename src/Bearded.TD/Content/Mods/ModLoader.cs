@@ -3,9 +3,7 @@ using System.Threading.Tasks;
 using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
@@ -91,6 +89,7 @@ namespace Bearded.TD.Content.Mods
                 serializer = new JsonSerializer();
                 serializer.Converters.AddRange(
                     new StepConverter(),
+                    new TileConverter(),
                     new SpaceTime1Converter<Unit>(v => v.U()),
                     new SpaceTime1Converter<Speed>(SpaceTimeExtensions.UnitsPerSecond),
                     new SpaceTime1Converter<TimeSpan>(v => ((double) v).S()),
