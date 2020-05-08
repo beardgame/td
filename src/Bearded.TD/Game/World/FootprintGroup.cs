@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.World
         public string Id { get; }
 
         public static FootprintGroup Single { get; } = new FootprintGroup(null, Footprint.Single);
-        
+
         public ReadOnlyCollection<Footprint> Footprints { get; }
         public ReadOnlyCollection<Angle> Orientations { get; }
 
@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.World
 
             if (Footprints.Count == 0)
                 throw new ArgumentException("Footprint group must have at least one footprint.");
-            
+
             if (Footprints.Count != Orientations.Count)
                 throw new ArgumentException("Footprint group must have equal number footprints and orientations.");
         }

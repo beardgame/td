@@ -1,4 +1,3 @@
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.World;
@@ -23,11 +22,11 @@ namespace Bearded.TD.Game.Rules.Buildings
 
         public readonly struct Parameters
         {
-            public BuildingBlueprint Building { get; }
+            public IBuildingBlueprint Building { get; }
             public PositionedFootprint Footprint { get; }
 
             [JsonConstructor]
-            public Parameters(BuildingBlueprint building, PositionedFootprint footprint)
+            public Parameters(IBuildingBlueprint building, PositionedFootprint footprint)
             {
                 Building = building;
                 Footprint = footprint;
