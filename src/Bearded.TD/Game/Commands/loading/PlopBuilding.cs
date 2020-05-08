@@ -84,7 +84,6 @@ namespace Bearded.TD.Game.Commands
                     id,
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
-                        game.State.Level,
                         game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile(footprintX, footprintY)));
             }

@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Input
         public override void Update(ICursorHandler cursor)
         {
             var currentTile = cursor.CurrentFootprint;
-            if (!currentTile.IsValid) return;
+            if (!currentTile.IsValid(Game.State.Level)) return;
 
             if (cursor.Click.Hit)
             {

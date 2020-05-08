@@ -42,7 +42,7 @@ namespace Bearded.TD.Game
             foreach (var command in setupFactions())
                 yield return command;
 
-            yield return ApplyGameRules.Command(game);
+            yield return ApplyGameRules.Command(game, game.Blueprints.GameModes["default"]);
 
             var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 

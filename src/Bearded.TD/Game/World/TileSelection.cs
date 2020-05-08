@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.World
             {
                 var footprint = footprintGroup.Footprints[0];
 
-                return new PositionedFootprint(level, footprintGroup, 0, footprint.RootTileClosestToWorldPosition(position));
+                return new PositionedFootprint(footprintGroup, 0, footprint.RootTileClosestToWorldPosition(position));
             }
         }
 
@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.World
                     })
                     .MinBy(r => r.Distance.NumericValue);
 
-                return new PositionedFootprint(level, footprints, index, root);
+                return new PositionedFootprint(footprints, index, root);
             }
         }
     }
