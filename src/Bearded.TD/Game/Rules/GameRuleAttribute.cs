@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using Bearded.TD.Content.Behaviors;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Components
+namespace Bearded.TD.Game.Rules
 {
     [AttributeUsage(AttributeTargets.Class)]
-    [BaseTypeRequired(typeof(IComponent<>))]
+    [BaseTypeRequired(typeof(IGameRule<>))]
     [MeansImplicitUse]
-    class ComponentAttribute : Attribute, IBehaviorAttribute
+    sealed class GameRuleAttribute : Attribute, IBehaviorAttribute
     {
         public string Id { get; }
 
-        public ComponentAttribute(string id)
+        public GameRuleAttribute(string id)
         {
             Id = id;
         }
