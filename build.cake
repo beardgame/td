@@ -63,8 +63,17 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        Information("Run all tests");
-        XUnit2("./**/*.Tests.dll");
+        var testProjects = GetFiles("./**/*.Tests.csproj");
+
+        foreach (var projectPath in testProjects)
+        {
+            Information($"Running tests for {projectPath.FullPath}");
+            DotNetCoreTool(
+                projectPath: projectPath.FullPath,
+                command: "xunit",
+                arguments: $"-configuration {releaseConfig} -diagnostics -stoponfail"
+            );
+        }
     });
 
 Task("Archive")
