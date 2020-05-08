@@ -1,3 +1,5 @@
+#tool "nuget:?package=xunit.runner.console"
+
 using System.Reflection;
 using static System.Reflection.BindingFlags;
 
@@ -7,6 +9,8 @@ var releaseConfig = "Release";
 var solutionFile = File("TD.sln");
 var tdProjectName = "Bearded.TD";
 var tdBinaryFile = File($"{tdProjectName}.exe");
+var tdTestProjectName = "Bearded.TD.Tests";
+var weaverTeastProjectName = "Bearded.TD.Weavers.Tests";
 var artifactDir = Directory(EnvironmentVariable("ARTIFACT_OUT_DIR") ?? "./bin/artifacts");
 
 void build(string config)
@@ -47,13 +51,27 @@ Task("NuGet.Restore")
     .IsDependentOn("Clean")
     .Does(() => NuGetRestore(solutionFile));
 
-Task("Build.Release")
+
+Task("Build")
     .IsDependentOn("NuGet.Restore")
     .Does(() =>
     {
         Information($"Building solution with {releaseConfig} config...");
         build(releaseConfig);
+    });
 
+Task("Test")
+    .IsDependentOn("NuGet.Restore")
+    .Does(() =>
+    {
+        Information("Run all tests");
+        XUnit2(buildDir + "/**/*.Tests.dll");
+    });
+
+Task("Archive")
+    .IsDependentOn("Test")
+    .Does(() =>
+    {
         var tdBinDir = getOutDir(tdProjectName, releaseConfig);
         Debug($"{tdProjectName} should now be available at '{tdBinDir}'.");
 
@@ -70,8 +88,10 @@ Task("Build.Release")
         Information($"Done archiving! Find your artifact at '{tdZipFile}'.");
     });
 
-
 Task("Default")
-    .IsDependentOn("Build.Release");
+    .IsDependentOn("Test");
+
+Task("Release")
+    .IsDependentOn("Archive");
 
 RunTarget(target);
