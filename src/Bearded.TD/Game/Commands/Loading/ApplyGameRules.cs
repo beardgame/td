@@ -6,7 +6,7 @@ using Bearded.TD.Game.Rules.Buildings;
 using Bearded.TD.Game.Rules.Technologies;
 using Bearded.TD.Game.Technologies;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities.SpaceTime;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Commands
 
             yield return new PlaceBuildingRule(new PlaceBuildingRule.Parameters(
                 blueprints.Buildings["base"],
-                blueprints.Footprints["seven"].Positioned(0, game.State.Level, new Position2(0, 0))));
+                blueprints.Footprints["seven"].Positioned(0, Tile.Origin)));
         }
     }
 }

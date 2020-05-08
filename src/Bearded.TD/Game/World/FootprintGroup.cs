@@ -36,12 +36,13 @@ namespace Bearded.TD.Game.World
         {
         }
 
-        public PositionedFootprint Positioned(int index, Level level, Position2 position)
+        public PositionedFootprint Positioned(int index, Position2 position) =>
+            Positioned(index, Footprints[index].RootTileClosestToWorldPosition(position));
+
+        public PositionedFootprint Positioned(int index, Tile rootTile)
         {
             DebugAssert.Argument.Satisfies(index >= 0 && index < Footprints.Count);
-
-            return new PositionedFootprint(level, this, index,
-                Footprints[index].RootTileClosestToWorldPosition(position));
+            return new PositionedFootprint(this, index, rootTile);
         }
     }
 }

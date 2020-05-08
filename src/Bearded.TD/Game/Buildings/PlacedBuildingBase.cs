@@ -16,10 +16,7 @@ namespace Bearded.TD.Game.Buildings
             IBuildingBlueprint blueprint,
             Faction faction,
             PositionedFootprint footprint)
-            : base(blueprint, faction, footprint)
-        {
-            DebugAssert.Argument.Satisfies(footprint.IsValid);
-        }
+            : base(blueprint, faction, footprint) {}
 
         protected override void ChangeFootprint(PositionedFootprint footprint)
             => throw new InvalidOperationException("Cannot change footprint of placed building.");
@@ -44,6 +41,7 @@ namespace Bearded.TD.Game.Buildings
         protected override void OnAdded()
         {
             base.OnAdded();
+            DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
             Game.BuildingLayer.AddBuilding(this);
         }
 
