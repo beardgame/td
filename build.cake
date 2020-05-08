@@ -44,9 +44,6 @@ string getTDVersionFromBinary(string config)
     return (string)versionProperty.GetValue(null);
 }
 
-Task("PrepareDirectories")
-    .Does(() => CreateDirectory(artifactDir));
-
 Task("Clean")
     .Does(() => CleanDirectory(buildDir));
 
@@ -55,7 +52,6 @@ Task("NuGet.Restore")
     .Does(() => NuGetRestore(solutionFile));
 
 Task("Build")
-    .IsDependentOn("PrepareDirectories")
     .IsDependentOn("NuGet.Restore")
     .Does(() =>
     {
@@ -90,7 +86,7 @@ Task("Test")
                     .Append("-nobuild")
                     .Append($"-xml {xmlOutFile.FullPath}")
             );
-            Debug($"Test results should now be available at {projectTestResultsDir.FullPath}");
+            Information($"Test results should now be available at {((DirectoryPath) projectTestResultsDir).FullPath}");
         }
     });
 
