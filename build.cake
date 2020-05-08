@@ -68,7 +68,7 @@ Task("Test")
         foreach (var projectPath in testProjects)
         {
             Information($"Running tests for {projectPath.FullPath}");
-            var xmlOutFile = artifactDir + File($"{projectPath.GetFilenameWithoutExtension()}.xml");
+            var xmlOutFile = (FilePath) (artifactDir + File($"{projectPath.GetFilenameWithoutExtension()}.xml"));
             DotNetCoreTool(
                 projectPath: projectPath.FullPath,
                 command: "xunit",
