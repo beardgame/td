@@ -51,7 +51,6 @@ Task("NuGet.Restore")
     .IsDependentOn("Clean")
     .Does(() => NuGetRestore(solutionFile));
 
-
 Task("Build")
     .IsDependentOn("NuGet.Restore")
     .Does(() =>
@@ -61,7 +60,7 @@ Task("Build")
     });
 
 Task("Test")
-    .IsDependentOn("NuGet.Restore")
+    .IsDependentOn("Build")
     .Does(() =>
     {
         Information("Run all tests");
