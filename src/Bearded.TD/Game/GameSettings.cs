@@ -39,7 +39,7 @@ namespace Bearded.TD.Game
                 // Initialize default values
                 Seed = StaticRandom.Int();
                 LevelSize = Constants.Game.World.Radius;
-                WorkerDistributionMethod = WorkerDistributionMethod.OnePerPlayer;
+                WorkerDistributionMethod = WorkerDistributionMethod.Neutral;
                 LevelGenerationMethod = LevelGenerationMethod.Default;
             }
 
@@ -51,7 +51,7 @@ namespace Bearded.TD.Game
                 WorkerDistributionMethod = template.WorkerDistributionMethod;
                 LevelGenerationMethod = template.LevelGenerationMethod;
             }
-            
+
             public GameSettings Build() => new GameSettings(this);
         }
 

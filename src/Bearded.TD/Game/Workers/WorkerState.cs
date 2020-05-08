@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
@@ -9,8 +10,9 @@ namespace Bearded.TD.Game.Workers
     abstract class WorkerState
     {
         public static WorkerState Idle(WorkerManager manager, Worker worker) => new IdleWorkerState(manager, worker);
-        public static WorkerState ExecuteTask(WorkerManager manager, Worker worker, IWorkerTask task)
-            => new ExecutingWorkerState(manager, worker, task);
+        public static WorkerState ExecuteTask(
+            WorkerManager manager, Worker worker, ResourceManager resources, IWorkerTask task)
+            => new ExecutingWorkerState(manager, worker, resources, task);
 
         public event GenericEventHandler<WorkerState> StateChanged;
         public event GenericEventHandler<IEnumerable<Tile>> TaskTilesChanged;
@@ -27,6 +29,7 @@ namespace Bearded.TD.Game.Workers
         public abstract void Update(TimeSpan elapsedTime);
 
         public abstract void Start();
+        public abstract void Stop();
 
         private void moveToState(WorkerState newState) => StateChanged?.Invoke(newState);
         private void setTaskTiles(IEnumerable<Tile> taskTiles) => TaskTilesChanged?.Invoke(taskTiles);
@@ -42,15 +45,20 @@ namespace Bearded.TD.Game.Workers
                 manager.RequestTask(worker);
                 setTaskTiles(worker.CurrentTile.Yield());
             }
+
+            public override void Stop() {}
         }
 
         private class ExecutingWorkerState : WorkerState
         {
+            private readonly ResourceManager resources;
             private readonly IWorkerTask task;
 
-            public ExecutingWorkerState(WorkerManager manager, Worker worker, IWorkerTask task)
+            public ExecutingWorkerState(
+                WorkerManager manager, Worker worker, ResourceManager resources, IWorkerTask task)
                 : base(manager, worker)
             {
+                this.resources = resources;
                 this.task = task;
             }
 
@@ -58,11 +66,11 @@ namespace Bearded.TD.Game.Workers
             {
                 if (!task.Finished && worker.CurrentTile.NeighboursToTiles(task.Tiles))
                 {
-                    task.Progress(elapsedTime, worker.Faction.Resources, worker.WorkerSpeed);
+                    task.Progress(elapsedTime, resources, worker.WorkerSpeed);
                 }
                 if (task.Finished)
                 {
-                    worker.Faction.Workers.FinishTask(task);
+                    manager.FinishTask(task);
                     moveToState(Idle(manager, worker));
                 }
             }
@@ -70,6 +78,11 @@ namespace Bearded.TD.Game.Workers
             public override void Start()
             {
                 setTaskTiles(task.Tiles);
+            }
+
+            public override void Stop()
+            {
+                manager.ReturnTask(task);
             }
         }
     }

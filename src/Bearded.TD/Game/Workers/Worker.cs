@@ -14,10 +14,10 @@ namespace Bearded.TD.Game.Workers
 {
     sealed class Worker : GameObject, ITileWalkerOwner, ISelectable
     {
-        private readonly WorkerManager manager;
         private TileWalker tileWalker;
 
-        public Faction Faction { get; }
+        public IFactioned HubOwner { get; }
+        public Faction Faction { get; private set; }
         public double WorkerSpeed => Constants.Game.Worker.WorkerSpeed;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
@@ -28,10 +28,9 @@ namespace Bearded.TD.Game.Workers
         private WorkerState currentState;
         private IEnumerable<Tile> taskTiles;
 
-        public Worker(WorkerManager manager, Faction faction)
+        public Worker(IFactioned hubOwner)
         {
-            this.manager = manager;
-            Faction = faction;
+            HubOwner = hubOwner;
         }
 
         protected override void OnAdded()
@@ -40,26 +39,40 @@ namespace Bearded.TD.Game.Workers
 
             tileWalker = new TileWalker(this, Game.Level, Tile.Origin);
 
-            manager.RegisterWorker(this);
-            setState(WorkerState.Idle(manager, this));
-
             Game.ListAs(this);
+
+            Game.Meta.Events.Send(new WorkerAdded(this));
+        }
+
+        public void AssignToFaction(Faction faction)
+        {
+            if (Faction != null)
+            {
+                Faction.Workers.UnregisterWorker(this);
+                Faction = null;
+            }
+
+            Faction = faction;
+            Faction.Workers.RegisterWorker(this);
+
+            setState(WorkerState.Idle(Faction.Workers, this));
         }
 
         public void AssignTask(IWorkerTask task)
         {
-            setState(WorkerState.ExecuteTask(manager, this, task));
+            setState(WorkerState.ExecuteTask(Faction.Workers, this, Faction.Resources, task));
         }
 
         public void SuspendCurrentTask()
         {
-            setState(WorkerState.Idle(manager, this));
+            setState(WorkerState.Idle(Faction.Workers, this));
         }
 
         private void setState(WorkerState newState)
         {
             if (currentState != null)
             {
+                currentState.Stop();
                 currentState.StateChanged -= setState;
                 currentState.TaskTilesChanged -= setTaskTiles;
             }
@@ -78,7 +91,7 @@ namespace Bearded.TD.Game.Workers
         {
             base.OnDelete();
 
-            manager.UnregisterWorker(this);
+            Faction?.Workers?.UnregisterWorker(this);
         }
 
         public override void Update(TimeSpan elapsedTime)

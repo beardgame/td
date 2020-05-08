@@ -13,11 +13,12 @@ namespace Bearded.TD.Game.Rules
 
         public void OnAdded(GameState owner, GlobalGameEvents events)
         {
-            RegisterEvents(events, parameters);
+            RegisterEvents(events, owner.GameSettings, parameters);
             Execute(owner, parameters);
         }
 
-        protected virtual void RegisterEvents(GlobalGameEvents events, TParameters parameters)
+        protected virtual void RegisterEvents(
+            GlobalGameEvents events, GameSettings gameSettings, TParameters parameters)
         {
         }
 
@@ -32,10 +33,11 @@ namespace Bearded.TD.Game.Rules
         {
         }
 
-        protected sealed override void RegisterEvents(GlobalGameEvents events, VoidParameters parameters) =>
-            RegisterEvents(events);
+        protected sealed override void RegisterEvents(
+                GlobalGameEvents events, GameSettings gameSettings, VoidParameters parameters) =>
+            RegisterEvents(events, gameSettings);
 
-        protected virtual void RegisterEvents(GlobalGameEvents events) {}
+        protected virtual void RegisterEvents(GlobalGameEvents events, GameSettings gameSettings) {}
 
         protected sealed override void Execute(GameState owner, VoidParameters parameters) => Execute(owner);
 

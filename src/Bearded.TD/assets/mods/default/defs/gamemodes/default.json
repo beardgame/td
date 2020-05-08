@@ -20,6 +20,7 @@
                     { "type" : "building", "blueprint" : "triangleTurret" }
                 ]
             }
-        }
+        },
+        { "id" : "assignWorkers" }
     ]
 }
