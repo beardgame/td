@@ -5,7 +5,10 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
+using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.SpaceTime;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Deferred
@@ -22,12 +25,48 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
 
+        private readonly ExpandingVertexSurface<LevelVertex> heightMapSurface;
+        private readonly float heightMapWorldSize;
+        private readonly int heightMapSize;
+        private readonly float heightMapPixelWorldSize;
+        private readonly float[,] heightMap;
+        private bool isHeightMapDirty = true;
+
         // TODO: in the future this also needs to know about textures and stuff from mods
         public LevelGeometryManager(GameInstance game, RenderContext context, Material material)
         {
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
             tileMapRadius = level.Radius;
+
+            heightMapWorldSize = (level.Radius * 2 + 1) * Constants.Game.World.HexagonWidth;
+            heightMapSize = level.Radius * 10;
+            heightMapPixelWorldSize = heightMapWorldSize / heightMapSize;
+            heightMap = new float[heightMapSize,heightMapSize];
+
+            var surface = new ExpandingVertexSurface<LevelVertex>()
+                {
+                    ClearOnRender = false,
+                    IsStatic = true,
+                }
+                .WithShader(material.Shader.SurfaceShader)
+                .AndSettings(
+                    context.Surfaces.ViewMatrixLevel,
+                    context.Surfaces.ProjectionMatrix,
+                    context.Surfaces.FarPlaneDistance
+                );
+
+            var textureUnit = TextureUnit.Texture0;
+
+            foreach (var texture in material.ArrayTextures)
+            {
+                surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture, textureUnit));
+
+                textureUnit++;
+            }
+
+            heightMapSurface = surface;
+
 
             var tileMapWidth = tileMapRadius * 2 + 1;
 
@@ -42,6 +81,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void HandleEvent(TileDrawInfoChanged @event)
         {
+            isHeightMapDirty = true;
             var tile = @event.Tile;
 
             var (x, y) = (tile.X, tile.Y);
@@ -61,10 +101,99 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void RenderAll()
         {
-            foreach (var batch in batches)
+            if (isHeightMapDirty)
+                regenerateHeightMap();
+
+            renderHeightMap();
+        }
+
+        private void renderHeightMap()
+        {
+            if (UserSettings.Instance.Debug.WireframeLevel)
             {
-                batch.Render();
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                heightMapSurface.Render();
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
+            else
+            {
+                heightMapSurface.Render();
+            }
+        }
+
+        private void populateHeightMapSurface()
+        {
+            heightMapSurface.Clear();
+            var vy = -0.5f * heightMapWorldSize;
+            foreach (var y in Enumerable.Range(0, heightMapSize - 1))
+            {
+                var vx = -0.5f * heightMapWorldSize;
+                var vy2 = vy + heightMapPixelWorldSize;
+
+                foreach (var x in Enumerable.Range(0, heightMapSize - 1))
+                {
+                    var vx2 = vx + heightMapPixelWorldSize;
+
+                    var h0 = heightMap[x, y];
+                    var h1 = heightMap[x + 1, y];
+                    var h2 = heightMap[x + 1, y + 1];
+                    var h3 = heightMap[x, y + 1];
+
+                    if (float.IsNaN(h0) || float.IsNaN(h1) || float.IsNaN(h2) || float.IsNaN(h3))
+                    {
+                        vx = vx2;
+                        continue;
+                    }
+
+                    heightMapSurface.AddVertices(
+                        new LevelVertex(new Vector3(vx, vy, h0), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        new LevelVertex(new Vector3(vx2, vy2, h2), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        new LevelVertex(new Vector3(vx2, vy, h1), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        new LevelVertex(new Vector3(vx, vy, h0), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        new LevelVertex(new Vector3(vx, vy2, h3), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        new LevelVertex(new Vector3(vx2, vy2, h2), Vector3.UnitZ, Vector2.Zero, Color.White)
+                    );
+
+                    vx = vx2;
+                }
+
+                vy = vy2;
+            }
+        }
+
+        private void regenerateHeightMap()
+        {
+            foreach (var y in Enumerable.Range(0, heightMapSize))
+            {
+                foreach (var x in Enumerable.Range(0, heightMapSize))
+                {
+                    var position = positionOfHeightmapPixel(x, y);
+                    var tile = Level.GetTile(position);
+
+                    if (!level.IsValid(tile))
+                    {
+                        heightMap[x, y] = float.NaN;
+                        continue;
+                    }
+
+                    var height = geometryLayer[tile].DrawInfo.Height;
+
+                    heightMap[x, y] = height.NumericValue;
+                }
+            }
+
+            populateHeightMapSurface();
+
+            isHeightMapDirty = false;
+        }
+
+        private Position2 positionOfHeightmapPixel(int x, int y)
+        {
+            return new Position2
+            (
+                (x / (float)heightMapSize - 0.5f) * heightMapWorldSize,
+                (y / (float)heightMapSize - 0.5f) * heightMapWorldSize
+            );
         }
 
         private void createValidBatches(RenderContext context, Material material)

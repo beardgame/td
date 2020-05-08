@@ -87,6 +87,7 @@ namespace Bearded.TD.Meta
             public bool RenderUIFallBack = false;
             public bool SimpleFluid = false;
             public bool ProjectileDots = false;
+            public bool WireframeLevel = false;
         }
     }
 }
