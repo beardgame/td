@@ -48,7 +48,6 @@ namespace Bearded.TD.Rendering
 
             game.PlayerCursors.DrawCursors(geometries);
             drawAmbientLight();
-            drawGameRules();
             drawGameObjects();
             drawDebug();
         }
@@ -61,14 +60,6 @@ namespace Bearded.TD.Rendering
                 new Vector3(-radius * 2, radius * 2, radius),
                 radius * 10, Color.White * 0.2f
             );
-        }
-
-        private void drawGameRules()
-        {
-            foreach (var rule in game.State.Rules)
-            {
-                rule.Draw(geometries);
-            }
         }
 
         private void drawGameObjects()
