@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
@@ -7,42 +6,63 @@ using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using static System.Math;
+using static System.Single;
+using static Bearded.TD.Constants.Game.World;
+using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
     class LevelGeometryManager : IListener<TileDrawInfoChanged>
     {
-        private const int batchWidth = 8;
+        private const float heightMapScale = 4;
+        private const float gridScale = 6;
 
-        private readonly int tileMapRadius;
-        private readonly int batchesPerRow;
-        private readonly Batch[] batchLookup;
-        private readonly List<Batch> batches = new List<Batch>();
+        private const float worldToGrid = gridScale;
+        private const float gridToWorld = 1 / gridScale;
+
+        private static readonly (Vector2, Step)[] gridNeighbourOffsets =
+            new[] {DownRight, Right, UpRight, UpLeft, Left, DownLeft}
+                .Select(d => (d.Vector() * gridToWorld, d.Step()))
+                .ToArray();
 
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
 
+        private readonly float fallOffDistance;
+
         private readonly ExpandingVertexSurface<LevelVertex> heightMapSurface;
         private readonly float heightMapWorldSize;
-        private readonly int heightMapSize;
-        private readonly float heightMapPixelWorldSize;
+        private readonly int heightMapResolution;
         private readonly float[,] heightMap;
+
+        private readonly int gridRadius;
+        private readonly Tilemap<float> sampledHeight;
+        private readonly Tilemap<Vector3> normals;
+
         private bool isHeightMapDirty = true;
 
-        // TODO: in the future this also needs to know about textures and stuff from mods
         public LevelGeometryManager(GameInstance game, RenderContext context, Material material)
         {
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
-            tileMapRadius = level.Radius;
 
-            heightMapWorldSize = (level.Radius * 2 + 1) * Constants.Game.World.HexagonWidth;
-            heightMapSize = level.Radius * 10;
-            heightMapPixelWorldSize = heightMapWorldSize / heightMapSize;
-            heightMap = new float[heightMapSize,heightMapSize];
+            var tileMapWidth = level.Radius * 2 + 1;
+            var gridWidth = tileMapWidth * gridScale;
+            gridRadius = (int) (gridWidth - 1) / 2;
+
+            fallOffDistance = (level.Radius - 0.25f) * HexagonWidth;
+
+            heightMapWorldSize = tileMapWidth * HexagonWidth;
+            heightMapResolution = (int) (tileMapWidth * heightMapScale);
+            heightMap = new float[heightMapResolution, heightMapResolution];
+
+            sampledHeight = new Tilemap<float>(gridRadius);
+            normals = new Tilemap<Vector3>(gridRadius);
 
             var surface = new ExpandingVertexSurface<LevelVertex>()
                 {
@@ -67,36 +87,13 @@ namespace Bearded.TD.Rendering.Deferred
 
             heightMapSurface = surface;
 
-
-            var tileMapWidth = tileMapRadius * 2 + 1;
-
-            batchesPerRow = (tileMapWidth + batchWidth - 1) / batchWidth;
-
-            batchLookup = new Batch[batchesPerRow * batchesPerRow];
-
-            createValidBatches(context, material);
-
             game.Meta.Events.Subscribe(this);
         }
 
         public void HandleEvent(TileDrawInfoChanged @event)
         {
             isHeightMapDirty = true;
-            var tile = @event.Tile;
-
-            var (x, y) = (tile.X, tile.Y);
-
-            markDirty((x, y));
-            markDirty((x - 1, y));
-            markDirty((x, y - 1));
-            markDirty((x - 1, y + 1));
-
-        }
-
-        private void markDirty((int X, int Y) tile)
-        {
-            var batchIndex = batchIndexFor(tile);
-            batchLookup[batchIndex].MarkAsDirty();
+            // TODO: regenerate only area around change
         }
 
         public void RenderAll()
@@ -121,230 +118,218 @@ namespace Bearded.TD.Rendering.Deferred
             }
         }
 
-        private void populateHeightMapSurface()
-        {
-            heightMapSurface.Clear();
-            var vy = -0.5f * heightMapWorldSize;
-            foreach (var y in Enumerable.Range(0, heightMapSize - 1))
-            {
-                var vx = -0.5f * heightMapWorldSize;
-                var vy2 = vy + heightMapPixelWorldSize;
-
-                foreach (var x in Enumerable.Range(0, heightMapSize - 1))
-                {
-                    var vx2 = vx + heightMapPixelWorldSize;
-
-                    var h0 = heightMap[x, y];
-                    var h1 = heightMap[x + 1, y];
-                    var h2 = heightMap[x + 1, y + 1];
-                    var h3 = heightMap[x, y + 1];
-
-                    if (float.IsNaN(h0) || float.IsNaN(h1) || float.IsNaN(h2) || float.IsNaN(h3))
-                    {
-                        vx = vx2;
-                        continue;
-                    }
-
-                    heightMapSurface.AddVertices(
-                        new LevelVertex(new Vector3(vx, vy, h0), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        new LevelVertex(new Vector3(vx2, vy2, h2), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        new LevelVertex(new Vector3(vx2, vy, h1), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        new LevelVertex(new Vector3(vx, vy, h0), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        new LevelVertex(new Vector3(vx, vy2, h3), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        new LevelVertex(new Vector3(vx2, vy2, h2), Vector3.UnitZ, Vector2.Zero, Color.White)
-                    );
-
-                    vx = vx2;
-                }
-
-                vy = vy2;
-            }
-        }
 
         private void regenerateHeightMap()
         {
-            foreach (var y in Enumerable.Range(0, heightMapSize))
-            {
-                foreach (var x in Enumerable.Range(0, heightMapSize))
-                {
-                    var position = positionOfHeightmapPixel(x, y);
-                    var tile = Level.GetTile(position);
+            sampleWorldToHeightmap();
 
-                    if (!level.IsValid(tile))
-                    {
-                        heightMap[x, y] = float.NaN;
-                        continue;
-                    }
+            sampleHeightmapToHeights();
 
-                    var height = geometryLayer[tile].DrawInfo.Height;
-
-                    heightMap[x, y] = height.NumericValue;
-                }
-            }
+            calculateNormals();
 
             populateHeightMapSurface();
 
             isHeightMapDirty = false;
         }
 
+
+        private void sampleWorldToHeightmap()
+        {
+            foreach (var y in Enumerable.Range(0, heightMapResolution))
+            {
+                foreach (var x in Enumerable.Range(0, heightMapResolution))
+                {
+                    var position = positionOfHeightmapPixel(x, y);
+                    var tile = Level.GetTile(position);
+
+                    if (!level.IsValid(tile))
+                    {
+                        heightMap[x, y] = NaN;
+                        continue;
+                    }
+
+                    var tileGeometry = geometryLayer[tile];
+
+                    var height = tileGeometry.DrawInfo.Height;
+
+                    heightMap[x, y] = height.NumericValue;
+                }
+            }
+        }
+
+        private void sampleHeightmapToHeights()
+        {
+            foreach (var tile in sampledHeight)
+            {
+                var p = Level.GetPosition(tile).NumericValue * gridToWorld;
+
+                var h = heightMapValueAt(p);
+
+                sampledHeight[tile] = h;
+            }
+        }
+
+        private void calculateNormals()
+        {
+            foreach (var tile in Tilemap.EnumerateTilemapWith(gridRadius - 1))
+            {
+                var height = sampledHeight[tile];
+
+                var (vectorPrev, stepPrev) = gridNeighbourOffsets.Last();
+                var heightPrevOffset = sampledHeight[tile.Offset(stepPrev)] - height;
+
+                var normalAccumulator = Vector3.Zero;
+
+                foreach (var (vectorCurrent, stepCurrent) in gridNeighbourOffsets)
+                {
+                    var heightCurrentOffset = sampledHeight[tile.Offset(stepCurrent)] - height;
+
+                    var triangleNormal = Vector3.Cross(
+                        vectorPrev.WithZ(heightPrevOffset),
+                        vectorCurrent.WithZ(heightCurrentOffset)
+                    );
+
+                    normalAccumulator += triangleNormal;
+
+                    vectorPrev = vectorCurrent;
+                    heightPrevOffset = heightCurrentOffset;
+                }
+
+                normals[tile] = normalAccumulator.NormalizedSafe();
+            }
+        }
+
+        private void populateHeightMapSurface()
+        {
+            heightMapSurface.Clear();
+
+            /* Vertex layout
+             * -- v3
+             *   /  \
+             * v0 -- v2
+             *   \  /
+             * -- v1
+             */
+
+            var (v1Offset, v1Step) = gridNeighbourOffsets[0];
+            var (v2Offset, v2Step) = gridNeighbourOffsets[1];
+            var (v3Offset, v3Step) = gridNeighbourOffsets[2];
+
+            foreach (var tile in Tilemap.EnumerateTilemapWith(gridRadius - 1))
+            {
+                var t1 = tile.Offset(v1Step);
+                var t2 = tile.Offset(v2Step);
+                var t3 = tile.Offset(v3Step);
+
+                var v0 = Level.GetPosition(tile).NumericValue * gridToWorld;
+                var v1 = v0 + v1Offset;
+                var v2 = v0 + v2Offset;
+                var v3 = v0 + v3Offset;
+
+                var h0 = sampledHeight[tile];
+                var h1 = sampledHeight[t1];
+                var h2 = sampledHeight[t2];
+                var h3 = sampledHeight[t3];
+
+                var n0 = normals[tile];
+                var n1 = normals[t1];
+                var n2 = normals[t2];
+                var n3 = normals[t3];
+
+                if (IsNaN(h0) || IsNaN(h1) || IsNaN(h2))
+                {
+                    /*
+                    heightMapSurface.AddVertices(
+                        new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
+                        new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red),
+                        new LevelVertex(v1.WithZ(), n1, Vector2.Zero, Color.Red)
+                    );
+                    */
+                }
+                else
+                {
+                    heightMapSurface.AddVertices(
+                        vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
+                        vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White),
+                        vertex(v1.WithZ(h1), n1, Vector2.Zero, Color.White)
+                    );
+                }
+
+                if (IsNaN(h0) || IsNaN(h3) || IsNaN(h2))
+                {
+                    /*
+                    heightMapSurface.AddVertices(
+                        new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
+                        new LevelVertex(v3.WithZ(), n3, Vector2.Zero, Color.Red),
+                        new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red)
+                    );
+                    */
+                }
+                else
+                {
+                    heightMapSurface.AddVertices(
+                        vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
+                        vertex(v3.WithZ(h3), n3, Vector2.Zero, Color.White),
+                        vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White)
+                    );
+                }
+            }
+        }
+
+        private LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
+        {
+            var a = 1f; //(1 - Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
+
+            var distanceFalloff = ((fallOffDistance - hexagonalDistanceToOrigin(v.Xy)) * 0.3f)
+                .Clamped(0f, 1f).Squared();
+
+            a *= distanceFalloff;
+
+            return new LevelVertex(v, n, uv, new Color(c * a, c.A));
+        }
+
+        private static float hexagonalDistanceToOrigin(Vector2 xy)
+        {
+            var yf = xy.Y * (1 / HexagonDistanceY);
+            var xf = xy.X * (1 / HexagonWidth) - yf * 0.5f;
+            var x = Abs(xf);
+            var y = Abs(yf);
+            var reduction = Sign(xf) != Sign(yf) ? Min(x, y) : 0f;
+            return x + y - reduction;
+        }
+
         private Position2 positionOfHeightmapPixel(int x, int y)
         {
             return new Position2
             (
-                (x / (float)heightMapSize - 0.5f) * heightMapWorldSize,
-                (y / (float)heightMapSize - 0.5f) * heightMapWorldSize
+                (x / (float) heightMapResolution - 0.5f) * heightMapWorldSize,
+                (y / (float) heightMapResolution - 0.5f) * heightMapWorldSize
             );
         }
 
-        private void createValidBatches(RenderContext context, Material material)
+        private float heightMapValueAt(Vector2 point)
         {
-            foreach (var i in Enumerable
-                .Range(0, batchLookup.Length)
-                .Where(isValidBatch))
-            {
-                var baseTile = baseTileFor(i);
-                var batch = new Batch(context, material, level, geometryLayer, baseTile);
+            var pointInMap = (point / heightMapWorldSize + new Vector2(0.5f)) * heightMapResolution;
 
-                batchLookup[i] = batch;
-                batches.Add(batch);
-            }
-        }
+            var x0 = Min((int) pointInMap.X, heightMapResolution - 2);
+            var y0 = Min((int) pointInMap.Y, heightMapResolution - 2);
 
-        private bool isValidBatch(int i)
-        {
-            var baseTile = baseTileFor(i);
+            var xt = pointInMap.X - x0;
+            var yt = pointInMap.Y - y0;
 
-            for (var x = 0; x < batchWidth; x++)
-                for (var y = 0; y < batchWidth; y++)
-                {
-                    if (level.IsValid(new Tile(baseTile.X + x, baseTile.Y + y)))
-                        return true;
-                }
-
-            return false;
-        }
-
-        private (int X, int Y) baseTileFor(int batchIndex)
-            => (
-                X: (batchIndex % batchesPerRow) * batchWidth - tileMapRadius,
-                Y: (batchIndex / batchesPerRow) * batchWidth - tileMapRadius
+            var height = Interpolate.Lerp(
+                Interpolate.Lerp(heightMap[x0, y0], heightMap[x0 + 1, y0], xt),
+                Interpolate.Lerp(heightMap[x0, y0 + 1], heightMap[x0 + 1, y0 + 1], xt),
+                yt
             );
 
-        private int batchIndexFor((int x, int y) tile)
-            => batchIndexFor(tile.x, tile.y);
-
-        private int batchIndexFor(int x, int y)
-            => ((y + tileMapRadius) / batchWidth) * batchesPerRow
-             + ((x + tileMapRadius) / batchWidth);
-
-        class Batch
-        {
-            private readonly Level level;
-            private readonly GeometryLayer geometryLayer;
-            private readonly (int X, int Y) baseTile;
-            private readonly IndexedSurface<LevelVertex> surface;
-            private readonly LevelGeometry geometry;
-
-            private bool isDirty = true;
-
-            public Batch(RenderContext context, Material material, Level level, GeometryLayer geometryLayer, (int X, int Y) baseTile)
-            {
-                this.level = level;
-                this.geometryLayer = geometryLayer;
-                this.baseTile = baseTile;
-                surface = createSurface(context, material);
-
-                geometry = new LevelGeometry(surface, level.Radius);
-            }
-
-            private static IndexedSurface<LevelVertex> createSurface(RenderContext context, Material material)
-            {
-                var surface = new IndexedSurface<LevelVertex>
-                    {
-                        ClearOnRender = false,
-                        IsStatic = true
-                    }
-                    .WithShader(material.Shader.SurfaceShader)
-                    .AndSettings(
-                        context.Surfaces.ViewMatrixLevel,
-                        context.Surfaces.ProjectionMatrix,
-                        context.Surfaces.FarPlaneDistance
-                    );
-
-                var textureUnit = TextureUnit.Texture0;
-
-                foreach (var texture in material.ArrayTextures)
-                {
-                    surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture, textureUnit));
-
-                    textureUnit++;
-                }
-
-                return surface;
-            }
-
-            public void MarkAsDirty()
-            {
-                isDirty = true;
-            }
-
-            public void Render()
-            {
-                if (isDirty)
-                {
-                    surface.Clear();
-                    generateGeometry();
-                    isDirty = false;
-                }
-
-                surface.Render();
-            }
-
-            private void generateGeometry()
-            {
-                for (var x = 0; x < batchWidth; x++)
-                    for (var y = 0; y < batchWidth; y++)
-                    {
-                        var (tileX, tileY) = (baseTile.X + x, baseTile.Y + y);
-
-                        var tile = new Tile(tileX, tileY);
-
-                        if (!level.IsValid(tile))
-                            continue;
-
-                        geometry.DrawTile(
-                            Level.GetPosition(tile).NumericValue,
-                            geometryLayer[tile],
-                            neighbourInfoOrDummy(tile, Direction.Right),
-                            neighbourInfoOrDummy(tile, Direction.UpRight),
-                            neighbourInfoOrDummy(tile, Direction.DownRight)
-                        );
-                    }
-
-                // TODO: need to move LevelGeometry code here?
-                // need to probably find a way to organise that code better
-                // consider sharing a single level geometry instance across batches?
-                // (need to inject surface then and pass that around internally, yuck)
-            }
-
-            private DrawableTileGeometry neighbourInfoOrDummy(Tile tile, Direction direction)
-            {
-                var neighbour = tile.Neighbour(direction);
-                return level.IsValid(neighbour) ? geometryLayer[neighbour] : new DrawableTileGeometry();
-            }
-
-            public void CleanUp()
-            {
-                surface.Dispose();
-            }
+            return height;
         }
+
 
         public void CleanUp()
         {
-            foreach (var batch in batches)
-            {
-                batch.CleanUp();
-            }
+            heightMapSurface.Dispose();
         }
     }
 }
