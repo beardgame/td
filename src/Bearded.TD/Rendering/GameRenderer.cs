@@ -17,7 +17,7 @@ namespace Bearded.TD.Rendering
     {
         private readonly GameInstance game;
         private readonly GeometryManager geometries;
-        private readonly LevelGeometryManager levelGeometry;
+        private readonly LevelRenderer levelRenderer;
         private readonly FluidGeometry waterGeometry;
 
         public ContentSurfaceManager DeferredSurfaces { get; }
@@ -31,12 +31,12 @@ namespace Bearded.TD.Rendering
             var levelMaterial = game.Blueprints.Materials["default"];
             var waterMaterial = game.Blueprints.Materials["water"];
 
-            levelGeometry = new LevelGeometryManager(game, renderContext, levelMaterial);
+            levelRenderer = new CPUHeightmapLevelRenderer(game, renderContext, levelMaterial);
 
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
             DeferredSurfaces = new ContentSurfaceManager(
-                levelGeometry,
+                levelRenderer,
                 game.Blueprints.Sprites,
                 new [] { waterGeometry }
             );
@@ -280,7 +280,7 @@ namespace Bearded.TD.Rendering
 
         public void CleanUp()
         {
-            levelGeometry.CleanUp();
+            levelRenderer.CleanUp();
             waterGeometry.CleanUp();
             GraphicsUnloader.CleanUp(game.Blueprints);
         }

@@ -234,7 +234,7 @@ namespace Bearded.TD.Rendering
             bind(gTargetLowRes, bufferSizeLowRes);
             clearColorAndDepth();
 
-            contentSurfaces.LevelGeometry.RenderAll();
+            contentSurfaces.LevelRenderer.RenderAll();
 
 
             GL.Disable(EnableCap.DepthTest);

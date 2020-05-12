@@ -13,17 +13,17 @@ namespace Bearded.TD.Rendering
 {
     class ContentSurfaceManager
     {
-        public LevelGeometryManager LevelGeometry { get; }
+        public LevelRenderer LevelRenderer { get; }
         public ImmutableList<FluidGeometry> FluidGeometries { get; }
         private static readonly ReadOnlyCollection<Surface> emptySurfaceList = new List<Surface>().AsReadOnly();
 
         private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
 
-        public ContentSurfaceManager(LevelGeometryManager levelGeometry,
+        public ContentSurfaceManager(LevelRenderer levelRenderer,
             ReadonlyBlueprintCollection<SpriteSet> spriteSets,
             IEnumerable<FluidGeometry> fluidGeometries)
         {
-            LevelGeometry = levelGeometry;
+            LevelRenderer = levelRenderer;
             FluidGeometries = fluidGeometries.ToImmutableList();
             groupedAndSortedSpriteSets = spriteSets.All
                 .GroupBy(sprites => sprites.DrawGroup)
