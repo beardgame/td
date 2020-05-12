@@ -105,10 +105,13 @@ namespace Bearded.TD.Game
                 msg.SenderConnection.Deny(rejectionReason);
                 return;
             }
-            var newPlayer = new Player(game.Ids.GetNext<Player>(), clientInfo.PlayerName);
+
+            var newPlayer = new Player(game.Ids.GetNext<Player>(), clientInfo.PlayerName)
+            {
+                ConnectionState = PlayerConnectionState.Connecting
+            };
             dispatcher.RunOnlyOnServer(
                 commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(game, newPlayer)));
-            newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             addPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }

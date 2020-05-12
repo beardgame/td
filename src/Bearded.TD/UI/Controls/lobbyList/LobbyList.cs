@@ -104,7 +104,7 @@ namespace Bearded.TD.UI.Controls
             var game = new GameInstance(
                 new ClientGameContext(networkInterface, logger),
                 new ContentManager(logger, graphicsLoader, new ModLister().GetAll()),
-                new Player(info.Id, playerName),
+                new Player(info.Id, playerName) { ConnectionState = PlayerConnectionState.Connecting },
                 null);
 
             Navigation.Replace<Lobby, LobbyManager>(

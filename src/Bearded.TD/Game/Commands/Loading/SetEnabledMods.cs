@@ -27,11 +27,11 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
-                DebugAssert.State.Satisfies(game.Me.ConnectionState == PlayerConnectionState.Waiting);
+                DebugAssert.State.Satisfies(game.Me.ConnectionState == PlayerConnectionState.Connecting);
                 game.ContentManager.SetEnabledMods(mods);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer();
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(mods);
         }
 
         private class Serializer : ICommandSerializer<GameInstance>

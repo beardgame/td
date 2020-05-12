@@ -70,7 +70,10 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             lobbyManager.Update(args);
-            LoadingUpdated?.Invoke();
+            if (lobbyManager.Game.Status == GameStatus.Lobby)
+            {
+                LoadingUpdated?.Invoke();
+            }
         }
 
         public void OnToggleReadyButtonClicked()

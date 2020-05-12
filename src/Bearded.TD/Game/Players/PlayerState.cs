@@ -3,7 +3,7 @@
 namespace Bearded.TD.Game.Players
 {
     [StructLayout(LayoutKind.Sequential)]
-    struct PlayerState
+    readonly struct PlayerState
     {
         public byte ConnectionState { get; }
         public int LastKnownPing { get; }
