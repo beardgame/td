@@ -4,90 +4,44 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
-using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using static System.Single;
 using static Bearded.TD.Constants.Game.World;
-using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    class CPUHeightmapLevelRenderer : LevelRenderer
+    class CPUHeightmapLevelRenderer : HeightmapLevelRenderer
     {
-        private const float heightMapScale = 4;
-        private const float gridScale = 6;
-
-        private const float worldToGrid = gridScale;
-        private const float gridToWorld = 1 / gridScale;
-
-        private static readonly (Vector2, Step)[] gridNeighbourOffsets =
-            new[] {DownRight, Right, UpRight, UpLeft, Left, DownLeft}
-                .Select(d => (d.Vector() * gridToWorld, d.Step()))
-                .ToArray();
-
         private readonly HashSet<Tile> dirtyTiles = new HashSet<Tile>();
 
-        private readonly Level level;
-        private readonly GeometryLayer geometryLayer;
-
-        private readonly float fallOffDistance;
-
         private readonly ExpandingVertexSurface<LevelVertex> heightMapSurface;
-        private readonly float heightMapWorldSize;
-        private readonly int heightMapResolution;
         private readonly float[,] heightMap;
 
-        private readonly int gridRadius;
         private readonly Tilemap<float> sampledHeight;
         private readonly Tilemap<Vector3> normals;
 
         private bool regenerateEntireHeightMap = true;
 
         public CPUHeightmapLevelRenderer(GameInstance game, RenderContext context, Material material)
-            : base(game)
+            : base(game, context, material)
         {
-            level = game.State.Level;
-            geometryLayer = game.State.GeometryLayer;
+            heightMap = new float[HeightMapResolution, HeightMapResolution];
 
-            var tileMapWidth = level.Radius * 2 + 1;
-            var gridWidth = tileMapWidth * gridScale;
-            gridRadius = (int) (gridWidth - 1) / 2;
+            sampledHeight = new Tilemap<float>(GridRadius);
+            normals = new Tilemap<Vector3>(GridRadius);
 
-            fallOffDistance = (level.Radius - 0.25f) * HexagonWidth;
-
-            heightMapWorldSize = tileMapWidth * HexagonWidth;
-            heightMapResolution = (int) (tileMapWidth * heightMapScale);
-            heightMap = new float[heightMapResolution, heightMapResolution];
-
-            sampledHeight = new Tilemap<float>(gridRadius);
-            normals = new Tilemap<Vector3>(gridRadius);
-
-            var surface = new ExpandingVertexSurface<LevelVertex>()
-                {
-                    ClearOnRender = false,
-                    IsStatic = true,
-                }
-                .WithShader(material.Shader.SurfaceShader)
-                .AndSettings(
-                    context.Surfaces.ViewMatrixLevel,
-                    context.Surfaces.ProjectionMatrix,
-                    context.Surfaces.FarPlaneDistance
-                );
-
-            var textureUnit = TextureUnit.Texture0;
-
-            foreach (var texture in material.ArrayTextures)
+            heightMapSurface = new ExpandingVertexSurface<LevelVertex>
             {
-                surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture, textureUnit));
+                ClearOnRender = false,
+                IsStatic = true,
+            };
 
-                textureUnit++;
-            }
-
-            heightMapSurface = surface;
+            UseMaterialOnSurface(heightMapSurface);
         }
 
         protected override void OnTileChanged(Tile tile)
@@ -112,11 +66,11 @@ namespace Bearded.TD.Rendering.Deferred
 
             foreach (var tile in dirtyTiles)
             {
-                var gridCenter = Level.GetTile(new Position2(Level.GetPosition(tile).NumericValue * worldToGrid));
+                var gridCenter = Level.GetTile(new Position2(Level.GetPosition(tile).NumericValue * WorldToGrid));
 
                 foreach (var gridTile in Tilemap
-                    .GetSpiralCenteredAt(gridCenter, (int) gridScale)
-                    .Where(t => t.Radius < gridRadius))
+                    .GetSpiralCenteredAt(gridCenter, (int) GridScale)
+                    .Where(t => t.Radius < GridRadius))
                 {
                     dirtyGridTiles.Add(gridTile);
                 }
@@ -159,9 +113,9 @@ namespace Bearded.TD.Rendering.Deferred
         {
             sampleWorldToHeightmap();
 
-            sampleHeightmapToHeights(Tilemap.EnumerateTilemapWith(gridRadius));
+            sampleHeightmapToHeights(Tilemap.EnumerateTilemapWith(GridRadius));
 
-            calculateNormals(Tilemap.EnumerateTilemapWith(gridRadius - 1));
+            calculateNormals(Tilemap.EnumerateTilemapWith(GridRadius - 1));
 
             populateHeightMapSurface();
 
@@ -171,20 +125,20 @@ namespace Bearded.TD.Rendering.Deferred
 
         private void sampleWorldToHeightmap()
         {
-            foreach (var y in Enumerable.Range(0, heightMapResolution))
+            foreach (var y in Enumerable.Range(0, HeightMapResolution))
             {
-                foreach (var x in Enumerable.Range(0, heightMapResolution))
+                foreach (var x in Enumerable.Range(0, HeightMapResolution))
                 {
                     var position = positionOfHeightmapPixel(x, y);
                     var tile = Level.GetTile(position);
 
-                    if (!level.IsValid(tile))
+                    if (!Level.IsValid(tile))
                     {
-                        heightMap[x, y] = Single.NaN;
+                        heightMap[x, y] = NaN;
                         continue;
                     }
 
-                    var tileGeometry = geometryLayer[tile];
+                    var tileGeometry = GeometryLayer[tile];
 
                     var height = tileGeometry.DrawInfo.Height;
 
@@ -197,7 +151,7 @@ namespace Bearded.TD.Rendering.Deferred
         {
             foreach (var tile in tiles)
             {
-                var p = Level.GetPosition(tile).NumericValue * gridToWorld;
+                var p = Level.GetPosition(tile).NumericValue * GridToWorld;
 
                 var h = heightMapValueAt(p);
 
@@ -211,12 +165,12 @@ namespace Bearded.TD.Rendering.Deferred
             {
                 var height = sampledHeight[tile];
 
-                var (vectorPrev, stepPrev) = gridNeighbourOffsets.Last();
+                var (vectorPrev, stepPrev) = GridNeighbourOffsets.Last();
                 var heightPrevOffset = sampledHeight[tile.Offset(stepPrev)] - height;
 
                 var normalAccumulator = Vector3.Zero;
 
-                foreach (var (vectorCurrent, stepCurrent) in gridNeighbourOffsets)
+                foreach (var (vectorCurrent, stepCurrent) in GridNeighbourOffsets)
                 {
                     var heightCurrentOffset = sampledHeight[tile.Offset(stepCurrent)] - height;
 
@@ -247,108 +201,76 @@ namespace Bearded.TD.Rendering.Deferred
              * -- v1
              */
 
-            var (v1Offset, v1Step) = gridNeighbourOffsets[0];
-            var (v2Offset, v2Step) = gridNeighbourOffsets[1];
-            var (v3Offset, v3Step) = gridNeighbourOffsets[2];
-
-            foreach (var tile in Tilemap.EnumerateTilemapWith(gridRadius - 1))
-            {
-                var t1 = tile.Offset(v1Step);
-                var t2 = tile.Offset(v2Step);
-                var t3 = tile.Offset(v3Step);
-
-                var v0 = Level.GetPosition(tile).NumericValue * gridToWorld;
-                var v1 = v0 + v1Offset;
-                var v2 = v0 + v2Offset;
-                var v3 = v0 + v3Offset;
-
-                var h0 = sampledHeight[tile];
-                var h1 = sampledHeight[t1];
-                var h2 = sampledHeight[t2];
-                var h3 = sampledHeight[t3];
-
-                var n0 = normals[tile];
-                var n1 = normals[t1];
-                var n2 = normals[t2];
-                var n3 = normals[t3];
-
-                if (Single.IsNaN(h0) || Single.IsNaN(h1) || Single.IsNaN(h2))
+            GenerateGrid(
+                (t0, t1, t2, t3, v0, v1, v2, v3) =>
                 {
-                    /*
-                    heightMapSurface.AddVertices(
-                        new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
-                        new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red),
-                        new LevelVertex(v1.WithZ(), n1, Vector2.Zero, Color.Red)
-                    );
-                    */
-                }
-                else
-                {
-                    heightMapSurface.AddVertices(
-                        vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White),
-                        vertex(v1.WithZ(h1), n1, Vector2.Zero, Color.White)
-                    );
-                }
+                    var h0 = sampledHeight[t0];
+                    var h1 = sampledHeight[t1];
+                    var h2 = sampledHeight[t2];
+                    var h3 = sampledHeight[t3];
 
-                if (Single.IsNaN(h0) || Single.IsNaN(h3) || Single.IsNaN(h2))
-                {
-                    /*
-                    heightMapSurface.AddVertices(
-                        new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
-                        new LevelVertex(v3.WithZ(), n3, Vector2.Zero, Color.Red),
-                        new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red)
-                    );
-                    */
+                    var n0 = normals[t0];
+                    var n1 = normals[t1];
+                    var n2 = normals[t2];
+                    var n3 = normals[t3];
+
+                    if (IsNaN(h0) || IsNaN(h1) || IsNaN(h2))
+                    {
+                        /*
+                        heightMapSurface.AddVertices(
+                            new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
+                            new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red),
+                            new LevelVertex(v1.WithZ(), n1, Vector2.Zero, Color.Red)
+                        );
+                        */
+                    }
+                    else
+                    {
+                        heightMapSurface.AddVertices(
+                            Vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
+                            Vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White),
+                            Vertex(v1.WithZ(h1), n1, Vector2.Zero, Color.White)
+                        );
+                    }
+
+                    if (IsNaN(h0) || IsNaN(h3) || IsNaN(h2))
+                    {
+                        /*
+                        heightMapSurface.AddVertices(
+                            new LevelVertex(v0.WithZ(), n0, Vector2.Zero, Color.Red),
+                            new LevelVertex(v3.WithZ(), n3, Vector2.Zero, Color.Red),
+                            new LevelVertex(v2.WithZ(), n2, Vector2.Zero, Color.Red)
+                        );
+                        */
+                    }
+                    else
+                    {
+                        heightMapSurface.AddVertices(
+                            Vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
+                            Vertex(v3.WithZ(h3), n3, Vector2.Zero, Color.White),
+                            Vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White)
+                        );
+                    }
                 }
-                else
-                {
-                    heightMapSurface.AddVertices(
-                        vertex(v0.WithZ(h0), n0, Vector2.Zero, Color.White),
-                        vertex(v3.WithZ(h3), n3, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(h2), n2, Vector2.Zero, Color.White)
-                    );
-                }
-            }
+                );
         }
 
-        private LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
-        {
-            var a = 1f; //(1 - Abs(v.Z * v.Z * 1f)).Clamped(0f, 1);
-
-            var distanceFalloff = ((fallOffDistance - hexagonalDistanceToOrigin(v.Xy)) * 0.3f)
-                .Clamped(0f, 1f).Squared();
-
-            a *= distanceFalloff;
-
-            return new LevelVertex(v, n, uv, new Color(c * a, c.A));
-        }
-
-        private static float hexagonalDistanceToOrigin(Vector2 xy)
-        {
-            var yf = xy.Y * (1 / HexagonDistanceY);
-            var xf = xy.X * (1 / HexagonWidth) - yf * 0.5f;
-            var x = Math.Abs(xf);
-            var y = Math.Abs(yf);
-            var reduction = Math.Sign(xf) != Math.Sign(yf) ? Math.Min(x, y) : 0f;
-            return x + y - reduction;
-        }
 
         private Position2 positionOfHeightmapPixel(int x, int y)
         {
             return new Position2
             (
-                (x / (float) heightMapResolution - 0.5f) * heightMapWorldSize,
-                (y / (float) heightMapResolution - 0.5f) * heightMapWorldSize
+                (x / (float) HeightMapResolution - 0.5f) * HeightMapWorldSize,
+                (y / (float) HeightMapResolution - 0.5f) * HeightMapWorldSize
             );
         }
 
         private float heightMapValueAt(Vector2 point)
         {
-            var pointInMap = (point / heightMapWorldSize + new Vector2(0.5f)) * heightMapResolution;
+            var pointInMap = (point / HeightMapWorldSize + new Vector2(0.5f)) * HeightMapResolution;
 
-            var x0 = Math.Min((int) pointInMap.X, heightMapResolution - 2);
-            var y0 = Math.Min((int) pointInMap.Y, heightMapResolution - 2);
+            var x0 = Math.Min((int) pointInMap.X, HeightMapResolution - 2);
+            var y0 = Math.Min((int) pointInMap.Y, HeightMapResolution - 2);
 
             var xt = pointInMap.X - x0;
             var yt = pointInMap.Y - y0;

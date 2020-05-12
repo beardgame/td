@@ -36,7 +36,7 @@ namespace Bearded.TD.Rendering.Deferred
             OnTileChanged(@event.Tile);
         }
 
-        protected abstract void OnTileChanged(Tile eventTile);
+        protected abstract void OnTileChanged(Tile tile);
         public abstract void RenderAll();
         public abstract void CleanUp();
     }
