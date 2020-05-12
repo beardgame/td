@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
@@ -11,33 +11,12 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using static System.Math;
-using static System.Single;
 using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    /* TODO: implement sprite->heightmap rendering
-     *     - take 'wall' as default
-     *     - render open areas (floors < or > crevices?)
-     *     - use simple generated sprites for testing
-     *     - add sprites to mod later, and experiment with what's possible
-     * TODO: See if dedicated cliff rendering is necessary
-     * TODO: once reasonably satisfied, move implementation to GPU
-     *     - keep CPU renderer as alternative as long as possible
-     * TODO: try tessellation on long triangles on GPU
-     *     - could even replace some of the existing detail, to render less geometry if camera is far away
-     * TODO: try using heightmaps for materials to apply vertex offsets in normal direction
-     *     - might mess with normals, but could make great use of tessellation
-     * TODO: ceilings (maybe GPU only?)
-     *     - can probably be generated from the same heightmaps
-     *     - stop rendering current wall-tops, replace by cross-section of rock
-     *         - cross sections could later give hints at what's 'in' the walls?
-     *     - try rendering front faces with regular level shaders, and back faces (separate pass) with special shader
-     */
-
-    class LevelGeometryManager : IListener<TileDrawInfoChanged>
+    class CPUHeightmapLevelRenderer : LevelRenderer
     {
         private const float heightMapScale = 4;
         private const float gridScale = 6;
@@ -68,7 +47,8 @@ namespace Bearded.TD.Rendering.Deferred
 
         private bool regenerateEntireHeightMap = true;
 
-        public LevelGeometryManager(GameInstance game, RenderContext context, Material material)
+        public CPUHeightmapLevelRenderer(GameInstance game, RenderContext context, Material material)
+            : base(game)
         {
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
@@ -108,17 +88,14 @@ namespace Bearded.TD.Rendering.Deferred
             }
 
             heightMapSurface = surface;
-
-            game.Meta.Events.Subscribe(this);
         }
 
-        public void HandleEvent(TileDrawInfoChanged @event)
+        protected override void OnTileChanged(Tile tile)
         {
-            var tile = @event.Tile;
             dirtyTiles.Add(tile);
         }
 
-        public void RenderAll()
+        public override void RenderAll()
         {
             if (regenerateEntireHeightMap)
                 regenerateHeightMap();
@@ -203,7 +180,7 @@ namespace Bearded.TD.Rendering.Deferred
 
                     if (!level.IsValid(tile))
                     {
-                        heightMap[x, y] = NaN;
+                        heightMap[x, y] = Single.NaN;
                         continue;
                     }
 
@@ -295,7 +272,7 @@ namespace Bearded.TD.Rendering.Deferred
                 var n2 = normals[t2];
                 var n3 = normals[t3];
 
-                if (IsNaN(h0) || IsNaN(h1) || IsNaN(h2))
+                if (Single.IsNaN(h0) || Single.IsNaN(h1) || Single.IsNaN(h2))
                 {
                     /*
                     heightMapSurface.AddVertices(
@@ -314,7 +291,7 @@ namespace Bearded.TD.Rendering.Deferred
                     );
                 }
 
-                if (IsNaN(h0) || IsNaN(h3) || IsNaN(h2))
+                if (Single.IsNaN(h0) || Single.IsNaN(h3) || Single.IsNaN(h2))
                 {
                     /*
                     heightMapSurface.AddVertices(
@@ -351,9 +328,9 @@ namespace Bearded.TD.Rendering.Deferred
         {
             var yf = xy.Y * (1 / HexagonDistanceY);
             var xf = xy.X * (1 / HexagonWidth) - yf * 0.5f;
-            var x = Abs(xf);
-            var y = Abs(yf);
-            var reduction = Sign(xf) != Sign(yf) ? Min(x, y) : 0f;
+            var x = Math.Abs(xf);
+            var y = Math.Abs(yf);
+            var reduction = Math.Sign(xf) != Math.Sign(yf) ? Math.Min(x, y) : 0f;
             return x + y - reduction;
         }
 
@@ -370,8 +347,8 @@ namespace Bearded.TD.Rendering.Deferred
         {
             var pointInMap = (point / heightMapWorldSize + new Vector2(0.5f)) * heightMapResolution;
 
-            var x0 = Min((int) pointInMap.X, heightMapResolution - 2);
-            var y0 = Min((int) pointInMap.Y, heightMapResolution - 2);
+            var x0 = Math.Min((int) pointInMap.X, heightMapResolution - 2);
+            var y0 = Math.Min((int) pointInMap.Y, heightMapResolution - 2);
 
             var xt = pointInMap.X - x0;
             var yt = pointInMap.Y - y0;
@@ -385,7 +362,7 @@ namespace Bearded.TD.Rendering.Deferred
             return height;
         }
 
-        public void CleanUp()
+        public override void CleanUp()
         {
             heightMapSurface.Dispose();
         }
