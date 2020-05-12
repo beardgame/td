@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Content;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
@@ -16,20 +17,20 @@ namespace Bearded.TD.UI.Controls
     sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
     {
         private Logger logger;
-        private ContentManager contentManager;
+        private IGraphicsLoader graphicsLoader;
         private ClientNetworkInterface networkInterface;
 
         public IList<Proto.Lobby> Lobbies { get; } = new List<Proto.Lobby>();
 
         public event VoidEventHandler LobbiesCleared;
-        public event GenericEventHandler<Proto.Lobby> LobbyReceived; 
+        public event GenericEventHandler<Proto.Lobby> LobbyReceived;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             base.Initialize(dependencies, parameters);
 
             logger = dependencies.Resolve<Logger>();
-            contentManager = dependencies.Resolve<ContentManager>();
+            graphicsLoader = dependencies.Resolve<IGraphicsLoader>();
 
             networkInterface = new ClientNetworkInterface();
             networkInterface.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
@@ -102,8 +103,8 @@ namespace Bearded.TD.UI.Controls
             var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
             var game = new GameInstance(
                 new ClientGameContext(networkInterface, logger),
-                contentManager,
-                new Player(info.Id, playerName),
+                new ContentManager(logger, graphicsLoader, new ModLister().GetAll()),
+                new Player(info.Id, playerName) { ConnectionState = PlayerConnectionState.Connecting },
                 null);
 
             Navigation.Replace<Lobby, LobbyManager>(

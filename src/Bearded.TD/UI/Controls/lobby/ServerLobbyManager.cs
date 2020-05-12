@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
@@ -12,7 +13,7 @@ using Bearded.Utilities.IO;
 
 namespace Bearded.TD.UI.Controls
 {
-    class ServerLobbyManager : LobbyManager
+    sealed class ServerLobbyManager : LobbyManager
     {
         private const float heartbeatTimeSeconds = 10;
 
@@ -33,7 +34,7 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             base.Update(args);
-            
+
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
             {
                 Dispatcher.RunOnlyOnServer(
@@ -64,8 +65,12 @@ namespace Bearded.TD.UI.Controls
         public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
 
         public static ServerLobbyManager Create(
-            ServerNetworkInterface networkInterface, Logger logger, ContentManager contentManager)
+            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader)
         {
+            var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
+            // TODO: move somewhere else/read from settings
+            contentManager.SetEnabledMods(contentManager.AvailableMods);
+
             var ids = new IdManager();
             var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)
             {
@@ -73,8 +78,8 @@ namespace Bearded.TD.UI.Controls
             };
 
             return new ServerLobbyManager(
-                new GameInstance(
-                    new ServerGameContext(networkInterface, logger), contentManager, p, ids), networkInterface);
+                new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids),
+                networkInterface);
         }
     }
 }

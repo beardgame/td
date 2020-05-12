@@ -23,6 +23,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
+        // TODO: this should not be in blueprints
         public ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,

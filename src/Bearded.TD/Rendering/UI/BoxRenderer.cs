@@ -17,7 +17,7 @@ namespace Bearded.TD.Rendering.UI
                 LineWidth = 1
             };
         }
-        
+
         public virtual void Render(Control control)
         {
             var frame = control.Frame;

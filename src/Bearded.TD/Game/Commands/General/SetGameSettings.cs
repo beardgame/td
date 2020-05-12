@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : ICommandSerializer<GameInstance>
         {
             private readonly GameSettings.Serializer gameSettingsSerializer;
-            
+
             // ReSharper disable once UnusedMember.Local
             public Serializer() : this(new GameSettings.Builder().Build()) { }
 

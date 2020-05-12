@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Players;
@@ -25,7 +26,11 @@ namespace Bearded.TD.UI.Controls
         public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
         public LevelGenerationMethod LevelGenerationMethod => gameSettings.LevelGenerationMethod;
 
+        public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading;
+        public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
+
         public event VoidEventHandler PlayersChanged;
+        public event VoidEventHandler LoadingUpdated;
         public event VoidEventHandler GameSettingsChanged;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
@@ -34,7 +39,7 @@ namespace Bearded.TD.UI.Controls
 
             this.lobbyManager = lobbyManager;
             logger = dependencies.Resolve<Logger>();
-            
+
             gameSettings = CanChangeGameSettings && UserSettings.Instance.LastGameSettings != null
                 ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
                 : new GameSettings.Builder();
@@ -46,7 +51,7 @@ namespace Bearded.TD.UI.Controls
                 }
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
-            
+
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
             lobbyManager.Game.PlayerRemoved += onPlayersChanged;
@@ -65,10 +70,18 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             lobbyManager.Update(args);
+            if (lobbyManager.Game.Status == GameStatus.Lobby)
+            {
+                LoadingUpdated?.Invoke();
+            }
         }
 
         public void OnToggleReadyButtonClicked()
         {
+            if (!lobbyManager.Game.ContentManager.IsFinishedLoading)
+            {
+                return;
+            }
             lobbyManager.ToggleReadyState();
         }
 

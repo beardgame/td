@@ -41,7 +41,6 @@ namespace Bearded.TD
         private UIUpdater uiUpdater;
         private EventManager eventManager;
 
-        private ContentManager contentManager;
         private CachedRendererRouter rendererRouter;
         private NavigationController navigationController;
 
@@ -84,8 +83,7 @@ namespace Bearded.TD
                     (typeof(Control), new FallbackBoxRenderer(surfaces.ConsoleBackground)),
                 });
 
-            contentManager = new ContentManager(renderContext.GraphicsLoader);
-            dependencyResolver.Add(contentManager);
+            dependencyResolver.Add(renderContext.GraphicsLoader);
 
             inputManager = new InputManager(this);
             dependencyResolver.Add(inputManager);

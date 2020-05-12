@@ -105,10 +105,13 @@ namespace Bearded.TD.Game
                 msg.SenderConnection.Deny(rejectionReason);
                 return;
             }
-            var newPlayer = new Player(game.Ids.GetNext<Player>(), clientInfo.PlayerName);
+
+            var newPlayer = new Player(game.Ids.GetNext<Player>(), clientInfo.PlayerName)
+            {
+                ConnectionState = PlayerConnectionState.Connecting
+            };
             dispatcher.RunOnlyOnServer(
                 commandDispatcher => commandDispatcher.Dispatch(AddPlayer.Command(game, newPlayer)));
-            newPlayer.ConnectionState = PlayerConnectionState.Connecting;
             addPlayerConnection(newPlayer, msg.SenderConnection);
             sendApproval(newPlayer, msg.SenderConnection);
         }
@@ -140,7 +143,7 @@ namespace Bearded.TD.Game
             {
                 case NetConnectionStatus.Connected:
                     GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
-                    
+
                     foreach (var p in game.Players)
                     {
                         if (p == GetSender(msg)) continue;
@@ -148,7 +151,9 @@ namespace Bearded.TD.Game
                     }
 
                     sendCommandToConnection(msg.SenderConnection, SetGameSettings.Command(game, game.GameSettings));
-                    
+                    sendCommandToConnection(
+                        msg.SenderConnection, SetEnabledMods.Command(game, game.ContentManager.EnabledMods));
+
                     break;
                 case NetConnectionStatus.Disconnected:
                     game.RemovePlayer(GetSender(msg));

@@ -9,19 +9,19 @@ namespace Bearded.TD.UI.Controls
     sealed class MainMenu : NavigationNode<Void>
     {
         private Logger logger;
-        private ContentManager contentManager;
+        private IGraphicsLoader graphicsLoader;
 
         protected override void Initialize(DependencyResolver dependencies, Void _)
         {
             logger = dependencies.Resolve<Logger>();
-            contentManager = dependencies.Resolve<ContentManager>();
+            graphicsLoader = dependencies.Resolve<IGraphicsLoader>();
         }
 
         public void OnHostGameButtonClicked()
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            Navigation.Replace<Lobby, LobbyManager>(ServerLobbyManager.Create(network, logger, contentManager), this);
+            Navigation.Replace<Lobby, LobbyManager>(ServerLobbyManager.Create(network, logger, graphicsLoader), this);
         }
 
         public void OnJoinGameButtonClicked() => Navigation.Replace<LobbyList>(this);
