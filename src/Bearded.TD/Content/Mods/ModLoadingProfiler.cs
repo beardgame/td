@@ -14,7 +14,7 @@ namespace Bearded.TD.Content.Mods
             HasError,
         }
 
-        public struct BlueprintLoadingProfile
+        public readonly struct BlueprintLoadingProfile
         {
             public string Path { get; }
             public TimeSpan LoadingTime { get; }

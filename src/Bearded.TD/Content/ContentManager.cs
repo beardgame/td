@@ -15,6 +15,7 @@ namespace Bearded.TD.Content
         private static readonly ModSorter sorter = new ModSorter();
 
         private readonly ModLoadingContext loadingContext;
+        public ModLoadingProfiler LoadingProfiler => loadingContext.Profiler;
 
         private readonly ImmutableDictionary<string, ModMetadata> modsById;
         public ImmutableHashSet<ModMetadata> AvailableMods { get; }
