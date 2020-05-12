@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Controls
 
             this.lobbyManager = lobbyManager;
             logger = dependencies.Resolve<Logger>();
-            
+
             gameSettings = CanChangeGameSettings && UserSettings.Instance.LastGameSettings != null
                 ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
                 : new GameSettings.Builder();
@@ -46,7 +46,7 @@ namespace Bearded.TD.UI.Controls
                 }
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
-            
+
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
             lobbyManager.Game.PlayerRemoved += onPlayersChanged;
@@ -69,6 +69,10 @@ namespace Bearded.TD.UI.Controls
 
         public void OnToggleReadyButtonClicked()
         {
+            if (!lobbyManager.Game.ContentManager.IsFinishedLoading)
+            {
+                return;
+            }
             lobbyManager.ToggleReadyState();
         }
 

@@ -9,7 +9,7 @@ using Bearded.TD.Networking;
 
 namespace Bearded.TD.UI.Controls
 {
-    class ServerLoadingManager : LoadingManager
+    sealed class ServerLoadingManager : LoadingManager
     {
         public ServerLoadingManager(GameInstance game, NetworkInterface networkInterface)
             : base(game, networkInterface) { }

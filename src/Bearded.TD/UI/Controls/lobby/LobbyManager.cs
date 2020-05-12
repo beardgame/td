@@ -45,6 +45,7 @@ namespace Bearded.TD.UI.Controls
         {
             Network.ConsumeMessages();
             Game.UpdatePlayers(args);
+            Game.ContentManager.Update(args);
         }
 
         public abstract LoadingManager GetLoadingManager();

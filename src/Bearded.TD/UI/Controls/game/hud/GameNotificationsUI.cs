@@ -37,10 +37,7 @@ namespace Bearded.TD.UI.Controls
                     @event => $"Upgraded {@event.Building.Blueprint.Name} with {@event.Upgrade.Name}",
                     @event => @event.Building),
                 textOnlyEventListener<TechnologyUnlocked>(
-                    @event => $"Unlocked {@event.Technology.Name}"),
-                textOnlyEventListener<ModFilesFailedLoading>(
-                    @event =>
-                        $"{@event.NumBlueprintsWithErrors} mod file{(@event.NumBlueprintsWithErrors != 1 ? "s" : "")} failed loading"));
+                    @event => $"Unlocked {@event.Technology.Name}"));
 
         public void Initialize(GameInstance game)
         {

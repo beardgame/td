@@ -37,8 +37,6 @@ namespace Bearded.TD.Game.Commands
                         return state == PlayerConnectionState.Ready;
                     case PlayerConnectionState.Ready:
                         return state == PlayerConnectionState.Waiting;
-                    case PlayerConnectionState.LoadingMods:
-                        return state == PlayerConnectionState.AwaitingLoadingData;
                     case PlayerConnectionState.ProcessingLoadingData:
                         return state == PlayerConnectionState.FinishedLoading;
                     default:

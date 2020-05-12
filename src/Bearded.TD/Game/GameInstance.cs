@@ -114,41 +114,47 @@ namespace Bearded.TD.Game
             playerManager?.Update(args);
         }
 
-        public void SetBlueprints(Blueprints blueprints)
+        public void SetLoading()
+        {
+            if (Status != GameStatus.Lobby)
+            {
+                throw new InvalidOperationException("Can only initialize loading from the lobby state.");
+            }
+
+            Status = GameStatus.Loading;
+            setAllPlayerConnectionStates(PlayerConnectionState.AwaitingLoadingData);
+        }
+
+        public void Start()
+        {
+            if (Status != GameStatus.Loading)
+            {
+                throw new InvalidOperationException("Can only start the game from the loading state.");
+            }
+
+            Status = GameStatus.Playing;
+            setAllPlayerConnectionStates(PlayerConnectionState.Playing);
+        }
+
+        private void gatherBlueprints()
         {
             if (Status != GameStatus.Loading)
                 throw new InvalidOperationException("Cannot set blueprints if the game is not loading.");
             if (Blueprints != null)
                 throw new InvalidOperationException("Cannot override the blueprints once set.");
 
-            Blueprints = blueprints;
-            Meta.SetBlueprints(blueprints);
-        }
-
-        public void SetLoading()
-        {
-            if (Status != GameStatus.Lobby)
-                throw new InvalidOperationException("Can only initialize loading from the lobby state.");
-            Status = GameStatus.Loading;
-            foreach (var p in Players)
-                p.ConnectionState = PlayerConnectionState.LoadingMods;
-        }
-
-        public void Start()
-        {
-            if (Status != GameStatus.Loading)
-                throw new InvalidOperationException("Can only start the game from the loading state.");
-            if (Blueprints == null)
-                throw new InvalidOperationException("Cannot start game before blueprints are set.");
-            Status = GameStatus.Playing;
-            foreach (var p in Players)
-                p.ConnectionState = PlayerConnectionState.Playing;
+            Blueprints = Blueprints.Merge(ContentManager.LoadedEnabledMods.Select(m => m.Blueprints));
+            Meta.SetBlueprints(Blueprints);
         }
 
         public void InitialiseState(GameState state)
         {
             if (State != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");
+
+            // TODO: Start() is a better place for this, but the game mode is currently in blueprints
+            gatherBlueprints();
+
             State = state;
             GameStateInitialized?.Invoke(State);
         }
@@ -165,6 +171,14 @@ namespace Bearded.TD.Game
             CameraController = new GameCameraController(Camera, State.Level.Radius);
             SelectionManager = new SelectionManager();
             PlayerInput = new PlayerInput(this);
+        }
+
+        private void setAllPlayerConnectionStates(PlayerConnectionState playerConnectionState)
+        {
+            foreach (var p in Players)
+            {
+                p.ConnectionState = playerConnectionState;
+            }
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Bearded.TD.Game
             {
                 case NetConnectionStatus.Connected:
                     GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
-                    
+
                     foreach (var p in game.Players)
                     {
                         if (p == GetSender(msg)) continue;
@@ -148,7 +148,9 @@ namespace Bearded.TD.Game
                     }
 
                     sendCommandToConnection(msg.SenderConnection, SetGameSettings.Command(game, game.GameSettings));
-                    
+                    sendCommandToConnection(
+                        msg.SenderConnection, SetEnabledMods.Command(game, game.ContentManager.EnabledMods));
+
                     break;
                 case NetConnectionStatus.Disconnected:
                     game.RemovePlayer(GetSender(msg));

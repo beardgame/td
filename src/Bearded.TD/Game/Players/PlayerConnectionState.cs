@@ -6,10 +6,9 @@
         Connecting = 1,
         Waiting = 2,
         Ready = 3,
-        LoadingMods = 4,
-        AwaitingLoadingData = 5,
-        ProcessingLoadingData = 6,
-        FinishedLoading = 7,
-        Playing = 8,
+        AwaitingLoadingData = 4,
+        ProcessingLoadingData = 5,
+        FinishedLoading = 6,
+        Playing = 7,
     }
 }
