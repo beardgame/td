@@ -35,6 +35,7 @@ namespace Bearded.TD.UI.Controls
         public static Button WithDefaultStyle(this Button button, Control labelControl)
         {
             button.Add(labelControl);
+            button.Add(new Border());
             button.Add(new ButtonBackgroundEffect());
             return button;
         }
