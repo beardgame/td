@@ -5,7 +5,7 @@ using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using OpenTK;
-using static Bearded.TD.UI.Controls.Default;
+using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {

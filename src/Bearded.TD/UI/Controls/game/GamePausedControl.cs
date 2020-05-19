@@ -1,7 +1,7 @@
 using amulware.Graphics;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
-using static Bearded.TD.UI.Controls.Default;
+using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {

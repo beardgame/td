@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Technologies;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -29,7 +30,7 @@ namespace Bearded.TD.UI.Controls
 
             Add(new BackgroundBox());
             Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
-            Add(Default.Button("close", 16)
+            Add(LegacyDefault.Button("close", 16)
                 .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
                 .Subscribe(btn => btn.Clicked += () => CloseButtonClicked?.Invoke()));
 

@@ -9,7 +9,7 @@ using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
 using OpenTK.Input;
-using static Bearded.TD.UI.Controls.Default;
+using static Bearded.TD.UI.Factories.LegacyDefault;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 

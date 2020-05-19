@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components.Damage;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Upgrades;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -44,10 +45,10 @@ namespace Bearded.TD.UI.Controls
 
             Add(upgradeList.Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
 
-            Add(Default.Button("Close")
+            Add(LegacyDefault.Button("Close")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Left(margin: 4).Right(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += buildingStatus.OnCloseClicked));
-            Add(Default.Button("Delete")
+            Add(LegacyDefault.Button("Delete")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Right(margin: 4).Left(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += buildingStatus.OnDeleteBuildingClicked));
 

@@ -7,7 +7,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK;
-using static Bearded.TD.UI.Controls.Default;
+using static Bearded.TD.UI.Factories.LegacyDefault;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
 
 namespace Bearded.TD.UI.Controls

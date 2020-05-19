@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Meta;
 using Bearded.UI.Controls;
-using static Bearded.TD.UI.Controls.Default;
+using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {

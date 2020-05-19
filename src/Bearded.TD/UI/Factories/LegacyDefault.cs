@@ -1,9 +1,10 @@
 ﻿using System;
+using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Factories
 {
-    static class Default
+    static class LegacyDefault
     {
         public static Button Button(string title, double fontSize = 24)
         {

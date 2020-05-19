@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using amulware.Graphics;
 using Bearded.TD.Game.Workers;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
@@ -33,7 +34,7 @@ namespace Bearded.TD.UI.Controls
 
             Add(taskList.Anchor(a => a.Top(margin: 72).Bottom(margin: 40).Left(margin: 4).Right(margin: 4)));
 
-            Add(Default.Button("Close")
+            Add(LegacyDefault.Button("Close")
                 .Anchor(a => a.Bottom(margin: 4, height: 32).Left(margin: 4).Right(relativePercentage: .5, margin: 2))
                 .Subscribe(btn => btn.Clicked += workerStatus.OnCloseClicked));
 
@@ -88,11 +89,11 @@ namespace Bearded.TD.UI.Controls
 
                 if (!workerStatus.CanInteract) return;
 
-                cancelButton = Default.Button("x");
+                cancelButton = LegacyDefault.Button("x");
                 cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
                 Add(cancelButton.Anchor(a => a.Right(margin: 24, width: 24)));
 
-                var bumpButton = Default.Button("+");
+                var bumpButton = LegacyDefault.Button("+");
                 bumpButton.Clicked += () => workerStatus.OnTaskBumpClicked(task);
                 Add(bumpButton.Anchor(a => a.Right(width: 24)));
             }
