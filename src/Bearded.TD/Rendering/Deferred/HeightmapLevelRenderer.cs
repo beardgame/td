@@ -25,8 +25,8 @@ namespace Bearded.TD.Rendering.Deferred
                 .Select(d => (d.Vector() * GridToWorld, d.Step()))
                 .ToArray();
 
-        protected const float HeightMapScale = 4;
-        protected const float GridScale = 6;
+        protected const float HeightMapScale = 50;
+        protected const float GridScale = 10;
         protected const float WorldToGrid = GridScale;
         protected const float GridToWorld = 1 / GridScale;
 

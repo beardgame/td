@@ -31,7 +31,7 @@ namespace Bearded.TD.Rendering
             var levelMaterial = game.Blueprints.Materials["default"];
             var waterMaterial = game.Blueprints.Materials["water"];
 
-            levelRenderer = new CPUHeightmapLevelRenderer(game, renderContext, levelMaterial);
+            levelRenderer = new GPUHeightmapLevelRenderer(game, renderContext, levelMaterial);
 
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 

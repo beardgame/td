@@ -92,7 +92,7 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     vec3 rock = texture(diffuseTextures, vec3(uvR, rockIndex)).rgb;
     vec3 sand = texture(diffuseTextures, vec3(uvS, sandIndex)).rgb;
 
-    float rockiness = clamp(position.z * 20, 0, 1);
+    float rockiness = clamp((position.z - 0.5) * 20, 0, 1);
 
     floorColor = mix(sand, rock - 0.25, rockiness);
 

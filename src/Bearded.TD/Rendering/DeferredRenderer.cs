@@ -225,6 +225,8 @@ namespace Bearded.TD.Rendering
 
         private void renderWorldToGBuffers(ContentSurfaceManager contentSurfaces)
         {
+            contentSurfaces.LevelRenderer.PrepareForRender();
+
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             GL.Enable(EnableCap.CullFace);

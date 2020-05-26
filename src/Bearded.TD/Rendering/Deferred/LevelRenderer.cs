@@ -39,5 +39,9 @@ namespace Bearded.TD.Rendering.Deferred
         protected abstract void OnTileChanged(Tile tile);
         public abstract void RenderAll();
         public abstract void CleanUp();
+
+        public virtual void PrepareForRender()
+        {
+        }
     }
 }
