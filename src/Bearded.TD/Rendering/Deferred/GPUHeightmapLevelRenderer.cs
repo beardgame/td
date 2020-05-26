@@ -159,6 +159,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             var allTiles = Tilemap.EnumerateTilemapWith(Level.Radius).Select(t => (Tile: t, Info: GeometryLayer[t]));
 
+            var count = 0;
             foreach (var (tile, info) in
                 Enumerable.Concat(
                     allTiles.Where(t => t.Info.Type == TileType.Crevice),
@@ -174,6 +175,14 @@ namespace Bearded.TD.Rendering.Deferred
                 var angle = StaticRandom.Int(0, 6) * 30.Degrees().Radians;
 
                 splat.Draw(p, Color.White, size, angle);
+
+                count++;
+
+                if (count > 10000)
+                {
+                    heightmapSplats.Surface.Render();
+                    count = 0;
+                }
             }
 
             heightmapSplats.Surface.Render();
