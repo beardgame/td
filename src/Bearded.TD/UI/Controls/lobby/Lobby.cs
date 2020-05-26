@@ -62,6 +62,8 @@ namespace Bearded.TD.UI.Controls
         {
             base.Terminate();
 
+            lobbyManager.Game.ContentManager.CleanUp();
+
             lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
             lobbyManager.Game.PlayerAdded -= onPlayersChanged;
             lobbyManager.Game.PlayerRemoved -= onPlayersChanged;
