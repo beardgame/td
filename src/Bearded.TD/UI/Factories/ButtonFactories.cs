@@ -9,9 +9,9 @@ namespace Bearded.TD.UI.Factories
 {
     static class ButtonFactories
     {
-        public static Button Button(string label) => Button(b => b.WithLabel(label).Build());
+        public static Button Button(string label) => Button(b => b.WithLabel(label));
 
-        public static Button Button(Func<string> labelFunc) => Button(b => b.WithLabel(labelFunc).Build());
+        public static Button Button(Func<string> labelFunc) => Button(b => b.WithLabel(labelFunc));
 
         public static Button Button(Action<Builder> builderFunc)
         {

@@ -6,7 +6,6 @@ using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using OpenTK;
-using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -106,10 +105,10 @@ namespace Bearded.TD.UI.Controls
                     new CompositeControl // ButtonGroup
                     {
                         levelSize,
-                        Button(() => model.WorkerDistributionMethod.ToString())
+                        ButtonFactories.Button(() => model.WorkerDistributionMethod.ToString())
                             .Anchor(a => a.Top(margin: 36, height: 32))
                             .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
-                        Button(() => model.LevelGenerationMethod.ToString())
+                        ButtonFactories.Button(() => model.LevelGenerationMethod.ToString())
                             .Anchor(a => a.Top(margin: 72, height: 32))
                             .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
                     }.Anchor(a => a.Left(margin: 8, width: 250).Top(margin: 8, height: 136))
