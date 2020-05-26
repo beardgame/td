@@ -1,6 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -13,94 +14,108 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyControl(Lobby model)
         {
-            // main buttons
-            Add(
-                new CompositeControl // ButtonGroup
-                {
-                    Button("Toggle ready")
-                        .Anchor(a => a.Top(margin: 0, height: 50))
-                        .Subscribe(b => b.Clicked += model.OnToggleReadyButtonClicked)
-                        // TODO: should be IsEnabled instead of IsVisible, but there's no rendering difference
-                        .Subscribe(b => model.LoadingUpdated += () => b.IsVisible = model.CanToggleReady),
-                    Button("Back to menu")
-                        .Anchor(a => a.Top(margin: 50, height: 50))
-                        .Subscribe(b => b.Clicked += model.OnBackToMenuButtonClicked),
-                }.Anchor(a => a.Left(margin: 8, width: 250).Bottom(margin: 8, height: 100))
-            );
+            var lobbyDetailsControl = new LobbyDetailsControl(model);
 
-            // game settings
-            var levelSize =
-                new NumericInput(model.LevelSize)
-                    {
-                        MinValue = 10,
-                        MaxValue = 100,
-                        IsEnabled = model.CanChangeGameSettings
-                    }
-                    .Anchor(a => a.Top(margin: 0, height: 32))
-                    .Subscribe(b => b.ValueChanged += newValue =>
-                    {
-                        if (b.IsEnabled) model.OnSetLevelSize(newValue);
-                    });
-            Add(
-                new CompositeControl // ButtonGroup
-                {
-                    levelSize,
-                    Button(() => model.WorkerDistributionMethod.ToString())
-                        .Anchor(a => a.Top(margin: 36, height: 32))
-                        .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
-                    Button(() => model.LevelGenerationMethod.ToString())
-                        .Anchor(a => a.Top(margin: 72, height: 32))
-                        .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
-                }.Anchor(a => a.Left(margin: 8, width: 250).Top(margin: 8, height: 136))
-            );
+            this.BuildLayout()
+                .AddNavBar(b => b
+                    .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked)
+                    .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked))
+                .AddMainSidebar(c => fillSidebar(c, model))
+                .AddTabs(t => t
+                    .AddButton("Game settings", lobbyDetailsControl.ShowGameSettings)
+                    .AddButton("Player list", lobbyDetailsControl.ShowPlayerList))
+                .FillContent(lobbyDetailsControl);
 
-            var playerList = new ListControl {ItemSource = new PlayerListItemSource(model)}
-                .Anchor(a => a
-                    .Left(margin: 4, relativePercentage: .5)
-                    .Right(margin: 8)
-                    .Top(margin: 8)
-                    .Bottom(margin: 4, relativePercentage: .5));
-            Add(playerList);
+            lobbyDetailsControl.ShowGameSettings();
+        }
 
+        private static void fillSidebar(IControlParent sidebar, Lobby model)
+        {
             var loadingList = new ListControl(new ViewportClippingLayerControl())
             {
                 ItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler),
                 StickToBottom = true
             };
-            Add(
+            sidebar.Add(
                 new CompositeControl
                 {
                     new Border(),
                     loadingList.Anchor(a => a.Left(4).Right(4))
-                }.Anchor(a => a
-                    .Left(margin: 4, relativePercentage: .5)
-                    .Right(margin: 8)
-                    .Top(margin: 4, relativePercentage: .5)
-                    .Bottom(margin: 8))
+                }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
             );
-
-            model.PlayersChanged += playerList.Reload;
             model.LoadingUpdated += loadingList.Reload;
-            model.GameSettingsChanged += () => { levelSize.Value = model.LevelSize; };
         }
 
-        private sealed class PlayerListItemSource : IListItemSource
+        private sealed class LobbyDetailsControl : CompositeControl
         {
-            private readonly Lobby lobby;
+            private readonly Control gameSettings;
+            private readonly LobbyPlayerList.ItemSource playerListItemSource;
+            private readonly ListControl playerList;
 
-            public int ItemCount => lobby.Players.Count;
-
-            public PlayerListItemSource(Lobby lobby)
+            public LobbyDetailsControl(Lobby model)
             {
-                this.lobby = lobby;
+                gameSettings = new GameSettingsControl(model);
+                playerListItemSource = new LobbyPlayerList.ItemSource(model);
+                playerList = new ListControl {ItemSource = playerListItemSource};
+                model.PlayersChanged += playerList.Reload;
             }
 
-            public double HeightOfItemAt(int index) => LobbyPlayerRowControl.Height;
-
-            public Control CreateItemControlFor(int index) => new LobbyPlayerRowControl(lobby.Players[index]);
-
-            public void DestroyItemControlAt(int index, Control control)
+            public void ShowGameSettings()
             {
+                RemoveAllChildren();
+                this.BuildLayout()
+                    .AddStatusSidebar(() => playerList)
+                    .FillContent(gameSettings);
+                setPlayerListCompact(true);
+            }
+
+            public void ShowPlayerList()
+            {
+                RemoveAllChildren();
+                this.BuildLayout()
+                    .FillContent(playerList);
+                setPlayerListCompact(false);
+            }
+
+            private void setPlayerListCompact(bool isCompact)
+            {
+                playerListItemSource.IsCompact = isCompact;
+                // This looks silly, but it's the only way to force a reload next frame, rather than immediately.
+                // Forcing a reload immediately throws an exception, because the control hierarchy is not fully built.
+                playerList.ItemSource = playerListItemSource;
+            }
+        }
+
+        private sealed class GameSettingsControl : CompositeControl
+        {
+            public GameSettingsControl(Lobby model)
+            {
+                var levelSize =
+                    new NumericInput(model.LevelSize)
+                        {
+                            MinValue = 10,
+                            MaxValue = 100,
+                            IsEnabled = model.CanChangeGameSettings
+                        }
+                        .Anchor(a => a.Top(margin: 0, height: 32))
+                        .Subscribe(b => b.ValueChanged += newValue =>
+                        {
+                            if (b.IsEnabled) model.OnSetLevelSize(newValue);
+                        });
+                Add(
+                    new CompositeControl // ButtonGroup
+                    {
+                        levelSize,
+                        Button(() => model.WorkerDistributionMethod.ToString())
+                            .Anchor(a => a.Top(margin: 36, height: 32))
+                            .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
+                        Button(() => model.LevelGenerationMethod.ToString())
+                            .Anchor(a => a.Top(margin: 72, height: 32))
+                            .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
+                    }.Anchor(a => a.Left(margin: 8, width: 250).Top(margin: 8, height: 136))
+                );
+
+                model.GameSettingsChanged += () => { levelSize.Value = model.LevelSize; };
             }
         }
 

@@ -7,16 +7,20 @@ namespace Bearded.TD.UI
         public static AnchorTemplate MarginAllSides(this AnchorTemplate a, double margin) =>
             a.Top(margin: margin).Bottom(margin: margin).Left(margin: margin).Right(margin: margin);
 
-        public static AnchorTemplate Below(this AnchorTemplate a, Control control, double? height = null) =>
-            a.Top(margin: control.VerticalAnchors.Bottom.Offset, height: height);
+        public static AnchorTemplate Below(
+                this AnchorTemplate a, Control control, double? height = null, double margin = 0) =>
+            a.Top(margin: control.VerticalAnchors.Bottom.Offset + margin, height: height);
 
-        public static AnchorTemplate Above(this AnchorTemplate a, Control control, double? height = null) =>
-            a.Bottom(margin: control.VerticalAnchors.Top.Offset, height: height);
+        public static AnchorTemplate Above(
+                this AnchorTemplate a, Control control, double? height = null, double margin = 0) =>
+            a.Bottom(margin: control.VerticalAnchors.Top.Offset + margin, height: height);
 
-        public static AnchorTemplate RightOf(this AnchorTemplate a, Control control, double? width = null) =>
-            a.Left(margin: control.HorizontalAnchors.Right.Offset, width: width);
+        public static AnchorTemplate RightOf(
+                this AnchorTemplate a, Control control, double? width = null, double margin = 0) =>
+            a.Left(margin: control.HorizontalAnchors.Right.Offset + margin, width: width);
 
-        public static AnchorTemplate LeftOf(this AnchorTemplate a, Control control, double? width = null) =>
-            a.Right(margin: control.HorizontalAnchors.Left.Offset, width: width);
+        public static AnchorTemplate LeftOf(
+                this AnchorTemplate a, Control control, double? width = null, double margin = 0) =>
+            a.Right(margin: control.HorizontalAnchors.Left.Offset + margin, width: width);
     }
 }

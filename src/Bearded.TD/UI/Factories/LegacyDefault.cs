@@ -6,17 +6,17 @@ namespace Bearded.TD.UI.Factories
 {
     static class LegacyDefault
     {
-        public static Button Button(string title, double fontSize = 24)
+        public static Button Button(string title, double fontSize = Constants.UI.Button.FontSize)
         {
             return new Button().WithDefaultStyle(title, fontSize);
         }
 
-        public static Button Button(Func<string> titleProvider, double fontSize = 24)
+        public static Button Button(Func<string> titleProvider, double fontSize = Constants.UI.Button.FontSize)
         {
             return new Button().WithDefaultStyle(titleProvider, fontSize);
         }
 
-        public static Button WithDefaultStyle(this Button button, string title, double fontSize = 24)
+        public static Button WithDefaultStyle(this Button button, string title, double fontSize = Constants.UI.Button.FontSize)
         {
             return button.WithDefaultStyle(new Label
             {
@@ -25,7 +25,7 @@ namespace Bearded.TD.UI.Factories
             });
         }
 
-        public static Button WithDefaultStyle(this Button button, Func<string> titleProvider, double fontSize = 24)
+        public static Button WithDefaultStyle(this Button button, Func<string> titleProvider, double fontSize = Constants.UI.Button.FontSize)
         {
             return button.WithDefaultStyle(new DynamicLabel(titleProvider)
             {
