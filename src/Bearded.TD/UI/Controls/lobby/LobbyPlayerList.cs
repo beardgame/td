@@ -82,7 +82,21 @@ namespace Bearded.TD.UI.Controls
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
             private static string getStatusStringForPlayer(Player player)
-                => player.ConnectionState == PlayerConnectionState.Ready ? "ready" : "not ready";
+            {
+                switch (player.ConnectionState)
+                {
+                    case PlayerConnectionState.Connecting:
+                        return "connecting";
+                    case PlayerConnectionState.Waiting:
+                        return "not ready";
+                    case PlayerConnectionState.LoadingMods:
+                        return "loading mods";
+                    case PlayerConnectionState.Ready:
+                        return "ready";
+                    default:
+                        return "unknown";
+                }
+            }
         }
     }
 }

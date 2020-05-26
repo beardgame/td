@@ -6,6 +6,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -29,6 +30,7 @@ namespace Bearded.TD.Game.Commands
             {
                 DebugAssert.State.Satisfies(game.Me.ConnectionState == PlayerConnectionState.Connecting);
                 game.ContentManager.SetEnabledMods(mods);
+                game.Players.ForEach(p => p.ConnectionState = PlayerConnectionState.LoadingMods);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(mods);

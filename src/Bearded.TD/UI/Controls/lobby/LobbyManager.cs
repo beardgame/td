@@ -24,6 +24,12 @@ namespace Bearded.TD.UI.Controls
 
         public void ToggleReadyState()
         {
+            if (Game.Me.ConnectionState != PlayerConnectionState.Ready &&
+                Game.Me.ConnectionState != PlayerConnectionState.Waiting)
+            {
+                return;
+            }
+
             var connectionState =
                     Game.Me.ConnectionState == PlayerConnectionState.Ready
                         ? PlayerConnectionState.Waiting
@@ -46,6 +52,11 @@ namespace Bearded.TD.UI.Controls
             Network.ConsumeMessages();
             Game.UpdatePlayers(args);
             Game.ContentManager.Update(args);
+
+            if (Game.Me.ConnectionState == PlayerConnectionState.LoadingMods && Game.ContentManager.IsFinishedLoading)
+            {
+                Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.Waiting));
+            }
         }
 
         public abstract LoadingManager GetLoadingManager();
