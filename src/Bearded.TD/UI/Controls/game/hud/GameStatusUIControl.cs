@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using Bearded.TD.UI.Factories;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenTK;
@@ -68,7 +69,7 @@ namespace Bearded.TD.UI.Controls
                     .Right(margin: 8));
             Add(techPointsLabel);
 
-            Add(Default.Button("Research", 16)
+            Add(LegacyDefault.Button("Research", 16)
                 .Anchor(a => a
                     .Top(margin: 84, height: 24)
                     .Left(margin: 16)

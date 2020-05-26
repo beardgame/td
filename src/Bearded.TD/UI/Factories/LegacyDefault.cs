@@ -1,21 +1,22 @@
 ﻿using System;
+using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Factories
 {
-    static class Default
+    static class LegacyDefault
     {
-        public static Button Button(string title, double fontSize = 24)
+        public static Button Button(string title, double fontSize = Constants.UI.Button.FontSize)
         {
             return new Button().WithDefaultStyle(title, fontSize);
         }
 
-        public static Button Button(Func<string> titleProvider, double fontSize = 24)
+        public static Button Button(Func<string> titleProvider, double fontSize = Constants.UI.Button.FontSize)
         {
             return new Button().WithDefaultStyle(titleProvider, fontSize);
         }
 
-        public static Button WithDefaultStyle(this Button button, string title, double fontSize = 24)
+        public static Button WithDefaultStyle(this Button button, string title, double fontSize = Constants.UI.Button.FontSize)
         {
             return button.WithDefaultStyle(new Label
             {
@@ -24,7 +25,7 @@ namespace Bearded.TD.UI.Controls
             });
         }
 
-        public static Button WithDefaultStyle(this Button button, Func<string> titleProvider, double fontSize = 24)
+        public static Button WithDefaultStyle(this Button button, Func<string> titleProvider, double fontSize = Constants.UI.Button.FontSize)
         {
             return button.WithDefaultStyle(new DynamicLabel(titleProvider)
             {
@@ -35,6 +36,7 @@ namespace Bearded.TD.UI.Controls
         public static Button WithDefaultStyle(this Button button, Control labelControl)
         {
             button.Add(labelControl);
+            button.Add(new Border());
             button.Add(new ButtonBackgroundEffect());
             return button;
         }

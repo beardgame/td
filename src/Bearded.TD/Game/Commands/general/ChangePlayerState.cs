@@ -28,15 +28,16 @@ namespace Bearded.TD.Game.Commands
 
                 switch (player.ConnectionState)
                 {
-                    case PlayerConnectionState.Connecting:
                     case PlayerConnectionState.AwaitingLoadingData:
                     case PlayerConnectionState.FinishedLoading:
                     case PlayerConnectionState.Playing:
                         return false;
-                    case PlayerConnectionState.Waiting:
-                        return state == PlayerConnectionState.Ready;
+                    case PlayerConnectionState.Connecting:
+                    case PlayerConnectionState.LoadingMods:
                     case PlayerConnectionState.Ready:
                         return state == PlayerConnectionState.Waiting;
+                    case PlayerConnectionState.Waiting:
+                        return state == PlayerConnectionState.Ready;
                     case PlayerConnectionState.ProcessingLoadingData:
                         return state == PlayerConnectionState.FinishedLoading;
                     default:

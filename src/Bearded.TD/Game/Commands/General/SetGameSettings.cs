@@ -1,6 +1,9 @@
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -23,6 +26,8 @@ namespace Bearded.TD.Game.Commands
             public void Execute()
             {
                 game.SetGameSettings(gameSettings);
+                game.Players.Where(p => p.ConnectionState == PlayerConnectionState.Ready)
+                    .ForEach(p => p.ConnectionState = PlayerConnectionState.Waiting);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);

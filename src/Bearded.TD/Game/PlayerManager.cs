@@ -142,17 +142,19 @@ namespace Bearded.TD.Game
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    GetSender(msg).ConnectionState = PlayerConnectionState.Waiting;
+                    GetSender(msg).ConnectionState = PlayerConnectionState.LoadingMods;
 
+                    sendCommandToConnection(msg.SenderConnection, SetGameSettings.Command(game, game.GameSettings));
+                    sendCommandToConnection(
+                        msg.SenderConnection, SetEnabledMods.Command(game, game.ContentManager.EnabledMods));
+
+                    // Send the players after the game settings and enabled mods, to make sure to get their latest
+                    // connection states.
                     foreach (var p in game.Players)
                     {
                         if (p == GetSender(msg)) continue;
                         sendCommandToConnection(msg.SenderConnection, AddPlayer.Command(game, p));
                     }
-
-                    sendCommandToConnection(msg.SenderConnection, SetGameSettings.Command(game, game.GameSettings));
-                    sendCommandToConnection(
-                        msg.SenderConnection, SetEnabledMods.Command(game, game.ContentManager.EnabledMods));
 
                     break;
                 case NetConnectionStatus.Disconnected:

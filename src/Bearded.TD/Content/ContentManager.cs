@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
@@ -141,6 +143,17 @@ namespace Bearded.TD.Content
 
             modForLoading.StartLoading(loadingContext, loadedDependencies);
             CurrentlyLoading = Maybe.Just(metadata);
+        }
+
+        public void CleanUp()
+        {
+            DebugAssert.State.Satisfies(IsFinishedLoading);
+            var unusedMods = modsForLoading.Where(m => !enabledMods.Contains(m.Key));
+            foreach (var (metadata, modForLoading) in unusedMods)
+            {
+                GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
+                modsForLoading.Remove(metadata);
+            }
         }
     }
 }
