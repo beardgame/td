@@ -68,6 +68,7 @@ namespace Bearded.TD.Game.Workers
 
         public void ReturnTask(IWorkerTask task)
         {
+            DebugAssert.Argument.Satisfies(!task.Finished);
             workerAssignments.Remove(task);
             tryAssignTaskToFirstIdleWorker(task);
         }

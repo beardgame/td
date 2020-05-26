@@ -82,7 +82,10 @@ namespace Bearded.TD.Game.Workers
 
             public override void Stop()
             {
-                manager.ReturnTask(task);
+                if (!task.Finished)
+                {
+                    manager.ReturnTask(task);
+                }
             }
         }
     }
