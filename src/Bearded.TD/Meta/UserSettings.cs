@@ -54,6 +54,9 @@ namespace Bearded.TD.Meta
         public class GraphicsSettings
         {
             public float SuperSample = 1f;
+
+            public float TerrainHeightmapResolution = 10;
+            public float TerrainMeshResolution = 5;
         }
 
         public class DebugSettings
