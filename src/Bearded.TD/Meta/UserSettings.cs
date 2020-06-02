@@ -44,12 +44,6 @@ namespace Bearded.TD.Meta
             public bool ShowTraceMessages = true;
 
             public int? MapGenSeed = null;
-
-#if DEBUG
-            public ModLoadFinishBehavior ModLoadFinishBehavior = ModLoadFinishBehavior.ThrowOnError;
-#else
-            public ModLoadFinishBehavior ModLoadFinishBehavior = ModLoadFinishBehavior.DoNothing;
-#endif
         }
 
         public class UISettings
