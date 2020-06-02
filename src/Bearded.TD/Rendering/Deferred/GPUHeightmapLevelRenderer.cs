@@ -35,13 +35,6 @@ namespace Bearded.TD.Rendering.Deferred
             gridSurface = setupSurface();
 
             heightmapSplats = setupHeightmapSplats(game);
-
-
-            // TODO: add normal generation to vertex shader
-            // TODO: can we reuse the same textures for multiple materials with different shaders?
-            //     - right now the gpu shader is hard-coded in the material
-            // TODO: figure out how to better use splats from mod
-            // -> discuss these content pipeline points
         }
 
         private PackedSpriteSet setupHeightmapSplats(GameInstance game)
@@ -66,9 +59,6 @@ namespace Bearded.TD.Rendering.Deferred
 
         private ExpandingVertexSurface<LevelVertex> setupSurface()
         {
-            // TODO: use smaller vertices with positions only
-            //     - later these can contain biome info, etc.
-
             var s = new ExpandingVertexSurface<LevelVertex>()
             {
                 ClearOnRender = false,
