@@ -40,13 +40,13 @@ namespace Bearded.TD.UI.Factories
                 backAction.Match(tuple => control.Add(
                     ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
                         .Anchor(a => a
-                            .Left(Constants.UI.BoxPadding, Constants.UI.Button.Width)
-                            .Bottom(Constants.UI.BoxPadding, Constants.UI.Button.Height))));
+                            .Left(width: Constants.UI.Button.Width)
+                            .Bottom(height: Constants.UI.Button.Height))));
                 forwardAction.Match(tuple => control.Add(
                     ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
                         .Anchor(a => a
-                            .Right(Constants.UI.BoxPadding, Constants.UI.Button.Width)
-                            .Bottom(Constants.UI.BoxPadding, Constants.UI.Button.Height))));
+                            .Right(width: Constants.UI.Button.Width)
+                            .Bottom(height: Constants.UI.Button.Height))));
                 return control;
             }
         }

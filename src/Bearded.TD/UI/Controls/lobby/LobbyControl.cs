@@ -20,6 +20,7 @@ namespace Bearded.TD.UI.Controls
             var lobbyDetailsControl = new LobbyDetailsControl(model);
 
             this.BuildLayout()
+                .ForFullScreen()
                 .AddNavBar(b => b
                     .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked)
                     .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked))

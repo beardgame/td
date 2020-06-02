@@ -1,3 +1,4 @@
+using Bearded.UI;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI
@@ -22,5 +23,8 @@ namespace Bearded.TD.UI
         public static AnchorTemplate LeftOf(
                 this AnchorTemplate a, Control control, double? width = null, double margin = 0) =>
             a.Right(margin: control.HorizontalAnchors.Left.Offset + margin, width: width);
+
+        public static Anchor WithAddedOffset(this Anchor anchor, double offset) =>
+            new Anchor(anchor.Percentage, anchor.Offset + offset);
     }
 }

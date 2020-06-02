@@ -32,10 +32,10 @@ namespace Bearded.TD.UI.Factories
                 var control = new CompositeControl();
                 for (var i = 0; i < buttonBuilderFunctions.Count; i++)
                 {
-                    var leftMargin = (i + 1) * Constants.UI.BoxPadding + i * Constants.UI.Button.Width;
+                    var leftMargin = i * (Constants.UI.LayoutMargin + Constants.UI.Button.Width);
                     control.Add(ButtonFactories.Button(buttonBuilderFunctions[i]).Anchor(a => a
                         .Left(leftMargin, Constants.UI.Button.Width)
-                        .Top(Constants.UI.BoxPadding, Constants.UI.Button.Height)));
+                        .Top(height: Constants.UI.Button.Height)));
                 }
                 return control;
             }
