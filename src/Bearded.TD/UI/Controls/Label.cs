@@ -5,7 +5,7 @@ using OpenTK;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class Label : Control
+    class Label : Control
     {
         public static readonly Vector2d TextAnchorLeft = new Vector2d(0, 0.5);
         public static readonly Vector2d TextAnchorCenter = new Vector2d(0.5, 0.5);
