@@ -5,6 +5,22 @@ namespace Bearded.TD.UI.Factories
 {
     static class LayoutFactories
     {
+        public static Control WrapHorizontallyCentered(this Control control, double width)
+        {
+            return new CompositeControl
+            {
+                control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5))
+            };
+        }
+
+        public static Control WrapVerticallyCentered(this Control control, double height)
+        {
+            return new CompositeControl
+            {
+                control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5))
+            };
+        }
+
         public static LayoutBuilder BuildLayout(this IControlParent parent) => new LayoutBuilder(parent);
 
         public sealed class LayoutBuilder

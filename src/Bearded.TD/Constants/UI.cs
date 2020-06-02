@@ -16,6 +16,11 @@
                 public const double Margin = 4;
             }
 
+            public static class Checkbox
+            {
+                public const double Size = Button.Height;
+            }
+
             public static class Form
             {
                 public const double FormRowHeight = 48;

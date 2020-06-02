@@ -2,8 +2,11 @@
 using System.Collections.Immutable;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Generation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using OpenTK;
@@ -92,32 +95,36 @@ namespace Bearded.TD.UI.Controls
         {
             public GameSettingsControl(Lobby model)
             {
-                var levelSize =
-                    new NumericInput(model.LevelSize)
-                        {
-                            MinValue = 10,
-                            MaxValue = 100,
-                            IsEnabled = model.CanChangeGameSettings
-                        }
-                        .Anchor(a => a.Top(margin: 0, height: 32))
-                        .Subscribe(b => b.ValueChanged += newValue =>
-                        {
-                            if (b.IsEnabled) model.OnSetLevelSize(newValue);
-                        });
-                Add(
-                    new CompositeControl // ButtonGroup
-                    {
-                        levelSize,
-                        ButtonFactories.Button(() => model.WorkerDistributionMethod.ToString())
-                            .Anchor(a => a.Top(margin: 36, height: 32))
-                            .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
-                        ButtonFactories.Button(() => model.LevelGenerationMethod.ToString())
-                            .Anchor(a => a.Top(margin: 72, height: 32))
-                            .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
-                    }.Anchor(a => a.Left(margin: 8, width: 250).Top(margin: 8, height: 136))
-                );
+                var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
+                var workerDistributionMethod =
+                    Binding.Create(model.WorkerDistributionMethod, model.OnSetWorkerDistributionMethod);
+                var levelGenerationMethod =
+                    Binding.Create(model.LevelGenerationMethod, model.OnSetLevelGenerationMethod);
 
-                model.GameSettingsChanged += () => { levelSize.Value = model.LevelSize; };
+                Add(FormFactories.Form(builder => builder
+                    .AddNumberSelectRow("Level size", 10, 100, levelSize)
+                    .AddDropdownSelectRow(
+                        "Worker distribution method",
+                        new [] { WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin},
+                        e => e.ToString(),
+                        workerDistributionMethod)
+                    .AddDropdownSelectRow(
+                        "Level generation method",
+                        new []
+                        {
+                            LevelGenerationMethod.Perlin,
+                            LevelGenerationMethod.Legacy,
+                            LevelGenerationMethod.Empty
+                        },
+                        e => e.ToString(),
+                        levelGenerationMethod)));
+
+                model.GameSettingsChanged += () =>
+                {
+                    levelSize.Value = model.LevelSize;
+                    workerDistributionMethod.Value = model.WorkerDistributionMethod;
+                    levelGenerationMethod.Value = model.LevelGenerationMethod;
+                };
             }
         }
 

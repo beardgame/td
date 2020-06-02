@@ -104,24 +104,15 @@ namespace Bearded.TD.UI.Controls
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
-        public void OnCycleWorkerDistributionMethod()
+        public void OnSetWorkerDistributionMethod(WorkerDistributionMethod method)
         {
-            gameSettings.WorkerDistributionMethod = gameSettings.WorkerDistributionMethod + 1;
-            if ((byte) gameSettings.WorkerDistributionMethod
-                >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
-            {
-                gameSettings.WorkerDistributionMethod = 0;
-            }
+            gameSettings.WorkerDistributionMethod = method;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
-        public void OnCycleLevelGenerationMethod()
+        public void OnSetLevelGenerationMethod(LevelGenerationMethod method)
         {
-            gameSettings.LevelGenerationMethod = gameSettings.LevelGenerationMethod + 1;
-            if ((byte) gameSettings.LevelGenerationMethod >= Enum.GetValues(LevelGenerationMethod.GetType()).Length)
-            {
-                gameSettings.LevelGenerationMethod = 0;
-            }
+            gameSettings.LevelGenerationMethod = method;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
