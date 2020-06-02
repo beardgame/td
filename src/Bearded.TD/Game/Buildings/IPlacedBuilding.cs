@@ -11,6 +11,6 @@ namespace Bearded.TD.Game.Buildings
         Faction Faction { get; }
         IEnumerable<Tile> OccupiedTiles { get; }
 
-        event VoidEventHandler Deleting;
+        event VoidEventHandler? Deleting;
     }
 }

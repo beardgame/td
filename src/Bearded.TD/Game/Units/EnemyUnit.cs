@@ -59,7 +59,7 @@ namespace Bearded.TD.Game.Units
 
         private IDamageOwner lastDamageSource;
 
-        public event GenericEventHandler<int> Healed;
+        public event GenericEventHandler<int>? Healed;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {

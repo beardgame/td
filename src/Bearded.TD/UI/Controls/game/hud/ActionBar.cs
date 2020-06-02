@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     {
-        public event VoidEventHandler ActionsChanged;
+        public event VoidEventHandler? ActionsChanged;
 
         private readonly InteractionHandler[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
         private readonly (string, string)[] labels = new (string, string)[Constants.Game.GameUI.ActionBarSize];

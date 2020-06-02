@@ -18,7 +18,7 @@ namespace Bearded.TD.UI.Controls
         public int NumWorkers => Faction.Workers.NumWorkers;
         public IList<IWorkerTask> QueuedTasks => Faction.Workers.QueuedTasks;
 
-        public event VoidEventHandler WorkerValuesUpdated;
+        public event VoidEventHandler? WorkerValuesUpdated;
 
         protected override void Initialize(DependencyResolver dependencies, Faction faction)
         {

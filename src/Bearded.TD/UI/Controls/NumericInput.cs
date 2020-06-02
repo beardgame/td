@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class NumericInput : CompositeControl
     {
-        public event GenericEventHandler<int> ValueChanged;
+        public event GenericEventHandler<int>? ValueChanged;
 
         private readonly TextInput textInput;
         private readonly Button plusButton;

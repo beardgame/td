@@ -7,7 +7,7 @@ namespace Bearded.TD.Game
     {
         void Damage(DamageInfo damageInfo);
 
-        event GenericEventHandler<int> Healed;
+        event GenericEventHandler<int>? Healed;
 
         void OnDeath();
     }

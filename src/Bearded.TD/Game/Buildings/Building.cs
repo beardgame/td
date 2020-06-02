@@ -40,8 +40,8 @@ namespace Bearded.TD.Game.Buildings
         private double buildProgress;
         private bool isDead;
 
-        public event VoidEventHandler Completing;
-        public event GenericEventHandler<int> Healed;
+        public event VoidEventHandler? Completing;
+        public event GenericEventHandler<int>? Healed;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)

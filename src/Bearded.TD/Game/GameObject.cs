@@ -11,7 +11,7 @@ namespace Bearded.TD.Game
         public GameState Game { get; private set; }
 
         public bool Deleted { get; private set; }
-        public event VoidEventHandler Deleting;
+        public event VoidEventHandler? Deleting;
 
         public void Add(GameState game)
         {

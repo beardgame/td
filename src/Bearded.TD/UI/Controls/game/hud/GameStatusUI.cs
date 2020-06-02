@@ -6,7 +6,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameStatusUI
     {
-        public event VoidEventHandler StatusChanged;
+        public event VoidEventHandler? StatusChanged;
 
         private GameInstance game;
 

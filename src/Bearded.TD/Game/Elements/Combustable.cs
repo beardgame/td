@@ -6,8 +6,8 @@ namespace Bearded.TD.Game.Elements
 {
     sealed class Combustable
     {
-        public event VoidEventHandler Ignited;
-        public event VoidEventHandler Extinguished;
+        public event VoidEventHandler? Ignited;
+        public event VoidEventHandler? Extinguished;
 
         // How fast the fuel is consumed when it is on fire.
         public EnergyConsumptionRate BurningSpeed { get; }

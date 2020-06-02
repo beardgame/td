@@ -30,11 +30,11 @@ namespace Bearded.TD.UI.Controls
         public PlayerStatusUI PlayerStatusUI { get; }
         public TechnologyUI TechnologyUI { get; }
 
-        public event VoidEventHandler FocusReset;
-        public event GenericEventHandler<ISelectable> EntityStatusOpened;
-        public event VoidEventHandler EntityStatusClosed;
-        public event VoidEventHandler GameOverTriggered;
-        public event VoidEventHandler GameLeft;
+        public event VoidEventHandler? FocusReset;
+        public event GenericEventHandler<ISelectable>? EntityStatusOpened;
+        public event VoidEventHandler? EntityStatusClosed;
+        public event VoidEventHandler? GameOverTriggered;
+        public event VoidEventHandler? GameLeft;
 
         private NavigationController entityStatusNavigation;
 

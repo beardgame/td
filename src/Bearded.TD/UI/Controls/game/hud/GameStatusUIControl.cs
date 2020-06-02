@@ -12,7 +12,7 @@ namespace Bearded.TD.UI.Controls
         private readonly Label resourcesLabel;
         private readonly Label techPointsLabel;
 
-        public event VoidEventHandler TechnologyButtonClicked;
+        public event VoidEventHandler? TechnologyButtonClicked;
 
         public GameStatusUIControl(GameStatusUI model)
         {

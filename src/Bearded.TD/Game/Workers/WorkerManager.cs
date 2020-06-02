@@ -21,9 +21,9 @@ namespace Bearded.TD.Game.Workers
         public IList<IWorkerTask> QueuedTasks { get; }
 
         // Fires when workers are added OR removed.
-        public event VoidEventHandler WorkersUpdated;
+        public event VoidEventHandler? WorkersUpdated;
         // Fires when the task queue changes in any way.
-        public event VoidEventHandler TasksUpdated;
+        public event VoidEventHandler? TasksUpdated;
 
         public WorkerManager(WorkerNetwork network)
         {
