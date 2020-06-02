@@ -11,24 +11,28 @@ using Bearded.Utilities.Geometry;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using static Bearded.TD.Constants.Game.World;
+using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
     class GPUHeightmapLevelRenderer : LevelRenderer
     {
-        private const float heightMapScale = 50;
-        private const float gridScale = 10;
-        private const float gridToWorld = 1 / gridScale;
         private static readonly float wallHeight = 1f;
+
+        private readonly int tileMapWidth;
+
+        private float heightMapPixelsPerTile;
+        private float gridVerticesPerTile;
 
         private readonly RenderContext context;
         private readonly Material material;
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
         private readonly float heightMapWorldSize;
-        private readonly int heightMapResolution;
-        private readonly int gridRadius;
         private readonly float fallOffDistance;
+
+        private readonly FloatUniform heightmapRadiusUniform = new FloatUniform("heightmapRadius");
+        private readonly FloatUniform heightmapPixelSizeUVUniform = new FloatUniform("heightmapPixelSizeUV");
 
         private readonly Texture heightmap;
         private readonly RenderTarget heightmapTarget; // H
@@ -36,29 +40,22 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly ExpandingVertexSurface<LevelVertex> gridSurface;
         private readonly PackedSpriteSet heightmapSplats;
 
+        private int heightMapResolution;
+        private float gridToWorld;
+        private int gridRadius;
+
         private bool isHeightmapGenerated;
-
-        private static readonly (Vector2, Step)[] gridNeighbourOffsets =
-            new[] {Direction.DownRight, Direction.Right, Direction.UpRight, Direction.UpLeft, Direction.Left, Direction.DownLeft}
-                .Select(d => (d.Vector() * gridToWorld, d.Step()))
-                .ToArray();
-
 
         public GPUHeightmapLevelRenderer(GameInstance game, RenderContext context, Material material)
             : base(game)
         {
-
             this.context = context;
             this.material = material;
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
 
-            var tileMapWidth = level.Radius * 2 + 1;
-            var gridWidth = tileMapWidth * gridScale;
-            gridRadius = (int) (gridWidth - 1) / 2;
-
+            tileMapWidth = level.Radius * 2 + 1;
             heightMapWorldSize = tileMapWidth * HexagonWidth;
-            heightMapResolution = (int) (tileMapWidth * heightMapScale);
 
             fallOffDistance = (level.Radius - 0.25f) * HexagonWidth;
 
@@ -68,21 +65,90 @@ namespace Bearded.TD.Rendering.Deferred
             gridSurface = setupSurface();
 
             heightmapSplats = setupHeightmapSplats(game);
+
+            resizeIfNeeded();
+        }
+
+        private void resizeIfNeeded()
+        {
+            var settings = UserSettings.Instance.Graphics;
+
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            if (heightMapPixelsPerTile != settings.TerrainHeightmapResolution)
+            {
+                resizeHeightmap(settings.TerrainHeightmapResolution);
+            }
+
+            if (gridVerticesPerTile != settings.TerrainMeshResolution)
+            {
+                resizeGrid(settings.TerrainMeshResolution);
+            }
+            // ReSharper restore CompareOfFloatsByEqualityOperator
+        }
+        private void resizeHeightmap(float scale)
+        {
+            heightMapPixelsPerTile = scale;
+            heightMapResolution = (int) (tileMapWidth * scale);
+
+            heightmap.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f);
+            heightmapRadiusUniform.Float = heightMapWorldSize * 0.5f;
+            heightmapPixelSizeUVUniform.Float = 1f / heightMapResolution;
+
+            isHeightmapGenerated = false;
+        }
+
+        private void resizeGrid(float scale)
+        {
+            gridVerticesPerTile = scale;
+
+            var gridWidth = tileMapWidth * scale;
+            gridRadius = (int) (gridWidth - 1) / 2;
+            gridToWorld = 1 / scale;
+
+            resizeSurface();
+        }
+
+        private void resizeSurface()
+        {
+            /* Vertex layout
+             * -- v3
+             *   /  \
+             * v0 -- v2
+             *   \  /
+             * -- v1
+             */
+
+            gridSurface.Clear();
+
+            generateGrid(
+                (t0, t1, t2, t3, v0, v1, v2, v3) =>
+                {
+                    gridSurface.AddVertices(
+                        vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
+                    );
+
+                    gridSurface.AddVertices(
+                        vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
+                    );
+                }
+            );
         }
 
         private PackedSpriteSet setupHeightmapSplats(GameInstance game)
         {
             var splats = game.Blueprints.Sprites["terrain-splats"].Sprites;
-            splats.Surface.AddSetting(new FloatUniform("heightmapRadius", heightMapWorldSize * 0.5f));
+            splats.Surface.AddSetting(heightmapRadiusUniform);
 
             return splats;
         }
 
         private Texture setupHeightmapTexture()
         {
-            var hm = new Texture(
-                heightMapResolution, heightMapResolution,
-                PixelInternalFormat.R16f);
+            var hm = new Texture();
             hm.SetParameters(
                 TextureMinFilter.Linear, TextureMagFilter.Linear,
                 TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
@@ -99,34 +165,9 @@ namespace Bearded.TD.Rendering.Deferred
             };
             useMaterialOnSurface(s);
             s.AddSettings(
-                new FloatUniform("heightmapRadius", heightMapWorldSize * 0.5f),
-                new TextureUniform("heightmap", heightmap),
-                new FloatUniform("heightmapPixelSizeUV", 1f / heightMapResolution)
-                );
-
-            /* Vertex layout
-             * -- v3
-             *   /  \
-             * v0 -- v2
-             *   \  /
-             * -- v1
-             */
-
-            GenerateGrid(
-                (t0, t1, t2, t3, v0, v1, v2, v3) =>
-                {
-                    s.AddVertices(
-                        vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
-                    );
-
-                    s.AddVertices(
-                        vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
-                    );
-                }
+                heightmapRadiusUniform,
+                heightmapPixelSizeUVUniform,
+                new TextureUniform("heightmap", heightmap)
                 );
 
             return s;
@@ -144,6 +185,8 @@ namespace Bearded.TD.Rendering.Deferred
 
         public override void RenderAll()
         {
+            resizeIfNeeded();
+
             if (UserSettings.Instance.Debug.WireframeLevel)
             {
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
@@ -222,11 +265,6 @@ namespace Bearded.TD.Rendering.Deferred
             heightmap.Dispose();
         }
 
-        protected delegate void GenerateTile(
-            Tile t0, Tile t1, Tile t2, Tile t3,
-            Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3
-        );
-
         private void useMaterialOnSurface(Surface surface)
         {
             surface.WithShader(material.Shader.SurfaceShader)
@@ -238,15 +276,20 @@ namespace Bearded.TD.Rendering.Deferred
 
             var textureUnit = TextureUnit.Texture0;
 
-            foreach (var texture in material.ArrayTextures)
+            foreach (var (uniformName, texture) in material.ArrayTextures)
             {
-                surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture, textureUnit));
+                surface.AddSetting(new ArrayTextureUniform(uniformName, texture, textureUnit));
 
                 textureUnit++;
             }
         }
 
-        protected void GenerateGrid(GenerateTile generateTile)
+        private delegate void GenerateTile(
+            Tile t0, Tile t1, Tile t2, Tile t3,
+            Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3
+        );
+
+        private void generateGrid(GenerateTile generateTile)
         {
             /* Vertex layout
              * -- v3
@@ -256,9 +299,9 @@ namespace Bearded.TD.Rendering.Deferred
              * -- v1
              */
 
-            var (v1Offset, v1Step) = gridNeighbourOffsets[0];
-            var (v2Offset, v2Step) = gridNeighbourOffsets[1];
-            var (v3Offset, v3Step) = gridNeighbourOffsets[2];
+            var (v1Offset, v1Step) = (DownRight.Vector() * gridToWorld, DownRight.Step());
+            var (v2Offset, v2Step) = (Right.Vector() * gridToWorld, Right.Step());
+            var (v3Offset, v3Step) = (UpRight.Vector() * gridToWorld, UpRight.Step());
 
             foreach (var t0 in Tilemap.EnumerateTilemapWith(gridRadius - 1))
             {
