@@ -16,6 +16,11 @@
                 public const double Margin = 4;
             }
 
+            public static class Form
+            {
+                public const double FormRowHeight = 48;
+            }
+
             public static class NavBar
             {
                 public const double Height = 48;

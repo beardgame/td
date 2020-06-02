@@ -8,7 +8,7 @@ namespace Bearded.TD.Meta
 {
     sealed partial class UserSettings
     {
-        public static UserSettings Instance { get; private set; }
+        public static UserSettings Instance { get; private set; } = getDefaultInstance();
 
         public static event VoidEventHandler? SettingsChanged;
 
@@ -44,12 +44,6 @@ namespace Bearded.TD.Meta
             public bool ShowTraceMessages = true;
 
             public int? MapGenSeed = null;
-
-#if DEBUG
-            public ModLoadFinishBehavior ModLoadFinishBehavior = ModLoadFinishBehavior.ThrowOnError;
-#else
-            public ModLoadFinishBehavior ModLoadFinishBehavior = ModLoadFinishBehavior.DoNothing;
-#endif
         }
 
         public class UISettings
