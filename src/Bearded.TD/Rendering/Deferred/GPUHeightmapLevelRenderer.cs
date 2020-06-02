@@ -35,13 +35,6 @@ namespace Bearded.TD.Rendering.Deferred
             gridSurface = setupSurface();
 
             heightmapSplats = setupHeightmapSplats(game);
-
-
-            // TODO: add normal generation to vertex shader
-            // TODO: can we reuse the same textures for multiple materials with different shaders?
-            //     - right now the gpu shader is hard-coded in the material
-            // TODO: figure out how to better use splats from mod
-            // -> discuss these content pipeline points
         }
 
         private PackedSpriteSet setupHeightmapSplats(GameInstance game)
@@ -66,9 +59,6 @@ namespace Bearded.TD.Rendering.Deferred
 
         private ExpandingVertexSurface<LevelVertex> setupSurface()
         {
-            // TODO: use smaller vertices with positions only
-            //     - later these can contain biome info, etc.
-
             var s = new ExpandingVertexSurface<LevelVertex>()
             {
                 ClearOnRender = false,
@@ -159,6 +149,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             var allTiles = Tilemap.EnumerateTilemapWith(Level.Radius).Select(t => (Tile: t, Info: GeometryLayer[t]));
 
+            var count = 0;
             foreach (var (tile, info) in
                 Enumerable.Concat(
                     allTiles.Where(t => t.Info.Type == TileType.Crevice),
@@ -174,6 +165,14 @@ namespace Bearded.TD.Rendering.Deferred
                 var angle = StaticRandom.Int(0, 6) * 30.Degrees().Radians;
 
                 splat.Draw(p, Color.White, size, angle);
+
+                count++;
+
+                if (count > 10000)
+                {
+                    heightmapSplats.Surface.Render();
+                    count = 0;
+                }
             }
 
             heightmapSplats.Surface.Render();
