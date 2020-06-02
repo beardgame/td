@@ -11,7 +11,7 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game { get; private set; }
         public TechnologyUIModel Model { get; private set; }
 
-        public event VoidEventHandler TechnologiesUpdated;
+        public event VoidEventHandler? TechnologiesUpdated;
 
         public void Initialize(GameInstance game)
         {

@@ -22,8 +22,8 @@ namespace Bearded.TD.UI.Controls
 
         public IList<Proto.Lobby> Lobbies { get; } = new List<Proto.Lobby>();
 
-        public event VoidEventHandler LobbiesCleared;
-        public event GenericEventHandler<Proto.Lobby> LobbyReceived;
+        public event VoidEventHandler? LobbiesCleared;
+        public event GenericEventHandler<Proto.Lobby>? LobbyReceived;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {

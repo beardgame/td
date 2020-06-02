@@ -15,7 +15,7 @@ namespace Bearded.TD.UI.Controls
 
         public ReadOnlyCollection<PlayerModel> Players { get; }
 
-        public event VoidEventHandler PlayersChanged;
+        public event VoidEventHandler? PlayersChanged;
 
         public PlayerStatusUI()
         {

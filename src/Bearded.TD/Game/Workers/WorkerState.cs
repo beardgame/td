@@ -14,8 +14,8 @@ namespace Bearded.TD.Game.Workers
             WorkerManager manager, Worker worker, ResourceManager resources, IWorkerTask task)
             => new ExecutingWorkerState(manager, worker, resources, task);
 
-        public event GenericEventHandler<WorkerState> StateChanged;
-        public event GenericEventHandler<IEnumerable<Tile>> TaskTilesChanged;
+        public event GenericEventHandler<WorkerState>? StateChanged;
+        public event GenericEventHandler<IEnumerable<Tile>>? TaskTilesChanged;
 
         private WorkerManager manager { get; }
         private Worker worker { get; }

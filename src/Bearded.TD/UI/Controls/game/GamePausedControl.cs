@@ -7,8 +7,8 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GamePausedControl : CompositeControl
     {
-        public event VoidEventHandler ResumeGameButtonClicked;
-        public event VoidEventHandler ReturnToMainMenuButtonClicked;
+        public event VoidEventHandler? ResumeGameButtonClicked;
+        public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
         public GamePausedControl()
         {

@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Workers
         private Tilemap<bool> antennaCoverage;
         private readonly List<IWorkerAntenna> antennae = new List<IWorkerAntenna>();
 
-        public event VoidEventHandler NetworkChanged;
+        public event VoidEventHandler? NetworkChanged;
 
         public void RegisterAntenna(GameState gameState, IWorkerAntenna antenna)
         {

@@ -19,7 +19,7 @@ namespace Bearded.TD.UI.Controls
 
         public ReadOnlyCollection<Item> Items { get; }
 
-        public event VoidEventHandler ItemsChanged;
+        public event VoidEventHandler? ItemsChanged;
 
         public GameDebugOverlay()
         {

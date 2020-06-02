@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Controls
     {
         private LoadingManager loadingManager;
 
-        public event VoidEventHandler ModLoadingUpdated;
+        public event VoidEventHandler? ModLoadingUpdated;
 
         protected override void Initialize(DependencyResolver dependencies, LoadingManager loadingManager)
         {

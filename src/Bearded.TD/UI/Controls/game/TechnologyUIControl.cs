@@ -20,7 +20,7 @@ namespace Bearded.TD.UI.Controls
         private readonly ListControl technologyList = new ListControl(new ViewportClippingLayerControl());
         private readonly TechnologyDetailsControl technologyDetails;
 
-        public event VoidEventHandler CloseButtonClicked;
+        public event VoidEventHandler? CloseButtonClicked;
 
         public TechnologyUIControl(TechnologyUI model)
         {

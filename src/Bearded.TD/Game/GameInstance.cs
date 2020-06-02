@@ -60,11 +60,11 @@ namespace Bearded.TD.Game
             }
         }
 
-        public event GenericEventHandler<GameState> GameStateInitialized;
-        public event GenericEventHandler<GameStatus> GameStatusChanged;
-        public event GenericEventHandler<GameSettings> GameSettingsChanged;
-        public event GenericEventHandler<Player> PlayerAdded;
-        public event GenericEventHandler<Player> PlayerRemoved;
+        public event GenericEventHandler<GameState>? GameStateInitialized;
+        public event GenericEventHandler<GameStatus>? GameStatusChanged;
+        public event GenericEventHandler<GameSettings>? GameSettingsChanged;
+        public event GenericEventHandler<Player>? PlayerAdded;
+        public event GenericEventHandler<Player>? PlayerRemoved;
 
         private readonly PlayerManager playerManager;
 

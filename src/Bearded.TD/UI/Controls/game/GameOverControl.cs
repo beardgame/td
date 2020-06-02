@@ -8,7 +8,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameOverControl : CompositeControl
     {
-        public event VoidEventHandler ReturnToMainMenuButtonClicked;
+        public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
         public GameOverControl()
         {

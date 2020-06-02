@@ -20,7 +20,7 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game { get; private set; }
         public ReadOnlyCollection<Notification> Notifications { get; }
 
-        public event VoidEventHandler NotificationsChanged;
+        public event VoidEventHandler? NotificationsChanged;
 
         public GameNotificationsUI()
         {

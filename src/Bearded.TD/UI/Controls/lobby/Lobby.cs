@@ -29,9 +29,9 @@ namespace Bearded.TD.UI.Controls
         public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading;
         public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
 
-        public event VoidEventHandler PlayersChanged;
-        public event VoidEventHandler LoadingUpdated;
-        public event VoidEventHandler GameSettingsChanged;
+        public event VoidEventHandler? PlayersChanged;
+        public event VoidEventHandler? LoadingUpdated;
+        public event VoidEventHandler? GameSettingsChanged;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
         {
@@ -89,6 +89,11 @@ namespace Bearded.TD.UI.Controls
 
         public void OnBackToMenuButtonClicked()
         {
+            if (!lobbyManager.Game.ContentManager.IsFinishedLoading)
+            {
+                return;
+            }
+            lobbyManager.Game.ContentManager.CleanUpAll();
             lobbyManager.Close();
             Navigation.Replace<MainMenu>(this);
         }

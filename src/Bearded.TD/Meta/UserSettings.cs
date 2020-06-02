@@ -10,7 +10,7 @@ namespace Bearded.TD.Meta
     {
         public static UserSettings Instance { get; private set; }
 
-        public static event VoidEventHandler SettingsChanged;
+        public static event VoidEventHandler? SettingsChanged;
 
         public static void RaiseSettingsChanged() => SettingsChanged?.Invoke();
 
