@@ -89,6 +89,11 @@ namespace Bearded.TD.UI.Controls
 
         public void OnBackToMenuButtonClicked()
         {
+            if (!lobbyManager.Game.ContentManager.IsFinishedLoading)
+            {
+                return;
+            }
+            lobbyManager.Game.ContentManager.CleanUpAll();
             lobbyManager.Close();
             Navigation.Replace<MainMenu>(this);
         }

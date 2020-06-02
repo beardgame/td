@@ -155,5 +155,16 @@ namespace Bearded.TD.Content
                 modsForLoading.Remove(metadata);
             }
         }
+
+        public void CleanUpAll()
+        {
+            DebugAssert.State.Satisfies(IsFinishedLoading);
+            foreach (var (_, modForLoading) in modsForLoading)
+            {
+                GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
+            }
+            enabledMods.Clear();
+            modsForLoading.Clear();
+        }
     }
 }
