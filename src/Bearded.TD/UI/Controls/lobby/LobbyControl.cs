@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.UI.Factories;
@@ -30,9 +31,10 @@ namespace Bearded.TD.UI.Controls
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)
         {
+            var itemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
             var loadingList = new ListControl(new ViewportClippingLayerControl())
             {
-                ItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler),
+                ItemSource = itemSource,
                 StickToBottom = true
             };
             sidebar.Add(
@@ -42,6 +44,7 @@ namespace Bearded.TD.UI.Controls
                     loadingList.Anchor(a => a.Left(4).Right(4))
                 }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
             );
+            model.LoadingUpdated += itemSource.Reload;
             model.LoadingUpdated += loadingList.Reload;
         }
 
@@ -122,25 +125,34 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly ModLoadingProfiler profiler;
 
-            public int ItemCount => profiler.LoadedBlueprints.Count + profiler.LoadingBlueprints.Count;
+            private ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile> loadedBlueprints;
+            private ImmutableList<string> loadingBlueprints;
+
+            public int ItemCount => loadedBlueprints.Count + loadingBlueprints.Count;
 
             public LoadingBlueprintsListSource(ModLoadingProfiler profiler)
             {
                 this.profiler = profiler;
+
+                loadedBlueprints = profiler.LoadedBlueprints;
+                loadingBlueprints = profiler.LoadingBlueprints;
             }
 
             public double HeightOfItemAt(int index) => 16;
 
             public Control CreateItemControlFor(int index)
             {
-                return index <  profiler.LoadedBlueprints.Count
-                    ? LoadingBlueprintsListRow.ForLoaded(profiler.LoadedBlueprints[index])
-                    : LoadingBlueprintsListRow.ForCurrentlyLoading(
-                        profiler.LoadingBlueprints[index - profiler.LoadedBlueprints.Count]);
+                return index <  loadedBlueprints.Count
+                    ? LoadingBlueprintsListRow.ForLoaded(loadedBlueprints[index])
+                    : LoadingBlueprintsListRow.ForCurrentlyLoading(loadingBlueprints[index - loadedBlueprints.Count]);
             }
 
-            public void DestroyItemControlAt(int index, Control control)
+            public void DestroyItemControlAt(int index, Control control) {}
+
+            public void Reload()
             {
+                loadedBlueprints = profiler.LoadedBlueprints;
+                loadingBlueprints = profiler.LoadingBlueprints;
             }
         }
 
