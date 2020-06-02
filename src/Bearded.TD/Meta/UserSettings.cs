@@ -8,7 +8,7 @@ namespace Bearded.TD.Meta
 {
     sealed partial class UserSettings
     {
-        public static UserSettings Instance { get; private set; }
+        public static UserSettings Instance { get; private set; } = getDefaultInstance();
 
         public static event VoidEventHandler? SettingsChanged;
 
