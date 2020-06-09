@@ -5,22 +5,22 @@ uniform sampler2D heightmap;
 uniform mat4 projection;
 uniform mat4 view;
 
-uniform float farPlaneDistance;
-
 uniform float heightmapRadius;
 
 uniform float heightmapPixelSizeUV;
 
+uniform float heightScale;
+uniform float heightOffset;
+
 in vec3 vertexPosition;
-in vec3 vertexNormal;
-in vec2 vertexUV;
-in vec4 vertexColor;
+in vec3 vertexNormal; // not used
+in vec2 vertexUV; // not used
+in vec4 vertexColor; // used?
 
 out vec3 fragmentPosition;
 out vec3 fragmentNormal;
-out vec2 fragmentUV;
+//out vec2 fragmentUV;
 out vec4 fragmentColor;
-out float fragmentDepth;
 
 void main()
 {
@@ -32,7 +32,10 @@ void main()
 
     float height = texture(heightmap, heightMapUV).x;
 
+    height = height * heightScale + heightOffset;
+
     p.z += height;
+
 
 	vec4 viewPosition = view * vec4(p, 1.0);
 	vec4 position = projection * viewPosition;
@@ -51,15 +54,8 @@ void main()
 
     vec3 normal = normalize(cross(tangentX, tangentY));
 
-
-    
     fragmentPosition = p;
     fragmentNormal = normal;
-    fragmentUV = vertexUV;
+    //fragmentUV = vertexUV;
     fragmentColor = vertexColor;
-
-    // check if this is actually in 0-1 space between camera and far plane
-    // it probably is not because we don't take near distance into account properly
-    float depth = -viewPosition.z / farPlaneDistance;
-    fragmentDepth = depth;
 }

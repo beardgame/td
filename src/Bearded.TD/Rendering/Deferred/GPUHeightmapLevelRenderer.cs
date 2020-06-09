@@ -17,8 +17,6 @@ namespace Bearded.TD.Rendering.Deferred
 {
     class GPUHeightmapLevelRenderer : LevelRenderer
     {
-        private static readonly float wallHeight = 1f;
-
         private readonly int tileMapWidth;
 
         private float heightMapPixelsPerTile;
@@ -33,6 +31,8 @@ namespace Bearded.TD.Rendering.Deferred
 
         private readonly FloatUniform heightmapRadiusUniform = new FloatUniform("heightmapRadius");
         private readonly FloatUniform heightmapPixelSizeUVUniform = new FloatUniform("heightmapPixelSizeUV");
+        private readonly FloatUniform heightScaleUniform = new FloatUniform("heightScale");
+        private readonly FloatUniform heightOffsetUniform = new FloatUniform("heightOffset");
 
         private readonly Texture heightmap;
         private readonly RenderTarget heightmapTarget; // H
@@ -62,7 +62,7 @@ namespace Bearded.TD.Rendering.Deferred
             heightmap = setupHeightmapTexture();
             heightmapTarget = new RenderTarget(heightmap);
 
-            gridSurface = setupSurface();
+            gridSurface = setupSurface(context);
 
             heightmapSplats = setupHeightmapSplats(game);
 
@@ -125,14 +125,14 @@ namespace Bearded.TD.Rendering.Deferred
                 {
                     gridSurface.AddVertices(
                         vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
+                        vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
                     );
 
                     gridSurface.AddVertices(
                         vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
+                        vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
+                        vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
                     );
                 }
             );
@@ -156,19 +156,33 @@ namespace Bearded.TD.Rendering.Deferred
             return hm;
         }
 
-        private ExpandingVertexSurface<LevelVertex> setupSurface()
+        private ExpandingVertexSurface<LevelVertex> setupSurface(RenderContext context)
         {
             var s = new ExpandingVertexSurface<LevelVertex>()
             {
                 ClearOnRender = false,
                 IsStatic = true,
-            };
-            useMaterialOnSurface(s);
-            s.AddSettings(
-                heightmapRadiusUniform,
-                heightmapPixelSizeUVUniform,
-                new TextureUniform("heightmap", heightmap)
+            }.WithShader(material.Shader.SurfaceShader)
+                .AndSettings(
+                    context.Surfaces.ViewMatrixLevel,
+                    context.Surfaces.ProjectionMatrix,
+                    context.Surfaces.FarPlaneDistance,
+                    heightmapRadiusUniform,
+                    heightmapPixelSizeUVUniform,
+                    new TextureUniform("heightmap", heightmap),
+                    context.Surfaces.CameraPosition,
+                    heightScaleUniform,
+                    heightOffsetUniform
                 );
+
+            var textureUnit = TextureUnit.Texture0;
+
+            foreach (var (uniformName, texture) in material.ArrayTextures)
+            {
+                s.AddSetting(new ArrayTextureUniform(uniformName, texture, textureUnit));
+
+                textureUnit++;
+            }
 
             return s;
         }
@@ -190,13 +204,31 @@ namespace Bearded.TD.Rendering.Deferred
             if (UserSettings.Instance.Debug.WireframeLevel)
             {
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                gridSurface.Render();
+                render();
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
             else
             {
-                gridSurface.Render();
+                render();
             }
+        }
+
+        private void render()
+        {
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            heightScaleUniform.Float = 1;
+            heightOffsetUniform.Float = 0;
+            gridSurface.Render();
+
+            GL.CullFace(CullFaceMode.Front);
+            GL.FrontFace(FrontFaceDirection.Cw);
+            heightScaleUniform.Float = -1;
+            heightOffsetUniform.Float = 1.5f;
+            gridSurface.Render();
+
+            GL.FrontFace(FrontFaceDirection.Ccw);
+            GL.Disable(EnableCap.CullFace);
         }
 
         private void ensureHeightmap()
@@ -218,7 +250,7 @@ namespace Bearded.TD.Rendering.Deferred
             GL.Viewport(0, 0, heightMapResolution, heightMapResolution);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, heightmapTarget);
 
-            GL.ClearColor(wallHeight, 0, 0, 0);
+            GL.ClearColor(Constants.Rendering.WallHeight, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             var splat = heightmapSplats.GetSprite("splat-hex");
@@ -263,25 +295,6 @@ namespace Bearded.TD.Rendering.Deferred
         {
             heightmapTarget.Dispose();
             heightmap.Dispose();
-        }
-
-        private void useMaterialOnSurface(Surface surface)
-        {
-            surface.WithShader(material.Shader.SurfaceShader)
-                .AndSettings(
-                    context.Surfaces.ViewMatrixLevel,
-                    context.Surfaces.ProjectionMatrix,
-                    context.Surfaces.FarPlaneDistance
-                );
-
-            var textureUnit = TextureUnit.Texture0;
-
-            foreach (var (uniformName, texture) in material.ArrayTextures)
-            {
-                surface.AddSetting(new ArrayTextureUniform(uniformName, texture, textureUnit));
-
-                textureUnit++;
-            }
         }
 
         private delegate void GenerateTile(
