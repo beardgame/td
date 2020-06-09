@@ -24,106 +24,111 @@ namespace Bearded.TD.UI.Factories
 
         public static LayoutBuilder BuildLayout(this IControlParent parent) => new LayoutBuilder(parent);
 
-        public sealed class LayoutBuilder
+        public sealed class PristineLayoutBuilder : LayoutBuilder
         {
-            private HorizontalAnchors horizontal = new HorizontalAnchors(Anchors.Default);
-            private VerticalAnchors vertical = new VerticalAnchors(Anchors.Default);
+            public PristineLayoutBuilder(IControlParent parent) : base(parent) {}
 
-            private readonly IControlParent parent;
+            public PristineLayoutBuilder ForFullScreen()
+            {
+                const double m = LayoutMargin;
+                Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+                Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+                return this;
+            }
+        }
+
+        public class LayoutBuilder
+        {
+            protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
+            protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
+
+            protected IControlParent Parent { get; }
 
             public LayoutBuilder(IControlParent parent)
             {
-                this.parent = parent;
-            }
-
-            public LayoutBuilder ForFullScreen()
-            {
-                const double m = LayoutMargin;
-                horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
-                vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
-                return this;
+                Parent = parent;
             }
 
             public LayoutBuilder DockFixedSizeToTop(Control control, double height)
             {
-                dockToTop(control, new Anchor(vertical.Top.Percentage, vertical.Top.Offset + height));
+                dockToTop(control, new Anchor(Vertical.Top.Percentage, Vertical.Top.Offset + height));
                 return this;
             }
 
             public LayoutBuilder DockFractionalSizeToTop(Control control, double percentage)
             {
-                dockToTop(control, new Anchor(vertical.Bottom.Percentage + percentage, vertical.Bottom.Offset));
+                dockToTop(control, new Anchor(Vertical.Bottom.Percentage + percentage, Vertical.Bottom.Offset));
                 return this;
             }
 
             private void dockToTop(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, new Anchors(vertical.Top, divider)));
-                vertical = new VerticalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), vertical.Bottom));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(Vertical.Top, divider)));
+                Vertical = new VerticalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Vertical.Bottom));
+                Parent.Add(control);
             }
 
             public LayoutBuilder DockFixedSizeToBottom(Control control, double height)
             {
-                dockToBottom(control, new Anchor(vertical.Bottom.Percentage, vertical.Bottom.Offset - height));
+                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage, Vertical.Bottom.Offset - height));
                 return this;
             }
 
             public LayoutBuilder DockFractionalSizeToBottom(Control control, double percentage)
             {
-                dockToBottom(control, new Anchor(vertical.Bottom.Percentage - percentage, vertical.Bottom.Offset));
+                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage - percentage, Vertical.Bottom.Offset));
                 return this;
             }
 
             private void dockToBottom(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, new Anchors(divider, vertical.Bottom)));
-                vertical = new VerticalAnchors(new Anchors(vertical.Top, divider.WithAddedOffset(-LayoutMargin)));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(divider, Vertical.Bottom)));
+                Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider.WithAddedOffset(-LayoutMargin)));
+                Parent.Add(control);
             }
 
             public LayoutBuilder DockFixedSizeToLeft(Control control, double width)
             {
-                dockToLeft(control, new Anchor(horizontal.Left.Percentage, horizontal.Left.Offset + width));
+                dockToLeft(control, new Anchor(Horizontal.Left.Percentage, Horizontal.Left.Offset + width));
                 return this;
             }
 
             public LayoutBuilder DockFractionalSizeToLeft(Control control, double percentage)
             {
-                dockToLeft(control, new Anchor(horizontal.Left.Percentage + percentage, horizontal.Left.Offset));
+                dockToLeft(control, new Anchor(Horizontal.Left.Percentage + percentage, Horizontal.Left.Offset));
                 return this;
             }
 
             private void dockToLeft(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(horizontal.Left, divider), vertical));
-                horizontal = new HorizontalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), horizontal.Right));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(new Anchors(Horizontal.Left, divider), Vertical));
+                Horizontal = new HorizontalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Horizontal.Right));
+                Parent.Add(control);
             }
 
             public LayoutBuilder DockFixedSizeToRight(Control control, double width)
             {
-                dockToRight(control, new Anchor(horizontal.Right.Percentage, horizontal.Right.Offset - width));
+                dockToRight(control, new Anchor(Horizontal.Right.Percentage, Horizontal.Right.Offset - width));
                 return this;
             }
 
             public LayoutBuilder DockFractionalSizeToRight(Control control, double percentage)
             {
-                dockToRight(control, new Anchor(horizontal.Right.Percentage - percentage, horizontal.Right.Offset));
+                dockToRight(control, new Anchor(Horizontal.Right.Percentage - percentage, Horizontal.Right.Offset));
                 return this;
             }
 
             private void dockToRight(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(divider, horizontal.Right), vertical));
-                horizontal = new HorizontalAnchors(new Anchors(horizontal.Left, divider.WithAddedOffset(-LayoutMargin)));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(new Anchors(divider, Horizontal.Right), Vertical));
+                Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider.WithAddedOffset(-LayoutMargin)));
+                Parent.Add(control);
             }
 
             public void FillContent(Control control)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, vertical));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, Vertical));
+                Parent.Add(control);
             }
         }
     }
