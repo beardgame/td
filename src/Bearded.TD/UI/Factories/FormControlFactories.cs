@@ -13,13 +13,13 @@ namespace Bearded.TD.UI.Factories
         {
             var checkbox = new Button();
             checkbox.Clicked += toggleCheckboxState;
-            valueBinding.ValueChanged += _ => updateCheckboxState();
+            valueBinding.SourceUpdated += _ => updateCheckboxState();
             updateCheckboxState();
             return checkbox;
 
             void toggleCheckboxState()
             {
-                valueBinding.Value = !valueBinding.Value;
+                valueBinding.SetFromControl(!valueBinding.Value);
                 updateCheckboxState();
             }
 
@@ -50,7 +50,7 @@ namespace Bearded.TD.UI.Factories
                 var selectedIndex = optionsList.FindIndex(e => e.Equals(valueBinding.Value));
                 DebugAssert.State.Satisfies(selectedIndex != -1);
                 selectedIndex = (selectedIndex + 1) % optionsList.Count;
-                valueBinding.Value = optionsList[selectedIndex];
+                valueBinding.SetFromControl(optionsList[selectedIndex]);
             }
         }
 
@@ -61,8 +61,8 @@ namespace Bearded.TD.UI.Factories
                     MinValue = minValue,
                     MaxValue = maxValue
                 };
-            numericInput.ValueChanged += newValue => valueBinding.Value = newValue;
-            valueBinding.ValueChanged += newValue => numericInput.Value = newValue;
+            numericInput.ValueChanged += valueBinding.SetFromControl;
+            valueBinding.SourceUpdated += newValue => numericInput.Value = newValue;
             return numericInput;
         }
 

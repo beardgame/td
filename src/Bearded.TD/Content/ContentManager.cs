@@ -23,7 +23,7 @@ namespace Bearded.TD.Content
         public ImmutableHashSet<ModMetadata> AvailableMods { get; }
 
         private readonly HashSet<ModMetadata> enabledMods = new HashSet<ModMetadata>();
-        public ReadOnlyCollection<ModMetadata> EnabledMods => enabledMods.ToList().AsReadOnly();
+        public ImmutableHashSet<ModMetadata> EnabledMods => enabledMods.ToImmutableHashSet();
 
         private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading =
             new Dictionary<ModMetadata, ModForLoading>();

@@ -21,6 +21,7 @@ namespace Bearded.TD.UI.Controls
 
         private GameSettings.Builder gameSettings;
 
+        private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;
         public ImmutableList<ModMetadata> AvailableMods { get; private set; } = ImmutableList<ModMetadata>.Empty;
 
         public IList<Player> Players => lobbyManager.Game.Players;
@@ -33,8 +34,9 @@ namespace Bearded.TD.UI.Controls
         public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading;
         public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
 
-        public event VoidEventHandler? PlayersChanged;
         public event VoidEventHandler? LoadingUpdated;
+        public event VoidEventHandler? PlayersChanged;
+        public event VoidEventHandler? ModsChanged;
         public event VoidEventHandler? GameSettingsChanged;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
@@ -73,6 +75,7 @@ namespace Bearded.TD.UI.Controls
             lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
             lobbyManager.Game.PlayerAdded -= onPlayersChanged;
             lobbyManager.Game.PlayerRemoved -= onPlayersChanged;
+            lobbyManager.Game.GameSettingsChanged -= onGameSettingsChanged;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -81,6 +84,12 @@ namespace Bearded.TD.UI.Controls
             if (lobbyManager.Game.Status == GameStatus.Lobby)
             {
                 LoadingUpdated?.Invoke();
+            }
+
+            if (!lobbyManager.Game.ContentManager.EnabledMods.SetEquals(enabledMods))
+            {
+                enabledMods = lobbyManager.Game.ContentManager.EnabledMods;
+                onModsChanged();
             }
         }
 
@@ -144,6 +153,11 @@ namespace Bearded.TD.UI.Controls
         private void onPlayersChanged(Player player)
         {
             PlayersChanged?.Invoke();
+        }
+
+        private void onModsChanged()
+        {
+            ModsChanged?.Invoke();
         }
 
         private void onGameSettingsChanged(IGameSettings newGameSettings)

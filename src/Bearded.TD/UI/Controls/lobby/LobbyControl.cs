@@ -97,10 +97,10 @@ namespace Bearded.TD.UI.Controls
         {
             public GameSettingsControl(Lobby model)
             {
-                var modStatuses = model.AvailableMods.Select(mod => (
-                        mod.Name,
-                        Binding.Create(model.IsModEnabled(mod), newValue => model.OnSetModEnabled(mod, newValue))))
-                    .ToList();
+                var modStatusBindings = model.AvailableMods.ToDictionary(
+                    mod => mod,
+                    mod => Binding.Create(model.IsModEnabled(mod), newValue => model.OnSetModEnabled(mod, newValue)));
+                var modStatuses = modStatusBindings.Select(pair => (pair.Key.Name, pair.Value)).ToList();
                 var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
                 var workerDistributionMethod =
                     Binding.Create(model.WorkerDistributionMethod, model.OnSetWorkerDistributionMethod);
@@ -129,11 +129,18 @@ namespace Bearded.TD.UI.Controls
                             e => e.ToString(),
                             levelGenerationMethod));
 
+                model.ModsChanged += () =>
+                {
+                    foreach (var (mod, binding) in modStatusBindings)
+                    {
+                        binding.SetFromSource(model.IsModEnabled(mod));
+                    }
+                };
                 model.GameSettingsChanged += () =>
                 {
-                    levelSize.Value = model.LevelSize;
-                    workerDistributionMethod.Value = model.WorkerDistributionMethod;
-                    levelGenerationMethod.Value = model.LevelGenerationMethod;
+                    levelSize.SetFromSource(model.LevelSize);
+                    workerDistributionMethod.SetFromSource(model.WorkerDistributionMethod);
+                    levelGenerationMethod.SetFromSource(model.LevelGenerationMethod);
                 };
             }
         }

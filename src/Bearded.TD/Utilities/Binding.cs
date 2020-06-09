@@ -4,26 +4,30 @@ namespace Bearded.TD.Utilities
 {
     sealed class Binding<T>
     {
-        private T innerValue;
+        public T Value { get; private set; }
 
-        public T Value
-        {
-            get => innerValue;
-            set
-            {
-                if (value.Equals(innerValue)) return;
-                innerValue = value;
-                ValueChanged?.Invoke(value);
-            }
-        }
-
-        public event GenericEventHandler<T>? ValueChanged;
+        public event GenericEventHandler<T>? ControlUpdated;
+        public event GenericEventHandler<T>? SourceUpdated;
 
         public Binding() : this(default) { }
 
         public Binding(T initialValue)
         {
-            innerValue = initialValue;
+            Value = initialValue;
+        }
+
+        public void SetFromControl(T value)
+        {
+            if (value.Equals(Value)) return;
+            Value = value;
+            ControlUpdated?.Invoke(value);
+        }
+
+        public void SetFromSource(T value)
+        {
+            if (value.Equals(Value)) return;
+            Value = value;
+            SourceUpdated?.Invoke(value);
         }
     }
 
@@ -34,7 +38,7 @@ namespace Bearded.TD.Utilities
         public static Binding<T> Create<T>(T initialValue, GenericEventHandler<T> syncBack)
         {
             var binding = new Binding<T>(initialValue);
-            binding.ValueChanged += syncBack;
+            binding.ControlUpdated += syncBack;
             return binding;
         }
     }
