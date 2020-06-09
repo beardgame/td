@@ -5,6 +5,7 @@ using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -36,10 +37,25 @@ namespace Bearded.TD.UI.Controls
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)
         {
-            var itemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
+            var chatItemSource = new ChatLogListSource(model.ChatLog);
+            var chatList = new ListControl(new ViewportClippingLayerControl())
+            {
+                ItemSource = chatItemSource,
+                StickToBottom = true
+            };
+            sidebar.Add(
+                new CompositeControl
+                {
+                    new Border(),
+                    chatList.Anchor(a => a.Left(4).Right(4))
+                }.Anchor(a => a.Bottom(margin: 4, relativePercentage: .5))
+            );
+            model.ChatMessagesUpdated += chatList.Reload;
+
+            var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
             var loadingList = new ListControl(new ViewportClippingLayerControl())
             {
-                ItemSource = itemSource,
+                ItemSource = loadingItemSource,
                 StickToBottom = true
             };
             sidebar.Add(
@@ -49,7 +65,7 @@ namespace Bearded.TD.UI.Controls
                     loadingList.Anchor(a => a.Left(4).Right(4))
                 }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
             );
-            model.LoadingUpdated += itemSource.Reload;
+            model.LoadingUpdated += loadingItemSource.Reload;
             model.LoadingUpdated += loadingList.Reload;
         }
 
@@ -143,6 +159,25 @@ namespace Bearded.TD.UI.Controls
                     levelGenerationMethod.SetFromSource(model.LevelGenerationMethod);
                 };
             }
+        }
+
+        private sealed class ChatLogListSource : IListItemSource
+        {
+            private readonly ChatLog chatLog;
+
+            public int ItemCount => chatLog.Messages.Count;
+
+            public ChatLogListSource(ChatLog chatLog)
+            {
+                this.chatLog = chatLog;
+            }
+
+            public double HeightOfItemAt(int index) => Constants.UI.Text.LineHeight;
+
+            public Control CreateItemControlFor(int index) =>
+                TextFactories.Label(chatLog.Messages[index].GetDisplayString(), Label.TextAnchorLeft);
+
+            public void DestroyItemControlAt(int index, Control control) {}
         }
 
         private sealed class LoadingBlueprintsListSource : IListItemSource

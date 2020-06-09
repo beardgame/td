@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Commands
 {
@@ -29,11 +33,15 @@ namespace Bearded.TD.Game.Commands
                 if (enabled)
                 {
                     game.ContentManager.EnableMod(mod);
+                    game.ChatLog.Add(new ChatMessage(null, $"Mod enabled: {mod.Name}"));
                 }
                 else
                 {
                     game.ContentManager.DisableMod(mod);
+                    game.ChatLog.Add(new ChatMessage(null, $"Mod disabled: {mod.Name}"));
                 }
+                game.Players.Where(p => p.ConnectionState == PlayerConnectionState.Ready)
+                    .ForEach(p => p.ConnectionState = PlayerConnectionState.Waiting);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(mod, enabled);

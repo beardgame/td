@@ -6,6 +6,7 @@ using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.UI.Navigation;
@@ -20,11 +21,13 @@ namespace Bearded.TD.UI.Controls
         private Logger logger;
 
         private GameSettings.Builder gameSettings;
+        private ChatMessage? lastSeenChatMessage;
 
         private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;
         public ImmutableList<ModMetadata> AvailableMods { get; private set; } = ImmutableList<ModMetadata>.Empty;
 
         public IList<Player> Players => lobbyManager.Game.Players;
+        public ChatLog ChatLog => lobbyManager.Game.ChatLog;
 
         public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
         public int LevelSize => gameSettings.LevelSize;
@@ -38,6 +41,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? PlayersChanged;
         public event VoidEventHandler? ModsChanged;
         public event VoidEventHandler? GameSettingsChanged;
+        public event VoidEventHandler? ChatMessagesUpdated;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
         {
@@ -90,6 +94,14 @@ namespace Bearded.TD.UI.Controls
             {
                 enabledMods = lobbyManager.Game.ContentManager.EnabledMods;
                 onModsChanged();
+            }
+
+            var chatMessages = lobbyManager.Game.ChatLog.Messages;
+            if (chatMessages.Count > 0
+                && (lastSeenChatMessage == null || chatMessages[chatMessages.Count - 1] != lastSeenChatMessage))
+            {
+                lastSeenChatMessage = chatMessages[chatMessages.Count - 1];
+                ChatMessagesUpdated?.Invoke();
             }
         }
 

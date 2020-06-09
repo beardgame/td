@@ -4,10 +4,10 @@ namespace Bearded.TD.Game.Meta
 {
     sealed class ChatMessage
     {
-        public Player Player { get; }
+        public Player? Player { get; }
         public string Text { get; }
 
-        public ChatMessage(Player player, string text)
+        public ChatMessage(Player? player, string text)
         {
             Player = player;
             Text = text;

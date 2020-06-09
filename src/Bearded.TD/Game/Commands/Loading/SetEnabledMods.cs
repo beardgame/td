@@ -64,4 +64,3 @@ namespace Bearded.TD.Game.Commands
         }
     }
 }
-
