@@ -22,7 +22,8 @@ namespace Bearded.TD.UI.Factories
             };
         }
 
-        public static LayoutBuilder BuildLayout(this IControlParent parent) => new LayoutBuilder(parent);
+        public static PristineLayoutBuilder BuildLayout(this IControlParent parent) =>
+            new PristineLayoutBuilder(parent);
 
         public sealed class PristineLayoutBuilder : LayoutBuilder
         {
