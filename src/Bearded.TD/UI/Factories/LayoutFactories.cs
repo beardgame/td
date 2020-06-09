@@ -1,3 +1,4 @@
+using Bearded.TD.UI.Controls;
 using Bearded.UI;
 using Bearded.UI.Controls;
 using static Bearded.TD.Constants.UI;
@@ -24,6 +25,11 @@ namespace Bearded.TD.UI.Factories
 
         public static PristineLayoutBuilder BuildLayout(this IControlParent parent) =>
             new PristineLayoutBuilder(parent);
+
+        public static IColumnBuilder BuildFixedColumn(this IControlParent parent) => new FixedColumnBuilder(parent);
+
+        public static IColumnBuilder BuildScrollableColumn(this IControlParent parent) =>
+            new ScrollableColumnBuilder(parent);
 
         public sealed class PristineLayoutBuilder : LayoutBuilder
         {
@@ -130,6 +136,46 @@ namespace Bearded.TD.UI.Factories
             {
                 control.Anchor(_ => new AnchorTemplate(Horizontal, Vertical));
                 Parent.Add(control);
+            }
+        }
+
+        public interface IColumnBuilder
+        {
+            IColumnBuilder Add(Control control, double height);
+        }
+
+        private sealed class FixedColumnBuilder : IColumnBuilder
+        {
+            private readonly IControlParent parent;
+            private double contentHeight;
+
+            public FixedColumnBuilder(IControlParent parent)
+            {
+                this.parent = parent;
+            }
+
+            public IColumnBuilder Add(Control control, double height)
+            {
+                parent.Add(control.Anchor(a => a.Top(contentHeight, height)));
+                contentHeight += height;
+                return this;
+            }
+        }
+
+        private sealed class ScrollableColumnBuilder : IColumnBuilder
+        {
+            private readonly VerticalScrollableContainer container;
+
+            public ScrollableColumnBuilder(IControlParent parent)
+            {
+                container = new VerticalScrollableContainer();
+                parent.Add(container);
+            }
+
+            public IColumnBuilder Add(Control control, double height)
+            {
+                container.Add(control, height);
+                return this;
             }
         }
     }
