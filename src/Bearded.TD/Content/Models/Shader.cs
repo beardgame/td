@@ -8,7 +8,7 @@ namespace Bearded.TD.Content.Models
         public string Id { get; }
 
         public ISurfaceShader SurfaceShader { get; }
-        
+
         public Shader(string id, ISurfaceShader surfaceShader)
         {
             Id = id;

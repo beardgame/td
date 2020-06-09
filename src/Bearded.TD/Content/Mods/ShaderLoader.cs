@@ -29,7 +29,7 @@ namespace Bearded.TD.Content.Mods
 
             return new Shader(jsonModel.Id, shaderProgram);
         }
-        
+
         private class ShaderCompiler
         {
             private readonly ModMetadata meta;
@@ -43,7 +43,6 @@ namespace Bearded.TD.Content.Mods
                 this.meta = meta;
                 directory = baseDirectory;
                 this.shaderId = shaderId;
-                
             }
 
             public ShaderCompiler Add(ShaderType type, string path)

@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Content.Mods
 {
-    struct ModAwareId
+    readonly struct ModAwareId
     {
         public string ModId { get; }
         public string Id { get; }

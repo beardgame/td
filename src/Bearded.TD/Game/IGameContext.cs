@@ -13,7 +13,7 @@ namespace Bearded.TD.Game
         IDispatcher<GameInstance> Dispatcher { get; }
         IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
         IGameSynchronizer GameSynchronizer { get; }
-        Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
+        Func<GameInstance, PlayerManager?> PlayerManagerFactory { get; }
         Action<GameInstance> DataMessageHandlerInitializer { get; }
         Func<GameInstance, IGameController> GameSimulatorFactory { get; }
     }
