@@ -1,5 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
@@ -36,6 +37,16 @@ namespace Bearded.TD.UI.Controls
                         : PlayerConnectionState.Ready;
 
             Game.Request(ChangePlayerState.Request(Game.Me, connectionState));
+        }
+
+        public void UpdateModEnabled(ModMetadata mod, bool enabled)
+        {
+            DebugAssert.State.Satisfies(CanChangeGameSettings, "Should only set game settings on server.");
+
+            if (Game.ContentManager.EnabledMods.Contains(mod) != enabled)
+            {
+                Dispatcher.RunOnlyOnServer(SetModEnabled.Command, Game, mod, enabled);
+            }
         }
 
         public void UpdateGameSettings(GameSettings gameSettings)

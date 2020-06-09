@@ -1,6 +1,7 @@
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities.Collections;
@@ -25,9 +26,31 @@ namespace Bearded.TD.Game.Commands
 
             public void Execute()
             {
+                logGameSettingChanges();
                 game.SetGameSettings(gameSettings);
                 game.Players.Where(p => p.ConnectionState == PlayerConnectionState.Ready)
                     .ForEach(p => p.ConnectionState = PlayerConnectionState.Waiting);
+            }
+
+            private void logGameSettingChanges()
+            {
+                if (game.GameSettings.LevelSize != gameSettings.LevelSize)
+                {
+                    logSettingChange($"Level size changed: {gameSettings.LevelSize}");
+                }
+                if (game.GameSettings.LevelGenerationMethod != gameSettings.LevelGenerationMethod)
+                {
+                    logSettingChange($"Level generation changed: {gameSettings.LevelGenerationMethod}");
+                }
+                if (game.GameSettings.WorkerDistributionMethod != gameSettings.WorkerDistributionMethod)
+                {
+                    logSettingChange($"Worker distribution changed: {gameSettings.WorkerDistributionMethod}");
+                }
+            }
+
+            private void logSettingChange(string message)
+            {
+                game.ChatLog.Add(new ChatMessage(null, message));
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);

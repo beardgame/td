@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using OpenTK;
@@ -17,6 +22,7 @@ namespace Bearded.TD.UI.Controls
             var lobbyDetailsControl = new LobbyDetailsControl(model);
 
             this.BuildLayout()
+                .ForFullScreen()
                 .AddNavBar(b => b
                     .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked)
                     .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked))
@@ -31,10 +37,25 @@ namespace Bearded.TD.UI.Controls
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)
         {
-            var itemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
+            var chatItemSource = new ChatLogListSource(model.ChatLog);
+            var chatList = new ListControl(new ViewportClippingLayerControl())
+            {
+                ItemSource = chatItemSource,
+                StickToBottom = true
+            };
+            sidebar.Add(
+                new CompositeControl
+                {
+                    new Border(),
+                    chatList.Anchor(a => a.Left(4).Right(4))
+                }.Anchor(a => a.Bottom(margin: 4, relativePercentage: .5))
+            );
+            model.ChatMessagesUpdated += chatList.Reload;
+
+            var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
             var loadingList = new ListControl(new ViewportClippingLayerControl())
             {
-                ItemSource = itemSource,
+                ItemSource = loadingItemSource,
                 StickToBottom = true
             };
             sidebar.Add(
@@ -44,7 +65,7 @@ namespace Bearded.TD.UI.Controls
                     loadingList.Anchor(a => a.Left(4).Right(4))
                 }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
             );
-            model.LoadingUpdated += itemSource.Reload;
+            model.LoadingUpdated += loadingItemSource.Reload;
             model.LoadingUpdated += loadingList.Reload;
         }
 
@@ -92,33 +113,71 @@ namespace Bearded.TD.UI.Controls
         {
             public GameSettingsControl(Lobby model)
             {
-                var levelSize =
-                    new NumericInput(model.LevelSize)
-                        {
-                            MinValue = 10,
-                            MaxValue = 100,
-                            IsEnabled = model.CanChangeGameSettings
-                        }
-                        .Anchor(a => a.Top(margin: 0, height: 32))
-                        .Subscribe(b => b.ValueChanged += newValue =>
-                        {
-                            if (b.IsEnabled) model.OnSetLevelSize(newValue);
-                        });
-                Add(
-                    new CompositeControl // ButtonGroup
-                    {
-                        levelSize,
-                        ButtonFactories.Button(() => model.WorkerDistributionMethod.ToString())
-                            .Anchor(a => a.Top(margin: 36, height: 32))
-                            .Subscribe(b => b.Clicked += model.OnCycleWorkerDistributionMethod),
-                        ButtonFactories.Button(() => model.LevelGenerationMethod.ToString())
-                            .Anchor(a => a.Top(margin: 72, height: 32))
-                            .Subscribe(b => b.Clicked += model.OnCycleLevelGenerationMethod)
-                    }.Anchor(a => a.Left(margin: 8, width: 250).Top(margin: 8, height: 136))
-                );
+                var modStatusBindings = model.AvailableMods.ToDictionary(
+                    mod => mod,
+                    mod => Binding.Create(model.IsModEnabled(mod), newValue => model.OnSetModEnabled(mod, newValue)));
+                var modStatuses = modStatusBindings.Select(pair => (pair.Key.Name, pair.Value)).ToList();
+                var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
+                var workerDistributionMethod =
+                    Binding.Create(model.WorkerDistributionMethod, model.OnSetWorkerDistributionMethod);
+                var levelGenerationMethod =
+                    Binding.Create(model.LevelGenerationMethod, model.OnSetLevelGenerationMethod);
 
-                model.GameSettingsChanged += () => { levelSize.Value = model.LevelSize; };
+                this.BuildScrollableColumn()
+                    .AddHeader("Enabled mods")
+                    .AddCollectionEditor(modStatuses)
+                    .AddHeader("Game settings")
+                    .AddForm(builder => builder
+                        .AddNumberSelectRow("Level size", 10, 100, levelSize)
+                        .AddDropdownSelectRow(
+                            "Worker distribution method",
+                            new[] {WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin},
+                            e => e.ToString(),
+                            workerDistributionMethod)
+                        .AddDropdownSelectRow(
+                            "Level generation method",
+                            new[]
+                            {
+                                LevelGenerationMethod.Perlin,
+                                LevelGenerationMethod.Legacy,
+                                LevelGenerationMethod.Empty
+                            },
+                            e => e.ToString(),
+                            levelGenerationMethod));
+
+                model.ModsChanged += () =>
+                {
+                    foreach (var (mod, binding) in modStatusBindings)
+                    {
+                        binding.SetFromSource(model.IsModEnabled(mod));
+                    }
+                };
+                model.GameSettingsChanged += () =>
+                {
+                    levelSize.SetFromSource(model.LevelSize);
+                    workerDistributionMethod.SetFromSource(model.WorkerDistributionMethod);
+                    levelGenerationMethod.SetFromSource(model.LevelGenerationMethod);
+                };
             }
+        }
+
+        private sealed class ChatLogListSource : IListItemSource
+        {
+            private readonly ChatLog chatLog;
+
+            public int ItemCount => chatLog.Messages.Count;
+
+            public ChatLogListSource(ChatLog chatLog)
+            {
+                this.chatLog = chatLog;
+            }
+
+            public double HeightOfItemAt(int index) => Constants.UI.Text.LineHeight;
+
+            public Control CreateItemControlFor(int index) =>
+                TextFactories.Label(chatLog.Messages[index].GetDisplayString(), Label.TextAnchorLeft);
+
+            public void DestroyItemControlAt(int index, Control control) {}
         }
 
         private sealed class LoadingBlueprintsListSource : IListItemSource

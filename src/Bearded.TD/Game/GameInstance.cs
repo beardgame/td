@@ -29,11 +29,21 @@ namespace Bearded.TD.Game
         public LevelDebugMetadata LevelDebugMetadata { get; }
 
         public GameSettings GameSettings { get; private set; } = new GameSettings.Builder().Build();
-        public GameState State { get; private set; }
-        public PlayerInput PlayerInput { get; private set; }
-        public GameCamera Camera { get; private set; }
-        public GameCameraController CameraController { get; private set; }
-        public SelectionManager SelectionManager { get; private set; }
+
+        private GameState? state;
+        public GameState State => state!;
+
+        private GameCamera? camera;
+        public GameCamera Camera => camera!;
+
+        private PlayerInput? playerInput;
+        public PlayerInput PlayerInput => playerInput!;
+
+        private GameCameraController? cameraController;
+        public GameCameraController CameraController => cameraController!;
+
+        private SelectionManager? selectionManager;
+        public SelectionManager SelectionManager => selectionManager!;
 
         private readonly IdCollection<Player> players = new IdCollection<Player>();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
@@ -47,7 +57,8 @@ namespace Bearded.TD.Game
             }
         }
 
-        public Blueprints Blueprints { get; private set; }
+        private Blueprints? blueprints;
+        public Blueprints Blueprints => blueprints!;
 
         private GameStatus status = GameStatus.Lobby;
         public GameStatus Status
@@ -66,7 +77,7 @@ namespace Bearded.TD.Game
         public event GenericEventHandler<Player>? PlayerAdded;
         public event GenericEventHandler<Player>? PlayerRemoved;
 
-        private readonly PlayerManager playerManager;
+        private readonly PlayerManager? playerManager;
 
         public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)
         {
@@ -107,7 +118,7 @@ namespace Bearded.TD.Game
 
         public Player PlayerFor(Id<Player> id) => players[id];
 
-        public Player PlayerFor(NetIncomingMessage msg) => playerManager.GetSender(msg);
+        public Player PlayerFor(NetIncomingMessage msg) => playerManager!.GetSender(msg);
 
         public void UpdatePlayers(UpdateEventArgs args)
         {
@@ -139,38 +150,46 @@ namespace Bearded.TD.Game
         private void gatherBlueprints()
         {
             if (Status != GameStatus.Loading)
+            {
                 throw new InvalidOperationException("Cannot set blueprints if the game is not loading.");
-            if (Blueprints != null)
+            }
+            if (blueprints != null)
+            {
                 throw new InvalidOperationException("Cannot override the blueprints once set.");
+            }
 
-            Blueprints = Blueprints.Merge(ContentManager.LoadedEnabledMods.Select(m => m.Blueprints));
+            blueprints = Blueprints.Merge(ContentManager.LoadedEnabledMods.Select(m => m.Blueprints));
             Meta.SetBlueprints(Blueprints);
         }
 
         public void InitialiseState(GameState state)
         {
-            if (State != null)
+            if (this.state != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");
 
             // TODO: Start() is a better place for this, but the game mode is currently in blueprints
             gatherBlueprints();
 
-            State = state;
+            this.state = state;
             GameStateInitialized?.Invoke(State);
         }
 
         public void PrepareUI()
         {
-            if (Camera != null)
+            if (camera != null)
+            {
                 throw new InvalidOperationException("Cannot override the camera once set.");
-            if (State == null)
+            }
+            if (state == null)
+            {
                 throw new InvalidOperationException("UI should be integrated after the game state is initialised.");
+            }
 
-            Camera = new PerspectiveGameCamera();
+            camera = new PerspectiveGameCamera();
             //Camera = new OrthographicGameCamera();
-            CameraController = new GameCameraController(Camera, State.Level.Radius);
-            SelectionManager = new SelectionManager();
-            PlayerInput = new PlayerInput(this);
+            cameraController = new GameCameraController(Camera, State.Level.Radius);
+            selectionManager = new SelectionManager();
+            playerInput = new PlayerInput(this);
         }
 
         private void setAllPlayerConnectionStates(PlayerConnectionState playerConnectionState)

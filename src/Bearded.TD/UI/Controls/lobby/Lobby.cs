@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.UI.Navigation;
@@ -18,8 +21,13 @@ namespace Bearded.TD.UI.Controls
         private Logger logger;
 
         private GameSettings.Builder gameSettings;
+        private ChatMessage? lastSeenChatMessage;
+
+        private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;
+        public ImmutableList<ModMetadata> AvailableMods { get; private set; } = ImmutableList<ModMetadata>.Empty;
 
         public IList<Player> Players => lobbyManager.Game.Players;
+        public ChatLog ChatLog => lobbyManager.Game.ChatLog;
 
         public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
         public int LevelSize => gameSettings.LevelSize;
@@ -29,9 +37,11 @@ namespace Bearded.TD.UI.Controls
         public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading;
         public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
 
-        public event VoidEventHandler? PlayersChanged;
         public event VoidEventHandler? LoadingUpdated;
+        public event VoidEventHandler? PlayersChanged;
+        public event VoidEventHandler? ModsChanged;
         public event VoidEventHandler? GameSettingsChanged;
+        public event VoidEventHandler? ChatMessagesUpdated;
 
         protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
         {
@@ -52,6 +62,8 @@ namespace Bearded.TD.UI.Controls
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
 
+            AvailableMods = lobbyManager.Game.ContentManager.AvailableMods.OrderBy(m => m.Name).ToImmutableList();
+
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
             lobbyManager.Game.PlayerRemoved += onPlayersChanged;
@@ -67,6 +79,7 @@ namespace Bearded.TD.UI.Controls
             lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
             lobbyManager.Game.PlayerAdded -= onPlayersChanged;
             lobbyManager.Game.PlayerRemoved -= onPlayersChanged;
+            lobbyManager.Game.GameSettingsChanged -= onGameSettingsChanged;
         }
 
         public override void Update(UpdateEventArgs args)
@@ -75,6 +88,20 @@ namespace Bearded.TD.UI.Controls
             if (lobbyManager.Game.Status == GameStatus.Lobby)
             {
                 LoadingUpdated?.Invoke();
+            }
+
+            if (!lobbyManager.Game.ContentManager.EnabledMods.SetEquals(enabledMods))
+            {
+                enabledMods = lobbyManager.Game.ContentManager.EnabledMods;
+                onModsChanged();
+            }
+
+            var chatMessages = lobbyManager.Game.ChatLog.Messages;
+            if (chatMessages.Count > 0
+                && (lastSeenChatMessage == null || chatMessages[chatMessages.Count - 1] != lastSeenChatMessage))
+            {
+                lastSeenChatMessage = chatMessages[chatMessages.Count - 1];
+                ChatMessagesUpdated?.Invoke();
             }
         }
 
@@ -98,30 +125,28 @@ namespace Bearded.TD.UI.Controls
             Navigation.Replace<MainMenu>(this);
         }
 
+        public void OnSetModEnabled(ModMetadata mod, bool enabled)
+        {
+            lobbyManager.UpdateModEnabled(mod, enabled);
+        }
+
+        public bool IsModEnabled(ModMetadata mod) => lobbyManager.Game.ContentManager.EnabledMods.Contains(mod);
+
         public void OnSetLevelSize(int size)
         {
             gameSettings.LevelSize = size;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
-        public void OnCycleWorkerDistributionMethod()
+        public void OnSetWorkerDistributionMethod(WorkerDistributionMethod method)
         {
-            gameSettings.WorkerDistributionMethod = gameSettings.WorkerDistributionMethod + 1;
-            if ((byte) gameSettings.WorkerDistributionMethod
-                >= Enum.GetValues(WorkerDistributionMethod.GetType()).Length)
-            {
-                gameSettings.WorkerDistributionMethod = 0;
-            }
+            gameSettings.WorkerDistributionMethod = method;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
-        public void OnCycleLevelGenerationMethod()
+        public void OnSetLevelGenerationMethod(LevelGenerationMethod method)
         {
-            gameSettings.LevelGenerationMethod = gameSettings.LevelGenerationMethod + 1;
-            if ((byte) gameSettings.LevelGenerationMethod >= Enum.GetValues(LevelGenerationMethod.GetType()).Length)
-            {
-                gameSettings.LevelGenerationMethod = 0;
-            }
+            gameSettings.LevelGenerationMethod = method;
             lobbyManager.UpdateGameSettings(gameSettings.Build());
         }
 
@@ -140,6 +165,11 @@ namespace Bearded.TD.UI.Controls
         private void onPlayersChanged(Player player)
         {
             PlayersChanged?.Invoke();
+        }
+
+        private void onModsChanged()
+        {
+            ModsChanged?.Invoke();
         }
 
         private void onGameSettingsChanged(IGameSettings newGameSettings)

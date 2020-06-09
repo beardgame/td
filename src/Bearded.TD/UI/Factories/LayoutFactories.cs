@@ -1,96 +1,181 @@
+using Bearded.TD.UI.Controls;
 using Bearded.UI;
 using Bearded.UI.Controls;
+using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Factories
 {
     static class LayoutFactories
     {
-        public static LayoutBuilder BuildLayout(this IControlParent parent) => new LayoutBuilder(parent);
-
-        public sealed class LayoutBuilder
+        public static Control WrapHorizontallyCentered(this Control control, double width)
         {
-            private HorizontalAnchors horizontal = new HorizontalAnchors(Anchors.Default);
-            private VerticalAnchors vertical = new VerticalAnchors(Anchors.Default);
+            return new CompositeControl
+            {
+                control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5))
+            };
+        }
 
-            private readonly IControlParent parent;
+        public static Control WrapVerticallyCentered(this Control control, double height)
+        {
+            return new CompositeControl
+            {
+                control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5))
+            };
+        }
+
+        public static PristineLayoutBuilder BuildLayout(this IControlParent parent) =>
+            new PristineLayoutBuilder(parent);
+
+        public static IColumnBuilder BuildFixedColumn(this IControlParent parent) => new FixedColumnBuilder(parent);
+
+        public static IColumnBuilder BuildScrollableColumn(this IControlParent parent) =>
+            new ScrollableColumnBuilder(parent);
+
+        public sealed class PristineLayoutBuilder : LayoutBuilder
+        {
+            public PristineLayoutBuilder(IControlParent parent) : base(parent) {}
+
+            public PristineLayoutBuilder ForFullScreen()
+            {
+                const double m = LayoutMargin;
+                Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+                Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+                return this;
+            }
+        }
+
+        public class LayoutBuilder
+        {
+            protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
+            protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
+
+            protected IControlParent Parent { get; }
 
             public LayoutBuilder(IControlParent parent)
             {
-                this.parent = parent;
+                Parent = parent;
             }
 
-            public void DockFixedSizeToTop(Control control, double height)
+            public LayoutBuilder DockFixedSizeToTop(Control control, double height)
             {
-                dockToTop(control, new Anchor(vertical.Top.Percentage, vertical.Top.Offset + height));
+                dockToTop(control, new Anchor(Vertical.Top.Percentage, Vertical.Top.Offset + height));
+                return this;
             }
 
-            public void DockFractionalSizeToTop(Control control, double percentage)
+            public LayoutBuilder DockFractionalSizeToTop(Control control, double percentage)
             {
-                dockToTop(control, new Anchor(vertical.Bottom.Percentage + percentage, vertical.Bottom.Offset));
+                dockToTop(control, new Anchor(Vertical.Bottom.Percentage + percentage, Vertical.Bottom.Offset));
+                return this;
             }
 
             private void dockToTop(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, new Anchors(vertical.Top, divider)));
-                vertical = new VerticalAnchors(new Anchors(divider, vertical.Bottom));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(Vertical.Top, divider)));
+                Vertical = new VerticalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Vertical.Bottom));
+                Parent.Add(control);
             }
 
-            public void DockFixedSizeToBottom(Control control, double height)
+            public LayoutBuilder DockFixedSizeToBottom(Control control, double height)
             {
-                dockToBottom(control, new Anchor(vertical.Bottom.Percentage, vertical.Bottom.Offset - height));
+                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage, Vertical.Bottom.Offset - height));
+                return this;
             }
 
-            public void DockFractionalSizeToBottom(Control control, double percentage)
+            public LayoutBuilder DockFractionalSizeToBottom(Control control, double percentage)
             {
-                dockToBottom(control, new Anchor(vertical.Bottom.Percentage - percentage, vertical.Bottom.Offset));
+                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage - percentage, Vertical.Bottom.Offset));
+                return this;
             }
 
             private void dockToBottom(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, new Anchors(divider, vertical.Bottom)));
-                vertical = new VerticalAnchors(new Anchors(vertical.Top, divider));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(divider, Vertical.Bottom)));
+                Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider.WithAddedOffset(-LayoutMargin)));
+                Parent.Add(control);
             }
 
-            public void DockFixedSizeToLeft(Control control, double width)
+            public LayoutBuilder DockFixedSizeToLeft(Control control, double width)
             {
-                dockToLeft(control, new Anchor(horizontal.Left.Percentage, horizontal.Left.Offset + width));
+                dockToLeft(control, new Anchor(Horizontal.Left.Percentage, Horizontal.Left.Offset + width));
+                return this;
             }
 
-            public void DockFractionalSizeToLeft(Control control, double percentage)
+            public LayoutBuilder DockFractionalSizeToLeft(Control control, double percentage)
             {
-                dockToLeft(control, new Anchor(horizontal.Left.Percentage + percentage, horizontal.Left.Offset));
+                dockToLeft(control, new Anchor(Horizontal.Left.Percentage + percentage, Horizontal.Left.Offset));
+                return this;
             }
 
             private void dockToLeft(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(horizontal.Left, divider), vertical));
-                horizontal = new HorizontalAnchors(new Anchors(divider, horizontal.Right));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(new Anchors(Horizontal.Left, divider), Vertical));
+                Horizontal = new HorizontalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Horizontal.Right));
+                Parent.Add(control);
             }
 
-            public void DockFixedSizeToRight(Control control, double width)
+            public LayoutBuilder DockFixedSizeToRight(Control control, double width)
             {
-                dockToRight(control, new Anchor(horizontal.Right.Percentage, horizontal.Right.Offset - width));
+                dockToRight(control, new Anchor(Horizontal.Right.Percentage, Horizontal.Right.Offset - width));
+                return this;
             }
 
-            public void DockFractionalSizeToRight(Control control, double percentage)
+            public LayoutBuilder DockFractionalSizeToRight(Control control, double percentage)
             {
-                dockToRight(control, new Anchor(horizontal.Right.Percentage - percentage, horizontal.Right.Offset));
+                dockToRight(control, new Anchor(Horizontal.Right.Percentage - percentage, Horizontal.Right.Offset));
+                return this;
             }
 
             private void dockToRight(Control control, Anchor divider)
             {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(divider, horizontal.Right), vertical));
-                horizontal = new HorizontalAnchors(new Anchors(horizontal.Left, divider));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(new Anchors(divider, Horizontal.Right), Vertical));
+                Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider.WithAddedOffset(-LayoutMargin)));
+                Parent.Add(control);
             }
 
             public void FillContent(Control control)
             {
-                control.Anchor(_ => new AnchorTemplate(horizontal, vertical));
-                parent.Add(control);
+                control.Anchor(_ => new AnchorTemplate(Horizontal, Vertical));
+                Parent.Add(control);
+            }
+        }
+
+        public interface IColumnBuilder
+        {
+            IColumnBuilder Add(Control control, double height);
+        }
+
+        private sealed class FixedColumnBuilder : IColumnBuilder
+        {
+            private readonly IControlParent parent;
+            private double contentHeight;
+
+            public FixedColumnBuilder(IControlParent parent)
+            {
+                this.parent = parent;
+            }
+
+            public IColumnBuilder Add(Control control, double height)
+            {
+                parent.Add(control.Anchor(a => a.Top(contentHeight, height)));
+                contentHeight += height;
+                return this;
+            }
+        }
+
+        private sealed class ScrollableColumnBuilder : IColumnBuilder
+        {
+            private readonly VerticalScrollableContainer container;
+
+            public ScrollableColumnBuilder(IControlParent parent)
+            {
+                container = new VerticalScrollableContainer();
+                parent.Add(container);
+            }
+
+            public IColumnBuilder Add(Control control, double height)
+            {
+                container.Add(control, height);
+                return this;
             }
         }
     }

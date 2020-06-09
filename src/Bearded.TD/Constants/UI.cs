@@ -4,9 +4,7 @@
     {
         public static class UI
         {
-            public const float FontSize = 16;
-            public const float BoxPadding = 8;
-            public const float LineHeight = 20;
+            public const double LayoutMargin = 8;
 
             public static class Button
             {
@@ -16,8 +14,14 @@
                 public const double Margin = 4;
             }
 
+            public static class Checkbox
+            {
+                public const double Size = Button.Height;
+            }
+
             public static class Form
             {
+                public const double DenseFormRowHeight = 36;
                 public const double FormRowHeight = 48;
             }
 
@@ -29,6 +33,18 @@
             public static class TabBar
             {
                 public const double Height = NavBar.Height;
+            }
+
+            public static class Text
+            {
+                public const float HeaderFontSize = 24;
+                public const float HeaderLineHeight = 32;
+
+                public const float SubHeaderFontSize = 20;
+                public const float SubHeaderLineHeight = 24;
+
+                public const float FontSize = 16;
+                public const float LineHeight = 20;
             }
         }
     }
