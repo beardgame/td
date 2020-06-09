@@ -39,14 +39,14 @@ namespace Bearded.TD.UI.Layers
         {
             callOnAllVisibleDescendantLayers(parent, layer => layer.RenderAsLayerAfterAncestorLayer);
         }
-        
+
         private void callOnAllVisibleDescendantLayers(IControlParent parent, Func<RenderLayerCompositeControl, Action<IRendererRouter>> getRenderFunction)
         {
             foreach (var control in parent.Children)
             {
                 if(!control.IsVisible)
                     continue;
-                
+
                 switch (control)
                 {
                     case RenderLayerCompositeControl renderLayer:

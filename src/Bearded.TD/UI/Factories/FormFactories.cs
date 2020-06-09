@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bearded.UI.Controls;
-using static Bearded.TD.UI.Factories.LabelFactories;
 using Label = Bearded.TD.UI.Controls.Label;
 
 namespace Bearded.TD.UI.Factories
@@ -75,7 +74,7 @@ namespace Bearded.TD.UI.Factories
                     var rowControl = new CompositeControl();
                     var rowLayout = rowControl.BuildLayout();
                     row.Item2(rowLayout);
-                    rowLayout.FillContent(Label(row.Item1, Label.TextAnchorLeft));
+                    rowLayout.FillContent(TextFactories.Label(row.Item1, Label.TextAnchorLeft));
                     columnBuilder.Add(rowControl, rowHeight);
                 }
             }

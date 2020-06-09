@@ -148,7 +148,7 @@ namespace Bearded.TD.Content
         public void CleanUp()
         {
             DebugAssert.State.Satisfies(IsFinishedLoading);
-            var unusedMods = modsForLoading.Where(m => !enabledMods.Contains(m.Key));
+            var unusedMods = modsForLoading.Where(m => !enabledMods.Contains(m.Key)).ToList();
             foreach (var (metadata, modForLoading) in unusedMods)
             {
                 GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);

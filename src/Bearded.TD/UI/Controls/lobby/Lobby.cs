@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -18,6 +20,8 @@ namespace Bearded.TD.UI.Controls
         private Logger logger;
 
         private GameSettings.Builder gameSettings;
+
+        public ImmutableList<ModMetadata> AvailableMods { get; private set; } = ImmutableList<ModMetadata>.Empty;
 
         public IList<Player> Players => lobbyManager.Game.Players;
 
@@ -51,6 +55,8 @@ namespace Bearded.TD.UI.Controls
                 }
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
+
+            AvailableMods = lobbyManager.Game.ContentManager.AvailableMods.OrderBy(m => m.Name).ToImmutableList();
 
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;
@@ -97,6 +103,13 @@ namespace Bearded.TD.UI.Controls
             lobbyManager.Close();
             Navigation.Replace<MainMenu>(this);
         }
+
+        public void OnSetModEnabled(ModMetadata mod, bool enabled)
+        {
+            lobbyManager.UpdateModEnabled(mod, enabled);
+        }
+
+        public bool IsModEnabled(ModMetadata mod) => lobbyManager.Game.ContentManager.EnabledMods.Contains(mod);
 
         public void OnSetLevelSize(int size)
         {

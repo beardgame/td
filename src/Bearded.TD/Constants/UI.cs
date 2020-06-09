@@ -4,9 +4,7 @@
     {
         public static class UI
         {
-            public const float FontSize = 16;
             public const double LayoutMargin = 8;
-            public const float LineHeight = 20;
 
             public static class Button
             {
@@ -35,6 +33,18 @@
             public static class TabBar
             {
                 public const double Height = NavBar.Height;
+            }
+
+            public static class Text
+            {
+                public const float HeaderFontSize = 24;
+                public const float HeaderLineHeight = 32;
+
+                public const float SubHeaderFontSize = 20;
+                public const float SubHeaderLineHeight = 24;
+
+                public const float FontSize = 16;
+                public const float LineHeight = 20;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -96,29 +97,37 @@ namespace Bearded.TD.UI.Controls
         {
             public GameSettingsControl(Lobby model)
             {
+                var modStatuses = model.AvailableMods.Select(mod => (
+                        mod.Name,
+                        Binding.Create(model.IsModEnabled(mod), newValue => model.OnSetModEnabled(mod, newValue))))
+                    .ToList();
                 var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
                 var workerDistributionMethod =
                     Binding.Create(model.WorkerDistributionMethod, model.OnSetWorkerDistributionMethod);
                 var levelGenerationMethod =
                     Binding.Create(model.LevelGenerationMethod, model.OnSetLevelGenerationMethod);
 
-                Add(FormFactories.Form(builder => builder
-                    .AddNumberSelectRow("Level size", 10, 100, levelSize)
-                    .AddDropdownSelectRow(
-                        "Worker distribution method",
-                        new [] { WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin},
-                        e => e.ToString(),
-                        workerDistributionMethod)
-                    .AddDropdownSelectRow(
-                        "Level generation method",
-                        new []
-                        {
-                            LevelGenerationMethod.Perlin,
-                            LevelGenerationMethod.Legacy,
-                            LevelGenerationMethod.Empty
-                        },
-                        e => e.ToString(),
-                        levelGenerationMethod)));
+                this.BuildScrollableColumn()
+                    .AddHeader("Enabled mods")
+                    .AddCollectionEditor(modStatuses)
+                    .AddHeader("Game settings")
+                    .AddForm(builder => builder
+                        .AddNumberSelectRow("Level size", 10, 100, levelSize)
+                        .AddDropdownSelectRow(
+                            "Worker distribution method",
+                            new[] {WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin},
+                            e => e.ToString(),
+                            workerDistributionMethod)
+                        .AddDropdownSelectRow(
+                            "Level generation method",
+                            new[]
+                            {
+                                LevelGenerationMethod.Perlin,
+                                LevelGenerationMethod.Legacy,
+                                LevelGenerationMethod.Empty
+                            },
+                            e => e.ToString(),
+                            levelGenerationMethod));
 
                 model.GameSettingsChanged += () =>
                 {

@@ -71,7 +71,7 @@ namespace Bearded.TD.UI.Factories
         {
             return builder.AddFormRow(
                 label,
-                layout => layout.DockFixedSizeToRight(
+                layout => layout.DockFixedSizeToLeft(
                     Checkbox(valueBinding).WrapVerticallyCentered(Constants.UI.Checkbox.Size),
                     Constants.UI.Checkbox.Size));
         }
