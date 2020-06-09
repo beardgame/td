@@ -17,10 +17,24 @@ namespace Bearded.TD.UI.Factories
             return builder.Build();
         }
 
+        public static Control DenseForm(Action<FormBuilder> builderFunc)
+        {
+            var builder = new FormBuilder().MakeDense();
+            builderFunc(builder);
+            return builder.Build();
+        }
+
         public class FormBuilder
         {
+            private bool isDense = false;
             private readonly List<(string, Action<LayoutFactories.LayoutBuilder>)> rows =
                 new List<(string, Action<LayoutFactories.LayoutBuilder>)>();
+
+            public FormBuilder MakeDense()
+            {
+                isDense = true;
+                return this;
+            }
 
             public FormBuilder AddFormRow(string label, Action<LayoutFactories.LayoutBuilder> builderFunc)
             {
@@ -41,7 +55,8 @@ namespace Bearded.TD.UI.Factories
 
                 return new ListControl
                 {
-                    ItemSource = new FixedListItemSource(controls, Constants.UI.Form.FormRowHeight)
+                    ItemSource = new FixedListItemSource(
+                        controls, isDense ? Constants.UI.Form.DenseFormRowHeight : Constants.UI.Form.FormRowHeight)
                 };
             }
         }

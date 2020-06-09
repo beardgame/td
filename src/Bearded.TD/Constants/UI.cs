@@ -23,6 +23,7 @@
 
             public static class Form
             {
+                public const double DenseFormRowHeight = 36;
                 public const double FormRowHeight = 48;
             }
 
