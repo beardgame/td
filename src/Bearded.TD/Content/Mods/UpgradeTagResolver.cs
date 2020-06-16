@@ -7,14 +7,14 @@ namespace Bearded.TD.Content.Mods
 {
     sealed class UpgradeTagResolver : ModAwareDependencyResolver<UpgradeTag>
     {
-        private readonly IDictionary<string, UpgradeTag> tagsForThisMod = new Dictionary<string, UpgradeTag>();
+        private readonly IDictionary<ModAwareId, UpgradeTag> tagsForThisMod = new Dictionary<ModAwareId, UpgradeTag>();
 
         public UpgradeTagResolver(ModMetadata thisMod, IEnumerable<Mod> otherMods)
             : base(thisMod, otherMods)
         {
         }
 
-        protected override UpgradeTag getDependencyFromThisMod(string id)
+        protected override UpgradeTag GetDependencyFromThisMod(ModAwareId id)
         {
             if (tagsForThisMod.TryGetValue(id, out var existingTag))
             {
@@ -27,14 +27,14 @@ namespace Bearded.TD.Content.Mods
             return newTag;
         }
 
-        protected override UpgradeTag getDependencyFromOtherMod(Mod mod, string id)
+        protected override UpgradeTag GetDependencyFromOtherMod(Mod mod, ModAwareId id)
         {
             return mod.Tags.TryGetValue(id, out var existingTag)
                 ? existingTag
                 : throw new InvalidDataException($"Unknown tag {id}");
         }
 
-        public IDictionary<string, UpgradeTag> GetForCurrentMod()
-            => new ReadOnlyDictionary<string, UpgradeTag>(tagsForThisMod);
+        public IDictionary<ModAwareId, UpgradeTag> GetForCurrentMod()
+            => new ReadOnlyDictionary<ModAwareId, UpgradeTag>(tagsForThisMod);
     }
 }

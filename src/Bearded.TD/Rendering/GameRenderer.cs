@@ -1,5 +1,6 @@
 using System;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Meta;
@@ -28,8 +29,8 @@ namespace Bearded.TD.Rendering
             geometries = renderContext.Geometries;
 
             // TODO: this should not stay hardcoded forever
-            var levelMaterial = game.Blueprints.Materials["default"];
-            var waterMaterial = game.Blueprints.Materials["water"];
+            var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];
+            var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
             levelRenderer = new GPUHeightmapLevelRenderer(game, renderContext, levelMaterial);
 

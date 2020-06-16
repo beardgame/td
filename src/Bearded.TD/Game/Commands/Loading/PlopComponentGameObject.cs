@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.Geometry;
@@ -38,7 +39,7 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
-            private string blueprint;
+            private ModAwareId blueprint;
             private Position3 position;
             private Direction2 direction;
 

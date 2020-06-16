@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Components.Graphical;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.World;
@@ -57,7 +58,7 @@ namespace Bearded.TD.Game.Units
 
         public override void Draw(GeometryManager geometries)
         {
-            var sprites = Game.Meta.Blueprints.Sprites["particle"];
+            var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("circle-soft");
 
             TrailRenderer.DrawTrail(trail, sprite, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha(0));

@@ -1,4 +1,5 @@
 using Bearded.TD.Commands;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Technologies;
@@ -39,7 +40,7 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
-            private string technology;
+            private ModAwareId technology;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer()

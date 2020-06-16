@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.World;
@@ -102,7 +103,7 @@ namespace Bearded.TD.Game.Workers
 
         public override void Draw(GeometryManager geometries)
         {
-            var sprites = Game.Meta.Blueprints.Sprites["particle"];
+            var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("halo");
 
             sprite.Draw(Position.NumericValue.WithZ(0.1f), Faction.Color, 0.5f);

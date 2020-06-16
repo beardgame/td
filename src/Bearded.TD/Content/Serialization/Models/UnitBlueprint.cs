@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -9,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    class UnitBlueprint : IConvertsTo<Content.Models.UnitBlueprint, Void>
+    sealed class UnitBlueprint : IConvertsTo<Content.Models.UnitBlueprint, Void>
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -21,10 +22,10 @@ namespace Bearded.TD.Content.Serialization.Models
         public Color Color { get; set; }
         public List<IComponent> Components { get; set; }
 
-        public Content.Models.UnitBlueprint ToGameModel(Void _)
+        public Content.Models.UnitBlueprint ToGameModel(ModMetadata modMetadata, Void _)
         {
             return new Content.Models.UnitBlueprint(
-                Id,
+                ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Health,
                 Damage,

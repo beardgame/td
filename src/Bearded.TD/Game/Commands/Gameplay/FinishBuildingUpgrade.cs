@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
@@ -31,7 +32,7 @@ namespace Bearded.TD.Game.Commands
         private class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> building;
-            private string upgrade;
+            private ModAwareId upgrade;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }

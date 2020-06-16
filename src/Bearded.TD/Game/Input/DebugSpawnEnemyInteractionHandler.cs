@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Units;
@@ -8,9 +9,9 @@ namespace Bearded.TD.Game.Input
 {
     sealed class DebugSpawnEnemyInteractionHandler : InteractionHandler
     {
-        private readonly string enemyBlueprintName;
+        private readonly ModAwareId enemyBlueprintName;
 
-        public DebugSpawnEnemyInteractionHandler(GameInstance game, string enemyBlueprintName)
+        public DebugSpawnEnemyInteractionHandler(GameInstance game, ModAwareId enemyBlueprintName)
             : base(game)
         {
             this.enemyBlueprintName = enemyBlueprintName;

@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
-    class EnemySpawnDefinition
+    sealed class EnemySpawnDefinition
     {
         private readonly double baseProbability;
         private readonly IEnumerable<IEnemySpawnFactor> spawnFactors;
 
-        public string BlueprintId { get; }
+        public ModAwareId BlueprintId { get; }
 
-        public EnemySpawnDefinition(string blueprintId, double baseProbability)
+        public EnemySpawnDefinition(ModAwareId blueprintId, double baseProbability)
             : this(blueprintId, baseProbability, Enumerable.Empty<IEnemySpawnFactor>()) { }
 
         public EnemySpawnDefinition(
-            string blueprintId, double baseProbability, IEnumerable<IEnemySpawnFactor> spawnFactors)
+            ModAwareId blueprintId, double baseProbability, IEnumerable<IEnemySpawnFactor> spawnFactors)
         {
             BlueprintId = blueprintId;
             this.baseProbability = baseProbability;

@@ -26,7 +26,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public bool Pixelate { get; set; }
 
-        public Content.Models.SpriteSet ToGameModel((FileInfo, SpriteSetLoader) resolvers)
+        public Content.Models.SpriteSet ToGameModel(ModMetadata contextMeta, (FileInfo, SpriteSetLoader) resolvers)
         {
             if (Shader == null)
                 throw new Exception("Cannot load sprite set without shader.");

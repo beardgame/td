@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Rules;
 using Bearded.TD.Networking.Serialization;
 
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
-            private string gameModeId;
+            private ModAwareId gameModeId;
 
             public Serializer(IGameModeBlueprint gameModeBlueprint)
             {

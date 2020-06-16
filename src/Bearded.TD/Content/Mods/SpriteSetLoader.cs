@@ -4,23 +4,30 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods.BlueprintLoaders;
 
 namespace Bearded.TD.Content.Mods
 {
-    internal class SpriteSetLoader
+    sealed class SpriteSetLoader
     {
         private readonly ModLoadingContext context;
+        private readonly ModMetadata meta;
 
-        public SpriteSetLoader(ModLoadingContext context)
+        public SpriteSetLoader(ModLoadingContext context, ModMetadata meta)
         {
             this.context = context;
+            this.meta = meta;
         }
 
         public SpriteSet TryLoad(FileInfo file, Content.Serialization.Models.SpriteSet jsonModel)
         {
             var packedSpriteSet = loadPackedSpriteSet(file.Directory, context, jsonModel);
 
-            return new SpriteSet(jsonModel.Id, jsonModel.DrawGroup, jsonModel.DrawGroupOrderKey, packedSpriteSet);
+            return new SpriteSet(
+                ModAwareId.FromNameInMod(jsonModel.Id, meta),
+                jsonModel.DrawGroup,
+                jsonModel.DrawGroupOrderKey,
+                packedSpriteSet);
         }
 
         private static PackedSpriteSet loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,

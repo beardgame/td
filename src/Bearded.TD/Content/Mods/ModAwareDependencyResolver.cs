@@ -25,12 +25,12 @@ namespace Bearded.TD.Content.Mods
             {
                 if (id.ModId == thisMod.Id)
                 {
-                    return getDependencyFromThisMod(id.Id);
+                    return GetDependencyFromThisMod(id);
                 }
 
                 if (mods.TryGetValue(id.ModId, out var mod))
                 {
-                    return getDependencyFromOtherMod(mod, id.Id);
+                    return GetDependencyFromOtherMod(mod, id);
                 }
             }
             catch (Exception e)
@@ -41,7 +41,7 @@ namespace Bearded.TD.Content.Mods
             throw new InvalidDataException($"Unknown mod in identifier {id}");
         }
 
-        protected abstract T getDependencyFromThisMod(string id);
-        protected abstract T getDependencyFromOtherMod(Mod mod, string id);
+        protected abstract T GetDependencyFromThisMod(ModAwareId id);
+        protected abstract T GetDependencyFromOtherMod(Mod mod, ModAwareId id);
     }
 }

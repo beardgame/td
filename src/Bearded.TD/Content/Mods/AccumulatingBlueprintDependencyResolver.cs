@@ -21,8 +21,8 @@ namespace Bearded.TD.Content.Mods
             blueprintsOf = blueprintCollectionSelector;
         }
 
-        protected override T getDependencyFromThisMod(string id) => thisModsBlueprints[id];
+        protected override T GetDependencyFromThisMod(ModAwareId id) => thisModsBlueprints[id];
 
-        protected override T getDependencyFromOtherMod(Mod mod, string id) => blueprintsOf(mod)[id];
+        protected override T GetDependencyFromOtherMod(Mod mod, ModAwareId id) => blueprintsOf(mod)[id];
     }
 }

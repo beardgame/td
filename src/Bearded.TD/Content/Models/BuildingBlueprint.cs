@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Upgrades;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Content.Models
 {
     sealed class BuildingBlueprint : IBuildingBlueprint
     {
-        public string Id { get; }
+        public ModAwareId Id { get; }
         public string Name { get; }
         public FootprintGroup FootprintGroup { get; }
         public int ResourceCost { get; }
@@ -18,7 +19,7 @@ namespace Bearded.TD.Content.Models
         public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
-        public BuildingBlueprint(string id, string name, FootprintGroup footprintGroup,
+        public BuildingBlueprint(ModAwareId id, string name, FootprintGroup footprintGroup,
             int resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;

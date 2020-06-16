@@ -13,7 +13,7 @@ namespace Bearded.TD.UI.Factories
 
         public static Button Button(Func<string> labelFunc) => Button(b => b.WithLabel(labelFunc));
 
-        public static Button Button(Action<Builder> builderFunc)
+        public static Button Button(BuilderFunc<Builder> builderFunc)
         {
             var builder = new Builder();
             builderFunc(builder);
@@ -22,8 +22,8 @@ namespace Bearded.TD.UI.Factories
 
         public sealed class Builder
         {
-            private Control labelControl;
-            private VoidEventHandler onClick;
+            private Control? labelControl;
+            private VoidEventHandler? onClick;
 
             public Builder WithLabel(string label)
             {

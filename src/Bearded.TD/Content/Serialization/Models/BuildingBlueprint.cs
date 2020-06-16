@@ -17,10 +17,10 @@ namespace Bearded.TD.Content.Serialization.Models
         public List<string> Tags { get; set; }
         public List<IBuildingComponent> Components { get; set; }
 
-        public Content.Models.BuildingBlueprint ToGameModel(UpgradeTagResolver tags)
+        public Content.Models.BuildingBlueprint ToGameModel(ModMetadata modMetadata, UpgradeTagResolver tags)
         {
             return new Content.Models.BuildingBlueprint(
-                Id,
+                ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Footprint,
                 Cost,

@@ -1,10 +1,11 @@
-﻿using Bearded.TD.Game;
+﻿using Bearded.TD.Content.Mods;
+using Bearded.TD.Game;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
     interface IConvertsTo<out TGameModel, in TResolvers>
         where TGameModel : IBlueprint
     {
-        TGameModel ToGameModel(TResolvers resolvers);
+        TGameModel ToGameModel(ModMetadata modMetadata, TResolvers resolvers);
     }
 }

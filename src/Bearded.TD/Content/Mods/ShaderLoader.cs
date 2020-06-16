@@ -6,7 +6,7 @@ using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Content.Mods
 {
-    class ShaderLoader
+    sealed class ShaderLoader
     {
         private readonly ModLoadingContext context;
         private readonly ModMetadata meta;
@@ -27,7 +27,7 @@ namespace Bearded.TD.Content.Mods
                 .Add(ShaderType.FragmentShader, jsonModel.FragmentShader)
                 .Compile(context);
 
-            return new Shader(jsonModel.Id, shaderProgram);
+            return new Shader(ModAwareId.FromNameInMod(jsonModel.Id, meta), shaderProgram);
         }
 
         private class ShaderCompiler

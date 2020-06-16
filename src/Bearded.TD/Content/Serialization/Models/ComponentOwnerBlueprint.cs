@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Content.Mods;
 using Bearded.Utilities;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -10,9 +11,9 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Id { get; set; }
         public List<IComponent> Components { get; set; }
 
-        public Content.Models.ComponentOwnerBlueprint ToGameModel(Void _)
+        public Content.Models.ComponentOwnerBlueprint ToGameModel(ModMetadata modMetadata, Void _)
         {
-            return new Content.Models.ComponentOwnerBlueprint(Id, Components);
+            return new Content.Models.ComponentOwnerBlueprint(ModAwareId.FromNameInMod(Id, modMetadata), Components);
         }
     }
 }

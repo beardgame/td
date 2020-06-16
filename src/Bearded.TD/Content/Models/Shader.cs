@@ -1,15 +1,16 @@
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 
 namespace Bearded.TD.Content.Models
 {
-    class Shader : IBlueprint
+    sealed class Shader : IBlueprint
     {
-        public string Id { get; }
+        public ModAwareId Id { get; }
 
         public ISurfaceShader SurfaceShader { get; }
 
-        public Shader(string id, ISurfaceShader surfaceShader)
+        public Shader(ModAwareId id, ISurfaceShader surfaceShader)
         {
             Id = id;
             SurfaceShader = surfaceShader;

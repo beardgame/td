@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Game;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Content.Mods
 {
@@ -18,13 +19,14 @@ namespace Bearded.TD.Content.Mods
             blueprintsOf = blueprintCollectionSelector;
         }
 
-        protected override T getDependencyFromThisMod(string id)
+        protected override T GetDependencyFromThisMod(ModAwareId id)
         {
             return thisModsBlueprints[id];
         }
 
-        protected override T getDependencyFromOtherMod(Mod mod, string id)
+        protected override T GetDependencyFromOtherMod(Mod mod, ModAwareId id)
         {
+            DebugAssert.Argument.Satisfies(mod.Id == id.ModId);
             return blueprintsOf(mod)[id];
         }
     }

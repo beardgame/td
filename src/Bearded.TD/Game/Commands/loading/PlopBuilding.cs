@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components.Damage;
 using Bearded.TD.Game.Factions;
@@ -55,8 +56,8 @@ namespace Bearded.TD.Game.Commands
         {
             private Id<Building> id;
             private Id<Faction> faction;
-            private string blueprint;
-            private string footprint;
+            private ModAwareId blueprint;
+            private ModAwareId footprint;
             private int footprintIndex;
             private int footprintX;
             private int footprintY;

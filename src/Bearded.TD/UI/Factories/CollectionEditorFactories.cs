@@ -19,14 +19,15 @@ namespace Bearded.TD.UI.Factories
                     {
                         builder.AddCheckboxRow(label, binding);
                     }
+                    return builder;
                 })
             };
         }
 
-        public static LayoutFactories.IColumnBuilder AddCollectionEditor(
-            this LayoutFactories.IColumnBuilder columnBuilder,
+        public static Layouts.IColumnLayout AddCollectionEditor(
+            this Layouts.IColumnLayout columnLayout,
             List<(string label, Binding<bool> binding)> entries,
             int numRowsShown = 5) =>
-            columnBuilder.Add(CollectionEditor(entries), Constants.UI.Form.DenseFormRowHeight * numRowsShown);
+            columnLayout.Add(CollectionEditor(entries), Constants.UI.Form.DenseFormRowHeight * numRowsShown);
     }
 }

@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         public SpriteBlueprintLoader(BlueprintLoadingContext context) : base(context)
         {
-            loader = new SpriteSetLoader(context.Context);
+            loader = new SpriteSetLoader(context.Context, context.Meta);
         }
 
         protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<SpriteSet> blueprintCollection)

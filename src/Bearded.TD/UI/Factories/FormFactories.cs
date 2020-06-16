@@ -7,56 +7,56 @@ namespace Bearded.TD.UI.Factories
 {
     static class FormFactories
     {
-        public static Control Form(Action<FormBuilder> builderFunc)
+        public static Control Form(BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder();
+            var builder = new Builder();
             builderFunc(builder);
             return builder.Build();
         }
 
-        public static Control DenseForm(Action<FormBuilder> builderFunc)
+        public static Control DenseForm(BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder().MakeDense();
+            var builder = new Builder().MakeDense();
             builderFunc(builder);
             return builder.Build();
         }
 
-        public static LayoutFactories.IColumnBuilder AddForm(
-            this LayoutFactories.IColumnBuilder columnBuilder, Action<FormBuilder> builderFunc)
+        public static Layouts.IColumnLayout AddForm(
+            this Layouts.IColumnLayout columnLayout, BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder();
+            var builder = new Builder();
             builderFunc(builder);
-            columnBuilder.Add(builder.Build(), builder.Height);
-            return columnBuilder;
+            columnLayout.Add(builder.Build(), builder.Height);
+            return columnLayout;
         }
 
-        public class FormBuilder
+        public class Builder
         {
             private bool isDense;
             private bool isScrollable;
-            private readonly List<(string, Action<LayoutFactories.LayoutBuilder>)> rows =
-                new List<(string, Action<LayoutFactories.LayoutBuilder>)>();
+            private readonly List<(string, Action<Layouts.Layout>)> rows =
+                new List<(string, Action<Layouts.Layout>)>();
 
             private double rowHeight =>
                 isDense ? Constants.UI.Form.DenseFormRowHeight : Constants.UI.Form.FormRowHeight;
 
             public double Height => rowHeight * rows.Count;
 
-            public FormBuilder MakeDense()
+            public Builder MakeDense()
             {
                 isDense = true;
                 return this;
             }
 
-            public FormBuilder MakeScrollable()
+            public Builder MakeScrollable()
             {
                 isScrollable = true;
                 return this;
             }
 
-            public FormBuilder AddFormRow(string label, Action<LayoutFactories.LayoutBuilder> builderFunc)
+            public Builder AddFormRow(string label, Action<Layouts.Layout> layoutFunc)
             {
-                rows.Add((label, builderFunc));
+                rows.Add((label, layoutFunc));
                 return this;
             }
 
@@ -67,7 +67,7 @@ namespace Bearded.TD.UI.Factories
                 return control;
             }
 
-            private void buildRows(LayoutFactories.IColumnBuilder columnBuilder)
+            private void buildRows(Layouts.IColumnLayout columnLayout)
             {
                 foreach (var row in rows)
                 {
@@ -75,7 +75,7 @@ namespace Bearded.TD.UI.Factories
                     var rowLayout = rowControl.BuildLayout();
                     row.Item2(rowLayout);
                     rowLayout.FillContent(TextFactories.Label(row.Item1, Label.TextAnchorLeft));
-                    columnBuilder.Add(rowControl, rowHeight);
+                    columnLayout.Add(rowControl, rowHeight);
                 }
             }
         }

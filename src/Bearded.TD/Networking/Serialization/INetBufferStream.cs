@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -24,6 +25,7 @@ namespace Bearded.TD.Networking.Serialization
 
         void SerializeArrayCount<T>(ref T[] array);
 
+        void Serialize(ref ModAwareId modAwareId);
         void Serialize(ref Unit unit);
     }
 }

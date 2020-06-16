@@ -10,8 +10,10 @@ using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.Utilities;
 using OpenTK;
+using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -37,36 +39,92 @@ namespace Bearded.TD.UI.Controls
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)
         {
-            var chatItemSource = new ChatLogListSource(model.ChatLog);
-            var chatList = new ListControl(new ViewportClippingLayerControl())
-            {
-                ItemSource = chatItemSource,
-                StickToBottom = true
-            };
-            sidebar.Add(
-                new CompositeControl
-                {
-                    new Border(),
-                    chatList.Anchor(a => a.Left(4).Right(4))
-                }.Anchor(a => a.Bottom(margin: 4, relativePercentage: .5))
-            );
-            model.ChatMessagesUpdated += chatList.Reload;
+            var logsContent = new LogsControl(model);
+            var logsWithTabs = new CompositeControl();
+            logsWithTabs
+                .BuildLayout()
+                .AddTabs(t => t
+                    .AddButton("Chat", logsContent.ShowChatLog)
+                    .AddButton("Loading", logsContent.ShowLoadingLog))
+                .FillContent(logsContent);
 
-            var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
-            var loadingList = new ListControl(new ViewportClippingLayerControl())
+            sidebar.BuildLayout().DockFractionalSizeToBottom(logsWithTabs, 0.5);
+
+            logsContent.ShowChatLog();
+        }
+
+        private sealed class LogsControl : CompositeControl
+        {
+            private readonly Lobby model;
+            private bool chatLogShown;
+            private readonly Control chatLog;
+            private readonly Control loadingLog;
+            private readonly Binding<string> chatInputBinding = new Binding<string>();
+
+            public LogsControl(Lobby model)
             {
-                ItemSource = loadingItemSource,
-                StickToBottom = true
-            };
-            sidebar.Add(
-                new CompositeControl
+                this.model = model;
+
+                // TODO: this is still very hardcoded with numbers
+                var chatItemSource = new ChatLogListSource(model.ChatLog);
+                var chatList = new ListControl(new ViewportClippingLayerControl())
                 {
-                    new Border(),
-                    loadingList.Anchor(a => a.Left(4).Right(4))
-                }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
-            );
-            model.LoadingUpdated += loadingItemSource.Reload;
-            model.LoadingUpdated += loadingList.Reload;
+                    ItemSource = chatItemSource,
+                    StickToBottom = true
+                };
+                var chatInput = FormControlFactories.TextInput(chatInputBinding);
+                chatLog =
+                    new CompositeControl
+                    {
+                        new Border(),
+                        chatList.Anchor(a => a.Left(4).Right(4).Bottom(Constants.UI.Text.LineHeight)),
+                        chatInput.Anchor(a => a.Bottom(height: Constants.UI.Text.LineHeight))
+                    };
+                model.ChatMessagesUpdated += () => chatList.ItemSource = chatItemSource;
+
+                var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
+                var loadingList = new ListControl(new ViewportClippingLayerControl())
+                {
+                    ItemSource = loadingItemSource,
+                    StickToBottom = true
+                };
+                loadingLog =
+                    new CompositeControl
+                    {
+                        new Border(),
+                        loadingList.Anchor(a => a.Left(4).Right(4))
+                    };
+                model.LoadingUpdated += loadingItemSource.Reload;
+                model.LoadingUpdated += () => loadingList.ItemSource = loadingItemSource;
+            }
+
+            public void ShowChatLog()
+            {
+                RemoveAllChildren();
+                Add(chatLog);
+                chatLogShown = true;
+            }
+
+            public void ShowLoadingLog()
+            {
+                RemoveAllChildren();
+                Add(loadingLog);
+                chatLogShown = false;
+            }
+
+            public override void KeyHit(KeyEventArgs eventArgs)
+            {
+                base.KeyHit(eventArgs);
+
+                if (eventArgs.Handled || !chatLogShown || string.IsNullOrEmpty(chatInputBinding.Value)) return;
+
+                if (eventArgs.Key == Key.Enter)
+                {
+                    model.OnSendChatMessage(chatInputBinding.Value);
+                    chatInputBinding.SetFromSource("");
+                    eventArgs.Handled = true;
+                }
+            }
         }
 
         private sealed class LobbyDetailsControl : CompositeControl

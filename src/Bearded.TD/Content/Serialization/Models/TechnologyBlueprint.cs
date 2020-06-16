@@ -19,10 +19,10 @@ namespace Bearded.TD.Content.Serialization.Models
         public List<TechnologyUnlock> Unlocks { get; set; }
         public List<string> RequiredTechs { get; set; } = new List<string>();
 
-        public Content.Models.TechnologyBlueprint ToGameModel(DependencyResolvers resolvers)
+        public Content.Models.TechnologyBlueprint ToGameModel(ModMetadata modMetadata, DependencyResolvers resolvers)
         {
             return new Content.Models.TechnologyBlueprint(
-                Id,
+                ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Cost,
                 ImmutableList.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))),

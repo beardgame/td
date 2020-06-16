@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Bearded.TD.Content.Mods
 {
-    readonly struct ModAwareId
+    readonly struct ModAwareId : IEquatable<ModAwareId>
     {
         public string ModId { get; }
         public string Id { get; }
@@ -31,7 +32,24 @@ namespace Bearded.TD.Content.Mods
             }
         }
 
-        public override string ToString()
-            => $"{ModId}.{Id}";
+        public bool Equals(ModAwareId other) => ModId == other.ModId && Id == other.Id;
+
+        public override bool Equals(object? obj) => obj is ModAwareId other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (ModId.GetHashCode() * 397) ^ Id.GetHashCode();
+            }
+        }
+
+        public override string ToString() => $"{ModId}.{Id}";
+
+        public static bool operator ==(ModAwareId left, ModAwareId right) => left.Equals(right);
+
+        public static bool operator !=(ModAwareId left, ModAwareId right) => !(left == right);
+
+        public static ModAwareId ForDefaultMod(string id) => new ModAwareId(Constants.Content.DefaultModId, id);
     }
 }

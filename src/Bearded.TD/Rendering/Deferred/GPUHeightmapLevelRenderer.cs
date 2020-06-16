@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 using Bearded.TD.Meta;
@@ -140,7 +141,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         private PackedSpriteSet setupHeightmapSplats(GameInstance game)
         {
-            var splats = game.Blueprints.Sprites["terrain-splats"].Sprites;
+            var splats = game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
             splats.Surface.AddSetting(heightmapRadiusUniform);
 
             return splats;

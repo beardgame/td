@@ -100,9 +100,9 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
             var jsonBlueprint = ParseJsonModel(file);
             var dependencyResolvers = GetDependencyResolvers(file);
-            var blueprint = jsonBlueprint.ToGameModel(dependencyResolvers);
+            var blueprint = jsonBlueprint.ToGameModel(Context.Meta, dependencyResolvers);
 
-            if (Path.GetFileNameWithoutExtension(file.FullName) != blueprint.Id)
+            if (Path.GetFileNameWithoutExtension(file.FullName) != blueprint.Id.Id)
             {
                 LogWarning($"Loaded blueprint {Context.Meta.Id}.{blueprint.Id} with mismatching filename {file.Name}");
                 hasWarnings = true;

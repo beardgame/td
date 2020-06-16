@@ -5,7 +5,7 @@ using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Factories
 {
-    static class LayoutFactories
+    static class Layouts
     {
         public static Control WrapHorizontallyCentered(this Control control, double width)
         {
@@ -23,19 +23,19 @@ namespace Bearded.TD.UI.Factories
             };
         }
 
-        public static PristineLayoutBuilder BuildLayout(this IControlParent parent) =>
-            new PristineLayoutBuilder(parent);
+        public static PristineLayout BuildLayout(this IControlParent parent) =>
+            new PristineLayout(parent);
 
-        public static IColumnBuilder BuildFixedColumn(this IControlParent parent) => new FixedColumnBuilder(parent);
+        public static IColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
 
-        public static IColumnBuilder BuildScrollableColumn(this IControlParent parent) =>
-            new ScrollableColumnBuilder(parent);
+        public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
+            new ScrollableColumnLayout(parent);
 
-        public sealed class PristineLayoutBuilder : LayoutBuilder
+        public sealed class PristineLayout : Layout
         {
-            public PristineLayoutBuilder(IControlParent parent) : base(parent) {}
+            public PristineLayout(IControlParent parent) : base(parent) {}
 
-            public PristineLayoutBuilder ForFullScreen()
+            public PristineLayout ForFullScreen()
             {
                 const double m = LayoutMargin;
                 Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
@@ -44,25 +44,25 @@ namespace Bearded.TD.UI.Factories
             }
         }
 
-        public class LayoutBuilder
+        public class Layout
         {
             protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
             protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
 
             protected IControlParent Parent { get; }
 
-            public LayoutBuilder(IControlParent parent)
+            public Layout(IControlParent parent)
             {
                 Parent = parent;
             }
 
-            public LayoutBuilder DockFixedSizeToTop(Control control, double height)
+            public Layout DockFixedSizeToTop(Control control, double height)
             {
                 dockToTop(control, new Anchor(Vertical.Top.Percentage, Vertical.Top.Offset + height));
                 return this;
             }
 
-            public LayoutBuilder DockFractionalSizeToTop(Control control, double percentage)
+            public Layout DockFractionalSizeToTop(Control control, double percentage)
             {
                 dockToTop(control, new Anchor(Vertical.Bottom.Percentage + percentage, Vertical.Bottom.Offset));
                 return this;
@@ -75,13 +75,13 @@ namespace Bearded.TD.UI.Factories
                 Parent.Add(control);
             }
 
-            public LayoutBuilder DockFixedSizeToBottom(Control control, double height)
+            public Layout DockFixedSizeToBottom(Control control, double height)
             {
                 dockToBottom(control, new Anchor(Vertical.Bottom.Percentage, Vertical.Bottom.Offset - height));
                 return this;
             }
 
-            public LayoutBuilder DockFractionalSizeToBottom(Control control, double percentage)
+            public Layout DockFractionalSizeToBottom(Control control, double percentage)
             {
                 dockToBottom(control, new Anchor(Vertical.Bottom.Percentage - percentage, Vertical.Bottom.Offset));
                 return this;
@@ -94,13 +94,13 @@ namespace Bearded.TD.UI.Factories
                 Parent.Add(control);
             }
 
-            public LayoutBuilder DockFixedSizeToLeft(Control control, double width)
+            public Layout DockFixedSizeToLeft(Control control, double width)
             {
                 dockToLeft(control, new Anchor(Horizontal.Left.Percentage, Horizontal.Left.Offset + width));
                 return this;
             }
 
-            public LayoutBuilder DockFractionalSizeToLeft(Control control, double percentage)
+            public Layout DockFractionalSizeToLeft(Control control, double percentage)
             {
                 dockToLeft(control, new Anchor(Horizontal.Left.Percentage + percentage, Horizontal.Left.Offset));
                 return this;
@@ -113,13 +113,13 @@ namespace Bearded.TD.UI.Factories
                 Parent.Add(control);
             }
 
-            public LayoutBuilder DockFixedSizeToRight(Control control, double width)
+            public Layout DockFixedSizeToRight(Control control, double width)
             {
                 dockToRight(control, new Anchor(Horizontal.Right.Percentage, Horizontal.Right.Offset - width));
                 return this;
             }
 
-            public LayoutBuilder DockFractionalSizeToRight(Control control, double percentage)
+            public Layout DockFractionalSizeToRight(Control control, double percentage)
             {
                 dockToRight(control, new Anchor(Horizontal.Right.Percentage - percentage, Horizontal.Right.Offset));
                 return this;
@@ -139,22 +139,22 @@ namespace Bearded.TD.UI.Factories
             }
         }
 
-        public interface IColumnBuilder
+        public interface IColumnLayout
         {
-            IColumnBuilder Add(Control control, double height);
+            IColumnLayout Add(Control control, double height);
         }
 
-        private sealed class FixedColumnBuilder : IColumnBuilder
+        private sealed class FixedColumnLayout : IColumnLayout
         {
             private readonly IControlParent parent;
             private double contentHeight;
 
-            public FixedColumnBuilder(IControlParent parent)
+            public FixedColumnLayout(IControlParent parent)
             {
                 this.parent = parent;
             }
 
-            public IColumnBuilder Add(Control control, double height)
+            public IColumnLayout Add(Control control, double height)
             {
                 parent.Add(control.Anchor(a => a.Top(contentHeight, height)));
                 contentHeight += height;
@@ -162,17 +162,17 @@ namespace Bearded.TD.UI.Factories
             }
         }
 
-        private sealed class ScrollableColumnBuilder : IColumnBuilder
+        private sealed class ScrollableColumnLayout : IColumnLayout
         {
             private readonly VerticalScrollableContainer container;
 
-            public ScrollableColumnBuilder(IControlParent parent)
+            public ScrollableColumnLayout(IControlParent parent)
             {
                 container = new VerticalScrollableContainer();
                 parent.Add(container);
             }
 
-            public IColumnBuilder Add(Control control, double height)
+            public IColumnLayout Add(Control control, double height)
             {
                 container.Add(control, height);
                 return this;
