@@ -229,8 +229,8 @@ namespace Bearded.TD.Rendering
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
+            //GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
             GL.Disable(EnableCap.Blend);
 
             bind(gTargetLowRes, bufferSizeLowRes);
@@ -241,7 +241,7 @@ namespace Bearded.TD.Rendering
 
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
-            GL.Disable(EnableCap.CullFace);
+            //GL.Disable(EnableCap.CullFace);
 
             bind(copyDiffuseTarget, bufferSize);
             copyDiffuseSurface.Render();

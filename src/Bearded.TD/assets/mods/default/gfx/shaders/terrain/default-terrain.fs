@@ -3,11 +3,17 @@
 uniform sampler2DArray diffuseTextures;
 uniform sampler2DArray normalTextures;
 
+uniform float farPlaneDistance;
+uniform vec3 cameraPosition;
+
+uniform mat4 view;
+
+uniform float heightScale;
+
 in vec3 fragmentPosition;
 in vec3 fragmentNormal;
-in vec2 fragmentUV;
+//in vec2 fragmentUV;
 in vec4 fragmentColor;
-in float fragmentDepth;
 
 out vec4 outRGBA;
 out vec4 outNormal;
@@ -95,7 +101,6 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     float rockiness = clamp((position.z - 0.5) * 20, 0, 1);
 
     floorColor = mix(sand, rock - 0.25, rockiness);
-
     vec3 rockN = texture(normalTextures, vec3(uvR, rockIndex)).rgb * 2 - 1;
     vec3 sandN = texture(normalTextures, vec3(uvS, sandIndex)).rgb * 2 - 1;
 
@@ -116,13 +121,35 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
 
 void main()
 {
+    float limit = 0.75;
+
+    if (fragmentPosition.z > limit)
+    {
+        discard;
+        return;
+    }
+
+    vec3 fPosition = fragmentPosition;
+    vec3 fNormal = fragmentNormal;
+    vec4 fColor = fragmentColor;
+
+    if(!gl_FrontFacing)
+    {
+        vec3 c = -cameraPosition;
+        float f = (limit - c.z) / (fPosition.z - c.z);
+
+        fPosition = c + (fPosition - c) * f;
+        fNormal = vec3(0, 0, 1);
+        fColor = vec4(fColor.rgb * 0.5, fColor.a);
+    }
+
     vec3 wallColor, wallNormal;
-    getWallColor(fragmentPosition, fragmentNormal, wallColor, wallNormal);
+    getWallColor(fPosition, fNormal, wallColor, wallNormal);
 
     vec3 floorColor, floorNormal;
-    getFloorColor(fragmentPosition, fragmentNormal, floorColor, floorNormal);
+    getFloorColor(fPosition, fNormal, floorColor, floorNormal);
     
-    float flatness = smoothstep(0.6, 0.9, fragmentNormal.z);
+    float flatness = smoothstep(0.6, 0.9, fNormal.z);
 
     vec3 diffuse, normal;
 
@@ -133,14 +160,17 @@ void main()
     }
     else
     {
-
         diffuse = mix(wallColor, floorColor, flatness);
         normal = mix(wallNormal, floorNormal, flatness);
     }
     
-    vec4 rgba = vec4(diffuse, 1) * fragmentColor;
+    vec4 rgba = vec4(diffuse, 1) * fColor;
 
     outRGBA = rgba;
     outNormal = vec4(normal * 0.5 + 0.5, rgba.a);
-    outDepth = vec4(fragmentDepth, 0, 0, rgba.a);
+
+    // check if this is actually in 0-1 space between camera and far plane
+    // it probably is not because we don't take near distance into account properly
+    float depth = -(view * vec4(fPosition, 1)).z / farPlaneDistance;
+    outDepth = vec4(depth, 0, 0, rgba.a);
 }
