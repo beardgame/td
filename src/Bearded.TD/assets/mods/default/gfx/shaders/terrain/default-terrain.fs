@@ -90,7 +90,7 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     int rockIndex = 1;
     int sandIndex = 2;
 
-    vec2 uvR = position.xy / 6;
+    vec2 uvR = position.xy / 4;
     vec2 uvS = position.xy / 3.4;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
@@ -118,15 +118,37 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     floorNormal = n;
 }
 
+float dither(vec2 xy)
+{
+    return fract(dot(xy, vec2(36, 7) / 16.0f));
+}
 
 void main()
 {
     float limit = 0.75;
+    float overhangLimit = 1;
 
-    if (fragmentPosition.z > limit)
+    vec3 camPosition = -cameraPosition;
+    vec3 cutoutCenter = vec3(camPosition.xy, camPosition.z * camPosition.z * 3);
+    float cutoutRadius = cutoutCenter.z - limit;
+
+    vec3 cutoutCenterToFragment = fragmentPosition - cutoutCenter;
+
+    float distanceToCutoutCenter = length(cutoutCenterToFragment);
+
+    if (heightScale > 0)
     {
-        discard;
-        return;
+        if (fragmentPosition.z > limit)
+        {
+            discard;
+        }
+    }
+    else
+    {
+        if (distanceToCutoutCenter < cutoutRadius)
+        {
+            discard;
+        } 
     }
 
     vec3 fPosition = fragmentPosition;
@@ -135,12 +157,32 @@ void main()
 
     if(!gl_FrontFacing)
     {
-        vec3 c = -cameraPosition;
-        float f = (limit - c.z) / (fPosition.z - c.z);
+        vec3 cutoutCenterToFragmentNormalised =
+            cutoutCenterToFragment / distanceToCutoutCenter;
 
-        fPosition = c + (fPosition - c) * f;
-        fNormal = vec3(0, 0, 1);
-        fColor = vec4(fColor.rgb * 0.5, fColor.a);
+        vec3 camToFragment = camPosition - fragmentPosition;
+
+        vec3 oc = camPosition - cutoutCenter;
+        float a = dot(camToFragment, camToFragment);
+        float b = 2 * dot(oc, camToFragment);
+        float c = dot(oc, oc) - cutoutRadius * cutoutRadius;
+        float discriminant = b*b - 4*a*c;
+
+        float f = (-b - sqrt(discriminant)) / (2.0*a);
+
+        fPosition = camPosition + camToFragment * f;
+        fNormal = -cutoutCenterToFragmentNormalised;
+        fColor = vec4(fColor.rgb * 0.75, fColor.a);
+
+        if (heightScale < 0 && fragmentPosition.z > limit)
+        {
+            float d = dither(gl_FragCoord.xy);
+
+            if (d < (fragmentPosition.z - limit) / (overhangLimit - limit))
+            {
+                discard;
+            }
+        }
     }
 
     vec3 wallColor, wallNormal;

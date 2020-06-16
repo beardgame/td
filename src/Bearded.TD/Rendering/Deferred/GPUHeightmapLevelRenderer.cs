@@ -215,20 +215,19 @@ namespace Bearded.TD.Rendering.Deferred
 
         private void render()
         {
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            //GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
             heightScaleUniform.Float = 1;
             heightOffsetUniform.Float = 0;
             gridSurface.Render();
 
-            GL.CullFace(CullFaceMode.Front);
+            //GL.Disable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
             heightScaleUniform.Float = -1;
             heightOffsetUniform.Float = 1.5f;
             gridSurface.Render();
 
             GL.FrontFace(FrontFaceDirection.Ccw);
-            GL.Disable(EnableCap.CullFace);
         }
 
         private void ensureHeightmap()
