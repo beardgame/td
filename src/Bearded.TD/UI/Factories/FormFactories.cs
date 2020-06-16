@@ -21,21 +21,21 @@ namespace Bearded.TD.UI.Factories
             return builder.Build();
         }
 
-        public static LayoutFactories.IColumnBuilder AddForm(
-            this LayoutFactories.IColumnBuilder columnBuilder, Action<FormBuilder> builderFunc)
+        public static Layouts.IColumnLayout AddForm(
+            this Layouts.IColumnLayout columnLayout, Action<FormBuilder> builderFunc)
         {
             var builder = new FormBuilder();
             builderFunc(builder);
-            columnBuilder.Add(builder.Build(), builder.Height);
-            return columnBuilder;
+            columnLayout.Add(builder.Build(), builder.Height);
+            return columnLayout;
         }
 
         public class FormBuilder
         {
             private bool isDense;
             private bool isScrollable;
-            private readonly List<(string, Action<LayoutFactories.LayoutBuilder>)> rows =
-                new List<(string, Action<LayoutFactories.LayoutBuilder>)>();
+            private readonly List<(string, Action<Layouts.Layout>)> rows =
+                new List<(string, Action<Layouts.Layout>)>();
 
             private double rowHeight =>
                 isDense ? Constants.UI.Form.DenseFormRowHeight : Constants.UI.Form.FormRowHeight;
@@ -54,7 +54,7 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
-            public FormBuilder AddFormRow(string label, Action<LayoutFactories.LayoutBuilder> builderFunc)
+            public FormBuilder AddFormRow(string label, Action<Layouts.Layout> builderFunc)
             {
                 rows.Add((label, builderFunc));
                 return this;
@@ -67,7 +67,7 @@ namespace Bearded.TD.UI.Factories
                 return control;
             }
 
-            private void buildRows(LayoutFactories.IColumnBuilder columnBuilder)
+            private void buildRows(Layouts.IColumnLayout columnLayout)
             {
                 foreach (var row in rows)
                 {
@@ -75,7 +75,7 @@ namespace Bearded.TD.UI.Factories
                     var rowLayout = rowControl.BuildLayout();
                     row.Item2(rowLayout);
                     rowLayout.FillContent(TextFactories.Label(row.Item1, Label.TextAnchorLeft));
-                    columnBuilder.Add(rowControl, rowHeight);
+                    columnLayout.Add(rowControl, rowHeight);
                 }
             }
         }

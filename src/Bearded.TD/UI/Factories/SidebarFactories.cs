@@ -5,8 +5,8 @@ namespace Bearded.TD.UI.Factories
 {
     static class SidebarFactories
     {
-        public static LayoutFactories.LayoutBuilder AddMainSidebar(
-            this LayoutFactories.LayoutBuilder layout, Action<IControlParent> builderFunc)
+        public static Layouts.Layout AddMainSidebar(
+            this Layouts.Layout layout, Action<IControlParent> builderFunc)
         {
             return AddMainSidebar(layout, () =>
             {
@@ -16,15 +16,15 @@ namespace Bearded.TD.UI.Factories
             });
         }
 
-        public static LayoutFactories.LayoutBuilder AddMainSidebar(
-            this LayoutFactories.LayoutBuilder layout, Func<Control> controlFactory)
+        public static Layouts.Layout AddMainSidebar(
+            this Layouts.Layout layout, Func<Control> controlFactory)
         {
             layout.DockFractionalSizeToLeft(controlFactory(), .33);
             return layout;
         }
 
-        public static LayoutFactories.LayoutBuilder AddStatusSidebar(
-            this LayoutFactories.LayoutBuilder layout, Action<IControlParent> builderFunc)
+        public static Layouts.Layout AddStatusSidebar(
+            this Layouts.Layout layout, Action<IControlParent> builderFunc)
         {
             return AddStatusSidebar(layout, () =>
             {
@@ -34,8 +34,8 @@ namespace Bearded.TD.UI.Factories
             });
         }
 
-        public static LayoutFactories.LayoutBuilder AddStatusSidebar(
-            this LayoutFactories.LayoutBuilder layout, Func<Control> controlFactory)
+        public static Layouts.Layout AddStatusSidebar(
+            this Layouts.Layout layout, Func<Control> controlFactory)
         {
             layout.DockFractionalSizeToRight(controlFactory(), .2);
             return layout;

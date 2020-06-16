@@ -7,8 +7,8 @@ namespace Bearded.TD.UI.Factories
 {
     static class TabBarFactories
     {
-        public static LayoutFactories.LayoutBuilder AddTabs(
-            this LayoutFactories.LayoutBuilder layout, Action<Builder> builderFunc)
+        public static Layouts.Layout AddTabs(
+            this Layouts.Layout layout, Action<Builder> builderFunc)
         {
             var builder = new Builder();
             builderFunc(builder);

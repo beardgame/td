@@ -12,9 +12,9 @@ namespace Bearded.TD.UI.Factories
             TextAnchor = Controls.Label.TextAnchorLeft
         };
 
-        public static LayoutFactories.IColumnBuilder AddHeader(
-            this LayoutFactories.IColumnBuilder columnBuilder, string text) =>
-            columnBuilder.Add(Header(text), HeaderLineHeight);
+        public static Layouts.IColumnLayout AddHeader(
+            this Layouts.IColumnLayout columnLayout, string text) =>
+            columnLayout.Add(Header(text), HeaderLineHeight);
 
         public static Label Label(string text, Vector2d? textAnchor = null) => new Label(text)
         {

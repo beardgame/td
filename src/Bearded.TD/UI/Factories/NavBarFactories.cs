@@ -6,8 +6,8 @@ namespace Bearded.TD.UI.Factories
 {
     static class NavBarFactories
     {
-        public static LayoutFactories.LayoutBuilder AddNavBar(
-            this LayoutFactories.LayoutBuilder layout, Action<Builder> builderFunc)
+        public static Layouts.Layout AddNavBar(
+            this Layouts.Layout layout, Action<Builder> builderFunc)
         {
             var builder = new Builder();
             builderFunc(builder);
