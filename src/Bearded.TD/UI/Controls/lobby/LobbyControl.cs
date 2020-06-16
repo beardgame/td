@@ -37,36 +37,69 @@ namespace Bearded.TD.UI.Controls
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)
         {
-            var chatItemSource = new ChatLogListSource(model.ChatLog);
-            var chatList = new ListControl(new ViewportClippingLayerControl())
-            {
-                ItemSource = chatItemSource,
-                StickToBottom = true
-            };
-            sidebar.Add(
-                new CompositeControl
-                {
-                    new Border(),
-                    chatList.Anchor(a => a.Left(4).Right(4))
-                }.Anchor(a => a.Bottom(margin: 4, relativePercentage: .5))
-            );
-            model.ChatMessagesUpdated += chatList.Reload;
+            var logsContent = new LogsControl(model);
+            var logsWithTabs = new CompositeControl();
+            logsWithTabs
+                .BuildLayout()
+                .AddTabs(t => t
+                    .AddButton("Chat", logsContent.ShowChatLog)
+                    .AddButton("Loading", logsContent.ShowLoadingLog))
+                .FillContent(logsContent);
 
-            var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
-            var loadingList = new ListControl(new ViewportClippingLayerControl())
+            sidebar.BuildLayout().DockFractionalSizeToBottom(logsWithTabs, 0.5);
+
+            logsContent.ShowChatLog();
+        }
+
+        private sealed class LogsControl : CompositeControl
+        {
+            private readonly Control chatLog;
+            private readonly Control loadingLog;
+
+            public LogsControl(Lobby model)
             {
-                ItemSource = loadingItemSource,
-                StickToBottom = true
-            };
-            sidebar.Add(
-                new CompositeControl
+                // TODO: this is still very hardcoded with numbers
+                var chatItemSource = new ChatLogListSource(model.ChatLog);
+                var chatList = new ListControl(new ViewportClippingLayerControl())
                 {
-                    new Border(),
-                    loadingList.Anchor(a => a.Left(4).Right(4))
-                }.Anchor(a => a.Top(margin: 4, relativePercentage: .5))
-            );
-            model.LoadingUpdated += loadingItemSource.Reload;
-            model.LoadingUpdated += loadingList.Reload;
+                    ItemSource = chatItemSource,
+                    StickToBottom = true
+                };
+                chatLog =
+                    new CompositeControl
+                    {
+                        new Border(),
+                        chatList.Anchor(a => a.Left(4).Right(4))
+                    };
+                model.ChatMessagesUpdated += () => chatList.ItemSource = chatItemSource;
+
+                var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
+                var loadingList = new ListControl(new ViewportClippingLayerControl())
+                {
+                    ItemSource = loadingItemSource,
+                    StickToBottom = true
+                };
+                loadingLog =
+                    new CompositeControl
+                    {
+                        new Border(),
+                        loadingList.Anchor(a => a.Left(4).Right(4))
+                    };
+                model.LoadingUpdated += loadingItemSource.Reload;
+                model.LoadingUpdated += () => loadingList.ItemSource = loadingItemSource;
+            }
+
+            public void ShowChatLog()
+            {
+                RemoveAllChildren();
+                Add(chatLog);
+            }
+
+            public void ShowLoadingLog()
+            {
+                RemoveAllChildren();
+                Add(loadingLog);
+            }
         }
 
         private sealed class LobbyDetailsControl : CompositeControl
