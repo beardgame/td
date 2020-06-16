@@ -24,20 +24,20 @@ namespace Bearded.TD.UI.Factories
         }
 
         public static Layouts.Layout AddStatusSidebar(
-            this Layouts.Layout layout, Action<IControlParent> builderFunc)
+            this Layouts.Layout layout, Action<IControlParent> controlConsumer)
         {
             return AddStatusSidebar(layout, () =>
             {
                 var control = new CompositeControl();
-                builderFunc(control);
+                controlConsumer(control);
                 return control;
             });
         }
 
         public static Layouts.Layout AddStatusSidebar(
-            this Layouts.Layout layout, Func<Control> controlFactory)
+            this Layouts.Layout layout, Func<Control> controlConsumer)
         {
-            layout.DockFractionalSizeToRight(controlFactory(), .2);
+            layout.DockFractionalSizeToRight(controlConsumer(), .2);
             return layout;
         }
     }

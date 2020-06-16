@@ -7,30 +7,30 @@ namespace Bearded.TD.UI.Factories
 {
     static class FormFactories
     {
-        public static Control Form(Action<FormBuilder> builderFunc)
+        public static Control Form(BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder();
+            var builder = new Builder();
             builderFunc(builder);
             return builder.Build();
         }
 
-        public static Control DenseForm(Action<FormBuilder> builderFunc)
+        public static Control DenseForm(BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder().MakeDense();
+            var builder = new Builder().MakeDense();
             builderFunc(builder);
             return builder.Build();
         }
 
         public static Layouts.IColumnLayout AddForm(
-            this Layouts.IColumnLayout columnLayout, Action<FormBuilder> builderFunc)
+            this Layouts.IColumnLayout columnLayout, BuilderFunc<Builder> builderFunc)
         {
-            var builder = new FormBuilder();
+            var builder = new Builder();
             builderFunc(builder);
             columnLayout.Add(builder.Build(), builder.Height);
             return columnLayout;
         }
 
-        public class FormBuilder
+        public class Builder
         {
             private bool isDense;
             private bool isScrollable;
@@ -42,21 +42,21 @@ namespace Bearded.TD.UI.Factories
 
             public double Height => rowHeight * rows.Count;
 
-            public FormBuilder MakeDense()
+            public Builder MakeDense()
             {
                 isDense = true;
                 return this;
             }
 
-            public FormBuilder MakeScrollable()
+            public Builder MakeScrollable()
             {
                 isScrollable = true;
                 return this;
             }
 
-            public FormBuilder AddFormRow(string label, Action<Layouts.Layout> builderFunc)
+            public Builder AddFormRow(string label, Action<Layouts.Layout> layoutFunc)
             {
-                rows.Add((label, builderFunc));
+                rows.Add((label, layoutFunc));
                 return this;
             }
 

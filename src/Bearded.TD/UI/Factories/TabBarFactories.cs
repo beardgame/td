@@ -8,7 +8,7 @@ namespace Bearded.TD.UI.Factories
     static class TabBarFactories
     {
         public static Layouts.Layout AddTabs(
-            this Layouts.Layout layout, Action<Builder> builderFunc)
+            this Layouts.Layout layout, BuilderFunc<Builder> builderFunc)
         {
             var builder = new Builder();
             builderFunc(builder);
@@ -18,8 +18,8 @@ namespace Bearded.TD.UI.Factories
 
         public class Builder
         {
-            private readonly List<Action<ButtonFactories.Builder>> buttonBuilderFunctions =
-                new List<Action<ButtonFactories.Builder>>();
+            private readonly List<BuilderFunc<ButtonFactories.Builder>> buttonBuilderFunctions =
+                new List<BuilderFunc<ButtonFactories.Builder>>();
 
             public Builder AddButton(string label, VoidEventHandler onClick)
             {

@@ -19,7 +19,7 @@ static class Factories
                 return builder;
             });
 
-    public static MyControl MyControl(Func<Builder, Builder> builderFunc)
+    public static MyControl MyControl(BuilderFunc<Builder> builderFunc)
     {
         var builder = new Builder();
         builderFunc(builder);
@@ -41,8 +41,8 @@ static class Factories
 Some notes and comments:
 
 * The use of a builder makes it possible to construct different controls in an expressive way, without having to create a large number of overloads for the factory methods.
-* We pass in a function that takes a builder instead of making a builder directly because it allows us to use a consistent pattern for composite controls. For example, a tab bar may allow adding buttons taking the same builder function, where the tab builder then ask some behaviour on top.
-* The passed in builder function needs to return a builder. This makes it less likely that the caller calls the `Build` function themselves. Sadly it isn't possible to make the `Build` function only visible to the factory itself without significant more boilerplate.
+* We pass in a special `BuilderFunc` delegate that takes a builder instead of making a builder directly because it allows us to use a consistent pattern for composite controls. For example, a tab bar may allow adding buttons taking the same builder function, where the tab builder then ask some behaviour on top.
+* The `BuilderFunc` delegate expects a builder to be returned. This makes it less likely that the caller calls the `Build` function themselves. Sadly it isn't possible to make the `Build` function only visible to the factory itself without significant more boilerplate.
 
 ## Layouts
 On top of building individual controls, controls also need to be arranged in consistent ways. Layouts can help with that. Layouts vary slightly from builders in that they apply directly to a control. You pass in the control on which the layout should be built, and it will add the children to the control directly, making sure that the correct anchors are set.

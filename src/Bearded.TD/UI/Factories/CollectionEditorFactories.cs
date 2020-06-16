@@ -19,6 +19,7 @@ namespace Bearded.TD.UI.Factories
                     {
                         builder.AddCheckboxRow(label, binding);
                     }
+                    return builder;
                 })
             };
         }

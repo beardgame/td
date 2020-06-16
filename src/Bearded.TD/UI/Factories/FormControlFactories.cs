@@ -66,8 +66,8 @@ namespace Bearded.TD.UI.Factories
             return numericInput;
         }
 
-        public static FormFactories.FormBuilder AddCheckboxRow(
-            this FormFactories.FormBuilder builder, string label, Binding<bool> valueBinding)
+        public static FormFactories.Builder AddCheckboxRow(
+            this FormFactories.Builder builder, string label, Binding<bool> valueBinding)
         {
             return builder.AddFormRow(
                 label,
@@ -76,15 +76,15 @@ namespace Bearded.TD.UI.Factories
                     Constants.UI.Checkbox.Size));
         }
 
-        public static FormFactories.FormBuilder AddDropdownSelectRow(
-            this FormFactories.FormBuilder builder,
+        public static FormFactories.Builder AddDropdownSelectRow(
+            this FormFactories.Builder builder,
             string label,
             IEnumerable<string> options,
             Binding<string> valueBinding) =>
             AddDropdownSelectRow(builder, label, options, s => s, valueBinding);
 
-        public static FormFactories.FormBuilder AddDropdownSelectRow<T>(
-            this FormFactories.FormBuilder builder,
+        public static FormFactories.Builder AddDropdownSelectRow<T>(
+            this FormFactories.Builder builder,
             string label, IEnumerable<T> options,
             Func<T, string> renderer,
             Binding<T> valueBinding)
@@ -96,8 +96,8 @@ namespace Bearded.TD.UI.Factories
                     Constants.UI.Button.Width));
         }
 
-        public static FormFactories.FormBuilder AddNumberSelectRow(
-            this FormFactories.FormBuilder builder,
+        public static FormFactories.Builder AddNumberSelectRow(
+            this FormFactories.Builder builder,
             string label,
             int minValue,
             int maxValue,
