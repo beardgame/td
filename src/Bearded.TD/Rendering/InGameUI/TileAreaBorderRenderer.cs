@@ -1,5 +1,6 @@
 using System;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
@@ -16,18 +17,18 @@ namespace Bearded.TD.Rendering.InGameUI
         {
             Render(game, border, _ => color, lineWidth);
         }
-        
+
         public static void Render(GameState game, TileAreaBorder border,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
             const float z = 0.2f;
-            
-            var sprites = game.Meta.Blueprints.Sprites["particle"];
+
+            var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("halo");
 
             var offsetOuter = new Unit(Constants.Game.World.HexagonSide);
             var lineWidthU = new Unit(lineWidth);
-            
+
             border.Visit(t =>
             {
                 var (tile, direction, beforeIsConvex, afterIsConvex) = t;

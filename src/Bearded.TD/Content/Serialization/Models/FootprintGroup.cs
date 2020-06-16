@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -19,9 +20,9 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Id { get; set; }
         public List<Footprint> Footprints { get; set; }
 
-        public Game.World.FootprintGroup ToGameModel(Void _)
+        public Game.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void _)
         {
-            return new Game.World.FootprintGroup(Id,
+            return new Game.World.FootprintGroup(ModAwareId.FromNameInMod(Id, modMetadata),
                 Footprints.Select(footprint => new Bearded.TD.Tiles.Footprint(footprint.Tiles)),
                 Footprints.Select(footprint => footprint.Orientation)
             );

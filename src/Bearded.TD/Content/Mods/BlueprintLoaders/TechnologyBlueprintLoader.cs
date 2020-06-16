@@ -80,7 +80,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
                 ITechnologyBlueprint blueprint;
                 try
                 {
-                    blueprint = jsonModel.ToGameModel(dependencyResolvers);
+                    blueprint = jsonModel.ToGameModel(Context.Meta, dependencyResolvers);
                 }
                 catch (InvalidDataException e)
                 {

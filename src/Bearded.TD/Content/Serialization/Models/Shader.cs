@@ -9,7 +9,7 @@ namespace Bearded.TD.Content.Serialization.Models
         public string VertexShader { get; set; }
         public string FragmentShader { get; set; }
         
-        public Content.Models.Shader ToGameModel((FileInfo, ShaderLoader) resolver)
+        public Content.Models.Shader ToGameModel(ModMetadata contextMeta, (FileInfo, ShaderLoader) resolver)
         {
             var (fileInfo, shaderLoader) = resolver;
             return shaderLoader.TryLoad(fileInfo, this);

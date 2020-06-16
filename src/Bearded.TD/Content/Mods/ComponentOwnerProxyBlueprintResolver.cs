@@ -20,7 +20,7 @@ namespace Bearded.TD.Content.Mods
             return proxies;
         }
 
-        protected override IComponentOwnerBlueprint getDependencyFromThisMod(string id)
+        protected override IComponentOwnerBlueprint GetDependencyFromThisMod(ModAwareId id)
         {
             // could cache these by id, but they are small objects, and are unlikely to be reused much it at all
             var proxy = new ComponentOwnerBlueprintProxy(id);
@@ -30,7 +30,7 @@ namespace Bearded.TD.Content.Mods
             return proxy;
         }
 
-        protected override IComponentOwnerBlueprint getDependencyFromOtherMod(Mod mod, string id)
+        protected override IComponentOwnerBlueprint GetDependencyFromOtherMod(Mod mod, ModAwareId id)
         {
             return mod.Blueprints.ComponentOwners[id];
         }

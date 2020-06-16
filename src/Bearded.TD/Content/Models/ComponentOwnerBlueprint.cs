@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -12,10 +13,10 @@ namespace Bearded.TD.Content.Models
 {
     sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
     {
-        private ComponentOwnerBlueprint blueprint;
-        public string Id { get; }
+        private ComponentOwnerBlueprint? blueprint;
+        public ModAwareId Id { get; }
 
-        public ComponentOwnerBlueprintProxy(string id)
+        public ComponentOwnerBlueprintProxy(ModAwareId id)
         {
             Id = id;
         }
@@ -28,13 +29,13 @@ namespace Bearded.TD.Content.Models
             this.blueprint = blueprint;
         }
 
-        IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint.GetComponents<T>();
-        bool IComponentOwnerBlueprint.CanApplyUpgradeEffect<T>(IUpgradeEffect effect) => blueprint.CanApplyUpgradeEffect<T>(effect);
+        IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint!.GetComponents<T>();
+        bool IComponentOwnerBlueprint.CanApplyUpgradeEffect<T>(IUpgradeEffect effect) => blueprint!.CanApplyUpgradeEffect<T>(effect);
     }
 
     sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
     {
-        public string Id { get; }
+        public ModAwareId Id { get; }
         private readonly IReadOnlyCollection<IComponent> componentParameters;
 
         private readonly Dictionary<Type, object> componentFactoriesByOwnerType = new Dictionary<Type, object>();
@@ -62,7 +63,7 @@ namespace Bearded.TD.Content.Models
             return factories;
         }
 
-        public ComponentOwnerBlueprint(string id, IEnumerable<IComponent> components)
+        public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponent>? components)
         {
             Id = id;
 

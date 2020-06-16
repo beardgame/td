@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -35,7 +36,7 @@ namespace Bearded.TD.Game.Commands
 
         private class Serializer : ICommandSerializer<GameInstance>
         {
-            private string blueprint;
+            private ModAwareId blueprint;
             private int x;
             private int y;
             private Id<EnemyUnit> unitId;

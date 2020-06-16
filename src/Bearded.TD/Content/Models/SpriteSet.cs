@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game;
+﻿using Bearded.TD.Content.Mods;
+using Bearded.TD.Game;
 
 namespace Bearded.TD.Content.Models
 {
@@ -12,14 +13,14 @@ namespace Bearded.TD.Content.Models
         Unknown
     }
 
-    class SpriteSet : IBlueprint
+    sealed class SpriteSet : IBlueprint
     {
-        public string Id { get; }
+        public ModAwareId Id { get; }
         public SpriteDrawGroup DrawGroup { get; }
         public int DrawGroupOrderKey { get; }
         public PackedSpriteSet Sprites { get; }
 
-        public SpriteSet(string id, SpriteDrawGroup drawGroup, int drawGroupOrderKey, PackedSpriteSet sprites)
+        public SpriteSet(ModAwareId id, SpriteDrawGroup drawGroup, int drawGroupOrderKey, PackedSpriteSet sprites)
         {
             Id = id;
             DrawGroup = drawGroup;

@@ -17,7 +17,7 @@ namespace Bearded.TD.Content.Mods
         public string Name { get; }
 
         public Blueprints Blueprints { get; }
-        public IDictionary<string, UpgradeTag> Tags { get; }
+        public IDictionary<ModAwareId, UpgradeTag> Tags { get; }
 
         public Mod(string id,
             string name,
@@ -31,7 +31,7 @@ namespace Bearded.TD.Content.Mods
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
             ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes,
-            IDictionary<string, UpgradeTag> tags)
+            IDictionary<ModAwareId, UpgradeTag> tags)
         {
             Id = id;
             Name = name;

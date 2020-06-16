@@ -52,10 +52,9 @@ namespace Bearded.TD.Content.Mods
 
         private ISprite spriteFrom(ReadonlyBlueprintCollection<SpriteSet> sets, ModAwareSpriteId id)
         {
-            var spriteSetId = id.SpriteSet.Id;
             var spriteId = id.Id;
 
-            var set = sets[spriteSetId];
+            var set = sets[id.SpriteSet];
 
             return set.Sprites.GetSprite(spriteId);
         }

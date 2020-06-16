@@ -1,7 +1,9 @@
-﻿namespace Bearded.TD.Game
+﻿using Bearded.TD.Content.Mods;
+
+namespace Bearded.TD.Game
 {
     interface IBlueprint
     {
-        string Id { get; }
+        ModAwareId Id { get; }
     }
 }

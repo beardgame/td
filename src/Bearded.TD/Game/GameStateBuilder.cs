@@ -2,6 +2,7 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Commands;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Generation;
@@ -42,7 +43,7 @@ namespace Bearded.TD.Game
             foreach (var command in setupFactions())
                 yield return command;
 
-            yield return ApplyGameRules.Command(game, game.Blueprints.GameModes["default"]);
+            yield return ApplyGameRules.Command(game, game.Blueprints.GameModes[ModAwareId.ForDefaultMod("default")]);
 
             var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 
@@ -64,7 +65,13 @@ namespace Bearded.TD.Game
             var level = game.State.Level;
             var geometry = game.State.GeometryLayer;
 
-            var crystalBlueprints = new[] {"crystal-cyan0", "crystal-cyan1", "crystal-cyan2", "crystal-cyan3"}
+            var crystalBlueprints = new[]
+                {
+                    ModAwareId.ForDefaultMod("crystal-cyan0"),
+                    ModAwareId.ForDefaultMod("crystal-cyan1"),
+                    ModAwareId.ForDefaultMod("crystal-cyan2"),
+                    ModAwareId.ForDefaultMod("crystal-cyan3")
+                }
                 .Select(id => game.Blueprints.ComponentOwners[id])
                 .ToList();
 

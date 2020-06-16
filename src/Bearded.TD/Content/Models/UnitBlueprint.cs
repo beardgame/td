@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Units;
 using Bearded.Utilities.SpaceTime;
@@ -9,7 +10,7 @@ namespace Bearded.TD.Content.Models
 {
     sealed class UnitBlueprint : IUnitBlueprint
     {
-        public string Id { get; }
+        public ModAwareId Id { get; }
         public string Name { get; }
         public int Health { get; }
         public int Damage { get; }
@@ -17,14 +18,14 @@ namespace Bearded.TD.Content.Models
         public Speed Speed { get; }
         public float Value { get; }
         public Color Color { get; }
-        
+
         private readonly IReadOnlyList<IComponentFactory<EnemyUnit>> componentFactories;
-        
+
         public IEnumerable<IComponent<EnemyUnit>> GetComponents()
             => componentFactories.Select(f => f.Create());
 
         public UnitBlueprint(
-            string id,
+            ModAwareId id,
             string name,
             int health,
             int damage,
@@ -32,7 +33,7 @@ namespace Bearded.TD.Content.Models
             Speed speed,
             float value,
             Color color,
-            IEnumerable<IComponentFactory<EnemyUnit>> componentFactories)
+            IEnumerable<IComponentFactory<EnemyUnit>>? componentFactories)
         {
             Id = id;
             Name = name;
@@ -42,7 +43,7 @@ namespace Bearded.TD.Content.Models
             Speed = speed;
             Value = value;
             Color = color;
-            
+
             this.componentFactories = (componentFactories?.ToList() ?? new List<IComponentFactory<EnemyUnit>>())
                 .AsReadOnly();
         }

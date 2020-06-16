@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -7,7 +8,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.Networking.Serialization
 {
-    class NetBufferWriter : INetBufferStream
+    sealed class NetBufferWriter : INetBufferStream
     {
         private readonly NetBuffer buffer;
 
@@ -46,6 +47,12 @@ namespace Bearded.TD.Networking.Serialization
         public void Serialize(ref Color? color, uint nullValue = 0) => buffer.Write(color?.ARGB ?? nullValue);
 
         public void SerializeArrayCount<T>(ref T[] array) => buffer.Write(array.Length);
+
+        public void Serialize(ref ModAwareId modAwareId)
+        {
+            buffer.Write(modAwareId.ModId);
+            buffer.Write(modAwareId.Id);
+        }
 
         public void Serialize(ref Unit unit) => buffer.Write(unit.NumericValue);
     }

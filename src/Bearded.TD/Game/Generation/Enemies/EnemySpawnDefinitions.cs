@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Content.Mods;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
@@ -8,17 +9,17 @@ namespace Bearded.TD.Game.Generation.Enemies
         {
             return new []
             {
-                new EnemySpawnDefinition("standard01", 8),
-                new EnemySpawnDefinition("standard02", 8),
-                new EnemySpawnDefinition("standard03", 8),
-                new EnemySpawnDefinition("fast01", 2),
-                new EnemySpawnDefinition("fast02", 2),
-                new EnemySpawnDefinition("fast03", 2),
-                new EnemySpawnDefinition("strong01", 1),
-                new EnemySpawnDefinition("strong02", 1),
-                new EnemySpawnDefinition("strong03", 1),
-                new EnemySpawnDefinition("tank01", .125),
-                new EnemySpawnDefinition("tank02", .125),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard01"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard02"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard03"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast01"), 2),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast02"), 2),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast03"), 2),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong01"), 1),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong02"), 1),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong03"), 1),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank01"), .125),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank02"), .125),
             };
         }
     }

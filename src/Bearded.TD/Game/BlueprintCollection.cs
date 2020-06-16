@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 
 namespace Bearded.TD.Game
 {
     interface IBlueprintCollection<out T> where T : IBlueprint
     {
-        T this[string id] { get; }
+        T this[ModAwareId id] { get; }
         IEnumerable<T> All { get; }
     }
 
     sealed class BlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
     {
-        private readonly Dictionary<string, T> blueprintsById = new Dictionary<string, T>();
+        private readonly Dictionary<ModAwareId, T> blueprintsById = new Dictionary<ModAwareId, T>();
 
-        public T this[string id] => blueprintsById[id];
+        public T this[ModAwareId id] => blueprintsById[id];
         public IEnumerable<T> All => blueprintsById.Values;
 
         public void Add(T blueprint)
@@ -27,17 +28,17 @@ namespace Bearded.TD.Game
 
     sealed class ReadonlyBlueprintCollection<T> : IBlueprintCollection<T> where T : IBlueprint
     {
-        private readonly IReadOnlyDictionary<string, T> blueprintsById;
+        private readonly IReadOnlyDictionary<ModAwareId, T> blueprintsById;
 
         public ReadonlyBlueprintCollection(IEnumerable<T> blueprints)
             : this(blueprints.ToDictionary(blueprint => blueprint.Id)) { }
 
-        public ReadonlyBlueprintCollection(IDictionary<string, T> blueprints)
+        public ReadonlyBlueprintCollection(IDictionary<ModAwareId, T> blueprints)
         {
-            blueprintsById = new ReadOnlyDictionary<string, T>(blueprints);
+            blueprintsById = new ReadOnlyDictionary<ModAwareId, T>(blueprints);
         }
 
-        public T this[string id] => blueprintsById[id];
+        public T this[ModAwareId id] => blueprintsById[id];
         public IEnumerable<T> All => blueprintsById.Values;
 
         public static implicit operator ReadonlyBlueprintCollection<T>(ReadonlyBlueprintCollection.EmptyReadonlyBlueprintCollection empty)
