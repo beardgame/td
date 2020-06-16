@@ -9,7 +9,7 @@ namespace Bearded.TD.UI.Controls
         private static readonly HashSet<char> allowedChars = new HashSet<char> { ' ', '-', '_', '.', '+', '"', ':', '@' };
 
         public double FontSize { get; set; } = 24;
-        
+
         public bool AllowDigits { get; set; } = true;
         public bool AllowLetters { get; set; } = true;
         public bool AllowSpecialCharacters { get; set; } = true;

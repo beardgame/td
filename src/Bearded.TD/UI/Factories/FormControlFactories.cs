@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD.UI.Factories
 {
@@ -64,6 +65,17 @@ namespace Bearded.TD.UI.Factories
             numericInput.ValueChanged += valueBinding.SetFromControl;
             valueBinding.SourceUpdated += newValue => numericInput.Value = newValue;
             return numericInput;
+        }
+
+        public static Control TextInput(Binding<string> valueBinding)
+        {
+            var textInput = new TextInput
+            {
+                FontSize = Constants.UI.Text.FontSize
+            };
+            textInput.TextChanged += () => valueBinding.SetFromControl(textInput.Text);
+            valueBinding.SourceUpdated += newValue => textInput.Text = newValue;
+            return textInput;
         }
 
         public static FormFactories.Builder AddCheckboxRow(

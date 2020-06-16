@@ -10,8 +10,10 @@ using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.Utilities;
 using OpenTK;
+using OpenTK.Input;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -53,11 +55,16 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class LogsControl : CompositeControl
         {
+            private readonly Lobby model;
+            private bool chatLogShown;
             private readonly Control chatLog;
             private readonly Control loadingLog;
+            private readonly Binding<string> chatInputBinding = new Binding<string>();
 
             public LogsControl(Lobby model)
             {
+                this.model = model;
+
                 // TODO: this is still very hardcoded with numbers
                 var chatItemSource = new ChatLogListSource(model.ChatLog);
                 var chatList = new ListControl(new ViewportClippingLayerControl())
@@ -65,11 +72,13 @@ namespace Bearded.TD.UI.Controls
                     ItemSource = chatItemSource,
                     StickToBottom = true
                 };
+                var chatInput = FormControlFactories.TextInput(chatInputBinding);
                 chatLog =
                     new CompositeControl
                     {
                         new Border(),
-                        chatList.Anchor(a => a.Left(4).Right(4))
+                        chatList.Anchor(a => a.Left(4).Right(4).Bottom(Constants.UI.Text.LineHeight)),
+                        chatInput.Anchor(a => a.Bottom(height: Constants.UI.Text.LineHeight))
                     };
                 model.ChatMessagesUpdated += () => chatList.ItemSource = chatItemSource;
 
@@ -93,12 +102,28 @@ namespace Bearded.TD.UI.Controls
             {
                 RemoveAllChildren();
                 Add(chatLog);
+                chatLogShown = true;
             }
 
             public void ShowLoadingLog()
             {
                 RemoveAllChildren();
                 Add(loadingLog);
+                chatLogShown = false;
+            }
+
+            public override void KeyHit(KeyEventArgs eventArgs)
+            {
+                base.KeyHit(eventArgs);
+
+                if (eventArgs.Handled || !chatLogShown || string.IsNullOrEmpty(chatInputBinding.Value)) return;
+
+                if (eventArgs.Key == Key.Enter)
+                {
+                    model.OnSendChatMessage(chatInputBinding.Value);
+                    chatInputBinding.SetFromSource("");
+                    eventArgs.Handled = true;
+                }
             }
         }
 

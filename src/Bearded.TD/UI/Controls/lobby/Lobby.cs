@@ -5,6 +5,7 @@ using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
@@ -50,7 +51,7 @@ namespace Bearded.TD.UI.Controls
             this.lobbyManager = lobbyManager;
             logger = dependencies.Resolve<Logger>();
 
-            gameSettings = CanChangeGameSettings && UserSettings.Instance.LastGameSettings != null
+            gameSettings = CanChangeGameSettings
                 ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
                 : new GameSettings.Builder();
             if (CanChangeGameSettings)
@@ -103,6 +104,13 @@ namespace Bearded.TD.UI.Controls
                 lastSeenChatMessage = chatMessages[chatMessages.Count - 1];
                 ChatMessagesUpdated?.Invoke();
             }
+        }
+
+        public void OnSendChatMessage(string value)
+        {
+            lobbyManager.Game.RequestDispatcher.Dispatch(
+                lobbyManager.Game.Me,
+                SendChatMessage.Request(lobbyManager.Game, lobbyManager.Game.Me, value));
         }
 
         public void OnToggleReadyButtonClicked()
