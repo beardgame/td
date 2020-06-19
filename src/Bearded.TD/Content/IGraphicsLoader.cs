@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Content

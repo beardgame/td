@@ -1,6 +1,6 @@
 ﻿using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenTK.Input;
+using OpenToolkit.Windowing.Common.Input;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 

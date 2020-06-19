@@ -5,12 +5,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.Threading;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
+using OpenToolkit.Mathematics;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Shader = Bearded.TD.Content.Models.Shader;
 

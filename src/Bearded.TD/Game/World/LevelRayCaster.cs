@@ -2,8 +2,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities.Linq;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.World
@@ -11,10 +10,10 @@ namespace Bearded.TD.Game.World
     struct LevelRayCaster
     {
         private static readonly Vector2[] directionVectorsWithHexWidthLength =
-            Tiles.Extensions.Directions
+            Extensions.Directions
                 .Select(d => d.Vector() * HexagonWidth)
                 .Prepend(Vector2.Zero).ToArray();
-        
+
         private Direction centerDirection, leftDirection, rightDirection;
         private float nextCenterIntersection, centerFullStep, centerHalfStep;
         private float nextLeftIntersection, leftFullStep, leftHalfStep;
@@ -140,7 +139,7 @@ namespace Bearded.TD.Game.World
             var sideVector = directionVectorsWithHexWidthLength[(int)side];
 
             var rayDirProjection = Vector2.Dot(rayDir, sideVector);
-            
+
             // non-positive values may occur due to rounding issues
             // in case of (nearly) orthogonal vectors in the dot product above
             // returning halfStep 0 will ensure we avoid `infinity - infinity` NaN

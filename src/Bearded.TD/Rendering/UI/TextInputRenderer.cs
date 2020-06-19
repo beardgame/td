@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using static amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI
@@ -35,7 +35,7 @@ namespace Bearded.TD.Rendering.UI
 
             geometry.Color = argb;
             geometry.Height = (float)textInput.FontSize;
-            
+
             var topLeft = textInput.Frame.TopLeft;
 
             var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);

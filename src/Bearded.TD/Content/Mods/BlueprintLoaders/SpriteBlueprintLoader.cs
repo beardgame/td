@@ -1,6 +1,4 @@
 using System.IO;
-using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
 using SpriteSet = Bearded.TD.Content.Models.SpriteSet;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;

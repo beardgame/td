@@ -6,7 +6,7 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using static Bearded.TD.UI.Factories.LegacyDefault;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
 

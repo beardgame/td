@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods.BlueprintLoaders;
 
 namespace Bearded.TD.Content.Mods
 {

@@ -8,6 +8,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;
+using KeyValuePair = Bearded.TD.Utilities.Collections.KeyValuePair;
 
 namespace Bearded.TD.Rendering
 {

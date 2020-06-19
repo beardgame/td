@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using OpenTK;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Content.Models
 {

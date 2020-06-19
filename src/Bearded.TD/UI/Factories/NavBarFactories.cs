@@ -1,4 +1,3 @@
-using System;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 

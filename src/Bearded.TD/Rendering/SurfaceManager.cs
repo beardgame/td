@@ -3,7 +3,7 @@ using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering
 {

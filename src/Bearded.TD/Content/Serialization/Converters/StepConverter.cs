@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Linq;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters

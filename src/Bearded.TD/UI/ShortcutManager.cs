@@ -6,7 +6,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Events;
 using Bearded.Utilities;
-using OpenTK.Input;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.UI
 {

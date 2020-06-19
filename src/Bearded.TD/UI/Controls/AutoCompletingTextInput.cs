@@ -1,7 +1,7 @@
 ﻿using System;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
-using OpenTK.Input;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.UI.Controls
 {

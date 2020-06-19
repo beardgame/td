@@ -5,8 +5,8 @@ using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering
 {

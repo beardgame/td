@@ -1,5 +1,5 @@
 using amulware.Graphics;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using static amulware.Graphics.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred

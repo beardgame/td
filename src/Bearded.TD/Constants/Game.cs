@@ -1,7 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD

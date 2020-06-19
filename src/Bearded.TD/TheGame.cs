@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using amulware.Graphics;
+using amulware.Graphics.Windowing;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Content;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
@@ -21,14 +21,15 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Input;
+using OpenToolkit.Mathematics;
+using OpenToolkit.Windowing.Common;
+using OpenToolkit.Windowing.Common.Input;
+using OpenToolkit.Windowing.Desktop;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD
 {
-    sealed class TheGame : Program
+    sealed class TheGame : Window
     {
         private static TheGame instance;
 
@@ -45,16 +46,21 @@ namespace Bearded.TD
         private NavigationController navigationController;
 
         public TheGame(Logger logger)
-         : base(1280, 720, GraphicsMode.Default, "Bearded.TD",
-             GameWindowFlags.Default, DisplayDevice.Default,
-             3, 2, GraphicsContextFlags.Default)
+         : base(
+             new NativeWindowSettings
+                 {
+                     Size = new Vector2i(1280, 720),
+                     API = ContextAPI.OpenGL, APIVersion = new Version(3, 2),
+                     WindowState = WindowState.Normal
+                 }
+             )
         {
             this.logger = logger;
 
             instance = this;
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override void OnLoad()
         {
             Serializers<Player, GameInstance>.Initialize();
 
@@ -84,7 +90,7 @@ namespace Bearded.TD
 
             dependencyResolver.Add(renderContext.GraphicsLoader);
 
-            inputManager = new InputManager(this);
+            inputManager = new InputManager(NativeWindow);
             dependencyResolver.Add(inputManager);
 
             rootControl = new RootControl(new DefaultRenderLayerControl());
@@ -107,17 +113,14 @@ namespace Bearded.TD
 
             shortcuts.RegisterShortcut(Key.Tilde, debugConsole.Toggle);
 
-            UserSettings.SettingsChanged += () => OnResize(null);
-
-            OnResize(EventArgs.Empty);
+            UserSettings.SettingsChanged += TriggerResize;
         }
 
-        protected override void OnResize(EventArgs e)
+        protected override void OnResize(ResizeEventArgs e)
         {
-            var viewportSize = new ViewportSize(Width, Height, UserSettings.Instance.UI.UIScale);
+            var viewportSize = new ViewportSize(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
             renderContext.OnResize(viewportSize);
-            rootControl.SetViewport(Width, Height, UserSettings.Instance.UI.UIScale);
-            base.OnResize(e);
+            rootControl.SetViewport(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
         }
 
         protected override void OnUpdateUIThread()
@@ -127,7 +130,7 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
-            inputManager.Update(Focused);
+            inputManager.Update(NativeWindow.IsFocused);
 
             if (inputManager.IsKeyPressed(Key.AltLeft) && inputManager.IsKeyHit(Key.F4))
             {
@@ -163,7 +166,6 @@ namespace Bearded.TD
         protected override void OnClosing(CancelEventArgs e)
         {
             UserSettings.Save(logger);
-            base.OnClosing(e);
         }
 
         [Command("debug.ui")]

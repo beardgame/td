@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
-using Bearded.TD.Rendering;
+﻿using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
-using OpenTK.Input;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.UI.Controls
 {

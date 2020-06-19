@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenTK;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -19,7 +19,7 @@ namespace Bearded.TD.Rendering.UI
                 Color = Color.White * .5f,
             };
         }
-        
+
         public void Render(AutoCompletingTextInput textInput)
         {
             internalRenderer.Render(textInput);

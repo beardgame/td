@@ -12,8 +12,8 @@ using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities;
-using OpenTK;
-using OpenTK.Input;
+using OpenToolkit.Mathematics;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.UI.Controls
 {

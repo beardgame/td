@@ -14,7 +14,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Game.Generation
 {

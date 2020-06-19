@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Components.Events;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;

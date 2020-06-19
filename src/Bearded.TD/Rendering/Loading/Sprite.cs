@@ -2,7 +2,7 @@
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.Utilities;
-using OpenTK;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.Loading
 {

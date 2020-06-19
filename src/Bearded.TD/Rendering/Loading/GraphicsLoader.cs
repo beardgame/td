@@ -7,13 +7,12 @@ using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Loading

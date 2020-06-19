@@ -5,7 +5,6 @@ using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 

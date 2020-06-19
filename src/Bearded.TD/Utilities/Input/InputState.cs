@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Bearded.Utilities.Input;
-using OpenTK;
-using OpenTK.Input;
+using OpenToolkit.Mathematics;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.Utilities.Input
 {

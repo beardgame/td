@@ -9,8 +9,8 @@ using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
+using OpenToolkit.Mathematics;
 using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Tiles.Direction;
 

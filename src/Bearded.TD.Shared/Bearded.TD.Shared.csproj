@@ -13,7 +13,7 @@
     <OutputPath>../../bin/Bearded.TD.Shared/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.301-dev" />
+    <PackageReference Include="Bearded.Utilities" Version="0.2.0.312-dev" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
   </ItemGroup>
 

@@ -4,8 +4,8 @@ using System.Linq;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
-using OpenTK;
-using OpenTK.Input;
+using OpenToolkit.Mathematics;
+using OpenToolkit.Windowing.Common.Input;
 
 namespace Bearded.TD.Game.Input
 {

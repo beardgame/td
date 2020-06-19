@@ -1,6 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.Utilities;
-using OpenTK;
+using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred
 {

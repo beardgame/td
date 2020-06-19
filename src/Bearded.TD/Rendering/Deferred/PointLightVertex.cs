@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using static amulware.Graphics.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred
@@ -10,7 +10,7 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly Vector3 vertexLightPosition;
         private readonly float vertexLightRadiusSquared;
         private readonly Color vertexLightColor;
-        
+
         public PointLightVertex(
             Vector3 vertexPosition,
             Vector3 vertexLightPosition,

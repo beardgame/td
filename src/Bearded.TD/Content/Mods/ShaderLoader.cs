@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using amulware.Graphics;
-using OpenTK.Graphics.OpenGL;
+using OpenToolkit.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Content.Mods

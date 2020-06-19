@@ -2,7 +2,7 @@
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
-using OpenTK;
+using OpenToolkit.Mathematics;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
