@@ -85,6 +85,7 @@ namespace Bearded.TD
                     (typeof(Border), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
                     (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
                     (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(surfaces.ConsoleBackground)),
+                    (typeof(Dot), new DotRenderer(surfaces.ConsoleBackground)),
                     (typeof(Control), new FallbackBoxRenderer(surfaces.ConsoleBackground)),
                 });
 

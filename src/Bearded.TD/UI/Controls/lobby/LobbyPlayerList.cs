@@ -11,6 +11,7 @@ namespace Bearded.TD.UI.Controls
         private const float margin = 2;
         private const float padding = 4;
         private const float fontSize = 20;
+        private const float dotSize = 6;
 
         public sealed class ItemSource : IListItemSource
         {
@@ -41,11 +42,14 @@ namespace Bearded.TD.UI.Controls
             {
                 Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
 
+                Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
+                    .Left(padding, width: dotSize)
+                    .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
                 Add(new Label(player.Name)
                 {
                     Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
                 }.Anchor(a => a
-                    .Left(padding)
+                    .Left(2 * padding + dotSize)
                     .Right(padding)));
             }
 
@@ -58,16 +62,19 @@ namespace Bearded.TD.UI.Controls
             {
                 Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
 
+                Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
+                    .Left(padding, width: dotSize)
+                    .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
                 Add(new Label(player.Name)
                 {
                     Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
                 }.Anchor(a => a
-                    .Left(padding)
+                    .Left(2 * padding + dotSize)
                     .Right(relativePercentage: .5)));
 
-                Add(new DynamicLabel(() => getStatusStringForPlayer(player))
+                Add(new DynamicLabel(() => getStatusStringForPlayer(player), () => getStatusColorForPlayer(player))
                 {
-                    Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
+                    FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
                 }.Anchor(a => a
                     .Left(relativePercentage: .5)
                     .Right(relativePercentage: .75)));
@@ -80,22 +87,39 @@ namespace Bearded.TD.UI.Controls
             }
 
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+        }
 
-            private static string getStatusStringForPlayer(Player player)
+        private static string getStatusStringForPlayer(Player player)
+        {
+            switch (player.ConnectionState)
             {
-                switch (player.ConnectionState)
-                {
-                    case PlayerConnectionState.Connecting:
-                        return "connecting";
-                    case PlayerConnectionState.Waiting:
-                        return "not ready";
-                    case PlayerConnectionState.LoadingMods:
-                        return "loading mods";
-                    case PlayerConnectionState.Ready:
-                        return "ready";
-                    default:
-                        return "unknown";
-                }
+                case PlayerConnectionState.Connecting:
+                    return "connecting";
+                case PlayerConnectionState.Waiting:
+                    return "not ready";
+                case PlayerConnectionState.LoadingMods:
+                    return "loading mods";
+                case PlayerConnectionState.Ready:
+                    return "ready";
+                default:
+                    return "unknown";
+            }
+        }
+
+        private static Color getStatusColorForPlayer(Player player)
+        {
+            switch (player.ConnectionState)
+            {
+                case PlayerConnectionState.Connecting:
+                    return Color.LightBlue;
+                case PlayerConnectionState.Waiting:
+                    return Color.Gold;
+                case PlayerConnectionState.LoadingMods:
+                    return Color.LightBlue;
+                case PlayerConnectionState.Ready:
+                    return Color.LimeGreen;
+                default:
+                    return Color.HotPink;
             }
         }
     }
