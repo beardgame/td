@@ -3,8 +3,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD.MasterServer/Debug/</OutputPath>
@@ -22,7 +23,7 @@
     <None Include="*.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj" />
+    <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
   </ItemGroup>
 </Project>

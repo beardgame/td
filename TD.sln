@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "amulware.Graphics", "libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lidgren.Network", "libs\lidgren\Lidgren.Network\Lidgren.Network.csproj", "{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Proto", "src\Bearded.TD.Proto\Bearded.TD.Proto.csproj", "{4862BBB1-839D-4831-9985-D3399C8C2DED}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.MasterServer", "src\Bearded.TD.MasterServer\Bearded.TD.MasterServer.csproj", "{56474285-E3DB-433D-8A04-8CF7DE00AF54}"
@@ -26,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Shared", "src\Be
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Tests", "src\Bearded.TD.Tests\Bearded.TD.Tests.csproj", "{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lidgren.Network.MultiTarget", "libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj", "{EC4CC942-9665-4713-BB93-22343A4A5167}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,14 +38,6 @@ Global
 		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59BEDA5C-D68A-4011-89BA-C09421D22974}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Debug|x86.Build.0 = Debug|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Release|x86.ActiveCfg = Release|Any CPU
-		{49BA1C69-6104-41AC-A5D8-B54FA9F696E8}.Release|x86.Build.0 = Release|Any CPU
 		{4862BBB1-839D-4831-9985-D3399C8C2DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4862BBB1-839D-4831-9985-D3399C8C2DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4862BBB1-839D-4831-9985-D3399C8C2DED}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -110,6 +102,14 @@ Global
 		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|x86.ActiveCfg = Release|Any CPU
 		{23779184-C19F-45BC-BC0D-DBF0CEFFDF70}.Release|x86.Build.0 = Release|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Debug|x86.Build.0 = Debug|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Release|x86.ActiveCfg = Release|Any CPU
+		{EC4CC942-9665-4713-BB93-22343A4A5167}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

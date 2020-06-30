@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj" />
-    <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network\Lidgren.Network.csproj" />
+    <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
     <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
   </ItemGroup>
