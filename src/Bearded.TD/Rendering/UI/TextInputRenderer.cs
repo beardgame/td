@@ -37,18 +37,17 @@ namespace Bearded.TD.Rendering.UI
             geometry.Height = (float)textInput.FontSize;
 
             var topLeft = textInput.Frame.TopLeft;
+            var midLeft = topLeft + Vector2d.UnitY * .5 * textInput.Frame.Size.Y;
 
             var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);
             var stringWidthBeforeCursor = geometry.StringWidth(textBeforeCursor);
 
-            geometry.DrawString((Vector2)topLeft, textInput.Text);
+            geometry.DrawString((Vector2)midLeft, textInput.Text, alignY: .5f);
 
             if (textInput.IsFocused)
             {
                 geometry.DrawString(
-                    (Vector2) new Vector2d(topLeft.X + stringWidthBeforeCursor, topLeft.Y + textInput.FontSize * 0.5f),
-                    cursorString, .5f, .5f
-                );
+                    (Vector2) new Vector2d(midLeft.X + stringWidthBeforeCursor, midLeft.Y), cursorString, .5f, .5f);
             }
         }
     }

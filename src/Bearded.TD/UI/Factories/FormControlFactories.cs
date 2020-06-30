@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD.UI.Factories
@@ -71,8 +72,10 @@ namespace Bearded.TD.UI.Factories
         {
             var textInput = new TextInput
             {
-                FontSize = Constants.UI.Text.FontSize
+                FontSize = Constants.UI.Text.FontSize,
+                Text = valueBinding.Value
             };
+            textInput.MoveCursorToEnd();
             textInput.TextChanged += () => valueBinding.SetFromControl(textInput.Text);
             valueBinding.SourceUpdated += newValue => textInput.Text = newValue;
             return textInput;
@@ -86,6 +89,21 @@ namespace Bearded.TD.UI.Factories
                 layout => layout.DockFixedSizeToLeft(
                     Checkbox(valueBinding).WrapVerticallyCentered(Constants.UI.Checkbox.Size),
                     Constants.UI.Checkbox.Size));
+        }
+
+        public static FormFactories.Builder AddButtonRow(
+            this FormFactories.Builder builder,
+            string label,
+            VoidEventHandler onClick) =>
+            AddButtonRow(builder, b => b.WithLabel(label).WithOnClick(onClick));
+
+        public static FormFactories.Builder AddButtonRow(
+            this FormFactories.Builder builder,
+            BuilderFunc<ButtonFactories.Builder> builderFunc)
+        {
+            return builder.AddFormRow(null, layout => layout.DockFixedSizeToRight(
+                ButtonFactories.Button(builderFunc).WrapVerticallyCentered(Constants.UI.Button.Height),
+                Constants.UI.Button.Width));
         }
 
         public static FormFactories.Builder AddDropdownSelectRow(
@@ -104,8 +122,8 @@ namespace Bearded.TD.UI.Factories
             return builder.AddFormRow(
                 label,
                 layout => layout.DockFixedSizeToRight(
-                    DropdownSelect(options, renderer, valueBinding).WrapVerticallyCentered(Constants.UI.Button.Height),
-                    Constants.UI.Button.Width));
+                    DropdownSelect(options, renderer, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                    Constants.UI.Form.InputWidth));
         }
 
         public static FormFactories.Builder AddNumberSelectRow(
@@ -118,8 +136,20 @@ namespace Bearded.TD.UI.Factories
             return builder.AddFormRow(
                 label,
                 layout => layout.DockFixedSizeToRight(
-                    NumberSelect(minValue, maxValue, valueBinding).WrapVerticallyCentered(Constants.UI.Button.Height),
-                    Constants.UI.Button.Width));
+                    NumberSelect(minValue, maxValue, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                    Constants.UI.Form.InputWidth));
+        }
+
+        public static FormFactories.Builder AddTextInputRow(
+            this FormFactories.Builder builder,
+            string label,
+            Binding<string> valueBinding)
+        {
+            return builder.AddFormRow(
+                label,
+                layout => layout.DockFixedSizeToRight(
+                    TextInput(valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                    Constants.UI.Form.InputWidth));
         }
     }
 }

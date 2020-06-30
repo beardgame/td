@@ -23,6 +23,9 @@
             {
                 public const double DenseFormRowHeight = 36;
                 public const double FormRowHeight = 48;
+
+                public const double InputHeight = Button.Height;
+                public const double InputWidth = Button.Width;
             }
 
             public static class NavBar

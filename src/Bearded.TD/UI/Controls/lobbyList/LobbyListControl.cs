@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Meta;
+using Bearded.TD.UI.Factories;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
-using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -8,40 +9,21 @@ namespace Bearded.TD.UI.Controls
     {
         public LobbyListControl(LobbyList model)
         {
-            Add(Button("Refresh lobbies")
-                .Anchor(a => a
-                    .Bottom(margin: 70, height: 50)
-                    .Left(margin: 20, width: 250))
-                .Subscribe(b => b.Clicked += model.OnRefreshLobbiesButtonClicked));
-            Add(Button("Back to menu")
-                .Anchor(a => a
-                    .Bottom(margin: 20, height: 50)
-                    .Left(margin: 20, width: 250))
-                .Subscribe(b => b.Clicked += model.OnBackToMenuButtonClicked));
+            var ipBinding = Binding.Create(UserSettings.Instance.Misc.SavedNetworkAddress);
 
-            var manualTextInput = new TextInput { Text = UserSettings.Instance.Misc.SavedNetworkAddress };
-            manualTextInput.MoveCursorToEnd();
-
-            Add(new CompositeControl
-            {
-                manualTextInput.Anchor(a => a.Right(margin: 120)),
-                Button("Connect")
-                    .Anchor(a => a.Right(width: 120))
-                    .Subscribe(b => b.Clicked += () => model.OnConnectManualButtonClicked(manualTextInput.Text))
-            }.Anchor(a => a
-                .Bottom(margin: 46, height: 24)
-                .Right(margin: 20)
-                .Left(relativePercentage: .5, margin: 20)));
-
-            var list = new ListControl {ItemSource = new LobbyListItemSource(model)}
-                .Anchor(a => a
-                    .Left(relativePercentage: .5)
-                    .Right(margin: 20)
-                    .Top(margin: 20)
-                    .Bottom(margin: 100));
-
-            Add(list);
+            var list = new ListControl {ItemSource = new LobbyListItemSource(model)};
             model.LobbyReceived += lobby => list.OnAppendItems(1);
+
+            this.BuildLayout()
+                .ForFullScreen()
+                .AddNavBar(b => b
+                    .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked))
+                .AddMainSidebar(c => c.BuildFixedColumn()
+                    .AddForm(f => f
+                        .AddTextInputRow("Custom IP", ipBinding)
+                        .AddButtonRow("Connect", () => model.OnConnectManualButtonClicked(ipBinding.Value))
+                        .AddButtonRow("Refresh lobbies", model.OnRefreshLobbiesButtonClicked)))
+                .FillContent(list);
         }
 
         private class LobbyListItemSource : IListItemSource

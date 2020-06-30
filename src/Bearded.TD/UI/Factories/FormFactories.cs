@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Factories
         {
             private bool isDense;
             private bool isScrollable;
-            private readonly List<(string, Action<Layouts.Layout>)> rows =
+            private readonly List<(string?, Action<Layouts.Layout>)> rows =
                 new List<(string, Action<Layouts.Layout>)>();
 
             private double rowHeight =>
@@ -54,7 +54,7 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
-            public Builder AddFormRow(string label, Action<Layouts.Layout> layoutFunc)
+            public Builder AddFormRow(string? label, Action<Layouts.Layout> layoutFunc)
             {
                 rows.Add((label, layoutFunc));
                 return this;
@@ -74,7 +74,10 @@ namespace Bearded.TD.UI.Factories
                     var rowControl = new CompositeControl();
                     var rowLayout = rowControl.BuildLayout();
                     row.Item2(rowLayout);
-                    rowLayout.FillContent(TextFactories.Label(row.Item1, Label.TextAnchorLeft));
+                    if (row.Item1 != null)
+                    {
+                        rowLayout.FillContent(TextFactories.Label(row.Item1, Label.TextAnchorLeft));
+                    }
                     columnLayout.Add(rowControl, rowHeight);
                 }
             }
