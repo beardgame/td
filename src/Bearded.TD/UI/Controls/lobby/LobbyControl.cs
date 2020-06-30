@@ -49,14 +49,14 @@ namespace Bearded.TD.UI.Controls
                 .FillContent(logsContent);
 
             sidebar.BuildLayout().DockFractionalSizeToBottom(logsWithTabs, 0.5);
-
-            logsContent.ShowChatLog();
         }
 
         private sealed class LogsControl : CompositeControl
         {
             private readonly Lobby model;
             private bool chatLogShown;
+            private readonly ListControl chatList;
+            private readonly ListControl loadingList;
             private readonly Control chatLog;
             private readonly Control loadingLog;
             private readonly Binding<string> chatInputBinding = new Binding<string>();
@@ -67,7 +67,7 @@ namespace Bearded.TD.UI.Controls
 
                 // TODO: this is still very hardcoded with numbers
                 var chatItemSource = new ChatLogListSource(model.ChatLog);
-                var chatList = new ListControl(new ViewportClippingLayerControl())
+                chatList = new ListControl(new ViewportClippingLayerControl())
                 {
                     ItemSource = chatItemSource,
                     StickToBottom = true
@@ -80,10 +80,12 @@ namespace Bearded.TD.UI.Controls
                         chatList.Anchor(a => a.Left(4).Right(4).Bottom(Constants.UI.Text.LineHeight)),
                         chatInput.Anchor(a => a.Bottom(height: Constants.UI.Text.LineHeight))
                     };
+                chatLog.IsVisible = true;
+                Add(chatLog);
                 model.ChatMessagesUpdated += () => chatList.ItemSource = chatItemSource;
 
                 var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
-                var loadingList = new ListControl(new ViewportClippingLayerControl())
+                loadingList = new ListControl(new ViewportClippingLayerControl())
                 {
                     ItemSource = loadingItemSource,
                     StickToBottom = true
@@ -94,21 +96,27 @@ namespace Bearded.TD.UI.Controls
                         new Border(),
                         loadingList.Anchor(a => a.Left(4).Right(4))
                     };
+                loadingLog.IsVisible = false;
+                Add(loadingLog);
                 model.LoadingUpdated += loadingItemSource.Reload;
                 model.LoadingUpdated += () => loadingList.ItemSource = loadingItemSource;
             }
 
             public void ShowChatLog()
             {
-                RemoveAllChildren();
-                Add(chatLog);
+                chatLog.IsVisible = true;
+                loadingLog.IsVisible = false;
+                chatList.Reload();
+                chatList.ScrollToBottom();
                 chatLogShown = true;
             }
 
             public void ShowLoadingLog()
             {
-                RemoveAllChildren();
-                Add(loadingLog);
+                chatLog.IsVisible = false;
+                loadingLog.IsVisible = true;
+                loadingList.Reload();
+                loadingList.ScrollToBottom();
                 chatLogShown = false;
             }
 
