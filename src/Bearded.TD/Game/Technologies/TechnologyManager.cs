@@ -15,7 +15,8 @@ namespace Bearded.TD.Game.Technologies
     {
         private readonly GlobalGameEvents events;
 
-        private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new HashSet<ITechnologyBlueprint>();
+        private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies =
+            new Dictionary<ITechnologyBlueprint, long>();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
         private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new HashSet<IUpgradeBlueprint>();
         private readonly List<ITechnologyBlueprint> queuedTechnologies = new List<ITechnologyBlueprint>();
@@ -97,7 +98,7 @@ namespace Bearded.TD.Game.Technologies
             }
         }
 
-        public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.Contains(technology);
+        public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.ContainsKey(technology);
 
         public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
             IsTechnologyLocked(technology)
@@ -106,19 +107,55 @@ namespace Bearded.TD.Game.Technologies
 
         private bool canAffordNow(ITechnologyBlueprint technology) => TechPoints >= CostIfUnlockedNow(technology);
 
-        public long CostIfUnlockedNow(ITechnologyBlueprint technology)
-        {
-            return (long) (technology.Cost * techCostMultiplier);
-        }
+        public long CostIfUnlockedNow(ITechnologyBlueprint technology) =>
+            costAtPositionInQueue(technology, 0);
 
-        public long CostAtEndOfQueue(ITechnologyBlueprint technology)
+        private long costAtPositionInQueue(ITechnologyBlueprint technology, int position)
         {
-            var multiplier = techCostMultiplier * Math.Pow(TechCostMultiplicationFactor, queuedTechnologies.Count);
+            var multiplier = techCostMultiplier * Math.Pow(TechCostMultiplicationFactor, position);
             return (long) (technology.Cost * multiplier);
         }
 
+        public long ExpectedCost(ITechnologyBlueprint technology)
+        {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (techCostMultiplier == 1)
+            {
+                return technology.Cost;
+            }
+
+            if (unlockedTechnologies.ContainsKey(technology))
+            {
+                return unlockedTechnologies[technology];
+            }
+
+            if (IsTechnologyQueued(technology))
+            {
+                return costAtPositionInQueue(technology, QueuePositionFor(technology));
+            }
+
+            return costAtPositionInQueue(
+                technology, queuedTechnologies.Count + countLockedAndNotQueuedDependencies(technology));
+        }
+
+        private int countLockedAndNotQueuedDependencies(ITechnologyBlueprint technology)
+        {
+            var seen = new HashSet<ITechnologyBlueprint>();
+            return countInternal(technology) - 1; // Since we include the current technology in the count.
+
+            int countInternal(ITechnologyBlueprint tech)
+            {
+                seen.Add(tech);
+                return 1 + tech.RequiredTechs
+                    .Where(dependency => !seen.Contains(dependency)
+                         && IsTechnologyLocked(dependency)
+                         && !IsTechnologyQueued(dependency))
+                    .Sum(countInternal);
+            }
+        }
+
         public bool HasAllRequiredTechs(ITechnologyBlueprint technology) =>
-            technology.RequiredTechs.All(unlockedTechnologies.Contains);
+            technology.RequiredTechs.All(unlockedTechnologies.ContainsKey);
 
         private void tryUnlockQueuedTechnologies()
         {
@@ -142,9 +179,10 @@ namespace Bearded.TD.Game.Technologies
         {
             DebugAssert.Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
-            TechPoints -= CostIfUnlockedNow(technology);
+            var cost = CostIfUnlockedNow(technology);
+            TechPoints -= cost;
             techCostMultiplier *= TechCostMultiplicationFactor;
-            unlockedTechnologies.Add(technology);
+            unlockedTechnologies.Add(technology, cost);
             technology.Unlocks.ForEach(unlock => unlock.Apply(this));
             events.Send(new TechnologyUnlocked(technology));
         }
