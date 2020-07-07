@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Events;
@@ -6,6 +7,7 @@ using Bearded.TD.Game.Units;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using static Bearded.TD.Constants.Game.Technology;
 
 namespace Bearded.TD.Game.Technologies
 {
@@ -19,6 +21,8 @@ namespace Bearded.TD.Game.Technologies
         private readonly List<ITechnologyBlueprint> queuedTechnologies = new List<ITechnologyBlueprint>();
 
         public long TechPoints { get; private set; }
+
+        private double techCostMultiplier = 1;
 
         public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
@@ -65,7 +69,7 @@ namespace Bearded.TD.Game.Technologies
                 queueTechnologyAndMissingDependencies(dependency);
             }
 
-            if (queuedTechnologies.Count == 0 && canAfford(technology))
+            if (queuedTechnologies.Count == 0 && canAffordNow(technology))
             {
                 unlockTechnology(technology);
             }
@@ -97,17 +101,28 @@ namespace Bearded.TD.Game.Technologies
 
         public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
             IsTechnologyLocked(technology)
-            && canAfford(technology)
+            && canAffordNow(technology)
             && HasAllRequiredTechs(technology);
 
-        private bool canAfford(ITechnologyBlueprint technology) => TechPoints >= technology.Cost;
+        private bool canAffordNow(ITechnologyBlueprint technology) => TechPoints >= CostIfUnlockedNow(technology);
+
+        public long CostIfUnlockedNow(ITechnologyBlueprint technology)
+        {
+            return (long) (technology.Cost * techCostMultiplier);
+        }
+
+        public long CostAtEndOfQueue(ITechnologyBlueprint technology)
+        {
+            var multiplier = techCostMultiplier * Math.Pow(TechCostMultiplicationFactor, queuedTechnologies.Count);
+            return (long) (technology.Cost * multiplier);
+        }
 
         public bool HasAllRequiredTechs(ITechnologyBlueprint technology) =>
             technology.RequiredTechs.All(unlockedTechnologies.Contains);
 
         private void tryUnlockQueuedTechnologies()
         {
-            while (queuedTechnologies.Count > 0 && queuedTechnologies[0].Cost <= TechPoints)
+            while (queuedTechnologies.Count > 0 && canAffordNow(queuedTechnologies[0]))
             {
                 unlockFirstQueuedTechnology();
             }
@@ -127,7 +142,8 @@ namespace Bearded.TD.Game.Technologies
         {
             DebugAssert.Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
-            TechPoints -= technology.Cost;
+            TechPoints -= CostIfUnlockedNow(technology);
+            techCostMultiplier *= TechCostMultiplicationFactor;
             unlockedTechnologies.Add(technology);
             technology.Unlocks.ForEach(unlock => unlock.Apply(this));
             events.Send(new TechnologyUnlocked(technology));

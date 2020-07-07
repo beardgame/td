@@ -48,6 +48,8 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
+        public long CostFor(ITechnologyBlueprint tech) => technologyManager.CostAtEndOfQueue(tech);
+
         public void UpdateTechnology(ITechnologyBlueprint tech)
         {
             technologyStatuses[tech] = evaluateStatusForTech(tech);

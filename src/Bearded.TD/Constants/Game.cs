@@ -72,6 +72,11 @@ namespace Bearded.TD
                 public const double ResourcesOnKillFactor = 0;
             }
 
+            public static class Technology
+            {
+                public const double TechCostMultiplicationFactor = 1.2;
+            }
+
             public static class Enemy
             {
                 public static readonly Speed PathIndicatorSpeed = 10.UnitsPerSecond();

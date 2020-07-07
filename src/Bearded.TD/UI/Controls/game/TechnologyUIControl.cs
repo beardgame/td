@@ -193,7 +193,7 @@ namespace Bearded.TD.UI.Controls
                     onValue: tech =>
                     {
                         headerLabel.Text = tech.Name;
-                        costLabel.Text = $"{tech.Cost} tech points";
+                        costLabel.Text = $"{model.CostFor(tech)} tech points";
                         unlockButton.IsVisible = true;
                         unlocksList.ItemSource =
                             new TechnologyUnlocksListItemSource(tech.Unlocks, model.DependentsFor(tech));
