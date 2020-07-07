@@ -56,7 +56,7 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly TechnologyUIModel model;
             private readonly Action<ITechnologyBlueprint> buttonClickCallback;
-            private readonly ImmutableList<ITechnologyBlueprint> sortedTechnologies;
+            private readonly ImmutableArray<ITechnologyBlueprint> sortedTechnologies;
 
             public int ItemCount { get; }
 
@@ -77,7 +77,7 @@ namespace Bearded.TD.UI.Controls
                         : leftIsLockedAsInt.CompareTo(rightIsLockedAsInt);
                 });
 
-                ItemCount = model.Technologies.Count;
+                ItemCount = model.Technologies.Length;
             }
 
             public double HeightOfItemAt(int index) => 32;
@@ -250,17 +250,17 @@ namespace Bearded.TD.UI.Controls
 
             private sealed class TechnologyUnlocksListItemSource : IListItemSource
             {
-                private readonly ImmutableList<ITechnologyUnlock> unlocks;
-                private readonly ImmutableList<ITechnologyBlueprint> dependents;
+                private readonly ImmutableArray<ITechnologyUnlock> unlocks;
+                private readonly ImmutableArray<ITechnologyBlueprint> dependents;
 
-                public int ItemCount => unlocks.Count + dependents.Count;
+                public int ItemCount => unlocks.Length + dependents.Length;
 
                 public TechnologyUnlocksListItemSource(
                     IEnumerable<ITechnologyUnlock> unlocks,
                     IEnumerable<ITechnologyBlueprint> dependents)
                 {
-                    this.unlocks = ImmutableList.CreateRange(unlocks);
-                    this.dependents = ImmutableList.CreateRange(dependents);
+                    this.unlocks = ImmutableArray.CreateRange(unlocks);
+                    this.dependents = ImmutableArray.CreateRange(dependents);
                 }
 
                 public double HeightOfItemAt(int index) => 24;
@@ -269,25 +269,25 @@ namespace Bearded.TD.UI.Controls
                     new Label(labelFor(index)) {FontSize = 20, TextAnchor = new Vector2d(0, .5)};
 
                 private string labelFor(int index) =>
-                    index < unlocks.Count
+                    index < unlocks.Length
                         ? $"- {unlocks[index].Description}"
-                        : $"- Required technology for: {dependents[index - unlocks.Count].Name}";
+                        : $"- Required technology for: {dependents[index - unlocks.Length].Name}";
 
                 public void DestroyItemControlAt(int index, Control control) {}
             }
 
             private sealed class TechnologyDependenciesListItemSource : IListItemSource
             {
-                private readonly ImmutableList<ITechnologyBlueprint> dependencies;
+                private readonly ImmutableArray<ITechnologyBlueprint> dependencies;
                 private readonly Func<ITechnologyBlueprint, TechnologyUIModel.TechnologyStatus> statusGetter;
 
-                public int ItemCount => dependencies.Count;
+                public int ItemCount => dependencies.Length;
 
                 public TechnologyDependenciesListItemSource(
                     IEnumerable<ITechnologyBlueprint> dependencies,
                     Func<ITechnologyBlueprint, TechnologyUIModel.TechnologyStatus> statusGetter)
                 {
-                    this.dependencies = ImmutableList.CreateRange(dependencies);
+                    this.dependencies = ImmutableArray.CreateRange(dependencies);
                     this.statusGetter = statusGetter;
                 }
 

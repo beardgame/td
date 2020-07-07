@@ -15,7 +15,7 @@ namespace Bearded.TD.Rendering
     class ContentSurfaceManager
     {
         public LevelRenderer LevelRenderer { get; }
-        public ImmutableList<FluidGeometry> FluidGeometries { get; }
+        public ImmutableArray<FluidGeometry> FluidGeometries { get; }
         private static readonly ReadOnlyCollection<Surface> emptySurfaceList = new List<Surface>().AsReadOnly();
 
         private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
@@ -25,7 +25,7 @@ namespace Bearded.TD.Rendering
             IEnumerable<FluidGeometry> fluidGeometries)
         {
             LevelRenderer = levelRenderer;
-            FluidGeometries = fluidGeometries.ToImmutableList();
+            FluidGeometries = fluidGeometries.ToImmutableArray();
             groupedAndSortedSpriteSets = spriteSets.All
                 .GroupBy(sprites => sprites.DrawGroup)
                 .ToDictionary(

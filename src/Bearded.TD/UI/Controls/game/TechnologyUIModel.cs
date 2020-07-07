@@ -27,12 +27,12 @@ namespace Bearded.TD.UI.Controls
         private readonly IDictionary<ITechnologyBlueprint, TechnologyStatus> technologyStatuses;
         private readonly ImmutableDictionary<ITechnologyBlueprint, IList<ITechnologyBlueprint>> technologyDependents;
 
-        public ImmutableList<ITechnologyBlueprint> Technologies { get; }
+        public ImmutableArray<ITechnologyBlueprint> Technologies { get; }
 
         public TechnologyUIModel(GameInstance game)
         {
             this.game = game;
-            Technologies = game.Blueprints.Technologies.All.ToImmutableList();
+            Technologies = game.Blueprints.Technologies.All.ToImmutableArray();
             faction = game.Me.Faction;
             technologyManager = faction.Technology;
 
@@ -75,7 +75,7 @@ namespace Bearded.TD.UI.Controls
         public int QueuePositionFor(ITechnologyBlueprint tech) => technologyManager.QueuePositionFor(tech);
 
         public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) =>
-            technologyDependents.GetValueOrDefault(tech, ImmutableList<ITechnologyBlueprint>.Empty);
+            technologyDependents.GetValueOrDefault(tech, ImmutableArray<ITechnologyBlueprint>.Empty);
 
         private TechnologyStatus evaluateStatusForTech(ITechnologyBlueprint tech)
         {

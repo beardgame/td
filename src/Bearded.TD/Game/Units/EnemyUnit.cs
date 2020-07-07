@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Units
         private readonly ComponentEvents events = new ComponentEvents();
 
         private readonly ComponentCollection<EnemyUnit> components;
-        private ImmutableList<ISyncable> syncables;
+        private ImmutableArray<ISyncable> syncables;
         private Health<EnemyUnit> health;
         private bool isDead;
 
@@ -85,7 +85,7 @@ namespace Bearded.TD.Game.Units
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
 
-            syncables = components.Get<ISyncable>().ToImmutableList();
+            syncables = components.Get<ISyncable>().ToImmutableArray();
 
             Radius = ((Mathf.Atan(.005f * (health.MaxHealth - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f).U();
         }

@@ -250,10 +250,10 @@ namespace Bearded.TD.UI.Controls
         {
             private readonly ModLoadingProfiler profiler;
 
-            private ImmutableList<ModLoadingProfiler.BlueprintLoadingProfile> loadedBlueprints;
-            private ImmutableList<string> loadingBlueprints;
+            private ImmutableArray<ModLoadingProfiler.BlueprintLoadingProfile> loadedBlueprints;
+            private ImmutableArray<string> loadingBlueprints;
 
-            public int ItemCount => loadedBlueprints.Count + loadingBlueprints.Count;
+            public int ItemCount => loadedBlueprints.Length + loadingBlueprints.Length;
 
             public LoadingBlueprintsListSource(ModLoadingProfiler profiler)
             {
@@ -267,9 +267,9 @@ namespace Bearded.TD.UI.Controls
 
             public Control CreateItemControlFor(int index)
             {
-                return index <  loadedBlueprints.Count
+                return index <  loadedBlueprints.Length
                     ? LoadingBlueprintsListRow.ForLoaded(loadedBlueprints[index])
-                    : LoadingBlueprintsListRow.ForCurrentlyLoading(loadingBlueprints[index - loadedBlueprints.Count]);
+                    : LoadingBlueprintsListRow.ForCurrentlyLoading(loadingBlueprints[index - loadedBlueprints.Length]);
             }
 
             public void DestroyItemControlAt(int index, Control control) {}

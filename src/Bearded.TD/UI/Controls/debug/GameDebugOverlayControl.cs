@@ -88,7 +88,7 @@ namespace Bearded.TD.UI.Controls
 
             private static Control multiSelect(OptionsSetting setting)
             {
-                var optionWidthPercentage = 1.0 / setting.Options.Count;
+                var optionWidthPercentage = 1.0 / setting.Options.Length;
 
                 var container = new CompositeControl
                 {

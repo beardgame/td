@@ -23,8 +23,8 @@ namespace Bearded.TD.Content.Models
             Id = id;
             Name = name;
             Cost = cost;
-            Unlocks = unlocks?.ToImmutableList() ?? ImmutableList<ITechnologyUnlock>.Empty;
-            RequiredTechs = requiredTechs?.ToImmutableList() ?? ImmutableList<ITechnologyBlueprint>.Empty;
+            Unlocks = unlocks?.ToImmutableArray() ?? ImmutableArray<ITechnologyUnlock>.Empty;
+            RequiredTechs = requiredTechs?.ToImmutableArray() ?? ImmutableArray<ITechnologyBlueprint>.Empty;
         }
     }
 }

@@ -10,12 +10,12 @@ namespace Bearded.TD.Game.Navigation
     {
         private readonly Level level;
         private readonly Tilemap<TilePassability> tilemap;
-        private readonly ImmutableList<Func<Tile, Tile, bool>> extraConditions;
+        private readonly ImmutableArray<Func<Tile, Tile, bool>> extraConditions;
 
         public PassabilityLayer(Level level, IEnumerable<Func<Tile, Tile, bool>> extraConditions)
         {
             this.level = level;
-            this.extraConditions = ImmutableList.CreateRange(extraConditions);
+            this.extraConditions = ImmutableArray.CreateRange(extraConditions);
             tilemap = new Tilemap<TilePassability>(level.Radius);
         }
 

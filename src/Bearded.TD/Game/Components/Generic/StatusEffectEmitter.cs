@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Components.Generic
         private Tile ownerTile;
         private Unit range;
         private Building ownerAsBuilding;
-        private ImmutableList<Tile> tilesInRange;
+        private ImmutableArray<Tile> tilesInRange;
 
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
 
@@ -120,12 +120,12 @@ namespace Bearded.TD.Game.Components.Generic
 
             if (!level.IsValid(tile))
             {
-                tilesInRange = ImmutableList<Tile>.Empty;
+                tilesInRange = ImmutableArray<Tile>.Empty;
                 return;
             }
 
             var tileRadius = (int)(range.NumericValue * (1 / HexagonWidth) + HexagonWidth);
-            tilesInRange = ImmutableList.CreateRange(Tilemap.GetSpiralCenteredAt(tile, tileRadius));
+            tilesInRange = ImmutableArray.CreateRange(Tilemap.GetSpiralCenteredAt(tile, tileRadius));
         }
     }
 }

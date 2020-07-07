@@ -34,8 +34,8 @@ namespace Bearded.TD.Content.Mods
         private readonly List<BlueprintLoadingProfile> blueprintsLoaded =
             new List<BlueprintLoadingProfile>();
 
-        public ImmutableList<string> LoadingBlueprints => ImmutableList.CreateRange(blueprintsLoading);
-        public ImmutableList<BlueprintLoadingProfile> LoadedBlueprints => ImmutableList.CreateRange(blueprintsLoaded);
+        public ImmutableArray<string> LoadingBlueprints => ImmutableArray.CreateRange(blueprintsLoading);
+        public ImmutableArray<BlueprintLoadingProfile> LoadedBlueprints => ImmutableArray.CreateRange(blueprintsLoaded);
 
         public TimeSpan TotalElapsedTime => stopwatch.Elapsed;
 

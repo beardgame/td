@@ -24,7 +24,7 @@ namespace Bearded.TD.Content.Serialization.Models
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Cost,
-                ImmutableList.CreateRange(Effects));
+                ImmutableArray.CreateRange(Effects));
         }
     }
 }

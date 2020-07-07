@@ -171,11 +171,11 @@ namespace Bearded.TD.UI.Controls
 
         public sealed class OptionsSetting : Setting<object>
         {
-            public ImmutableList<object> Options { get; }
+            public ImmutableArray<object> Options { get; }
 
             public OptionsSetting(string setting, object[] options, Logger logger) : base(setting, logger)
             {
-                Options = ImmutableList.Create(options);
+                Options = ImmutableArray.Create(options);
             }
 
             public void Set(int index)

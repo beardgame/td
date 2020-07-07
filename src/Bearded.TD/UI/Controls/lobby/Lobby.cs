@@ -25,7 +25,7 @@ namespace Bearded.TD.UI.Controls
         private ChatMessage? lastSeenChatMessage;
 
         private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;
-        public ImmutableList<ModMetadata> AvailableMods { get; private set; } = ImmutableList<ModMetadata>.Empty;
+        public ImmutableArray<ModMetadata> AvailableMods { get; private set; } = ImmutableArray<ModMetadata>.Empty;
 
         public IList<Player> Players => lobbyManager.Game.Players;
         public ChatLog ChatLog => lobbyManager.Game.ChatLog;
@@ -63,7 +63,7 @@ namespace Bearded.TD.UI.Controls
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
 
-            AvailableMods = lobbyManager.Game.ContentManager.AvailableMods.OrderBy(m => m.Name).ToImmutableList();
+            AvailableMods = lobbyManager.Game.ContentManager.AvailableMods.OrderBy(m => m.Name).ToImmutableArray();
 
             lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
             lobbyManager.Game.PlayerAdded += onPlayersChanged;

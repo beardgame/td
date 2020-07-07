@@ -17,7 +17,7 @@ namespace Bearded.TD.Content.Models
             Id = id;
             Name = name;
             Cost = cost;
-            Effects = effects?.ToImmutableList() ?? ImmutableList<IUpgradeEffect>.Empty;
+            Effects = effects?.ToImmutableArray() ?? ImmutableArray<IUpgradeEffect>.Empty;
         }
     }
 }

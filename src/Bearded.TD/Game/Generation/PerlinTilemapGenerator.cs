@@ -285,7 +285,7 @@ namespace Bearded.TD.Game.Generation
 #if DEBUG
                     levelDebugMetadata.AddSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua);
 #endif
-                    var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableList.Create(from));
+                    var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableArray.Create(from));
                     digAlongShortestPath(from, to, pathFindingResult);
                 }
             }
@@ -300,7 +300,7 @@ namespace Bearded.TD.Game.Generation
                 // Use this if you want to make it less likely that points show up in hard rock.
                 var pushedPoints = points.Select(t => pushTileToLowestHardnessInRange(t, 5)).Distinct();
 
-                return pushedPoints.Concat(level.Corners).Concat(ImmutableList.Create(level.Center));
+                return pushedPoints.Concat(level.Corners).Concat(ImmutableArray.Create(level.Center));
             }
 
             private Tile snapTileToAlreadyCarved(Tile tile, int searchRadius)

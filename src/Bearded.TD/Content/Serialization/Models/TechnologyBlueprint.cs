@@ -25,7 +25,7 @@ namespace Bearded.TD.Content.Serialization.Models
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Cost,
-                ImmutableList.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))),
+                ImmutableArray.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))),
                 RequiredTechs.Select(resolvers.TechnologyResolver.Resolve));
         }
 

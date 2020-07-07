@@ -14,7 +14,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameNotificationsUI
     {
-        private readonly ImmutableList<INotificationListener> notificationListeners;
+        private readonly ImmutableArray<INotificationListener> notificationListeners;
         private readonly List<Notification> notifications = new List<Notification>();
 
         public GameInstance Game { get; private set; }
@@ -28,8 +28,8 @@ namespace Bearded.TD.UI.Controls
             Notifications = notifications.AsReadOnly();
         }
 
-        private ImmutableList<INotificationListener> createNotificationListeners() =>
-            ImmutableList.Create<INotificationListener>(
+        private ImmutableArray<INotificationListener> createNotificationListeners() =>
+            ImmutableArray.Create<INotificationListener>(
                 textAndGameObjectEventListener<BuildingConstructionFinished>(
                     @event => $"Constructed {@event.Building.Blueprint.Name}",
                     @event => @event.Building),

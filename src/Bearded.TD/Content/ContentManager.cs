@@ -40,7 +40,7 @@ namespace Bearded.TD.Content
                     throw new InvalidOperationException("Cannot access loaded enabled mods before finished loading.");
                 }
 
-                return enabledMods.Select(metadata => modsForLoading[metadata].GetLoadedMod()).ToImmutableList();
+                return enabledMods.Select(metadata => modsForLoading[metadata].GetLoadedMod()).ToImmutableArray();
             }
         }
 
