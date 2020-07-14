@@ -44,7 +44,7 @@ namespace Bearded.TD.Content.Serialization.Converters
 
         protected virtual void WriteJson(JsonWriter writer, T value, JsonSerializer serializer)
         {
-            throw new NotImplementedException($"Cannot serialise {typeof(T).FullName}.");
+            throw new InvalidOperationException($"Cannot serialise {typeof(T).FullName}.");
         }
     }
 }

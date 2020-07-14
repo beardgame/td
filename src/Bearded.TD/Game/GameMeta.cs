@@ -9,13 +9,15 @@ namespace Bearded.TD.Game
 {
     sealed class GameMeta
     {
+        private Blueprints? blueprints;
+
         public IDispatcher<GameInstance> Dispatcher { get; }
         public IGameSynchronizer Synchronizer { get; }
         public IdManager Ids { get; }
         public Logger Logger { get; }
         public bool GameOver { get; private set; }
         public GlobalGameEvents Events { get; } = new GlobalGameEvents();
-        public Blueprints Blueprints { get; private set; }
+        public Blueprints Blueprints => blueprints!;
 
         public GameMeta(Logger logger, IDispatcher<GameInstance> dispatcher, IGameSynchronizer synchronizer, IdManager ids)
         {
@@ -31,10 +33,10 @@ namespace Bearded.TD.Game
             // Might have to initialise the Meta class late in the GameInstance,
             // but that will require some refactoring
 
-            if (Blueprints != null)
+            if (this.blueprints != null)
                 throw new InvalidOperationException("Can only set blueprints once.");
 
-            Blueprints = blueprints;
+            this.blueprints = blueprints;
         }
 
         public void DoGameOver()
