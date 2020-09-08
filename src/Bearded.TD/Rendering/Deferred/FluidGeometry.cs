@@ -36,7 +36,7 @@ namespace Bearded.TD.Rendering
             flow = new Tilemap<Vector2>(radius + 1);
 
             surface = new ExpandingVertexSurface<FluidVertex>()
-                .WithShader(material.Shader.SurfaceShader)
+                .WithShader(material.Shader.RendererShader)
                 .AndSettings(
                     context.Surfaces.ViewMatrix,
                     context.Surfaces.ProjectionMatrix,

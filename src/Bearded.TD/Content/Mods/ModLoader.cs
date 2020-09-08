@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using amulware.Graphics.Serialization.JsonNet;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game.Components;
@@ -103,7 +102,7 @@ namespace Bearded.TD.Content.Mods
                     new SpaceTime1Converter<Energy>(d => new Energy(d)),
                     new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
                     new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
-                    Converters.ColorContainerConverter,
+                    new ColorConverter(),
                     BehaviorConverterFactory.ForBuildingComponents(),
                     BehaviorConverterFactory.ForBaseComponents(),
                     BehaviorConverterFactory.ForGameRules(),

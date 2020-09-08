@@ -127,7 +127,7 @@ namespace Bearded.TD.Rendering.Loading
 
             var surface = new IndexedSurface<UVColorVertexData>();
 
-            shader.SurfaceShader.UseOnSurface(surface);
+            shader.RendererShader.UseOnSurface(surface);
 
             return (textureUniforms, surface);
         }

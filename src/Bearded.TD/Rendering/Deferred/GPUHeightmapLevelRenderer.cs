@@ -142,7 +142,7 @@ namespace Bearded.TD.Rendering.Deferred
         private PackedSpriteSet setupHeightmapSplats(GameInstance game)
         {
             var splats = game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
-            splats.Surface.AddSetting(heightmapRadiusUniform);
+            splats.MeshBuilder.AddSetting(heightmapRadiusUniform);
 
             return splats;
         }
@@ -163,7 +163,7 @@ namespace Bearded.TD.Rendering.Deferred
             {
                 ClearOnRender = false,
                 IsStatic = true,
-            }.WithShader(material.Shader.SurfaceShader)
+            }.WithShader(material.Shader.RendererShader)
                 .AndSettings(
                     context.Surfaces.ViewMatrixLevel,
                     context.Surfaces.ProjectionMatrix,
@@ -281,12 +281,12 @@ namespace Bearded.TD.Rendering.Deferred
 
                 if (count > 10000)
                 {
-                    heightmapSplats.Surface.Render();
+                    heightmapSplats.MeshBuilder.Render();
                     count = 0;
                 }
             }
 
-            heightmapSplats.Surface.Render();
+            heightmapSplats.MeshBuilder.Render();
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
         }

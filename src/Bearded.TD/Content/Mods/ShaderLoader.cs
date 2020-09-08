@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using amulware.Graphics;
+using amulware.Graphics.ShaderManagement;
 using OpenToolkit.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
@@ -63,9 +63,9 @@ namespace Bearded.TD.Content.Mods
                 return $"{meta.Id}.{shaderId}.{path}";
             }
 
-            public ISurfaceShader Compile(ModLoadingContext context)
+            public IRendererShader Compile(ModLoadingContext context)
             {
-                return context.GraphicsLoader.CreateShaderProgram(
+                return context.GraphicsLoader.CreateRendererShader(
                     shaders, $"{meta.Id}.{shaderId}"
                 );
             }

@@ -26,7 +26,7 @@ namespace Bearded.TD.Rendering
                 .ForEach(spriteSet =>
                     {
                         spriteSet.Sprites.Textures.ForEach(t => t.Dispose());
-                        spriteSet.Sprites.Surface.Dispose();
+                        spriteSet.Sprites.MeshBuilder.Dispose();
                     }
                 );
         }

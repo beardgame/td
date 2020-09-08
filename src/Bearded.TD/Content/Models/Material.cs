@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using amulware.Graphics;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 

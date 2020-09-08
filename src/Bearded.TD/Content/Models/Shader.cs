@@ -1,4 +1,4 @@
-using amulware.Graphics;
+using amulware.Graphics.ShaderManagement;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 
@@ -8,12 +8,12 @@ namespace Bearded.TD.Content.Models
     {
         public ModAwareId Id { get; }
 
-        public ISurfaceShader SurfaceShader { get; }
+        public IRendererShader RendererShader { get; }
 
-        public Shader(ModAwareId id, ISurfaceShader surfaceShader)
+        public Shader(ModAwareId id, IRendererShader rendererShader)
         {
             Id = id;
-            SurfaceShader = surfaceShader;
+            RendererShader = rendererShader;
         }
 
     }

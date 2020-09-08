@@ -19,7 +19,7 @@ namespace Bearded.TD.Content.Serialization.Converters
 
             var x = readNumber(reader);
             var y = readNumber(reader);
-            
+
             confirmArrayToken(reader, JsonToken.EndArray);
 
             return convert(x, y);

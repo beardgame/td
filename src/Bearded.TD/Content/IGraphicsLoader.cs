@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using amulware.Graphics;
+using amulware.Graphics.ShaderManagement;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using OpenToolkit.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
@@ -16,7 +17,7 @@ namespace Bearded.TD.Content
             Shader shader,
             bool pixelate);
 
-        ISurfaceShader CreateShaderProgram(
+        IRendererShader CreateRendererShader(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);
 
         ArrayTexture CreateArrayTexture(List<Bitmap> layers);

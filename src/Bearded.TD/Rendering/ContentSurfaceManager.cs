@@ -42,7 +42,7 @@ namespace Bearded.TD.Rendering
 
         private Surface surfaceFromSpriteSet(SpriteSet spriteSet)
         {
-            return spriteSet.Sprites.Surface;
+            return spriteSet.Sprites.MeshBuilder;
         }
 
         private void fillDictionaryForMissingGroups()
