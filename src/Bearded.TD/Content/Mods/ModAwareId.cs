@@ -21,15 +21,12 @@ namespace Bearded.TD.Content.Mods
 
             var components = name.Split('.');
 
-            switch (components.Length)
+            return components.Length switch
             {
-                case 1:
-                    return new ModAwareId(mod.Id, name);
-                case 2:
-                    return new ModAwareId(components[0], components[1]);
-                default:
-                    throw new InvalidDataException($"Id may not contain more than one . ({name})");
-            }
+                1 => new ModAwareId(mod.Id, name),
+                2 => new ModAwareId(components[0], components[1]),
+                _ => throw new InvalidDataException($"Id may not contain more than one . ({name})")
+            };
         }
 
         public bool Equals(ModAwareId other) => ModId == other.ModId && Id == other.Id;
