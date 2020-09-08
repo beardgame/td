@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
@@ -7,19 +8,18 @@ namespace Bearded.TD.Rendering.UI
 {
     sealed class BackgroundBoxRenderer : IRenderer<BackgroundBox>
     {
-        private readonly PrimitiveGeometry geometry;
+        private readonly ColorShapeDrawer2 drawer;
 
-        public BackgroundBoxRenderer(IndexedSurface<PrimitiveVertexData> surface)
+        public BackgroundBoxRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
         {
-            geometry = new PrimitiveGeometry(surface);
+            drawer = new ColorShapeDrawer2(meshBuilder);
         }
 
         public void Render(BackgroundBox control)
         {
             var frame = control.Frame;
-            geometry.Color = control.Color;
 
-            geometry.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size);
+            drawer.FillRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, control.Color);
         }
     }
 }

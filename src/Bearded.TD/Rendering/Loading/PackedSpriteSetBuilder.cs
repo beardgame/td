@@ -4,7 +4,10 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
+using amulware.Graphics.RenderSettings;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Threading;
 using OpenToolkit.Graphics.OpenGL;
@@ -84,7 +87,7 @@ namespace Bearded.TD.Rendering.Loading
             );
         }
 
-        private Dictionary<string, ISprite> createSprites(IndexedSurface<UVColorVertexData> surface)
+        private Dictionary<string, ISprite> createSprites(IndexedSurface<UVColorVertex> surface)
         {
             return nameToRectangle.ToDictionary(
                 pair => pair.Key,
@@ -92,7 +95,7 @@ namespace Bearded.TD.Rendering.Loading
             );
         }
 
-        private ISprite createSprite(IndexedSurface<UVColorVertexData> surface, Rectangle rectangle)
+        private ISprite createSprite(IndexedSurface<UVColorVertex> surface, Rectangle rectangle)
         {
             var uv = toUvRectangle(rectangle);
 
@@ -106,7 +109,7 @@ namespace Bearded.TD.Rendering.Loading
                 (float)rect.Top / height, (float)rect.Bottom / height);
         }
 
-        private (List<TextureUniform>, IndexedSurface<UVColorVertexData>) createGlEntities(Shader shader, bool pixelate)
+        private (List<TextureUniform>, IndexedSurface<UVColorVertex>) createGlEntities(Shader shader, bool pixelate)
         {
             var textureUniforms = samplerData.Select(
                 (kvp, i) =>
@@ -125,7 +128,7 @@ namespace Bearded.TD.Rendering.Loading
                 }
             ).ToList();
 
-            var surface = new IndexedSurface<UVColorVertexData>();
+            var surface = new IndexedSurface<UVColorVertex>();
 
             shader.RendererShader.UseOnSurface(surface);
 

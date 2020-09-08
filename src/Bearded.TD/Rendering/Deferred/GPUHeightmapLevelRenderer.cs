@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.RenderSettings;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -61,7 +63,7 @@ namespace Bearded.TD.Rendering.Deferred
             fallOffDistance = (level.Radius - 0.25f) * HexagonWidth;
 
             heightmap = setupHeightmapTexture();
-            heightmapTarget = new RenderTarget(heightmap);
+            heightmapTarget = RenderTarget.WithColorAttachments(heightmap);
 
             gridSurface = setupSurface(context);
 
@@ -91,9 +93,13 @@ namespace Bearded.TD.Rendering.Deferred
             heightMapPixelsPerTile = scale;
             heightMapResolution = (int) (tileMapWidth * scale);
 
-            heightmap.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f);
-            heightmapRadiusUniform.Float = heightMapWorldSize * 0.5f;
-            heightmapPixelSizeUVUniform.Float = 1f / heightMapResolution;
+            using (var target = heightmap.Bind())
+            {
+                target.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f);
+            }
+
+            heightmapRadiusUniform.Value = heightMapWorldSize * 0.5f;
+            heightmapPixelSizeUVUniform.Value = 1f / heightMapResolution;
 
             isHeightmapGenerated = false;
         }
@@ -150,10 +156,9 @@ namespace Bearded.TD.Rendering.Deferred
         private Texture setupHeightmapTexture()
         {
             var hm = new Texture();
-            hm.SetParameters(
-                TextureMinFilter.Linear, TextureMagFilter.Linear,
-                TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
-                );
+            using var target = hm.Bind();
+            target.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
+            target.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
             return hm;
         }
 
@@ -218,14 +223,14 @@ namespace Bearded.TD.Rendering.Deferred
         {
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Back);
-            heightScaleUniform.Float = 1;
-            heightOffsetUniform.Float = 0;
+            heightScaleUniform.Value = 1;
+            heightOffsetUniform.Value = 0;
             gridSurface.Render();
 
             //GL.Disable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
-            heightScaleUniform.Float = -1;
-            heightOffsetUniform.Float = 1.5f;
+            heightScaleUniform.Value = -1;
+            heightOffsetUniform.Value = 1.5f;
             gridSurface.Render();
 
             GL.FrontFace(FrontFaceDirection.Ccw);
@@ -248,7 +253,8 @@ namespace Bearded.TD.Rendering.Deferred
         private void redrawHeightmap()
         {
             GL.Viewport(0, 0, heightMapResolution, heightMapResolution);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, heightmapTarget);
+
+            using var _ = heightmapTarget.Bind(FramebufferTarget.DrawFramebuffer);
 
             GL.ClearColor(Constants.Rendering.WallHeight, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -287,8 +293,6 @@ namespace Bearded.TD.Rendering.Deferred
             }
 
             heightmapSplats.MeshBuilder.Render();
-
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
         }
 
         public override void CleanUp()
@@ -340,7 +344,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             a *= distanceFalloff;
 
-            return new LevelVertex(v, n, uv, new Color(c * a, c.A));
+            return new LevelVertex(v, n, uv, (c * a).WithAlpha(c.A));
         }
 
         private static float hexagonalDistanceToOrigin(Vector2 xy)

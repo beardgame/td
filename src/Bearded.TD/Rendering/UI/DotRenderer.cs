@@ -1,4 +1,5 @@
-using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
@@ -7,19 +8,18 @@ namespace Bearded.TD.Rendering.UI
 {
     sealed class DotRenderer : IRenderer<Dot>
     {
-        private readonly PrimitiveGeometry geometry;
+        private readonly ColorShapeDrawer2 drawer;
 
-        public DotRenderer(IndexedSurface<PrimitiveVertexData> surface)
+        public DotRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
         {
-            geometry = new PrimitiveGeometry(surface);
+            drawer = new ColorShapeDrawer2(meshBuilder);
         }
 
         public void Render(Dot control)
         {
             var frame = control.Frame;
-            geometry.Color = control.Color;
 
-            geometry.DrawOval((Vector2) frame.TopLeft, (Vector2) frame.Size, filled: true);
+            drawer.FillOval((Vector2) frame.TopLeft, (Vector2) frame.Size, control.Color, 6);
         }
     }
 }

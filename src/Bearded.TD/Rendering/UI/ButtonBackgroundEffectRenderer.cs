@@ -1,4 +1,6 @@
 ﻿using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -8,11 +10,11 @@ namespace Bearded.TD.Rendering.UI
 {
     class ButtonBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
     {
-        private readonly PrimitiveGeometry geometry;
+        private readonly ColorShapeDrawer2 drawer;
 
-        public ButtonBackgroundEffectRenderer(IndexedSurface<PrimitiveVertexData> surface)
+        public ButtonBackgroundEffectRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
         {
-            geometry = new PrimitiveGeometry(surface);
+            drawer = new ColorShapeDrawer2(meshBuilder);
         }
 
         public void Render(ButtonBackgroundEffect control)
@@ -25,9 +27,9 @@ namespace Bearded.TD.Rendering.UI
 
             var frame = control.Frame;
 
-            geometry.Color = Color.White * (control.MouseIsDown ? 0.5f : 0.25f);
+            var color = Color.White * (control.MouseIsDown ? 0.5f : 0.25f);
 
-            geometry.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size);
+            drawer.FillRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, color);
         }
     }
 }

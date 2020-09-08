@@ -1,10 +1,13 @@
-﻿using amulware.Graphics;
+﻿using System.Runtime.InteropServices;
+using amulware.Graphics;
+using amulware.Graphics.Vertices;
 using OpenToolkit.Mathematics;
-using static amulware.Graphics.VertexData;
+using static amulware.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    struct PointLightVertex : IVertexData
+    [StructLayout(LayoutKind.Sequential)]
+    readonly struct PointLightVertex : IVertexData
     {
         private readonly Vector3 vertexPosition;
         private readonly Vector3 vertexLightPosition;
@@ -23,12 +26,13 @@ namespace Bearded.TD.Rendering.Deferred
             this.vertexLightColor = vertexLightColor;
         }
 
-        public VertexAttribute[] VertexAttributes()
-            => MakeAttributeArray(
-                MakeAttributeTemplate<Vector3>("vertexPosition"),
-                MakeAttributeTemplate<Vector3>("vertexLightPosition"),
-                MakeAttributeTemplate<float>("vertexLightRadiusSquared"),
-                MakeAttributeTemplate<Color>("vertexLightColor")
-                );
+        private static readonly VertexAttribute[] vertexAttributes = MakeAttributeArray(
+            MakeAttributeTemplate<Vector3>("vertexPosition"),
+            MakeAttributeTemplate<Vector3>("vertexLightPosition"),
+            MakeAttributeTemplate<float>("vertexLightRadiusSquared"),
+            MakeAttributeTemplate<Color>("vertexLightColor")
+        );
+
+        VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
     }
 }

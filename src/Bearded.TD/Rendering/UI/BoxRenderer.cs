@@ -1,4 +1,6 @@
 ﻿using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
@@ -7,22 +9,20 @@ namespace Bearded.TD.Rendering.UI
 {
     class BoxRenderer : IRenderer<Control>
     {
-        private readonly PrimitiveGeometry geometry;
+        private readonly Color color;
+        private readonly ColorShapeDrawer2 drawer;
 
-        public BoxRenderer(IndexedSurface<PrimitiveVertexData> surface, Color color)
+        public BoxRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder, Color color)
         {
-            geometry = new PrimitiveGeometry(surface)
-            {
-                Color = color,
-                LineWidth = 1
-            };
+            this.color = color;
+            drawer = new ColorShapeDrawer2(meshBuilder);
         }
 
         public virtual void Render(Control control)
         {
             var frame = control.Frame;
 
-            geometry.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, false);
+            drawer.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, color, 1);
         }
     }
 }

@@ -1,15 +1,17 @@
-using amulware.Graphics;
+using System.Runtime.InteropServices;
+using amulware.Graphics.Vertices;
 using OpenToolkit.Mathematics;
-using static amulware.Graphics.VertexData;
+using static amulware.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    struct FluidVertex : IVertexData
+    [StructLayout(LayoutKind.Sequential)]
+    readonly struct FluidVertex : IVertexData
     {
         // ReSharper disable NotAccessedField.Local
-        private Vector3 position;
-        private Vector3 normal;
-        private Vector2 flow;
+        private readonly Vector3 position;
+        private readonly Vector3 normal;
+        private readonly Vector2 flow;
 
         public FluidVertex(Vector3 position, Vector3 normal, Vector2 flow)
         {
@@ -18,11 +20,12 @@ namespace Bearded.TD.Rendering.Deferred
             this.flow = flow;
         }
 
-        public VertexAttribute[] VertexAttributes()
-            => MakeAttributeArray(
-                MakeAttributeTemplate<Vector3>("vertexPosition"),
-                MakeAttributeTemplate<Vector3>("vertexNormal"),
-                MakeAttributeTemplate<Vector2>("vertexFlow")
-            );
+        private static readonly VertexAttribute[] vertexAttributes = MakeAttributeArray(
+            MakeAttributeTemplate<Vector3>("vertexPosition"),
+            MakeAttributeTemplate<Vector3>("vertexNormal"),
+            MakeAttributeTemplate<Vector2>("vertexFlow")
+        );
+
+        VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
     }
 }

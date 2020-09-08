@@ -49,7 +49,8 @@ namespace Bearded.TD.Rendering
             GL.CullFace(CullFaceMode.FrontAndBack);
 
             GL.Enable(EnableCap.Blend);
-            SurfaceBlendSetting.PremultipliedAlpha.Set(null);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
         }
 
         private void reloadShadersIfNeeded()
@@ -82,7 +83,7 @@ namespace Bearded.TD.Rendering
 
         private void logShaderReloadErrors(ShaderReloadReport report)
         {
-            if (report.ReloadExceptions.Count <= 0)
+            if (report.ReloadExceptions.Length <= 0)
                 return;
 
             logger.Error?.Log($"Failed to reload shaders:");

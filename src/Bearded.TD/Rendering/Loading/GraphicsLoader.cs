@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Utilities.Collections;
@@ -90,27 +91,33 @@ namespace Bearded.TD.Rendering.Loading
             }
         }
 
-        public ISurfaceShader CreateShaderProgram(
-            IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
+        public IRendererShader CreateRendererShader(IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
         {
             var shaderManager = context.Surfaces.Shaders;
 
             var shadersToAdd = shaders.Where(s => !shaderManager.Contains(s.Type, s.FriendlyName)).ToList();
-            var shaderProgram = shaderManager[shaderProgramName];
 
-            if (shadersToAdd.Count == 0 && shaderProgram != null)
-                return shaderProgram;
+            if (shaderManager.TryGetRendererShader(shaderProgramName, out var shaderProgram))
+            {
+                if (shadersToAdd.Count == 0)
+                    return shaderProgram;
+
+                throw new InvalidDataException($"Different shader program with name {shaderProgramName} already exists.");
+            }
 
             return glActions.RunAndReturn(glOperations);
 
-            ISurfaceShader glOperations()
+            IRendererShader glOperations()
             {
                 shadersToAdd.Select(shaderFile).ForEach(shaderManager.Add);
 
-                return shaderProgram ?? shaders.Aggregate(
-                    shaderManager.BuildShaderProgram(),
-                    (builder, shader) => builder.With(shader.Type, shader.FriendlyName)
-                ).As(shaderProgramName);
+                return shaderManager.RegisterRendererShader(b =>
+                {
+                    foreach (var (type, _, name) in shaders)
+                    {
+                        b.With(type, name);
+                    }
+                }, shaderProgramName);
             }
 
             ShaderFile shaderFile((ShaderType, string, string) data)
@@ -139,7 +146,7 @@ namespace Bearded.TD.Rendering.Loading
 
         public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
         {
-            return glActions.RunAndReturn(() => new ArrayTexture(layers));
+            return glActions.RunAndReturn(() => ArrayTextureData.From(layers).ToTexture());
         }
 
     }
