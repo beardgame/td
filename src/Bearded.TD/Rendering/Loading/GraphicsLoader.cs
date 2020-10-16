@@ -58,7 +58,7 @@ namespace Bearded.TD.Rendering.Loading
                 }
             }
 
-            return builder.Build(context, glActions, shader, pixelate);
+            return builder.Build(glActions, shader, pixelate);
 
 
             static BinPacking.Rectangle<(string Name, Dictionary<string, Bitmap> BitmapsBySampler)>

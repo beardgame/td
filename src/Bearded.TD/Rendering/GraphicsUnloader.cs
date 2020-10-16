@@ -22,13 +22,7 @@ namespace Bearded.TD.Rendering
 
         private static void cleanUp(ReadonlyBlueprintCollection<SpriteSet> spriteSets)
         {
-            spriteSets.All
-                .ForEach(spriteSet =>
-                    {
-                        spriteSet.Sprites.Textures.ForEach(t => t.Dispose());
-                        spriteSet.Sprites.MeshBuilder.Dispose();
-                    }
-                );
+            spriteSets.All.ForEach(spriteSet => spriteSet.Sprites.Dispose());
         }
     }
 }

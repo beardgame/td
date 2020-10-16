@@ -1,63 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
-using amulware.Graphics;
+using amulware.Graphics.Rendering;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Deferred;
-using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.Linq;
-using KeyValuePair = Bearded.TD.Utilities.Collections.KeyValuePair;
 
 namespace Bearded.TD.Rendering
 {
-    class ContentSurfaceManager
+    sealed class ContentSurfaceManager : IDisposable
     {
+
         public LevelRenderer LevelRenderer { get; }
         public ImmutableArray<FluidGeometry> FluidGeometries { get; }
-        private static readonly ReadOnlyCollection<Surface> emptySurfaceList = new List<Surface>().AsReadOnly();
 
-        private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<Surface>> groupedAndSortedSpriteSets;
+        private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<IRenderer>> groupedAndSortedRenderers;
 
-        public ContentSurfaceManager(LevelRenderer levelRenderer,
+        public ContentSurfaceManager(RenderContext context, LevelRenderer levelRenderer,
             ReadonlyBlueprintCollection<SpriteSet> spriteSets,
             IEnumerable<FluidGeometry> fluidGeometries)
         {
             LevelRenderer = levelRenderer;
             FluidGeometries = fluidGeometries.ToImmutableArray();
-            groupedAndSortedSpriteSets = spriteSets.All
+            groupedAndSortedRenderers = spriteSets.All
                 .GroupBy(sprites => sprites.DrawGroup)
                 .ToDictionary(
                     group => group.Key,
                     group => group
                         .OrderBy(sprites => sprites.DrawGroupOrderKey)
-                        .Select(surfaceFromSpriteSet)
+                        .Select(spriteSet => makeSpriteSetRenderer(context, spriteSet))
                         .ToList()
                         .AsReadOnly()
                 );
 
-            fillDictionaryForMissingGroups();
         }
 
-        private Surface surfaceFromSpriteSet(SpriteSet spriteSet)
+        private IRenderer makeSpriteSetRenderer(RenderContext context, SpriteSet spriteSet)
         {
-            return spriteSet.Sprites.MeshBuilder;
-        }
-
-        private void fillDictionaryForMissingGroups()
-        {
-            var missingGroups = DeferredRenderer.AllDrawGroups
-                .WhereNot(groupedAndSortedSpriteSets.ContainsKey);
-
-            groupedAndSortedSpriteSets.AddRange(
-                missingGroups.Select(g => KeyValuePair.From(g, emptySurfaceList))
+            return spriteSet.Sprites.CreateRendererWithSettings(
+                context.Surfaces.ProjectionMatrix,
+                context.Surfaces.ViewMatrix,
+                context.Surfaces.FarPlaneDistance
                 );
         }
 
-        public ReadOnlyCollection<Surface> SurfacesFor(SpriteDrawGroup group)
+        public void RenderDrawGroup(SpriteDrawGroup group)
         {
-            return groupedAndSortedSpriteSets[group];
+            if (groupedAndSortedRenderers.TryGetValue(group, out var renderers))
+            {
+                foreach (var renderer in renderers)
+                {
+                    renderer.Render();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var drawGroup in groupedAndSortedRenderers.Values)
+            {
+                foreach (var renderer in drawGroup)
+                {
+                    renderer.Dispose();
+                }
+            }
         }
     }
 }

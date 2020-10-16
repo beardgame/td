@@ -1,6 +1,12 @@
 ﻿using System.IO;
 using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Rendering;
+using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
+using amulware.Graphics.Shapes;
+using amulware.Graphics.Textures;
+using amulware.Graphics.Vertices;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
@@ -27,7 +33,8 @@ namespace Bearded.TD.Rendering
 
         public TextureUniform DepthBuffer { get; set; }
 
-        public IndexedSurface<PrimitiveVertexData> Primitives { get; }
+        public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; }
+        public IRenderer PrimitivesRenderer { get; }
         public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
         public IndexedSurface<UVColorVertexData> ConsoleFontSurface { get; }
         public IndexedSurface<UVColorVertexData> UIFontSurface { get; }
@@ -61,9 +68,12 @@ namespace Bearded.TD.Rendering
                 "deferred/spotlight"
             }.ForEach(name => Shaders.MakeShaderProgram(name));
 
-            Primitives = new IndexedSurface<PrimitiveVertexData>()
-                    .WithShader(Shaders["geometry"])
-                    .AndSettings(ViewMatrix, ProjectionMatrix);
+            Primitives = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
+            PrimitivesRenderer = BatchedRenderer.From(
+                    Primitives.ToRenderable(), ViewMatrix, ProjectionMatrix);
+            Shaders.TryGetRendererShader("geometry", out var primitiveShader);
+            primitiveShader!.UseOnRenderer(PrimitivesRenderer);
+
             ConsoleBackground = new IndexedSurface<PrimitiveVertexData>()
                 .WithShader(Shaders["geometry"])
                 .AndSettings(ViewMatrix, ProjectionMatrix);
@@ -112,8 +122,8 @@ namespace Bearded.TD.Rendering
 
         public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
         {
-            var normalUniform = new TextureUniform("normalBuffer", normalBuffer, TextureUnit.Texture0);
-            DepthBuffer = new TextureUniform("depthBuffer", depthBuffer, TextureUnit.Texture1);
+            var normalUniform = new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer);
+            DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, depthBuffer);
 
             PointLights.AddSettings(normalUniform, DepthBuffer);
             Spotlights.AddSettings(normalUniform, DepthBuffer);

@@ -37,7 +37,7 @@ namespace Bearded.TD.Rendering
 #if DEBUG
             reloadShadersIfNeeded();
 #endif
-
+            //TODO: turn into pipeline code
             GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
             GL.Disable(EnableCap.ScissorTest);
 
@@ -112,8 +112,8 @@ namespace Bearded.TD.Rendering
 
         private void setUniformsFrom(IRenderLayer layer)
         {
-            surfaces.ViewMatrix.Matrix = layer.ViewMatrix;
-            surfaces.ProjectionMatrix.Matrix = layer.ProjectionMatrix;
+            surfaces.ViewMatrix.Value = layer.ViewMatrix;
+            surfaces.ProjectionMatrix.Value = layer.ProjectionMatrix;
 
             if (layer is IDeferredRenderLayer deferredLayer)
                 setUniformsFrom(deferredLayer);
@@ -121,8 +121,8 @@ namespace Bearded.TD.Rendering
 
         private void setUniformsFrom(IDeferredRenderLayer deferredRenderLayer)
         {
-            surfaces.FarPlaneDistance.Float = deferredRenderLayer.FarPlaneDistance;
-            surfaces.Time.Float = deferredRenderLayer.Time;
+            surfaces.FarPlaneDistance.Value = deferredRenderLayer.FarPlaneDistance;
+            surfaces.Time.Value = deferredRenderLayer.Time;
 
             setFarPlaneParameters(deferredRenderLayer);
         }
@@ -148,10 +148,10 @@ namespace Bearded.TD.Rendering
             var yCorner = new Vector4(-1, 1, 1, 1) * projectionViewInverted;
             yCorner = yCorner / yCorner.W;
 
-            surfaces.FarPlaneBaseCorner.Vector = baseCorner.Xyz;
-            surfaces.FarPlaneUnitX.Vector = xCorner.Xyz - baseCorner.Xyz;
-            surfaces.FarPlaneUnitY.Vector = yCorner.Xyz - baseCorner.Xyz;
-            surfaces.CameraPosition.Vector = cameraTranslation;
+            surfaces.FarPlaneBaseCorner.Value = baseCorner.Xyz;
+            surfaces.FarPlaneUnitX.Value = xCorner.Xyz - baseCorner.Xyz;
+            surfaces.FarPlaneUnitY.Value = yCorner.Xyz - baseCorner.Xyz;
+            surfaces.CameraPosition.Value = cameraTranslation;
         }
 
         private void setViewportFrom(RenderOptions options)
@@ -188,7 +188,7 @@ namespace Bearded.TD.Rendering
 
         private void renderConsoleSurfaces()
         {
-            surfaces.Primitives.Render();
+            surfaces.PrimitivesRenderer.Render();
             surfaces.UIFontSurface.Render();
             surfaces.ConsoleBackground.Render();
             surfaces.ConsoleFontSurface.Render();

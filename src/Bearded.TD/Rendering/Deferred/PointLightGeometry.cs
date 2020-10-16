@@ -23,6 +23,7 @@ namespace Bearded.TD.Rendering.Deferred
             var rSquared = radius.Squared();
 
             // TODO: account for perspective to prevent light cutoff
+            // OMG - we can use the ColorShapeDrawer3 if we just make it generic in the vertex!
             surface.AddQuad(
                 new PointLightVertex(new Vector3(x0, y0, 0), center, rSquared, color),
                 new PointLightVertex(new Vector3(x1, y0, 0), center, rSquared, color),

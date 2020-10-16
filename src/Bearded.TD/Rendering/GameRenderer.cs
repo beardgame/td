@@ -37,6 +37,7 @@ namespace Bearded.TD.Rendering
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
             DeferredSurfaces = new ContentSurfaceManager(
+                renderContext,
                 levelRenderer,
                 game.Blueprints.Sprites,
                 new [] { waterGeometry }
@@ -283,6 +284,7 @@ namespace Bearded.TD.Rendering
         {
             levelRenderer.CleanUp();
             waterGeometry.CleanUp();
+            DeferredSurfaces.Dispose();
             GraphicsUnloader.CleanUp(game.Blueprints);
         }
 

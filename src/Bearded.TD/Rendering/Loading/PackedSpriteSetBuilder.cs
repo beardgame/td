@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
@@ -64,42 +67,65 @@ namespace Bearded.TD.Rendering.Loading
         private int flatCoordinate(int x, int y)
             => 4 * (y * width + x);
 
-        public PackedSpriteSet Build(RenderContext context, IActionQueue glActions, Shader shader, bool pixelate)
+        public PackedSpriteSet Build(IActionQueue glActions, Shader shader, bool pixelate)
         {
-            samplerData.Values.ForEach(Texture.PreMultipleArgbArray);
+            var premultiply = TextureTransformation.Premultiply;
 
-            var (textureUniforms, surface) = glActions.RunAndReturn(() => createGlEntities(shader, pixelate));
-            var sprites = createSprites(surface);
+            samplerData.Values.ForEach(bytes =>
+            {
+                var (w, h) = (width, height);
+                premultiply.Transform(ref bytes, ref w, ref h);
+            });
 
-            surface.AddSettings(
-                context.Surfaces.ProjectionMatrix,
-                context.Surfaces.ViewMatrix,
-                context.Surfaces.FarPlaneDistance
-            );
-            surface.AddSettings(
-                textureUniforms
-            );
+            var (textureUniforms, meshBuilder) = glActions.RunAndReturn(() => createGlEntities(pixelate));
+            var sprites = createSprites(meshBuilder);
 
             return new PackedSpriteSet(
-                textureUniforms.Select(u => u.Texture),
-                surface,
-                sprites
+                textureUniforms,
+                meshBuilder,
+                sprites,
+                shader
             );
         }
 
-        private Dictionary<string, ISprite> createSprites(IndexedSurface<UVColorVertex> surface)
+        private (List<TextureUniform>, ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>)
+            createGlEntities(bool pixelate)
+        {
+            var textureUniforms = samplerData.Select(
+                (kvp, i) =>
+                {
+                    var (name, data) = kvp;
+                    var texture = TextureData.From(data, width, height).ToTexture(t =>
+                    {
+                        if (pixelate)
+                        {
+                            t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+                            t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+                        }
+                    });
+
+                    return new TextureUniform(name, TextureUnit.Texture0 + i, texture);
+                }
+            ).ToList();
+
+            var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
+
+            return (textureUniforms, meshBuilder);
+        }
+
+        private Dictionary<string, ISprite> createSprites(IIndexedTrianglesMeshBuilder<UVColorVertex, ushort> meshBuilder)
         {
             return nameToRectangle.ToDictionary(
                 pair => pair.Key,
-                pair => createSprite(surface, pair.Value)
+                pair => createSprite(meshBuilder, pair.Value)
             );
         }
 
-        private ISprite createSprite(IndexedSurface<UVColorVertex> surface, Rectangle rectangle)
+        private ISprite createSprite(IIndexedTrianglesMeshBuilder<UVColorVertex, ushort> meshBuilder, Rectangle rectangle)
         {
             var uv = toUvRectangle(rectangle);
 
-            return new Sprite(surface, uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
+            return new Sprite(meshBuilder, uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
         }
 
         private UVRectangle toUvRectangle(Rectangle rect)
@@ -107,32 +133,6 @@ namespace Bearded.TD.Rendering.Loading
             return new UVRectangle(
                 (float)rect.Left / width, (float)rect.Right / width,
                 (float)rect.Top / height, (float)rect.Bottom / height);
-        }
-
-        private (List<TextureUniform>, IndexedSurface<UVColorVertex>) createGlEntities(Shader shader, bool pixelate)
-        {
-            var textureUniforms = samplerData.Select(
-                (kvp, i) =>
-                {
-                    var (name, data) = kvp;
-                    var texture = new Texture(data, width, height);
-                    if (pixelate)
-                    {
-                        texture.SetParameters(
-                            TextureMinFilter.Nearest, TextureMagFilter.Nearest,
-                            TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge
-                        );
-                    }
-
-                    return new TextureUniform(name, texture, TextureUnit.Texture0 + i);
-                }
-            ).ToList();
-
-            var surface = new IndexedSurface<UVColorVertex>();
-
-            shader.RendererShader.UseOnSurface(surface);
-
-            return (textureUniforms, surface);
         }
     }
 }

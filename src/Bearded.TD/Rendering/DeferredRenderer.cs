@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
@@ -63,6 +64,8 @@ namespace Bearded.TD.Rendering
         private readonly PostProcessSurface copyDepthSurface;
         private readonly PostProcessSurface copyDepthMaskSurface;
 
+        private void test<T>(T t, Action<T> x) => x.Invoke(t);
+
         public DeferredRenderer(SurfaceManager surfaces)
         {
             this.surfaces = surfaces;
@@ -80,6 +83,26 @@ namespace Bearded.TD.Rendering
             });
             bind(null, (0, 0));
 
+
+/*
+            state = new {
+                depthMaskBufferLowRes = T(Func<size>, pixelformat),
+            }
+
+            names = new {
+                Depth = IdMan.Next()
+            }
+
+            OptionalStep(() => this.needsResize, ResizeIfNeeded(state.Depth, state.Normal))
+
+            RTWithDepthAndColours(Func<size>, depthFormat
+                diffuseBufferLowRes,
+                normalBufferLowRes,
+                depthBufferLowRes
+                )
+
+
+*/
             gTarget.Attach(FramebufferAttachment.ColorAttachment0, diffuseBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment1, normalBuffer);
             gTarget.Attach(FramebufferAttachment.ColorAttachment2, depthBuffer);
@@ -251,7 +274,6 @@ namespace Bearded.TD.Rendering
 
             bind(copyDepthTarget, bufferSize);
             copyDepthSurface.Render();
-
 
 
             GL.Enable(EnableCap.DepthTest);
