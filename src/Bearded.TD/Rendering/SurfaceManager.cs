@@ -10,8 +10,6 @@ using amulware.Graphics.Textures;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
-using Color = amulware.Graphics.Color;
 using Font = amulware.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering

@@ -73,7 +73,7 @@ namespace Bearded.TD
 
             renderContext = new RenderContext(glActionQueue, logger);
 
-            var surfaces = renderContext.Surfaces;
+            var geometries = renderContext.Geometries;
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {
@@ -81,7 +81,7 @@ namespace Bearded.TD
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                     (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
                     (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
-                    (typeof(Label), new LabelRenderer(surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(Label), new LabelRenderer(geometries.UIFont)),
                     (typeof(Border), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
                     (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
                     (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(surfaces.ConsoleBackground)),

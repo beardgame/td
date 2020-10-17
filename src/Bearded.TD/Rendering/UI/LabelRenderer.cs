@@ -1,38 +1,41 @@
 ﻿using amulware.Graphics;
+using amulware.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.UI
 {
     class LabelRenderer : IRenderer<Label>
     {
-        private readonly FontGeometry geometry;
+        private readonly TextDrawerWithDefaults<Color> textDrawer;
 
-        public LabelRenderer(IndexedSurface<UVColorVertexData> surface, Font font)
+        public LabelRenderer(TextDrawerWithDefaults<Color> textDrawer)
         {
-            geometry = new FontGeometry(surface, font)
-            {
-                Color = Color.White,
-            };
+            this.textDrawer = textDrawer;
         }
 
         public void Render(Label label)
         {
-            geometry.Height = (float)label.FontSize;
             var argb = label.Color;
 
             if (label.Parent is Button button && !button.IsEnabled)
                 argb *= 0.5f;
 
-            geometry.Color = argb;
-
-            var textAnchor = label.TextAnchor;
+            var (anchorX, anchorY) = label.TextAnchor;
             var frame = label.Frame;
             var anchor = frame.TopLeft + frame.Size * label.TextAnchor;
 
-            geometry.DrawString((Vector2)anchor, label.Text, (float)textAnchor.X, (float)textAnchor.Y);
+            textDrawer.DrawLine(
+                xyz: ((Vector2) anchor).WithZ(),
+                text: label.Text,
+                alignHorizontal: (float) anchorX,
+                alignVertical: (float) anchorY,
+                fontHeight: (float) label.FontSize,
+                parameters: argb
+            );
         }
     }
 }
