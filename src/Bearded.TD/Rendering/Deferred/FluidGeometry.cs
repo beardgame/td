@@ -1,21 +1,24 @@
 using System;
-using amulware.Graphics;
+using System.Linq;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Rendering;
+using amulware.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.World;
 using Bearded.TD.Game.World.Fluids;
-using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Rendering.Deferred
 {
     class FluidGeometry
     {
-        private static Vector2 rightVector = Direction.Right.Vector();
-        private static Vector2 upRightVector = Direction.UpRight.Vector();
-        private static Vector2 upLeftVector = Direction.UpLeft.Vector();
+        private static readonly Vector2 rightVector = Direction.Right.Vector();
+        private static readonly Vector2 upRightVector = Direction.UpRight.Vector();
+        private static readonly Vector2 upLeftVector = Direction.UpLeft.Vector();
 
         private readonly int radius;
         private readonly GeometryLayer levelGeometry;
@@ -24,7 +27,11 @@ namespace Bearded.TD.Rendering
         private readonly Tilemap<(float SurfaceLevel, bool HasFluid)> height;
         private readonly Tilemap<Vector2> flow;
 
-        private readonly ExpandingVertexSurface<FluidVertex> surface;
+        // TODO: use a non-indexed mesh builder instead?
+        private readonly ExpandingIndexedTrianglesMeshBuilder<FluidVertex> meshBuilder
+            = new ExpandingIndexedTrianglesMeshBuilder<FluidVertex>();
+
+        private readonly IRenderer renderer;
 
         public FluidGeometry(GameInstance game, Fluid fluid, RenderContext context, Material material)
         {
@@ -35,23 +42,22 @@ namespace Bearded.TD.Rendering
             height = new Tilemap<(float, bool)>(radius + 1);
             flow = new Tilemap<Vector2>(radius + 1);
 
-            surface = new ExpandingVertexSurface<FluidVertex>()
-                .WithShader(material.Shader.RendererShader)
-                .AndSettings(
-                    context.Surfaces.ViewMatrix,
-                    context.Surfaces.ProjectionMatrix,
-                    context.Surfaces.Time,
-                    context.Surfaces.FarPlaneBaseCorner,
-                    context.Surfaces.FarPlaneUnitX,
-                    context.Surfaces.FarPlaneUnitY,
-                    context.Surfaces.CameraPosition,
-                    context.Surfaces.DepthBuffer
-                    );
-
-            foreach (var texture in material.ArrayTextures)
-            {
-                surface.AddSetting(new ArrayTextureUniform(texture.UniformName, texture.Texture));
-            }
+            renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
+                new IRenderSetting[]{
+                context.Surfaces.ViewMatrix,
+                context.Surfaces.ProjectionMatrix,
+                context.Surfaces.Time,
+                context.Surfaces.FarPlaneBaseCorner,
+                context.Surfaces.FarPlaneUnitX,
+                context.Surfaces.FarPlaneUnitY,
+                context.Surfaces.CameraPosition,
+                context.Surfaces.DepthBuffer
+                }.Concat(material.ArrayTextures.Select(
+                    // TODO: find out why the below ! are needed?
+                    (t, i) => new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))
+                )
+            );
+            material.Shader.RendererShader.UseOnRenderer(renderer);
         }
 
         public void Render()
@@ -60,7 +66,7 @@ namespace Bearded.TD.Rendering
             prepareHeightAndFlow();
             createGeometry();
 
-            surface.Render();
+            renderer.Render();
         }
 
         private void resetFlow()
@@ -107,8 +113,6 @@ namespace Bearded.TD.Rendering
 
         private void createGeometryForTile(Tile tile)
         {
-            const float oneThird = 1f / 3f;
-
             var rightTile = tile.Neighbour(Direction.Right);
             var upRightTile = tile.Neighbour(Direction.UpRight);
             var upLeftTile = tile.Neighbour(Direction.UpLeft);
@@ -174,7 +178,7 @@ namespace Bearded.TD.Rendering
 
         private void addTriangle(Vector3 p0, Vector3 p1, Vector3 p2, Vector2 f0, Vector2 f1, Vector2 f2)
         {
-            surface.AddVertices(
+            meshBuilder.AddTriangle(
                 new FluidVertex(p0, Vector3.Zero, f0),
                 new FluidVertex(p1, Vector3.Zero, f1),
                 new FluidVertex(p2, Vector3.Zero, f2)
@@ -183,7 +187,8 @@ namespace Bearded.TD.Rendering
 
         public void CleanUp()
         {
-            surface.Dispose();
+            meshBuilder.Dispose();
+            renderer.Dispose();
         }
     }
 }
