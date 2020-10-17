@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.Textures;
@@ -26,7 +27,6 @@ namespace Bearded.TD.Rendering.Deferred
         private float heightMapPixelsPerTile;
         private float gridVerticesPerTile;
 
-        private readonly RenderContext context;
         private readonly Material material;
         private readonly Level level;
         private readonly GeometryLayer geometryLayer;
@@ -41,7 +41,9 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly Texture heightmap;
         private readonly RenderTarget heightmapTarget; // H
 
-        private readonly ExpandingVertexSurface<LevelVertex> gridSurface;
+        private readonly ExpandingIndexedTrianglesMeshBuilder<LevelVertex> gridMeshBuilder;
+        private readonly IRenderer gridRenderer;
+
         private readonly PackedSpriteSet heightmapSplats;
         private readonly IRenderer heightMapSplatRenderer;
 
@@ -54,7 +56,6 @@ namespace Bearded.TD.Rendering.Deferred
         public GPUHeightmapLevelRenderer(GameInstance game, RenderContext context, Material material)
             : base(game)
         {
-            this.context = context;
             this.material = material;
             level = game.State.Level;
             geometryLayer = game.State.GeometryLayer;
@@ -67,7 +68,7 @@ namespace Bearded.TD.Rendering.Deferred
             heightmap = setupHeightmapTexture();
             heightmapTarget = RenderTarget.WithColorAttachments(heightmap);
 
-            gridSurface = setupSurface(context);
+            (gridMeshBuilder, gridRenderer) = setupGridRenderer(context);
 
             heightmapSplats = findHeightmapSplats(game);
             heightMapSplatRenderer = heightmapSplats.CreateRendererWithSettings(heightmapRadiusUniform);
@@ -128,18 +129,19 @@ namespace Bearded.TD.Rendering.Deferred
              * -- v1
              */
 
-            gridSurface.Clear();
+            gridMeshBuilder.Clear();
 
+            // TODO: this can be optimised, since we are not reusing indices
             generateGrid(
                 (t0, t1, t2, t3, v0, v1, v2, v3) =>
                 {
-                    gridSurface.AddVertices(
+                    gridMeshBuilder.AddTriangle(
                         vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
                         vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
                         vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
                     );
 
-                    gridSurface.AddVertices(
+                    gridMeshBuilder.AddTriangle(
                         vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
                         vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
                         vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
@@ -162,35 +164,28 @@ namespace Bearded.TD.Rendering.Deferred
             return hm;
         }
 
-        private ExpandingVertexSurface<LevelVertex> setupSurface(RenderContext context)
+        private (ExpandingIndexedTrianglesMeshBuilder<LevelVertex>, IRenderer) setupGridRenderer(RenderContext context)
         {
-            var s = new ExpandingVertexSurface<LevelVertex>()
-            {
-                ClearOnRender = false,
-                IsStatic = true,
-            }.WithShader(material.Shader.RendererShader)
-                .AndSettings(
+            var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<LevelVertex>();
+
+            var renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
+                new IRenderSetting[]
+                {
                     context.Surfaces.ViewMatrixLevel,
                     context.Surfaces.ProjectionMatrix,
                     context.Surfaces.FarPlaneDistance,
                     heightmapRadiusUniform,
                     heightmapPixelSizeUVUniform,
-                    new TextureUniform("heightmap", heightmap),
+                    new TextureUniform("heightmap", TextureUnit.Texture0, heightmap),
                     context.Surfaces.CameraPosition,
                     heightScaleUniform,
                     heightOffsetUniform
-                );
+                }.Concat(material.ArrayTextures.Select((t, i) =>
+                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))));
 
-            var textureUnit = TextureUnit.Texture0;
+            material.Shader.RendererShader.UseOnRenderer(renderer);
 
-            foreach (var (uniformName, texture) in material.ArrayTextures)
-            {
-                s.AddSetting(new ArrayTextureUniform(uniformName, texture, textureUnit));
-
-                textureUnit++;
-            }
-
-            return s;
+            return (meshBuilder, renderer);
         }
 
         protected override void OnTileChanged(Tile tile)
@@ -225,13 +220,13 @@ namespace Bearded.TD.Rendering.Deferred
             //GL.CullFace(CullFaceMode.Back);
             heightScaleUniform.Value = 1;
             heightOffsetUniform.Value = 0;
-            gridSurface.Render();
+            gridRenderer.Render();
 
             //GL.Disable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
             heightScaleUniform.Value = -1;
             heightOffsetUniform.Value = 1.5f;
-            gridSurface.Render();
+            gridRenderer.Render();
 
             GL.FrontFace(FrontFaceDirection.Ccw);
         }
