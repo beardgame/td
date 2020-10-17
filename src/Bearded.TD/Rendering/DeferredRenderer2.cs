@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using amulware.Graphics.Pipelines;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
@@ -17,6 +18,7 @@ namespace Bearded.TD.Rendering
         private Vector2i resolution;
         private Vector2i lowResResolution;
         private ShaderManager shaders;
+        private SurfaceManager surfaces;
         private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
 
         public DeferredRenderer2()
@@ -56,6 +58,9 @@ namespace Bearded.TD.Rendering
             // resizeForCameraDistance
             // contentSurfaces.LevelRenderer.PrepareForRender
 
+            // how to get access to content surfaces in pipeline?
+            // - might have to parameterise it (and then make parameter state available for any injected Funcs)
+
             var resizedBuffers = InOrder(
                 Resize(() => resolution,
                     textures.DepthMask, textures.Diffuse, textures.Normal,
@@ -67,7 +72,9 @@ namespace Bearded.TD.Rendering
 
             var renderedGBuffers = resizedBuffers.Then(InOrder(
                 WithContext(
-                    c => c.SetDepthMode(Default).BindRenderTarget(targets.GeometryLowRes),
+                    c => c.BindRenderTarget(targets.GeometryLowRes)
+                        .SetViewport(() => new Rectangle(0, 0, lowResResolution.X, lowResResolution.Y))
+                        .SetDepthMode(Default),
                     InOrder(ClearColor(), ClearDepth(), Do(() =>
                     {
                         /* contentSurfaces.LevelRenderer.RenderAll */
@@ -77,15 +84,45 @@ namespace Bearded.TD.Rendering
                 upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
                 WithContext(
                     c => c.SetDepthMode(WriteOnly),
-                    upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask)
-                ),
+                    upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask)),
                 WithContext(
-                    c => c.SetDepthMode(Default).SetBlendMode(Premultiplied).BindRenderTarget(targets.Geometry),
+                    c => c.BindRenderTarget(targets.Geometry)
+                        .SetDepthMode(Default)
+                        .SetBlendMode(Premultiplied),
                     Do(() =>
                     {
                         /* renderDrawGroups(contentSurfaces, worldDrawGroups) */
                     }))
-                ));
+            ));
+
+            var compositedFrame = renderedGBuffers.Then(InOrder(
+                WithContext(
+                    c => c.BindRenderTarget(targets.LightAccum)
+                        .SetDepthMode(TestOnly(DepthFunction.Less))
+                        .SetBlendMode(Premultiplied),
+                    InOrder(
+                        ClearColor(),
+                        Render(surfaces.PointLightRenderer),
+                        Render(surfaces.SpotLightRenderer)
+                    )),
+                WithContext(
+                    c => c.BindRenderTarget(targets.Composition),
+                    InOrder(
+                        PostProcess(getShader("deferred/compose"), out _,
+                            new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
+                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture)
+                        ),
+                        WithContext(
+                            c => c.SetDepthMode(TestOnly(DepthFunction.Less)),
+                            InOrder(
+                                Render(fluids)
+                                /* renderDrawGroups(contentSurfaces, postLightGroups) */
+                            ))
+                    ))
+            ));
+
+            // copy composited frame to output target (how to inject into pipeline?)
+            // clean all mesh builders (through content surface man and regular surface man?)
         }
 
         private IPipeline upscale(string shaderName, PipelineTextureBase texture, PipelineRenderTarget target)
