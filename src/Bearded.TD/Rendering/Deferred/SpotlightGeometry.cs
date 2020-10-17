@@ -1,35 +1,56 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Shapes;
 using Bearded.Utilities;
 using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred
 {
+
     class SpotlightGeometry
     {
-        private readonly IndexedSurface<SpotlightVertex> surface;
-
-        public SpotlightGeometry(IndexedSurface<SpotlightVertex> surface)
+        private readonly struct Parameters
         {
-            this.surface = surface;
+            public Vector3 Center { get; }
+            public Vector3 Direction { get; }
+            public float Angle { get; }
+            public float RadiusSquared { get; }
+            public Color Color { get; }
+
+            public Parameters(Vector3 center, Vector3 direction, float angle, float radiusSquared, Color color)
+            {
+                Center = center;
+                Direction = direction;
+                Angle = angle;
+                RadiusSquared = radiusSquared;
+                Color = color;
+            }
+        }
+
+        private readonly ShapeDrawer3<SpotlightVertex, Parameters> drawer;
+
+        public SpotlightGeometry(IIndexedTrianglesMeshBuilder<SpotlightVertex, ushort> meshBuilder)
+        {
+            drawer = new ShapeDrawer3<SpotlightVertex, Parameters>(
+                meshBuilder,
+                (xyz, p) => new SpotlightVertex(xyz, p.Center, p.Direction, p.Angle, p.RadiusSquared, p.Color));
         }
 
         public void Draw(Vector3 center, Vector3 direction, float radius, float angle, Color color)
         {
-            var x0 = center.X - radius;
-            var x1 = center.X + radius;
-            var y0 = center.Y - radius;
-            var y1 = center.Y + radius;
+            const float innerToOuterRadius = 2 / 1.73205080757f; // R = 2 / sqrt(3) * r
+            const int edges = 6;
 
-            var rSquared = radius.Squared();
+            var vectorFromCenterToBase = direction.NormalizedSafe() * radius;
+            var coneBase = center + vectorFromCenterToBase;
 
-            // TODO: account for perspective to prevent light cutoff
-            // TODO: optimise to draw triangle/cone only
-            surface.AddQuad(
-                new SpotlightVertex(new Vector3(x0, y0, 0), center, direction, angle, rSquared, color),
-                new SpotlightVertex(new Vector3(x1, y0, 0), center, direction, angle, rSquared, color),
-                new SpotlightVertex(new Vector3(x1, y1, 0), center, direction, angle, rSquared, color),
-                new SpotlightVertex(new Vector3(x0, y1, 0), center, direction, angle, rSquared, color)
-            );
+            var innerBaseRadius = MathF.Tan(angle) * radius;
+            var outerBaseRadius = innerBaseRadius * innerToOuterRadius;
+
+            var parameters = new Parameters(center, direction, angle, radius.Squared(), color);
+
+            drawer.DrawCone(coneBase, -vectorFromCenterToBase, outerBaseRadius, parameters, edges);
         }
     }
 }
