@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
@@ -10,12 +11,15 @@ using Bearded.TD.Rendering.Deferred;
 
 namespace Bearded.TD.Rendering
 {
+    using SpriteRenderers =
+        ReadOnlyCollection<(IRenderer Renderer, ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> MeshBuilder)>;
+
     sealed class ContentSurfaceManager : IDisposable
     {
         public LevelRenderer LevelRenderer { get; }
         public ImmutableArray<FluidGeometry> FluidGeometries { get; }
 
-        private readonly Dictionary<SpriteDrawGroup, ReadOnlyCollection<IRenderer>> groupedAndSortedRenderers;
+        private readonly Dictionary<SpriteDrawGroup, SpriteRenderers> groupedAndSortedRenderers;
 
         public ContentSurfaceManager(RenderContext context, LevelRenderer levelRenderer,
             ReadonlyBlueprintCollection<SpriteSet> spriteSets,
@@ -29,7 +33,7 @@ namespace Bearded.TD.Rendering
                     group => group.Key,
                     group => group
                         .OrderBy(sprites => sprites.DrawGroupOrderKey)
-                        .Select(spriteSet => makeSpriteSetRenderer(context, spriteSet))
+                        .Select(spriteSet => (makeSpriteSetRenderer(context, spriteSet), spriteSet.Sprites.MeshBuilder))
                         .ToList()
                         .AsReadOnly()
                 );
@@ -41,16 +45,17 @@ namespace Bearded.TD.Rendering
                 context.Surfaces.ProjectionMatrix,
                 context.Surfaces.ViewMatrix,
                 context.Surfaces.FarPlaneDistance
-                );
+            );
         }
 
         public void RenderDrawGroup(SpriteDrawGroup group)
         {
             if (groupedAndSortedRenderers.TryGetValue(group, out var renderers))
             {
-                foreach (var renderer in renderers)
+                foreach (var (renderer, meshBuilder) in renderers)
                 {
                     renderer.Render();
+                    meshBuilder.Clear();
                 }
             }
         }
@@ -59,7 +64,7 @@ namespace Bearded.TD.Rendering
         {
             foreach (var drawGroup in groupedAndSortedRenderers.Values)
             {
-                foreach (var renderer in drawGroup)
+                foreach (var (renderer, _) in drawGroup)
                 {
                     renderer.Dispose();
                 }
