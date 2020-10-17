@@ -10,11 +10,11 @@ namespace Bearded.TD.Rendering
 {
     sealed class GeometryManager
     {
-        public ShapeDrawer2<ColorVertexData, Color> Primitives { get; }
+        public IShapeDrawer2<Color> Primitives { get; }
 
         public TextDrawerWithDefaults<Color> ConsoleFont { get; }
         public TextDrawerWithDefaults<Color> InGameConsoleFont { get; }
-        public ShapeDrawer2<ColorVertexData, Color> ConsoleBackground { get; }
+        public IShapeDrawer2<Color> ConsoleBackground { get; }
 
         public TextDrawerWithDefaults<Color> UIFont { get; }
 

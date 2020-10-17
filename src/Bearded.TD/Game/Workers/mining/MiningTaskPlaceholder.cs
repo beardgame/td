@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Rendering;
