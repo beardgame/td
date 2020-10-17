@@ -36,7 +36,7 @@ namespace Bearded.TD.Rendering.UI
             var midLeft = topLeft + Vector2d.UnitY * .5 * textInput.Frame.Size.Y;
 
             var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);
-            var stringWidthBeforeCursor = geometry.StringWidth(textBeforeCursor);
+            var stringOffset = textDrawer.StringWidth(textBeforeCursor, (float) textInput.FontSize);
 
             textDrawer.DrawLine(
                 xyz: ((Vector2) midLeft).WithZ(),
@@ -47,10 +47,8 @@ namespace Bearded.TD.Rendering.UI
 
             if (textInput.IsFocused)
             {
-                var cursorPos = new Vector2d(midLeft.X + stringWidthBeforeCursor, midLeft.Y);
-
                 textDrawer.DrawLine(
-                    xyz: ((Vector2) cursorPos).WithZ(),
+                    xyz: ((Vector2) midLeft).WithZ() + stringOffset,
                     text: cursorString,
                     fontHeight: (float) textInput.FontSize,
                     alignHorizontal: .5f,

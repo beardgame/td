@@ -32,13 +32,12 @@ namespace Bearded.TD.Rendering.UI
 
             var argb = White * .5f;
 
-            var textWidth = geometry.StringWidth(textInput.Text);
+            var stringOffset = textDrawer.StringWidth(textInput.Text, (float) textInput.FontSize);
 
-            var topLeft = textInput.Frame.TopLeft + textWidth * Vector2d.UnitX;
             var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
 
             textDrawer.DrawLine(
-                xyz: ((Vector2) topLeft).WithZ(),
+                xyz: ((Vector2) textInput.Frame.TopLeft).WithZ() + stringOffset,
                 text: str,
                 fontHeight: (float) textInput.FontSize,
                 alignVertical: 0,
