@@ -1,6 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using System.Collections.Generic;
+using amulware.Graphics.Shapes;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Damage;

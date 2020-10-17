@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Components;
 using Bearded.TD.Game.Components.Damage;
