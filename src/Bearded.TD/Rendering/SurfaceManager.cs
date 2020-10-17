@@ -1,15 +1,19 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Shapes;
+using amulware.Graphics.Text;
 using amulware.Graphics.Textures;
 using amulware.Graphics.Vertices;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
+using Color = amulware.Graphics.Color;
+using Font = amulware.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering
 {
@@ -34,15 +38,26 @@ namespace Bearded.TD.Rendering
         public TextureUniform DepthBuffer { get; set; }
 
         public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; }
+            = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
         public IRenderer PrimitivesRenderer { get; }
-        public IndexedSurface<PrimitiveVertexData> ConsoleBackground { get; }
-        public IndexedSurface<UVColorVertexData> ConsoleFontSurface { get; }
-        public IndexedSurface<UVColorVertexData> UIFontSurface { get; }
+        public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; }
+            = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
+        public IRenderer ConsoleBackgroundRenderer { get; }
+        public TextDrawer<UVColorVertex> ConsoleFontMeshBuilder { get; }
+        public IRenderer ConsoleFontRenderer { get; }
+        public TextDrawer<UVColorVertex> UIFontMeshBuilder { get; }
+        public IRenderer UIFontRenderer { get; }
+
         public Font ConsoleFont { get; }
         public Font UIFont { get; }
 
-        public IndexedSurface<PointLightVertex> PointLights { get; }
-        public IndexedSurface<SpotlightVertex> Spotlights { get; }
+        public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; }
+            = new ExpandingIndexedTrianglesMeshBuilder<PointLightVertex>();
+        public IRenderer PointLightRenderer { get; set; }
+
+        public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; }
+            = new ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex>();
+        public IRenderer SpotLightRenderer { get; set; }
 
         public SurfaceManager()
         {
@@ -52,7 +67,7 @@ namespace Bearded.TD.Rendering
             shaderPath = AdjustPathToReloadable(shaderPath);
 #endif
 
-            Shaders.Add(
+            Shaders.AddRange(
                 ShaderFileLoader.CreateDefault(shaderPath).Load(".")
             );
             new[]
@@ -66,43 +81,46 @@ namespace Bearded.TD.Rendering
                 "deferred/copyDepth",
                 "deferred/pointlight",
                 "deferred/spotlight"
-            }.ForEach(name => Shaders.MakeShaderProgram(name));
+            }.ForEach(name => Shaders.RegisterRendererShaderFromAllShadersWithName(name));
 
-            Primitives = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
-            PrimitivesRenderer = BatchedRenderer.From(
-                    Primitives.ToRenderable(), ViewMatrix, ProjectionMatrix);
             Shaders.TryGetRendererShader("geometry", out var primitiveShader);
+            Shaders.TryGetRendererShader("uvcolor", out var uvColorShader);
+
+            PrimitivesRenderer = BatchedRenderer.From(
+                Primitives.ToRenderable(), ViewMatrix, ProjectionMatrix);
             primitiveShader!.UseOnRenderer(PrimitivesRenderer);
 
-            ConsoleBackground = new IndexedSurface<PrimitiveVertexData>()
-                .WithShader(Shaders["geometry"])
-                .AndSettings(ViewMatrix, ProjectionMatrix);
+            ConsoleBackgroundRenderer = BatchedRenderer.From(
+                ConsoleBackground.ToRenderable(), ViewMatrix, ProjectionMatrix);
+            primitiveShader!.UseOnRenderer(ConsoleBackgroundRenderer);
 
-            ConsoleFont = Font.FromJsonFile(font("inconsolata.json"));
-            ConsoleFontSurface = new IndexedSurface<UVColorVertexData>()
-                .WithShader(Shaders["uvcolor"])
-                .AndSettings(
-                    ViewMatrix, ProjectionMatrix,
-                    new TextureUniform("diffuse", new Texture(font("inconsolata.png"), preMultiplyAlpha: true))
-                );
+            var (consoleFontTextureData, consoleFont) = // used to be inconsolata
+                FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), 2);
+            // TODO: premultiply console font texture data!
+            var consoleFontTexture = consoleFontTextureData.ToTexture(t =>
+            {
+                t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
+                t.GenerateMipmap();
+            });
+            ConsoleFont = consoleFont;
+            ConsoleFontMeshBuilder = new TextDrawer<UVColorVertex>(ConsoleFont, (xyz, uv) => new UVColorVertex(xyz, uv, Color.White));
+            ConsoleFontRenderer = BatchedRenderer.From(ConsoleFontMeshBuilder.ToRenderable(),
+                ViewMatrix, ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, consoleFontTexture));
+            uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
 
-            UIFont = Font.FromJsonFile(font("helveticaneue.json"));
-            UIFontSurface = new IndexedSurface<UVColorVertexData>()
-                    .WithShader(Shaders["uvcolor"])
-                    .AndSettings(
-                        ViewMatrix, ProjectionMatrix,
-                        new TextureUniform("diffuse", new Texture(font("helveticaneue.png"), preMultiplyAlpha: true))
-                    );
-
-            PointLights = new IndexedSurface<PointLightVertex>()
-                .WithShader(Shaders["deferred/pointlight"])
-                .AndSettings(ViewMatrix, ProjectionMatrix,
-                    FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
-
-            Spotlights = new IndexedSurface<SpotlightVertex>()
-                .WithShader(Shaders["deferred/spotlight"])
-                .AndSettings(ViewMatrix, ProjectionMatrix,
-                    FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition);
+            var (uiFontTextureData, uiFont) = // used to be helveticaneue
+                FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), 2);
+            // TODO: premultiply console font texture data!
+            var uiFontTexture = uiFontTextureData.ToTexture(t =>
+            {
+                t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
+                t.GenerateMipmap();
+            });
+            UIFont = consoleFont;
+            UIFontMeshBuilder = new TextDrawer<UVColorVertex>(UIFont, (xyz, uv) => new UVColorVertex(xyz, uv, Color.White));
+            UIFontRenderer = BatchedRenderer.From(UIFontMeshBuilder.ToRenderable(),
+                ViewMatrix, ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, uiFontTexture));
+            uvColorShader!.UseOnRenderer(UIFontRenderer);
         }
 
         public static string AdjustPathToReloadable(string file)
@@ -125,8 +143,18 @@ namespace Bearded.TD.Rendering
             var normalUniform = new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer);
             DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, depthBuffer);
 
-            PointLights.AddSettings(normalUniform, DepthBuffer);
-            Spotlights.AddSettings(normalUniform, DepthBuffer);
+            Shaders.TryGetRendererShader("deferred/pointlight", out var pointLightShader);
+            Shaders.TryGetRendererShader("deferred/spotlight", out var spotLightShader);
+
+            PointLightRenderer = BatchedRenderer.From(PointLights.ToRenderable(),
+                ViewMatrix, ProjectionMatrix, FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition,
+                normalUniform, DepthBuffer);
+            pointLightShader!.UseOnRenderer(PointLightRenderer);
+
+            SpotLightRenderer = BatchedRenderer.From(Spotlights.ToRenderable(),
+                ViewMatrix, ProjectionMatrix, FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition,
+                normalUniform, DepthBuffer);
+            spotLightShader!.UseOnRenderer(SpotLightRenderer);
         }
 
         private static string asset(string path) => workingDir + "assets/" + path;

@@ -13,11 +13,11 @@ namespace Bearded.TD.Rendering
         public FrameCompositor Compositor { get; }
         public IGraphicsLoader GraphicsLoader { get; }
 
-        public RenderContext(ManualActionQueue glActionQueue, Logger logger)
+        public RenderContext(IActionQueue glActionQueue, Logger logger)
         {
             Surfaces = new SurfaceManager();
-            Geometries = new GeometryManager(Surfaces);
             Compositor = new FrameCompositor(logger, Surfaces);
+            Geometries = new GeometryManager(Surfaces);
             GraphicsLoader = new GraphicsLoader(this, glActionQueue, logger);
         }
 

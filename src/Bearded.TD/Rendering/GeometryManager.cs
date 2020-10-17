@@ -1,6 +1,7 @@
 ﻿using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
+using amulware.Graphics.Text;
 using Bearded.TD.Rendering.Deferred;
 
 namespace Bearded.TD.Rendering
@@ -11,7 +12,7 @@ namespace Bearded.TD.Rendering
 
         public ColorShapeDrawer2 Primitives { get; }
 
-        public FontGeometry ConsoleFont { get; }
+        public TextDrawer<UVColorVertex> ConsoleFont { get; }
         public PrimitiveGeometry ConsoleBackground { get; }
 
         public FontGeometry UIFont { get; }
@@ -25,7 +26,8 @@ namespace Bearded.TD.Rendering
 
             Primitives = new ColorShapeDrawer2(surfaces.Primitives);
             ConsoleBackground = new PrimitiveGeometry(surfaces.ConsoleBackground);
-            ConsoleFont = new FontGeometry(surfaces.ConsoleFontSurface, surfaces.ConsoleFont);
+
+            ConsoleFont =
             UIFont = new FontGeometry(surfaces.UIFontSurface, surfaces.UIFont);
             PointLight = new PointLightGeometry(surfaces.PointLights);
             Spotlight = new SpotlightGeometry(surfaces.Spotlights);
