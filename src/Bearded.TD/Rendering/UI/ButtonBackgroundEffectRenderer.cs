@@ -5,16 +5,17 @@ using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class ButtonBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
+    sealed class ButtonBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
     {
-        private readonly ColorShapeDrawer2 drawer;
+        private readonly ShapeDrawer2<ColorVertexData, Color> drawer;
 
-        public ButtonBackgroundEffectRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
+        public ButtonBackgroundEffectRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
         {
-            drawer = new ColorShapeDrawer2(meshBuilder);
+            this.drawer = drawer;
         }
 
         public void Render(ButtonBackgroundEffect control)

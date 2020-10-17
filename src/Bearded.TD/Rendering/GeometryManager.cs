@@ -4,17 +4,16 @@ using amulware.Graphics.Shapes;
 using amulware.Graphics.Text;
 using Bearded.TD.Rendering.Deferred;
 using OpenToolkit.Mathematics;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering
 {
     sealed class GeometryManager
     {
-        private readonly SurfaceManager surfaces;
-
-        public ColorShapeDrawer2 Primitives { get; }
+        public ShapeDrawer2<ColorVertexData, Color> Primitives { get; }
 
         public TextDrawerWithDefaults<Color> ConsoleFont { get; }
-        public PrimitiveGeometry ConsoleBackground { get; }
+        public ShapeDrawer2<ColorVertexData, Color> ConsoleBackground { get; }
 
         public TextDrawerWithDefaults<Color> UIFont { get; }
 
@@ -23,10 +22,10 @@ namespace Bearded.TD.Rendering
 
         public GeometryManager(SurfaceManager surfaces)
         {
-            this.surfaces = surfaces;
-
-            Primitives = new ColorShapeDrawer2(surfaces.Primitives);
-            ConsoleBackground = new PrimitiveGeometry(surfaces.ConsoleBackground);
+            Primitives = new ShapeDrawer2<ColorVertexData, Color>(
+                surfaces.Primitives, (xyz, color) => new ColorVertexData(xyz, color));
+            ConsoleBackground = new ShapeDrawer2<ColorVertexData, Color>(
+                surfaces.ConsoleBackground, (xyz, color) => new ColorVertexData(xyz, color));
 
             ConsoleFont = createTextDrawerWithDefaults(surfaces.ConsoleFont, surfaces.ConsoleFontMeshBuilder);
             UIFont = createTextDrawerWithDefaults(surfaces.UIFont, surfaces.UIFontMeshBuilder);
