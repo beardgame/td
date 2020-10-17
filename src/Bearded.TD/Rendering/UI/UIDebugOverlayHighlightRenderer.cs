@@ -5,17 +5,16 @@ using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenToolkit.Mathematics;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class UIDebugOverlayHighlightRenderer : IRenderer<UIDebugOverlayControl.Highlight>
+    sealed class UIDebugOverlayHighlightRenderer : IRenderer<UIDebugOverlayControl.Highlight>
     {
-        private readonly ShapeDrawer2<ColorVertexData, Color> shapeDrawer;
+        private readonly IShapeDrawer2<Color> shapeDrawer;
         private readonly TextDrawerWithDefaults<Color> textDrawer;
 
         public UIDebugOverlayHighlightRenderer(
-            ShapeDrawer2<ColorVertexData, Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+            IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
         {
             this.shapeDrawer = shapeDrawer;
             this.textDrawer = textDrawer.With(fontHeight: 14);

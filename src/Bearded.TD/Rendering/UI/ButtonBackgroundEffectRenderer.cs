@@ -1,19 +1,17 @@
 ﻿using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
     sealed class ButtonBackgroundEffectRenderer : IRenderer<ButtonBackgroundEffect>
     {
-        private readonly ShapeDrawer2<ColorVertexData, Color> drawer;
+        private readonly IShapeDrawer2<Color> drawer;
 
-        public ButtonBackgroundEffectRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
+        public ButtonBackgroundEffectRenderer(IShapeDrawer2<Color> drawer)
         {
             this.drawer = drawer;
         }

@@ -1,18 +1,16 @@
 ﻿using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
     sealed class BackgroundBoxRenderer : IRenderer<BackgroundBox>
     {
-        private readonly ShapeDrawer2<ColorVertexData, Color> drawer;
+        private readonly IShapeDrawer2<Color> drawer;
 
-        public BackgroundBoxRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
+        public BackgroundBoxRenderer(IShapeDrawer2<Color> drawer)
         {
             this.drawer = drawer;
         }

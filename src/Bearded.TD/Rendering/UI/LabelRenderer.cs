@@ -8,7 +8,7 @@ using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class LabelRenderer : IRenderer<Label>
+    sealed class LabelRenderer : IRenderer<Label>
     {
         private readonly TextDrawerWithDefaults<Color> textDrawer;
 

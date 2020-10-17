@@ -6,7 +6,6 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenToolkit.Mathematics;
 using static amulware.Graphics.Color;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -16,7 +15,7 @@ namespace Bearded.TD.Rendering.UI
         private readonly TextDrawerWithDefaults<Color> textDrawer;
 
         public AutoCompletingTextInputRenderer(
-            ShapeDrawer2<ColorVertexData, Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+            IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
         {
             internalRenderer = new TextInputRenderer(shapeDrawer, textDrawer);
             this.textDrawer = textDrawer;
@@ -33,13 +32,12 @@ namespace Bearded.TD.Rendering.UI
 
             var argb = White * .5f;
 
-            var textWidth = geometry.StringWidth(textInput.Text);
+            var stringOffset = textDrawer.StringWidth(textInput.Text, (float) textInput.FontSize);
 
-            var topLeft = textInput.Frame.TopLeft + textWidth * Vector2d.UnitX;
             var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
 
             textDrawer.DrawLine(
-                xyz: ((Vector2) topLeft).WithZ(),
+                xyz: ((Vector2) textInput.Frame.TopLeft).WithZ() + stringOffset,
                 text: str,
                 fontHeight: (float) textInput.FontSize,
                 alignVertical: 0,

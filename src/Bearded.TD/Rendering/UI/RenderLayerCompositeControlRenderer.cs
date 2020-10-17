@@ -3,7 +3,7 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.Rendering.UI
 {
-    class RenderLayerCompositeControlRenderer : IRenderer<RenderLayerCompositeControl>
+    sealed class RenderLayerCompositeControlRenderer : IRenderer<RenderLayerCompositeControl>
     {
         private readonly FrameCompositor compositor;
 

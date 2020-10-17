@@ -132,8 +132,7 @@ namespace Bearded.TD.Game.Buildings
                 xyz: Position.NumericValue,
                 text: Blueprint.Name,
                 parameters: color,
-                fontHeight: .2f,
-                unitDownDp: -Vector3.UnitY);
+                fontHeight: .2f);
         }
     }
 }
