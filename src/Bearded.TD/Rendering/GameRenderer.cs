@@ -1,5 +1,7 @@
 using System;
 using amulware.Graphics;
+using amulware.Graphics.Shapes;
+using amulware.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Navigation;
@@ -20,6 +22,10 @@ namespace Bearded.TD.Rendering
         private readonly GeometryManager geometries;
         private readonly LevelRenderer levelRenderer;
         private readonly FluidGeometry waterGeometry;
+
+        private readonly IShapeDrawer2<Color> shapeDrawer;
+        private readonly TextDrawerWithDefaults<Color> debugGeometryTextDrawer;
+        private readonly TextDrawerWithDefaults<Color> debugCoordinateTextDrawer;
 
         public ContentSurfaceManager DeferredSurfaces { get; }
 
@@ -42,6 +48,12 @@ namespace Bearded.TD.Rendering
                 game.Blueprints.Sprites,
                 new [] { waterGeometry }
             );
+
+            shapeDrawer = geometries.Primitives;
+            debugGeometryTextDrawer = geometries.ConsoleFont.With(
+                fontHeight: .3f * HexagonSide, parameters: Color.Orange, alignHorizontal: .5f);
+            debugCoordinateTextDrawer = geometries.ConsoleFont.With(
+                fontHeight: .3f * HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
         }
 
         public void Render()
@@ -108,8 +120,7 @@ namespace Bearded.TD.Rendering
 
         private void drawDebugPassabilityLayer()
         {
-            var shapes = geometries.Primitives;
-            shapes.LineWidth = HexagonSide * 0.1f;
+            const float lineWidth = HexagonSide * 0.1f;
 
             var passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
@@ -125,25 +136,16 @@ namespace Bearded.TD.Rendering
                     {
                         var v = direction.Vector() * HexagonWidth * 0.5f;
 
-                        shapes.Color = Color.Green;
-                        shapes.DrawLine(p + v, p + v + v);
+                        shapeDrawer.DrawLine(p + v, p + v + v, lineWidth, Color.Green);
                     }
 
-                    shapes.Color = passability.IsPassable ? Color.Green : Color.Red;
-
-                    shapes.DrawCircle(p, HexagonSide * 0.25f, true, 3);
+                    shapeDrawer.FillCircle(p, HexagonSide * 0.25f, passability.IsPassable ? Color.Green : Color.Red, 3);
                 }
             }
         }
 
         private void drawDebugLevelGeometry()
         {
-            var font = geometries.ConsoleFont;
-            font.Height = .3f * HexagonSide;
-            font.Color = Color.Orange;
-
-            var shapes = geometries.Primitives;
-
             var geometryLayer = game.State.GeometryLayer;
 
             foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
@@ -153,29 +155,28 @@ namespace Bearded.TD.Rendering
                 var height = tileGeometry.Geometry.FloorHeight.NumericValue;
                 var hardness = tileGeometry.Geometry.Hardness;
 
-                shapes.Color = Color.Lerp(Color.Green, Color.Red,
+                var color = Color.Lerp(Color.Green, Color.Red,
                     (float) (UserSettings.Instance.Debug.LevelGeometryShowHeights ? (height + 0.5f) : hardness))
                     * 0.75f;
-                shapes.DrawCircle(p.WithZ(height), HexagonSide, true, 6);
+                shapeDrawer.FillCircle(p.WithZ(height), HexagonSide, color, 6);
 
                 if (UserSettings.Instance.Debug.LevelGeometryLabels)
                 {
-                    font.DrawString(p.WithZ(height),
-                        $"{height:#.#}",
-                        .5f, 1f);
+                    debugGeometryTextDrawer.DrawLine(
+                        xyz: p.WithZ(height),
+                        text: $"{height:#.#}",
+                        alignVertical: 1f);
 
-                    font.DrawString(p.WithZ(height),
-                        $"{hardness:#.#}",
-                        .5f, 0f);
+                    debugGeometryTextDrawer.DrawLine(
+                        xyz: p.WithZ(height),
+                        text: $"{hardness:#.#}",
+                        alignVertical: 0f);
                 }
             }
         }
 
         private void drawDebugFluids()
         {
-            var geo = geometries.Primitives;
-            geo.LineWidth = 0.02f;
-
             var water = game.State.FluidLayer.Water;
             var ground = game.State.GeometryLayer;
 
@@ -193,11 +194,12 @@ namespace Bearded.TD.Rendering
                 var numericFluidLevel = (float) fluidLevel.NumericValue;
 
                 var alpha = Math.Min(numericFluidLevel * 10, 0.5f);
-                geo.Color = Color.DodgerBlue * alpha;
-                geo.DrawCircle(tilePos.WithZ(numericFluidLevel + groundHeight.NumericValue), HexagonSide, true, 6);
+                shapeDrawer.FillCircle(
+                    tilePos.WithZ(numericFluidLevel + groundHeight.NumericValue),
+                    HexagonSide,
+                    Color.DodgerBlue * alpha,
+                    6);
             }
-
-            geo.Color = Color.Aquamarine * 1f;
 
             foreach (var tile in Tilemap.EnumerateTilemapWith(game.State.Level.Radius))
             {
@@ -212,6 +214,8 @@ namespace Bearded.TD.Rendering
 
             void drawFlow(Vector2 tileP, Vector2 otherP, FlowRate flow)
             {
+                const float lineWidth = 0.02f;
+
                 var f = (float) flow.NumericValue;
 
                 if (f == 0f) return;
@@ -222,27 +226,20 @@ namespace Bearded.TD.Rendering
 
                 var d = otherP - tileP;
 
-                geo.DrawLine(tileP + d * p, tileP + d * q);
+                shapeDrawer.DrawLine(tileP + d * p, tileP + d * q, lineWidth, Color.Aquamarine * 1f);
             }
         }
 
         private void drawDebugLevelMetadata()
         {
-            var geo = geometries.Primitives;
-            geo.LineWidth = .1f;
             foreach (var segment in game.LevelDebugMetadata.Segments)
             {
-                geo.Color = segment.Color;
-                geo.DrawLine(segment.From.NumericValue, segment.To.NumericValue);
+                shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
             }
         }
 
         private void drawDebugCoordinates()
         {
-            var geo = geometries.ConsoleFont;
-            geo.Height = .3f * HexagonSide;
-            geo.Color = Color.Beige;
-
             var topLeftOffset = Direction2.FromDegrees(150).Vector * HexagonSide * .6f;
             var bottomOffset = Direction2.FromDegrees(270).Vector * HexagonSide * .6f;
             var topRightOffset = Direction2.FromDegrees(30).Vector * HexagonSide * .6f;
@@ -260,20 +257,21 @@ namespace Bearded.TD.Rendering
 
                     if (x == 0 && y == 0 && z == 0)
                     {
-                        geo.DrawString(topLeft, "x", .5f, .5f);
-                        geo.DrawString(bottom, "y", .5f, .5f);
-                        geo.DrawString(topRight, "z", .5f, .5f);
+                        debugCoordinateTextDrawer.DrawLine(topLeft.WithZ(), text: "x");
+                        debugCoordinateTextDrawer.DrawLine(bottom.WithZ(), "y");
+                        debugCoordinateTextDrawer.DrawLine(topRight.WithZ(), "z");
                     }
                     else
                     {
-                        geo.DrawString(topLeft, $"{x:+0;-0;0}", .5f, .5f);
-                        geo.DrawString(bottom, $"{y:+0;-0;0}", .5f, .5f);
-                        geo.DrawString(topRight, $"{z:+0;-0;0}", .5f, .5f);
+                        debugCoordinateTextDrawer.DrawLine(topLeft.WithZ(), $"{x:+0;-0;0}");
+                        debugCoordinateTextDrawer.DrawLine(bottom.WithZ(), $"{y:+0;-0;0}");
+                        debugCoordinateTextDrawer.DrawLine(topRight.WithZ(), $"{z:+0;-0;0}");
                     }
                 }
                 else
                 {
-                    geo.DrawString(Level.GetPosition(tile).NumericValue, $"{tile.X}, {tile.Y}", .5f, .5f);
+                    debugCoordinateTextDrawer.DrawLine(
+                        Level.GetPosition(tile).NumericValue.WithZ(), $"{tile.X}, {tile.Y}");
                 }
             }
         }

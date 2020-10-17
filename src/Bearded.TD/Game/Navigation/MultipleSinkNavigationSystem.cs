@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation
@@ -189,14 +191,13 @@ namespace Bearded.TD.Game.Navigation
 
         public void DrawDebug(GeometryManager geometries, bool drawWeights)
         {
-            var geo = geometries.ConsoleBackground;
-            var font = geometries.InGameConsoleFont;
+            var shapeDrawer = geometries.ConsoleBackground;
+            var textDrawer = geometries.InGameConsoleFont;
 
-            geo.LineWidth = HexagonSide * 0.05f;
-            geo.Color = Color.Orange * 0.3f;
+            const float lineWidth = HexagonSide * 0.05f;
+            const float fontHeight = HexagonSide;
 
-            font.Height = HexagonSide;
-            font.Color = Color.Orange;
+            var weightsFontColor = Color.Orange;
 
             const float w = HexagonDistanceX * 0.5f - 0.1f;
             const float h = HexagonDistanceY * 0.5f - 0.1f;
@@ -208,14 +209,18 @@ namespace Bearded.TD.Game.Navigation
                 {
                     var p = Level.GetPosition(tile).NumericValue;
 
-                    geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
+                    shapeDrawer.FillRectangle(p.X - w, p.Y - h, w * 2, h * 2, weightsFontColor * 0.3f);
 
-                    font.DrawString(p, $"{i}", 0.5f, 1f);
+                    textDrawer.DrawLine(
+                        xyz: p.WithZ(),
+                        text: $"{i}",
+                        fontHeight: fontHeight,
+                        alignHorizontal: 0.5f,
+                        alignVertical: 1f,
+                        parameters: weightsFontColor);
                     i++;
                 }
             }
-
-            font.Height = HexagonSide;
 
             foreach (var tile in graph)
             {
@@ -225,7 +230,6 @@ namespace Bearded.TD.Game.Navigation
 
                 var d = node.Direction.Vector() * HexagonWidth;
 
-
                 if (!node.IsSink)
                 {
                     var pointsToTile = tile.Neighbour(node.Direction);
@@ -233,34 +237,36 @@ namespace Bearded.TD.Game.Navigation
 
                     if (!pointsToNode.IsInvalid && pointsToNode.Distance >= node.Distance)
                     {
-
-                        geo.Color = Color.Red * 0.3f;
-                        geo.DrawRectangle(p.X - w, p.Y - h, w * 2, h * 2);
+                        shapeDrawer.FillRectangle(p.X - w, p.Y - h, w * 2, h * 2, Color.Red * 0.3f);
                     }
 
-                    geo.Color = (pointsToNode.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
-                    geo.DrawLine(p, p + d);
-                    geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularRight);
-                    geo.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularLeft);
+                    var color = (pointsToNode.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
+                    shapeDrawer.DrawLine(p, p + d, lineWidth, color);
+                    shapeDrawer.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularRight, lineWidth, color);
+                    shapeDrawer.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularLeft, lineWidth, color);
                 }
 
                 if (drawWeights && !node.IsInvalid)
                 {
-                    font.Color = Color.Yellow;
+                    var color = Color.Yellow;
                     var distance = node.Distance;
                     if (distance >= backupSinkDistance)
                     {
                         distance -= backupSinkDistance;
-                        font.Color = Color.Red;
+                        color = Color.Red;
                     }
 
                     if (!node.IsSink && level.ValidNeighboursOf(tile).Select(t => graph[t])
                             .Any(n => !n.IsInvalid && !n.IsSink && Math.Abs(n.Distance - node.Distance) > 1))
                     {
-                        font.Color = Color.MediumPurple;
+                        color = Color.MediumPurple;
                     }
 
-                    font.DrawString(p, $"{distance}", 0.5f);
+                    textDrawer.DrawLine(
+                        xyz: p.WithZ(),
+                        text: $"{distance}",
+                        alignHorizontal: 0.5f,
+                        parameters: color);
                 }
             }
         }
@@ -271,7 +277,7 @@ namespace Bearded.TD.Game.Navigation
         private static Node sink => new Node(0, Direction.Unknown);
         private static Node backupSink => new Node(backupSinkDistance, Direction.Unknown);
 
-        private struct Node
+        private readonly struct Node
         {
             public int Distance { get; }
             public Direction Direction { get; }
