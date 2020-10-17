@@ -12,7 +12,6 @@ namespace Bearded.TD.Rendering
 {
     sealed class ContentSurfaceManager : IDisposable
     {
-
         public LevelRenderer LevelRenderer { get; }
         public ImmutableArray<FluidGeometry> FluidGeometries { get; }
 
@@ -34,7 +33,6 @@ namespace Bearded.TD.Rendering
                         .ToList()
                         .AsReadOnly()
                 );
-
         }
 
         private IRenderer makeSpriteSetRenderer(RenderContext context, SpriteSet spriteSet)
