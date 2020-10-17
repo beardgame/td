@@ -10,20 +10,20 @@ namespace Bearded.TD.Rendering.UI
 {
     class BoxRenderer : IRenderer<Control>
     {
+        private readonly ShapeDrawer2<ColorVertexData, Color> drawer;
         private readonly Color color;
-        private readonly ColorShapeDrawer2 drawer;
 
-        public BoxRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder, Color color)
+        public BoxRenderer(ShapeDrawer2<ColorVertexData, Color> drawer, Color color)
         {
+            this.drawer = drawer;
             this.color = color;
-            drawer = new ColorShapeDrawer2(meshBuilder);
         }
 
         public virtual void Render(Control control)
         {
             var frame = control.Frame;
 
-            drawer.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, color, 1);
+            drawer.DrawRectangle((Vector2)frame.TopLeft, (Vector2)frame.Size, 1, color);
         }
     }
 }

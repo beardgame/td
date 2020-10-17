@@ -1,4 +1,4 @@
-using amulware.Graphics.MeshBuilders;
+using amulware.Graphics;
 using amulware.Graphics.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
@@ -9,11 +9,11 @@ namespace Bearded.TD.Rendering.UI
 {
     sealed class DotRenderer : IRenderer<Dot>
     {
-        private readonly ColorShapeDrawer2 drawer;
+        private readonly ShapeDrawer2<ColorVertexData, Color> drawer;
 
-        public DotRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
+        public DotRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
         {
-            drawer = new ColorShapeDrawer2(meshBuilder);
+            this.drawer = drawer;
         }
 
         public void Render(Dot control)

@@ -189,9 +189,9 @@ namespace Bearded.TD.Rendering
         private void renderConsoleSurfaces()
         {
             surfaces.PrimitivesRenderer.Render();
-            surfaces.UIFontSurface.Render();
-            surfaces.ConsoleBackground.Render();
-            surfaces.ConsoleFontSurface.Render();
+            surfaces.UIFontRenderer.Render();
+            surfaces.ConsoleBackgroundRenderer.Render();
+            surfaces.ConsoleFontRenderer.Render();
         }
 
         public void FinalizeFrame()

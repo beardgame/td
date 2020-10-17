@@ -1,8 +1,12 @@
 ﻿using amulware.Graphics;
+using amulware.Graphics.Shapes;
+using amulware.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 using OpenToolkit.Mathematics;
 using static amulware.Graphics.Color;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -11,16 +15,13 @@ namespace Bearded.TD.Rendering.UI
         private const string cursorString = "|";
 
         private readonly BoxRenderer boxRenderer;
-        private readonly FontGeometry geometry;
+        private readonly TextDrawerWithDefaults<Color> textDrawer;
 
-        public TextInputRenderer(IndexedSurface<PrimitiveVertexData> primitives, IndexedSurface<UVColorVertexData> fontSurface, Font font)
+        public TextInputRenderer(
+            ShapeDrawer2<ColorVertexData, Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
         {
-            boxRenderer = new BoxRenderer(primitives, White);
-
-            geometry = new FontGeometry(fontSurface, font)
-            {
-                Color = White,
-            };
+            boxRenderer = new BoxRenderer(shapeDrawer, White);
+            this.textDrawer = textDrawer.With(alignVertical: .5f);
         }
 
         public void Render(TextInput textInput)
@@ -33,21 +34,30 @@ namespace Bearded.TD.Rendering.UI
                 argb *= .5f;
             }
 
-            geometry.Color = argb;
-            geometry.Height = (float)textInput.FontSize;
-
             var topLeft = textInput.Frame.TopLeft;
             var midLeft = topLeft + Vector2d.UnitY * .5 * textInput.Frame.Size.Y;
 
             var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);
             var stringWidthBeforeCursor = geometry.StringWidth(textBeforeCursor);
 
-            geometry.DrawString((Vector2)midLeft, textInput.Text, alignY: .5f);
+            textDrawer.DrawLine(
+                xyz: ((Vector2) midLeft).WithZ(),
+                text: textInput.Text,
+                fontHeight: (float) textInput.FontSize,
+                parameters: argb
+            );
 
             if (textInput.IsFocused)
             {
-                geometry.DrawString(
-                    (Vector2) new Vector2d(midLeft.X + stringWidthBeforeCursor, midLeft.Y), cursorString, .5f, .5f);
+                var cursorPos = new Vector2d(midLeft.X + stringWidthBeforeCursor, midLeft.Y);
+
+                textDrawer.DrawLine(
+                    xyz: ((Vector2) cursorPos).WithZ(),
+                    text: cursorString,
+                    fontHeight: (float) textInput.FontSize,
+                    alignHorizontal: .5f,
+                    parameters: argb
+                );
             }
         }
     }

@@ -1,36 +1,36 @@
 using amulware.Graphics;
+using amulware.Graphics.Shapes;
+using amulware.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
+using Bearded.Utilities;
 using OpenToolkit.Mathematics;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
     class UIDebugOverlayHighlightRenderer : IRenderer<UIDebugOverlayControl.Highlight>
     {
-        private readonly PrimitiveGeometry background;
-        private readonly FontGeometry text;
+        private readonly ShapeDrawer2<ColorVertexData, Color> shapeDrawer;
+        private readonly TextDrawerWithDefaults<Color> textDrawer;
 
-        public UIDebugOverlayHighlightRenderer(IndexedSurface<PrimitiveVertexData> backgroundSurface,
-            IndexedSurface<UVColorVertexData> fontSurface, Font font)
+        public UIDebugOverlayHighlightRenderer(
+            ShapeDrawer2<ColorVertexData, Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
         {
-            background = new PrimitiveGeometry(backgroundSurface)
-            {
-                LineWidth = 1
-            };
-            text = new FontGeometry(fontSurface, font)
-            {
-                Height = 14
-            };
+            this.shapeDrawer = shapeDrawer;
+            this.textDrawer = textDrawer.With(fontHeight: 14);
         }
 
         public void Render(UIDebugOverlayControl.Highlight control)
         {
             var argb = Color.IndianRed * control.Alpha;
-            background.Color = argb;
-            background.DrawRectangle((Vector2)control.Frame.TopLeft, (Vector2)control.Frame.Size, false);
+            shapeDrawer.DrawRectangle((Vector2)control.Frame.TopLeft, (Vector2)control.Frame.Size, 1, argb);
 
-            text.Color = argb;
-            text.DrawString((Vector2)new Vector2d(control.Frame.X.Start, control.TextY), control.Name);
+            var xy = new Vector2d(control.Frame.X.Start, control.TextY);
+            textDrawer.DrawLine(
+                xyz: ((Vector2) xy).WithZ(),
+                text: control.Name,
+                parameters: argb);
         }
     }
 }

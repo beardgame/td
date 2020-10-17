@@ -1,5 +1,4 @@
 ﻿using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.TD.Meta;
 using Bearded.UI.Controls;
@@ -9,8 +8,8 @@ namespace Bearded.TD.Rendering.UI
 {
     sealed class FallbackBoxRenderer : BoxRenderer
     {
-        public FallbackBoxRenderer(IIndexedTrianglesMeshBuilder<ColorVertexData, ushort> meshBuilder)
-            : base(meshBuilder, Color.Fuchsia)
+        public FallbackBoxRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
+            : base(drawer, Color.Fuchsia)
         {
         }
 

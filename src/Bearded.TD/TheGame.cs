@@ -31,7 +31,7 @@ namespace Bearded.TD
 {
     sealed class TheGame : Window
     {
-        private static TheGame instance;
+        private static TheGame? instance;
 
         private readonly Logger logger;
         private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
@@ -77,16 +77,16 @@ namespace Bearded.TD
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {
-                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(geometries.ConsoleBackground, geometries.ConsoleFont)),
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
-                    (typeof(TextInput), new TextInputRenderer(surfaces.ConsoleBackground, surfaces.ConsoleFontSurface, surfaces.ConsoleFont)),
+                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(geometries.ConsoleBackground, geometries.UIFont)),
+                    (typeof(TextInput), new TextInputRenderer(geometries.ConsoleBackground, geometries.UIFont)),
                     (typeof(Label), new LabelRenderer(geometries.UIFont)),
-                    (typeof(Border), new BoxRenderer(surfaces.ConsoleBackground, Color.White)),
-                    (typeof(BackgroundBox), new BackgroundBoxRenderer(surfaces.ConsoleBackground)),
-                    (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(surfaces.ConsoleBackground)),
-                    (typeof(Dot), new DotRenderer(surfaces.ConsoleBackground)),
-                    (typeof(Control), new FallbackBoxRenderer(surfaces.ConsoleBackground)),
+                    (typeof(Border), new BoxRenderer(geometries.ConsoleBackground, Color.White)),
+                    (typeof(BackgroundBox), new BackgroundBoxRenderer(geometries.ConsoleBackground)),
+                    (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(geometries.ConsoleBackground)),
+                    (typeof(Dot), new DotRenderer(geometries.ConsoleBackground)),
+                    (typeof(Control), new FallbackBoxRenderer(geometries.ConsoleBackground)),
                 });
 
             dependencyResolver.Add(renderContext.GraphicsLoader);
@@ -172,7 +172,7 @@ namespace Bearded.TD
         [Command("debug.ui")]
         private static void openUIDebugOverlay(Logger logger, CommandParameters p)
         {
-            instance.navigationController.Push<UIDebugOverlay>();
+            instance!.navigationController.Push<UIDebugOverlay>();
         }
     }
 }
