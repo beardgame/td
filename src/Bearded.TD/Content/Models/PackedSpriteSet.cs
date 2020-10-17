@@ -13,9 +13,10 @@ namespace Bearded.TD.Content.Models
     sealed class PackedSpriteSet : IDisposable
     {
         private readonly ImmutableArray<TextureUniform> textures;
-        private readonly ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> meshBuilder;
         private readonly IDictionary<string, ISprite> sprites;
         private readonly Shader shader;
+
+        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> MeshBuilder { get; }
 
         public PackedSpriteSet(
             IEnumerable<TextureUniform> textures,
@@ -24,7 +25,7 @@ namespace Bearded.TD.Content.Models
             Shader shader)
         {
             this.textures = textures.ToImmutableArray();
-            this.meshBuilder = meshBuilder;
+            MeshBuilder = meshBuilder;
             this.sprites = sprites;
             this.shader = shader;
         }
@@ -37,7 +38,7 @@ namespace Bearded.TD.Content.Models
         public IRenderer CreateRendererWithSettings(params IRenderSetting[] additionalSettings)
         {
             var renderer = BatchedRenderer.From(
-                meshBuilder.ToRenderable(),
+                MeshBuilder.ToRenderable(),
                 textures.Concat(additionalSettings)
                 );
 
@@ -53,7 +54,7 @@ namespace Bearded.TD.Content.Models
             {
                 textureUniform.Value.Dispose();
             }
-            meshBuilder.Dispose();
+            MeshBuilder.Dispose();
         }
     }
 }

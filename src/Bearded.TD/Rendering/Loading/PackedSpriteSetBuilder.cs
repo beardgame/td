@@ -77,6 +77,8 @@ namespace Bearded.TD.Rendering.Loading
                 premultiply.Transform(ref bytes, ref w, ref h);
             });
 
+            // TODO: mesh builder should not be a responsibility of the packed sprite set so we can use multiple mesh
+            //     builders for different use cases using the same sprites.
             var (textureUniforms, meshBuilder) = glActions.RunAndReturn(() => createGlEntities(pixelate));
             var sprites = createSprites(meshBuilder);
 

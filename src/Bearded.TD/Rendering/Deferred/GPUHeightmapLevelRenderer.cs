@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
@@ -18,7 +19,7 @@ using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    class GPUHeightmapLevelRenderer : LevelRenderer
+    sealed class GPUHeightmapLevelRenderer : LevelRenderer
     {
         private readonly int tileMapWidth;
 
@@ -42,6 +43,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         private readonly ExpandingVertexSurface<LevelVertex> gridSurface;
         private readonly PackedSpriteSet heightmapSplats;
+        private readonly IRenderer heightMapSplatRenderer;
 
         private int heightMapResolution;
         private float gridToWorld;
@@ -67,7 +69,8 @@ namespace Bearded.TD.Rendering.Deferred
 
             gridSurface = setupSurface(context);
 
-            heightmapSplats = setupHeightmapSplats(game);
+            heightmapSplats = findHeightmapSplats(game);
+            heightMapSplatRenderer = heightmapSplats.CreateRendererWithSettings(heightmapRadiusUniform);
 
             resizeIfNeeded();
         }
@@ -145,12 +148,9 @@ namespace Bearded.TD.Rendering.Deferred
             );
         }
 
-        private PackedSpriteSet setupHeightmapSplats(GameInstance game)
+        private PackedSpriteSet findHeightmapSplats(GameInstance game)
         {
-            var splats = game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
-            splats.MeshBuilder.AddSetting(heightmapRadiusUniform);
-
-            return splats;
+            return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
         }
 
         private Texture setupHeightmapTexture()
@@ -287,12 +287,14 @@ namespace Bearded.TD.Rendering.Deferred
 
                 if (count > 10000)
                 {
-                    heightmapSplats.MeshBuilder.Render();
+                    heightMapSplatRenderer.Render();
+                    heightmapSplats.MeshBuilder.Clear();
                     count = 0;
                 }
             }
 
-            heightmapSplats.MeshBuilder.Render();
+            heightMapSplatRenderer.Render();
+            heightmapSplats.MeshBuilder.Clear();
         }
 
         public override void CleanUp()
