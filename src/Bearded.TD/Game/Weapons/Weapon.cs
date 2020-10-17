@@ -89,12 +89,11 @@ namespace Bearded.TD.Game.Weapons
 
         public void Draw(GeometryManager geometries)
         {
-            var geo = geometries.Primitives;
-            geo.Color = Color.Red;
-            geo.LineWidth = 0.15f;
+            const float lineWidth = .15f;
 
-            var v = (CurrentDirection.Vector * geo.LineWidth).WithZ();
-            //geo.DrawLine(Position.NumericValue - v, Position.NumericValue + v * 2);
+            var v = (CurrentDirection.Vector * lineWidth).WithZ();
+            // geometries.Primitives.DrawLine(
+            //     Position.NumericValue - v, Position.NumericValue + v * 2, lineWidth, Color.Red);
 
             components.Draw(geometries);
         }

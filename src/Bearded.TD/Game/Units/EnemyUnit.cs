@@ -108,15 +108,17 @@ namespace Bearded.TD.Game.Units
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-            geo.Color = blueprint.Color;
-            geo.DrawCircle(Position.NumericValue, Radius.NumericValue, true, 6);
+            var drawer = geometries.ConsoleBackground;
+
+            drawer.FillCircle(Position.NumericValue, Radius.NumericValue, blueprint.Color, 6);
+
+            drawer.FillRectangle(
+                Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f), Color.DarkGray);
 
             var p = (float) health.HealthPercentage;
-            geo.Color = Color.DarkGray;
-            geo.DrawRectangle(Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f));
-            geo.Color = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
-            geo.DrawRectangle(Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1 * p, .1f));
+            var healthColor = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
+            drawer.FillRectangle(
+                Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1 * p, .1f), healthColor);
 
             components.Draw(geometries);
         }

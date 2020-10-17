@@ -13,6 +13,7 @@ namespace Bearded.TD.Rendering
         public ShapeDrawer2<ColorVertexData, Color> Primitives { get; }
 
         public TextDrawerWithDefaults<Color> ConsoleFont { get; }
+        public TextDrawerWithDefaults<Color> InGameConsoleFont { get; }
         public ShapeDrawer2<ColorVertexData, Color> ConsoleBackground { get; }
 
         public TextDrawerWithDefaults<Color> UIFont { get; }
@@ -28,6 +29,7 @@ namespace Bearded.TD.Rendering
                 surfaces.ConsoleBackground, (xyz, color) => new ColorVertexData(xyz, color));
 
             ConsoleFont = createTextDrawerWithDefaults(surfaces.ConsoleFont, surfaces.ConsoleFontMeshBuilder);
+            InGameConsoleFont = ConsoleFont.With(unitDownDp: -Vector3.UnitY);
             UIFont = createTextDrawerWithDefaults(surfaces.UIFont, surfaces.UIFontMeshBuilder);
             PointLight = new PointLightGeometry(surfaces.PointLights);
             Spotlight = new SpotlightGeometry(surfaces.Spotlights);

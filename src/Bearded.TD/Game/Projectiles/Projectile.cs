@@ -109,9 +109,8 @@ namespace Bearded.TD.Game.Projectiles
             if (!UserSettings.Instance.Debug.ProjectileDots)
                 return;
 
-            var geo = geometries.Primitives;
-            geo.Color = Color.Yellow;
-            geo.DrawRectangle(Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f));
+            geometries.Primitives.FillRectangle(
+                Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f), Color.Yellow);
         }
 
         IEnumerable<TComponent> IComponentOwner<Projectile>.GetComponents<TComponent>() => components.Get<TComponent>();

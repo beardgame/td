@@ -121,18 +121,18 @@ namespace Bearded.TD.Game.Buildings
 
         protected void DrawTile(GeometryManager geometries, Color color, Tile tile)
         {
-            var geo = geometries.Primitives;
-            geo.Color = color;
-            geo.DrawCircle(Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            geometries.Primitives.FillCircle(
+                Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 
         protected void DrawBuildingName(GeometryManager geometries, Color color)
         {
-            var geo = geometries.ConsoleFont;
-            geo.Color = color;
-            geo.Height = .2f;
-            geo.SizeCoefficient = new Vector2(1, -1);
-            geo.DrawString(Position.NumericValue, Blueprint.Name, .5f, .5f);
+            geometries.InGameConsoleFont.DrawLine(
+                xyz: Position.NumericValue,
+                text: Blueprint.Name,
+                parameters: color,
+                fontHeight: .2f,
+                unitDownDp: -Vector3.UnitY);
         }
     }
 }

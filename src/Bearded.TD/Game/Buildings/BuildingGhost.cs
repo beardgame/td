@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Buildings
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.Primitives;
+            var primitiveDrawer = geometries.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
             var workerNetwork = Faction.WorkerNetwork;
@@ -82,12 +82,10 @@ namespace Bearded.TD.Game.Buildings
                     if (Game.BuildingPlacementLayer.IsTileCombinationValidForBuilding(tile, neighbor))
                         continue;
 
-                    geo.Color = Color.Red;
-                    geo.LineWidth = 0.1f;
                     var p = Level.GetPosition(tile).WithZ(Position.Z).NumericValue;
                     var p0 = direction.CornerBefore() * Constants.Game.World.HexagonSide;
                     var p1 = direction.CornerAfter() * Constants.Game.World.HexagonSide;
-                    geo.DrawLine(p + p0.WithZ(), p + p1.WithZ());
+                    primitiveDrawer.DrawLine(p + p0.WithZ(), p + p1.WithZ(), .1f, Color.Red);
                 }
             }
 

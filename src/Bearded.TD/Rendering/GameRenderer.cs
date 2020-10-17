@@ -14,7 +14,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Rendering
 {
-    class GameRenderer
+    sealed class GameRenderer
     {
         private readonly GameInstance game;
         private readonly GeometryManager geometries;
@@ -46,8 +46,6 @@ namespace Bearded.TD.Rendering
 
         public void Render()
         {
-            geometries.ConsoleFont.SizeCoefficient = new Vector2(1, -1);
-
             game.PlayerCursors.DrawCursors(geometries);
             drawAmbientLight();
             drawGameObjects();

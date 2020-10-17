@@ -27,11 +27,14 @@ namespace Bearded.TD.Game.Components.Generic
         {
             healthComponent.Match(health =>
             {
-                var fontGeo = geometries.ConsoleFont;
-                fontGeo.Color = Color.White;
-                fontGeo.Height = 1;
-
-                fontGeo.DrawString(Owner.Position.NumericValue, health.CurrentHealth.ToString(), .5f, .5f);
+                geometries.InGameConsoleFont.DrawLine(
+                    xyz: Owner.Position.NumericValue,
+                    text: health.CurrentHealth.ToString(),
+                    fontHeight: 1,
+                    alignHorizontal: .5f,
+                    alignVertical: .5f,
+                    parameters: Color.White
+                );
             });
         }
     }

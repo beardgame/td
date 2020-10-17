@@ -103,20 +103,22 @@ namespace Bearded.TD.Game.Components.Weapons
                 return;
             }
 
-            var geo = geometries.ConsoleBackground;
+            var shapeDrawer = geometries.ConsoleBackground;
             var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
 
             foreach (var (start, end, factor) in beamSegments)
             {
-                geo.Color = Parameters.Color.WithAlpha() * baseAlpha * factor;
-                geo.LineWidth = Parameters.Width.NumericValue * PixelSize * 0.5f;
+                shapeDrawer.DrawLine(
+                    start.WithZ(Weapon.Position.Z).NumericValue,
+                    end.WithZ(Weapon.Position.Z).NumericValue,
+                    Parameters.Width.NumericValue * PixelSize * 0.5f,
+                    Parameters.Color.WithAlpha() * baseAlpha * factor);
 
-                geo.DrawLine(start.WithZ(Weapon.Position.Z).NumericValue, end.WithZ(Weapon.Position.Z).NumericValue);
-
-                geo.Color = Color.White.WithAlpha() * baseAlpha * factor;
-                geo.LineWidth = Parameters.CoreWidth.NumericValue * PixelSize * 0.5f;
-
-                geo.DrawLine(start.WithZ(Weapon.Position.Z).NumericValue, end.WithZ(Weapon.Position.Z).NumericValue);
+                shapeDrawer.DrawLine(
+                    start.WithZ(Weapon.Position.Z).NumericValue,
+                    end.WithZ(Weapon.Position.Z).NumericValue,
+                    Parameters.CoreWidth.NumericValue * PixelSize * 0.5f,
+                    Color.White.WithAlpha() * baseAlpha * factor);
             }
         }
     }

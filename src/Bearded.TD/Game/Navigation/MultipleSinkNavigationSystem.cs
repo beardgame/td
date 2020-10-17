@@ -10,7 +10,7 @@ using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Navigation
 {
-    class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
+    sealed class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     {
         private readonly GlobalGameEvents events;
         private readonly Level level;
@@ -181,7 +181,7 @@ namespace Bearded.TD.Game.Navigation
                 return;
             updateFront.Enqueue(tile);
         }
-        
+
         private Directions passableDirectionsFrom(Tile tile)
         {
             return passability[tile].PassableDirections;
@@ -190,7 +190,7 @@ namespace Bearded.TD.Game.Navigation
         public void DrawDebug(GeometryManager geometries, bool drawWeights)
         {
             var geo = geometries.ConsoleBackground;
-            var font = geometries.ConsoleFont;
+            var font = geometries.InGameConsoleFont;
 
             geo.LineWidth = HexagonSide * 0.05f;
             geo.Color = Color.Orange * 0.3f;
@@ -220,7 +220,7 @@ namespace Bearded.TD.Game.Navigation
             foreach (var tile in graph)
             {
                 var node = graph[tile];
-                
+
                 var p = Level.GetPosition(tile).NumericValue;
 
                 var d = node.Direction.Vector() * HexagonWidth;
@@ -264,9 +264,9 @@ namespace Bearded.TD.Game.Navigation
                 }
             }
         }
-        
+
         private const int backupSinkDistance = 100_000_000;
-        
+
         private static Node none => new Node(int.MaxValue, Direction.Unknown);
         private static Node sink => new Node(0, Direction.Unknown);
         private static Node backupSink => new Node(backupSinkDistance, Direction.Unknown);

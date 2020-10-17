@@ -38,12 +38,9 @@ namespace Bearded.TD.Game.Units
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
             var radius = .3f * (1.2f + Mathf.Sin((float)Game.Time.NumericValue * Mathf.Pi));
-            geo.Color = Color.Red * .8f;
-            geo.LineWidth = .1f;
             var position = Level.GetPosition(tile);
-            geo.DrawCircle(position.NumericValue, radius, false);
+            geometries.ConsoleBackground.DrawCircle(position.NumericValue, radius, .1f, Color.Red * .8f);
         }
     }
 }

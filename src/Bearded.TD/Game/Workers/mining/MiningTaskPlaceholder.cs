@@ -51,10 +51,9 @@ namespace Bearded.TD.Game.Workers
 
         public override void Draw(GeometryManager geometries)
         {
-            var geo = geometries.ConsoleBackground;
-            var color = SelectionState == SelectionState.Focused ? Color.DarkViolet : Color.MediumVioletRed;
-            geo.Color = color * 0.5f;
-            geo.DrawCircle(Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, true, 6);
+            var color = .5f * (SelectionState == SelectionState.Focused ? Color.DarkViolet : Color.MediumVioletRed);
+            geometries.ConsoleBackground.FillCircle(
+                Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 
         public void ResetSelection()
