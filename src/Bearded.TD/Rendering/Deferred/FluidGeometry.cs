@@ -67,6 +67,7 @@ namespace Bearded.TD.Rendering.Deferred
             createGeometry();
 
             renderer.Render();
+            meshBuilder.Clear();
         }
 
         private void resetFlow()
