@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.IO;
-using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
@@ -8,11 +7,9 @@ using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Shapes;
 using amulware.Graphics.Text;
 using amulware.Graphics.Textures;
-using amulware.Graphics.Vertices;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
-using Color = amulware.Graphics.Color;
 using Font = amulware.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering
@@ -43,9 +40,9 @@ namespace Bearded.TD.Rendering
         public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; }
             = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
         public IRenderer ConsoleBackgroundRenderer { get; }
-        public TextDrawer<UVColorVertex> ConsoleFontMeshBuilder { get; }
+        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> ConsoleFontMeshBuilder { get; }
         public IRenderer ConsoleFontRenderer { get; }
-        public TextDrawer<UVColorVertex> UIFontMeshBuilder { get; }
+        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> UIFontMeshBuilder { get; }
         public IRenderer UIFontRenderer { get; }
 
         public Font ConsoleFont { get; }
@@ -102,8 +99,9 @@ namespace Bearded.TD.Rendering
                 t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
                 t.GenerateMipmap();
             });
+
             ConsoleFont = consoleFont;
-            ConsoleFontMeshBuilder = new TextDrawer<UVColorVertex>(ConsoleFont, (xyz, uv) => new UVColorVertex(xyz, uv, Color.White));
+            ConsoleFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
             ConsoleFontRenderer = BatchedRenderer.From(ConsoleFontMeshBuilder.ToRenderable(),
                 ViewMatrix, ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, consoleFontTexture));
             uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
@@ -116,8 +114,9 @@ namespace Bearded.TD.Rendering
                 t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
                 t.GenerateMipmap();
             });
-            UIFont = consoleFont;
-            UIFontMeshBuilder = new TextDrawer<UVColorVertex>(UIFont, (xyz, uv) => new UVColorVertex(xyz, uv, Color.White));
+
+            UIFont = uiFont;
+            UIFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
             UIFontRenderer = BatchedRenderer.From(UIFontMeshBuilder.ToRenderable(),
                 ViewMatrix, ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, uiFontTexture));
             uvColorShader!.UseOnRenderer(UIFontRenderer);
