@@ -4,17 +4,17 @@ using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
-using amulware.Graphics.Shapes;
 using amulware.Graphics.Text;
 using amulware.Graphics.Textures;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 using Font = amulware.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering
 {
-    class SurfaceManager
+    sealed class SurfaceManager
     {
         private static readonly string workingDir = Directory.GetCurrentDirectory() + "/";
 

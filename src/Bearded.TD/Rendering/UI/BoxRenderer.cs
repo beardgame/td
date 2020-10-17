@@ -4,6 +4,7 @@ using amulware.Graphics.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenToolkit.Mathematics;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {

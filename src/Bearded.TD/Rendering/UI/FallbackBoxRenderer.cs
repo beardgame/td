@@ -3,6 +3,7 @@ using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.TD.Meta;
 using Bearded.UI.Controls;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
