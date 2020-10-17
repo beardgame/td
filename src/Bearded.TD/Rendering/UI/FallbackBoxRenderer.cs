@@ -2,13 +2,12 @@
 using amulware.Graphics.Shapes;
 using Bearded.TD.Meta;
 using Bearded.UI.Controls;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
     sealed class FallbackBoxRenderer : BoxRenderer
     {
-        public FallbackBoxRenderer(ShapeDrawer2<ColorVertexData, Color> drawer)
+        public FallbackBoxRenderer(IShapeDrawer2<Color> drawer)
             : base(drawer, Color.Fuchsia)
         {
         }

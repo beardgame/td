@@ -6,7 +6,6 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenToolkit.Mathematics;
 using static amulware.Graphics.Color;
-using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering.UI
 {
@@ -17,8 +16,7 @@ namespace Bearded.TD.Rendering.UI
         private readonly BoxRenderer boxRenderer;
         private readonly TextDrawerWithDefaults<Color> textDrawer;
 
-        public TextInputRenderer(
-            ShapeDrawer2<ColorVertexData, Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+        public TextInputRenderer(IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
         {
             boxRenderer = new BoxRenderer(shapeDrawer, White);
             this.textDrawer = textDrawer.With(alignVertical: .5f);
