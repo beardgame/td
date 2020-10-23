@@ -97,6 +97,7 @@ namespace Bearded.TD.Rendering
             }
         }
 
+        // TODO: this should be the main responsibility of this guy, can we extract most other things?
         public void RenderLayer(IRenderLayer layer)
         {
             prepareForRendering(layer);
@@ -175,6 +176,7 @@ namespace Bearded.TD.Rendering
                 renderDeferred(deferredLayer);
             }
 
+            // TODO: turn this indo a renderer similar to DeferredRenderer2 with its own pipeline so that ideally there is no GL still in this class
             renderConsoleSurfaces();
         }
 

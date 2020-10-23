@@ -3,23 +3,35 @@ using System.Drawing;
 using amulware.Graphics.Pipelines;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
+using amulware.Graphics.Textures;
+using Bearded.TD.UI.Layers;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
-using static amulware.Graphics.Pipelines.Context.BlendMode;
-using static amulware.Graphics.Pipelines.Context.DepthMode;
-using static amulware.Graphics.Pipelines.Pipeline;
 
 namespace Bearded.TD.Rendering
 {
-    // NEXT TIME: work on content loading instead of this - the rest here should be easy (RIP)
+    using static amulware.Graphics.Pipelines.Context.BlendMode;
+    using static amulware.Graphics.Pipelines.Context.DepthMode;
+    using static Pipeline;
+    using static Pipeline<DeferredRenderer2.RenderState>;
 
-    public class DeferredRenderer2
+    class DeferredRenderer2
     {
+        public class RenderState
+        {
+            public Vector2i Resolution { get; }
+            public Vector2i LowResResolution { get; }
+
+            public RenderTarget FinalRenderTarget { get; }
+        }
+
         private Vector2i resolution;
         private Vector2i lowResResolution;
         private ShaderManager shaders;
         private SurfaceManager surfaces;
         private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
+        private readonly IPipeline<RenderState> pipeline;
+
 
         public DeferredRenderer2()
         {
@@ -58,14 +70,11 @@ namespace Bearded.TD.Rendering
             // resizeForCameraDistance
             // contentSurfaces.LevelRenderer.PrepareForRender
 
-            // how to get access to content surfaces in pipeline?
-            // - might have to parameterise it (and then make parameter state available for any injected Funcs)
-
             var resizedBuffers = InOrder(
-                Resize(() => resolution,
+                Resize(s => s.Resolution,
                     textures.DepthMask, textures.Diffuse, textures.Normal,
                     textures.Depth, textures.LightAccum, textures.Composition),
-                Resize(() => lowResResolution,
+                Resize(s => s.LowResResolution,
                     textures.DepthMaskLowRes, textures.DiffuseLowRes,
                     textures.NormalLowRes, textures.DepthLowRes)
             );
@@ -73,10 +82,11 @@ namespace Bearded.TD.Rendering
             var renderedGBuffers = resizedBuffers.Then(InOrder(
                 WithContext(
                     c => c.BindRenderTarget(targets.GeometryLowRes)
-                        .SetViewport(() => new Rectangle(0, 0, lowResResolution.X, lowResResolution.Y))
+                        .SetViewport(s => new Rectangle(0, 0, s.LowResResolution.X, s.LowResResolution.Y))
                         .SetDepthMode(Default),
-                    InOrder(ClearColor(), ClearDepth(), Do(() =>
+                    InOrder(ClearColor(), ClearDepth(), Do(s =>
                     {
+                        s.Content.LevelRenderer.RenderAll();
                         /* contentSurfaces.LevelRenderer.RenderAll */
                     }))),
                 upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
@@ -89,8 +99,9 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(targets.Geometry)
                         .SetDepthMode(Default)
                         .SetBlendMode(Premultiplied),
-                    Do(() =>
+                    Do(s =>
                     {
+                        s.Content.WorldDrawGroups.RenderAll();
                         /* renderDrawGroups(contentSurfaces, worldDrawGroups) */
                     }))
             ));
@@ -109,23 +120,52 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(targets.Composition),
                     InOrder(
                         PostProcess(getShader("deferred/compose"), out _,
+                            // TODO: it should be much easier to quickly pass in a couple of textures
                             new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
                             new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture)
                         ),
                         WithContext(
                             c => c.SetDepthMode(TestOnly(DepthFunction.Less)),
                             InOrder(
-                                Render(fluids)
+                                Render(contentSurfaces.fluids)
                                 /* renderDrawGroups(contentSurfaces, postLightGroups) */
                             ))
                     ))
             ));
 
-            // copy composited frame to output target (how to inject into pipeline?)
-            // clean all mesh builders (through content surface man and regular surface man?)
+
+            var fullRender = compositedFrame.Then(
+                WithContext(
+                    c => c.BindRenderTarget(s => s.FinalRenderTarget),
+                    PostProcess(getShader("deferred/copy"), out _,
+                        new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
+                        new Vector2Uniform("uvOffset"))
+                    )
+            );
+
+            pipeline = fullRender;
+
+
+            // TODO: it would be neat to have some steps have a more semantic associated output
+            // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
+            // by a call that takes texture definitions, and returns a pipeline step that also
+            // exposes the PipeLineTexture objects which can then be used as input for future steps
+            // and that would possibly allow us to write things more like a tree of actual dependencies
+            // instead of of a linear chain of commands
         }
 
-        private IPipeline upscale(string shaderName, PipelineTextureBase texture, PipelineRenderTarget target)
+        public void Render(IDeferredRenderLayer deferredLayer, RenderTarget target)
+        {
+            // prepare RenderState with resolutions, final render target (need a c.BindRenderTarget(Func<TState..>), and content
+
+            var state = new RenderState();
+
+            pipeline.Execute(state);
+
+            // cleaning of mesh builders will happen in game renderer
+        }
+
+        private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture, PipelineRenderTarget target)
         {
             return WithContext(
                 c => c.BindRenderTarget(target),

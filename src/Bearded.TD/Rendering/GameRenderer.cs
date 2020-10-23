@@ -58,6 +58,8 @@ namespace Bearded.TD.Rendering
 
         public void Render()
         {
+            // TODO: clean mesh builder so we can draw again!
+
             game.PlayerCursors.DrawCursors(geometries);
             drawAmbientLight();
             drawGameObjects();
