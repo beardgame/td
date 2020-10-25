@@ -4,9 +4,12 @@ using amulware.Graphics.Pipelines;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
+using Bearded.TD.Content.Models;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities.Collections;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
+using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
 {
@@ -17,12 +20,25 @@ namespace Bearded.TD.Rendering
 
     class DeferredRenderer2
     {
+        private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
+        private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
+
         public class RenderState
         {
             public Vector2i Resolution { get; }
             public Vector2i LowResResolution { get; }
 
             public RenderTarget FinalRenderTarget { get; }
+
+            public ContentSurfaceManager Content { get; }
+
+            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget, ContentSurfaceManager content)
+            {
+                Resolution = resolution;
+                LowResResolution = lowResResolution;
+                FinalRenderTarget = finalRenderTarget;
+                Content = content;
+            }
         }
 
         private Vector2i resolution;
@@ -99,11 +115,7 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(targets.Geometry)
                         .SetDepthMode(Default)
                         .SetBlendMode(Premultiplied),
-                    Do(s =>
-                    {
-                        s.Content.WorldDrawGroups.RenderAll();
-                        /* renderDrawGroups(contentSurfaces, worldDrawGroups) */
-                    }))
+                    Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
             ));
 
             var compositedFrame = renderedGBuffers.Then(InOrder(
@@ -127,8 +139,8 @@ namespace Bearded.TD.Rendering
                         WithContext(
                             c => c.SetDepthMode(TestOnly(DepthFunction.Less)),
                             InOrder(
-                                Render(contentSurfaces.fluids)
-                                /* renderDrawGroups(contentSurfaces, postLightGroups) */
+                                Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
+                                Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
                             ))
                     ))
             ));
@@ -154,11 +166,9 @@ namespace Bearded.TD.Rendering
             // instead of of a linear chain of commands
         }
 
-        public void Render(IDeferredRenderLayer deferredLayer, RenderTarget target)
+        public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
         {
-            // prepare RenderState with resolutions, final render target (need a c.BindRenderTarget(Func<TState..>), and content
-
-            var state = new RenderState();
+            var state = new RenderState(resolution, lowResResolution, target, deferredLayer.DeferredSurfaces);
 
             pipeline.Execute(state);
 
