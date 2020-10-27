@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Bearded.UI" Version="0.1.42-dev" />
     <PackageReference Include="Bearded.Utilities" Version="0.2.0.318-dev" />
-    <PackageReference Include="Fody" Version="3.2.1">
+    <PackageReference Include="Fody" Version="6.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -41,6 +41,12 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <None Include="assets\**\*" Exclude="assets\mods\debug\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WeaverFiles
+            Include="$(SolutionDir)Weavers\bin\$(Configuration)\Weavers.dll"
+            WeaverClassNames="TechEffectWeaver" />
   </ItemGroup>
 
   <ItemGroup>
