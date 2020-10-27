@@ -5,8 +5,11 @@ using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
@@ -47,6 +50,7 @@ namespace Bearded.TD.Rendering
         private SurfaceManager surfaces;
         private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
         private readonly IPipeline<RenderState> pipeline;
+        private ViewportSize viewport;
 
 
         public DeferredRenderer2()
@@ -83,9 +87,6 @@ namespace Bearded.TD.Rendering
             };
 
 
-            // resizeForCameraDistance
-            // contentSurfaces.LevelRenderer.PrepareForRender
-
             var resizedBuffers = InOrder(
                 Resize(s => s.Resolution,
                     textures.DepthMask, textures.Diffuse, textures.Normal,
@@ -100,11 +101,11 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(targets.GeometryLowRes)
                         .SetViewport(s => new Rectangle(0, 0, s.LowResResolution.X, s.LowResResolution.Y))
                         .SetDepthMode(Default),
-                    InOrder(ClearColor(), ClearDepth(), Do(s =>
-                    {
-                        s.Content.LevelRenderer.RenderAll();
-                        /* contentSurfaces.LevelRenderer.RenderAll */
-                    }))),
+                    InOrder(
+                        ClearColor(),
+                        ClearDepth(),
+                        Do(s => s.Content.LevelRenderer.RenderAll())
+                        )),
                 upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
                 upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
                 upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
@@ -168,11 +169,62 @@ namespace Bearded.TD.Rendering
 
         public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
         {
+            resizeForCameraDistance(deferredLayer.CameraDistance);
+
+            deferredLayer.DeferredSurfaces.LevelRenderer.PrepareForRender();
+
             var state = new RenderState(resolution, lowResResolution, target, deferredLayer.DeferredSurfaces);
 
             pipeline.Execute(state);
 
             // cleaning of mesh builders will happen in game renderer
+        }
+
+        public void OnResize(ViewportSize newViewport)
+        {
+            viewport = newViewport;
+        }
+
+        private void resizeForCameraDistance(float cameraDistance)
+        {
+            lowResResolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
+            resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
+
+            setLevelViewMatrix(cameraDistance);
+        }
+
+        private Vector2i calculateResolution(float cameraDistance, float pixelsPerTile)
+        {
+            var screenPixelsPerTile = viewport.Height * 0.5f / cameraDistance;
+
+            var scale = Math.Min(1, pixelsPerTile / screenPixelsPerTile);
+
+            var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
+
+            var w = (int) (viewport.Width * bufferSizeFactor * scale);
+            var h = (int) (viewport.Height * bufferSizeFactor * scale);
+
+            return (w, h);
+        }
+
+        private void setLevelViewMatrix(float cameraDistance)
+        {
+            var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
+
+            var viewMatrix = surfaces.ViewMatrix.Value;
+            var translation = viewMatrix.Row3;
+
+            var levelTranslation = new Vector2(
+                Mathf.RoundToInt(translation.X / pixelStep) * pixelStep,
+                Mathf.RoundToInt(translation.Y / pixelStep) * pixelStep
+            );
+
+            viewMatrix.Row3.Xy = levelTranslation;
+            surfaces.ViewMatrixLevel.Value = viewMatrix;
+
+            var offset = (levelTranslation - translation.Xy) / (cameraDistance * 2);
+            offset.X = offset.X / viewport.Width * viewport.Height;
+            levelUpSampleUVOffset.Value = offset;
         }
 
         private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture, PipelineRenderTarget target)
@@ -194,11 +246,6 @@ namespace Bearded.TD.Rendering
             }
 
             throw new ArgumentException("Shader with name not found.", nameof(name));
-        }
-
-        private void setLevelViewMatrix()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
