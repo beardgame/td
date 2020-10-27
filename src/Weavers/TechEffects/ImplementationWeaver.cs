@@ -79,12 +79,12 @@ namespace Weavers.TechEffects
 
         private void postProcessTypeDictionary()
         {
-            var readOnlyDictConstructor = referenceFinder
-                .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>));
+            // var readOnlyDictConstructor = referenceFinder
+                // .GetConstructorReference(typeof(ReadOnlyDictionary<Type, Type>));
 
             var processor = parametersTemplateDictionaryMethod.Body.GetILProcessor();
             processor.Emit(OpCodes.Ldloc_0);
-            processor.Emit(OpCodes.Newobj, readOnlyDictConstructor);
+            // processor.Emit(OpCodes.Newobj, readOnlyDictConstructor);
             processor.Emit(OpCodes.Ret);
         }
 
