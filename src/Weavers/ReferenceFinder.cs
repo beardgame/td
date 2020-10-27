@@ -8,10 +8,12 @@ namespace Weavers
     sealed class ReferenceFinder
     {
         private readonly ModuleDefinition moduleDefinition;
+        private readonly Func<string, TypeDefinition> findType;
 
-        internal ReferenceFinder(ModuleDefinition moduleDefinition)
+        internal ReferenceFinder(ModuleDefinition moduleDefinition, Func<string, TypeDefinition> findType)
         {
             this.moduleDefinition = moduleDefinition;
+            this.findType = findType;
         }
 
         internal FieldReference GetFieldReference(TypeReference typeReference, string name)
@@ -19,13 +21,13 @@ namespace Weavers
 
         internal FieldReference GetFieldReference(TypeReference typeReference, Func<FieldDefinition, bool> predicate)
         {
-            var typeDefinition = typeReference.Resolve();
+            var typeDefinition = resolve(typeReference);
 
             FieldDefinition fieldDefinition;
             do
             {
                 fieldDefinition = typeDefinition.Fields.FirstOrDefault(predicate);
-                typeDefinition = typeDefinition.BaseType?.Resolve();
+                typeDefinition = typeDefinition.BaseType == null ? null : resolve(typeDefinition.BaseType);
             } while (fieldDefinition == null && typeDefinition != null);
 
             return moduleDefinition.ImportReference(fieldDefinition);
@@ -36,13 +38,13 @@ namespace Weavers
 
         internal PropertyReference GetPropertyReference(TypeReference typeReference, Func<PropertyDefinition, bool> predicate)
         {
-            var typeDefinition = typeReference.Resolve();
+            var typeDefinition = resolve(typeReference);
 
             PropertyDefinition propertyDefinition;
             do
             {
                 propertyDefinition = typeDefinition.Properties.FirstOrDefault(predicate);
-                typeDefinition = typeDefinition.BaseType?.Resolve();
+                typeDefinition = typeDefinition.BaseType == null ? null : resolve(typeDefinition.BaseType);
             } while (propertyDefinition == null && typeDefinition != null);
 
             return propertyDefinition;
@@ -77,7 +79,7 @@ namespace Weavers
 
         internal MethodReference GetMethodReference(TypeReference typeReference, Func<MethodDefinition, bool> predicate)
         {
-            var typeDefinition = typeReference.Resolve();
+            var typeDefinition = resolve(typeReference);
             var methodDefinition = typeDefinition.Methods.FirstOrDefault(predicate);
             if (methodDefinition == null)
             {
@@ -94,6 +96,11 @@ namespace Weavers
         internal TypeReference GetTypeReference(Type type)
         {
             return moduleDefinition.ImportReference(type);
+        }
+
+        private TypeDefinition resolve(TypeReference typeReference)
+        {
+            return typeReference.Resolve() ?? findType(typeReference.FullName.Split('<')[0]);
         }
     }
 }

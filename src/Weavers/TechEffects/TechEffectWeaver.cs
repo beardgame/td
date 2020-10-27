@@ -7,7 +7,7 @@ namespace Weavers.TechEffects
     {
         public override void Execute()
         {
-            var weaver = new ImplementationWeaver(ModuleDefinition, TypeSystem, this, new ReferenceFinder(ModuleDefinition));
+            var weaver = new ImplementationWeaver(ModuleDefinition, TypeSystem, this, new ReferenceFinder(ModuleDefinition, FindTypeDefinition));
             weaver.Execute();
         }
 
