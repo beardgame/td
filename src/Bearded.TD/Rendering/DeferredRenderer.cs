@@ -72,6 +72,8 @@ namespace Bearded.TD.Rendering
                 Composition = Texture(PixelInternalFormat.Rgba),
             };
 
+            surfaceManager.InjectDeferredBuffer(textures.Normal.Texture, textures.Depth.Texture);
+
             var targets = new
             {
                 GeometryLowRes = RenderTargetWithDepthAndColors(
