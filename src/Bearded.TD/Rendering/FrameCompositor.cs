@@ -1,7 +1,7 @@
 ﻿using System;
 using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
-using Bearded.TD.Meta;
+using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
@@ -182,10 +182,11 @@ namespace Bearded.TD.Rendering
 
         private void renderDeferred(IDeferredRenderLayer deferredLayer)
         {
-            deferredRenderer.Render(deferredLayer);
+            deferredRenderer.RenderLayer(deferredLayer, RenderTarget.BackBuffer);
 
-            if (UserSettings.Instance.Debug.Deferred)
-                deferredRenderer.RenderDebug();
+            // TODO: not implemented yet
+            //if (UserSettings.Instance.Debug.Deferred)
+            //    deferredRenderer.RenderDebug();
         }
 
         private void renderConsoleSurfaces()

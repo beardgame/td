@@ -19,9 +19,9 @@ namespace Bearded.TD.Rendering
     using static amulware.Graphics.Pipelines.Context.BlendMode;
     using static amulware.Graphics.Pipelines.Context.DepthMode;
     using static Pipeline;
-    using static Pipeline<DeferredRenderer2.RenderState>;
+    using static Pipeline<DeferredRenderer.RenderState>;
 
-    class DeferredRenderer2
+    class DeferredRenderer
     {
         private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
         private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
@@ -44,17 +44,18 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        private Vector2i resolution;
-        private Vector2i lowResResolution;
-        private ShaderManager shaders;
-        private SurfaceManager surfaces;
+        private readonly ShaderManager shaders;
+        private readonly SurfaceManager surfaces;
         private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
         private readonly IPipeline<RenderState> pipeline;
+
         private ViewportSize viewport;
 
-
-        public DeferredRenderer2()
+        public DeferredRenderer(SurfaceManager surfaceManager)
         {
+            surfaces = surfaceManager;
+            shaders = surfaceManager.Shaders;
+
             var textures = new
             {
                 DiffuseLowRes = Texture(PixelInternalFormat.Rgba), // rgba
@@ -169,7 +170,7 @@ namespace Bearded.TD.Rendering
 
         public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
         {
-            resizeForCameraDistance(deferredLayer.CameraDistance);
+            var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
 
             deferredLayer.DeferredSurfaces.LevelRenderer.PrepareForRender();
 
@@ -185,12 +186,14 @@ namespace Bearded.TD.Rendering
             viewport = newViewport;
         }
 
-        private void resizeForCameraDistance(float cameraDistance)
+        private (Vector2i LowResResolution, Vector2i Resolution) resizeForCameraDistance(float cameraDistance)
         {
-            lowResResolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
-            resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
+            var lowResResolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
+            var resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
 
             setLevelViewMatrix(cameraDistance);
+
+            return (lowResResolution, resolution);
         }
 
         private Vector2i calculateResolution(float cameraDistance, float pixelsPerTile)
