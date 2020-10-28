@@ -20,9 +20,9 @@ namespace Bearded.TD.Rendering.Deferred
         }
 
         private static readonly VertexAttribute[] vertexAttributes = VertexData.MakeAttributeArray(
-            VertexData.MakeAttributeTemplate<Vector3>("vertexPosition"),
-            VertexData.MakeAttributeTemplate<Vector2>("vertexUV"),
-            VertexData.MakeAttributeTemplate<Color>("vertexColor")
+            VertexData.MakeAttributeTemplate<Vector3>("v_position"),
+            VertexData.MakeAttributeTemplate<Vector2>("v_texcoord"),
+            VertexData.MakeAttributeTemplate<Color>("v_color")
         );
 
         VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
