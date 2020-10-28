@@ -70,5 +70,16 @@ namespace Bearded.TD.Rendering
                 }
             }
         }
+
+        public void ClearAll()
+        {
+            foreach (var drawGroup in groupedAndSortedRenderers.Values)
+            {
+                foreach (var (_, meshBuilder) in drawGroup)
+                {
+                    meshBuilder.Clear();
+                }
+            }
+        }
     }
 }
