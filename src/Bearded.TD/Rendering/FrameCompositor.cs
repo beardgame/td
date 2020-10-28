@@ -107,6 +107,7 @@ namespace Bearded.TD.Rendering
 
         private void prepareForRendering(IRenderLayer layer)
         {
+            surfaces.ClearAll();
             layer.Draw();
             setUniformsFrom(layer);
         }
