@@ -5,9 +5,9 @@ namespace Bearded.TD.Generators.TechEffects
     [Generator]
     public sealed class TechEffectGenerator : ISourceGenerator
     {
-        public void Initialize(GeneratorInitializationContext context) {}
+        public void Initialize(InitializationContext context) {}
 
-        public void Execute(GeneratorExecutionContext context)
+        public void Execute(SourceGeneratorContext context)
         {
 
         }
