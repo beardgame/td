@@ -99,7 +99,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             using (var target = heightmap.Bind())
             {
-                target.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f);
+                target.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f, PixelFormat.Red, PixelType.Float);
             }
 
             heightmapRadiusUniform.Value = heightMapWorldSize * 0.5f;
