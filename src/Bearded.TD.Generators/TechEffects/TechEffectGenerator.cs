@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -10,6 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace Bearded.TD.Generators.TechEffects
 {
     [Generator]
+    [UsedImplicitly]
     public sealed class TechEffectGenerator : ISourceGenerator
     {
         public void Initialize(InitializationContext context)

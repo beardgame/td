@@ -20,7 +20,6 @@ namespace Bearded.TD.Generators.TechEffects
                         PropertyName: property.Name,
                         DefaultValue: (string?) null)))
                 .addHasAttributeOfTypeMethod(definition.ModifiableName)
-                .addModificationMethods()
                 .addCreateModifiableInstanceMethod(definition.InterfaceName, definition.ModifiableName)
                 .addFileBottom()
                 .build();
@@ -57,12 +56,6 @@ namespace Bearded.TD.Generators.TechEffects
             return this;
         }
 
-        private TemplateSourceGenerator addModificationMethods()
-        {
-            sb.Append(Templates.ModificationMethods);
-            return this;
-        }
-
         private TemplateSourceGenerator addCreateModifiableInstanceMethod(
             string interfaceName, string modifiableClassName)
         {
@@ -90,7 +83,7 @@ using Newtonsoft.Json;
             public static string ClassTop(string @namespace, string className, string interfaceName) => $@"
 namespace {@namespace}
 {{
-    sealed class {className} : {interfaceName}
+    sealed class {className} : TemplateBase, {interfaceName}
     {{
 ";
 
@@ -151,28 +144,6 @@ namespace {@namespace}
 
             public static string HasAttributeOfTypeMethod(string modifiableClassName) => $@"
         public bool HasAttributeOfType(AttributeType type) => {modifiableClassName}.AttributeIsKnown(type);";
-
-            public const string ModificationMethods = @"
-        public bool AddModification(AttributeType type, Modification modification)
-        {
-            throw new InvalidOperationException(""Cannot modify attributes on immutable template."");
-        }
-
-        public bool AddModificationWithId(AttributeType type, ModificationWithId modification)
-        {
-            throw new InvalidOperationException(""Cannot modify attributes on immutable template."");
-        }
-
-        public bool UpdateModification(AttributeType type, Id<Modification> id, Modification modification)
-        {
-            throw new InvalidOperationException(""Cannot modify attributes on immutable template."");
-        }
-
-        public bool RemoveModification(AttributeType type, Id<Modification> id)
-        {
-            throw new InvalidOperationException(""Cannot modify attributes on immutable template."");
-        }
-";
 
             public static string CreateModifiableMethod(string interfaceName, string modifiableClassName) => $@"
         public {interfaceName} CreateModifiableInstance() => new {modifiableClassName}(this);
