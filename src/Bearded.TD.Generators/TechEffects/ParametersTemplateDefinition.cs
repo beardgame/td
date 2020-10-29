@@ -7,15 +7,19 @@ namespace Bearded.TD.Generators.TechEffects
 {
     sealed class ParametersTemplateDefinition
     {
-        public string BaseName { get; }
+        public string Namespace { get; }
+        public string InterfaceName { get; }
         public ImmutableArray<ParametersPropertyDefinition> Properties { get; }
 
-        public string TemplateName => BaseName + "Template";
-        public string ModifiableName => BaseName + "Modifiable";
+        public string TemplateName => baseName + "Template";
+        public string ModifiableName => baseName + "Modifiable";
+        private string baseName => getInterfaceBaseName(InterfaceName);
 
-        private ParametersTemplateDefinition(string baseName, ImmutableArray<ParametersPropertyDefinition> properties)
+        private ParametersTemplateDefinition(
+            string @namespace, string interfaceName, ImmutableArray<ParametersPropertyDefinition> properties)
         {
-            BaseName = baseName;
+            Namespace = @namespace;
+            InterfaceName = interfaceName;
             Properties = properties;
         }
 
@@ -23,7 +27,8 @@ namespace Bearded.TD.Generators.TechEffects
         {
             var properties = string.Join(", ", Properties);
             return
-                $"{nameof(BaseName)}: {BaseName}, " +
+                $"{nameof(Namespace)}: {Namespace}, " +
+                $"{nameof(InterfaceName)}: {InterfaceName}, " +
                 $"{nameof(Properties)}: {properties}, " +
                 $"{nameof(TemplateName)}: {TemplateName}, " +
                 $"{nameof(ModifiableName)}: {ModifiableName}";
@@ -32,10 +37,9 @@ namespace Bearded.TD.Generators.TechEffects
         public static ParametersTemplateDefinition FromNamedSymbol(
             INamedTypeSymbol symbol, INamedTypeSymbol modifiableAttributeSymbol)
         {
-            var baseName = getInterfaceBaseName(symbol.Name);
             var properties = extractProperties(symbol, modifiableAttributeSymbol).ToImmutableArray();
 
-            return new ParametersTemplateDefinition(baseName, properties);
+            return new ParametersTemplateDefinition($"{symbol.ContainingNamespace}", symbol.Name, properties);
         }
 
         private static string getInterfaceBaseName(string interfaceName)
@@ -55,7 +59,8 @@ namespace Bearded.TD.Generators.TechEffects
                         var modifiableAttribute = propertySymbol.GetAttributes()
                             .FirstOrDefault(a =>
                                 a.AttributeClass!.Equals(modifiableAttributeSymbol, SymbolEqualityComparer.Default));
-                        var typeConstant = modifiableAttribute?.NamedArguments.FirstOrDefault(pair => pair.Key == "Type").Value;
+                        var typeConstant = modifiableAttribute?.NamedArguments
+                            .FirstOrDefault(pair => pair.Key == "Type").Value;
 
                         return new ParametersPropertyDefinition(
                             propertySymbol.Name, propertySymbol.Type, modifiableAttribute != null, typeConstant);
