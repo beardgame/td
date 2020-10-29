@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Bearded.TD.Generators.TechEffects
 {
@@ -11,6 +14,13 @@ namespace Bearded.TD.Generators.TechEffects
     {
         public void Initialize(InitializationContext context)
         {
+// #if DEBUG
+//             if (!Debugger.IsAttached)
+//             {
+//                 Debugger.Launch();
+//             }
+// #endif
+
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
@@ -24,18 +34,24 @@ namespace Bearded.TD.Generators.TechEffects
                 }
 
                 var templateInterface = context.Compilation
-                    .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
-                    .ConstructUnboundGenericType();
+                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
+                        .ConstructUnboundGenericType() ??
+                    throw new InvalidOperationException("Could not find parameters template interface.");
                 var interfacesToGenerateFor =
                     findSymbolsImplementingInterface(context.Compilation, receiver.Interfaces, templateInterface);
 
-                var attributeInterface =
-                    context.Compilation.GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ModifiableAttribute") ??
+                var attributeInterface = context.Compilation
+                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ModifiableAttribute") ??
                     throw new InvalidOperationException("Could not find modifiable attribute.");
                 foreach (var namedTypeSymbol in interfacesToGenerateFor)
                 {
-                    context.ReportDiagnostic(fakeDebugDiagnostic(
-                        $"{ParametersTemplateDefinition.FromNamedSymbol(namedTypeSymbol, attributeInterface)}"));
+                    var definition = ParametersTemplateDefinition.FromNamedSymbol(namedTypeSymbol, attributeInterface);
+                    context.AddSource(
+                        definition.ModifiableName,
+                        SourceText.From(ModifiableSourceGenerator.GenerateFor(definition), Encoding.Default));
+                    context.AddSource(
+                        definition.TemplateName,
+                        SourceText.From(TemplateSourceGenerator.GenerateFor(definition), Encoding.Default));
                 }
             }
             catch (Exception e)
@@ -77,7 +93,8 @@ namespace Bearded.TD.Generators.TechEffects
             }
         }
 
-        private static Diagnostic fakeDebugDiagnostic(string text, DiagnosticSeverity severity = DiagnosticSeverity.Warning)
+        private static Diagnostic fakeDebugDiagnostic(
+            string text, DiagnosticSeverity severity = DiagnosticSeverity.Warning)
         {
             return Diagnostic.Create(
                 new DiagnosticDescriptor("TD1", "Debug message", text, "Debug", severity, true),
