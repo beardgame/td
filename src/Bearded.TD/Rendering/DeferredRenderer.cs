@@ -137,8 +137,7 @@ namespace Bearded.TD.Rendering
                         .SetBlendMode(Premultiplied),
                     InOrder(
                         ClearColor(),
-                        Render(surfaces.PointLightRenderer),
-                        Render(surfaces.SpotLightRenderer)
+                        Render(surfaces.PointLightRenderer, surfaces.SpotLightRenderer)
                     )),
                 WithContext(
                     c => c.BindRenderTarget(targets.Composition),
