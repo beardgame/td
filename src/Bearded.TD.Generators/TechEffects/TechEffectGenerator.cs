@@ -46,7 +46,7 @@ namespace Bearded.TD.Generators.TechEffects
                         context.Compilation, receiver.AttributeConverterCandidates, convertsAttribute)
                     .Select(a => (Attribute: a, Type: extractAttributeConverterType(a, attributeConverterType)))
                     .Where(tuple => tuple.Type != null)
-                    .ToImmutableDictionary(tuple => (ITypeSymbol) tuple.Type!, tuple => tuple.Attribute);
+                    .ToImmutableDictionary(tuple => tuple.Type!, tuple => tuple.Attribute);
 
                 var templateInterface = context.Compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
