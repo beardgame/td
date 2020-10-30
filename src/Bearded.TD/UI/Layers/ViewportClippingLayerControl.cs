@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using Bearded.TD.Meta;
 using Bearded.UI.Rendering;
 
@@ -8,7 +9,7 @@ namespace Bearded.TD.UI.Layers
     {
         public override RenderOptions RenderOptions => new RenderOptions(getViewportFromFrame());
 
-        private ((int, int), (int, int)) getViewportFromFrame()
+        private Rectangle getViewportFromFrame()
         {
             var frame = Frame;
             var topLeft = frame.TopLeft;
@@ -25,7 +26,7 @@ namespace Bearded.TD.UI.Layers
 
             var openGly = ViewportSize.Height - (y + h);
 
-            return ((x, openGly), (w, h));
+            return new Rectangle(x, openGly, w, h);
         }
 
         protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)

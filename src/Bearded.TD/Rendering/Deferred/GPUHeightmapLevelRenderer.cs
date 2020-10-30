@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
-using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.Pipelines;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -15,8 +14,12 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
+using static amulware.Graphics.Pipelines.Context.BlendMode;
+using static amulware.Graphics.Pipelines.Pipeline<int>;
 using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Tiles.Direction;
+using Color = amulware.Graphics.Color;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Bearded.TD.Rendering.Deferred
 {
@@ -38,8 +41,8 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly FloatUniform heightScaleUniform = new FloatUniform("heightScale");
         private readonly FloatUniform heightOffsetUniform = new FloatUniform("heightOffset");
 
-        private readonly Texture heightmap;
-        private readonly RenderTarget heightmapTarget; // H
+        private readonly PipelineTexture heightmap;
+        private readonly PipelineRenderTarget heightmapTarget; // H
 
         private readonly ExpandingIndexedTrianglesMeshBuilder<LevelVertex> gridMeshBuilder;
         private readonly IRenderer gridRenderer;
@@ -53,6 +56,8 @@ namespace Bearded.TD.Rendering.Deferred
 
         private bool isHeightmapGenerated;
 
+        private readonly IPipeline<int> renderHeightmapAtResolution;
+
         public GPUHeightmapLevelRenderer(GameInstance game, RenderContext context, Material material)
             : base(game)
         {
@@ -65,8 +70,27 @@ namespace Bearded.TD.Rendering.Deferred
 
             fallOffDistance = (level.Radius - 0.25f) * HexagonWidth;
 
-            heightmap = setupHeightmapTexture();
-            heightmapTarget = RenderTarget.WithColorAttachments(heightmap);
+            heightmap = Pipeline.Texture(PixelInternalFormat.R16f, setup: t =>
+            {
+                t.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
+                t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+            });
+
+            heightmapTarget = Pipeline.RenderTargetWithColors(heightmap);
+
+            renderHeightmapAtResolution =
+                InOrder(
+                    Resize(r => new Vector2i(r, r), heightmap),
+                    WithContext(c => c
+                            .BindRenderTarget(heightmapTarget)
+                            .SetViewport(r => new Rectangle(0, 0, r, r))
+                            .SetBlendMode(Premultiplied),
+                        InOrder(
+                            ClearColor(Constants.Rendering.WallHeight, 0, 0, 0),
+                            Do(_ => renderHeightmapInBatches())
+                        )
+                    )
+                );
 
             (gridMeshBuilder, gridRenderer) = setupGridRenderer(context);
 
@@ -92,15 +116,11 @@ namespace Bearded.TD.Rendering.Deferred
             }
             // ReSharper restore CompareOfFloatsByEqualityOperator
         }
+
         private void resizeHeightmap(float scale)
         {
             heightMapPixelsPerTile = scale;
             heightMapResolution = (int) (tileMapWidth * scale);
-
-            using (var target = heightmap.Bind())
-            {
-                target.Resize(heightMapResolution, heightMapResolution, PixelInternalFormat.R16f);
-            }
 
             heightmapRadiusUniform.Value = heightMapWorldSize * 0.5f;
             heightmapPixelSizeUVUniform.Value = 1f / heightMapResolution;
@@ -155,15 +175,6 @@ namespace Bearded.TD.Rendering.Deferred
             return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
         }
 
-        private Texture setupHeightmapTexture()
-        {
-            var hm = new Texture();
-            using var target = hm.Bind();
-            target.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
-            target.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-            return hm;
-        }
-
         private (ExpandingIndexedTrianglesMeshBuilder<LevelVertex>, IRenderer) setupGridRenderer(RenderContext context)
         {
             var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<LevelVertex>();
@@ -176,12 +187,12 @@ namespace Bearded.TD.Rendering.Deferred
                     context.Surfaces.FarPlaneDistance,
                     heightmapRadiusUniform,
                     heightmapPixelSizeUVUniform,
-                    new TextureUniform("heightmap", TextureUnit.Texture0, heightmap),
+                    new TextureUniform("heightmap", TextureUnit.Texture0, heightmap.Texture),
                     context.Surfaces.CameraPosition,
                     heightScaleUniform,
                     heightOffsetUniform
                 }.Concat(material.ArrayTextures.Select((t, i) =>
-                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))));
+                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
 
             material.Shader.RendererShader.UseOnRenderer(renderer);
 
@@ -240,20 +251,13 @@ namespace Bearded.TD.Rendering.Deferred
                 return;
             }
 
-            redrawHeightmap();
+            renderHeightmapAtResolution.Execute(heightMapResolution);
 
             isHeightmapGenerated = true;
         }
 
-        private void redrawHeightmap()
+        private void renderHeightmapInBatches()
         {
-            GL.Viewport(0, 0, heightMapResolution, heightMapResolution);
-
-            using var _ = heightmapTarget.Bind(FramebufferTarget.DrawFramebuffer);
-
-            GL.ClearColor(Constants.Rendering.WallHeight, 0, 0, 0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
             var splat = heightmapSplats.GetSprite("splat-hex");
 
             var allTiles = Tilemap.EnumerateTilemapWith(level.Radius).Select(t => (Tile: t, Info: geometryLayer[t]));
@@ -265,9 +269,9 @@ namespace Bearded.TD.Rendering.Deferred
                 Enumerable.Concat(
                     allTiles.Where(t => t.Info.Type == TileType.Crevice),
                     allTiles.Where(t => t.Info.Type == TileType.Floor)
-                    )
-                // ReSharper restore PossibleMultipleEnumeration
                 )
+                // ReSharper restore PossibleMultipleEnumeration
+            )
             {
                 var p = Level.GetPosition(tile).NumericValue
                     .WithZ(info.DrawInfo.Height.NumericValue);

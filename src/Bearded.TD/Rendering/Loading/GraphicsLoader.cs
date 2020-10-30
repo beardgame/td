@@ -146,7 +146,7 @@ namespace Bearded.TD.Rendering.Loading
 
         public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
         {
-            return glActions.RunAndReturn(() => ArrayTextureData.From(layers).ToTexture());
+            return glActions.RunAndReturn(() => ArrayTextureData.From(layers).ToTexture(t => t.GenerateMipmap()));
         }
 
     }

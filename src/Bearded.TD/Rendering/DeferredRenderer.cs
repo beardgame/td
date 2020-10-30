@@ -56,12 +56,18 @@ namespace Bearded.TD.Rendering
             surfaces = surfaceManager;
             shaders = surfaceManager.Shaders;
 
+            void upscaleNearest(Texture.Target t)
+            {
+                t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+                t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+            }
+
             var textures = new
             {
-                DiffuseLowRes = Texture(PixelInternalFormat.Rgba), // rgba
-                NormalLowRes = Texture(PixelInternalFormat.Rgba), // xyz
-                DepthLowRes = Texture(PixelInternalFormat.R16f), // z (0-1, camera space)
-                DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f),
+                DiffuseLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest), // rgba
+                NormalLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest), // xyz
+                DepthLowRes = Texture(PixelInternalFormat.R16f, setup: upscaleNearest), // z (0-1, camera space)
+                DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f, setup: upscaleNearest),
 
                 Diffuse = Texture(PixelInternalFormat.Rgba), // rgba
                 Normal = Texture(PixelInternalFormat.Rgba), // xyz
@@ -109,6 +115,8 @@ namespace Bearded.TD.Rendering
                         ClearDepth(),
                         Do(s => s.Content.LevelRenderer.RenderAll())
                         )),
+                // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling
+                // compositing two different pipelines with most steps shared should be easy
                 upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
                 upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
                 upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
@@ -129,8 +137,7 @@ namespace Bearded.TD.Rendering
                         .SetBlendMode(Premultiplied),
                     InOrder(
                         ClearColor(),
-                        Render(surfaces.PointLightRenderer),
-                        Render(surfaces.SpotLightRenderer)
+                        Render(surfaces.PointLightRenderer, surfaces.SpotLightRenderer)
                     )),
                 WithContext(
                     c => c.BindRenderTarget(targets.Composition),
@@ -141,7 +148,8 @@ namespace Bearded.TD.Rendering
                             new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture)
                         ),
                         WithContext(
-                            c => c.SetDepthMode(TestOnly(DepthFunction.Less)),
+                            c => c.SetDepthMode(TestOnly(DepthFunction.Less))
+                                .SetBlendMode(Premultiplied),
                             InOrder(
                                 Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
                                 Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
@@ -155,7 +163,7 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(s => s.FinalRenderTarget),
                     PostProcess(getShader("deferred/copy"), out _,
                         new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
-                        new Vector2Uniform("uvOffset"))
+                        levelUpSampleUVOffset)
                     )
             );
 

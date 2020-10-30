@@ -36,9 +36,12 @@ namespace Bearded.TD.Rendering
 
         public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; }
             = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
+
         public IRenderer PrimitivesRenderer { get; }
+
         public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; }
             = new ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>();
+
         public IRenderer ConsoleBackgroundRenderer { get; }
         public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> ConsoleFontMeshBuilder { get; }
         public IRenderer ConsoleFontRenderer { get; }
@@ -50,10 +53,12 @@ namespace Bearded.TD.Rendering
 
         public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; }
             = new ExpandingIndexedTrianglesMeshBuilder<PointLightVertex>();
+
         public IRenderer PointLightRenderer { get; set; }
 
         public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; }
             = new ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex>();
+
         public IRenderer SpotLightRenderer { get; set; }
 
         public SurfaceManager()
@@ -156,8 +161,17 @@ namespace Bearded.TD.Rendering
             spotLightShader!.UseOnRenderer(SpotLightRenderer);
         }
 
+        public void ClearAll()
+        {
+            Primitives.Clear();
+            ConsoleBackground.Clear();
+            ConsoleFontMeshBuilder.Clear();
+            UIFontMeshBuilder.Clear();
+            PointLights.Clear();
+            Spotlights.Clear();
+        }
+
         private static string asset(string path) => workingDir + "assets/" + path;
         private static string font(string path) => asset("font/" + path);
-
     }
 }

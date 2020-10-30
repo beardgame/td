@@ -1,15 +1,17 @@
 
+using System.Drawing;
+
 namespace Bearded.TD.UI.Layers
 {
     struct RenderOptions
     {
-        public ((int X, int Y), (int W, int H))? OverrideViewport { get; }
-        
-        public RenderOptions(((int x, int y), (int w, int h))? overrideViewport = null)
+        public Rectangle? ClipDrawRegion { get; }
+
+        public RenderOptions(Rectangle? clipDrawRegion = null)
         {
-            OverrideViewport = overrideViewport;
+            ClipDrawRegion = clipDrawRegion;
         }
-        
+
         public static RenderOptions Default => new RenderOptions();
      }
 }
