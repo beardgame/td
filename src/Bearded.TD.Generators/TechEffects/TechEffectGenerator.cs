@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -35,6 +35,19 @@ namespace Bearded.TD.Generators.TechEffects
                     return;
                 }
 
+                var convertsAttribute = context.Compilation
+                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ConvertsAttributeAttribute") ??
+                    throw new InvalidOperationException("Could not find converts attribute attribute.");
+                var attributeConverterType = context.Compilation
+                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.AttributeConverter`1")?
+                        .ConstructUnboundGenericType() ??
+                    throw new InvalidOperationException("Could not find attribute converter class.");
+                var attributeConverters = findFieldsWithAnnotation(
+                        context.Compilation, receiver.AttributeConverterCandidates, convertsAttribute)
+                    .Select(a => (Attribute: a, Type: extractAttributeConverterType(a, attributeConverterType)))
+                    .Where(tuple => tuple.Type != null)
+                    .ToImmutableDictionary(tuple => (ITypeSymbol) tuple.Type!, tuple => tuple.Attribute);
+
                 var templateInterface = context.Compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
                         .ConstructUnboundGenericType() ??
@@ -47,7 +60,8 @@ namespace Bearded.TD.Generators.TechEffects
                     throw new InvalidOperationException("Could not find modifiable attribute.");
                 foreach (var namedTypeSymbol in interfacesToGenerateFor)
                 {
-                    var definition = ParametersTemplateDefinition.FromNamedSymbol(namedTypeSymbol, attributeInterface);
+                    var definition = ParametersTemplateDefinition.FromNamedSymbol(
+                        namedTypeSymbol, attributeInterface, attributeConverters);
                     context.AddSource(
                         definition.ModifiableName,
                         SourceText.From(ModifiableSourceGenerator.GenerateFor(definition), Encoding.Default));
@@ -60,6 +74,38 @@ namespace Bearded.TD.Generators.TechEffects
             {
                 context.ReportDiagnostic(fakeDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
             }
+        }
+
+        private static IEnumerable<IFieldSymbol> findFieldsWithAnnotation(
+            Compilation compilation, IEnumerable<FieldDeclarationSyntax> candidates, ISymbol target)
+        {
+            foreach (var fieldSyntax in candidates)
+            {
+                var fieldModel = compilation.GetSemanticModel(fieldSyntax.SyntaxTree);
+                var fieldSymbolsWithAttribute = fieldSyntax.Declaration.Variables
+                    .Select(v => v == null ? null : fieldModel.GetDeclaredSymbol(v) as IFieldSymbol)
+                    .Where(symbol => symbol != null)
+                    .Where(symbol =>
+                        symbol?.GetAttributes().Any(a =>
+                            a.AttributeClass?.Equals(target, SymbolEqualityComparer.Default) ?? false) ?? false)
+                    .Select(symbol => symbol!);
+
+                foreach (var symbol in fieldSymbolsWithAttribute)
+                {
+                    yield return symbol;
+                }
+            }
+        }
+
+        private static ITypeSymbol? extractAttributeConverterType(
+            IFieldSymbol fieldSymbol, ISymbol attributeConverterSymbol)
+        {
+            var fieldType = fieldSymbol.Type as INamedTypeSymbol ??
+                throw new InvalidOperationException("Field type must be a named type.");
+            return fieldType.ConstructUnboundGenericType()
+                .Equals(attributeConverterSymbol, SymbolEqualityComparer.Default)
+                ? fieldType.TypeArguments[0]
+                : null;
         }
 
         private static IEnumerable<INamedTypeSymbol> findSymbolsImplementingInterface(
@@ -86,11 +132,23 @@ namespace Bearded.TD.Generators.TechEffects
         {
             public List<InterfaceDeclarationSyntax> Interfaces { get; } = new List<InterfaceDeclarationSyntax>();
 
+            public List<FieldDeclarationSyntax> AttributeConverterCandidates { get; } =
+                new List<FieldDeclarationSyntax>();
+
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is InterfaceDeclarationSyntax interfaceSyntax)
+                switch (syntaxNode)
                 {
-                    Interfaces.Add(interfaceSyntax);
+                    case InterfaceDeclarationSyntax interfaceSyntax:
+                        Interfaces.Add(interfaceSyntax);
+                        break;
+                    case FieldDeclarationSyntax fieldSyntax:
+                        if (fieldSyntax.AttributeLists.Any())
+                        {
+                            AttributeConverterCandidates.Add(fieldSyntax);
+                        }
+
+                        break;
                 }
             }
         }

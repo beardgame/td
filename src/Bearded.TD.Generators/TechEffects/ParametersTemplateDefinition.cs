@@ -35,9 +35,12 @@ namespace Bearded.TD.Generators.TechEffects
         }
 
         public static ParametersTemplateDefinition FromNamedSymbol(
-            INamedTypeSymbol symbol, INamedTypeSymbol modifiableAttributeSymbol)
+            INamedTypeSymbol symbol,
+            INamedTypeSymbol modifiableAttributeSymbol,
+            IDictionary<ITypeSymbol, IFieldSymbol> attributeConverters)
         {
-            var properties = extractProperties(symbol, modifiableAttributeSymbol).ToImmutableArray();
+            var properties =
+                extractProperties(symbol, modifiableAttributeSymbol, attributeConverters).ToImmutableArray();
 
             return new ParametersTemplateDefinition($"{symbol.ContainingNamespace}", symbol.Name, properties);
         }
@@ -50,7 +53,9 @@ namespace Bearded.TD.Generators.TechEffects
         }
 
         private static IEnumerable<ParametersPropertyDefinition> extractProperties(
-            INamespaceOrTypeSymbol symbol, ISymbol modifiableAttributeSymbol)
+            INamespaceOrTypeSymbol symbol,
+            ISymbol modifiableAttributeSymbol,
+            IDictionary<ITypeSymbol, IFieldSymbol> attributeConverters)
         {
             return symbol.GetMembers()
                 .OfType<IPropertySymbol>()
@@ -62,8 +67,13 @@ namespace Bearded.TD.Generators.TechEffects
                         var typeConstant = modifiableAttribute?.NamedArguments
                             .FirstOrDefault(pair => pair.Key == "Type").Value;
 
+                        attributeConverters.TryGetValue(propertySymbol.Type, out var converter);
                         return new ParametersPropertyDefinition(
-                            propertySymbol.Name, propertySymbol.Type, modifiableAttribute != null, typeConstant);
+                            propertySymbol.Name,
+                            $"{propertySymbol.Type}",
+                            modifiableAttribute != null,
+                            typeConstant,
+                            converter == null ? null : $"{converter}");
                     }
                 );
         }
@@ -71,18 +81,20 @@ namespace Bearded.TD.Generators.TechEffects
         public sealed class ParametersPropertyDefinition
         {
             public string Name { get; }
-            public ITypeSymbol Type { get; }
+            public string Type { get; }
             public bool IsModifiable { get; }
             public TypedConstant? TypeConstant { get; }
+            public string? Converter { get; }
 
             public ParametersPropertyDefinition(
-                string name, ITypeSymbol type, bool isModifiable, TypedConstant? typeConstant)
+                string name, string type, bool isModifiable, TypedConstant? typeConstant, string? converter)
             {
                 Name = name;
                 Type = type;
                 IsModifiable = isModifiable;
                 // TODO: access to the actual enum constant can be done by finding the enum symbol and resolving number
                 TypeConstant = typeConstant;
+                Converter = converter;
             }
 
             public override string ToString()

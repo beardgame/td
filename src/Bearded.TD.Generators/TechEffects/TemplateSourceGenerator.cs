@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using static Bearded.TD.Generators.TechEffects.TechEffectsUtils;
 
 namespace Bearded.TD.Generators.TechEffects
 {
@@ -12,11 +12,11 @@ namespace Bearded.TD.Generators.TechEffects
             return new TemplateSourceGenerator()
                 .addFileTop(definition.Namespace, definition.TemplateName, definition.InterfaceName)
                 .addProperties(
-                    definition.Properties.Select(property => (Type: $"{property.Type}", PropertyName: property.Name)))
+                    definition.Properties.Select(property => (Type: property.Type, PropertyName: property.Name)))
                 .addConstructor(
                     definition.TemplateName,
                     definition.Properties.Select(property => (
-                        Type: $"{property.Type}",
+                        Type: property.Type,
                         PropertyName: property.Name,
                         DefaultValue: (string?) null)))
                 .addHasAttributeOfTypeMethod(definition.ModifiableName)
@@ -132,14 +132,6 @@ namespace {@namespace}
 
                 return $@"
             {propertyName} = {val};";
-            }
-
-            private static readonly ImmutableHashSet<string> reservedNames = ImmutableHashSet.Create("object");
-
-            private static string toCamelCase(string str)
-            {
-                var camelCaseStr = char.ToLowerInvariant(str[0]) + str.Substring(1);
-                return reservedNames.Contains(camelCaseStr) ? $"@{camelCaseStr}" : camelCaseStr;
             }
 
             public static string HasAttributeOfTypeMethod(string modifiableClassName) => $@"
