@@ -108,7 +108,7 @@ namespace Bearded.TD.Content.Mods
                     BehaviorConverterFactory.ForGameRules(),
                     new UpgradeEffectConverter()
                 );
-                foreach (var (key, value) in ParametersTemplateLibrary.Instance.GetInterfaceToTemplateMap())
+                foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
                     serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
             }
         }
