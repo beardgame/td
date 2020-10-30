@@ -1,5 +1,7 @@
 ﻿using System;
-using amulware.Graphics;
+using System.Drawing;
+using amulware.Graphics.Pipelines;
+using amulware.Graphics.Pipelines.Context;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
@@ -7,6 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
+using Color = amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering
 {
@@ -38,19 +41,21 @@ namespace Bearded.TD.Rendering
             reloadShadersIfNeeded();
 #endif
             //TODO: turn into pipeline code
-            GL.Viewport(0, 0, ViewPort.Width, ViewPort.Height);
-            GL.Disable(EnableCap.ScissorTest);
+            //GL.Disable(EnableCap.ScissorTest);
 
-            var argb = Color.Black;
+            var argb = Color.Green;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Disable(EnableCap.DepthTest);
-            GL.DepthMask(false);
-            GL.CullFace(CullFaceMode.FrontAndBack);
+            //GL.Disable(EnableCap.DepthTest);
+            //GL.DepthMask(false);
+            //GL.CullFace(CullFaceMode.FrontAndBack);
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
+            //GL.BlendEquation(BlendEquationMode.FuncAdd);
+
+            // set frame defaults
+            GLState.SetViewport(new Rectangle(0, 0, ViewPort.Width, ViewPort.Height));
         }
 
         private void reloadShadersIfNeeded()

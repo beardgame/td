@@ -168,10 +168,7 @@ namespace Bearded.TD.Rendering
                     )
             );
 
-            pipeline = WithContext(
-                c => c.SetViewport(s => new Rectangle(0, 0, s.Resolution.X, s.Resolution.Y)),
-                fullRender
-                );
+            pipeline = fullRender;
 
 
             // TODO: it would be neat to have some steps have a more semantic associated output
