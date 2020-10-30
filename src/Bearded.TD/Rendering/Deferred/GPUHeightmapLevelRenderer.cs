@@ -192,7 +192,7 @@ namespace Bearded.TD.Rendering.Deferred
                     heightScaleUniform,
                     heightOffsetUniform
                 }.Concat(material.ArrayTextures.Select((t, i) =>
-                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))));
+                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
 
             material.Shader.RendererShader.UseOnRenderer(renderer);
 
