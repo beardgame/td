@@ -104,6 +104,10 @@ namespace Bearded.TD.Rendering.Loading
                             t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
                             t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
                         }
+                        else
+                        {
+                            t.GenerateMipmap();
+                        }
                     });
 
                     return new TextureUniform(name, TextureUnit.Texture0 + i, texture);
