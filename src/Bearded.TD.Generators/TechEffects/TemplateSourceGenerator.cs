@@ -83,6 +83,7 @@ using Newtonsoft.Json;
             public static string ClassTop(string @namespace, string className, string interfaceName) => $@"
 namespace {@namespace}
 {{
+    [ParametersTemplate]
     sealed class {className} : TemplateBase, {interfaceName}
     {{
 ";

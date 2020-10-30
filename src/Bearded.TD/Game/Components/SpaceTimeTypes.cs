@@ -5,7 +5,6 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Components
 {
-    [ContainsAttributeConverters]
     static class SpaceTimeTypes
     {
         [ConvertsAttribute]
