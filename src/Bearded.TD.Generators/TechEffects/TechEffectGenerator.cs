@@ -83,7 +83,7 @@ namespace Bearded.TD.Generators.TechEffects
             {
                 var fieldModel = compilation.GetSemanticModel(fieldSyntax.SyntaxTree);
                 var fieldSymbolsWithAttribute = fieldSyntax.Declaration.Variables
-                    .Select(v => v == null ? null : fieldModel.GetDeclaredSymbol(v) as IFieldSymbol)
+                    .Select(v => v == null ? null : ModelExtensions.GetDeclaredSymbol(fieldModel, v) as IFieldSymbol)
                     .Where(symbol => symbol != null)
                     .Where(symbol =>
                         symbol?.GetAttributes().Any(a =>
@@ -114,7 +114,7 @@ namespace Bearded.TD.Generators.TechEffects
             foreach (var interfaceSyntax in candidates)
             {
                 var classModel = compilation.GetSemanticModel(interfaceSyntax.SyntaxTree);
-                var classSymbol = classModel.GetDeclaredSymbol(interfaceSyntax) as INamedTypeSymbol
+                var classSymbol = ModelExtensions.GetDeclaredSymbol(classModel, interfaceSyntax) as INamedTypeSymbol
                     ?? throw new InvalidCastException("Expected a named type");
 
                 var candidateInterfaces = classSymbol.Interfaces

@@ -66,12 +66,17 @@ namespace Bearded.TD.Generators.TechEffects
                                 a.AttributeClass!.Equals(modifiableAttributeSymbol, SymbolEqualityComparer.Default));
                         var typeConstant = modifiableAttribute?.NamedArguments
                             .FirstOrDefault(pair => pair.Key == "Type").Value;
+                        var attributeType = typeConstant?.Value == null
+                            ? "AttributeType.None"
+                            : $"(AttributeType) {typeConstant.Value.Value}";
 
                         attributeConverters.TryGetValue(propertySymbol.Type, out var converter);
                         return new ParametersPropertyDefinition(
                             propertySymbol.Name,
                             $"{propertySymbol.Type}",
-                            modifiableAttribute != null, "AttributeType.None", typeConstant, converter == null ? null : $"{converter}");
+                            modifiableAttribute != null,
+                            attributeType,
+                            converter == null ? null : $"{converter}");
                     }
                 );
         }
@@ -82,20 +87,16 @@ namespace Bearded.TD.Generators.TechEffects
             public string Type { get; }
             public bool IsModifiable { get; }
             public string AttributeType { get; }
-            public TypedConstant? TypeConstant { get; }
             public string? Converter { get; }
 
             public ParametersPropertyDefinition(
-                string name, string type, bool isModifiable, string attributeType, TypedConstant? typeConstant,
-                string? converter)
+                string name, string type, bool isModifiable, string attributeType, string? converter)
             {
                 Name = name;
                 Type = type;
                 IsModifiable = isModifiable;
-                // TODO: access to the actual enum constant can be done by finding the enum symbol and resolving number
-                TypeConstant = typeConstant;
-                Converter = converter;
                 AttributeType = attributeType;
+                Converter = converter;
             }
 
             public override string ToString()
@@ -103,7 +104,8 @@ namespace Bearded.TD.Generators.TechEffects
                 return $"{nameof(Name)}: {Name}, " +
                     $"{nameof(Type)}: {Type}, " +
                     $"{nameof(IsModifiable)}: {IsModifiable} " +
-                    $"{nameof(TypeConstant)}: {TypeConstant?.Value}";
+                    $"{nameof(AttributeType)}: {AttributeType}" +
+                    $"{nameof(Converter)}: {Converter}";
             }
         }
     }
