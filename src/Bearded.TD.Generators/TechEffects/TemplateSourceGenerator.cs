@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Bearded.TD.Generators.TechEffects.ParametersTemplateDefinition;
 using static Bearded.TD.Generators.TechEffects.TechEffectsUtils;
 
 namespace Bearded.TD.Generators.TechEffects
@@ -11,14 +12,8 @@ namespace Bearded.TD.Generators.TechEffects
         {
             return new TemplateSourceGenerator()
                 .addFileTop(definition.Namespace, definition.TemplateName, definition.InterfaceName)
-                .addProperties(
-                    definition.Properties.Select(property => (Type: property.Type, PropertyName: property.Name)))
-                .addConstructor(
-                    definition.TemplateName,
-                    definition.Properties.Select(property => (
-                        Type: property.Type,
-                        PropertyName: property.Name,
-                        DefaultValue: (string?) null)))
+                .addProperties(definition.Properties)
+                .addConstructor(definition.TemplateName, definition.Properties)
                 .addHasAttributeOfTypeMethod(definition.ModifiableName)
                 .addCreateModifiableInstanceMethod(definition.InterfaceName, definition.ModifiableName)
                 .addFileBottom()
@@ -34,17 +29,17 @@ namespace Bearded.TD.Generators.TechEffects
             return this;
         }
 
-        private TemplateSourceGenerator addProperties(IEnumerable<(string Type, string PropertyName)> properties)
+        private TemplateSourceGenerator addProperties(IEnumerable<ParametersPropertyDefinition> properties)
         {
-            foreach (var (type, name) in properties)
+            foreach (var p in properties)
             {
-                sb.Append(Templates.Property(type, name));
+                sb.Append(Templates.Property(p.Type, p.Name));
             }
             return this;
         }
 
         private TemplateSourceGenerator addConstructor(
-            string className, IEnumerable<(string Type, string PropertyName, string? DefaultValue)> parameters)
+            string className, IEnumerable<ParametersPropertyDefinition> parameters)
         {
             sb.Append(Templates.Constructor(className, parameters));
             return this;
@@ -98,15 +93,13 @@ namespace {@namespace}
 ";
 
             public static string Constructor(
-                string className, IEnumerable<(string Type, string PropertyName, string? DefaultValue)> parameters)
+                string className, IEnumerable<ParametersPropertyDefinition> parameters)
             {
                 var parametersList = parameters.ToList();
                 var parametersString = string.Join(", ",
-                    parametersList.Select(tuple =>
-                        constructorParameter(tuple.Type, tuple.PropertyName, tuple.DefaultValue != null)));
+                    parametersList.Select(p => constructorParameter(p.Type, p.Name, p.DefaultValue != null)));
                 var bodyString = string.Join("\n",
-                    parametersList.Select(tuple =>
-                        constructorAssignment(tuple.PropertyName, tuple.DefaultValue)));
+                    parametersList.Select(p => constructorAssignment(p.Name, p.DefaultValueInstantiation)));
 
                 return $@"
         [JsonConstructor]
@@ -117,22 +110,22 @@ namespace {@namespace}
 ";
             }
 
-            private static string constructorParameter(string type, string propertyName, bool isNullable)
+            private static string constructorParameter(string type, string name, bool isNullable)
             {
                 var parameterType = isNullable ? $"{type}?" : type;
-                return $"{parameterType} {toCamelCase(propertyName)}";
+                return $"{parameterType} {toCamelCase(name)}";
             }
 
-            private static string constructorAssignment(string propertyName, string? defaultValue)
+            private static string constructorAssignment(string name, string? defaultValue)
             {
-                var val = toCamelCase(propertyName);
+                var val = toCamelCase(name);
                 if (defaultValue != null)
                 {
                     val += $".GetValueOrDefault({defaultValue})";
                 }
 
                 return $@"
-            {propertyName} = {val};";
+            {name} = {val};";
             }
 
             public static string HasAttributeOfTypeMethod(string modifiableClassName) => $@"

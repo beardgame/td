@@ -64,6 +64,8 @@ namespace Bearded.TD.Generators.TechEffects
                         var modifiableAttribute = propertySymbol.GetAttributes()
                             .FirstOrDefault(a =>
                                 a.AttributeClass!.Equals(modifiableAttributeSymbol, SymbolEqualityComparer.Default));
+                        var defaultConstant = modifiableAttribute?.ConstructorArguments.FirstOrDefault();
+                        var defaultValue = defaultConstant?.Value;
                         var typeConstant = modifiableAttribute?.NamedArguments
                             .FirstOrDefault(pair => pair.Key == "Type").Value;
                         var attributeType = typeConstant?.Value == null
@@ -76,6 +78,7 @@ namespace Bearded.TD.Generators.TechEffects
                             $"{propertySymbol.Type}",
                             modifiableAttribute != null,
                             attributeType,
+                            defaultValue,
                             converter == null ? null : $"{converter}");
                     }
                 );
@@ -87,15 +90,26 @@ namespace Bearded.TD.Generators.TechEffects
             public string Type { get; }
             public bool IsModifiable { get; }
             public string AttributeType { get; }
+            public object? DefaultValue { get; }
             public string? Converter { get; }
 
+            public string? DefaultValueInstantiation => DefaultValue == null
+                ? null
+                : Converter == null ? $"{DefaultValue}" : $"{Converter}.ToWrapped({DefaultValue})";
+
             public ParametersPropertyDefinition(
-                string name, string type, bool isModifiable, string attributeType, string? converter)
+                string name,
+                string type,
+                bool isModifiable,
+                string attributeType,
+                object? defaultValue,
+                string? converter)
             {
                 Name = name;
                 Type = type;
                 IsModifiable = isModifiable;
                 AttributeType = attributeType;
+                DefaultValue = defaultValue;
                 Converter = converter;
             }
 
@@ -105,7 +119,9 @@ namespace Bearded.TD.Generators.TechEffects
                     $"{nameof(Type)}: {Type}, " +
                     $"{nameof(IsModifiable)}: {IsModifiable} " +
                     $"{nameof(AttributeType)}: {AttributeType}" +
-                    $"{nameof(Converter)}: {Converter}";
+                    $"{nameof(DefaultValue)}: {DefaultValue}" +
+                    $"{nameof(Converter)}: {Converter}" +
+                    $"{nameof(DefaultValueInstantiation)}: {DefaultValueInstantiation}";
             }
         }
     }
