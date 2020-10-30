@@ -71,9 +71,7 @@ namespace Bearded.TD.Generators.TechEffects
                         return new ParametersPropertyDefinition(
                             propertySymbol.Name,
                             $"{propertySymbol.Type}",
-                            modifiableAttribute != null,
-                            typeConstant,
-                            converter == null ? null : $"{converter}");
+                            modifiableAttribute != null, "AttributeType.None", typeConstant, converter == null ? null : $"{converter}");
                     }
                 );
         }
@@ -83,11 +81,13 @@ namespace Bearded.TD.Generators.TechEffects
             public string Name { get; }
             public string Type { get; }
             public bool IsModifiable { get; }
+            public string AttributeType { get; }
             public TypedConstant? TypeConstant { get; }
             public string? Converter { get; }
 
             public ParametersPropertyDefinition(
-                string name, string type, bool isModifiable, TypedConstant? typeConstant, string? converter)
+                string name, string type, bool isModifiable, string attributeType, TypedConstant? typeConstant,
+                string? converter)
             {
                 Name = name;
                 Type = type;
@@ -95,6 +95,7 @@ namespace Bearded.TD.Generators.TechEffects
                 // TODO: access to the actual enum constant can be done by finding the enum symbol and resolving number
                 TypeConstant = typeConstant;
                 Converter = converter;
+                AttributeType = attributeType;
             }
 
             public override string ToString()

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Bearded.TD.Generators.TechEffects.ParametersTemplateDefinition;
 using static Bearded.TD.Generators.TechEffects.TechEffectsUtils;
 
 namespace Bearded.TD.Generators.TechEffects
@@ -9,18 +10,15 @@ namespace Bearded.TD.Generators.TechEffects
     {
         public static string GenerateFor(ParametersTemplateDefinition definition)
         {
-            var immutableProperties = definition.Properties.Where(property => !property.IsModifiable)
-                .Select(property => (property.Type, property.Name));
-            var modifiableProperties = definition.Properties
-                .Where(property => property.IsModifiable)
-                .Select(property => (property.Type, property.Name, property.Converter))
-                .ToList();
+            var immutableProperties = definition.Properties.Where(property => !property.IsModifiable);
+            var modifiableProperties = definition.Properties.Where(property => property.IsModifiable).ToList();
 
             return new ModifiableSourceGenerator()
                 .addFileTop(definition.Namespace, definition.ModifiableName, definition.InterfaceName)
                 .addImmutableProperties(immutableProperties)
                 .addModifiableProperties(modifiableProperties)
                 .addConstructor(definition.InterfaceName, definition.ModifiableName, modifiableProperties)
+                .addStaticConstructor(definition.ModifiableName, modifiableProperties)
                 .addCreateModifiableInstanceMethod(definition.InterfaceName, definition.ModifiableName)
                 .addFileBottom()
                 .build();
@@ -36,22 +34,21 @@ namespace Bearded.TD.Generators.TechEffects
         }
 
         private ModifiableSourceGenerator addImmutableProperties(
-            IEnumerable<(string Type, string Name)> properties)
+            IEnumerable<ParametersPropertyDefinition> properties)
         {
-            foreach (var (type, name) in properties)
+            foreach (var p in properties)
             {
-                sb.Append(Templates.ImmutableProperty(type, name));
+                sb.Append(Templates.ImmutableProperty(p.Type, p.Name));
             }
 
             return this;
         }
 
-        private ModifiableSourceGenerator addModifiableProperties(
-            IEnumerable<(string Type, string Name, string? Converter)> properties)
+        private ModifiableSourceGenerator addModifiableProperties(IEnumerable<ParametersPropertyDefinition> properties)
         {
-            foreach (var (type, name, _) in properties)
+            foreach (var p in properties)
             {
-                sb.Append(Templates.ModifiableProperty(type, name));
+                sb.Append(Templates.ModifiableProperty(p.Type, p.Name));
             }
 
             return this;
@@ -60,9 +57,21 @@ namespace Bearded.TD.Generators.TechEffects
         private ModifiableSourceGenerator addConstructor(
             string interfaceName,
             string className,
-            IEnumerable<(string Type, string Name, string? Converter)> modifiableParameters)
+            IEnumerable<ParametersPropertyDefinition> modifiableParameters)
         {
             sb.Append(Templates.Constructor(interfaceName, className, modifiableParameters));
+            return this;
+        }
+
+        private ModifiableSourceGenerator addStaticConstructor(
+            string className,
+            ICollection<ParametersPropertyDefinition> modifiableParameters)
+        {
+            if (modifiableParameters.Count > 0)
+            {
+                sb.Append(Templates.StaticConstructor(className, modifiableParameters));
+            }
+
             return this;
         }
 
@@ -86,6 +95,7 @@ namespace Bearded.TD.Generators.TechEffects
             public const string FileHeader = @"
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 ";
@@ -119,11 +129,10 @@ namespace {@namespace}
             public static string Constructor(
                 string interfaceName,
                 string className,
-                IEnumerable<(string Type, string Name, string? Converter)> modifiableParameters)
+                IEnumerable<ParametersPropertyDefinition> modifiableParameters)
             {
                 var assignments = string.Join("\n",
-                    modifiableParameters.Select(tuple =>
-                        constructorAssignment(tuple.Type, tuple.Name, tuple.Converter)));
+                    modifiableParameters.Select(p => constructorAssignment(p.Type, p.Name, p.Converter)));
                 return $@"
         public {className}({interfaceName} template)
         {{
@@ -148,6 +157,29 @@ namespace {@namespace}
             {fieldName} = new AttributeWithModifications<{type}>(
                 {initialValue},
                 {fromRawConverter});
+";
+            }
+
+            public static string StaticConstructor(
+                string className, IEnumerable<ParametersPropertyDefinition> modifiableParameters)
+            {
+                var attributeTuples = string.Join(",\n",
+                    modifiableParameters.Select(p => staticConstructorAttributeTuple(p.AttributeType, p.Name)));
+                return $@"
+        static {className}()
+        {{
+            InitializeAttributes(
+                new (AttributeType Type, Func<{className}, IAttributeWithModifications> Getter)[]{{
+                    {attributeTuples}
+                }}.ToLookup(tuple => tuple.Type, tuple => tuple.Getter));
+        }}
+";
+            }
+
+            private static string staticConstructorAttributeTuple(string attributeType, string propertyName)
+            {
+                return $@"
+                    ({attributeType}, instance => instance.{toCamelCase(propertyName)})
 ";
             }
 

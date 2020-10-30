@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Shared.TechEffects
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public abstract class ModifiableBase<T> where T : ModifiableBase<T>
     {
-        private static IDictionary<AttributeType, List<Func<T, IAttributeWithModifications>>> attributeGettersByType;
+        private static IDictionary<AttributeType, List<Func<T, IAttributeWithModifications>>>? attributeGettersByType;
 
-        protected static void InitializeAttributes(
-            IEnumerable<KeyValuePair<AttributeType, Func<T, IAttributeWithModifications>>> attributes)
+        protected static void InitializeAttributes(ILookup<AttributeType, Func<T, IAttributeWithModifications>> attributes)
         {
             if (attributeGettersByType != null)
                 throw new InvalidOperationException("Do not initialise attributes multiple times.");
 
             attributeGettersByType = attributes
-                .GroupBy(kvp => kvp.Key)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(kvp => kvp.Value).ToList()
+                    g => g.ToList()
                 );
         }
 
@@ -37,7 +37,7 @@ namespace Bearded.TD.Shared.TechEffects
         public virtual bool RemoveModification(AttributeType type, Id<Modification> id)
             => removeModificationOnInstance((T) this, type, id);
 
-        public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType.ContainsKey(type);
+        public static bool AttributeIsKnown(AttributeType type) => attributeGettersByType!.ContainsKey(type);
 
         private static bool addModificationOnInstance(T instance, AttributeType type, Modification modification)
             => doOnInstance(instance, type, attr => attr.AddModification(modification));
@@ -67,7 +67,7 @@ namespace Bearded.TD.Shared.TechEffects
 
         private static bool doOnInstance(T instance, AttributeType type, Func<IAttributeWithModifications, bool> action)
         {
-            if (!attributeGettersByType.TryGetValue(type, out var attributeGetters))
+            if (!attributeGettersByType!.TryGetValue(type, out var attributeGetters))
                 return false;
 
             var result = false;
