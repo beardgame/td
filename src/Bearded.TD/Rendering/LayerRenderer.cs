@@ -1,36 +1,65 @@
 using amulware.Graphics.Pipelines;
+using amulware.Graphics.Pipelines.Context;
 using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
-using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
 using static amulware.Graphics.Pipelines.Context.BlendMode;
 
 namespace Bearded.TD.Rendering
 {
-    using static Pipeline<RenderTarget>;
+    using static Pipeline<LayerRenderer.State>;
+    using IPipeline = IPipeline<LayerRenderer.State>;
 
     sealed class LayerRenderer
     {
+        public readonly struct State
+        {
+            public IRenderLayer Layer { get; }
+            public RenderTarget Target { get; }
+
+            public State(IRenderLayer layer, RenderTarget target)
+            {
+                Layer = layer;
+                Target = target;
+            }
+        }
+
         private readonly SurfaceManager surfaces;
         private readonly DeferredRenderer deferredRenderer;
-        private readonly IPipeline<RenderTarget> renderSurfaces;
+        private readonly IPipeline renderLayer;
 
         public LayerRenderer(SurfaceManager surfaces)
         {
             this.surfaces = surfaces;
             deferredRenderer = new DeferredRenderer(surfaces);
 
-            renderSurfaces = WithContext(
-                    c => c.BindRenderTarget(t => t)
-                        .SetBlendMode(Premultiplied),
-                    Render(
-                        surfaces.PrimitivesRenderer,
-                        surfaces.UIFontRenderer,
-                        surfaces.ConsoleBackgroundRenderer,
-                        surfaces.ConsoleFontRenderer
-                        )
-                );
+            renderLayer = WithContext(
+                c => c.BindRenderTarget(s => s.Target)
+                    .SetScissorRegion(s => ScissorRegion.SingleOrFullTarget(s.Layer.RenderOptions.ClipDrawRegion)),
+                InOrder(
+                    Do(tryRenderDeferred),
+                    WithContext(c => c.SetBlendMode(Premultiplied),
+                        Render(
+                            surfaces.PrimitivesRenderer,
+                            surfaces.UIFontRenderer,
+                            surfaces.ConsoleBackgroundRenderer,
+                            surfaces.ConsoleFontRenderer)
+                    )
+                )
+            );
+        }
+
+        private void tryRenderDeferred(State state)
+        {
+            if (state.Layer is IDeferredRenderLayer deferredLayer)
+            {
+                deferredRenderer.RenderLayer(deferredLayer, state.Target);
+
+                // TODO: not implemented yet
+                //if (UserSettings.Instance.Debug.Deferred)
+                //    deferredRenderer.RenderDebug();
+            }
         }
 
         public void RenderLayer(IRenderLayer layer, RenderTarget renderTarget)
@@ -38,8 +67,7 @@ namespace Bearded.TD.Rendering
             surfaces.ClearAll();
             layer.Draw();
             setUniformsFrom(layer);
-            setClipRegionFrom(layer.RenderOptions);
-            render(layer, renderTarget);
+            renderLayer.Execute(new State(layer, renderTarget));
         }
 
         private void setUniformsFrom(IRenderLayer layer)
@@ -84,34 +112,6 @@ namespace Bearded.TD.Rendering
             surfaces.FarPlaneUnitX.Value = xCorner.Xyz - baseCorner.Xyz;
             surfaces.FarPlaneUnitY.Value = yCorner.Xyz - baseCorner.Xyz;
             surfaces.CameraPosition.Value = cameraTranslation;
-        }
-
-        private void setClipRegionFrom(RenderOptions options)
-        {
-            if (options.ClipDrawRegion.HasValue)
-            {
-                var ((x, y), (w, h)) = options.ClipDrawRegion.Value;
-                GL.Enable(EnableCap.ScissorTest);
-                GL.Scissor(x, y, w, h);
-            }
-            else
-            {
-                GL.Disable(EnableCap.ScissorTest);
-            }
-        }
-
-        private void render(IRenderLayer layer, RenderTarget renderTarget)
-        {
-            if (layer is IDeferredRenderLayer deferredLayer)
-            {
-                deferredRenderer.RenderLayer(deferredLayer, renderTarget);
-
-                // TODO: not implemented yet
-                //if (UserSettings.Instance.Debug.Deferred)
-                //    deferredRenderer.RenderDebug();
-            }
-
-            renderSurfaces.Execute(renderTarget);
         }
 
         public void OnResize(ViewportSize viewPort)
