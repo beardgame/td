@@ -42,8 +42,8 @@ namespace Bearded.TD.Rendering
                     WithContext(c => c.SetBlendMode(Premultiplied),
                         Render(
                             surfaces.PrimitivesRenderer,
-                            surfaces.UIFontRenderer,
                             surfaces.ConsoleBackgroundRenderer,
+                            surfaces.UIFontRenderer,
                             surfaces.ConsoleFontRenderer)
                     )
                 )
