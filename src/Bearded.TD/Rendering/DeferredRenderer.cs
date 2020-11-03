@@ -92,7 +92,7 @@ namespace Bearded.TD.Rendering
                     textures.DepthMaskLowRes, textures.DiffuseLowRes, textures.NormalLowRes, textures.DepthLowRes),
                 Geometry = RenderTargetWithDepthAndColors(
                     textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
-                LightAccum = RenderTargetWithColors(textures.LightAccum),
+                LightAccum = RenderTargetWithDepthAndColors(textures.DepthMask, textures.LightAccum),
                 Composition = RenderTargetWithDepthAndColors(textures.DepthMask, textures.Composition),
 
                 UpscaleDiffuse = RenderTargetWithColors(textures.Diffuse),
@@ -139,7 +139,7 @@ namespace Bearded.TD.Rendering
             var compositedFrame = renderedGBuffers.Then(InOrder(
                 WithContext(
                     c => c.BindRenderTarget(targets.LightAccum)
-                        .SetDepthMode(TestOnly(DepthFunction.Less))
+                        .SetDepthMode(TestOnly(DepthFunction.Gequal))
                         .SetBlendMode(Premultiplied)
                         .SetCullMode(RenderBack),
                     InOrder(

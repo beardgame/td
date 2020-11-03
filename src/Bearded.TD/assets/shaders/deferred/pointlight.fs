@@ -21,8 +21,6 @@ void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
 
-    // interpolation along the diagonal might be broken?
-    // probably only for weird geometry
     vec3 pointOnFarPlane = farPlaneBaseCorner
         + farPlaneUnitX * uv.x
         + farPlaneUnitY * uv.y;
@@ -39,9 +37,6 @@ void main()
     float distanceToLightSquared = dot(vectorToLight, vectorToLight);
 
     float a = 1 - distanceToLightSquared / lightRadiusSquared;
-
-    outRGB = vec4(uv, 0, 1);
-    //return;
 
     if (a < 0)
         discard;
