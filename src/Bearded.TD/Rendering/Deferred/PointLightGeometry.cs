@@ -1,4 +1,5 @@
-﻿using amulware.Graphics;
+﻿using System;
+using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.Utilities;
@@ -18,11 +19,14 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void Draw(Vector3 center, float radius, Color color)
         {
+            // 1f / sqrt((5 + 2 * sqrt(5)) / 15)
+            const float innerToOuterRadius = 1f / 0.794654472f;
+
             var rSquared = radius.Squared();
             var parameters = (center, rSquared, color);
 
             // TODO: confirm this draws at the right scale so that radius is the inner radius of the icosahedron
-            drawer.DrawIcosahedron(center, radius, parameters);
+            drawer.DrawIcosahedron(center, radius * innerToOuterRadius, parameters);
         }
     }
 }

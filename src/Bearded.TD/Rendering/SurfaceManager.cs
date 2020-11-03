@@ -142,7 +142,7 @@ namespace Bearded.TD.Rendering
             return newFile;
         }
 
-        public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer)
+        public void InjectDeferredBuffer(Texture normalBuffer, Texture depthBuffer, Vector2Uniform gBufferResolution)
         {
             var normalUniform = new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer);
             DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, depthBuffer);
@@ -152,12 +152,12 @@ namespace Bearded.TD.Rendering
 
             PointLightRenderer = BatchedRenderer.From(PointLights.ToRenderable(),
                 ViewMatrix, ProjectionMatrix, FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition,
-                normalUniform, DepthBuffer);
+                normalUniform, DepthBuffer, gBufferResolution);
             pointLightShader!.UseOnRenderer(PointLightRenderer);
 
             SpotLightRenderer = BatchedRenderer.From(Spotlights.ToRenderable(),
                 ViewMatrix, ProjectionMatrix, FarPlaneBaseCorner, FarPlaneUnitX, FarPlaneUnitY, CameraPosition,
-                normalUniform, DepthBuffer);
+                normalUniform, DepthBuffer, gBufferResolution);
             spotLightShader!.UseOnRenderer(SpotLightRenderer);
         }
 

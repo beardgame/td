@@ -3,16 +3,20 @@
 uniform sampler2D normalBuffer;
 uniform sampler2D depthBuffer;
 
+uniform vec2 resolution;
+
+uniform vec3 farPlaneBaseCorner;
+uniform vec3 farPlaneUnitX;
+uniform vec3 farPlaneUnitY;
+
 uniform vec3 cameraPosition;
 
-in vec2 fragmentUV;
 in vec2 fragmentXY;
 in vec3 lightPosition;
 in vec3 lightDirection;
 in float lightAngleCos;
 in float lightRadiusSquared;
 in vec4 lightColor;
-in vec3 pointOnFarPlane;
 
 out vec4 outRGB;
 
@@ -37,10 +41,18 @@ float diffuseLightAmount(vec3 surfaceNormal, vec3 vectorToLight)
 
 void main()
 {
-    vec3 normal = texture(normalBuffer, fragmentUV).xyz;
+    vec2 uv = gl_FragCoord.xy / resolution;
+
+    // interpolation along the diagonal might be broken?
+    // probably only for weird geometry
+    vec3 pointOnFarPlane = farPlaneBaseCorner
+        + farPlaneUnitX * uv.x
+        + farPlaneUnitY * uv.y;
+
+    vec3 normal = texture(normalBuffer, uv).xyz;
     normal = normal * 2 - 1;
 
-    float depth = texture(depthBuffer, fragmentUV).x;
+    float depth = texture(depthBuffer, uv).x;
 
     vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
     vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;

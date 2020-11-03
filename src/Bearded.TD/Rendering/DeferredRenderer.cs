@@ -12,6 +12,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
+using static amulware.Graphics.Pipelines.Context.CullMode;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
@@ -47,6 +48,7 @@ namespace Bearded.TD.Rendering
         private readonly ShaderManager shaders;
         private readonly SurfaceManager surfaces;
         private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
+        private readonly Vector2Uniform gBufferResolution = new Vector2Uniform("resolution");
         private readonly IPipeline<RenderState> pipeline;
 
         private ViewportSize viewport;
@@ -78,7 +80,11 @@ namespace Bearded.TD.Rendering
                 Composition = Texture(PixelInternalFormat.Rgba),
             };
 
-            surfaceManager.InjectDeferredBuffer(textures.Normal.Texture, textures.Depth.Texture);
+            // TODO: this injection is ugly and fragile, let's find a better way
+            surfaceManager.InjectDeferredBuffer(
+                textures.Normal.Texture,
+                textures.Depth.Texture,
+                gBufferResolution);
 
             var targets = new
             {
@@ -134,7 +140,8 @@ namespace Bearded.TD.Rendering
                 WithContext(
                     c => c.BindRenderTarget(targets.LightAccum)
                         .SetDepthMode(TestOnly(DepthFunction.Less))
-                        .SetBlendMode(Premultiplied),
+                        .SetBlendMode(Premultiplied)
+                        .SetCullMode(RenderBack),
                     InOrder(
                         ClearColor(),
                         Render(surfaces.PointLightRenderer, surfaces.SpotLightRenderer)
@@ -181,6 +188,7 @@ namespace Bearded.TD.Rendering
         public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
         {
             var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
+            gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
 
             deferredLayer.DeferredSurfaces.LevelRenderer.PrepareForRender();
 
