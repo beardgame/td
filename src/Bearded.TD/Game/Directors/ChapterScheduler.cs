@@ -1,23 +1,22 @@
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Directors.WaveDirector;
+using static Bearded.TD.Game.Directors.WaveScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Directors
 {
-    sealed class ChapterDirector
+    sealed class ChapterScheduler
     {
-        private readonly WaveDirector waveDirector;
+        private readonly WaveScheduler waveScheduler;
 
         private bool chapterStarted;
         private int wavesLeftInChapter;
 
         public event VoidEventHandler? ChapterEnded;
 
-        public ChapterDirector(WaveDirector waveDirector)
+        public ChapterScheduler(WaveScheduler waveScheduler)
         {
-            this.waveDirector = waveDirector;
-            waveDirector.WaveEnded += onWaveEnded;
+            this.waveScheduler = waveScheduler;
+            waveScheduler.WaveEnded += onWaveEnded;
         }
 
         private void onWaveEnded()
@@ -49,14 +48,7 @@ namespace Bearded.TD.Game.Directors
         {
             State.Satisfies(wavesLeftInChapter > 0);
             wavesLeftInChapter--;
-            waveDirector.StartWave(new WaveRequirements());
-        }
-
-        public void Update(TimeSpan elapsedTime)
-        {
-            if (!chapterStarted) return;
-
-            waveDirector.Update(elapsedTime);
+            waveScheduler.StartWave(new WaveRequirements());
         }
 
         public readonly struct ChapterRequirements

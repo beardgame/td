@@ -1,27 +1,26 @@
 using Bearded.TD.Game.Events;
-using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Directors.ChapterDirector;
+using static Bearded.TD.Game.Directors.ChapterScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Directors
 {
-    sealed class GameDirector
+    sealed class GameScheduler
     {
         // TODO: these should be populated from mod files
         private const int chaptersPerGame = 5;
         private const int wavesPerChapter = 5;
 
         private readonly GlobalGameEvents gameEvents;
-        private readonly ChapterDirector chapterDirector;
+        private readonly ChapterScheduler chapterScheduler;
 
         private bool gameStarted;
         private int chaptersLeftInGame;
 
-        public GameDirector(GlobalGameEvents gameEvents, ChapterDirector chapterDirector)
+        public GameScheduler(GlobalGameEvents gameEvents, ChapterScheduler chapterScheduler)
         {
             this.gameEvents = gameEvents;
-            this.chapterDirector = chapterDirector;
-            chapterDirector.ChapterEnded += onChapterEnded;
+            this.chapterScheduler = chapterScheduler;
+            chapterScheduler.ChapterEnded += onChapterEnded;
         }
 
         private void onChapterEnded()
@@ -54,13 +53,7 @@ namespace Bearded.TD.Game.Directors
         {
             State.Satisfies(chaptersLeftInGame > 0);
             chaptersLeftInGame--;
-            chapterDirector.StartChapter(new ChapterRequirements(wavesPerChapter));
-        }
-
-        public void Update(TimeSpan elapsedTime)
-        {
-            if (!gameStarted) return;
-            chapterDirector.Update(elapsedTime);
+            chapterScheduler.StartChapter(new ChapterRequirements(wavesPerChapter));
         }
     }
 }
