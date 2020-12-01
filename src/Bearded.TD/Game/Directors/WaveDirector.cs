@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Directors
             this.game = game;
         }
 
-        public void StartWave(WaveScript script)
+        public void ExecuteScript(WaveScript script)
         {
             waves.Add(new SingleWaveDirector(game, script));
         }
@@ -28,16 +28,16 @@ namespace Bearded.TD.Game.Directors
             waves.RemoveAll(w => w.IsDone);
         }
 
-        private enum Phase
-        {
-            Downtime,
-            Spawning,
-            FinishOff,
-            Completed,
-        }
-
         private sealed class SingleWaveDirector
         {
+            private enum Phase
+            {
+                Downtime,
+                Spawning,
+                FinishOff,
+                Completed,
+            }
+
             private readonly GameState game;
             private readonly WaveScript script;
 
