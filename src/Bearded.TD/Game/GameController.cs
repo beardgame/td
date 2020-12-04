@@ -5,20 +5,17 @@ namespace Bearded.TD.Game
 {
     interface IGameController
     {
-        EnemySpawnDebugParameters DebugParameters { get; }
         void Update(TimeSpan elapsedTime);
     }
 
-    class DummyGameController : IGameController
+    sealed class DummyGameController : IGameController
     {
-        public EnemySpawnDebugParameters DebugParameters => EnemySpawnDebugParameters.Empty;
-
         public void Update(TimeSpan elapsedTime)
         {
         }
     }
 
-    class GameController : IGameController
+    sealed class GameController : IGameController
     {
         private readonly EnemySpawnController enemySpawnController;
 
@@ -31,7 +28,5 @@ namespace Bearded.TD.Game
         {
             enemySpawnController.Update(elapsedTime);
         }
-
-        public EnemySpawnDebugParameters DebugParameters => enemySpawnController.DebugParameters;
     }
 }

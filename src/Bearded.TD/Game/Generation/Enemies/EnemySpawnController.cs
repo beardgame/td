@@ -28,9 +28,6 @@ namespace Bearded.TD.Game.Generation.Enemies
         private double minWaveCost = InitialMinWaveCost;
         private double maxWaveCost = InitialMaxWaveCost;
 
-        public EnemySpawnDebugParameters DebugParameters => new EnemySpawnDebugParameters(
-            debit, debitPayoffFactor, minWaveCost, maxWaveCost, TimeBeforeFirstWave.NumericValue);
-
         public EnemySpawnController(GameInstance game)
         {
             this.game = game;
