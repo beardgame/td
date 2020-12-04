@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.Directors;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Navigation;
 using Bearded.TD.Game.Rules;
@@ -49,6 +50,8 @@ namespace Bearded.TD.Game
         public MiningLayer MiningLayer { get; }
         public PassabilityManager PassabilityManager { get; }
 
+        public WaveDirector WaveDirector { get; }
+
         private bool isLoading = true;
 
         private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
@@ -70,6 +73,8 @@ namespace Bearded.TD.Game
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
+
+            WaveDirector = new WaveDirector(this);
         }
 
         public void FinishLoading()
@@ -197,6 +202,7 @@ namespace Bearded.TD.Game
             Time += elapsedTime;
 
             FluidLayer.Update();
+            WaveDirector.Update();
 
             foreach (var obj in gameObjects)
             {
