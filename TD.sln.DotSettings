@@ -66,7 +66,7 @@ namespace $NAMESPACE$
         public static IRequest&lt;GameInstance&gt; Request(GameInstance game)
             =&gt; new Implementation(game);
 
-        private class Implementation : UnifiedRequestCommand
+        private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
 
@@ -85,7 +85,7 @@ namespace $NAMESPACE$
             protected override UnifiedRequestCommandSerializer GetSerializer() =&gt; new Serializer();
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
@@ -220,7 +220,7 @@ namespace $NAMESPACE$
         public static ISerializableCommand&lt;GameInstance&gt; Command(GameInstance game)
             =&gt; new Implementation(game);
 
-        private class Implementation : ISerializableCommand&lt;GameInstance&gt;
+        private sealed class Implementation : ISerializableCommand&lt;GameInstance&gt;
         {
             private readonly GameInstance game;
 
@@ -237,7 +237,7 @@ namespace $NAMESPACE$
             public ICommandSerializer&lt;GameInstance&gt; Serializer =&gt; new Serializer();
         }
 
-        private class Serializer : ICommandSerializer&lt;GameInstance&gt;
+        private sealed class Serializer : ICommandSerializer&lt;GameInstance&gt;
         {
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
