@@ -19,6 +19,9 @@ namespace Bearded.TD.Game.Directors
         {
             id = waveScript.Id;
             targetFaction = waveScript.TargetFaction.Id;
+            spawnStart = waveScript.SpawnStart.NumericValue;
+            spawnDuration = waveScript.SpawnDuration.NumericValue;
+            resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase;
         }
 
         public WaveScript ToWaveScript(GameState game)
