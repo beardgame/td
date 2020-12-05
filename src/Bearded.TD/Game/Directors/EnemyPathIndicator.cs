@@ -9,7 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Units
+namespace Bearded.TD.Game.Directors
 {
     sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
     {
