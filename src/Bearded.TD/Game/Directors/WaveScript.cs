@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Resources;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Directors
         public Faction TargetFaction { get; }
         public Instant SpawnStart { get; }
         public TimeSpan SpawnDuration { get; }
-        public double ResourcesAwardedBySpawnPhase { get; }
+        public ResourceAmount ResourcesAwardedBySpawnPhase { get; }
 
         public Instant SpawnEnd => SpawnStart + SpawnDuration;
 
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Directors
             Faction targetFaction,
             Instant spawnStart,
             TimeSpan spawnDuration,
-            double resourcesAwardedBySpawnPhase)
+            ResourceAmount resourcesAwardedBySpawnPhase)
         {
             Id = id;
             TargetFaction = targetFaction;

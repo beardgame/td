@@ -11,9 +11,9 @@ namespace Bearded.TD.Game.Upgrades
         private readonly Building building;
         private readonly IUpgradeBlueprint upgrade;
 
-        private double maximumResources => upgrade.Cost;
+        private ResourceAmount maximumResources => upgrade.Cost;
 
-        private double progress;
+        private ResourceAmount progress;
         private bool completed;
 
         public Building Building => building;
@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Upgrades
             if (completed)
                 return;
 
-            building.Faction.Resources.RegisterConsumer(this, 10, maximumResources - progress);
+            building.Faction.Resources.RegisterConsumer(this, 10.ResourcesPerSecond(), maximumResources - progress);
         }
 
         public override void Draw(GeometryManager geometries)

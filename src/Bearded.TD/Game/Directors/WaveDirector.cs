@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Resources;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Directors
@@ -42,7 +43,7 @@ namespace Bearded.TD.Game.Directors
             private readonly WaveScript script;
 
             private Phase phase;
-            private double resourcesGiven;
+            private ResourceAmount resourcesGiven;
 
             public bool IsDone => phase == Phase.Completed;
 
@@ -83,10 +84,9 @@ namespace Bearded.TD.Game.Directors
 
             private void updateResources()
             {
-                var resourcesPerSecond = script.ResourcesAwardedBySpawnPhase / script.SpawnDuration;
                 var spawnTimeElapsed = game.Time - script.SpawnStart;
-                var expectedResourcesGiven = Math.Clamp(
-                    spawnTimeElapsed * resourcesPerSecond, 0, script.ResourcesAwardedBySpawnPhase);
+                var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
+                var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.DiscretizedPercentage(percentageTimeElapsed);
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
                 script.TargetFaction.Resources.ProvideOneTimeResource(expectedResourcesGiven - resourcesGiven);
                 resourcesGiven = expectedResourcesGiven;

@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Buildings
         private BuildingPlaceholder placeholder;
         private Building building;
 
-        private double resourcesConsumed;
+        private ResourceAmount resourcesConsumed;
         private int healthGiven = 1;
         private int maxHealth = 1;
 
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game.Buildings
             Finished = true;
         }
 
-        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
         {
             if (placeholder != null)
             {

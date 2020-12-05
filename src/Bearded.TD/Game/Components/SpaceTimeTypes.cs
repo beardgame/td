@@ -1,7 +1,12 @@
+using System;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using OpenToolkit.Mathematics;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components
 {
@@ -32,6 +37,14 @@ namespace Bearded.TD.Game.Components
         [ConvertsAttribute]
         public static AttributeConverter<Frequency> FrequencyConverter =
             new AttributeConverter<Frequency>(d => new Frequency(d), f => f.NumericValue);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<ResourceAmount> ResourceAmountConverter =
+            new AttributeConverter<ResourceAmount>(n => new ResourceAmount(MathExtensions.RoundedToInt(n)), n => n.NumericValue);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<ResourceRate> ResourceRateConverter =
+            new AttributeConverter<ResourceRate>(n => new ResourceRate(MathExtensions.RoundedToInt(n)), n => n.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Speed> SpeedConverter =

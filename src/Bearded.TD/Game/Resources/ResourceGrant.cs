@@ -1,16 +1,16 @@
 ﻿namespace Bearded.TD.Game.Resources
 {
-    struct ResourceGrant
+    readonly struct ResourceGrant
     {
-        public double Amount { get; }
+        public ResourceAmount Amount { get; }
         public bool ReachedCapacity { get; }
 
-        public ResourceGrant(double amount, bool reachedCapacity)
+        public ResourceGrant(ResourceAmount amount, bool reachedCapacity)
         {
             Amount = amount;
             ReachedCapacity = reachedCapacity;
         }
 
-        public static readonly ResourceGrant Infinite = new ResourceGrant(double.PositiveInfinity, true);
+        public static readonly ResourceGrant Infinite = new(long.MaxValue.Resources(), true);
     }
 }

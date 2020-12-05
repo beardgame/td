@@ -12,9 +12,9 @@ namespace Bearded.TD.UI.Controls
     {
         public event VoidEventHandler? ActionsChanged;
 
-        private readonly InteractionHandler[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
+        private readonly InteractionHandler?[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
         private readonly (string, string)[] labels = new (string, string)[Constants.Game.GameUI.ActionBarSize];
-        private GameInstance game;
+        private GameInstance game = null!;
         private int lastFilledIndex = -1;
 
         public void Initialize(GameInstance game)
@@ -66,7 +66,7 @@ namespace Bearded.TD.UI.Controls
 
             lastFilledIndex++;
             handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-            labels[lastFilledIndex] = (blueprint.Name, $"{blueprint.ResourceCost}");
+            labels[lastFilledIndex] = (blueprint.Name, $"{blueprint.ResourceCost.NumericValue}");
         }
     }
 }

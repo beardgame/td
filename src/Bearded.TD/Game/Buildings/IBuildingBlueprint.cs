@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 
@@ -9,7 +10,7 @@ namespace Bearded.TD.Game.Buildings
     {
         string Name { get; }
         FootprintGroup FootprintGroup { get; }
-        int ResourceCost { get; }
+        ResourceAmount ResourceCost { get; }
         IReadOnlyList<UpgradeTag> Tags { get; }
 
         IEnumerable<IComponent<Building>> GetComponentsForBuilding();

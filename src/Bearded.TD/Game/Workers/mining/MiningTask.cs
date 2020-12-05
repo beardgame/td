@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Tiles;
@@ -6,6 +7,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Workers
 {
@@ -15,15 +17,16 @@ namespace Bearded.TD.Game.Workers
         public string Name => "Mine a tile";
         public IEnumerable<Tile> Tiles => tile.Yield();
         public Maybe<ISelectable> Selectable => Maybe.Just<ISelectable>(miningTaskPlaceholder);
-        public bool CanAbort => miningProgress == 0;
+        public bool CanAbort => miningProgress == ResourceAmount.Zero;
         public bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
 
         private readonly MiningTaskPlaceholder miningTaskPlaceholder;
         private readonly Tile tile;
         private readonly GeometryLayer geometry;
         private readonly TileDrawInfo originalDrawInfo;
+        private readonly Random random = new();
 
-        private double miningProgress;
+        private ResourceAmount miningProgress;
 
         public double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
 
@@ -39,9 +42,10 @@ namespace Bearded.TD.Game.Workers
             originalDrawInfo = geometry[tile].DrawInfo;
         }
 
-        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS)
+        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
         {
-            miningProgress += ratePerS * elapsedTime.NumericValue;
+            // TODO: mining progress shouldn't be measured in resources
+            miningProgress += random.Discretise((float) (ratePerS.NumericValue * elapsedTime.NumericValue)).Resources();
             if (Finished)
             {
                 var previousGeo = geometry[tile].Geometry;

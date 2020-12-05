@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Workers
         bool CanAbort { get; }
         bool Finished { get; }
 
-        void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, double ratePerS);
+        void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS);
         void OnAbort();
     }
 }

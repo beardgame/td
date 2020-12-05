@@ -1,4 +1,5 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -61,14 +62,14 @@ namespace Bearded.TD
 
             public static class Worker
             {
-                public const double WorkerSpeed = 15;
-
-                public const double TotalMiningProgressRequired = 8 * WorkerSpeed;
+                public static readonly ResourceRate WorkerSpeed = 15.ResourcesPerSecond();
+                public static readonly ResourceAmount TotalMiningProgressRequired =
+                    WorkerSpeed.DiscretizedAmountInTime(8.S());
             }
 
             public static class Resources
             {
-                public const long InitialResources = 0;
+                public static readonly ResourceAmount InitialResources = 0.Resources();
                 public const double ResourcesOnKillFactor = 0;
             }
 

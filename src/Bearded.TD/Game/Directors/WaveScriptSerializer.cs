@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Directors
         private Id<Faction> targetFaction;
         private double spawnStart;
         private double spawnDuration;
-        private double resourcesAwardedBySpawnPhase;
+        private long resourcesAwardedBySpawnPhase;
 
         public WaveScriptSerializer() {}
 
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game.Directors
             targetFaction = waveScript.TargetFaction.Id;
             spawnStart = waveScript.SpawnStart.NumericValue;
             spawnDuration = waveScript.SpawnDuration.NumericValue;
-            resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase;
+            resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase.NumericValue;
         }
 
         public WaveScript ToWaveScript(GameState game)
@@ -31,7 +32,7 @@ namespace Bearded.TD.Game.Directors
                 game.FactionFor(targetFaction),
                 new Instant(spawnStart),
                 new TimeSpan(spawnDuration),
-                resourcesAwardedBySpawnPhase);
+                new ResourceAmount(resourcesAwardedBySpawnPhase));
         }
 
         public void Serialize(INetBufferStream stream)

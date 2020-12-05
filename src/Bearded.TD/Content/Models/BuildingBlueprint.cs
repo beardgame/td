@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Game.World;
 using Bearded.Utilities.Linq;
@@ -14,13 +15,13 @@ namespace Bearded.TD.Content.Models
         public ModAwareId Id { get; }
         public string Name { get; }
         public FootprintGroup FootprintGroup { get; }
-        public int ResourceCost { get; }
+        public ResourceAmount ResourceCost { get; }
 
         public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
         public BuildingBlueprint(ModAwareId id, string name, FootprintGroup footprintGroup,
-            int resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
+            ResourceAmount resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;

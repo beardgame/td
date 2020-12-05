@@ -155,7 +155,7 @@ namespace Bearded.TD.UI.Controls
                 this.myFaction = myFaction;
                 this.building = building;
                 this.upgrade = upgrade;
-                this.WithDefaultStyle(new ButtonLabelWithCost { Name = upgrade.Name, Cost = $"{upgrade.Cost}" });
+                this.WithDefaultStyle(new ButtonLabelWithCost { Name = upgrade.Name, Cost = $"{upgrade.Cost.NumericValue}" });
                 progressBar = new BackgroundBox { Color = Color.White * 0.25f };
                 Add(progressBar);
             }

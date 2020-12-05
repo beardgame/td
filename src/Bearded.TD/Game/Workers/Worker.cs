@@ -2,6 +2,7 @@
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Factions;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Workers
 
         public IFactioned HubOwner { get; }
         public Faction Faction { get; private set; }
-        public double WorkerSpeed => Constants.Game.Worker.WorkerSpeed;
+        public ResourceRate WorkerSpeed => Constants.Game.Worker.WorkerSpeed;
 
         public Position2 Position => tileWalker?.Position ?? Position2.Zero;
         public Tile CurrentTile => tileWalker?.CurrentTile ?? Level.GetTile(Position2.Zero);

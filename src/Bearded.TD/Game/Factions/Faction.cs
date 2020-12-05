@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Factions
     {
         private readonly Color? color;
         private readonly ResourceManager resources;
-        private readonly TechnologyManager technology;
+        private readonly TechnologyManager? technology;
         private readonly WorkerNetwork workerNetwork;
         private readonly WorkerManager workers;
 
@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Factions
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
         public ResourceManager Resources => resources ?? Parent?.Resources;
-        public TechnologyManager Technology => technology ?? Parent?.Technology;
+        public TechnologyManager? Technology => technology ?? Parent?.Technology;
         public WorkerNetwork WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
         public WorkerManager Workers => workers ?? Parent?.Workers;
 

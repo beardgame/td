@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Game.Upgrades;
 
 namespace Bearded.TD.Content.Models
@@ -9,10 +10,10 @@ namespace Bearded.TD.Content.Models
     {
         public ModAwareId Id { get; }
         public string Name { get; }
-        public double Cost { get; }
+        public ResourceAmount Cost { get; }
         public IEnumerable<IUpgradeEffect> Effects { get; }
 
-        public UpgradeBlueprint(ModAwareId id, string name, double cost, IEnumerable<IUpgradeEffect> effects)
+        public UpgradeBlueprint(ModAwareId id, string name, ResourceAmount cost, IEnumerable<IUpgradeEffect> effects)
         {
             Id = id;
             Name = name;

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game.Components;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
@@ -102,6 +103,8 @@ namespace Bearded.TD.Content.Mods
                     new SpaceTime1Converter<Energy>(d => new Energy(d)),
                     new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
                     new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
+                    new DiscreteSpaceTime1Converter<ResourceAmount>(n => n.Resources()),
+                    new DiscreteSpaceTime1Converter<ResourceRate>(n => n.ResourcesPerSecond()),
                     new ColorConverter(),
                     BehaviorConverterFactory.ForBuildingComponents(),
                     BehaviorConverterFactory.ForBaseComponents(),

@@ -81,7 +81,7 @@ namespace Bearded.TD.UI.Controls
 
         private void updateLabels()
         {
-            resourcesLabel.Text = $"{model.FactionResources} {model.FactionResourceIncome:+#;-#;0}";
+            resourcesLabel.Text = $"{model.FactionResources.NumericValue} {model.FactionResourceIncome.NumericValue:+#;-#;0}";
             techPointsLabel.Text = $"{model.FactionTechPoints} smarts";
         }
 

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Units;
+using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Resources;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -9,19 +11,18 @@ namespace Bearded.TD.Game.Resources
 {
     sealed class ResourceManager : IListener<EnemyKilled>
     {
+        private readonly Random random = new();
+
         private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
-        private double totalResourcesRequested;
-        private double totalResourcesProvided;
+        private ResourceRate totalResourcesRequested;
+        private ResourceRate totalResourcesProvided;
 
-        private double currentResources;
-        private double currentIncome;
-
-        public long CurrentResources => (long) currentResources;
-        public int CurrentIncome => (int) currentIncome;
+        public ResourceAmount CurrentResources { get; private set; }
+        public ResourceRate CurrentIncome { get; private set; }
 
         public ResourceManager(GlobalGameEvents events)
         {
-            currentResources = InitialResources;
+            CurrentResources = InitialResources;
             events.Subscribe(this);
         }
 
@@ -29,21 +30,21 @@ namespace Bearded.TD.Game.Resources
         {
             if (@event.KillingFaction.Resources == this)
             {
-                ProvideOneTimeResource(ResourcesOnKillFactor * @event.Unit.Value);
+                ProvideOneTimeResource(new ResourceAmount((long) (ResourcesOnKillFactor * @event.Unit.Value)));
             }
         }
 
-        public void ProvideOneTimeResource(double amount)
+        public void ProvideOneTimeResource(ResourceAmount amount)
         {
-            currentResources += amount;
+            CurrentResources += amount;
         }
 
-        public void ProvideResourcesOverTime(double ratePerS)
+        public void ProvideResourcesOverTime(ResourceRate ratePerS)
         {
             totalResourcesProvided += ratePerS;
         }
 
-        public void RegisterConsumer(IResourceConsumer consumer, double ratePerS, double maximum)
+        public void RegisterConsumer(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
         {
             requestedResources.Add(new ResourceRequest(consumer, ratePerS, maximum));
             totalResourcesRequested += ratePerS;
@@ -51,10 +52,10 @@ namespace Bearded.TD.Game.Resources
 
         public void DistributeResources(TimeSpan elapsedTime)
         {
-            currentResources += totalResourcesProvided * elapsedTime.NumericValue;
-            var resourceOut = totalResourcesRequested * elapsedTime.NumericValue;
+            CurrentResources += discretizedRate(totalResourcesProvided, elapsedTime);
+            var resourceOut = discretizedRate(totalResourcesRequested, elapsedTime);
 
-            if (resourceOut <= currentResources)
+            if (resourceOut <= CurrentResources)
             {
                 distributeAtMaxRates(elapsedTime);
             }
@@ -70,64 +71,74 @@ namespace Bearded.TD.Game.Resources
         {
             foreach (var request in requestedResources)
             {
-                var grantedResources = request.RatePerS * elapsedTime.NumericValue;
+                var grantedResources = discretizedRate(request.RatePerS, elapsedTime);
                 request.TryGrant(grantedResources, out var consumedResources);
-                currentResources -= consumedResources;
+                CurrentResources -= consumedResources;
             }
         }
 
-        private void distributedAtLimitedRates(TimeSpan elapsedTime, double resourceOut)
+        private void distributedAtLimitedRates(TimeSpan elapsedTime, ResourceAmount resourceOut)
         {
-            var sortedRequests = requestedResources.OrderBy(consumer => consumer.Maximum / consumer.RatePerS);
-            var resourceRatio = currentResources / resourceOut;
+            var sortedRequests = requestedResources.OrderBy(
+                consumer => consumer.Maximum.NumericValue / consumer.RatePerS.NumericValue);
+            var resourceRatio = (double) CurrentResources.NumericValue / resourceOut.NumericValue;
 
             foreach (var request in sortedRequests)
             {
-                var grantedResources = request.RatePerS * resourceRatio * elapsedTime.NumericValue;
+                var grantedResources = discretizedRate(request.RatePerS, elapsedTime, resourceRatio);
 
                 var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
-                currentResources -= consumedResources;
+                CurrentResources -= consumedResources;
+                resourceOut -= consumedResources;
 
                 if (!grantFullyConsumed)
                 {
-                    resourceOut -= consumedResources;
-                    resourceRatio = currentResources / resourceOut;
+                    resourceRatio = (double) CurrentResources.NumericValue / resourceOut.NumericValue;
                 }
             }
         }
 
-        private void resetForFrame()
+        private ResourceAmount discretizedRate(ResourceRate rate, TimeSpan time) => discretizedRate(rate, time, 1);
+
+        private ResourceAmount discretizedRate(ResourceRate rate, TimeSpan time, double ratio)
         {
-            currentIncome = totalResourcesProvided - totalResourcesRequested;
-            requestedResources.Clear();
-            totalResourcesRequested = 0;
-            totalResourcesProvided = 0;
+            // TODO: get rid of the random.Discretise. It is only there because we're dealing with resources of time
+            // still, but that will go away as we make resources completely time-independent.
+            return random.Discretise((float) (ratio * rate.NumericValue * time.NumericValue)).Resources();
         }
 
-        private struct ResourceRequest
+        private void resetForFrame()
         {
-            public IResourceConsumer Consumer { get; }
-            public double RatePerS { get; }
-            public double Maximum { get; }
+            CurrentIncome = totalResourcesProvided - totalResourcesRequested;
+            requestedResources.Clear();
+            totalResourcesRequested = ResourceRate.Zero;
+            totalResourcesProvided = ResourceRate.Zero;;
+        }
 
-            public ResourceRequest(IResourceConsumer consumer, double ratePerS, double maximum)
+        private readonly struct ResourceRequest
+        {
+            private readonly IResourceConsumer consumer;
+            public ResourceRate RatePerS { get; }
+            public ResourceAmount Maximum { get; }
+
+            public ResourceRequest(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
             {
-                Consumer = consumer;
+                this.consumer = consumer;
                 RatePerS = ratePerS;
                 Maximum = maximum;
             }
 
-            public bool TryGrant(double resourcesAvailable, out double grantedResources)
+            public bool TryGrant(ResourceAmount resourcesAvailable, out ResourceAmount grantedResources)
             {
                 if (resourcesAvailable >= Maximum)
                 {
-                    Consumer.ConsumeResources(new ResourceGrant(Maximum, true));
+                    consumer.ConsumeResources(new ResourceGrant(Maximum, true));
                     grantedResources = Maximum;
                     return false;
                 }
                 else
                 {
-                    Consumer.ConsumeResources(new ResourceGrant(resourcesAvailable, false));
+                    consumer.ConsumeResources(new ResourceGrant(resourcesAvailable, false));
                     grantedResources = resourcesAvailable;
                     return true;
                 }

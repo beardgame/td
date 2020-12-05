@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Commands.Debug;
+using Bearded.TD.Game.Resources;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
 // ReSharper disable UnusedMember.Local
@@ -44,7 +45,7 @@ namespace Bearded.TD.Game.Debug
                 return;
             }
 
-            if (!double.TryParse(p.Args[0], out var amount))
+            if (!long.TryParse(p.Args[0], out var amount))
             {
                 logger.Warning?.Log($"Invalid amount: {amount}");
                 return;
@@ -61,7 +62,7 @@ namespace Bearded.TD.Game.Debug
                 logger.Warning?.Log($"Cannot add resources: player is not part of a faction with resource management.");
             }
 
-            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount));
+            gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Resources()));
         });
 
         [Command("game.techpoints")]
