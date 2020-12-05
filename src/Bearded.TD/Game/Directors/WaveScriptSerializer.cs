@@ -10,8 +10,8 @@ namespace Bearded.TD.Game.Directors
         private Id<WaveScript> id;
         private Id<Faction> targetFaction;
         private double spawnStart;
-        private double spawnEnd;
-        private double resourcesAwardedOverTime;
+        private double spawnDuration;
+        private double resourcesAwardedBySpawnPhase;
 
         public WaveScriptSerializer() {}
 
@@ -27,8 +27,8 @@ namespace Bearded.TD.Game.Directors
                 id,
                 game.FactionFor(targetFaction),
                 new Instant(spawnStart),
-                new Instant(spawnEnd),
-                resourcesAwardedOverTime);
+                new TimeSpan(spawnDuration),
+                resourcesAwardedBySpawnPhase);
         }
 
         public void Serialize(INetBufferStream stream)
@@ -36,8 +36,8 @@ namespace Bearded.TD.Game.Directors
             stream.Serialize(ref id);
             stream.Serialize(ref targetFaction);
             stream.Serialize(ref spawnStart);
-            stream.Serialize(ref spawnEnd);
-            stream.Serialize(ref resourcesAwardedOverTime);
+            stream.Serialize(ref spawnDuration);
+            stream.Serialize(ref resourcesAwardedBySpawnPhase);
         }
     }
 }

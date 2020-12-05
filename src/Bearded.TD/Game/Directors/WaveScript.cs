@@ -6,27 +6,26 @@ namespace Bearded.TD.Game.Directors
 {
     sealed record WaveScript
     {
-        // TODO: figure out why the compiler gets so upset when making this an Id<WaveScript>
         public Id<WaveScript> Id { get; }
         public Faction TargetFaction { get; }
         public Instant SpawnStart { get; }
-        public Instant SpawnEnd { get; }
-        public double ResourcesAwardedOverTime { get; }
+        public TimeSpan SpawnDuration { get; }
+        public double ResourcesAwardedBySpawnPhase { get; }
 
-        public TimeSpan SpawnDuration => SpawnEnd - SpawnStart;
+        public Instant SpawnEnd => SpawnStart + SpawnDuration;
 
         public WaveScript(
             Id<WaveScript> id,
             Faction targetFaction,
             Instant spawnStart,
-            Instant spawnEnd,
-            double resourcesAwardedOverTime)
+            TimeSpan spawnDuration,
+            double resourcesAwardedBySpawnPhase)
         {
             Id = id;
             TargetFaction = targetFaction;
             SpawnStart = spawnStart;
-            SpawnEnd = spawnEnd;
-            ResourcesAwardedOverTime = resourcesAwardedOverTime;
+            SpawnDuration = spawnDuration;
+            ResourcesAwardedBySpawnPhase = resourcesAwardedBySpawnPhase;
         }
     }
 }

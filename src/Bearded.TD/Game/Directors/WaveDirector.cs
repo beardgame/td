@@ -83,10 +83,10 @@ namespace Bearded.TD.Game.Directors
 
             private void updateResources()
             {
-                var resourcesPerSecond = script.ResourcesAwardedOverTime / script.SpawnDuration;
+                var resourcesPerSecond = script.ResourcesAwardedBySpawnPhase / script.SpawnDuration;
                 var spawnTimeElapsed = game.Time - script.SpawnStart;
                 var expectedResourcesGiven = Math.Clamp(
-                    spawnTimeElapsed * resourcesPerSecond, 0, script.ResourcesAwardedOverTime);
+                    spawnTimeElapsed * resourcesPerSecond, 0, script.ResourcesAwardedBySpawnPhase);
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
                 script.TargetFaction.Resources.ProvideOneTimeResource(expectedResourcesGiven - resourcesGiven);
                 resourcesGiven = expectedResourcesGiven;
