@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Events;
 using Bearded.TD.Game.Units;
-using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Resources;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -11,11 +9,9 @@ namespace Bearded.TD.Game.Resources
 {
     sealed class ResourceManager : IListener<EnemyKilled>
     {
-        private readonly Random random = new();
-
         private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
         private ResourceRate totalResourcesRequested;
-        private ResourceRate totalResourcesProvided;
+        private ResourceRate  totalResourcesProvided;
 
         public ResourceAmount CurrentResources { get; private set; }
         public ResourceRate CurrentIncome { get; private set; }
@@ -30,7 +26,7 @@ namespace Bearded.TD.Game.Resources
         {
             if (@event.KillingFaction.Resources == this)
             {
-                ProvideOneTimeResource(new ResourceAmount((long) (ResourcesOnKillFactor * @event.Unit.Value)));
+                ProvideOneTimeResource(new ResourceAmount(ResourcesOnKillFactor * @event.Unit.Value));
             }
         }
 
@@ -52,8 +48,8 @@ namespace Bearded.TD.Game.Resources
 
         public void DistributeResources(TimeSpan elapsedTime)
         {
-            CurrentResources += discretizedRate(totalResourcesProvided, elapsedTime);
-            var resourceOut = discretizedRate(totalResourcesRequested, elapsedTime);
+            CurrentResources += totalResourcesProvided * elapsedTime;
+            var resourceOut = totalResourcesRequested * elapsedTime;
 
             if (resourceOut <= CurrentResources)
             {
@@ -71,7 +67,7 @@ namespace Bearded.TD.Game.Resources
         {
             foreach (var request in requestedResources)
             {
-                var grantedResources = discretizedRate(request.RatePerS, elapsedTime);
+                var grantedResources = request.RatePerS * elapsedTime;
                 request.TryGrant(grantedResources, out var consumedResources);
                 CurrentResources -= consumedResources;
             }
@@ -81,11 +77,11 @@ namespace Bearded.TD.Game.Resources
         {
             var sortedRequests = requestedResources.OrderBy(
                 consumer => consumer.Maximum.NumericValue / consumer.RatePerS.NumericValue);
-            var resourceRatio = (double) CurrentResources.NumericValue / resourceOut.NumericValue;
+            var resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
 
             foreach (var request in sortedRequests)
             {
-                var grantedResources = discretizedRate(request.RatePerS, elapsedTime, resourceRatio);
+                var grantedResources = resourceRatio * request.RatePerS * elapsedTime;
 
                 var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
                 CurrentResources -= consumedResources;
@@ -93,18 +89,9 @@ namespace Bearded.TD.Game.Resources
 
                 if (!grantFullyConsumed)
                 {
-                    resourceRatio = (double) CurrentResources.NumericValue / resourceOut.NumericValue;
+                    resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
                 }
             }
-        }
-
-        private ResourceAmount discretizedRate(ResourceRate rate, TimeSpan time) => discretizedRate(rate, time, 1);
-
-        private ResourceAmount discretizedRate(ResourceRate rate, TimeSpan time, double ratio)
-        {
-            // TODO: get rid of the random.Discretise. It is only there because we're dealing with resources of time
-            // still, but that will go away as we make resources completely time-independent.
-            return random.Discretise((float) (ratio * rate.NumericValue * time.NumericValue)).Resources();
         }
 
         private void resetForFrame()

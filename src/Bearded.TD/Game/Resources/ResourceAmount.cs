@@ -1,23 +1,23 @@
 using System;
 using Bearded.TD.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Resources
 {
-    readonly struct ResourceAmount : IDiscreteMeasure1, IEquatable<ResourceAmount>
+    readonly struct ResourceAmount : IMeasure1, IEquatable<ResourceAmount>
     {
         public static ResourceAmount Zero { get; } = new(0);
 
-        public long NumericValue { get; }
+        public double NumericValue { get; }
 
-        public ResourceAmount(long numericValue)
+        public long DisplayValue => (long) NumericValue;
+
+        public ResourceAmount(double numericValue)
         {
             NumericValue = numericValue;
         }
 
-        // NB: this multiplication always rounds down.
-        public ResourceAmount DiscretizedPercentage(double factor) => new((long) (factor * NumericValue));
-
-        public bool Equals(ResourceAmount other) => NumericValue == other.NumericValue;
+        public bool Equals(ResourceAmount other) => NumericValue.Equals(other.NumericValue);
 
         public override bool Equals(object? obj) => obj is ResourceAmount other && Equals(other);
 
@@ -45,17 +45,22 @@ namespace Bearded.TD.Game.Resources
         public static ResourceAmount operator -(ResourceAmount left, ResourceAmount right) =>
             new(left.NumericValue - right.NumericValue);
 
-        public static ResourceAmount operator *(long scalar, ResourceAmount amount) =>
+        public static ResourceAmount operator *(double scalar, ResourceAmount amount) =>
             new(scalar * amount.NumericValue);
 
+        public static ResourceAmount operator /(ResourceAmount amount, double scalar) =>
+            new(amount.NumericValue / scalar);
+
         public static double operator /(ResourceAmount left, ResourceAmount right) =>
-            (double) left.NumericValue / right.NumericValue;
+            left.NumericValue / right.NumericValue;
+
+        public static ResourceRate operator /(ResourceAmount amount, TimeSpan time) =>
+            new(amount.NumericValue / time.NumericValue);
     }
 
     static class ResourceAmountExtensions
     {
-        public static ResourceAmount Resources(this long amount) => new(amount);
-
+        public static ResourceAmount Resources(this double amount) => new(amount);
         public static ResourceAmount Resources(this int amount) => new(amount);
     }
 }

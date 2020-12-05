@@ -1,11 +1,8 @@
-using System;
 using Bearded.TD.Game.Resources;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using OpenToolkit.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Components
@@ -14,52 +11,50 @@ namespace Bearded.TD.Game.Components
     {
         [ConvertsAttribute]
         public static AttributeConverter<Angle> AngleConverter =
-            new AttributeConverter<Angle>(
-                d => Angle.FromDegrees((float) d), a => a.Degrees);
+            new(d => Angle.FromDegrees((float) d), a => a.Degrees);
 
         [ConvertsAttribute]
         public static AttributeConverter<AngularAcceleration> AngularAccelerationConverter =
-            new AttributeConverter<AngularAcceleration>(
-                d => AngularAcceleration.FromDegrees((float) d), a => a.AngleValue.Degrees);
+            new(d => AngularAcceleration.FromDegrees((float) d), a => a.AngleValue.Degrees);
 
         [ConvertsAttribute]
         public static AttributeConverter<Energy> EnergyConverter =
-            new AttributeConverter<Energy>(d => new Energy(d), e => e.NumericValue);
+            new(d => new Energy(d), e => e.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<EnergyConsumptionRate> EnergyConsumptionRateConverter =
-            new AttributeConverter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d), e => e.NumericValue);
+            new(d => new EnergyConsumptionRate(d), e => e.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<FlowRate> FlowRateConverter =
-            new AttributeConverter<FlowRate>(d => new FlowRate((float) d), r => r.NumericValue);
+            new(d => new FlowRate((float) d), r => r.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Frequency> FrequencyConverter =
-            new AttributeConverter<Frequency>(d => new Frequency(d), f => f.NumericValue);
+            new(d => new Frequency(d), f => f.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<ResourceAmount> ResourceAmountConverter =
-            new AttributeConverter<ResourceAmount>(n => new ResourceAmount(MathExtensions.RoundedToInt(n)), n => n.NumericValue);
+            new(d => new ResourceAmount(d), r => r.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<ResourceRate> ResourceRateConverter =
-            new AttributeConverter<ResourceRate>(n => new ResourceRate(MathExtensions.RoundedToInt(n)), n => n.NumericValue);
+            new(d => new ResourceRate(d), r => r.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Speed> SpeedConverter =
-            new AttributeConverter<Speed>(d => new Speed((float) d), s => s.NumericValue);
+            new(d => new Speed((float) d), s => s.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<TimeSpan> TimeSpanConverter =
-            new AttributeConverter<TimeSpan>(d => new TimeSpan(d), t => t.NumericValue);
+            new(d => new TimeSpan(d), t => t.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Unit> UnitConverter =
-            new AttributeConverter<Unit>(d => new Unit((float) d), u => u.NumericValue);
+            new(d => new Unit((float) d), u => u.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Volume> VolumeConverter =
-            new AttributeConverter<Volume>(d => new Volume((float) d), v => v.NumericValue);
+            new(d => new Volume((float) d), v => v.NumericValue);
     }
 }

@@ -24,7 +24,6 @@ namespace Bearded.TD.Game.Workers
         private readonly Tile tile;
         private readonly GeometryLayer geometry;
         private readonly TileDrawInfo originalDrawInfo;
-        private readonly Random random = new();
 
         private ResourceAmount miningProgress;
 
@@ -45,7 +44,7 @@ namespace Bearded.TD.Game.Workers
         public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
         {
             // TODO: mining progress shouldn't be measured in resources
-            miningProgress += random.Discretise((float) (ratePerS.NumericValue * elapsedTime.NumericValue)).Resources();
+            miningProgress += ratePerS * elapsedTime;
             if (Finished)
             {
                 var previousGeo = geometry[tile].Geometry;

@@ -86,7 +86,7 @@ namespace Bearded.TD.Game.Directors
             {
                 var spawnTimeElapsed = game.Time - script.SpawnStart;
                 var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
-                var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.DiscretizedPercentage(percentageTimeElapsed);
+                var expectedResourcesGiven = percentageTimeElapsed * script.ResourcesAwardedBySpawnPhase;
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
                 script.TargetFaction.Resources.ProvideOneTimeResource(expectedResourcesGiven - resourcesGiven);
                 resourcesGiven = expectedResourcesGiven;

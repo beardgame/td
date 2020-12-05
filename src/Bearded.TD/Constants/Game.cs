@@ -63,8 +63,7 @@ namespace Bearded.TD
             public static class Worker
             {
                 public static readonly ResourceRate WorkerSpeed = 15.ResourcesPerSecond();
-                public static readonly ResourceAmount TotalMiningProgressRequired =
-                    WorkerSpeed.DiscretizedAmountInTime(8.S());
+                public static readonly ResourceAmount TotalMiningProgressRequired = WorkerSpeed * 8.S();
             }
 
             public static class Resources

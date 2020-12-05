@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Commands.Debug
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
-            private long amount;
+            private double amount;
 
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }

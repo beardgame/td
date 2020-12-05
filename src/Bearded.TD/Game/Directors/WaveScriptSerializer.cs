@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Directors
         private Id<Faction> targetFaction;
         private double spawnStart;
         private double spawnDuration;
-        private long resourcesAwardedBySpawnPhase;
+        private double resourcesAwardedBySpawnPhase;
 
         public WaveScriptSerializer() {}
 

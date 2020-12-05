@@ -11,6 +11,6 @@
             ReachedCapacity = reachedCapacity;
         }
 
-        public static readonly ResourceGrant Infinite = new(long.MaxValue.Resources(), true);
+        public static readonly ResourceGrant Infinite = new(double.PositiveInfinity.Resources(), true);
     }
 }
