@@ -4,10 +4,10 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Directors
 {
-    readonly struct WaveScript
+    sealed record WaveScript
     {
         // TODO: figure out why the compiler gets so upset when making this an Id<WaveScript>
-        public Id<int> Id { get; }
+        public Id<WaveScript> Id { get; }
         public Faction TargetFaction { get; }
         public Instant SpawnStart { get; }
         public Instant SpawnEnd { get; }
@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Directors
         public TimeSpan SpawnDuration => SpawnEnd - SpawnStart;
 
         public WaveScript(
-            Id<int> id,
+            Id<WaveScript> id,
             Faction targetFaction,
             Instant spawnStart,
             Instant spawnEnd,

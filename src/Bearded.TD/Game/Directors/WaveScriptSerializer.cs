@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Directors
 {
     sealed class WaveScriptSerializer
     {
-        private Id<int> id;
+        private Id<WaveScript> id;
         private Id<Faction> targetFaction;
         private double spawnStart;
         private double spawnEnd;
