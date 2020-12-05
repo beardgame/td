@@ -14,7 +14,7 @@ namespace Bearded.TD.Generators.TechEffects
     [UsedImplicitly]
     public sealed class TechEffectGenerator : ISourceGenerator
     {
-        public void Initialize(InitializationContext context)
+        public void Initialize(GeneratorInitializationContext context)
         {
 // #if DEBUG
 //             if (!Debugger.IsAttached)
@@ -26,7 +26,7 @@ namespace Bearded.TD.Generators.TechEffects
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
-        public void Execute(SourceGeneratorContext context)
+        public void Execute(GeneratorExecutionContext context)
         {
             try
             {
