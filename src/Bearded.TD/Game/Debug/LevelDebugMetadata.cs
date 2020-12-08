@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.GameState.World
+namespace Bearded.TD.Game.Debug
 {
     sealed class LevelDebugMetadata
     {
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.GameState.World
             segments.Add(new DebugLineSegment(from, to, color));
         }
 
-        public struct DebugLineSegment
+        public readonly struct DebugLineSegment
         {
             public Position2 From { get; }
             public Position2 To { get; }

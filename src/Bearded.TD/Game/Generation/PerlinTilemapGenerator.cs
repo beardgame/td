@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using amulware.Graphics;
+using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;

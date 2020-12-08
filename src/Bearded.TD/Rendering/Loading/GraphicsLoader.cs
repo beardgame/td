@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using amulware.Graphics;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content;

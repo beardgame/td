@@ -1,7 +1,6 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game;
 using Bearded.TD.Game.GameState;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Tiles;

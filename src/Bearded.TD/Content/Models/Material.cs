@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game;
 using Bearded.TD.Game.GameState;
 
 namespace Bearded.TD.Content.Models

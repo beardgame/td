@@ -1,5 +1,4 @@
-﻿using System;
-using amulware.Graphics;
+﻿using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using Bearded.Utilities;

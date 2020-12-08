@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game;
 using Bearded.TD.Game.GameState;
 using Bearded.TD.Game.GameState.Rules;
 using Bearded.Utilities;
