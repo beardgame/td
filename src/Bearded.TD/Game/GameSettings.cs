@@ -38,7 +38,7 @@ namespace Bearded.TD.Game
             {
                 // Initialize default values
                 Seed = StaticRandom.Int();
-                LevelSize = Constants.Game.World.Radius;
+                LevelSize = 32;
                 WorkerDistributionMethod = WorkerDistributionMethod.Neutral;
                 LevelGenerationMethod = LevelGenerationMethod.Default;
             }

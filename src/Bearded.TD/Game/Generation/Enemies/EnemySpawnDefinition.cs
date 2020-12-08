@@ -1,33 +1,38 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
     sealed class EnemySpawnDefinition
     {
-        private readonly double baseProbability;
-        private readonly IEnumerable<IEnemySpawnFactor> spawnFactors;
-
         public ModAwareId BlueprintId { get; }
+        public double Probability { get; }
 
-        public EnemySpawnDefinition(ModAwareId blueprintId, double baseProbability)
-            : this(blueprintId, baseProbability, Enumerable.Empty<IEnemySpawnFactor>()) { }
-
-        public EnemySpawnDefinition(
-            ModAwareId blueprintId, double baseProbability, IEnumerable<IEnemySpawnFactor> spawnFactors)
+        private EnemySpawnDefinition(ModAwareId blueprintId, double probability)
         {
             BlueprintId = blueprintId;
-            this.baseProbability = baseProbability;
-            this.spawnFactors = spawnFactors;
+            Probability = probability;
         }
 
-        public double GetProbability(GameInstance game)
+        public static IReadOnlyList<EnemySpawnDefinition> All
         {
-            var probability = baseProbability;
-            spawnFactors.ForEach(factor => factor.Apply(ref probability, game));
-            return probability;
+            get
+            {
+                return new[]
+                {
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard01"), 8),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard02"), 8),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard03"), 8),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast01"), 2),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast02"), 2),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast03"), 2),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong01"), 1),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong02"), 1),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong03"), 1),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank01"), .125),
+                    new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank02"), .125),
+                };
+            }
         }
     }
 }

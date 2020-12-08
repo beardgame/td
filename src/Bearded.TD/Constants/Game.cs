@@ -12,8 +12,6 @@ namespace Bearded.TD
         {
             public static class World
             {
-                public const int Radius = 32;
-
                 private const float sqrtOfThree = 1.73205080757f;
 
                 public const float HexagonWidth = 1; // distance between hexagon centers == min diameter

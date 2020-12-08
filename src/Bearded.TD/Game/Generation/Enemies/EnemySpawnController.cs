@@ -14,9 +14,10 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Generation.Enemies
 {
-    class EnemySpawnController
+    sealed class EnemySpawnController
     {
         private readonly GameInstance game;
+        private readonly Blueprints blueprints;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
@@ -28,12 +29,13 @@ namespace Bearded.TD.Game.Generation.Enemies
         private double minWaveCost = InitialMinWaveCost;
         private double maxWaveCost = InitialMaxWaveCost;
 
-        public EnemySpawnController(GameInstance game)
+        public EnemySpawnController(GameInstance game, Blueprints blueprints)
         {
             this.game = game;
-            enemies = EnemySpawnDefinitions.BuildSpawnDefinitions();
+            this.blueprints = blueprints;
+            enemies = EnemySpawnDefinition.All;
 
-            game.GameStateInitialized += state =>
+            game.GameStateInitialized += _ =>
             {
                 spawnPoints = Directions
                     .All
@@ -102,13 +104,13 @@ namespace Bearded.TD.Game.Generation.Enemies
             var probabilities = new double[enemies.Count + 1];
             foreach (var (enemy, i) in enemies.Indexed())
             {
-                probabilities[i + 1] = enemy.GetProbability(game) + probabilities[i];
+                probabilities[i + 1] = enemy.Probability + probabilities[i];
             }
             var t = random.NextDouble(probabilities[probabilities.Length - 1]);
             var result = Array.BinarySearch(probabilities, t);
 
             var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-            return game.Blueprints.Units[definition.BlueprintId];
+            return blueprints.Units[definition.BlueprintId];
         }
 
         private void buildWave(int numSpawnPoints, IUnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)

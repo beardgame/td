@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.GameLoop
 
         public GameController(GameInstance game)
         {
-            enemySpawnController = new EnemySpawnController(game);
+            enemySpawnController = new EnemySpawnController(game, game.Blueprints);
         }
 
         public void Update(TimeSpan elapsedTime)
