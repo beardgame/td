@@ -9,7 +9,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Constants.Game.EnemyGeneration;
+using static Bearded.TD.Constants.Game.WaveGeneration;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Generation.Enemies

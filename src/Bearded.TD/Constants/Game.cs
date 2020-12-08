@@ -41,8 +41,23 @@ namespace Bearded.TD
                 public static readonly Color TechPointsColor = Color.Turquoise;
             }
 
-            public static class EnemyGeneration
+            public static class WaveGeneration
             {
+                public static readonly TimeSpan FirstDownTimeDuration = 40.S();
+                public static readonly TimeSpan DownTimeDuration = 20.S();
+
+                public static readonly TimeSpan MaxSpawnTimeDuration = 12.S();
+                public static readonly TimeSpan PreferredTimeBetweenSpawns = 1.S();
+                public static readonly TimeSpan MinTimeBetweenSpawns = 0.1.S();
+
+                public const double FirstWaveValue = 15;
+                public const double WaveValueErrorFactor = 0.1;
+                public const double WaveValueMultiplier = 1.3;
+
+                public static readonly ResourceAmount InitialResources = 240.Resources();
+                public static readonly ResourceAmount FirstWaveResources = 120.Resources();
+                public static readonly double WaveResourcesMultiplier = 1.2;
+
                 public static readonly TimeSpan TimeBeforeFirstWave = 40.S();
                 public static readonly TimeSpan WarningTime = 20.S();
                 public static readonly TimeSpan MinTimeBetweenEnemies = .1.S();

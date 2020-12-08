@@ -4,7 +4,7 @@ using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game.Commands.Directors
+namespace Bearded.TD.Game.Commands.GameLoop
 {
     static class ExecuteWaveScript
     {
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Commands.Directors
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, scriptSerializer.ToWaveScript(game.State));
+                => new Implementation(game, scriptSerializer.ToWaveScript(game));
 
             public void Serialize(INetBufferStream stream)
             {

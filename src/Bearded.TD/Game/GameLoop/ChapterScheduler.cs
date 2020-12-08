@@ -1,4 +1,6 @@
+using Bearded.TD.Game.GameState.Resources;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.Game.WaveGeneration;
 using static Bearded.TD.Game.GameLoop.WaveScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
@@ -10,6 +12,10 @@ namespace Bearded.TD.Game.GameLoop
 
         private bool chapterStarted;
         private int wavesLeftInChapter;
+
+        private bool firstWaveOfChapter;
+        private double nextWaveValue = FirstWaveValue;
+        private ResourceAmount nextWaveResources = FirstWaveResources;
 
         public event VoidEventHandler? ChapterEnded;
 
@@ -35,6 +41,21 @@ namespace Bearded.TD.Game.GameLoop
         {
             State.Satisfies(!chapterStarted);
             wavesLeftInChapter = chapterRequirements.WaveCount;
+            firstWaveOfChapter = true;
+        }
+
+        private void requestWave()
+        {
+            State.Satisfies(wavesLeftInChapter > 0);
+            wavesLeftInChapter--;
+            waveScheduler.StartWave(new WaveRequirements(
+                nextWaveValue,
+                nextWaveResources,
+                firstWaveOfChapter ? FirstDownTimeDuration : DownTimeDuration));
+
+            firstWaveOfChapter = false;
+            nextWaveValue *= WaveValueMultiplier;
+            nextWaveResources *= WaveResourcesMultiplier;
         }
 
         private void endChapter()
@@ -42,13 +63,6 @@ namespace Bearded.TD.Game.GameLoop
             State.Satisfies(chapterStarted);
             chapterStarted = false;
             ChapterEnded?.Invoke();
-        }
-
-        private void requestWave()
-        {
-            State.Satisfies(wavesLeftInChapter > 0);
-            wavesLeftInChapter--;
-            waveScheduler.StartWave(new WaveRequirements());
         }
 
         public readonly struct ChapterRequirements
