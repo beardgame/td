@@ -5,6 +5,7 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.GameState.GameLoop
 {
@@ -15,6 +16,7 @@ namespace Bearded.TD.Game.GameState.GameLoop
 
         public Id<SpawnLocation> Id { get; }
         public Tile Tile { get; }
+        public bool IsAwake { get; private set; }
 
         public SpawnLocation(Id<SpawnLocation> id, Tile tile)
         {
@@ -31,8 +33,14 @@ namespace Bearded.TD.Game.GameState.GameLoop
             Game.Meta.Events.Subscribe(this);
         }
 
+        public void WakeUp()
+        {
+            IsAwake = true;
+        }
+
         public void AssignWave(Id<WaveScript> wave)
         {
+            State.Satisfies(IsAwake);
             assignedWaves.Add(wave);
         }
 
