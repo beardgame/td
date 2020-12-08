@@ -25,6 +25,11 @@ namespace Bearded.TD.Game.GameLoop
             waveScheduler.WaveEnded += onWaveEnded;
         }
 
+        public void OnGameStart()
+        {
+            waveScheduler.OnGameStart();
+        }
+
         private void onWaveEnded()
         {
             if (wavesLeftInChapter > 0)
@@ -40,8 +45,11 @@ namespace Bearded.TD.Game.GameLoop
         public void StartChapter(ChapterRequirements chapterRequirements)
         {
             State.Satisfies(!chapterStarted);
+            chapterStarted = true;
+
             wavesLeftInChapter = chapterRequirements.WaveCount;
             firstWaveOfChapter = true;
+            requestWave();
         }
 
         private void requestWave()

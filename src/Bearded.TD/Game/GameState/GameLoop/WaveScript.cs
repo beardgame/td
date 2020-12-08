@@ -17,6 +17,7 @@ namespace Bearded.TD.Game.GameState.GameLoop
         public ImmutableArray<SpawnLocation> SpawnLocations { get; }
         public int UnitsPerSpawnLocation { get; }
         public IUnitBlueprint UnitBlueprint { get; }
+        public ImmutableArray<Id<EnemyUnit>> SpawnedUnitIds { get; }
 
         public Instant SpawnEnd => SpawnStart + SpawnDuration;
 
@@ -28,7 +29,8 @@ namespace Bearded.TD.Game.GameState.GameLoop
             ResourceAmount resourcesAwardedBySpawnPhase,
             ImmutableArray<SpawnLocation> spawnLocations,
             int unitsPerSpawnLocation,
-            IUnitBlueprint unitBlueprint)
+            IUnitBlueprint unitBlueprint,
+            ImmutableArray<Id<EnemyUnit>> spawnedUnitIds)
         {
             Id = id;
             TargetFaction = targetFaction;
@@ -38,6 +40,7 @@ namespace Bearded.TD.Game.GameState.GameLoop
             SpawnLocations = spawnLocations;
             UnitsPerSpawnLocation = unitsPerSpawnLocation;
             UnitBlueprint = unitBlueprint;
+            SpawnedUnitIds = spawnedUnitIds;
         }
     }
 }

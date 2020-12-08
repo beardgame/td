@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -21,6 +22,7 @@ namespace Bearded.TD.Game.GameLoop
         private Id<SpawnLocation>[] spawnLocations;
         private int unitsPerSpawnLocation;
         private ModAwareId unitBlueprint;
+        private Id<EnemyUnit>[] spawnedUnitIds;
 
         [UsedImplicitly]
         public WaveScriptSerializer() {}
@@ -35,6 +37,7 @@ namespace Bearded.TD.Game.GameLoop
             spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
             unitsPerSpawnLocation = waveScript.UnitsPerSpawnLocation;
             unitBlueprint = waveScript.UnitBlueprint.Id;
+            spawnedUnitIds = waveScript.SpawnedUnitIds.ToArray();
         }
 
         public WaveScript ToWaveScript(GameInstance game)
@@ -47,7 +50,8 @@ namespace Bearded.TD.Game.GameLoop
                 new ResourceAmount(resourcesAwardedBySpawnPhase),
                 spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
                 unitsPerSpawnLocation,
-                game.Blueprints.Units[unitBlueprint]);
+                game.Blueprints.Units[unitBlueprint],
+                spawnedUnitIds.ToImmutableArray());
         }
 
         public void Serialize(INetBufferStream stream)
@@ -64,6 +68,11 @@ namespace Bearded.TD.Game.GameLoop
             }
             stream.Serialize(ref unitsPerSpawnLocation);
             stream.Serialize(ref unitBlueprint);
+            stream.SerializeArrayCount(ref spawnedUnitIds);
+            for (var i = 0; i < spawnedUnitIds.Length; i++)
+            {
+                stream.Serialize(ref spawnedUnitIds[i]);
+            }
         }
     }
 }

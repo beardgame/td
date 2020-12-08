@@ -7,6 +7,7 @@ using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
@@ -28,8 +29,12 @@ namespace Bearded.TD.Game.GameLoop
         public WaveScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher)
         {
             this.game = game;
-            game.State.Meta.Events.Subscribe(this);
             this.commandDispatcher = commandDispatcher;
+        }
+
+        public void OnGameStart()
+        {
+            game.State.Meta.Events.Subscribe(this);
         }
 
         public void HandleEvent(WaveEnded @event)
@@ -70,7 +75,8 @@ namespace Bearded.TD.Game.GameLoop
                 requirements.Resources,
                 spawnLocations,
                 enemiesPerSpawn,
-                blueprint);
+                blueprint,
+                game.Ids.GetBatch<EnemyUnit>(spawnLocations.Length * enemiesPerSpawn));
         }
 
         private (IUnitBlueprint blueprint, int enemiesPerSpawn, ImmutableArray<SpawnLocation> spawnLocations, TimeSpan spawnDuration)
@@ -95,7 +101,7 @@ namespace Bearded.TD.Game.GameLoop
             State.Satisfies(activeSpawnLocations.Count > 0);
 
             var minSequentialSpawnTime = numEnemies * MinTimeBetweenSpawns;
-            var minSpawnPoints = Mathf.CeilToInt(MaxSpawnTimeDuration / minSequentialSpawnTime);
+            var minSpawnPoints = Mathf.CeilToInt(MaxSpawnTimeDuration / (minSequentialSpawnTime * numEnemies));
             var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
                 ? minSpawnPoints
                 : random.Next(minSpawnPoints, activeSpawnLocations.Count);
