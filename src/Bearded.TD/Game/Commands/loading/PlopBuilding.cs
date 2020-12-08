@@ -1,10 +1,11 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.Damage;
-using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.World;
+using Bearded.TD.Game.GameState;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Components.Damage;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Commands
     static class PlopBuilding
     {
         public static ISerializableCommand<GameInstance> Command(
-                GameState gameState,
+                GameState.GameState gameState,
                 Faction faction,
                 Id<Building> id,
                 IBuildingBlueprint blueprint,
@@ -24,13 +25,13 @@ namespace Bearded.TD.Game.Commands
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameState gameState;
+            private readonly GameState.GameState gameState;
             private readonly Faction faction;
             private readonly Id<Building> id;
             private readonly IBuildingBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameState gameState, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameState.GameState gameState, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.gameState = gameState;
                 this.faction = faction;

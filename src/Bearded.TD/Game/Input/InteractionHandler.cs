@@ -1,6 +1,4 @@
-﻿using Bearded.TD.Game.World;
-
-namespace Bearded.TD.Game.Input
+﻿namespace Bearded.TD.Game.Input
 {
     abstract class InteractionHandler
     {

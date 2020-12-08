@@ -1,9 +1,9 @@
 using System;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Technologies;
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Technologies;
+using Bearded.TD.Game.GameState.Upgrades;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters

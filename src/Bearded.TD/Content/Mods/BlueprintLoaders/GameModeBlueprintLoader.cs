@@ -1,8 +1,8 @@
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Rules;
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.Utilities;
 using GameModeBlueprintJson = Bearded.TD.Content.Serialization.Models.GameModeBlueprint;
 

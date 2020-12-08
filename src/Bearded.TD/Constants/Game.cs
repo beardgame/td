@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Resources;
+using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;

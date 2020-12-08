@@ -3,8 +3,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.Technologies;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.UI.Controls

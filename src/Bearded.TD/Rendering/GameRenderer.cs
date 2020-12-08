@@ -4,7 +4,7 @@ using amulware.Graphics.Shapes;
 using amulware.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Navigation;
+using Bearded.TD.Game.GameState.Navigation;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Tiles;

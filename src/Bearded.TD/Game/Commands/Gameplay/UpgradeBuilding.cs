@@ -1,8 +1,8 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 

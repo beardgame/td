@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.GameState.Buildings;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 

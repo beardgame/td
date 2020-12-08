@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Damage;
+using Bearded.TD.Game.GameState.Damage;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Content.Models

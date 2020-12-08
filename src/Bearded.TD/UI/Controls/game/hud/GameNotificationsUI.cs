@@ -4,9 +4,10 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Events;
-using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.GameState;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Events;
+using Bearded.TD.Game.GameState.Technologies;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

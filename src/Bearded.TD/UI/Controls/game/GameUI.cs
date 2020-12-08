@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Events;
-using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Events;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Meta;

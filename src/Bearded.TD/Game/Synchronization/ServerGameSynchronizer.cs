@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Units;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;

@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Resources;
+﻿using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Content.Models

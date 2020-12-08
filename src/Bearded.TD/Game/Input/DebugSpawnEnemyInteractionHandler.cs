@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Navigation;
-using Bearded.TD.Game.Units;
+using Bearded.TD.Game.GameState.Navigation;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Input

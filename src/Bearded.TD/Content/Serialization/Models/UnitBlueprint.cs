@@ -2,7 +2,7 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Units;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

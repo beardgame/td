@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.Utilities;
 using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
 

@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Debug
         public static DebugGameManager Instance = new DebugGameManager();
 
         private DebugGameManager() { }
-        
+
         public Maybe<GameInstance> Game { get; private set; }
 
         public void RegisterGame(GameInstance game)

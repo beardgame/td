@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Components;
+﻿using Bearded.TD.Game.GameState.Components;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;

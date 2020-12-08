@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Resources;
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.GameState.Upgrades;
 
 namespace Bearded.TD.Content.Models
 {

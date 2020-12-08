@@ -1,7 +1,7 @@
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
 using Bearded.Utilities;
-using FootprintGroup = Bearded.TD.Game.World.FootprintGroup;
+using FootprintGroup = Bearded.TD.Game.GameState.World.FootprintGroup;
 using FootprintGroupJson = Bearded.TD.Content.Serialization.Models.FootprintGroup;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders

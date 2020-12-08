@@ -1,5 +1,5 @@
 ﻿using amulware.Graphics;
-using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.GameState.Factions;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 

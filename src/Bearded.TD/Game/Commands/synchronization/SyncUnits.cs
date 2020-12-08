@@ -2,8 +2,8 @@
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Game.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Lidgren.Network;

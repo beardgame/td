@@ -1,5 +1,6 @@
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game;
+using Bearded.TD.Game.GameState;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders

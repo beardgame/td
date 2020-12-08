@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Rules;
-using Bearded.TD.Game.Technologies;
-using Bearded.TD.Game.Units;
-using Bearded.TD.Game.Upgrades;
-using Bearded.TD.Game.World;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Components;
+using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.GameState.Technologies;
+using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.GameState.Upgrades;
+using Bearded.TD.Game.GameState.World;
 
 namespace Bearded.TD.Content.Mods
 {

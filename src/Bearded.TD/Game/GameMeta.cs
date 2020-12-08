@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Events;
+using Bearded.TD.Game.GameState.Events;
+using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.Synchronization;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;

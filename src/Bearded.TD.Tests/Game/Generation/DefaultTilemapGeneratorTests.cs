@@ -1,5 +1,5 @@
+using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Game.World;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Tests.Game.Generation

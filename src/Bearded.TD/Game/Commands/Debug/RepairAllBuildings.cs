@@ -1,8 +1,8 @@
 using System.Linq;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Components.Damage;
-using Bearded.TD.Game.Damage;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Components.Damage;
+using Bearded.TD.Game.GameState.Damage;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Utilities;
 

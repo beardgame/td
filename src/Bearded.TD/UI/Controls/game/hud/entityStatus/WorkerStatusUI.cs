@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.Workers;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;

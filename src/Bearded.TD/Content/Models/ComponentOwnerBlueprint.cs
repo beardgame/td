@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Components;
-using Bearded.TD.Game.Upgrades;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.GameState.Components;
+using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;

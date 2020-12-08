@@ -6,14 +6,14 @@ namespace Bearded.TD.Game.Commands
 {
     static class GameOver
     {
-        public static ISerializableCommand<GameInstance> Command(GameState game)
+        public static ISerializableCommand<GameInstance> Command(GameState.GameState game)
             => new Implementation(game);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameState game;
+            private readonly GameState.GameState game;
 
-            public Implementation(GameState game)
+            public Implementation(GameState.GameState game)
             {
                 this.game = game;
             }

@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Factions;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Workers;
 using Bearded.TD.Networking.Serialization;

@@ -5,10 +5,11 @@ using amulware.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;
+using Bearded.TD.Game.GameLoop;
+using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.World;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -30,8 +31,8 @@ namespace Bearded.TD.Game
 
         public GameSettings GameSettings { get; private set; } = new GameSettings.Builder().Build();
 
-        private GameState? state;
-        public GameState State => state!;
+        private GameState.GameState? state;
+        public GameState.GameState State => state!;
 
         private GameCamera? camera;
         public GameCamera Camera => camera!;
@@ -71,7 +72,7 @@ namespace Bearded.TD.Game
             }
         }
 
-        public event GenericEventHandler<GameState>? GameStateInitialized;
+        public event GenericEventHandler<GameState.GameState>? GameStateInitialized;
         public event GenericEventHandler<GameStatus>? GameStatusChanged;
         public event GenericEventHandler<GameSettings>? GameSettingsChanged;
         public event GenericEventHandler<Player>? PlayerAdded;
@@ -162,7 +163,7 @@ namespace Bearded.TD.Game
             Meta.SetBlueprints(Blueprints);
         }
 
-        public void InitialiseState(GameState state)
+        public void InitialiseState(GameState.GameState state)
         {
             if (this.state != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");

@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Buildings;
-using Bearded.TD.Game.Technologies;
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Technologies;
+using Bearded.TD.Game.GameState.Upgrades;
 
 namespace Bearded.TD.Content.Serialization.Models
 {

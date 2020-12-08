@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game;
+using Bearded.TD.Game.GameState;
 using Bearded.TD.Utilities;
 using Newtonsoft.Json;
 using Void = Bearded.Utilities.Void;

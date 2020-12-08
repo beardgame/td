@@ -6,14 +6,14 @@ namespace Bearded.TD.Game.Commands.Debug
 {
     static class DebugGameOver
     {
-        public static IRequest<Player, GameInstance> Request(GameState game)
+        public static IRequest<Player, GameInstance> Request(GameState.GameState game)
             => new Implementation(game);
 
         private class Implementation : UnifiedDebugRequestCommand
         {
-            private readonly GameState game;
+            private readonly GameState.GameState game;
 
-            public Implementation(GameState game)
+            public Implementation(GameState.GameState game)
             {
                 this.game = game;
             }

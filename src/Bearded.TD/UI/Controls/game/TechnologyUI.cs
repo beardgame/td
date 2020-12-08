@@ -1,6 +1,6 @@
 using Bearded.TD.Game;
-using Bearded.TD.Game.Events;
-using Bearded.TD.Game.Technologies;
+using Bearded.TD.Game.GameState.Events;
+using Bearded.TD.Game.GameState.Technologies;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls

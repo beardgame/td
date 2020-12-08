@@ -1,5 +1,5 @@
 using System.IO;
-using Bearded.TD.Game.Buildings;
+using Bearded.TD.Game.GameState.Buildings;
 using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBlueprint;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders

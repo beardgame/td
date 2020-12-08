@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
+using Bearded.TD.Game.GameState;
 
 namespace Bearded.TD.Content.Serialization.Models
 {

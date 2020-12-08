@@ -2,11 +2,11 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Buildings;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Components.Damage;
-using Bearded.TD.Game.Factions;
-using Bearded.TD.Game.Upgrades;
+using Bearded.TD.Game.GameState.Buildings;
+using Bearded.TD.Game.GameState.Components.Damage;
+using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
