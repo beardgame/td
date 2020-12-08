@@ -10,10 +10,10 @@ namespace Bearded.TD.UI.Controls
     {
         public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
-        public GameOverControl()
+        public GameOverControl(string text)
         {
             Add(new BackgroundBox { Color = .5f * Color.Black });
-            Add(new Label { Color = Color.PaleVioletRed, FontSize = 24, Text = "oh dear, u ded" }.Anchor(a => a
+            Add(new Label { Color = Color.PaleVioletRed, FontSize = 24, Text = text }.Anchor(a => a
                 .Bottom(margin: 32)));
             Add(Button("back to main menu", 16)
                 .Anchor(a => a

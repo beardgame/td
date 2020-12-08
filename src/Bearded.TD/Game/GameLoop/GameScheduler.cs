@@ -1,5 +1,5 @@
-using Bearded.TD.Game.GameState.Events;
-using Bearded.TD.Game.GameState.GameLoop;
+using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands.GameLoop;
 using static Bearded.TD.Game.GameLoop.ChapterScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
@@ -11,15 +11,17 @@ namespace Bearded.TD.Game.GameLoop
         private const int chaptersPerGame = 5;
         private const int wavesPerChapter = 5;
 
-        private readonly GlobalGameEvents gameEvents;
+        private readonly GameInstance game;
+        private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         private readonly ChapterScheduler chapterScheduler;
 
         private bool gameStarted;
         private int chaptersLeftInGame;
 
-        public GameScheduler(GlobalGameEvents gameEvents, ChapterScheduler chapterScheduler)
+        public GameScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher, ChapterScheduler chapterScheduler)
         {
-            this.gameEvents = gameEvents;
+            this.game = game;
+            this.commandDispatcher = commandDispatcher;
             this.chapterScheduler = chapterScheduler;
             chapterScheduler.ChapterEnded += onChapterEnded;
         }
@@ -47,7 +49,7 @@ namespace Bearded.TD.Game.GameLoop
         {
             State.Satisfies(gameStarted);
             gameStarted = false;
-            gameEvents.Send(new GameVictoryTriggered());
+            commandDispatcher.Dispatch(WinGame.Command(game));
         }
 
         private void requestChapter()

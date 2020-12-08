@@ -18,7 +18,7 @@ using Bearded.Utilities.Input;
 namespace Bearded.TD.UI.Controls
 {
     sealed class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
-        IListener<GameOverTriggered>, IListener<BuildingConstructionStarted>
+        IListener<GameOverTriggered>, IListener<GameVictoryTriggered>, IListener<BuildingConstructionStarted>
     {
         public GameInstance Game { get; private set; }
         private GameRunner runner;
@@ -34,6 +34,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? FocusReset;
         public event GenericEventHandler<ISelectable>? EntityStatusOpened;
         public event VoidEventHandler? EntityStatusClosed;
+        public event VoidEventHandler? GameVictoryTriggered;
         public event VoidEventHandler? GameOverTriggered;
         public event VoidEventHandler? GameLeft;
 
@@ -174,6 +175,11 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(GameOverTriggered @event)
         {
             GameOverTriggered?.Invoke();
+        }
+
+        public void HandleEvent(GameVictoryTriggered @event)
+        {
+            GameVictoryTriggered?.Invoke();
         }
 
         public void HandleEvent(BuildingConstructionStarted @event)

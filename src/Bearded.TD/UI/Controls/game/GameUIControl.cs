@@ -64,6 +64,7 @@ namespace Bearded.TD.UI.Controls
             gameUI.FocusReset += Focus;
             gameUI.GameLeft += Unfocus;
             gameUI.GameOverTriggered += onGameOver;
+            gameUI.GameVictoryTriggered += onGameVictory;
             gameUI.GameLeft += gameWorldControl.CleanUp;
         }
 
@@ -91,7 +92,16 @@ namespace Bearded.TD.UI.Controls
 
         private void onGameOver()
         {
-            Add(new GameOverControl()
+            Add(new GameOverControl("you lose")
+                .Anchor(a => a
+                    .Top(margin: 0, height: 64)
+                    .Left(relativePercentage: .5, margin: - 120, width: 240))
+                .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked));
+        }
+
+        private void onGameVictory()
+        {
+            Add(new GameOverControl("you win")
                 .Anchor(a => a
                     .Top(margin: 0, height: 64)
                     .Left(relativePercentage: .5, margin: - 120, width: 240))

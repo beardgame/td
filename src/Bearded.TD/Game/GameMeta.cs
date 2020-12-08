@@ -45,5 +45,11 @@ namespace Bearded.TD.Game
             GameOver = true;
             Events.Send(new GameOverTriggered());
         }
+
+        public void DoGameVictory()
+        {
+            GameOver = true;
+            Events.Send(new GameVictoryTriggered());
+        }
     }
 }
