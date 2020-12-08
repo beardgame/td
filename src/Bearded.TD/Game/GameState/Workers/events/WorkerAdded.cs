@@ -1,6 +1,6 @@
 using Bearded.TD.Game.GameState.Events;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     readonly struct WorkerAdded : IGlobalEvent
     {

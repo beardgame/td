@@ -5,7 +5,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     sealed class WorkerNetwork
     {
@@ -14,18 +14,18 @@ namespace Bearded.TD.Game.Workers
 
         public event VoidEventHandler? NetworkChanged;
 
-        public void RegisterAntenna(GameState.GameState gameState, IWorkerAntenna antenna)
+        public void RegisterAntenna(Game.GameState.GameState gameState, IWorkerAntenna antenna)
         {
             antennae.Add(antenna);
             buildAntennaCoverage(gameState.Level);
         }
 
-        public void OnAntennaRangeUpdated(GameState.GameState gameState)
+        public void OnAntennaRangeUpdated(Game.GameState.GameState gameState)
         {
             buildAntennaCoverage(gameState.Level);
         }
 
-        public void UnregisterAntenna(GameState.GameState gameState, IWorkerAntenna antenna)
+        public void UnregisterAntenna(Game.GameState.GameState gameState, IWorkerAntenna antenna)
         {
             var deleted = antennae.Remove(antenna);
             DebugAssert.Argument.Satisfies(deleted);

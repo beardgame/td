@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Bearded.TD.Game.Directors;
 using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;

@@ -1,8 +1,8 @@
 using Bearded.Utilities;
-using static Bearded.TD.Game.Directors.WaveScheduler;
+using static Bearded.TD.Game.GameLoop.WaveScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Directors
+namespace Bearded.TD.Game.GameLoop
 {
     sealed class ChapterScheduler
     {

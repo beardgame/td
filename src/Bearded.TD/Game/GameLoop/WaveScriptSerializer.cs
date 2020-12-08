@@ -5,7 +5,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Directors
+namespace Bearded.TD.Game.GameLoop
 {
     sealed class WaveScriptSerializer
     {

@@ -1,15 +1,13 @@
 ﻿using amulware.Graphics;
 using amulware.Graphics.Shapes;
-using Bearded.TD.Game.GameState;
 using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     sealed class MiningTaskPlaceholder : GameObject, ISelectable
     {

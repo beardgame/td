@@ -1,9 +1,9 @@
 using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.GameLoop;
-using static Bearded.TD.Game.Directors.ChapterScheduler;
+using static Bearded.TD.Game.GameLoop.ChapterScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Directors
+namespace Bearded.TD.Game.GameLoop
 {
     sealed class GameScheduler
     {

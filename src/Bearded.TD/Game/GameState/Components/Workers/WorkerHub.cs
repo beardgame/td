@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Content.Models;
 using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.Workers;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.Workers;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.GameState.Rules.Workers

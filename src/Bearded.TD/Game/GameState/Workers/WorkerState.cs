@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     abstract class WorkerState
     {

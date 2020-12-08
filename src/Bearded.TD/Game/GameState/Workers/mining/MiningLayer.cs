@@ -4,7 +4,7 @@ using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.IO;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     sealed class MiningLayer : IListener<TileMined>
     {

@@ -6,7 +6,6 @@ using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Workers;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;

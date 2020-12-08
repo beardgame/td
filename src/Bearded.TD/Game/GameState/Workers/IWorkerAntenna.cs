@@ -1,6 +1,6 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     public interface IWorkerAntenna
     {

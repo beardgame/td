@@ -1,7 +1,7 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Game.GameState.Technologies;
-using Bearded.TD.Game.Workers;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;

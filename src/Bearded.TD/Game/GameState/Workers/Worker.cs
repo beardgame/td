@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Rendering;
@@ -14,7 +12,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     sealed class Worker : GameObject, ITileWalkerOwner, ISelectable
     {

@@ -4,7 +4,7 @@ using Bearded.TD.Game.Commands.Directors;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Directors
+namespace Bearded.TD.Game.GameLoop
 {
     sealed class WaveScheduler
     {

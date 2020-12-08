@@ -1,6 +1,5 @@
 ﻿using amulware.Graphics;
 using amulware.Graphics.Shapes;
-using Bearded.TD.Game.Directors;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;

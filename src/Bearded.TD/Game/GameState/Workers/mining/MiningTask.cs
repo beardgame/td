@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Tiles;
@@ -11,7 +9,7 @@ using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     sealed class MiningTask : IWorkerTask
     {

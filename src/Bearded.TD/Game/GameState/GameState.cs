@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Bearded.TD.Game.Directors;
 using Bearded.TD.Game.GameState.Buildings;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Navigation;
 using Bearded.TD.Game.GameState.Rules;
 using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.GameState.World.Fluids;
-using Bearded.TD.Game.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;

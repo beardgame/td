@@ -2,7 +2,7 @@ using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Workers
+namespace Bearded.TD.Game.GameState.Workers
 {
     struct TileMined : IGlobalEvent
     {
