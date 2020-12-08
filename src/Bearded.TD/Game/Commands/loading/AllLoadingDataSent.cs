@@ -4,7 +4,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities.Collections;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Loading
 {
     static class AllLoadingDataSent
     {

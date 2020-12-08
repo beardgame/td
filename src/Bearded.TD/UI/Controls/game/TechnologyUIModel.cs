@@ -57,17 +57,17 @@ namespace Bearded.TD.UI.Controls
 
         public void ReplaceTechnologyQueue(ITechnologyBlueprint tech)
         {
-            game.Request(Game.Commands.ReplaceTechnologyQueue.Request(faction, tech));
+            game.Request(Game.Commands.Gameplay.ReplaceTechnologyQueue.Request(faction, tech));
         }
 
         public void AddToTechnologyQueue(ITechnologyBlueprint tech)
         {
-            game.Request(Game.Commands.AddToTechnologyQueue.Request(faction, tech));
+            game.Request(Game.Commands.Gameplay.technology.AddToTechnologyQueue.Request(faction, tech));
         }
 
         public void ClearTechnologyQueue()
         {
-            game.Request(Game.Commands.ClearTechnologyQueue.Request(faction));
+            game.Request(Game.Commands.Gameplay.ClearTechnologyQueue.Request(faction));
         }
 
         public TechnologyStatus StatusFor(ITechnologyBlueprint tech) => technologyStatuses[tech];

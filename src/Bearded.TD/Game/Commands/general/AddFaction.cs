@@ -5,7 +5,7 @@ using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.General
 {
     static class AddFaction
     {

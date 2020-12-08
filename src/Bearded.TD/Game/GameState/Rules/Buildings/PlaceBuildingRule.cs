@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.GameState.Buildings;
 using Bearded.TD.Game.GameState.World;
 using Newtonsoft.Json;

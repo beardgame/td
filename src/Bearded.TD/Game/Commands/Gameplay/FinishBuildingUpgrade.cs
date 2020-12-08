@@ -6,7 +6,7 @@ using Bearded.TD.Game.GameState.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class FinishBuildingUpgrade
     {

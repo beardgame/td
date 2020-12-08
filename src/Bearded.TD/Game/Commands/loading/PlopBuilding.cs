@@ -11,7 +11,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Loading
 {
     static class PlopBuilding
     {

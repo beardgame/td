@@ -5,7 +5,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class ShowUnitSpawnWarning
     {

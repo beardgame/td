@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.GameState.Navigation;
 using Bearded.TD.Game.GameState.Units;
 using Bearded.TD.Utilities.Collections;

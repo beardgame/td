@@ -2,7 +2,7 @@
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Loading
 {
     static class StartGame
     {

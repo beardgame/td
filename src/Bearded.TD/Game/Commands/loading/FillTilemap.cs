@@ -8,7 +8,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Loading
 {
     static class FillTilemap
     {

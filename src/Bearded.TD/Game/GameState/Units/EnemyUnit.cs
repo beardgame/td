@@ -5,6 +5,7 @@ using System.Linq;
 using amulware.Graphics;
 using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.GameState.Components;
 using Bearded.TD.Game.GameState.Components.Damage;
 using Bearded.TD.Game.GameState.Components.Events;
@@ -45,7 +46,6 @@ namespace Bearded.TD.Game.GameState.Units
         private ImmutableArray<ISyncable> syncables;
         private Health<EnemyUnit> health;
         private bool isDead;
-
 
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
         public Faction Faction => Game.RootFaction;

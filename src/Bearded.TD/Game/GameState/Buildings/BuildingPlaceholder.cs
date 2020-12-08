@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.GameState.Components;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.Workers;

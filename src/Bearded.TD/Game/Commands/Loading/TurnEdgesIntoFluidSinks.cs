@@ -3,7 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Loading
 {
     static class TurnEdgesIntoFluidSinks
     {
