@@ -1,9 +1,13 @@
+using System.Collections.Immutable;
+using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.GameLoop
 {
@@ -14,7 +18,11 @@ namespace Bearded.TD.Game.GameLoop
         private double spawnStart;
         private double spawnDuration;
         private double resourcesAwardedBySpawnPhase;
+        private Id<SpawnLocation>[] spawnLocations;
+        private int unitsPerSpawnLocation;
+        private ModAwareId unitBlueprint;
 
+        [UsedImplicitly]
         public WaveScriptSerializer() {}
 
         public WaveScriptSerializer(WaveScript waveScript)
@@ -24,16 +32,22 @@ namespace Bearded.TD.Game.GameLoop
             spawnStart = waveScript.SpawnStart.NumericValue;
             spawnDuration = waveScript.SpawnDuration.NumericValue;
             resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase.NumericValue;
+            spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
+            unitsPerSpawnLocation = waveScript.UnitsPerSpawnLocation;
+            unitBlueprint = waveScript.UnitBlueprint.Id;
         }
 
-        public WaveScript ToWaveScript(GameState.GameState game)
+        public WaveScript ToWaveScript(GameInstance game)
         {
             return new(
                 id,
-                game.FactionFor(targetFaction),
+                game.State.FactionFor(targetFaction),
                 new Instant(spawnStart),
                 new TimeSpan(spawnDuration),
-                new ResourceAmount(resourcesAwardedBySpawnPhase));
+                new ResourceAmount(resourcesAwardedBySpawnPhase),
+                spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
+                unitsPerSpawnLocation,
+                game.Blueprints.Units[unitBlueprint]);
         }
 
         public void Serialize(INetBufferStream stream)
@@ -43,6 +57,13 @@ namespace Bearded.TD.Game.GameLoop
             stream.Serialize(ref spawnStart);
             stream.Serialize(ref spawnDuration);
             stream.Serialize(ref resourcesAwardedBySpawnPhase);
+            stream.SerializeArrayCount(ref spawnLocations);
+            for (var i = 0; i < spawnLocations.Length; i++)
+            {
+                stream.Serialize(ref spawnLocations[i]);
+            }
+            stream.Serialize(ref unitsPerSpawnLocation);
+            stream.Serialize(ref unitBlueprint);
         }
     }
 }

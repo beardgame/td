@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using Bearded.TD.Game.GameState.Factions;
 using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.GameState.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -12,6 +14,9 @@ namespace Bearded.TD.Game.GameState.GameLoop
         public Instant SpawnStart { get; }
         public TimeSpan SpawnDuration { get; }
         public ResourceAmount ResourcesAwardedBySpawnPhase { get; }
+        public ImmutableArray<SpawnLocation> SpawnLocations { get; }
+        public int UnitsPerSpawnLocation { get; }
+        public IUnitBlueprint UnitBlueprint { get; }
 
         public Instant SpawnEnd => SpawnStart + SpawnDuration;
 
@@ -20,13 +25,19 @@ namespace Bearded.TD.Game.GameState.GameLoop
             Faction targetFaction,
             Instant spawnStart,
             TimeSpan spawnDuration,
-            ResourceAmount resourcesAwardedBySpawnPhase)
+            ResourceAmount resourcesAwardedBySpawnPhase,
+            ImmutableArray<SpawnLocation> spawnLocations,
+            int unitsPerSpawnLocation,
+            IUnitBlueprint unitBlueprint)
         {
             Id = id;
             TargetFaction = targetFaction;
             SpawnStart = spawnStart;
             SpawnDuration = spawnDuration;
             ResourcesAwardedBySpawnPhase = resourcesAwardedBySpawnPhase;
+            SpawnLocations = spawnLocations;
+            UnitsPerSpawnLocation = unitsPerSpawnLocation;
+            UnitBlueprint = unitBlueprint;
         }
     }
 }
