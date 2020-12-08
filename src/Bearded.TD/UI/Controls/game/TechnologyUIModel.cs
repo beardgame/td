@@ -62,7 +62,7 @@ namespace Bearded.TD.UI.Controls
 
         public void AddToTechnologyQueue(ITechnologyBlueprint tech)
         {
-            game.Request(Game.Commands.Gameplay.technology.AddToTechnologyQueue.Request(faction, tech));
+            game.Request(Game.Commands.Gameplay.AddToTechnologyQueue.Request(faction, tech));
         }
 
         public void ClearTechnologyQueue()

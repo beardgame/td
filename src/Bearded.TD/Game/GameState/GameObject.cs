@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.GameState
 
         public void Add(GameState game)
         {
-            if (game.ObjectBeingAdded != this || game != null)
+            if (game.ObjectBeingAdded != this || this.game != null)
             {
                 throw new Exception("Tried adding game object to game in unexpected circumstances.");
             }

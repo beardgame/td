@@ -17,7 +17,6 @@ namespace Bearded.TD.Game.Generation.Enemies
     sealed class EnemySpawnController
     {
         private readonly GameInstance game;
-        private readonly Blueprints blueprints;
         private readonly Random random = new Random();
         private readonly LinkedList<EnemyWave> plannedWaves = new LinkedList<EnemyWave>();
 
@@ -29,10 +28,9 @@ namespace Bearded.TD.Game.Generation.Enemies
         private double minWaveCost = InitialMinWaveCost;
         private double maxWaveCost = InitialMaxWaveCost;
 
-        public EnemySpawnController(GameInstance game, Blueprints blueprints)
+        public EnemySpawnController(GameInstance game)
         {
             this.game = game;
-            this.blueprints = blueprints;
             enemies = EnemySpawnDefinition.All;
 
             game.GameStateInitialized += _ =>
@@ -110,7 +108,7 @@ namespace Bearded.TD.Game.Generation.Enemies
             var result = Array.BinarySearch(probabilities, t);
 
             var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-            return blueprints.Units[definition.BlueprintId];
+            return game.Blueprints.Units[definition.BlueprintId];
         }
 
         private void buildWave(int numSpawnPoints, IUnitBlueprint blueprint, int numEnemies, TimeSpan timeBetweenSpawns)
