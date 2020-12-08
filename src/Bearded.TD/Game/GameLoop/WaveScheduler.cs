@@ -7,7 +7,6 @@ using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Game.GameState.Units;
-using Bearded.TD.Game.Generation.Enemies;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;

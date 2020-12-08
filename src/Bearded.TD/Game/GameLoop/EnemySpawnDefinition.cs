@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Content.Mods;
 
-namespace Bearded.TD.Game.Generation.Enemies
+namespace Bearded.TD.Game.GameLoop
 {
     sealed class EnemySpawnDefinition
     {
