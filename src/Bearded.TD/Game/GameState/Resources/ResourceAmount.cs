@@ -48,6 +48,9 @@ namespace Bearded.TD.Game.GameState.Resources
         public static ResourceAmount operator *(double scalar, ResourceAmount amount) =>
             new(scalar * amount.NumericValue);
 
+        public static ResourceAmount operator *(ResourceAmount amount, double scalar) =>
+            new(scalar * amount.NumericValue);
+
         public static ResourceAmount operator /(ResourceAmount amount, double scalar) =>
             new(amount.NumericValue / scalar);
 
