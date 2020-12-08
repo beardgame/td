@@ -141,7 +141,6 @@ namespace Bearded.TD.Game.GameState
         public void IdAs<T>(T obj)
             where T : GameObject, IIdable<T>
         {
-            ListAs(obj);
             var dict = getDictionary<T>();
             dict.Add(obj);
             obj.Deleting += () => dict.Remove(obj);

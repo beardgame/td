@@ -8,45 +8,24 @@ namespace Bearded.TD.Game.GameState
 {
     abstract class GameObject : IDeletable
     {
-        public GameState Game { get; private set; }
+        private GameState? game;
+        public GameState Game => game!;
 
         public bool Deleted { get; private set; }
         public event VoidEventHandler? Deleting;
 
         public void Add(GameState game)
         {
-            if (game.ObjectBeingAdded != this || Game != null)
-                throw new Exception("Bad!");
-            Game = game;
+            if (game.ObjectBeingAdded != this || game != null)
+            {
+                throw new Exception("Tried adding game object to game in unexpected circumstances.");
+            }
+
+            this.game = game;
             OnAdded();
         }
 
-        protected virtual void OnAdded()
-        {
-
-        }
-
-        protected void IsSingleton<T>()
-            where T : class
-        {
-            var asT = this as T;
-#if DEBUG
-            if (asT == null)
-                throw new Exception("Cannot list singleton as incompatible type");
-#endif
-            Game.RegisterSingleton(asT);
-        }
-
-        protected void ListAs<T>()
-            where T : class, IDeletable
-        {
-            var asT = this as T;
-#if DEBUG
-            if (asT == null)
-                throw new Exception("Cannot list as incompatible type");
-#endif
-            Game.ListAs(asT);
-        }
+        protected virtual void OnAdded() {}
 
         public abstract void Update(TimeSpan elapsedTime);
 
@@ -59,10 +38,6 @@ namespace Bearded.TD.Game.GameState
             Deleted = true;
         }
 
-        protected virtual void OnDelete()
-        {
-
-        }
-
+        protected virtual void OnDelete() {}
     }
 }
