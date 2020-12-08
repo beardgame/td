@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.GameLoop;
+using Bearded.TD.Game.GameState.Events;
 using Bearded.TD.Game.GameState.GameLoop;
 using Bearded.TD.Game.GameState.Resources;
 using Bearded.TD.Game.GameState.Units;
@@ -16,28 +17,46 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameLoop
 {
-    sealed class WaveScheduler
+    sealed class WaveScheduler : IListener<WaveEnded>
     {
         private readonly Random random = new();
         private readonly GameInstance game;
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         public event VoidEventHandler? WaveEnded;
 
+        private Id<WaveScript>? activeWave;
+
         public WaveScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher)
         {
             this.game = game;
+            game.State.Meta.Events.Subscribe(this);
             this.commandDispatcher = commandDispatcher;
+        }
+
+        public void HandleEvent(WaveEnded @event)
+        {
+            if (@event.WaveId != activeWave)
+            {
+                return;
+            }
+
+            activeWave = null;
+            WaveEnded?.Invoke();
         }
 
         public void StartWave(WaveRequirements requirements)
         {
+            State.Satisfies(activeWave == null, "We only support one simultaneous wave right now");
+
             var dormantSpawnLocations = game.State.Enumerate<SpawnLocation>().Where(s => !s.IsAwake).ToList();
             if (dormantSpawnLocations.Count > 0)
             {
                 commandDispatcher.Dispatch(WakeUpSpawnLocation.Command(dormantSpawnLocations.RandomElement()));
             }
 
-            commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, createWaveScript(requirements)));
+            var script = createWaveScript(requirements);
+            activeWave = script.Id;
+            commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, script));
         }
 
         private WaveScript createWaveScript(WaveRequirements requirements)
