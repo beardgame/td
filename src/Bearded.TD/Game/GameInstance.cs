@@ -21,7 +21,7 @@ namespace Bearded.TD.Game
         public ContentManager ContentManager { get; }
         public Player Me { get; }
         public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
-        public IGameController Controller { get; }
+        public GameScheduler? Scheduler { get; }
         public GameMeta Meta { get; }
 
         public ChatLog ChatLog { get; } = new ChatLog();
@@ -84,7 +84,7 @@ namespace Bearded.TD.Game
         {
             RequestDispatcher = context.RequestDispatcher;
             context.DataMessageHandlerInitializer(this);
-            Controller = context.GameSimulatorFactory(this);
+            Scheduler = context.GameSchedulerFactory(this);
             ContentManager = contentManager;
             Me = me;
             Ids = ids;

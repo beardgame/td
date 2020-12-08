@@ -16,7 +16,7 @@ namespace Bearded.TD.Game
         IGameSynchronizer GameSynchronizer { get; }
         Func<GameInstance, PlayerManager?> PlayerManagerFactory { get; }
         Action<GameInstance> DataMessageHandlerInitializer { get; }
-        Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        Func<GameInstance, GameScheduler?> GameSchedulerFactory { get; }
     }
 
     sealed class ServerGameContext : IGameContext
@@ -27,7 +27,7 @@ namespace Bearded.TD.Game
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
         public Action<GameInstance> DataMessageHandlerInitializer { get; }
-        public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        public Func<GameInstance, GameScheduler?> GameSchedulerFactory { get; }
 
         public ServerGameContext(ServerNetworkInterface network, Logger logger)
         {
@@ -44,7 +44,12 @@ namespace Bearded.TD.Game
                 return playerManager;
             };
             DataMessageHandlerInitializer = game => network.RegisterMessageHandler(new ServerDataMessageHandler(game, logger));
-            GameSimulatorFactory = game => new GameController(game);
+            GameSchedulerFactory = game =>
+            {
+                var waveScheduler = new WaveScheduler(game, commandDispatcher);
+                var chapterScheduler = new ChapterScheduler(waveScheduler);
+                return new GameScheduler(game, commandDispatcher, chapterScheduler);
+            };
         }
     }
 
@@ -56,7 +61,7 @@ namespace Bearded.TD.Game
         public IGameSynchronizer GameSynchronizer { get; }
         public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
         public Action<GameInstance> DataMessageHandlerInitializer { get; }
-        public Func<GameInstance, IGameController> GameSimulatorFactory { get; }
+        public Func<GameInstance, GameScheduler?> GameSchedulerFactory { get; }
 
         public ClientGameContext(ClientNetworkInterface network, Logger logger)
         {
@@ -65,9 +70,9 @@ namespace Bearded.TD.Game
             RequestDispatcher = new ClientRequestDispatcher<Player, GameInstance>(network, logger);
             Dispatcher = new ClientDispatcher<GameInstance>();
             GameSynchronizer = new ClientGameSynchronizer();
-            PlayerManagerFactory = game => null;
+            PlayerManagerFactory = _ => null;
             DataMessageHandlerInitializer = game => network.RegisterMessageHandler(new ClientDataMessageHandler(game, logger));
-            GameSimulatorFactory = game => new DummyGameController();
+            GameSchedulerFactory = _ => null;
         }
     }
 }

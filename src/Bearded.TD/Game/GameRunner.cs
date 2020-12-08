@@ -7,10 +7,12 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game
 {
-    class GameRunner
+    sealed class GameRunner
     {
         private readonly GameInstance game;
         private readonly NetworkInterface networkInterface;
+
+        private bool isGameStarted;
 
         public GameRunner(GameInstance game, NetworkInterface networkInterface)
         {
@@ -27,11 +29,15 @@ namespace Bearded.TD.Game
 
         public void Update(UpdateEventArgs args)
         {
+            if (!isGameStarted)
+            {
+                game.Scheduler?.StartGame();
+                isGameStarted = true;
+            }
+
             game.CameraController.Update(args);
 
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
-
-            game.Controller.Update(elapsedTime);
 
             networkInterface.ConsumeMessages();
             game.UpdatePlayers(args);
