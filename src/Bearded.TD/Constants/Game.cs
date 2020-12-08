@@ -50,39 +50,19 @@ namespace Bearded.TD
                 public static readonly TimeSpan PreferredTimeBetweenSpawns = 1.S();
                 public static readonly TimeSpan MinTimeBetweenSpawns = 0.1.S();
 
-                public const double FirstWaveValue = 15;
+                public const double FirstWaveValue = 30;
                 public const double WaveValueErrorFactor = 0.1;
                 public const double WaveValueMultiplier = 1.3;
 
                 public static readonly ResourceAmount InitialResources = 240.Resources();
-                public static readonly ResourceAmount FirstWaveResources = 120.Resources();
+                public static readonly ResourceAmount FirstWaveResources = 200.Resources();
                 public static readonly double WaveResourcesMultiplier = 1.2;
-
-                public static readonly TimeSpan TimeBeforeFirstWave = 40.S();
-                public static readonly TimeSpan WarningTime = 20.S();
-                public static readonly TimeSpan MinTimeBetweenEnemies = .1.S();
-                public static readonly TimeSpan MaxTimeBetweenEnemies = 2.S();
-                public static readonly TimeSpan MinWaveDuration = 3.S();
-                public static readonly TimeSpan MaxWaveDuration = 10.S();
-
-                public const double InitialMinWaveCost = 12;
-                public const double InitialMaxWaveCost = 16;
-                public const double WaveCostGrowth = 1.011;
-
-                public const double InitialDebitPayoffRate = .6;
-                public const double DebitPayoffGrowth = 1.008;
             }
 
             public static class Worker
             {
                 public static readonly ResourceRate WorkerSpeed = 15.ResourcesPerSecond();
                 public static readonly ResourceAmount TotalMiningProgressRequired = WorkerSpeed * 8.S();
-            }
-
-            public static class Resources
-            {
-                public static readonly ResourceAmount InitialResources = 0.Resources();
-                public const double ResourcesOnKillFactor = 0;
             }
 
             public static class Technology

@@ -16,10 +16,6 @@
             "onPlaceholder" :  true,
             "onGhost": true,
             "parameters" : { "workerRange" : 12 }
-        },
-        {
-            "id" : "incomeOverTime",
-            "parameters" : { "incomePerSecond" : 5 }
         }
     ]
 }

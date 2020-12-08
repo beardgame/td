@@ -41,14 +41,17 @@ namespace Bearded.TD.Game.GameLoop
         public void StartGame()
         {
             State.Satisfies(!gameStarted);
+            gameStarted = true;
+
+            chapterScheduler.OnGameStart();
 
             chaptersLeftInGame = chaptersPerGame;
+            requestChapter();
         }
 
         private void endGame()
         {
             State.Satisfies(gameStarted);
-            gameStarted = false;
             commandDispatcher.Dispatch(WinGame.Command(game));
         }
 

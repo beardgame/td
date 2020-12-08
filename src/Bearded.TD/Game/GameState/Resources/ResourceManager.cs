@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.GameState.Events;
-using Bearded.TD.Game.GameState.Units;
-using static Bearded.TD.Constants.Game.Resources;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameState.Resources
 {
-    sealed class ResourceManager : IListener<EnemyKilled>
+    sealed class ResourceManager
     {
         private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
         private ResourceRate totalResourcesRequested;
@@ -16,18 +13,9 @@ namespace Bearded.TD.Game.GameState.Resources
         public ResourceAmount CurrentResources { get; private set; }
         public ResourceRate CurrentIncome { get; private set; }
 
-        public ResourceManager(GlobalGameEvents events)
+        public ResourceManager()
         {
-            CurrentResources = InitialResources;
-            events.Subscribe(this);
-        }
-
-        public void HandleEvent(EnemyKilled @event)
-        {
-            if (@event.KillingFaction.Resources == this)
-            {
-                ProvideOneTimeResource(new ResourceAmount(ResourcesOnKillFactor * @event.Unit.Value));
-            }
+            CurrentResources = Constants.Game.WaveGeneration.InitialResources;
         }
 
         public void ProvideOneTimeResource(ResourceAmount amount)
@@ -99,7 +87,7 @@ namespace Bearded.TD.Game.GameState.Resources
             CurrentIncome = totalResourcesProvided - totalResourcesRequested;
             requestedResources.Clear();
             totalResourcesRequested = ResourceRate.Zero;
-            totalResourcesProvided = ResourceRate.Zero;;
+            totalResourcesProvided = ResourceRate.Zero;
         }
 
         private readonly struct ResourceRequest
