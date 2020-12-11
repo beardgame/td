@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -150,6 +151,11 @@ namespace Bearded.TD.Game.Simulation
             where T : class, IIdable<T>
         {
             return getDictionary<T>()[id];
+        }
+
+        public bool TryFind<T>(Id<T> id, [NotNullWhen(true)] out T? result) where T : class, IIdable<T>
+        {
+            return getDictionary<T>().TryGetValue(id, out result);
         }
 
         private DeletableObjectList<T> getList<T>()

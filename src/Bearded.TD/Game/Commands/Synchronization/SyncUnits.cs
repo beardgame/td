@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Lidgren.Network;
 
 namespace Bearded.TD.Game.Commands
@@ -50,12 +51,16 @@ namespace Bearded.TD.Game.Commands
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-                new Implementation(units.Select(tuple =>
+                new Implementation(units.SelectMany(tuple =>
                 {
                     var (id, data) = tuple;
-                    var unit = game.State.Find(id);
+                    if (!game.State.TryFind(id, out var unit))
+                    {
+                        game.Meta.Logger.Debug?.Log($"Trying to sync an enemy that doesn't exist. ID: {id}");
+                        return Enumerable.Empty<(EnemyUnit unit, IStateToSync synchronizer)>();
+                    }
                     var synchronizer = populatedStateToSyncFor(unit, data);
-                    return (unit, synchronizer);
+                    return (unit, synchronizer).Yield();
                 }).ToList());
 
             public void Serialize(INetBufferStream stream)
