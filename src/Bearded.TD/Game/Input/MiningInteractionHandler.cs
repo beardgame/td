@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Game.Input
 {

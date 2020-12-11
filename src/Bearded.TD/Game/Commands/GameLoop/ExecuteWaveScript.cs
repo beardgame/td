@@ -1,7 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.GameLoop;
-using Bearded.TD.Game.GameState.GameLoop;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands.GameLoop

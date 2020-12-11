@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.Simulation.Resources;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -13,7 +13,7 @@ namespace Bearded.TD.Content.Serialization.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public Game.GameState.World.FootprintGroup Footprint { get; set; }
+        public Game.Simulation.World.FootprintGroup Footprint { get; set; }
         public ResourceAmount Cost { get; set; }
         public List<string> Tags { get; set; }
         public List<IBuildingComponent> Components { get; set; }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.GameState.Components;
+using Bearded.TD.Game.Simulation.Components;
 
 namespace Bearded.TD.Content.Mods
 {

@@ -1,6 +1,6 @@
 ﻿using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls

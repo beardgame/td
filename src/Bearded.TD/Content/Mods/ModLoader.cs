@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
-using Bearded.TD.Game.GameState.Components;
-using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;

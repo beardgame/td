@@ -1,19 +1,20 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Simulation;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class GameOver
     {
-        public static ISerializableCommand<GameInstance> Command(GameState.GameState game)
+        public static ISerializableCommand<GameInstance> Command(GameState game)
             => new Implementation(game);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameState.GameState game;
+            private readonly GameState game;
 
-            public Implementation(GameState.GameState game)
+            public Implementation(GameState game)
             {
                 this.game = game;
             }

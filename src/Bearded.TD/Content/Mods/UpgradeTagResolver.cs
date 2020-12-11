@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using Bearded.TD.Game.GameState.Upgrades;
+using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Content.Mods
 {

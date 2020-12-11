@@ -1,4 +1,4 @@
-using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using static Bearded.TD.Game.GameLoop.WaveScheduler;

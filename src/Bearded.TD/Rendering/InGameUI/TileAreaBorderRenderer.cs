@@ -1,8 +1,8 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

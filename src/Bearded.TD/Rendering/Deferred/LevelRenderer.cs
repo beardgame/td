@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Game;
-using Bearded.TD.Game.GameState.Events;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Rendering.Deferred

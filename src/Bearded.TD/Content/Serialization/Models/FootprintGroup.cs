@@ -9,7 +9,7 @@ using Bearded.Utilities.Geometry;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    sealed class FootprintGroup : IConvertsTo<Game.GameState.World.FootprintGroup, Void>
+    sealed class FootprintGroup : IConvertsTo<Game.Simulation.World.FootprintGroup, Void>
     {
         public sealed class Footprint
         {
@@ -20,9 +20,9 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Id { get; set; }
         public List<Footprint> Footprints { get; set; }
 
-        public Game.GameState.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void _)
+        public Game.Simulation.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void _)
         {
-            return new Game.GameState.World.FootprintGroup(ModAwareId.FromNameInMod(Id, modMetadata),
+            return new Game.Simulation.World.FootprintGroup(ModAwareId.FromNameInMod(Id, modMetadata),
                 Footprints.Select(footprint => new Bearded.TD.Tiles.Footprint(footprint.Tiles)),
                 Footprints.Select(footprint => footprint.Orientation)
             );

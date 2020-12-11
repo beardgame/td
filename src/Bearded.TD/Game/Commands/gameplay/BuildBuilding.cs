@@ -1,11 +1,11 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.Workers;
-using Bearded.TD.Game.GameState.World;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Workers;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;

@@ -1,4 +1,4 @@
-using Bearded.TD.Game.GameState.Damage;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 

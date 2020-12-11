@@ -1,4 +1,4 @@
-using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.Utilities;
 using UnitBlueprintJson = Bearded.TD.Content.Serialization.Models.UnitBlueprint;
 

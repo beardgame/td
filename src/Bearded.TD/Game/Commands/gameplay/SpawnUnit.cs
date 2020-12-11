@@ -1,8 +1,8 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState;
-using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -12,17 +12,17 @@ namespace Bearded.TD.Game.Commands.Gameplay
     static class SpawnUnit
     {
         public static ISerializableCommand<GameInstance> Command(
-                GameState.GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
+                GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
             => new Implementation(game, tile, blueprint, unitId);
 
         private class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameState.GameState game;
+            private readonly GameState game;
             private readonly Tile tile;
             private readonly IUnitBlueprint blueprint;
             private readonly Id<EnemyUnit> unitId;
 
-            public Implementation(GameState.GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
+            public Implementation(GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
             {
                 this.game = game;
                 this.tile = tile;

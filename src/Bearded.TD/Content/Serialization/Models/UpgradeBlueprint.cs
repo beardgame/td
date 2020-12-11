@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Upgrades;
+using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Content.Serialization.Models

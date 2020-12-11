@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.GameState;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Components;
-using Bearded.TD.Game.GameState.Rules;
-using Bearded.TD.Game.GameState.Technologies;
-using Bearded.TD.Game.GameState.Units;
-using Bearded.TD.Game.GameState.Upgrades;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Game
 {

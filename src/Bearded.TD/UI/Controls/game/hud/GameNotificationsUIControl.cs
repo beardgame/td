@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using Bearded.TD.Game;
-using Bearded.TD.Game.GameState;
+using Bearded.TD.Game.Simulation;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;

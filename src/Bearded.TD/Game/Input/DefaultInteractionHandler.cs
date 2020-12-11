@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;

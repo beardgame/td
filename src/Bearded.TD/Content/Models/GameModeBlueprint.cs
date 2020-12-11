@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState;
-using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Rules;
 
 namespace Bearded.TD.Content.Models
 {

@@ -2,8 +2,8 @@
 using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Upgrades;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.UI.Navigation;
 
 namespace Bearded.TD.UI.Controls

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.GameState.Upgrades;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

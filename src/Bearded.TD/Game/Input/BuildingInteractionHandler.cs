@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Factions;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Factions;
 
 namespace Bearded.TD.Game.Input
 {

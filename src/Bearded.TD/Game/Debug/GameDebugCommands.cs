@@ -1,6 +1,6 @@
 using System;
 using Bearded.TD.Game.Commands.Debug;
-using Bearded.TD.Game.GameState.Resources;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
 // ReSharper disable UnusedMember.Local

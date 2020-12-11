@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using amulware.Graphics;
-using Bearded.TD.Game.GameState.Technologies;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;

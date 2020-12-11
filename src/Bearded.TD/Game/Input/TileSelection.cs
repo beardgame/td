@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;

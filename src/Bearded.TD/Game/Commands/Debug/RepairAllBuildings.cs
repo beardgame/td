@@ -1,9 +1,9 @@
 using System.Linq;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Components.Damage;
-using Bearded.TD.Game.GameState.Damage;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Commands.Debug

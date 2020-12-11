@@ -1,7 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands.Loading

@@ -2,8 +2,8 @@
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Components;
-using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Content.Models

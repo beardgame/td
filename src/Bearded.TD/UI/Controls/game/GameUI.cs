@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 using amulware.Graphics;
 using Bearded.TD.Game;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Events;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.GameLoop;
-using Bearded.TD.Game.GameState.Workers;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;

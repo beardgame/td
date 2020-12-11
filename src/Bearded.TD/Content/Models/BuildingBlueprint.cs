@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Buildings;
-using Bearded.TD.Game.GameState.Components;
-using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Upgrades;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Content.Models

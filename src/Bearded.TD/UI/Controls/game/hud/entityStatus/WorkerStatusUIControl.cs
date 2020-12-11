@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using amulware.Graphics;
-using Bearded.TD.Game.GameState.Workers;
+using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;

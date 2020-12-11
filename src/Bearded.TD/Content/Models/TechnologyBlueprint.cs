@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Technologies;
+using Bearded.TD.Game.Simulation.Technologies;
 
 namespace Bearded.TD.Content.Models
 {

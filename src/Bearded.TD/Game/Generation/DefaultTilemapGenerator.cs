@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.GameState.World;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Geometry;
@@ -13,7 +13,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.GameState.World.TileType;
+using static Bearded.TD.Game.Simulation.World.TileType;
 using static Bearded.TD.Tiles.Directions;
 
 namespace Bearded.TD.Game.Generation

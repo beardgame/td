@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

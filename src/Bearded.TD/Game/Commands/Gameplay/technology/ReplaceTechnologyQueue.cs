@@ -1,8 +1,8 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.Technologies;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 

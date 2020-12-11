@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Simulation;
 using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Commands.Loading
@@ -22,7 +23,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
             public void Execute()
             {
-                game.InitialiseState(new GameState.GameState(game.Meta, gameSettings));
+                game.InitialiseState(new GameState(game.Meta, gameSettings));
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);

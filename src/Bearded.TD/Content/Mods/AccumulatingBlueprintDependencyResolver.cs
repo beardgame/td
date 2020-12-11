@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bearded.TD.Game;
-using Bearded.TD.Game.GameState;
+using Bearded.TD.Game.Simulation;
 
 namespace Bearded.TD.Content.Mods
 {

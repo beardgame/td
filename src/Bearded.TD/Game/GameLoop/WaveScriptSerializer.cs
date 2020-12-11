@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.GameLoop;
-using Bearded.TD.Game.GameState.Resources;
-using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

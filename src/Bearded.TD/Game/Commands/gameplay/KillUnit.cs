@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.GameState.Factions;
-using Bearded.TD.Game.GameState.Units;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 

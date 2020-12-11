@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.GameState.Rules;
+using Bearded.TD.Game.Simulation.Rules;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD
