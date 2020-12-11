@@ -27,7 +27,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Units
 {
     [ComponentOwner]
-    class EnemyUnit : GameObject,
+    sealed class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
         IIdable<EnemyUnit>,
         IMortal,
