@@ -7,8 +7,9 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Synchronization
 {
     static class SyncCursors
     {
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Commands
                 GameInstance game, IDictionary<Player, Tile> cursorPositions)
             => new CommandImplementation(game, cursorPositions);
 
-        private class RequestImplementation : IRequest<Player, GameInstance>
+        private sealed class RequestImplementation : IRequest<Player, GameInstance>
         {
             private readonly GameInstance game;
             private readonly Player player;
@@ -44,7 +45,7 @@ namespace Bearded.TD.Game.Commands
                 new Serializer(new Dictionary<Player, Tile> {{player, cursorPosition}});
         }
 
-        private class CommandImplementation : ISerializableCommand<GameInstance>
+        private sealed class CommandImplementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IDictionary<Player, Tile> cursorPositions;
@@ -66,11 +67,11 @@ namespace Bearded.TD.Game.Commands
             public ICommandSerializer<GameInstance> Serializer => new Serializer(cursorPositions);
         }
 
-        private class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>
+        private sealed class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>
         {
             private (Id<Player> player, int x, int y)[] cursorPositions;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() {}
 
             public Serializer(IDictionary<Player, Tile> cursorPositions)

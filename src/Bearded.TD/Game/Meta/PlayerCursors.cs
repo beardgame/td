@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using amulware.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;

@@ -6,6 +6,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities.Collections;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -14,7 +15,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game, ModMetadata mod, bool enabled)
             => new Implementation(game, mod, enabled);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly ModMetadata mod;
@@ -46,15 +47,13 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(mod, enabled);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private string mod;
             private bool enabled;
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(ModMetadata mod, bool enabled)
             {

@@ -3,6 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             => new CommandImplementation(
                 placeholder.Game.Meta.Ids.GetNext<Building>(), placeholder);
 
-        private class CommandImplementation : ISerializableCommand<GameInstance>
+        private sealed class CommandImplementation : ISerializableCommand<GameInstance>
         {
             private readonly Id<Building> buildingId;
             private readonly BuildingPlaceholder placeholder;
@@ -33,7 +34,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             public ICommandSerializer<GameInstance> Serializer => new CommandSerializer(buildingId, placeholder);
         }
 
-        private class CommandSerializer : ICommandSerializer<GameInstance>
+        private sealed class CommandSerializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> buildingId;
             private Id<BuildingPlaceholder> placeholder;
@@ -44,7 +45,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.placeholder = placeholder.Id;
             }
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public CommandSerializer() { }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)

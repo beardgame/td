@@ -5,6 +5,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Synchronization
 {
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
         public static ISerializableCommand<GameInstance> Command(GameInstance game)
             => new Implementation(game.Players.Select(p => (p, p.GetCurrentState())).ToList());
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly IList<(Player, PlayerState)> players;
 
@@ -33,11 +34,11 @@ namespace Bearded.TD.Game.Commands.Synchronization
             public ICommandSerializer<GameInstance> Serializer => new Serializer(players);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private (Id<Player> id, PlayerState state)[] players;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(IEnumerable<(Player player, PlayerState state)> players)

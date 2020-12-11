@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             new Implementation(
                 game, faction, Id<BuildingPlaceholder>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
 
-        private class Implementation : UnifiedRequestCommand
+        private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
@@ -68,7 +69,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 new Serializer(faction, id, blueprint, footprint, taskId);
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
             private ModAwareId blueprint;
@@ -79,10 +80,8 @@ namespace Bearded.TD.Game.Commands.Gameplay
             private int footprintY;
             private Id<IWorkerTask> taskId;
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(
                 Faction faction,

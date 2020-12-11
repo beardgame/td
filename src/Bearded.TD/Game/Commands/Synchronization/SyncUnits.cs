@@ -7,16 +7,17 @@ using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using JetBrains.Annotations;
 using Lidgren.Network;
 
-namespace Bearded.TD.Game.Commands
+namespace Bearded.TD.Game.Commands.Synchronization
 {
     static class SyncUnits
     {
         public static ISerializableCommand<GameInstance> Command(IEnumerable<EnemyUnit> units)
             => new Implementation(units.Select(u => (u, u.GetCurrentStateToSync())).ToList());
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly IList<(EnemyUnit, IStateToSync)> units;
 
@@ -36,7 +37,7 @@ namespace Bearded.TD.Game.Commands
             public ICommandSerializer<GameInstance> Serializer => new Serializer(units);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private (Id<EnemyUnit> unit, byte[] data)[] units;
 
@@ -45,7 +46,7 @@ namespace Bearded.TD.Game.Commands
                 this.units = units.Select(tuple => (tuple.unit.Id, dataFromStateToSync(tuple.synchronizer))).ToArray();
             }
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
             }

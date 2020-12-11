@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -40,7 +41,7 @@ namespace Bearded.TD.Game.Commands.Loading
             private int tileX;
             private int tileY;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(Id<SpawnLocation> id, Tile tile)

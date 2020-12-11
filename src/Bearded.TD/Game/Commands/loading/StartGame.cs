@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game)
             => new Implementation(game);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
 
@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer();
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             // ReSharper disable once EmptyConstructor
             public Serializer() {}

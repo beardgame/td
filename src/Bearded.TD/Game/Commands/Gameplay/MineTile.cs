@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
         public static IRequest<Player, GameInstance> Request(GameInstance game, Faction faction, Tile tile)
             => new Implementation(game, faction, tile, Id<IWorkerTask>.Invalid);
 
-        private class Implementation : UnifiedRequestCommand
+        private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
@@ -44,14 +45,14 @@ namespace Bearded.TD.Game.Commands.Gameplay
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(tile, faction, taskId);
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private int tileX;
             private int tileY;
             private Id<Faction> faction;
             private Id<IWorkerTask> taskId;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
             }

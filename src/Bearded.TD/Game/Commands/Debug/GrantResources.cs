@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Debug
 {
@@ -35,7 +36,7 @@ namespace Bearded.TD.Game.Commands.Debug
             private Id<Faction> faction;
             private double amount;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(Faction faction, ResourceAmount amount)

@@ -5,6 +5,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities.Collections;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.General
 {
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Commands.General
         public static ISerializableCommand<GameInstance> Command(GameInstance game, GameSettings gameSettings)
             => new Implementation(game, gameSettings);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly GameSettings gameSettings;
@@ -56,11 +57,11 @@ namespace Bearded.TD.Game.Commands.General
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private readonly GameSettings.Serializer gameSettingsSerializer;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() : this(new GameSettings.Builder().Build()) { }
 
             public Serializer(IGameSettings gameSettings)

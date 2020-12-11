@@ -7,6 +7,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game, IEnumerable<ModMetadata> mods)
             => new Implementation(game, mods);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IEnumerable<ModMetadata> mods;
@@ -36,7 +37,7 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(mods);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private string[] mods;
 
@@ -45,10 +46,8 @@ namespace Bearded.TD.Game.Commands.Loading
                 this.mods = mods.Select(m => m.Id).ToArray();
             }
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, mods.Select(game.ContentManager.FindMod).ToList());

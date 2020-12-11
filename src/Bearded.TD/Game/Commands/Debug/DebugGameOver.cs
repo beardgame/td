@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Commands.Debug
         public static IRequest<Player, GameInstance> Request(GameState game)
             => new Implementation(game);
 
-        private class Implementation : UnifiedDebugRequestCommand
+        private sealed class Implementation : UnifiedDebugRequestCommand
         {
             private readonly GameState game;
 
@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Commands.Debug
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             // ReSharper disable once EmptyConstructor
             public Serializer() { }

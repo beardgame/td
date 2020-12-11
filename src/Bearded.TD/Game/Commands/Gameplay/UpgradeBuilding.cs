@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
@@ -14,7 +15,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 GameInstance game, Building building, IUpgradeBlueprint upgrade)
             => new Implementation(game, building, upgrade);
 
-        private class Implementation : UnifiedRequestCommand
+        private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Building building;
@@ -41,12 +42,12 @@ namespace Bearded.TD.Game.Commands.Gameplay
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(building, upgrade);
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Building> building;
             private ModAwareId upgrade;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(Building building, IUpgradeBlueprint upgrade)

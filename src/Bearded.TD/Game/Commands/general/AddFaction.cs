@@ -4,6 +4,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.General
 {
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Commands.General
         public static ISerializableCommand<GameInstance> Command(GameInstance game, Faction faction)
             => new Implementation(game, faction);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Faction faction;
@@ -31,7 +32,7 @@ namespace Bearded.TD.Game.Commands.General
             public ICommandSerializer<GameInstance> Serializer => new Serializer(faction);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Faction> id;
             private Id<Faction> parent;
@@ -52,10 +53,8 @@ namespace Bearded.TD.Game.Commands.General
                 color = faction.Color;
             }
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(

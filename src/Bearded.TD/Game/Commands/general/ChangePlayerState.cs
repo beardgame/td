@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.General
 {
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Commands.General
         public static IRequest<Player, GameInstance> Request(Player player, PlayerConnectionState state)
             => new Implementation(player, state);
 
-        private class Implementation : UnifiedRequestCommand
+        private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly Player player;
             private readonly PlayerConnectionState state;
@@ -53,15 +54,13 @@ namespace Bearded.TD.Game.Commands.General
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(player, state);
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Player> player;
             private byte state;
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(Player player, PlayerConnectionState state)
             {

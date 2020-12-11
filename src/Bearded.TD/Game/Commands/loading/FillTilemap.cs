@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -18,7 +19,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 game,
                 tileGeometries.Select(t => tileGeometries[t]).ToList(), drawInfos.Select(t => drawInfos[t]).ToList());
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IList<TileGeometry> tileGeometries;
@@ -50,7 +51,7 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(tileGeometries, drawInfos);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private byte[] types;
             private double[] hardnesses;
@@ -67,7 +68,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 drawSizeFactors = drawInfos.Select(i => i.HexScale).ToArray();
             }
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
             }

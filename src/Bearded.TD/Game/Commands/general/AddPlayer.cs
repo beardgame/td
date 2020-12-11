@@ -3,6 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.General
 {
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Commands.General
         public static ISerializableCommand<GameInstance> Command(GameInstance game, Player player)
             => new Implementation(game, player);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly Player player;
@@ -30,7 +31,7 @@ namespace Bearded.TD.Game.Commands.General
             public ICommandSerializer<GameInstance> Serializer => new Serializer(player);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Player> id;
             private string name;
@@ -41,10 +42,8 @@ namespace Bearded.TD.Game.Commands.General
                 name = player.Name;
             }
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, new Player(id, name));

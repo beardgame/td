@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Networking.Serialization;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -9,7 +10,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game)
             => new Implementation(game);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
 
@@ -26,9 +27,9 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer();
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            // ReSharper disable once EmptyConstructor
+            [UsedImplicitly]
             public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)

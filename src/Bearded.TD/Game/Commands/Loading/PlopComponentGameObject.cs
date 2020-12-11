@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -13,7 +14,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game, IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
             => new Implementation(game, blueprint, position, direction);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IComponentOwnerBlueprint blueprint;
@@ -37,13 +38,13 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(blueprint, position, direction);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private ModAwareId blueprint;
             private Position3 position;
             private Direction2 direction;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
             }

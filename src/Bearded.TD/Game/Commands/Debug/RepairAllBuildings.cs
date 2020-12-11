@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Commands.Debug
         public static IRequest<Player, GameInstance> Request(GameInstance game)
             => Implementation.For(game);
 
-        private class Implementation : UnifiedDebugRequestCommandWithoutParameter<Implementation>
+        private sealed class Implementation : UnifiedDebugRequestCommandWithoutParameter<Implementation>
         {
             public override void Execute()
             {

@@ -10,6 +10,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -23,7 +24,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 PositionedFootprint footprint)
             => new Implementation(gameState, faction, id, blueprint, footprint);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameState gameState;
             private readonly Faction faction;
@@ -53,7 +54,7 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(faction, id, blueprint, footprint);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> id;
             private Id<Faction> faction;
@@ -63,10 +64,8 @@ namespace Bearded.TD.Game.Commands.Loading
             private int footprintX;
             private int footprintY;
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(Faction faction, Id<Building> id, IBlueprint blueprint, PositionedFootprint footprint)
             {

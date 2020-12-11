@@ -4,6 +4,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.General
 {
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Commands.General
         public static ISerializableCommand<GameInstance> Command(Player player, Faction faction)
             => new Implementation(player, faction);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly Player player;
             private readonly Faction faction;
@@ -31,15 +32,13 @@ namespace Bearded.TD.Game.Commands.General
             public ICommandSerializer<GameInstance> Serializer => new Serializer(player, faction);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Player> player;
             private Id<Faction> faction;
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer()
-            {
-            }
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(Player player, Faction faction)
             {

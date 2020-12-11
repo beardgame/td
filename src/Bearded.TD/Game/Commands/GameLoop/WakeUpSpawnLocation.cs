@@ -3,6 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.GameLoop
 {
@@ -32,7 +33,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
         {
             private Id<SpawnLocation> spawnLocation;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(SpawnLocation spawnLocation)

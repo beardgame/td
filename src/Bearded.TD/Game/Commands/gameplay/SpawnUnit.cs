@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Gameplay
 {
@@ -15,7 +16,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
             => new Implementation(game, tile, blueprint, unitId);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameState game;
             private readonly Tile tile;
@@ -35,14 +36,14 @@ namespace Bearded.TD.Game.Commands.Gameplay
             public ICommandSerializer<GameInstance> Serializer => new Serializer(blueprint, tile, unitId);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private ModAwareId blueprint;
             private int x;
             private int y;
             private Id<EnemyUnit> unitId;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
             }

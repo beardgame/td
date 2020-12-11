@@ -3,6 +3,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Debug
 {
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Commands.Debug
         public static IRequest<Player, GameInstance> Request(Faction faction, long number)
             => new Implementation(faction, number);
 
-        private class Implementation : UnifiedDebugRequestCommand
+        private sealed class Implementation : UnifiedDebugRequestCommand
         {
             private readonly Faction faction;
             private readonly long number;
@@ -29,12 +30,12 @@ namespace Bearded.TD.Game.Commands.Debug
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, number);
         }
 
-        private class Serializer : UnifiedRequestCommandSerializer
+        private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
             private long number;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             public Serializer(Faction faction, long number)

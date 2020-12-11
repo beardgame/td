@@ -3,6 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Networking.Serialization;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Loading
 {
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(GameInstance game, IGameModeBlueprint gameMode)
             => new Implementation(game, gameMode);
 
-        private class Implementation : ISerializableCommand<GameInstance>
+        private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly IGameModeBlueprint gameMode;
@@ -33,17 +34,17 @@ namespace Bearded.TD.Game.Commands.Loading
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameMode);
         }
 
-        private class Serializer : ICommandSerializer<GameInstance>
+        private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private ModAwareId gameModeId;
+
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(IGameModeBlueprint gameModeBlueprint)
             {
                 gameModeId = gameModeBlueprint.Id;
             }
-
-            // ReSharper disable once UnusedMember.Local
-            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
                 new Implementation(game, game.Blueprints.GameModes[gameModeId]);

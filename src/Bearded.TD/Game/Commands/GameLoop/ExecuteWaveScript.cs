@@ -3,6 +3,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.GameLoop
 {
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
         {
             private readonly WaveScriptSerializer scriptSerializer;
 
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer()
             {
                 scriptSerializer = new WaveScriptSerializer();
