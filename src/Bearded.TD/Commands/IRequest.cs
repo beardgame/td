@@ -6,7 +6,7 @@ namespace Bearded.TD.Commands
     {
         bool CheckPreconditions(TActor actor);
 
-        ISerializableCommand<TObject> ToCommand();
+        ISerializableCommand<TObject>? ToCommand();
 
         IRequestSerializer<TActor, TObject> Serializer { get; }
     }

@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Simulation.Factions
         private readonly WorkerManager workers;
 
         public Id<Faction> Id { get; }
-        public Faction Parent { get; }
+        public Faction? Parent { get; }
         public bool HasResources { get; }
         public bool HasWorkerNetwork { get; }
         public bool HasWorkers { get; }
@@ -31,11 +31,11 @@ namespace Bearded.TD.Game.Simulation.Factions
         public Faction(
             Id<Faction> id,
             GameState gameState,
-            Faction parent,
+            Faction? parent,
             bool hasResources,
             bool hasWorkerNetwork,
             bool hasWorkers,
-            string name = null,
+            string? name = null,
             Color? color = null)
         {
             Id = id;
@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Simulation.Factions
             HasResources = hasResources;
             HasWorkerNetwork = hasWorkerNetwork;
             HasWorkers = hasWorkers;
-            Name = name;
+            Name = name ?? "";
             this.color = color;
 
             if (hasResources)

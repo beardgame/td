@@ -144,7 +144,7 @@ namespace Bearded.TD.Game.Simulation.Units
             isDead = true;
         }
 
-        public void Execute(Faction killingBlowFaction)
+        public void Execute(Faction? killingBlowFaction)
         {
             Game.Meta.Events.Send(new EnemyKilled(this, killingBlowFaction));
             Delete();

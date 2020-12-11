@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Commands.General
             private bool hasResources;
             private bool hasWorkerNetwork;
             private bool hasWorkers;
-            private string name;
+            private string name = "";
             private Color? color;
 
             public Serializer(Faction faction)
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Commands.General
                 stream.Serialize(ref hasWorkerNetwork);
                 stream.Serialize(ref hasWorkers);
                 stream.Serialize(ref name);
-                stream.Serialize(ref color, 0U);
+                stream.Serialize(ref color);
             }
         }
     }

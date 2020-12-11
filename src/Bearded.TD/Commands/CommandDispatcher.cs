@@ -4,10 +4,10 @@ namespace Bearded.TD.Commands
 {
     interface ICommandDispatcher<TObject>
     {
-        void Dispatch(ISerializableCommand<TObject> command);
+        void Dispatch(ISerializableCommand<TObject>? command);
     }
 
-    class ClientCommandDispatcher<TObject> : ICommandDispatcher<TObject>
+    sealed class ClientCommandDispatcher<TObject> : ICommandDispatcher<TObject>
     {
         private readonly ICommandExecutor executor;
 
@@ -16,13 +16,13 @@ namespace Bearded.TD.Commands
             this.executor = executor;
         }
 
-        public void Dispatch(ISerializableCommand<TObject> command)
+        public void Dispatch(ISerializableCommand<TObject>? command)
         {
-            executor.Execute(command);
+            executor.Execute(command!);
         }
     }
 
-    class ServerCommandDispatcher<TActor, TObject> : ICommandDispatcher<TObject>
+    sealed class ServerCommandDispatcher<TActor, TObject> : ICommandDispatcher<TObject>
     {
         private readonly ICommandExecutor executor;
         private readonly ServerNetworkInterface network;
@@ -33,7 +33,7 @@ namespace Bearded.TD.Commands
             this.network = network;
         }
 
-        public void Dispatch(ISerializableCommand<TObject> command)
+        public void Dispatch(ISerializableCommand<TObject>? command)
         {
             if (command == null)
                 return;

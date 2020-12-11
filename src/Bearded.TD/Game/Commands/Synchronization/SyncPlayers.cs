@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private (Id<Player> id, PlayerState state)[] players;
+            private (Id<Player> id, PlayerState state)[] players = {};
 
             [UsedImplicitly]
             public Serializer() { }

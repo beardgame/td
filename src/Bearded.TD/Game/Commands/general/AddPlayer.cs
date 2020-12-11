@@ -34,16 +34,16 @@ namespace Bearded.TD.Game.Commands.General
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Id<Player> id;
-            private string name;
+            private string name = "";
+
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(Player player)
             {
                 id = player.Id;
                 name = player.Name;
             }
-
-            [UsedImplicitly]
-            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game, new Player(id, name));

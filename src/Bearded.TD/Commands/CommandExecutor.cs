@@ -5,7 +5,7 @@
         void Execute(ICommand command);
     }
 
-    class DefaultCommandExecutor : ICommandExecutor
+    sealed class DefaultCommandExecutor : ICommandExecutor
     {
         public void Execute(ICommand command)
         {

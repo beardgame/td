@@ -38,9 +38,7 @@ namespace Bearded.TD.Game.Commands.Loading
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game);
 
-            public void Serialize(INetBufferStream stream)
-            {
-            }
+            public void Serialize(INetBufferStream stream) {}
         }
     }
 }

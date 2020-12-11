@@ -212,7 +212,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         public void HandleEvent(EnemyKilled @event)
         {
-            if (@event.KillingFaction.Technology == this)
+            if (@event.KillingFaction?.Technology == this)
             {
                 AddTechPoints(@event.Unit.Value);
             }

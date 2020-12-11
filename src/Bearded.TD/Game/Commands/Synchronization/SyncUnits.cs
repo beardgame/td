@@ -39,16 +39,14 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private (Id<EnemyUnit> unit, byte[] data)[] units;
+            private (Id<EnemyUnit> unit, byte[] data)[] units = {};
+
+            [UsedImplicitly]
+            public Serializer() {}
 
             public Serializer(IEnumerable<(EnemyUnit unit, IStateToSync synchronizer)> units)
             {
                 this.units = units.Select(tuple => (tuple.unit.Id, dataFromStateToSync(tuple.synchronizer))).ToArray();
-            }
-
-            [UsedImplicitly]
-            public Serializer()
-            {
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>

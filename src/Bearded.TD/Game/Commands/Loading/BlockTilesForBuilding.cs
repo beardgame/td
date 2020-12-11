@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private (int x, int y)[] tiles;
+            private (int x, int y)[] tiles = {};
 
             [UsedImplicitly]
             public Serializer() { }

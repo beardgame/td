@@ -61,12 +61,12 @@ namespace Bearded.TD.Commands
             commandDispatcher.Dispatch(command);
         }
 
-        private ISerializableCommand<TObject> cancel(IRequest<TActor, TObject> request)
+        private ISerializableCommand<TObject>? cancel(IRequest<TActor, TObject> request)
         {
             return null;
         }
 
-        private ISerializableCommand<TObject> execute(IRequest<TActor, TObject> request)
+        private ISerializableCommand<TObject>? execute(IRequest<TActor, TObject> request)
         {
             return request.ToCommand();
         }

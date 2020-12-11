@@ -53,11 +53,11 @@ namespace Bearded.TD.Game.Commands.Loading
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private byte[] types;
-            private double[] hardnesses;
-            private Unit[] heights;
-            private Unit[] drawHeights;
-            private float[] drawSizeFactors;
+            private byte[] types = {};
+            private double[]? hardnesses;
+            private Unit[]? heights;
+            private Unit[]? drawHeights;
+            private float[]? drawSizeFactors;
 
             public Serializer(IList<TileGeometry> tileGeometries, IList<TileDrawInfo> drawInfos)
             {
@@ -69,17 +69,15 @@ namespace Bearded.TD.Game.Commands.Loading
             }
 
             [UsedImplicitly]
-            public Serializer()
-            {
-            }
+            public Serializer() {}
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
                 => new Implementation(game,
                     Enumerable.Range(0, types.Length)
-                        .Select(i => new TileGeometry((TileType) types[i], hardnesses[i], heights[i]))
+                        .Select(i => new TileGeometry((TileType) types[i], hardnesses![i], heights![i]))
                         .ToList(),
                     Enumerable.Range(0, types.Length)
-                        .Select(i => new TileDrawInfo(drawHeights[i], drawSizeFactors[i]))
+                        .Select(i => new TileDrawInfo(drawHeights![i], drawSizeFactors![i]))
                         .ToList()
                     );
 

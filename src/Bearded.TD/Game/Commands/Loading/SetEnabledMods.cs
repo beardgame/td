@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private string[] mods;
+            private string[] mods = {};
 
             public Serializer(IEnumerable<ModMetadata> mods)
             {

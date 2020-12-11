@@ -16,9 +16,9 @@ namespace Bearded.TD.Game.Commands.Gameplay
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly EnemyUnit unit;
-            private readonly Faction killingBlowFaction;
+            private readonly Faction? killingBlowFaction;
 
-            public Implementation(EnemyUnit unit, Faction killingBlowFaction)
+            public Implementation(EnemyUnit unit, Faction? killingBlowFaction)
             {
                 this.unit = unit;
                 this.killingBlowFaction = killingBlowFaction;
@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             {
             }
 
-            public Serializer(EnemyUnit unit, Faction killingBlowFaction)
+            public Serializer(EnemyUnit unit, Faction? killingBlowFaction)
             {
                 this.unit = unit.Id;
                 this.killingBlowFaction = killingBlowFaction?.Id ?? Id<Faction>.Invalid;
@@ -46,7 +46,9 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
             {
-                return new Implementation(game.State.Find(unit), killingBlowFaction.IsValid ? game.State.FactionFor(killingBlowFaction) : null);
+                return new Implementation(
+                    game.State.Find(unit),
+                    killingBlowFaction.IsValid ? game.State.FactionFor(killingBlowFaction) : null);
             }
 
             public void Serialize(INetBufferStream stream)

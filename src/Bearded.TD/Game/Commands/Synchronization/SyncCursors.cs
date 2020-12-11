@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
             public bool CheckPreconditions(Player actor) => player == actor;
 
-            public ISerializableCommand<GameInstance> ToCommand()
+            public ISerializableCommand<GameInstance>? ToCommand()
             {
                 game.PlayerCursors.SetPlayerCursorPosition(player, cursorPosition);
                 return null;
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
         private sealed class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>
         {
-            private (Id<Player> player, int x, int y)[] cursorPositions;
+            private (Id<Player> player, int x, int y)[] cursorPositions = {};
 
             [UsedImplicitly]
             public Serializer() {}

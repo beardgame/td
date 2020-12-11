@@ -3,12 +3,12 @@ using Bearded.TD.Game.Simulation.Factions;
 
 namespace Bearded.TD.Game.Simulation.Units
 {
-    struct EnemyKilled : IGlobalEvent
+    readonly struct EnemyKilled : IGlobalEvent
     {
         public EnemyUnit Unit { get; }
-        public Faction KillingFaction { get; }
+        public Faction? KillingFaction { get; }
 
-        public EnemyKilled(EnemyUnit unit, Faction killingFaction)
+        public EnemyKilled(EnemyUnit unit, Faction? killingFaction)
         {
             Unit = unit;
             KillingFaction = killingFaction;
