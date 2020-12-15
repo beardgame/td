@@ -21,6 +21,7 @@
                 ]
             }
         },
-        { "id" : "assignWorkers" }
+        { "id" : "assignWorkers" },
+        { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} }
     ]
 }

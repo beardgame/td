@@ -1,7 +1,7 @@
 {
     "id" : "extraDamage2",
     "name" : "A bigger boom",
-    "cost" : 30,
+    "cost" : 1,
     "requiredTechs" : [ "extraDamage1" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage2" }

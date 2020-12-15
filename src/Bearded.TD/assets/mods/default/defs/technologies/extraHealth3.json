@@ -1,7 +1,7 @@
 {
     "id" : "extraHealth3",
     "name" : "Constitution III",
-    "cost" : 40,
+    "cost" : 1,
     "requiredTechs" : [ "extraHealth2" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraHealth3" }

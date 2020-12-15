@@ -1,7 +1,7 @@
 {
     "id" : "unlockFountain",
     "name" : "Flow Like Water",
-    "cost" : 40,
+    "cost" : 1,
     "unlocks": [
         { "type" : "building", "blueprint" : "fountain" },
         { "type" : "upgrade", "blueprint" : "generateWater" }
