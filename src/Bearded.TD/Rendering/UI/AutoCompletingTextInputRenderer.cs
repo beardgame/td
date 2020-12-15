@@ -36,11 +36,12 @@ namespace Bearded.TD.Rendering.UI
 
             var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
 
+            var midLeft = textInput.Frame.TopLeft + new Vector2d(0, textInput.Frame.Size.Y * .5);
             textDrawer.DrawLine(
-                xyz: ((Vector2) textInput.Frame.TopLeft).WithZ() + stringOffset,
+                xyz: ((Vector2) midLeft).WithZ() + stringOffset,
                 text: str,
                 fontHeight: (float) textInput.FontSize,
-                alignVertical: 0,
+                alignVertical: 0.5f,
                 parameters: argb
             );
         }
