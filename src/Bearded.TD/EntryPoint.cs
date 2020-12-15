@@ -20,8 +20,10 @@ namespace Bearded.TD
                 Constants.Paths.LogFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             using var writer = new StreamWriter(stream);
 
+#if !DEBUG
             try
             {
+#endif
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -46,6 +48,7 @@ namespace Bearded.TD
                 game.Run();
 
                 logger.Info?.Log("Safely exited game");
+#if !DEBUG
             }
             catch (Exception e)
             {
@@ -53,6 +56,7 @@ namespace Bearded.TD
                 writer.WriteLine(e);
                 throw;
             }
+#endif
         }
     }
 }
