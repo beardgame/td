@@ -17,7 +17,7 @@ namespace Bearded.TD.UI.Controls
         private Id<WaveScript> currentWave;
         private Instant? waveSpawnStart;
 
-        public int? WaveNumber { get; private set; }
+        public string? WaveName { get; private set; }
         public ResourceAmount? WaveResources { get; private set; }
 
         public string FactionName => game.Me.Faction.Name;
@@ -44,7 +44,7 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(WaveScheduled @event)
         {
             currentWave = @event.WaveId;
-            WaveNumber = @event.WaveNumber;
+            WaveName = @event.WaveName;
             waveSpawnStart = @event.SpawnStart;
             WaveResources = @event.ResourceAmount;
         }
@@ -57,7 +57,7 @@ namespace Bearded.TD.UI.Controls
             }
 
             currentWave = Id<WaveScript>.Invalid;
-            WaveNumber = null;
+            WaveName = null;
             waveSpawnStart = null;
             WaveResources = null;
         }

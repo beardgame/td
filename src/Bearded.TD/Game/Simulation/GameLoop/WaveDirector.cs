@@ -70,7 +70,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 game.Meta.Events.Subscribe(this);
                 game.Meta.Events.Send(
                     new WaveScheduled(
-                        script.Id, script.Id.Value, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
+                        script.Id, script.DisplayName, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
                 phase = Phase.Downtime;
                 foreach (var location in script.SpawnLocations)
                 {

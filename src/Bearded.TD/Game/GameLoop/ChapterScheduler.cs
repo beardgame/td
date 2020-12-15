@@ -10,10 +10,9 @@ namespace Bearded.TD.Game.GameLoop
     {
         private readonly WaveScheduler waveScheduler;
 
-        private bool chapterStarted;
-        private int wavesLeftInChapter;
+        private ChapterScript? currentChapter;
+        private int wavesSpawnedThisChapter;
 
-        private bool firstWaveOfChapter;
         private double nextWaveValue = FirstWaveValue;
         private ResourceAmount nextWaveResources = FirstWaveResources;
 
@@ -32,7 +31,8 @@ namespace Bearded.TD.Game.GameLoop
 
         private void onWaveEnded()
         {
-            if (wavesLeftInChapter > 0)
+            State.Satisfies(currentChapter != null);
+            if (wavesSpawnedThisChapter < currentChapter!.WaveCount)
             {
                 requestWave();
             }
@@ -44,41 +44,55 @@ namespace Bearded.TD.Game.GameLoop
 
         public void StartChapter(ChapterRequirements chapterRequirements)
         {
-            State.Satisfies(!chapterStarted);
-            chapterStarted = true;
-
-            wavesLeftInChapter = chapterRequirements.WaveCount;
-            firstWaveOfChapter = true;
+            State.Satisfies(currentChapter == null);
+            currentChapter = new ChapterScript(chapterRequirements.ChapterNumber, chapterRequirements.WaveCount);
+            wavesSpawnedThisChapter = 0;
             requestWave();
         }
 
         private void requestWave()
         {
-            State.Satisfies(wavesLeftInChapter > 0);
-            wavesLeftInChapter--;
+            State.Satisfies(currentChapter != null);
+            State.Satisfies(wavesSpawnedThisChapter < currentChapter!.WaveCount);
+            var waveNumber = ++wavesSpawnedThisChapter;
             waveScheduler.StartWave(new WaveRequirements(
+                currentChapter.ChapterNumber,
+                waveNumber,
                 nextWaveValue,
                 nextWaveResources,
-                firstWaveOfChapter ? FirstDownTimeDuration : DownTimeDuration));
+                waveNumber == 1 ? FirstDownTimeDuration : DownTimeDuration));
 
-            firstWaveOfChapter = false;
             nextWaveValue *= WaveValueMultiplier;
             nextWaveResources *= WaveResourcesMultiplier;
         }
 
         private void endChapter()
         {
-            State.Satisfies(chapterStarted);
-            chapterStarted = false;
+            State.Satisfies(currentChapter != null);
+            currentChapter = null;
             ChapterEnded?.Invoke();
         }
 
         public readonly struct ChapterRequirements
         {
+            public int ChapterNumber { get; }
             public int WaveCount { get; }
 
-            public ChapterRequirements(int waveCount)
+            public ChapterRequirements(int chapterNumber, int waveCount)
             {
+                WaveCount = waveCount;
+                ChapterNumber = chapterNumber;
+            }
+        }
+
+        private sealed record ChapterScript
+        {
+            public int ChapterNumber { get; }
+            public int WaveCount { get; }
+
+            public ChapterScript(int chapterNumber, int waveCount)
+            {
+                ChapterNumber = chapterNumber;
                 WaveCount = waveCount;
             }
         }

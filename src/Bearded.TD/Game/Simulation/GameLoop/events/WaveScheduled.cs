@@ -8,14 +8,14 @@ namespace Bearded.TD.Game.Simulation.GameLoop
     sealed record WaveScheduled : IGlobalEvent
     {
         public Id<WaveScript> WaveId { get; }
-        public int WaveNumber { get; }
+        public string WaveName { get; }
         public Instant SpawnStart { get; }
         public ResourceAmount ResourceAmount { get; }
 
-        public WaveScheduled(Id<WaveScript> waveId, int waveNumber, Instant spawnStart, ResourceAmount resourceAmount)
+        public WaveScheduled(Id<WaveScript> waveId, string waveName, Instant spawnStart, ResourceAmount resourceAmount)
         {
             WaveId = waveId;
-            WaveNumber = waveNumber;
+            WaveName = waveName;
             SpawnStart = spawnStart;
             ResourceAmount = resourceAmount;
         }

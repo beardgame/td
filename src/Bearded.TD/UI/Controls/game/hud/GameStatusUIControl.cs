@@ -41,7 +41,7 @@ namespace Bearded.TD.UI.Controls
         {
             resourcesAmount.SetFromSource($"{model.FactionResources.DisplayValue}");
             techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
-            waveNumber.SetFromSource(model.WaveNumber == null ? "-" : $"{model.WaveNumber}");
+            waveNumber.SetFromSource(model.WaveName ?? "-");
             timeUntilSpawn.SetFromSource(
                 model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
             waveResources.SetFromSource(
