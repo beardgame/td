@@ -126,7 +126,7 @@ float dither(vec2 xy)
 void main()
 {
     float limit = 0.75;
-    float overhangLimit = 1;
+    float overhangLimit = 0.9;
 
     vec3 camPosition = -cameraPosition;
     vec3 cutoutCenter = vec3(camPosition.xy, camPosition.z * camPosition.z * 3);
@@ -140,6 +140,7 @@ void main()
     {
         if (fragmentPosition.z > limit)
         {
+            // discard top of regular terrain
             discard;
         }
     }
@@ -147,7 +148,13 @@ void main()
     {
         if (distanceToCutoutCenter < cutoutRadius)
         {
-            discard;
+
+            // uncoming for much more dithered fading
+            //if (gl_FrontFacing)
+            {
+                // discard excessive height of upside down terrain
+                discard;
+            }
         } 
     }
 
@@ -162,6 +169,7 @@ void main()
 
         vec3 camToFragment = camPosition - fragmentPosition;
 
+        // intersect with cutout sphere
         vec3 oc = camPosition - cutoutCenter;
         float a = dot(camToFragment, camToFragment);
         float b = 2 * dot(oc, camToFragment);
@@ -170,10 +178,11 @@ void main()
 
         float f = (-b - sqrt(discriminant)) / (2.0*a);
 
+        // properties of point on cutout sphere
         fPosition = camPosition + camToFragment * f;
         fNormal = -cutoutCenterToFragmentNormalised;
         fColor = vec4(fColor.rgb * 0.75, fColor.a);
-
+    
         if (heightScale < 0 && fragmentPosition.z > limit)
         {
             float d = dither(gl_FragCoord.xy);
