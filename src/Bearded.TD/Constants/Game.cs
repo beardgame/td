@@ -67,7 +67,7 @@ namespace Bearded.TD
 
             public static class Technology
             {
-                public const double TechCostMultiplicationFactor = 1.2;
+                public const double TechCostMultiplicationFactor = 1;
             }
 
             public static class Enemy

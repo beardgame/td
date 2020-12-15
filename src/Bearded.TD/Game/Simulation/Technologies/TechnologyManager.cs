@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -11,15 +10,14 @@ using static Bearded.TD.Constants.Game.Technology;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    sealed class TechnologyManager : IListener<EnemyKilled>
+    sealed class TechnologyManager
     {
         private readonly GlobalGameEvents events;
 
-        private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies =
-            new Dictionary<ITechnologyBlueprint, long>();
-        private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new HashSet<IBuildingBlueprint>();
-        private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new HashSet<IUpgradeBlueprint>();
-        private readonly List<ITechnologyBlueprint> queuedTechnologies = new List<ITechnologyBlueprint>();
+        private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies = new();
+        private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new();
+        private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new();
+        private readonly List<ITechnologyBlueprint> queuedTechnologies = new();
 
         public long TechPoints { get; private set; }
 
@@ -30,8 +28,6 @@ namespace Bearded.TD.Game.Simulation.Technologies
         public TechnologyManager(GlobalGameEvents events)
         {
             this.events = events;
-
-            events.Subscribe(this);
         }
 
         public bool IsTechnologyQueued(ITechnologyBlueprint technology) => queuedTechnologies.Contains(technology);
@@ -105,9 +101,9 @@ namespace Bearded.TD.Game.Simulation.Technologies
             && canAffordNow(technology)
             && HasAllRequiredTechs(technology);
 
-        private bool canAffordNow(ITechnologyBlueprint technology) => TechPoints >= CostIfUnlockedNow(technology);
+        private bool canAffordNow(ITechnologyBlueprint technology) => TechPoints >= costIfUnlockedNow(technology);
 
-        public long CostIfUnlockedNow(ITechnologyBlueprint technology) =>
+        private long costIfUnlockedNow(ITechnologyBlueprint technology) =>
             costAtPositionInQueue(technology, 0);
 
         private long costAtPositionInQueue(ITechnologyBlueprint technology, int position)
@@ -179,7 +175,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             DebugAssert.Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
-            var cost = CostIfUnlockedNow(technology);
+            var cost = costIfUnlockedNow(technology);
             TechPoints -= cost;
             techCostMultiplier *= TechCostMultiplicationFactor;
             unlockedTechnologies.Add(technology, cost);
@@ -207,14 +203,6 @@ namespace Bearded.TD.Game.Simulation.Technologies
             if (unlockedUpgrades.Add(blueprint))
             {
                 events.Send(new UpgradeTechnologyUnlocked(this, blueprint));
-            }
-        }
-
-        public void HandleEvent(EnemyKilled @event)
-        {
-            if (@event.KillingFaction?.Technology == this)
-            {
-                AddTechPoints(@event.Unit.Value);
             }
         }
 

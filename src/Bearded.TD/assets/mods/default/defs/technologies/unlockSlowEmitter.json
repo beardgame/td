@@ -1,7 +1,7 @@
 {
     "id" : "unlockSlowEmitter",
     "name" : "Slow motion",
-    "cost" : 40,
+    "cost" : 1,
     "unlocks": [
         { "type" : "building", "blueprint" : "slowEmitter" }
     ]

@@ -124,7 +124,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                     case Phase.FinishOff:
                         if (spawnedUnits.Count == 0)
                         {
-                            game.Meta.Events.Send(new WaveEnded(script.Id));
+                            game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
                             game.Meta.Events.Unsubscribe(this);
                             phase = Phase.Completed;
                         }

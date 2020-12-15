@@ -1,7 +1,7 @@
 {
     "id" : "extraSpeed3",
     "name" : "Faster everything II",
-    "cost" : 90,
+    "cost" : 1,
     "requiredTechs" : [ "extraSpeed2a", "extraSpeed2b" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraFireRate3" },

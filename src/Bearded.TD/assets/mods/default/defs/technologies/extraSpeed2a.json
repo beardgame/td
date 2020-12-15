@@ -1,7 +1,7 @@
 {
     "id" : "extraSpeed2a",
     "name" : "Faster fire rate",
-    "cost" : 40,
+    "cost" : 1,
     "requiredTechs" : [ "extraSpeed1" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraFireRate2" }

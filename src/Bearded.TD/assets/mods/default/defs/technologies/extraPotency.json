@@ -1,7 +1,7 @@
 {
     "id" : "extraPotency",
     "name" : "Augmentor",
-    "cost" : 20,
+    "cost" : 1,
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraPotency" }
     ]

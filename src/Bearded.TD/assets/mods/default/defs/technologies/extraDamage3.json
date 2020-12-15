@@ -1,7 +1,7 @@
 {
     "id" : "extraDamage3",
     "name" : "The biggest boom",
-    "cost" : 40,
+    "cost" : 1,
     "requiredTechs" : [ "extraDamage2" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage3" }
