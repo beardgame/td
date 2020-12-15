@@ -42,6 +42,12 @@ namespace Bearded.TD.UI.Factories
                 Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
                 return this;
             }
+
+            public PristineLayout ForContentBox()
+            {
+                // Use the same margins as full screen for now.
+                return ForFullScreen();
+            }
         }
 
         public class Layout
