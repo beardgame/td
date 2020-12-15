@@ -11,6 +11,9 @@ namespace Bearded.TD.UI.Controls
         private readonly GameStatusUI model;
         private readonly Binding<string> resourcesAmount = new();
         private readonly Binding<string> techPointsAmount = new();
+        private readonly Binding<string> waveNumber = new();
+        private readonly Binding<string> timeUntilSpawn = new();
+        private readonly Binding<string> waveResources = new();
 
         public event VoidEventHandler? TechnologyButtonClicked;
 
@@ -25,7 +28,10 @@ namespace Bearded.TD.UI.Controls
                 .AddHeader($"{model.FactionName}", model.FactionColor)
                 .AddValueLabel("Resources:", resourcesAmount, rightColor: Constants.Game.GameUI.ResourcesColor)
                 .AddValueLabel("Tech points:", techPointsAmount, rightColor: Constants.Game.GameUI.TechPointsColor)
-                .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()));
+                .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
+                .AddValueLabel("Wave:", waveNumber)
+                .AddValueLabel("Next spawn:", timeUntilSpawn)
+                .AddValueLabel("Resources this wave:", waveResources, rightColor: Constants.Game.GameUI.ResourcesColor);
             this.BuildLayout().ForContentBox().FillContent(content);
 
             model.StatusChanged += updateLabels;
@@ -35,6 +41,11 @@ namespace Bearded.TD.UI.Controls
         {
             resourcesAmount.SetFromSource($"{model.FactionResources.DisplayValue}");
             techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
+            waveNumber.SetFromSource(model.WaveNumber == null ? "-" : $"{model.WaveNumber}");
+            timeUntilSpawn.SetFromSource(
+                model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
+            waveResources.SetFromSource(
+                model.WaveResources == null ? "-" : $"{model.WaveResources.Value.DisplayValue}");
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
