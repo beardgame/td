@@ -31,7 +31,7 @@ namespace Bearded.TD.Rendering
         {
             shaderReloader.ReloadShadersIfNeeded();
 
-            var argb = Color.Green;
+            var argb = Color.Black;
             GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
