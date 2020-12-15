@@ -36,10 +36,10 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly float heightMapWorldSize;
         private readonly float fallOffDistance;
 
-        private readonly FloatUniform heightmapRadiusUniform = new FloatUniform("heightmapRadius");
-        private readonly FloatUniform heightmapPixelSizeUVUniform = new FloatUniform("heightmapPixelSizeUV");
-        private readonly FloatUniform heightScaleUniform = new FloatUniform("heightScale");
-        private readonly FloatUniform heightOffsetUniform = new FloatUniform("heightOffset");
+        private readonly FloatUniform heightmapRadiusUniform = new("heightmapRadius");
+        private readonly FloatUniform heightmapPixelSizeUVUniform = new("heightmapPixelSizeUV");
+        private readonly FloatUniform heightScaleUniform = new("heightScale");
+        private readonly FloatUniform heightOffsetUniform = new("heightOffset");
 
         private readonly PipelineTexture heightmap;
         private readonly PipelineRenderTarget heightmapTarget; // H
