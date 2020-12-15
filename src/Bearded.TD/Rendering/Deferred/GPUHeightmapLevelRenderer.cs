@@ -36,10 +36,10 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly float heightMapWorldSize;
         private readonly float fallOffDistance;
 
-        private readonly FloatUniform heightmapRadiusUniform = new FloatUniform("heightmapRadius");
-        private readonly FloatUniform heightmapPixelSizeUVUniform = new FloatUniform("heightmapPixelSizeUV");
-        private readonly FloatUniform heightScaleUniform = new FloatUniform("heightScale");
-        private readonly FloatUniform heightOffsetUniform = new FloatUniform("heightOffset");
+        private readonly FloatUniform heightmapRadiusUniform = new("heightmapRadius");
+        private readonly FloatUniform heightmapPixelSizeUVUniform = new("heightmapPixelSizeUV");
+        private readonly FloatUniform heightScaleUniform = new("heightScale");
+        private readonly FloatUniform heightOffsetUniform = new("heightOffset");
 
         private readonly PipelineTexture heightmap;
         private readonly PipelineRenderTarget heightmapTarget; // H
@@ -153,7 +153,7 @@ namespace Bearded.TD.Rendering.Deferred
 
             // TODO: this can be optimised, since we are not reusing indices
             generateGrid(
-                (t0, t1, t2, t3, v0, v1, v2, v3) =>
+                (_, _, _, _, v0, v1, v2, v3) =>
                 {
                     gridMeshBuilder.AddTriangle(
                         vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
@@ -170,7 +170,7 @@ namespace Bearded.TD.Rendering.Deferred
             );
         }
 
-        private PackedSpriteSet findHeightmapSplats(GameInstance game)
+        private static PackedSpriteSet findHeightmapSplats(GameInstance game)
         {
             return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
         }
