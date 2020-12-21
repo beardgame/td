@@ -15,8 +15,8 @@ namespace Bearded.TD.Game.Simulation.Resources
         private ResourceAmount committedResources;
         public ResourceAmount CurrentResources { get; private set; }
 
-        public ResourceAmount ResourcesAfterCommitments => CurrentResources - committedResources;
-        public ResourceAmount ResourcesAfterReservations => ResourcesAfterCommitments - reservedResources;
+        public ResourceAmount AvailableResources => CurrentResources - committedResources;
+        public ResourceAmount ResourcesAfterQueue => AvailableResources - reservedResources;
 
         public ResourceManager(Logger logger)
         {
@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Simulation.Resources
             logger.Trace?.Log($"Received resource request for {request.AmountRequested} resources");
             var ticket = new ResourceTicket(this, request.AmountRequested);
             reservedResources += request.AmountRequested;
-            if (outstandingTickets.Count == 0 && request.AmountRequested <= ResourcesAfterCommitments)
+            if (outstandingTickets.Count == 0 && request.AmountRequested <= AvailableResources)
             {
                 commitResources(ticket);
             }
@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Simulation.Resources
         public void DistributeResources()
         {
             while (outstandingTickets.Count > 0
-                && outstandingTickets[0].ResourcesLeftToClaim <= ResourcesAfterCommitments)
+                && outstandingTickets[0].ResourcesLeftToClaim <= AvailableResources)
             {
                 commitResources(outstandingTickets[0]);
                 outstandingTickets.RemoveAt(0);
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Simulation.Resources
 
         private void commitResources(ResourceTicket ticket)
         {
-            State.Satisfies(ResourcesAfterCommitments >= ticket.ResourcesLeftToClaim);
+            State.Satisfies(AvailableResources >= ticket.ResourcesLeftToClaim);
             committedTickets.Add(ticket);
             ticket.CommitResources();
             reservedResources -= ticket.ResourcesLeftToClaim;

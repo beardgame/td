@@ -23,6 +23,7 @@ namespace Bearded.TD.UI.Controls
         public string FactionName => game.Me.Faction.Name;
         public Color FactionColor => game.Me.Faction.Color;
         public ResourceAmount FactionResources => game.Me.Faction.Resources.CurrentResources;
+        public ResourceAmount FactionResourcesAfterReservation => game.Me.Faction.Resources.ResourcesAfterQueue;
         public long FactionTechPoints => game.Me.Faction.Technology?.TechPoints ?? 0;
         public TimeSpan? TimeUntilWaveSpawn =>
             waveSpawnStart == null || game.State.Time >= waveSpawnStart

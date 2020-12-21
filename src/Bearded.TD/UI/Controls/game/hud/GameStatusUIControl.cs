@@ -39,7 +39,17 @@ namespace Bearded.TD.UI.Controls
 
         private void updateLabels()
         {
-            resourcesAmount.SetFromSource($"{model.FactionResources.NumericValue}");
+            if (model.FactionResources == model.FactionResourcesAfterReservation)
+            {
+                resourcesAmount.SetFromSource($"{model.FactionResources.NumericValue}");
+            }
+            else
+            {
+                resourcesAmount.SetFromSource(
+                    $"{model.FactionResources.NumericValue} -> " +
+                    $"{model.FactionResourcesAfterReservation.NumericValue}");
+            }
+
             techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
             waveNumber.SetFromSource(model.WaveName ?? "-");
             timeUntilSpawn.SetFromSource(
