@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades
             resourceConsumer = new ResourceConsumer(
                 Game,
                 building.Faction.Resources.RequestResources(new ResourceManager.ResourceRequest(upgrade.Cost)),
-                10.ResourcesPerSecond());
+                Constants.Game.Worker.UpgradeSpeed);
             building.RegisterBuildingUpgradeTask(this);
         }
 
