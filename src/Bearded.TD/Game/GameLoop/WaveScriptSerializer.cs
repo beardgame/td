@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.GameLoop
         private Id<Faction> targetFaction;
         private double spawnStart;
         private double spawnDuration;
-        private double resourcesAwardedBySpawnPhase;
+        private int resourcesAwardedBySpawnPhase;
         private Id<SpawnLocation>[] spawnLocations = {};
         private int unitsPerSpawnLocation;
         private ModAwareId unitBlueprint;

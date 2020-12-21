@@ -41,10 +41,10 @@ namespace Bearded.TD.Game.Simulation.Workers
             originalDrawInfo = geometry[tile].DrawInfo;
         }
 
-        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
+        public void Progress(TimeSpan elapsedTime)
         {
             // TODO: mining progress shouldn't be measured in resources
-            miningProgress += ratePerS * elapsedTime;
+            miningProgress += Constants.Game.Worker.WorkerSpeed.InTime(elapsedTime);
             if (Finished)
             {
                 var previousGeo = geometry[tile].Geometry;

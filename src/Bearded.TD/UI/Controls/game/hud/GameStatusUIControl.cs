@@ -39,13 +39,13 @@ namespace Bearded.TD.UI.Controls
 
         private void updateLabels()
         {
-            resourcesAmount.SetFromSource($"{model.FactionResources.DisplayValue}");
+            resourcesAmount.SetFromSource($"{model.FactionResources.NumericValue}");
             techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
             waveNumber.SetFromSource(model.WaveName ?? "-");
             timeUntilSpawn.SetFromSource(
                 model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
             waveResources.SetFromSource(
-                model.WaveResources == null ? "-" : $"{model.WaveResources.Value.DisplayValue}");
+                model.WaveResources == null ? "-" : $"{model.WaveResources.Value.NumericValue}");
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

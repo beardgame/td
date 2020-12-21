@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public override void Select(SelectionManager selectionManager)
             => throw new InvalidOperationException(selectionIsImmutable);
 
-        protected override IEnumerable<IComponent<BuildingGhost>> InitialiseComponents()
+        protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
             => Blueprint.GetComponentsForGhost();
 
         public override void Draw(GeometryManager geometries)

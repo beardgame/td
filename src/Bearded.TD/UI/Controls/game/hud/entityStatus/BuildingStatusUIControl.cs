@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Game;
@@ -21,7 +22,7 @@ namespace Bearded.TD.UI.Controls
         private readonly ListControl upgradeList = new ListControl(new ViewportClippingLayerControl());
 
         private readonly BuildingStatusUI buildingStatus;
-        private readonly Building building;
+        private readonly Building? building;
         private UpgradeListItemSource upgradeItemSource;
 
         public BuildingStatusUIControl(BuildingStatusUI buildingStatus)
@@ -78,7 +79,7 @@ namespace Bearded.TD.UI.Controls
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
-        private class UpgradeListItemSource : IListItemSource
+        private sealed class UpgradeListItemSource : IListItemSource
         {
             private readonly GameInstance game;
             private readonly Building building;
@@ -133,7 +134,7 @@ namespace Bearded.TD.UI.Controls
             public void DestroyItemControlAt(int index, Control control) {}
         }
 
-        private class AppliedUpgradeControl : Label
+        private sealed class AppliedUpgradeControl : Label
         {
             public AppliedUpgradeControl(IUpgradeBlueprint upgrade)
             {
@@ -144,7 +145,7 @@ namespace Bearded.TD.UI.Controls
             protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
         }
 
-        private class UpgradeButton : Button
+        private sealed class UpgradeButton : Button
         {
             private readonly Faction myFaction;
             private readonly Building building;
@@ -157,7 +158,7 @@ namespace Bearded.TD.UI.Controls
                 this.building = building;
                 this.upgrade = upgrade;
                 this.WithDefaultStyle(
-                    new ButtonLabelWithCost { Name = upgrade.Name, Cost = $"{upgrade.Cost.DisplayValue}" });
+                    new ButtonLabelWithCost { Name = upgrade.Name, Cost = $"{upgrade.Cost.NumericValue}" });
                 progressBar = new BackgroundBox { Color = Color.White * 0.25f };
                 Add(progressBar);
             }
@@ -178,9 +179,12 @@ namespace Bearded.TD.UI.Controls
                 IsEnabled = !upgradeIsActive;
                 progressBar.IsVisible = upgradeIsActive;
 
+                Debug.WriteLine($"rendering active {upgradeIsActive}");
+
                 if (upgradeIsActive)
                 {
                     var percentage = activeUpgrade.ProgressPercentage;
+                    Debug.WriteLine($"percentage {percentage}");
                     progressBar.Anchor(a => a.Right(relativePercentage: percentage));
                 }
 

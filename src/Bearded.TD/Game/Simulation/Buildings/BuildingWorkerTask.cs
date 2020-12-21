@@ -12,20 +12,20 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class BuildingWorkerTask : IWorkerTask, IResourceConsumer
+    sealed class BuildingWorkerTask : IWorkerTask
     {
         private readonly IBuildingBlueprint blueprint;
+        private readonly ResourceConsumer resourceConsumer;
 
-        private BuildingPlaceholder placeholder;
-        private Building building;
+        private BuildingPlaceholder? placeholder;
+        private Building? building;
 
-        private ResourceAmount resourcesConsumed;
         private int healthGiven = 1;
         private int maxHealth = 1;
 
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {blueprint.Name}";
-        public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder?.OccupiedTiles;
+        public IEnumerable<Tile> Tiles => building?.OccupiedTiles ?? placeholder!.OccupiedTiles;
         public Maybe<ISelectable> Selectable => placeholder != null
             ? Maybe.Just<ISelectable>(placeholder)
             : Maybe.Just<ISelectable>(building);
@@ -33,18 +33,20 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public bool CanAbort => placeholder != null;
         public bool Finished { get; private set; }
 
-        public BuildingWorkerTask(Id<IWorkerTask> taskId, BuildingPlaceholder placeholder)
+        public BuildingWorkerTask(
+            Id<IWorkerTask> taskId, BuildingPlaceholder placeholder, ResourceManager.IResourceTicket resourceTicket)
         {
             Id = taskId;
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
+            resourceConsumer =
+                new ResourceConsumer(placeholder.Game, resourceTicket, Constants.Game.Worker.WorkerSpeed);
         }
 
         public void SetBuilding(Building building)
         {
             DebugAssert.State.Satisfies(placeholder != null, "Placeholder needs to be set when building is set.");
             DebugAssert.State.Satisfies(this.building == null, "Can only set building once.");
-            // ReSharper disable once PossibleNullReferenceException
             placeholder = null;
             this.building = building;
             building.Completing += onBuildingCompleting;
@@ -61,14 +63,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
             // Note that we can assume building is set, because the StartBuildingConstruction command has been called.
 
             var healthRemaining = maxHealth - healthGiven;
-            building.SetBuildProgress(1, healthRemaining);
+            building!.SetBuildProgress(1, healthRemaining);
             building.Completing -= onBuildingCompleting;
             Finished = true;
         }
 
-        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
+        public void Progress(TimeSpan elapsedTime)
         {
-            if (placeholder != null)
+            if (placeholder != null && resourceConsumer.CanConsume)
             {
                 onConstructionStart();
             }
@@ -78,9 +80,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 Finished = true;
                 return;
             }
-
-            var remaining = blueprint.ResourceCost - resourcesConsumed;
-            resourceManager.RegisterConsumer(this, ratePerS, remaining);
+            resourceConsumer.Update();
+            if (building != null)
+            {
+                updateBuildingToMatch();
+            }
+            if (resourceConsumer.IsDone)
+            {
+                building?.Sync(FinishBuildingConstruction.Command);
+            }
         }
 
         public void OnAbort()
@@ -91,32 +99,22 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private void onConstructionStart()
         {
-            placeholder.Sync(StartBuildingConstruction.Command);
-        }
-
-        public void ConsumeResources(ResourceGrant grant)
-        {
-            resourcesConsumed += grant.Amount;
-            if (building != null)
-            {
-                updateBuildingToMatch();
-            }
-            if (grant.ReachedCapacity)
-            {
-                Finished = true;
-                building?.Sync(FinishBuildingConstruction.Command);
-            }
+            placeholder!.Sync(StartBuildingConstruction.Command);
         }
 
         private void updateBuildingToMatch()
         {
             // Building was set to completed, probably because of command from server.
             // We want to keep consuming resources though to make sure the resources stay in sync.
-            if (building.IsCompleted) return;
+            if (building!.IsCompleted) return;
 
-            var buildProgress = resourcesConsumed / blueprint.ResourceCost;
+            var buildProgress = resourceConsumer.PercentageDone;
             DebugAssert.State.Satisfies(buildProgress <= 1);
             var expectedHealthGiven = Mathf.CeilToInt(buildProgress * maxHealth);
+            if (expectedHealthGiven == 0)
+            {
+                return;
+            }
             var newHealthGiven = expectedHealthGiven - healthGiven;
             building.SetBuildProgress(buildProgress, newHealthGiven);
             healthGiven = expectedHealthGiven;

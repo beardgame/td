@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         bool CanAbort { get; }
         bool Finished { get; }
 
-        void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS);
+        void Progress(TimeSpan elapsedTime);
         void OnAbort();
     }
 }

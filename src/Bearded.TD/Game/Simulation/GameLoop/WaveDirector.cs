@@ -144,9 +144,9 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 var spawnTimeElapsed = game.Time - script.SpawnStart;
                 var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
-                var expectedResourcesGiven = percentageTimeElapsed * script.ResourcesAwardedBySpawnPhase;
+                var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.Percentage(percentageTimeElapsed);
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
-                script.TargetFaction.Resources.ProvideOneTimeResource(expectedResourcesGiven - resourcesGiven);
+                script.TargetFaction.Resources.ProvideResources(expectedResourcesGiven - resourcesGiven);
                 resourcesGiven = expectedResourcesGiven;
             }
 

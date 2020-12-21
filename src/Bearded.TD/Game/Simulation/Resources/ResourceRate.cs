@@ -4,18 +4,18 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
-    readonly struct ResourceRate : IMeasure1, IEquatable<ResourceRate>
+    readonly struct ResourceRate : IDiscreteMeasure1, IEquatable<ResourceRate>
     {
         public static ResourceRate Zero { get; } = new(0);
 
-        public double NumericValue { get; }
+        public int NumericValue { get; }
 
-        public long DisplayValue => (long) NumericValue;
-
-        public ResourceRate(double numericValue)
+        public ResourceRate(int numericValue)
         {
             NumericValue = numericValue;
         }
+
+        public ResourceAmount InTime(TimeSpan timeSpan) => new((int) (timeSpan.NumericValue * NumericValue));
 
         public bool Equals(ResourceRate other) => NumericValue.Equals(other.NumericValue);
 
@@ -43,23 +43,15 @@ namespace Bearded.TD.Game.Simulation.Resources
         public static ResourceRate operator -(ResourceRate left, ResourceRate right) =>
             new(left.NumericValue - right.NumericValue);
 
-        public static ResourceRate operator *(double scalar, ResourceRate amount) =>
+        public static ResourceRate operator *(int scalar, ResourceRate amount) =>
             new(scalar * amount.NumericValue);
 
-        public static ResourceRate operator /(ResourceRate amount, double scalar) =>
+        public static ResourceRate operator /(ResourceRate amount, int scalar) =>
             new(amount.NumericValue / scalar);
-
-        public static double operator /(ResourceRate left, ResourceRate right) =>
-            left.NumericValue / right.NumericValue;
-
-        public static ResourceAmount operator *(ResourceRate rate, TimeSpan time) =>
-            new(rate.NumericValue * time.NumericValue);
     }
 
     static class ResourceRateExtensions
     {
-        public static ResourceRate ResourcesPerSecond(this double amount) => new(amount);
-
         public static ResourceRate ResourcesPerSecond(this int amount) => new(amount);
     }
 }

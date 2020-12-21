@@ -1,121 +1,126 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Bearded.Utilities.IO;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
     sealed class ResourceManager
     {
-        private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
-        private ResourceRate totalResourcesRequested;
-        private ResourceRate  totalResourcesProvided;
+        private readonly Logger logger;
+        private readonly Queue<ResourceTicket> outstandingTickets = new();
+        private readonly HashSet<ResourceTicket> committedTickets = new();
 
+        private ResourceAmount reservedResources;
+        private ResourceAmount committedResources;
         public ResourceAmount CurrentResources { get; private set; }
-        public ResourceRate CurrentIncome { get; private set; }
 
-        public ResourceManager()
+        public ResourceAmount ResourcesAfterCommitments => CurrentResources - committedResources;
+        public ResourceAmount ResourcesAfterReservations => ResourcesAfterCommitments - reservedResources;
+
+        public ResourceManager(Logger logger)
         {
+            this.logger = logger;
             CurrentResources = Constants.Game.WaveGeneration.InitialResources;
         }
 
-        public void ProvideOneTimeResource(ResourceAmount amount)
+        public void ProvideResources(ResourceAmount amount)
         {
             CurrentResources += amount;
         }
 
-        public void ProvideResourcesOverTime(ResourceRate ratePerS)
+        public IResourceTicket RequestResources(ResourceRequest request)
         {
-            totalResourcesProvided += ratePerS;
-        }
-
-        public void RegisterConsumer(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
-        {
-            requestedResources.Add(new ResourceRequest(consumer, ratePerS, maximum));
-            totalResourcesRequested += ratePerS;
-        }
-
-        public void DistributeResources(TimeSpan elapsedTime)
-        {
-            CurrentResources += totalResourcesProvided * elapsedTime;
-            var resourceOut = totalResourcesRequested * elapsedTime;
-
-            if (resourceOut <= CurrentResources)
+            logger.Trace?.Log($"Received resource request for {request.AmountRequested} resources");
+            var ticket = new ResourceTicket(this, request.AmountRequested);
+            reservedResources += request.AmountRequested;
+            if (outstandingTickets.Count == 0 && request.AmountRequested <= ResourcesAfterCommitments)
             {
-                distributeAtMaxRates(elapsedTime);
+                commitResources(ticket);
             }
             else
             {
-                distributedAtLimitedRates(elapsedTime, resourceOut);
+                outstandingTickets.Enqueue(ticket);
             }
-
-            resetForFrame();
+            return ticket;
         }
 
-        private void distributeAtMaxRates(TimeSpan elapsedTime)
+        public void DistributeResources()
         {
-            foreach (var request in requestedResources)
+            while (outstandingTickets.TryPeek(out var ticket)
+                && ticket.ResourcesLeftToClaim <= ResourcesAfterCommitments)
             {
-                var grantedResources = request.RatePerS * elapsedTime;
-                request.TryGrant(grantedResources, out var consumedResources);
-                CurrentResources -= consumedResources;
+                commitResources(outstandingTickets.Dequeue());
             }
         }
 
-        private void distributedAtLimitedRates(TimeSpan elapsedTime, ResourceAmount resourceOut)
+        private void commitResources(ResourceTicket ticket)
         {
-            var sortedRequests = requestedResources.OrderBy(
-                consumer => consumer.Maximum.NumericValue / consumer.RatePerS.NumericValue);
-            var resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
+            State.Satisfies(ResourcesAfterCommitments >= ticket.ResourcesLeftToClaim);
+            committedTickets.Add(ticket);
+            ticket.CommitResources();
+            reservedResources -= ticket.ResourcesLeftToClaim;
+            committedResources += ticket.ResourcesLeftToClaim;
+            logger.Trace?.Log($"Committed {ticket.ResourcesLeftToClaim} resources");
+        }
 
-            foreach (var request in sortedRequests)
+        private void consumeResources(ResourceAmount amount)
+        {
+            CurrentResources -= amount;
+            committedResources -= amount;
+        }
+
+        private void onTicketCompleted(ResourceTicket ticket)
+        {
+            committedTickets.Remove(ticket);
+        }
+
+        public sealed record ResourceRequest
+        {
+            public ResourceAmount AmountRequested { get; }
+
+            public ResourceRequest(ResourceAmount amountRequested)
             {
-                var grantedResources = resourceRatio * request.RatePerS * elapsedTime;
+                AmountRequested = amountRequested;
+            }
+        }
 
-                var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
-                CurrentResources -= consumedResources;
-                resourceOut -= consumedResources;
+        public interface IResourceTicket
+        {
+            bool IsCommitted { get; }
+            ResourceAmount ResourcesLeftToClaim { get; }
 
-                if (!grantFullyConsumed)
+            void ClaimResources(ResourceAmount amount);
+        }
+
+        private sealed class ResourceTicket : IResourceTicket
+        {
+            private readonly ResourceManager resourceManager;
+
+            public bool IsCommitted { get; private set; }
+            public ResourceAmount ResourcesLeftToClaim { get; private set; }
+
+            public ResourceTicket(ResourceManager resourceManager, ResourceAmount requestedAmount)
+            {
+                this.resourceManager = resourceManager;
+                ResourcesLeftToClaim = requestedAmount;
+            }
+
+            public void CommitResources()
+            {
+                State.Satisfies(!IsCommitted);
+                IsCommitted = true;
+            }
+
+            public void ClaimResources(ResourceAmount amount)
+            {
+                State.Satisfies(IsCommitted);
+                Argument.Satisfies(amount <= ResourcesLeftToClaim);
+                resourceManager.consumeResources(amount);
+                ResourcesLeftToClaim -= amount;
+
+                if (ResourcesLeftToClaim == ResourceAmount.Zero)
                 {
-                    resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
-                }
-            }
-        }
-
-        private void resetForFrame()
-        {
-            CurrentIncome = totalResourcesProvided - totalResourcesRequested;
-            requestedResources.Clear();
-            totalResourcesRequested = ResourceRate.Zero;
-            totalResourcesProvided = ResourceRate.Zero;
-        }
-
-        private readonly struct ResourceRequest
-        {
-            private readonly IResourceConsumer consumer;
-            public ResourceRate RatePerS { get; }
-            public ResourceAmount Maximum { get; }
-
-            public ResourceRequest(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
-            {
-                this.consumer = consumer;
-                RatePerS = ratePerS;
-                Maximum = maximum;
-            }
-
-            public bool TryGrant(ResourceAmount resourcesAvailable, out ResourceAmount grantedResources)
-            {
-                if (resourcesAvailable >= Maximum)
-                {
-                    consumer.ConsumeResources(new ResourceGrant(Maximum, true));
-                    grantedResources = Maximum;
-                    return false;
-                }
-                else
-                {
-                    consumer.ConsumeResources(new ResourceGrant(resourcesAvailable, false));
-                    grantedResources = resourcesAvailable;
-                    return true;
+                    resourceManager.onTicketCompleted(this);
                 }
             }
         }

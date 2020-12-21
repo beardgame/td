@@ -63,7 +63,7 @@ namespace Bearded.TD.Game.GameLoop
                 waveNumber == 1 ? FirstDownTimeDuration : DownTimeDuration));
 
             nextWaveValue *= WaveValueMultiplier;
-            nextWaveResources *= WaveResourcesMultiplier;
+            nextWaveResources = new ResourceAmount((int) (nextWaveResources.NumericValue * WaveResourcesMultiplier));
         }
 
         private void endChapter()

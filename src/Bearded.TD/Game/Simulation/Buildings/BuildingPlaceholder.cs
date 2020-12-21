@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -13,10 +14,11 @@ using Bearded.Utilities.Collections;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    class BuildingPlaceholder : PlacedBuildingBase<BuildingPlaceholder>, IIdable<BuildingPlaceholder>
+    sealed class BuildingPlaceholder : PlacedBuildingBase<BuildingPlaceholder>, IIdable<BuildingPlaceholder>
     {
         public Id<BuildingPlaceholder> Id { get; }
-        private readonly BuildingWorkerTask workerTask;
+        private readonly Id<IWorkerTask> taskId;
+        private BuildingWorkerTask workerTask = null!;
 
         public BuildingPlaceholder(
             Id<BuildingPlaceholder> id,
@@ -26,10 +28,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id<IWorkerTask> taskId) : base(blueprint, faction, footprint)
         {
             Id = id;
-            workerTask = new BuildingWorkerTask(taskId, this);
+            this.taskId = taskId;
         }
 
-        protected override IEnumerable<IComponent<BuildingPlaceholder>> InitialiseComponents()
+        protected override IEnumerable<IComponent<BuildingPlaceholder>> InitializeComponents()
             => Blueprint.GetComponentsForPlaceholder();
 
         protected override void OnAdded()
@@ -37,6 +39,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             base.OnAdded();
 
             Game.IdAs(this);
+
+            workerTask = new BuildingWorkerTask(
+                taskId,
+                this,
+                Faction.Resources.RequestResources(new ResourceManager.ResourceRequest(Blueprint.ResourceCost)));
             Faction.Workers.RegisterTask(workerTask);
         }
 
