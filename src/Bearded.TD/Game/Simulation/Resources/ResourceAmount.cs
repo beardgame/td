@@ -23,6 +23,8 @@ namespace Bearded.TD.Game.Simulation.Resources
 
         public override int GetHashCode() => NumericValue.GetHashCode();
 
+        public override string ToString() => $"{NumericValue} resources";
+
         public static bool operator ==(ResourceAmount left, ResourceAmount right) => left.Equals(right);
 
         public static bool operator !=(ResourceAmount left, ResourceAmount right) => !left.Equals(right);
