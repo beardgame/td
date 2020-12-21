@@ -52,5 +52,10 @@ namespace Bearded.TD.Game.Simulation.Resources
 
             ticket.ClaimResources(resourcesToClaim);
         }
+
+        public void Abort()
+        {
+            ticket.CancelRemainingResources();
+        }
     }
 }

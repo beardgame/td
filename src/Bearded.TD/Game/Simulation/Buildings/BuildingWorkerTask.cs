@@ -93,6 +93,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void OnAbort()
         {
+            resourceConsumer.Abort();
             placeholder?.Delete();
             building?.Delete();
         }
