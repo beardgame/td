@@ -63,7 +63,7 @@ namespace Bearded.TD
             {
                 public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
                 public static readonly ResourceRate WorkerSpeed = 15.ResourcesPerSecond();
-                public static readonly ResourceAmount TotalMiningProgressRequired = WorkerSpeed.InTime(8.S());
+                public static readonly TimeSpan MiningDuration = 8.S();
             }
 
             public static class Technology
