@@ -179,12 +179,9 @@ namespace Bearded.TD.UI.Controls
                 IsEnabled = !upgradeIsActive;
                 progressBar.IsVisible = upgradeIsActive;
 
-                Debug.WriteLine($"rendering active {upgradeIsActive}");
-
                 if (upgradeIsActive)
                 {
                     var percentage = activeUpgrade.ProgressPercentage;
-                    Debug.WriteLine($"percentage {percentage}");
                     progressBar.Anchor(a => a.Right(relativePercentage: percentage));
                 }
 
