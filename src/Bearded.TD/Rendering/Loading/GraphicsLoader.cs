@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using amulware.Graphics.MeshBuilders;
+using amulware.Graphics.RenderSettings;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Algorithms;
@@ -30,12 +33,18 @@ namespace Bearded.TD.Rendering.Loading
             this.logger = logger;
         }
 
-        public PackedSpriteSet CreateSpriteSet(
-            IEnumerable<string> samplers,
+        public PackedSpriteSet CreateSpriteSet(IEnumerable<string> samplers,
             IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
-            Shader shader, bool pixelate)
+            Shader shader, bool pixelate, string id)
         {
-            var packedSprites = BinPacking.Pack(sprites.Select(rectangleWithBitmaps));
+            var spriteRectangles = sprites.Select(rectangleWithBitmaps).ToList();
+            if (spriteRectangles.Count == 0)
+            {
+                logger.Warning?.Log($"Sprite set '{id}' contains no sprites.");
+                return new PackedSpriteSetBuilder(new List<string>(), 0, 0).Build(glActions, shader, pixelate);
+            }
+
+            var packedSprites = BinPacking.Pack(spriteRectangles);
 
             var usedSamplers = packedSprites.Rectangles.SelectMany(r => r.Value.BitmapsBySampler.Keys).Distinct().ToList();
             var unusedSamplers = samplers.Except(usedSamplers).ToList();
