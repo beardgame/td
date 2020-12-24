@@ -1,7 +1,7 @@
 ﻿using System;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -24,7 +24,7 @@ namespace Bearded.TD.UI.Controls
 
         public override void KeyHit(KeyEventArgs eventArgs)
         {
-            if (eventArgs.Key == Key.Tab && Text != AutoCompletionText)
+            if (eventArgs.Key == Keys.Tab && Text != AutoCompletionText)
             {
                 Text = AutoCompletionText;
                 MoveCursorToEnd();

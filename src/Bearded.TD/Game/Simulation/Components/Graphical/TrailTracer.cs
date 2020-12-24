@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Components.Graphical
 {

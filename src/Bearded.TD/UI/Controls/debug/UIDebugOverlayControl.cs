@@ -7,8 +7,8 @@ using Bearded.TD.UI.Layers;
 using Bearded.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using static Bearded.TD.UI.Factories.LegacyDefault;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
@@ -223,7 +223,7 @@ namespace Bearded.TD.UI.Controls
         }
 
 
-        private void toggleMoveControlBox()
+        private void toggleMoveControlBox(Button.ClickEventArgs _)
         {
             moveControlBox = !moveControlBox;
         }

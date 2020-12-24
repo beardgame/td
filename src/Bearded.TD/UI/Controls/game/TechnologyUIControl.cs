@@ -9,7 +9,7 @@ using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -32,7 +32,7 @@ namespace Bearded.TD.UI.Controls
             Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
             Add(LegacyDefault.Button("close", 16)
                 .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
-                .Subscribe(btn => btn.Clicked += () => CloseButtonClicked?.Invoke()));
+                .Subscribe(btn => btn.Clicked += _ => CloseButtonClicked?.Invoke()));
 
             Add(technologyList.Anchor(a =>
                 a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));
@@ -88,7 +88,7 @@ namespace Bearded.TD.UI.Controls
                 var button = new TechnologyButton(
                     technology,
                     () => model.StatusFor(technology));
-                button.Clicked += () => buttonClickCallback(technology);
+                button.Clicked += _ => buttonClickCallback(technology);
                 return button;
             }
 
@@ -164,9 +164,9 @@ namespace Bearded.TD.UI.Controls
                 SetTechnologyToDisplay(Maybe.Nothing);
             }
 
-            private void onUnlockButtonClicked()
+            private void onUnlockButtonClicked(Button.ClickEventArgs _)
             {
-                var tech = technology.ValueOrDefault(null);
+                var tech = technology.ValueOrDefault((ITechnologyBlueprint) null);
                 var techStatus = model.StatusFor(tech);
 
                 switch (techStatus)

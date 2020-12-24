@@ -10,8 +10,8 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
-using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using static amulware.Graphics.Pipelines.Context.CullMode;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
 

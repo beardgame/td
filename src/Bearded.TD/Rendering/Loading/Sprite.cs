@@ -4,7 +4,7 @@ using amulware.Graphics.MeshBuilders;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.Utilities;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Loading
 {

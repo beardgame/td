@@ -4,8 +4,9 @@ using System.Linq;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.Game.Input
 {
@@ -24,19 +25,19 @@ namespace Bearded.TD.Game.Input
 
             scrollActions = new Dictionary<Func<InputState, ActionState>, Difference2>
             {
-                { actionFunc(Key.Left, Key.A), new Difference2(-Vector2.UnitX) },
-                { actionFunc(Key.Right, Key.D), new Difference2(Vector2.UnitX) },
-                { actionFunc(Key.Up, Key.W), new Difference2(Vector2.UnitY) },
-                { actionFunc(Key.Down, Key.S), new Difference2(-Vector2.UnitY) },
+                { actionFunc(Keys.Left, Keys.A), new Difference2(-Vector2.UnitX) },
+                { actionFunc(Keys.Right, Keys.D), new Difference2(Vector2.UnitX) },
+                { actionFunc(Keys.Up, Keys.W), new Difference2(Vector2.UnitY) },
+                { actionFunc(Keys.Down, Keys.S), new Difference2(-Vector2.UnitY) },
             };
             zoomActions = new Dictionary<Func<InputState, ActionState>, float>
             {
-                { actionFunc(Key.PageDown), 1f },
-                { actionFunc(Key.PageUp), -1f },
+                { actionFunc(Keys.PageDown), 1f },
+                { actionFunc(Keys.PageUp), -1f },
             };
         }
 
-        private static Func<InputState, ActionState> actionFunc(params Key[] keys)
+        private static Func<InputState, ActionState> actionFunc(params Keys[] keys)
         {
             return input => input.ForAnyKey(keys);
         }

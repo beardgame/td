@@ -1,6 +1,6 @@
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Camera
 {

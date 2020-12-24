@@ -8,7 +8,7 @@ using amulware.Graphics.Text;
 using amulware.Graphics.Textures;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
-using OpenToolkit.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 using Font = amulware.Graphics.Text.Font;
 

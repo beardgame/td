@@ -9,8 +9,8 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.World.Fluids;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
-using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using static Bearded.TD.Tiles.Level;
 
 namespace Bearded.TD.Rendering.Deferred

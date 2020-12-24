@@ -25,7 +25,7 @@ namespace Bearded.TD.UI.Controls
                     .Anchor(a => a
                         .Top(relativePercentage: i1 * buttonHeightPercentage)
                         .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
-                    .Subscribe(b => b.Clicked += () => model.OnActionClicked(i1));
+                    .Subscribe(b => b.Clicked += _ => model.OnActionClicked(i1));
                 Add(buttons[i]);
             }
 

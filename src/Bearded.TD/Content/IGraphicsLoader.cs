@@ -4,7 +4,7 @@ using System.Drawing;
 using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
-using OpenToolkit.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Content

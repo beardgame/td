@@ -21,13 +21,13 @@ namespace Bearded.TD.UI.Controls
                     .Bottom(margin: 32, height: 24)
                     .Left(margin: 4)
                     .Right(margin: 4))
-                .Subscribe(btn => btn.Clicked += () => ResumeGameButtonClicked?.Invoke()));
+                .Subscribe(btn => btn.Clicked += _ => ResumeGameButtonClicked?.Invoke()));
             Add(Button("exit", 16)
                 .Anchor(a => a
                     .Bottom(margin: 4, height: 24)
                     .Left(margin: 4)
                     .Right(margin: 4))
-                .Subscribe(btn => btn.Clicked += () => ReturnToMainMenuButtonClicked?.Invoke()));
+                .Subscribe(btn => btn.Clicked += _ => ReturnToMainMenuButtonClicked?.Invoke()));
         }
     }
 }

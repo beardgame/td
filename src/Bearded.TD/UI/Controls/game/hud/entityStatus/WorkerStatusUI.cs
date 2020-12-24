@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Workers;
+using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 
@@ -64,7 +65,7 @@ namespace Bearded.TD.UI.Controls
             game.Request(PrioritizeTask.Request(Faction, task));
         }
 
-        public void OnCloseClicked()
+        public void OnCloseClicked(Button.ClickEventArgs _)
         {
             Navigation.Exit();
         }

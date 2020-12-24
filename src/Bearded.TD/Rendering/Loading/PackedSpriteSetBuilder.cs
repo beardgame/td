@@ -10,8 +10,8 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Threading;
-using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Shader = Bearded.TD.Content.Models.Shader;
 

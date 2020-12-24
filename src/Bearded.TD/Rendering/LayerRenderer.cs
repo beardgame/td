@@ -3,7 +3,7 @@ using amulware.Graphics.Pipelines.Context;
 using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 using static amulware.Graphics.Pipelines.Context.BlendMode;
 
 namespace Bearded.TD.Rendering

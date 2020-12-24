@@ -86,8 +86,8 @@ namespace Bearded.TD.UI.Controls
             plusButton = new Button { new Label("+") };
             minusButton = new Button { new Label("-") };
 
-            plusButton.Clicked += stepUp;
-            minusButton.Clicked += stepDown;
+            plusButton.Clicked += _ => stepUp();
+            minusButton.Clicked += _ => stepDown();
             textInput.TextChanged += textChanged;
 
             Add(textInput.Anchor(a => a.Right(20)));

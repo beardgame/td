@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using amulware.Graphics;
-using amulware.Graphics.Windowing;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
@@ -21,11 +20,12 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common;
-using OpenToolkit.Windowing.Common.Input;
-using OpenToolkit.Windowing.Desktop;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
+using Window = amulware.Graphics.Windowing.Window;
 
 namespace Bearded.TD
 {
@@ -112,7 +112,7 @@ namespace Bearded.TD
             navigationController.Push<VersionOverlay>(a => a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));
             navigationController.Exited += Close;
 
-            shortcuts.RegisterShortcut(Key.Tilde, debugConsole.Toggle);
+            shortcuts.RegisterShortcut(Keys.GraveAccent, debugConsole.Toggle);
 
             UserSettings.SettingsChanged += TriggerResize;
         }
@@ -133,7 +133,7 @@ namespace Bearded.TD
         {
             inputManager.Update(NativeWindow.IsFocused);
 
-            if (inputManager.IsKeyPressed(Key.AltLeft) && inputManager.IsKeyHit(Key.F4))
+            if (inputManager.IsKeyPressed(Keys.LeftAlt) && inputManager.IsKeyHit(Keys.F4))
             {
                 Close();
             }

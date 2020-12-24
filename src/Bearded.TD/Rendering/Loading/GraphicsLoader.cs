@@ -15,7 +15,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenToolkit.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Loading

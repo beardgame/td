@@ -90,11 +90,11 @@ namespace Bearded.TD.UI.Controls
                 if (!workerStatus.CanInteract) return;
 
                 cancelButton = LegacyDefault.Button("x");
-                cancelButton.Clicked += () => workerStatus.OnTaskCancelClicked(task);
+                cancelButton.Clicked += _ => workerStatus.OnTaskCancelClicked(task);
                 Add(cancelButton.Anchor(a => a.Right(margin: 24, width: 24)));
 
                 var bumpButton = LegacyDefault.Button("+");
-                bumpButton.Clicked += () => workerStatus.OnTaskBumpClicked(task);
+                bumpButton.Clicked += _ => workerStatus.OnTaskBumpClicked(task);
                 Add(bumpButton.Anchor(a => a.Right(width: 24)));
             }
 

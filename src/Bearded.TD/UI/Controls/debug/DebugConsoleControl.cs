@@ -4,8 +4,8 @@ using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities.IO;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -100,19 +100,19 @@ namespace Bearded.TD.UI.Controls
         {
             switch (eventArgs.Key)
             {
-                case Key.Enter:
+                case Keys.Enter:
                     debug.OnCommandExecuted(commandInput.Text);
                     commandInput.Clear();
                     break;
-                case Key.Tab:
+                case Keys.Tab:
                     commandInput.Text = debug.AutoCompleteCommand(commandInput.Text, true);
                     commandInput.MoveCursorToEnd();
                     break;
-                case Key.Up:
+                case Keys.Up:
                     commandInput.Text = debug.GetPreviousCommandInHistory(commandInput.Text);
                     commandInput.MoveCursorToEnd();
                     break;
-                case Key.Down:
+                case Keys.Down:
                     commandInput.Text = debug.GetNextCommandInHistory(commandInput.Text);
                     commandInput.MoveCursorToEnd();
                     break;

@@ -14,7 +14,7 @@ namespace Bearded.TD.UI.Factories
         public static Control Checkbox(Binding<bool> valueBinding)
         {
             var checkbox = new Button();
-            checkbox.Clicked += toggleCheckboxState;
+            checkbox.Clicked += _ => toggleCheckboxState();
             valueBinding.SourceUpdated += _ => updateCheckboxState();
             updateCheckboxState();
             return checkbox;
@@ -44,7 +44,7 @@ namespace Bearded.TD.UI.Factories
             var optionsList = options.ToList();
 
             var button = ButtonFactories.Button(() => renderer(valueBinding.Value));
-            button.Clicked += advanceSelection;
+            button.Clicked += _ => advanceSelection();
             return button;
 
             void advanceSelection()

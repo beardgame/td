@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
+using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -79,7 +80,7 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public void Close()
+        public void Close(Button.ClickEventArgs _)
         {
             UserSettings.Instance.Debug.GameDebugScreen = false;
             UserSettings.Save(logger);

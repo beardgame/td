@@ -12,8 +12,8 @@ using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -126,7 +126,7 @@ namespace Bearded.TD.UI.Controls
 
                 if (eventArgs.Handled || !chatLogShown || string.IsNullOrEmpty(chatInputBinding.Value)) return;
 
-                if (eventArgs.Key == Key.Enter)
+                if (eventArgs.Key == Keys.Enter)
                 {
                     model.OnSendChatMessage(chatInputBinding.Value);
                     chatInputBinding.SetFromSource("");

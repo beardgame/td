@@ -4,7 +4,7 @@ using amulware.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI
 {

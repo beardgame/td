@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -74,14 +74,14 @@ namespace Bearded.TD.UI.Controls
             base.KeyHit(keyEventArgs);
         }
 
-        private bool tryHandleKeyHit(Key key)
+        private bool tryHandleKeyHit(Keys key)
         {
             switch (key)
             {
-                case Key.T:
+                case Keys.T:
                     technologyUIControl.IsVisible = !technologyUIControl.IsVisible;
                     break;
-                case Key.Escape:
+                case Keys.Escape:
                     gamePausedControl.IsVisible = !gamePausedControl.IsVisible;
                     break;
                 default:

@@ -12,8 +12,8 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
-using OpenToolkit.Graphics.OpenGL;
-using OpenToolkit.Mathematics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {

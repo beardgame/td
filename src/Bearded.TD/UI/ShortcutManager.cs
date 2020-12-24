@@ -6,7 +6,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Events;
 using Bearded.Utilities;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI
 {
@@ -32,19 +32,19 @@ namespace Bearded.TD.UI
             };
 
         private readonly IdManager ids = new IdManager();
-        private readonly MultiDictionary<Key, Shortcut> shortcuts = new MultiDictionary<Key, Shortcut>();
+        private readonly MultiDictionary<Keys, Shortcut> shortcuts = new();
 
-        public Id<Shortcut> RegisterShortcut(Key key, Action action) =>
+        public Id<Shortcut> RegisterShortcut(Keys key, Action action) =>
             RegisterShortcut(key, ShortcutModifierKeys.None, action);
 
-        public Id<Shortcut> RegisterShortcut(Key key, ShortcutModifierKeys modifierKeys, Action action)
+        public Id<Shortcut> RegisterShortcut(Keys key, ShortcutModifierKeys modifierKeys, Action action)
         {
             var id = ids.GetNext<Shortcut>();
             shortcuts.Add(key, new Shortcut(id, key, modifierKeys, action));
             return id;
         }
 
-        public bool RemoveShortcut(Key key, Id<Shortcut> id)
+        public bool RemoveShortcut(Keys key, Id<Shortcut> id)
         {
             return shortcuts.RemoveWhere(key, s => s.Id == id) > 0;
         }
@@ -70,11 +70,11 @@ namespace Bearded.TD.UI
         public sealed class Shortcut
         {
             public Id<Shortcut> Id { get; }
-            private readonly Key key;
+            private readonly Keys key;
             public ShortcutModifierKeys ModifierKeys { get; }
             public Action Action { get; }
 
-            public Shortcut(Id<Shortcut> id, Key key, ShortcutModifierKeys modifierKeys, Action action)
+            public Shortcut(Id<Shortcut> id, Keys key, ShortcutModifierKeys modifierKeys, Action action)
             {
                 Id = id;
                 this.key = key;

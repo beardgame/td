@@ -33,7 +33,7 @@ namespace Bearded.TD.UI.Controls
                     .Left(relativePercentage: .5)
                     .Right(padding)),
                 new ButtonBackgroundEffect()
-            }.Subscribe(btn => btn.Clicked += () => Clicked?.Invoke(lobby)));
+            }.Subscribe(btn => btn.Clicked += _ => Clicked?.Invoke(lobby)));
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

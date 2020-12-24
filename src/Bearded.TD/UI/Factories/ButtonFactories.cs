@@ -61,7 +61,7 @@ namespace Bearded.TD.UI.Factories
                 var button = new Button {labelControl, new Border(), new ButtonBackgroundEffect()};
                 if (onClick != null)
                 {
-                    button.Clicked += onClick;
+                    button.Clicked += _ => onClick();
                 }
                 return button;
             }

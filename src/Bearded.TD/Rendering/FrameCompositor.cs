@@ -4,7 +4,7 @@ using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
-using OpenToolkit.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 using Color = amulware.Graphics.Color;
 
 namespace Bearded.TD.Rendering

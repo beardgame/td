@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using amulware.Graphics;
 using amulware.Graphics.Vertices;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred
 {

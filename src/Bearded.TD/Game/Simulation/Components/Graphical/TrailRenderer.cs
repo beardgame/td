@@ -4,7 +4,7 @@ using amulware.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components.Graphical

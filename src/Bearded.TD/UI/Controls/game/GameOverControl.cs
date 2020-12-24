@@ -20,7 +20,7 @@ namespace Bearded.TD.UI.Controls
                     .Bottom(margin: 4, height: 24)
                     .Left(margin: 4)
                     .Right(margin: 4))
-                .Subscribe(btn => btn.Clicked += () => ReturnToMainMenuButtonClicked?.Invoke()));
+                .Subscribe(btn => btn.Clicked += _ => ReturnToMainMenuButtonClicked?.Invoke()));
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

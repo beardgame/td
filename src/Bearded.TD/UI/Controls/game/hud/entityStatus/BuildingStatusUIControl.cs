@@ -122,7 +122,7 @@ namespace Bearded.TD.UI.Controls
             {
                 var upgrade = availableUpgrades[index];
                 var ctrl = new UpgradeButton(game.Me.Faction, building, upgrade);
-                ctrl.Clicked += () => game.Request(UpgradeBuilding.Request, building, upgrade);
+                ctrl.Clicked += _ => game.Request(UpgradeBuilding.Request, building, upgrade);
                 return ctrl;
             }
 

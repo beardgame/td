@@ -1,4 +1,5 @@
 using amulware.Graphics;
+using Bearded.UI.Controls;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls
@@ -11,7 +12,7 @@ namespace Bearded.TD.UI.Controls
 
         }
 
-        public void Close()
+        public void Close(Button.ClickEventArgs t)
         {
             Navigation.Close(this);
         }

@@ -6,7 +6,7 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 using static Bearded.TD.UI.Factories.LegacyDefault;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
 
@@ -36,12 +36,12 @@ namespace Bearded.TD.UI.Controls
                 .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
             Add(itemList);
 
-            toggleMinimized();
+            toggleMinimized(new Button.ClickEventArgs());
 
             model.ItemsChanged += itemList.Reload;
         }
 
-        private void toggleMinimized()
+        private void toggleMinimized(Button.ClickEventArgs _)
         {
             minimized = !minimized;
 
@@ -104,7 +104,7 @@ namespace Bearded.TD.UI.Controls
                             b =>
                             {
                                 b.FirstChildOfType<Label>().FontSize = 16;
-                                b.Clicked += () => setting.Set(i);
+                                b.Clicked += _ => setting.Set(i);
 
                                 if (setting.Value.ToString() == o.ToString())
                                 {
@@ -133,7 +133,7 @@ namespace Bearded.TD.UI.Controls
                             .Anchor(a => a.Left(3, 20 - 3 - 3).Top(3).Bottom(3))
                     );
 
-                    b.Clicked += () => onClick();
+                    b.Clicked += _ => onClick();
                 });
 
             private static Button button(string text, Action onClick)
@@ -144,7 +144,7 @@ namespace Bearded.TD.UI.Controls
                     label.FontSize = 16;
                     label.Anchor(a => a.Left(4));
 
-                    b.Clicked += () => onClick();
+                    b.Clicked += _ => onClick();
                 });
 
             public void DestroyItemControlAt(int index, Control control)

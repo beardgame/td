@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Bearded.Utilities.Input;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common.Input;
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using InputAction = Bearded.Utilities.Input.InputAction;
 
 namespace Bearded.TD.Utilities.Input
 {
@@ -16,12 +17,12 @@ namespace Bearded.TD.Utilities.Input
             Keyboard = new KeyboardInputState(inputManager);
         }
 
-        public ActionState ForKey(Key key)
+        public ActionState ForKey(Keys key)
         {
             return Keyboard.GetKeyState(key);
         }
 
-        public ActionState ForAnyKey(params Key[] keys)
+        public ActionState ForAnyKey(params Keys[] keys)
         {
             return Keyboard.GetAnyKeyState(keys);
         }
@@ -59,12 +60,12 @@ namespace Bearded.TD.Utilities.Input
                 this.inputManager = inputManager;
             }
 
-            public ActionState GetKeyState(Key key)
+            public ActionState GetKeyState(Keys key)
             {
                 return new ActionState(inputManager.Actions.Keyboard.FromKey(key));
             }
 
-            public ActionState GetAnyKeyState(params Key[] keys)
+            public ActionState GetAnyKeyState(params Keys[] keys)
             {
                 return new ActionState(InputAction.AnyOf(keys.Select(key => inputManager.Actions.Keyboard.FromKey(key))));
             }

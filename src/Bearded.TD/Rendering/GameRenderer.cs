@@ -12,7 +12,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Rendering

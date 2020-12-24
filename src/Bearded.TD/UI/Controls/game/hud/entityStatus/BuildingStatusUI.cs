@@ -4,6 +4,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 
 namespace Bearded.TD.UI.Controls
@@ -34,12 +35,12 @@ namespace Bearded.TD.UI.Controls
             Building.Deleting -= Navigation.Exit;
         }
 
-        public void OnCloseClicked()
+        public void OnCloseClicked(Button.ClickEventArgs _)
         {
             Navigation.Exit();
         }
 
-        public void OnDeleteBuildingClicked()
+        public void OnDeleteBuildingClicked(Button.ClickEventArgs _)
         {
             switch (Building)
             {

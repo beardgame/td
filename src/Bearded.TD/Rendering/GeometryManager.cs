@@ -3,7 +3,7 @@ using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Shapes;
 using amulware.Graphics.Text;
 using Bearded.TD.Rendering.Deferred;
-using OpenToolkit.Mathematics;
+using OpenTK.Mathematics;
 using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering
