@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableArray<ISyncable> syncables;
-        private Health<EnemyUnit> health;
+        private Health<EnemyUnit> health = null!;
         private bool isDead;
 
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Simulation.Units
         public Circle CollisionCircle => new Circle(Position.XY(), Radius);
         public long Value => (long) blueprint.Value;
 
-        private IDamageOwner lastDamageSource;
+        private IDamageOwner? lastDamageSource;
 
         public event GenericEventHandler<int>? Healed;
 
@@ -103,7 +103,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             if (isDead)
             {
-                this.Sync(KillUnit.Command, this, lastDamageSource.Faction);
+                this.Sync(KillUnit.Command, this, lastDamageSource?.Faction);
             }
         }
 
