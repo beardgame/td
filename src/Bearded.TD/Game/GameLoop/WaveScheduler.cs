@@ -94,15 +94,15 @@ namespace Bearded.TD.Game.GameLoop
                 blueprint = selectBlueprint();
             } while (blueprint.Value > maxWaveValue && tries++ < 5);
 
-            var minEnemies = Mathf.CeilToInt(minWaveValue / blueprint.Value);
-            var maxEnemies = Mathf.FloorToInt(maxWaveValue / blueprint.Value);
+            var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprint.Value);
+            var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprint.Value);
             var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
 
             var activeSpawnLocations = game.State.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
             State.Satisfies(activeSpawnLocations.Count > 0);
 
             var minSequentialSpawnTime = numEnemies * MinTimeBetweenSpawns;
-            var minSpawnPoints = Mathf.CeilToInt(MaxSpawnTimeDuration / (minSequentialSpawnTime * numEnemies));
+            var minSpawnPoints = MoreMath.CeilToInt(MaxSpawnTimeDuration / (minSequentialSpawnTime * numEnemies));
             var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
                 ? minSpawnPoints
                 : random.Next(minSpawnPoints, activeSpawnLocations.Count);
@@ -112,7 +112,7 @@ namespace Bearded.TD.Game.GameLoop
             }
             var spawnLocations = activeSpawnLocations.RandomSubset(numSpawnPoints, random).ToImmutableArray();
 
-            var enemiesPerSpawn = Mathf.CeilToInt((double) numEnemies / numSpawnPoints);
+            var enemiesPerSpawn = MoreMath.CeilToInt((double) numEnemies / numSpawnPoints);
             var actualValue = enemiesPerSpawn * numSpawnPoints * blueprint.Value;
             var actualError = Math.Abs(actualValue - requirements.WaveValue);
 

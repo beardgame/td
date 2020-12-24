@@ -236,8 +236,8 @@ namespace Bearded.TD.Rendering
             var translation = viewMatrix.Row3;
 
             var levelTranslation = new Vector2(
-                Mathf.RoundToInt(translation.X / pixelStep) * pixelStep,
-                Mathf.RoundToInt(translation.Y / pixelStep) * pixelStep
+                MoreMath.RoundToInt(translation.X / pixelStep) * pixelStep,
+                MoreMath.RoundToInt(translation.Y / pixelStep) * pixelStep
             );
 
             viewMatrix.Row3.Xy = levelTranslation;

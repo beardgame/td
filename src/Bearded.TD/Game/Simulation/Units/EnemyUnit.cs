@@ -88,7 +88,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             syncables = components.Get<ISyncable>().ToImmutableArray();
 
-            Radius = ((Mathf.Atan(.005f * (health.MaxHealth - 200)) + Mathf.PiOver2) / Mathf.Pi * 0.6f).U();
+            Radius = ((MathF.Atan(.005f * (health.MaxHealth - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         }
 
         protected override void OnDelete()

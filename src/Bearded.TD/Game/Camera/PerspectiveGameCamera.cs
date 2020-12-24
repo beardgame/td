@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities;
+﻿using System;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
@@ -6,14 +7,14 @@ namespace Bearded.TD.Game.Camera
 {
     sealed class PerspectiveGameCamera : GameCamera
     {
-        private const float fovy = Mathf.PiOver2;
+        private const float fovy = MathConstants.PiOver2;
 
         protected override Matrix4 CalculateProjectionMatrix()
         {
             var zNear = NearPlaneDistance;
             var zFar = FarPlaneDistance;
 
-            var yMax = zNear * Mathf.Tan(.5f * fovy);
+            var yMax = zNear * MathF.Tan(.5f * fovy);
             var yMin = -yMax;
             var xMax = yMax * ViewportSize.AspectRatio;
             var xMin = yMin * ViewportSize.AspectRatio;
