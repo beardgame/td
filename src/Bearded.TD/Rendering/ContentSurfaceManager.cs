@@ -8,6 +8,7 @@ using amulware.Graphics.Rendering;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Deferred.Level;
 
 namespace Bearded.TD.Rendering
 {

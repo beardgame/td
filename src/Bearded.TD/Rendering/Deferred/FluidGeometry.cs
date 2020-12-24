@@ -11,6 +11,7 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using OpenToolkit.Graphics.OpenGL;
 using OpenToolkit.Mathematics;
+using static Bearded.TD.Tiles.Level;
 
 namespace Bearded.TD.Rendering.Deferred
 {
@@ -29,7 +30,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         // TODO: use a non-indexed mesh builder instead?
         private readonly ExpandingIndexedTrianglesMeshBuilder<FluidVertex> meshBuilder
-            = new ExpandingIndexedTrianglesMeshBuilder<FluidVertex>();
+            = new();
 
         private readonly IRenderer renderer;
 
@@ -157,9 +158,9 @@ namespace Bearded.TD.Rendering.Deferred
             var maxValidHeight = getMaxValidHeight(h0, h1, h2);
 
             addTriangle(
-                Level.GetPosition(t0).NumericValue.WithZ(h0.HasFluid ? h0.SurfaceLevel : maxValidHeight),
-                Level.GetPosition(t1).NumericValue.WithZ(h1.HasFluid ? h1.SurfaceLevel : maxValidHeight),
-                Level.GetPosition(t2).NumericValue.WithZ(h2.HasFluid ? h2.SurfaceLevel : maxValidHeight),
+                GetPosition(t0).NumericValue.WithZ(h0.HasFluid ? h0.SurfaceLevel : maxValidHeight),
+                GetPosition(t1).NumericValue.WithZ(h1.HasFluid ? h1.SurfaceLevel : maxValidHeight),
+                GetPosition(t2).NumericValue.WithZ(h2.HasFluid ? h2.SurfaceLevel : maxValidHeight),
                 f0, f1, f2
             );
         }

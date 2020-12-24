@@ -7,6 +7,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Deferred.Level;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
@@ -38,7 +39,7 @@ namespace Bearded.TD.Rendering
             var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];
             var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
-            levelRenderer = new GPUHeightmapLevelRenderer(game, renderContext, levelMaterial);
+            levelRenderer = new LevelRenderer(game, renderContext, levelMaterial);
 
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
