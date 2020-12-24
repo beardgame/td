@@ -39,8 +39,9 @@ namespace Bearded.TD.Game.Simulation.Units
 
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
+        private Unit radius;
 
-        private readonly ComponentEvents events = new ComponentEvents();
+        private readonly ComponentEvents events = new();
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableArray<ISyncable> syncables;
@@ -50,17 +51,12 @@ namespace Bearded.TD.Game.Simulation.Units
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
         public Faction Faction => Game.RootFaction;
 
-        public Unit Radius { get; private set; }
-
-        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + Radius);
+        public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
-        public Circle CollisionCircle => new Circle(Position.XY(), Radius);
-        public long Value => (long) blueprint.Value;
+        public Circle CollisionCircle => new(Position.XY(), radius);
 
         private IDamageOwner? lastDamageSource;
-
-        public event GenericEventHandler<int>? Healed;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
@@ -88,7 +84,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             syncables = components.Get<ISyncable>().ToImmutableArray();
 
-            Radius = ((MathF.Atan(.005f * (health.MaxHealth - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
+            radius = ((MathF.Atan(.005f * (health.MaxHealth - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         }
 
         protected override void OnDelete()
@@ -111,7 +107,7 @@ namespace Bearded.TD.Game.Simulation.Units
         {
             var drawer = geometries.ConsoleBackground;
 
-            drawer.FillCircle(Position.NumericValue, Radius.NumericValue, blueprint.Color, 6);
+            drawer.FillCircle(Position.NumericValue, radius.NumericValue, blueprint.Color, 6);
 
             drawer.FillRectangle(
                 Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f), Color.DarkGray);

@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using amulware.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
@@ -23,26 +20,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
     [ComponentOwner]
     sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
     {
-        private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
-        {
-            {SelectionState.Default, Color.Blue},
-            {SelectionState.Focused, Color.DarkBlue},
-            {SelectionState.Selected, Color.RoyalBlue}
-        };
-
-        private readonly List<BuildingUpgradeTask> upgradesInProgress = new List<BuildingUpgradeTask>();
+        private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
-        private readonly List<IUpgradeBlueprint> appliedUpgrades = new List<IUpgradeBlueprint>();
+        private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
         public Id<Building> Id { get; }
 
         public bool IsCompleted { get; private set; }
-        private double buildProgress;
         private bool isDead;
 
         public event VoidEventHandler? Completing;
-        public event GenericEventHandler<int>? Healed;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
@@ -77,8 +65,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void SetBuildProgress(double newBuildProgress, int healthAdded)
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
-            buildProgress = newBuildProgress;
-            Healed?.Invoke(healthAdded);
+            Events.Send(new HealDamage(healthAdded));
         }
 
         public void SetBuildCompleted()
@@ -140,15 +127,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        public override void Draw(GeometryManager geometries)
-        {
-            var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
-            //DrawTiles(geometries, drawColors[SelectionState] * alpha);
-            //DrawBuildingName(geometries, Color.Black);
-            base.Draw(geometries);
-        }
-
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
-            Faction.Technology.GetApplicableUpgradesFor(this);
+            Faction.Technology?.GetApplicableUpgradesFor(this) ?? Enumerable.Empty<IUpgradeBlueprint>();
     }
 }

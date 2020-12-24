@@ -15,7 +15,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components.Damage
 {
     [Component("health")]
-    class Health<T> : Component<T, IHealthComponentParameter>, ISyncable, IListener<TakeDamage> where T : IMortal
+    sealed class Health<T> :
+        Component<T, IHealthComponentParameter>,
+        ISyncable,
+        IListener<HealDamage>,
+        IListener<TakeDamage>
+        where T : IMortal
     {
         public int CurrentHealth { get; private set; }
         public int MaxHealth { get; private set; }
@@ -29,8 +34,13 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         protected override void Initialise()
         {
-            Owner.Healed += onHealed;
-            Events.Subscribe(this);
+            Events.Subscribe<HealDamage>(this);
+            Events.Subscribe<TakeDamage>(this);
+        }
+
+        public void HandleEvent(HealDamage @event)
+        {
+            onHealed(@event.Amount);
         }
 
         public void HandleEvent(TakeDamage @event)
@@ -94,7 +104,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         public IStateToSync GetCurrentStateToSync() => new HealthSynchronizedState(this);
 
-        private class HealthSynchronizedState : IStateToSync
+        private sealed class HealthSynchronizedState : IStateToSync
         {
             private readonly Health<T> source;
             private int currentHealth;
