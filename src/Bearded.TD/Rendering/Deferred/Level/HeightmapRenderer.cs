@@ -14,6 +14,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
@@ -55,7 +56,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     Pipeline<int>.Resize(r => new Vector2i(r, r), heightmap),
                     Pipeline<int>.WithContext(c => c
                             .BindRenderTarget(heightmapTarget)
-                            .SetViewport(r => new(0, 0, r, r))
+                            .SetViewport(r => new Rectangle(0, 0, r, r))
                             .SetBlendMode(BlendMode.Premultiplied),
                         Pipeline<int>.InOrder(
                             Pipeline<int>.ClearColor(Constants.Rendering.WallHeight, 0, 0, 0),
