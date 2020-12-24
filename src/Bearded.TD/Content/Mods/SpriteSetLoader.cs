@@ -36,7 +36,7 @@ namespace Bearded.TD.Content.Mods
             var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
             return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-                samplers.Select(s => s.name), sprites, jsonModel.Shader, jsonModel.Pixelate);
+                samplers.Select(s => s.name), sprites, jsonModel.Shader, jsonModel.Pixelate, jsonModel.Id);
         }
 
         private static IEnumerable<(string, Dictionary<string, Lazy<Bitmap>>)>

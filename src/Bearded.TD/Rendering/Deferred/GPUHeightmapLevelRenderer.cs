@@ -278,7 +278,7 @@ namespace Bearded.TD.Rendering.Deferred
 
                 var size = HexagonWidth * 2 / Math.Max(splat.BaseSize.X, splat.BaseSize.Y);
 
-                var angle = StaticRandom.Int(0, 6) * 30.Degrees().Radians;
+                var angle = StaticRandom.Int(0, 6) * 60.Degrees().Radians;
 
                 splat.Draw(p, Color.White, size, angle);
 

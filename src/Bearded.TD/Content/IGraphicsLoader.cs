@@ -11,11 +11,10 @@ namespace Bearded.TD.Content
 {
     interface IGraphicsLoader
     {
-        PackedSpriteSet CreateSpriteSet(
-            IEnumerable<string> samplers,
+        PackedSpriteSet CreateSpriteSet(IEnumerable<string> samplers,
             IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
             Shader shader,
-            bool pixelate);
+            bool pixelate, string id);
 
         IRendererShader CreateRendererShader(
             IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);
