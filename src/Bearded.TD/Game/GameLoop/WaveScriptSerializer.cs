@@ -15,14 +15,15 @@ namespace Bearded.TD.Game.GameLoop
     sealed class WaveScriptSerializer
     {
         private Id<WaveScript> id;
+        private string displayName = "";
         private Id<Faction> targetFaction;
         private double spawnStart;
         private double spawnDuration;
-        private double resourcesAwardedBySpawnPhase;
-        private Id<SpawnLocation>[] spawnLocations;
+        private int resourcesAwardedBySpawnPhase;
+        private Id<SpawnLocation>[] spawnLocations = {};
         private int unitsPerSpawnLocation;
         private ModAwareId unitBlueprint;
-        private Id<EnemyUnit>[] spawnedUnitIds;
+        private Id<EnemyUnit>[] spawnedUnitIds = {};
 
         [UsedImplicitly]
         public WaveScriptSerializer() {}
@@ -30,6 +31,7 @@ namespace Bearded.TD.Game.GameLoop
         public WaveScriptSerializer(WaveScript waveScript)
         {
             id = waveScript.Id;
+            displayName = waveScript.DisplayName;
             targetFaction = waveScript.TargetFaction.Id;
             spawnStart = waveScript.SpawnStart.NumericValue;
             spawnDuration = waveScript.SpawnDuration.NumericValue;
@@ -44,6 +46,7 @@ namespace Bearded.TD.Game.GameLoop
         {
             return new(
                 id,
+                displayName,
                 game.State.FactionFor(targetFaction),
                 new Instant(spawnStart),
                 new TimeSpan(spawnDuration),
@@ -57,6 +60,7 @@ namespace Bearded.TD.Game.GameLoop
         public void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref id);
+            stream.Serialize(ref displayName);
             stream.Serialize(ref targetFaction);
             stream.Serialize(ref spawnStart);
             stream.Serialize(ref spawnDuration);

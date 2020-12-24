@@ -66,7 +66,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 if (!task.Finished && worker.CurrentTile.NeighboursToTiles(task.Tiles))
                 {
-                    task.Progress(elapsedTime, resources, worker.WorkerSpeed);
+                    task.Progress(elapsedTime);
                 }
                 if (task.Finished)
                 {

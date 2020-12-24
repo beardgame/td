@@ -1,9 +1,0 @@
-{
-    "id" : "extraResources",
-    "name" : "Diggy diggy hole",
-    "cost" : 1,
-    "unlocks": [
-        { "type" : "building", "blueprint" : "mine" },
-        { "type" : "upgrade", "blueprint" : "extraResources" }
-    ]
-}

@@ -35,11 +35,7 @@ namespace Bearded.TD.Game.Simulation.Components
 
         [ConvertsAttribute]
         public static AttributeConverter<ResourceAmount> ResourceAmountConverter =
-            new(d => new ResourceAmount(d), r => r.NumericValue);
-
-        [ConvertsAttribute]
-        public static AttributeConverter<ResourceRate> ResourceRateConverter =
-            new(d => new ResourceRate(d), r => r.NumericValue);
+            new(d => new ResourceAmount((int) d), r => r.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<Speed> SpeedConverter =

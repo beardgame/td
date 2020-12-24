@@ -81,7 +81,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             base.OnAdded();
 
-            Components.Add(InitialiseComponents());
+            Components.Add(InitializeComponents());
 
             calculatePositionZ();
         }
@@ -95,7 +95,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Position = Position.XY().WithZ(z);
         }
 
-        protected abstract IEnumerable<IComponent<T>> InitialiseComponents();
+        protected abstract IEnumerable<IComponent<T>> InitializeComponents();
         public IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent => Components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner<T>.GetComponents<TComponent>() => GetComponents<TComponent>();

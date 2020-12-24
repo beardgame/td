@@ -10,6 +10,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
     sealed record WaveScript
     {
         public Id<WaveScript> Id { get; }
+        public string DisplayName { get; }
         public Faction TargetFaction { get; }
         public Instant SpawnStart { get; }
         public TimeSpan SpawnDuration { get; }
@@ -23,6 +24,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
         public WaveScript(
             Id<WaveScript> id,
+            string displayName,
             Faction targetFaction,
             Instant spawnStart,
             TimeSpan spawnDuration,
@@ -33,6 +35,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             ImmutableArray<Id<EnemyUnit>> spawnedUnitIds)
         {
             Id = id;
+            DisplayName = displayName;
             TargetFaction = targetFaction;
             SpawnStart = spawnStart;
             SpawnDuration = spawnDuration;

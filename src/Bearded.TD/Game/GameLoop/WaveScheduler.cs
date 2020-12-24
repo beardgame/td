@@ -69,6 +69,7 @@ namespace Bearded.TD.Game.GameLoop
 
             return new WaveScript(
                 game.Ids.GetNext<WaveScript>(),
+                $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
                 game.Me.Faction,
                 game.State.Time + requirements.DowntimeDuration,
                 spawnDuration,
@@ -145,12 +146,21 @@ namespace Bearded.TD.Game.GameLoop
 
         public sealed class WaveRequirements
         {
+            public int ChapterNumber { get; }
+            public int WaveNumber { get; }
             public double WaveValue { get; }
             public ResourceAmount Resources { get; }
             public TimeSpan DowntimeDuration { get; }
 
-            public WaveRequirements(double waveValue, ResourceAmount resources, TimeSpan downtimeDuration)
+            public WaveRequirements(
+                int chapterNumber,
+                int waveNumber,
+                double waveValue,
+                ResourceAmount resources,
+                TimeSpan downtimeDuration)
             {
+                ChapterNumber = chapterNumber;
+                WaveNumber = waveNumber;
                 DowntimeDuration = downtimeDuration;
                 Resources = resources;
                 WaveValue = waveValue;

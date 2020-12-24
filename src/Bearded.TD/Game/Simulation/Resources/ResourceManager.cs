@@ -1,122 +1,184 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+﻿using System;
+using System.Collections.Generic;
+using Bearded.Utilities.IO;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
     sealed class ResourceManager
     {
-        private readonly IList<ResourceRequest> requestedResources = new List<ResourceRequest>();
-        private ResourceRate totalResourcesRequested;
-        private ResourceRate  totalResourcesProvided;
+        private readonly Logger logger;
+        private readonly HashSet<ResourceReservation> outstandingReservations = new();
+        private readonly List<ResourceReservation> reservationQueue = new();
+        private readonly HashSet<ResourceReservation> committedReservations = new();
 
+        private ResourceAmount reservedResources;
+        private ResourceAmount committedResources;
         public ResourceAmount CurrentResources { get; private set; }
-        public ResourceRate CurrentIncome { get; private set; }
 
-        public ResourceManager()
+        public ResourceAmount AvailableResources => CurrentResources - committedResources;
+        public ResourceAmount ResourcesAfterQueue => AvailableResources - reservedResources;
+
+        public ResourceManager(Logger logger)
         {
+            this.logger = logger;
             CurrentResources = Constants.Game.WaveGeneration.InitialResources;
         }
 
-        public void ProvideOneTimeResource(ResourceAmount amount)
+        public void ProvideResources(ResourceAmount amount)
         {
             CurrentResources += amount;
         }
 
-        public void ProvideResourcesOverTime(ResourceRate ratePerS)
+        public IResourceReservation ReserveResources(ResourceRequest request)
         {
-            totalResourcesProvided += ratePerS;
+            logger.Trace?.Log($"Received resource request for {request.AmountRequested} resources");
+            var reservation = new ResourceReservation(this, request.AmountRequested);
+            reservedResources += request.AmountRequested;
+            outstandingReservations.Add(reservation);
+            return reservation;
         }
 
-        public void RegisterConsumer(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
+        public void DistributeResources()
         {
-            requestedResources.Add(new ResourceRequest(consumer, ratePerS, maximum));
-            totalResourcesRequested += ratePerS;
-        }
-
-        public void DistributeResources(TimeSpan elapsedTime)
-        {
-            CurrentResources += totalResourcesProvided * elapsedTime;
-            var resourceOut = totalResourcesRequested * elapsedTime;
-
-            if (resourceOut <= CurrentResources)
+            while (reservationQueue.Count > 0
+                && reservationQueue[0].ResourcesLeftToClaim <= AvailableResources)
             {
-                distributeAtMaxRates(elapsedTime);
+                commitResources(reservationQueue[0]);
+                reservationQueue.RemoveAt(0);
+            }
+        }
+
+        private void commitResources(ResourceReservation reservation)
+        {
+            State.Satisfies(AvailableResources >= reservation.ResourcesLeftToClaim);
+            committedReservations.Add(reservation);
+            reservation.CommitResources();
+            reservedResources -= reservation.ResourcesLeftToClaim;
+            committedResources += reservation.ResourcesLeftToClaim;
+            logger.Trace?.Log($"Committed {reservation.ResourcesLeftToClaim} resources");
+        }
+
+        private void requestResources(ResourceReservation reservation)
+        {
+            if (!outstandingReservations.Remove(reservation))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (reservationQueue.Count == 0 && reservation.ResourcesLeftToClaim <= AvailableResources)
+            {
+                commitResources(reservation);
             }
             else
             {
-                distributedAtLimitedRates(elapsedTime, resourceOut);
-            }
-
-            resetForFrame();
-        }
-
-        private void distributeAtMaxRates(TimeSpan elapsedTime)
-        {
-            foreach (var request in requestedResources)
-            {
-                var grantedResources = request.RatePerS * elapsedTime;
-                request.TryGrant(grantedResources, out var consumedResources);
-                CurrentResources -= consumedResources;
+                reservationQueue.Add(reservation);
             }
         }
 
-        private void distributedAtLimitedRates(TimeSpan elapsedTime, ResourceAmount resourceOut)
+        private void consumeResources(ResourceAmount amount)
         {
-            var sortedRequests = requestedResources.OrderBy(
-                consumer => consumer.Maximum.NumericValue / consumer.RatePerS.NumericValue);
-            var resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
+            CurrentResources -= amount;
+            committedResources -= amount;
+        }
 
-            foreach (var request in sortedRequests)
+        private void onReservationCompleted(ResourceReservation reservation)
+        {
+            committedReservations.Remove(reservation);
+        }
+
+        private void cancelReservation(ResourceReservation reservation)
+        {
+            if (committedReservations.Remove(reservation))
             {
-                var grantedResources = resourceRatio * request.RatePerS * elapsedTime;
+                committedResources -= reservation.ResourcesLeftToClaim;
+                return;
+            }
 
-                var grantFullyConsumed = request.TryGrant(grantedResources, out var consumedResources);
-                CurrentResources -= consumedResources;
-                resourceOut -= consumedResources;
+            if (outstandingReservations.Remove(reservation) || reservationQueue.Remove(reservation))
+            {
+                reservedResources -= reservation.ResourcesLeftToClaim;
+                return;
+            }
 
-                if (!grantFullyConsumed)
+            throw new InvalidOperationException("Reservation wasn't found.");
+        }
+
+        public sealed record ResourceRequest
+        {
+            public ResourceAmount AmountRequested { get; }
+
+            public ResourceRequest(ResourceAmount amountRequested)
+            {
+                AmountRequested = amountRequested;
+            }
+        }
+
+        public interface IResourceReservation
+        {
+            bool IsReadyToReceive { get; }
+            bool IsCommitted { get; }
+            ResourceAmount ResourcesLeftToClaim { get; }
+
+            void MarkReadyToReceive();
+            void ClaimResources(ResourceAmount amount);
+            void CancelRemainingResources();
+        }
+
+        private sealed class ResourceReservation : IResourceReservation
+        {
+            private readonly ResourceManager resourceManager;
+
+            private bool isCancelled;
+            public bool IsReadyToReceive { get; private set; }
+            public bool IsCommitted { get; private set; }
+            public ResourceAmount ResourcesLeftToClaim { get; private set; }
+
+            public ResourceReservation(ResourceManager resourceManager, ResourceAmount requestedAmount)
+            {
+                this.resourceManager = resourceManager;
+                ResourcesLeftToClaim = requestedAmount;
+            }
+
+            public void CommitResources()
+            {
+                State.Satisfies(IsReadyToReceive);
+                State.Satisfies(!IsCommitted);
+                State.Satisfies(!isCancelled);
+                IsCommitted = true;
+            }
+
+            public void MarkReadyToReceive()
+            {
+                State.Satisfies(!IsReadyToReceive);
+                State.Satisfies(!isCancelled);
+                IsReadyToReceive = true;
+                resourceManager.requestResources(this);
+            }
+
+            public void ClaimResources(ResourceAmount amount)
+            {
+                State.Satisfies(IsReadyToReceive);
+                State.Satisfies(IsCommitted);
+                State.Satisfies(!isCancelled);
+                Argument.Satisfies(amount <= ResourcesLeftToClaim);
+                resourceManager.consumeResources(amount);
+                ResourcesLeftToClaim -= amount;
+
+                if (ResourcesLeftToClaim == ResourceAmount.Zero)
                 {
-                    resourceRatio = CurrentResources.NumericValue / resourceOut.NumericValue;
+                    resourceManager.onReservationCompleted(this);
                 }
             }
-        }
 
-        private void resetForFrame()
-        {
-            CurrentIncome = totalResourcesProvided - totalResourcesRequested;
-            requestedResources.Clear();
-            totalResourcesRequested = ResourceRate.Zero;
-            totalResourcesProvided = ResourceRate.Zero;
-        }
-
-        private readonly struct ResourceRequest
-        {
-            private readonly IResourceConsumer consumer;
-            public ResourceRate RatePerS { get; }
-            public ResourceAmount Maximum { get; }
-
-            public ResourceRequest(IResourceConsumer consumer, ResourceRate ratePerS, ResourceAmount maximum)
+            public void CancelRemainingResources()
             {
-                this.consumer = consumer;
-                RatePerS = ratePerS;
-                Maximum = maximum;
-            }
-
-            public bool TryGrant(ResourceAmount resourcesAvailable, out ResourceAmount grantedResources)
-            {
-                if (resourcesAvailable >= Maximum)
+                if (ResourcesLeftToClaim == ResourceAmount.Zero)
                 {
-                    consumer.ConsumeResources(new ResourceGrant(Maximum, true));
-                    grantedResources = Maximum;
-                    return false;
+                    return;
                 }
-                else
-                {
-                    consumer.ConsumeResources(new ResourceGrant(resourcesAvailable, false));
-                    grantedResources = resourcesAvailable;
-                    return true;
-                }
+                resourceManager.cancelReservation(this);
+                isCancelled = true;
             }
         }
     }

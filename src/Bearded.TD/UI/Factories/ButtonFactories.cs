@@ -20,6 +20,12 @@ namespace Bearded.TD.UI.Factories
             return builder.Build();
         }
 
+        public static Layouts.IColumnLayout AddButton(
+            this Layouts.IColumnLayout columnLayout, BuilderFunc<Builder> builderFunc)
+        {
+            return columnLayout.Add(Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
+        }
+
         public sealed class Builder
         {
             private Control? labelControl;

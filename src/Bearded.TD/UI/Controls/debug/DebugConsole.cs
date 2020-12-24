@@ -8,6 +8,7 @@ using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using Environment = System.Environment;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
@@ -54,7 +55,10 @@ namespace Bearded.TD.UI.Controls
         {
             while (loggerEntriesAdded.TryDequeue(out var entry))
             {
-                LogEntryAdded?.Invoke(entry);
+                foreach (var line in entry.Text.Split(Environment.NewLine))
+                {
+                    LogEntryAdded?.Invoke(new Logger.Entry(line, entry.Severity, entry.Time));
+                }
             }
         }
 

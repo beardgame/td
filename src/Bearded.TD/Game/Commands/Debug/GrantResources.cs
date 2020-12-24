@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Commands.Debug
 
             protected override bool CheckPreconditionsDebug(Player _) => faction.HasResources;
 
-            public override void Execute() => faction.Resources.ProvideOneTimeResource(amount);
+            public override void Execute() => faction.Resources.ProvideResources(amount);
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, amount);
         }
@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands.Debug
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
-            private double amount;
+            private int amount;
 
             [UsedImplicitly]
             public Serializer() { }

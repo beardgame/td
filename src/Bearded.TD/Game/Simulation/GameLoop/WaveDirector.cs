@@ -68,6 +68,9 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 fillSpawnQueue();
                 game.Meta.Events.Subscribe(this);
+                game.Meta.Events.Send(
+                    new WaveScheduled(
+                        script.Id, script.DisplayName, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
                 phase = Phase.Downtime;
                 foreach (var location in script.SpawnLocations)
                 {
@@ -141,9 +144,9 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 var spawnTimeElapsed = game.Time - script.SpawnStart;
                 var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
-                var expectedResourcesGiven = percentageTimeElapsed * script.ResourcesAwardedBySpawnPhase;
+                var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.Percentage(percentageTimeElapsed);
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
-                script.TargetFaction.Resources.ProvideOneTimeResource(expectedResourcesGiven - resourcesGiven);
+                script.TargetFaction.Resources.ProvideResources(expectedResourcesGiven - resourcesGiven);
                 resourcesGiven = expectedResourcesGiven;
             }
 

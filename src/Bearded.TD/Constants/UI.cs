@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD
+﻿using amulware.Graphics;
+
+namespace Bearded.TD
 {
     static partial class Constants
     {
@@ -48,6 +50,8 @@
 
                 public const float FontSize = 16;
                 public const float LineHeight = 20;
+
+                public static readonly Color TextColor = Color.White;
             }
         }
     }

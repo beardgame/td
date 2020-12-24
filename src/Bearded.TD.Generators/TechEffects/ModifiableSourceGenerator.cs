@@ -67,11 +67,7 @@ namespace Bearded.TD.Generators.TechEffects
             string className,
             ICollection<ParametersPropertyDefinition> modifiableParameters)
         {
-            if (modifiableParameters.Count > 0)
-            {
-                sb.Append(Templates.StaticConstructor(className, modifiableParameters));
-            }
-
+            sb.Append(Templates.StaticConstructor(className, modifiableParameters));
             return this;
         }
 

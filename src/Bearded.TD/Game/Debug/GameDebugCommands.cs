@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Debug
                 return;
             }
 
-            if (!double.TryParse(p.Args[0], out var amount))
+            if (!int.TryParse(p.Args[0], out var amount))
             {
                 logger.Warning?.Log($"Invalid amount: {amount}");
                 return;

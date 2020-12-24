@@ -7,18 +7,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Upgrades
 {
-    sealed class BuildingUpgradeTask : GameObject, IResourceConsumer
+    sealed class BuildingUpgradeTask : GameObject
     {
         private readonly Building building;
         private readonly IUpgradeBlueprint upgrade;
-
-        private ResourceAmount maximumResources => upgrade.Cost;
-
-        private ResourceAmount progress;
-        private bool completed;
+        private ResourceConsumer resourceConsumer = null!;
 
         public Building Building => building;
-        public double ProgressPercentage => progress / maximumResources;
+        public double ProgressPercentage => resourceConsumer.PercentageDone;
         public IUpgradeBlueprint Upgrade => upgrade;
 
         public BuildingUpgradeTask(Building building, IUpgradeBlueprint upgrade)
@@ -29,6 +25,10 @@ namespace Bearded.TD.Game.Simulation.Upgrades
 
         protected override void OnAdded()
         {
+            resourceConsumer = new ResourceConsumer(
+                Game,
+                building.Faction.Resources.ReserveResources(new ResourceManager.ResourceRequest(upgrade.Cost)),
+                Constants.Game.Worker.UpgradeSpeed);
             building.RegisterBuildingUpgradeTask(this);
         }
 
@@ -40,24 +40,19 @@ namespace Bearded.TD.Game.Simulation.Upgrades
         public override void Update(TimeSpan elapsedTime)
         {
             if (!building.IsCompleted)
+            {
                 return;
+            }
 
-            if (completed)
+            if (resourceConsumer.IsDone)
+            {
                 return;
+            }
 
-            building.Faction.Resources.RegisterConsumer(this, 10.ResourcesPerSecond(), maximumResources - progress);
-        }
+            resourceConsumer.PrepareIfNeeded();
+            resourceConsumer.Update();
 
-        public override void Draw(GeometryManager geometries)
-        {
-        }
-
-        public void ConsumeResources(ResourceGrant grant)
-        {
-            progress += grant.Amount;
-            completed = grant.ReachedCapacity;
-
-            if (completed)
+            if (resourceConsumer.IsDone)
             {
                 building.Sync(FinishBuildingUpgrade.Command, building, upgrade);
 
@@ -66,5 +61,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades
                 Delete();
             }
         }
+
+        public override void Draw(GeometryManager geometries) { }
     }
 }

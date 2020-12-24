@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.GameLoop
         private readonly ChapterScheduler chapterScheduler;
 
         private bool gameStarted;
-        private int chaptersLeftInGame;
+        private int chaptersStarted;
 
         public GameScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher, ChapterScheduler chapterScheduler)
         {
@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.GameLoop
 
         private void onChapterEnded()
         {
-            if (chaptersLeftInGame > 0)
+            if (chaptersStarted < chaptersPerGame)
             {
                 requestChapter();
             }
@@ -45,7 +45,6 @@ namespace Bearded.TD.Game.GameLoop
 
             chapterScheduler.OnGameStart();
 
-            chaptersLeftInGame = chaptersPerGame;
             requestChapter();
         }
 
@@ -57,9 +56,9 @@ namespace Bearded.TD.Game.GameLoop
 
         private void requestChapter()
         {
-            State.Satisfies(chaptersLeftInGame > 0);
-            chaptersLeftInGame--;
-            chapterScheduler.StartChapter(new ChapterRequirements(wavesPerChapter));
+            State.Satisfies(chaptersStarted < chaptersPerGame);
+            var chapterNumber = ++chaptersStarted;
+            chapterScheduler.StartChapter(new ChapterRequirements(chapterNumber, wavesPerChapter));
         }
     }
 }

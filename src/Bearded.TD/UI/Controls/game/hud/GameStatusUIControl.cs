@@ -1,16 +1,19 @@
 ﻿using Bearded.TD.UI.Factories;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
-using OpenToolkit.Mathematics;
 
 namespace Bearded.TD.UI.Controls
 {
     sealed class GameStatusUIControl : CompositeControl
     {
         private readonly GameStatusUI model;
-        private readonly Label resourcesLabel;
-        private readonly Label techPointsLabel;
+        private readonly Binding<string> resourcesAmount = new();
+        private readonly Binding<string> techPointsAmount = new();
+        private readonly Binding<string> waveNumber = new();
+        private readonly Binding<string> timeUntilSpawn = new();
+        private readonly Binding<string> waveResources = new();
 
         public event VoidEventHandler? TechnologyButtonClicked;
 
@@ -20,69 +23,39 @@ namespace Bearded.TD.UI.Controls
 
             Add(new BackgroundBox());
 
-            Add(new Label($"{model.FactionName}")
-                {
-                    Color = model.FactionColor,
-                    FontSize = 16,
-                }.Anchor(a => a
-                    .Top(margin: 8, height: 24)
-                    .Left(margin: 8)
-                    .Right(margin: 8)));
-
-            Add(new Label("Resources:")
-                {
-                    FontSize = 16,
-                    TextAnchor = new Vector2d(0, .5)
-                }
-                .Anchor(a => a
-                    .Top(margin: 32, height: 24)
-                    .Left(margin: 8)));
-
-            resourcesLabel = new Label
-                {
-                    Color = Constants.Game.GameUI.ResourcesColor,
-                    FontSize = 16,
-                    TextAnchor = new Vector2d(1, .5)
-                }
-                .Anchor(a => a
-                    .Top(margin: 32, height: 24)
-                    .Right(margin: 8));
-            Add(resourcesLabel);
-
-            Add(new Label("Technology:")
-                {
-                    FontSize = 16,
-                    TextAnchor = new Vector2d(0, .5)
-                }
-                .Anchor(a => a
-                    .Top(margin: 56, height: 24)
-                    .Left(margin: 8)));
-
-            techPointsLabel = new Label
-                {
-                    Color = Constants.Game.GameUI.TechPointsColor,
-                    FontSize = 16,
-                    TextAnchor = new Vector2d(1, .5)
-                }
-                .Anchor(a => a
-                    .Top(margin: 56, height: 24)
-                    .Right(margin: 8));
-            Add(techPointsLabel);
-
-            Add(LegacyDefault.Button("Research", 16)
-                .Anchor(a => a
-                    .Top(margin: 84, height: 24)
-                    .Left(margin: 16)
-                    .Right(margin: 16))
-                .Subscribe(btn => btn.Clicked += () => TechnologyButtonClicked?.Invoke()));
+            var content = new CompositeControl().Anchor(a => a.MarginAllSides(4));
+            content.BuildFixedColumn()
+                .AddHeader($"{model.FactionName}", model.FactionColor)
+                .AddValueLabel("Resources:", resourcesAmount, rightColor: Constants.Game.GameUI.ResourcesColor)
+                .AddValueLabel("Tech points:", techPointsAmount, rightColor: Constants.Game.GameUI.TechPointsColor)
+                .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
+                .AddValueLabel("Wave:", waveNumber)
+                .AddValueLabel("Next spawn:", timeUntilSpawn)
+                .AddValueLabel("Resources this wave:", waveResources, rightColor: Constants.Game.GameUI.ResourcesColor);
+            this.BuildLayout().ForContentBox().FillContent(content);
 
             model.StatusChanged += updateLabels;
         }
 
         private void updateLabels()
         {
-            resourcesLabel.Text = $"{model.FactionResources.DisplayValue} {model.FactionResourceIncome.DisplayValue:+#;-#;0}";
-            techPointsLabel.Text = $"{model.FactionTechPoints} smarts";
+            if (model.FactionResources == model.FactionResourcesAfterReservation)
+            {
+                resourcesAmount.SetFromSource($"{model.FactionResources.NumericValue}");
+            }
+            else
+            {
+                resourcesAmount.SetFromSource(
+                    $"{model.FactionResources.NumericValue} -> " +
+                    $"{model.FactionResourcesAfterReservation.NumericValue}");
+            }
+
+            techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
+            waveNumber.SetFromSource(model.WaveName ?? "-");
+            timeUntilSpawn.SetFromSource(
+                model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
+            waveResources.SetFromSource(
+                model.WaveResources == null ? "-" : $"{model.WaveResources.Value.NumericValue}");
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

@@ -21,7 +21,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
+    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
     {
         private static readonly Dictionary<SelectionState, Color> drawColors = new Dictionary<SelectionState, Color>
         {
@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
         }
 
-        protected override IEnumerable<IComponent<Building>> InitialiseComponents()
+        protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
         public void Damage(DamageInfo damage)

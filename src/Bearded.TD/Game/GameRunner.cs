@@ -46,7 +46,7 @@ namespace Bearded.TD.Game
 
             foreach (var f in game.State.Factions)
                 if (f.HasResources)
-                    f.Resources.DistributeResources(elapsedTime);
+                    f.Resources.DistributeResources();
             game.State.Navigator.Update();
             game.State.Advance(elapsedTime);
 

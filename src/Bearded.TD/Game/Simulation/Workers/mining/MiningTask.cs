@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -17,17 +16,17 @@ namespace Bearded.TD.Game.Simulation.Workers
         public string Name => "Mine a tile";
         public IEnumerable<Tile> Tiles => tile.Yield();
         public Maybe<ISelectable> Selectable => Maybe.Just<ISelectable>(miningTaskPlaceholder);
-        public bool CanAbort => miningProgress == ResourceAmount.Zero;
-        public bool Finished => miningProgress >= Constants.Game.Worker.TotalMiningProgressRequired;
+        public bool CanAbort => miningProgress == TimeSpan.Zero;
+        public bool Finished => miningProgress >= Constants.Game.Worker.MiningDuration;
 
         private readonly MiningTaskPlaceholder miningTaskPlaceholder;
         private readonly Tile tile;
         private readonly GeometryLayer geometry;
         private readonly TileDrawInfo originalDrawInfo;
 
-        private ResourceAmount miningProgress;
+        private TimeSpan miningProgress;
 
-        public double PercentCompleted => miningProgress / Constants.Game.Worker.TotalMiningProgressRequired;
+        public double PercentCompleted => miningProgress / Constants.Game.Worker.MiningDuration;
 
         public MiningTask(
             Id<IWorkerTask> id, MiningTaskPlaceholder miningTaskPlaceholder, Tile tile, GeometryLayer geometry)
@@ -41,10 +40,9 @@ namespace Bearded.TD.Game.Simulation.Workers
             originalDrawInfo = geometry[tile].DrawInfo;
         }
 
-        public void Progress(TimeSpan elapsedTime, ResourceManager resourceManager, ResourceRate ratePerS)
+        public void Progress(TimeSpan elapsedTime)
         {
-            // TODO: mining progress shouldn't be measured in resources
-            miningProgress += ratePerS * elapsedTime;
+            miningProgress += elapsedTime;
             if (Finished)
             {
                 var previousGeo = geometry[tile].Geometry;
@@ -55,7 +53,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 geometry.SetDrawInfo(tile,
                     new TileDrawInfo(
-                        originalDrawInfo.Height * (float)(1 - miningProgress / Constants.Game.Worker.TotalMiningProgressRequired),
+                        originalDrawInfo.Height * (float)(1 - miningProgress / Constants.Game.Worker.MiningDuration),
                         originalDrawInfo.HexScale)
                 );
             }
