@@ -76,7 +76,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         public void Resize(float scale)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (heightMapPixelsPerTile != scale)
+            if (heightMapPixelsPerTile == scale)
             {
                 return;
             }
