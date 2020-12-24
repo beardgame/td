@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             workerTask = new BuildingWorkerTask(
                 taskId,
                 this,
-                Faction.Resources.RequestResources(new ResourceManager.ResourceRequest(Blueprint.ResourceCost)));
+                Faction.Resources.ReserveResources(new ResourceManager.ResourceRequest(Blueprint.ResourceCost)));
             Faction.Workers.RegisterTask(workerTask);
         }
 

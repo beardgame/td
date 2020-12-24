@@ -8,34 +8,42 @@ namespace Bearded.TD.Game.Simulation.Resources
     sealed class ResourceConsumer
     {
         private readonly Func<Instant> currentTimeProvider;
-        private readonly ResourceManager.IResourceTicket ticket;
+        private readonly ResourceManager.IResourceReservation reservation;
         private readonly ResourceAmount resourcesRequested;
         private readonly ResourceRate consumptionRate;
 
         private Instant? consumptionStartTime;
         private Instant time => currentTimeProvider();
 
-        public bool CanConsume => ticket.IsCommitted;
-        public double PercentageDone => (resourcesRequested - ticket.ResourcesLeftToClaim) / resourcesRequested;
-        public bool IsDone => ticket.ResourcesLeftToClaim == ResourceAmount.Zero;
+        public bool CanConsume => reservation.IsCommitted;
+        public double PercentageDone => (resourcesRequested - reservation.ResourcesLeftToClaim) / resourcesRequested;
+        public bool IsDone => reservation.ResourcesLeftToClaim == ResourceAmount.Zero;
 
-        public ResourceConsumer(GameState game, ResourceManager.IResourceTicket ticket, ResourceRate consumptionRate)
-            : this(() => game.Time, ticket, consumptionRate) { }
+        public ResourceConsumer(GameState game, ResourceManager.IResourceReservation reservation, ResourceRate consumptionRate)
+            : this(() => game.Time, reservation, consumptionRate) { }
 
         public ResourceConsumer(
-            Func<Instant> currentTimeProvider, ResourceManager.IResourceTicket ticket, ResourceRate consumptionRate)
+            Func<Instant> currentTimeProvider, ResourceManager.IResourceReservation reservation, ResourceRate consumptionRate)
         {
             this.currentTimeProvider = currentTimeProvider;
-            this.ticket = ticket;
+            this.reservation = reservation;
             this.consumptionRate = consumptionRate;
-            resourcesRequested = ticket.ResourcesLeftToClaim;
+            resourcesRequested = reservation.ResourcesLeftToClaim;
+        }
+
+        public void PrepareIfNeeded()
+        {
+            if (!reservation.IsReadyToReceive)
+            {
+                reservation.MarkReadyToReceive();
+            }
         }
 
         public void Update()
         {
             if (consumptionStartTime == null)
             {
-                if (ticket.IsCommitted)
+                if (reservation.IsCommitted)
                 {
                     consumptionStartTime = time;
                 }
@@ -45,17 +53,17 @@ namespace Bearded.TD.Game.Simulation.Resources
             var expectedResourcesConsumed = DiscreteSpaceTime1Math.Min(
                 resourcesRequested,
                 consumptionRate.InTime(time - consumptionStartTime.Value));
-            var actualResourcesConsumed = resourcesRequested - ticket.ResourcesLeftToClaim;
+            var actualResourcesConsumed = resourcesRequested - reservation.ResourcesLeftToClaim;
             var resourcesToClaim = expectedResourcesConsumed - actualResourcesConsumed;
 
             DebugAssert.State.Satisfies(resourcesToClaim >= ResourceAmount.Zero);
 
-            ticket.ClaimResources(resourcesToClaim);
+            reservation.ClaimResources(resourcesToClaim);
         }
 
         public void Abort()
         {
-            ticket.CancelRemainingResources();
+            reservation.CancelRemainingResources();
         }
     }
 }

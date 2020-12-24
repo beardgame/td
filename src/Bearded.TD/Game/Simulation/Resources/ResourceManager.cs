@@ -8,8 +8,9 @@ namespace Bearded.TD.Game.Simulation.Resources
     sealed class ResourceManager
     {
         private readonly Logger logger;
-        private readonly List<ResourceTicket> outstandingTickets = new();
-        private readonly HashSet<ResourceTicket> committedTickets = new();
+        private readonly HashSet<ResourceReservation> outstandingReservations = new();
+        private readonly List<ResourceReservation> reservationQueue = new();
+        private readonly HashSet<ResourceReservation> committedReservations = new();
 
         private ResourceAmount reservedResources;
         private ResourceAmount committedResources;
@@ -29,40 +30,50 @@ namespace Bearded.TD.Game.Simulation.Resources
             CurrentResources += amount;
         }
 
-        public IResourceTicket RequestResources(ResourceRequest request)
+        public IResourceReservation ReserveResources(ResourceRequest request)
         {
             logger.Trace?.Log($"Received resource request for {request.AmountRequested} resources");
-            var ticket = new ResourceTicket(this, request.AmountRequested);
+            var reservation = new ResourceReservation(this, request.AmountRequested);
             reservedResources += request.AmountRequested;
-            if (outstandingTickets.Count == 0 && request.AmountRequested <= AvailableResources)
-            {
-                commitResources(ticket);
-            }
-            else
-            {
-                outstandingTickets.Add(ticket);
-            }
-            return ticket;
+            outstandingReservations.Add(reservation);
+            return reservation;
         }
 
         public void DistributeResources()
         {
-            while (outstandingTickets.Count > 0
-                && outstandingTickets[0].ResourcesLeftToClaim <= AvailableResources)
+            while (reservationQueue.Count > 0
+                && reservationQueue[0].ResourcesLeftToClaim <= AvailableResources)
             {
-                commitResources(outstandingTickets[0]);
-                outstandingTickets.RemoveAt(0);
+                commitResources(reservationQueue[0]);
+                reservationQueue.RemoveAt(0);
             }
         }
 
-        private void commitResources(ResourceTicket ticket)
+        private void commitResources(ResourceReservation reservation)
         {
-            State.Satisfies(AvailableResources >= ticket.ResourcesLeftToClaim);
-            committedTickets.Add(ticket);
-            ticket.CommitResources();
-            reservedResources -= ticket.ResourcesLeftToClaim;
-            committedResources += ticket.ResourcesLeftToClaim;
-            logger.Trace?.Log($"Committed {ticket.ResourcesLeftToClaim} resources");
+            State.Satisfies(AvailableResources >= reservation.ResourcesLeftToClaim);
+            committedReservations.Add(reservation);
+            reservation.CommitResources();
+            reservedResources -= reservation.ResourcesLeftToClaim;
+            committedResources += reservation.ResourcesLeftToClaim;
+            logger.Trace?.Log($"Committed {reservation.ResourcesLeftToClaim} resources");
+        }
+
+        private void requestResources(ResourceReservation reservation)
+        {
+            if (!outstandingReservations.Remove(reservation))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (reservationQueue.Count == 0 && reservation.ResourcesLeftToClaim <= AvailableResources)
+            {
+                commitResources(reservation);
+            }
+            else
+            {
+                reservationQueue.Add(reservation);
+            }
         }
 
         private void consumeResources(ResourceAmount amount)
@@ -71,26 +82,26 @@ namespace Bearded.TD.Game.Simulation.Resources
             committedResources -= amount;
         }
 
-        private void onTicketCompleted(ResourceTicket ticket)
+        private void onReservationCompleted(ResourceReservation reservation)
         {
-            committedTickets.Remove(ticket);
+            committedReservations.Remove(reservation);
         }
 
-        private void cancelTicket(ResourceTicket ticket)
+        private void cancelReservation(ResourceReservation reservation)
         {
-            if (committedTickets.Remove(ticket))
+            if (committedReservations.Remove(reservation))
             {
-                committedResources -= ticket.ResourcesLeftToClaim;
+                committedResources -= reservation.ResourcesLeftToClaim;
                 return;
             }
 
-            if (outstandingTickets.Remove(ticket))
+            if (outstandingReservations.Remove(reservation) || reservationQueue.Remove(reservation))
             {
-                reservedResources -= ticket.ResourcesLeftToClaim;
+                reservedResources -= reservation.ResourcesLeftToClaim;
                 return;
             }
 
-            throw new InvalidOperationException("Ticket must be either committed or reserved.");
+            throw new InvalidOperationException("Reservation wasn't found.");
         }
 
         public sealed record ResourceRequest
@@ -103,24 +114,27 @@ namespace Bearded.TD.Game.Simulation.Resources
             }
         }
 
-        public interface IResourceTicket
+        public interface IResourceReservation
         {
+            bool IsReadyToReceive { get; }
             bool IsCommitted { get; }
             ResourceAmount ResourcesLeftToClaim { get; }
 
+            void MarkReadyToReceive();
             void ClaimResources(ResourceAmount amount);
             void CancelRemainingResources();
         }
 
-        private sealed class ResourceTicket : IResourceTicket
+        private sealed class ResourceReservation : IResourceReservation
         {
             private readonly ResourceManager resourceManager;
 
             private bool isCancelled;
+            public bool IsReadyToReceive { get; private set; }
             public bool IsCommitted { get; private set; }
             public ResourceAmount ResourcesLeftToClaim { get; private set; }
 
-            public ResourceTicket(ResourceManager resourceManager, ResourceAmount requestedAmount)
+            public ResourceReservation(ResourceManager resourceManager, ResourceAmount requestedAmount)
             {
                 this.resourceManager = resourceManager;
                 ResourcesLeftToClaim = requestedAmount;
@@ -128,13 +142,23 @@ namespace Bearded.TD.Game.Simulation.Resources
 
             public void CommitResources()
             {
+                State.Satisfies(IsReadyToReceive);
                 State.Satisfies(!IsCommitted);
                 State.Satisfies(!isCancelled);
                 IsCommitted = true;
             }
 
+            public void MarkReadyToReceive()
+            {
+                State.Satisfies(!IsReadyToReceive);
+                State.Satisfies(!isCancelled);
+                IsReadyToReceive = true;
+                resourceManager.requestResources(this);
+            }
+
             public void ClaimResources(ResourceAmount amount)
             {
+                State.Satisfies(IsReadyToReceive);
                 State.Satisfies(IsCommitted);
                 State.Satisfies(!isCancelled);
                 Argument.Satisfies(amount <= ResourcesLeftToClaim);
@@ -143,7 +167,7 @@ namespace Bearded.TD.Game.Simulation.Resources
 
                 if (ResourcesLeftToClaim == ResourceAmount.Zero)
                 {
-                    resourceManager.onTicketCompleted(this);
+                    resourceManager.onReservationCompleted(this);
                 }
             }
 
@@ -153,7 +177,7 @@ namespace Bearded.TD.Game.Simulation.Resources
                 {
                     return;
                 }
-                resourceManager.cancelTicket(this);
+                resourceManager.cancelReservation(this);
                 isCancelled = true;
             }
         }

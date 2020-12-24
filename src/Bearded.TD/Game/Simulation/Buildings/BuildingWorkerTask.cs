@@ -34,13 +34,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public bool Finished { get; private set; }
 
         public BuildingWorkerTask(
-            Id<IWorkerTask> taskId, BuildingPlaceholder placeholder, ResourceManager.IResourceTicket resourceTicket)
+            Id<IWorkerTask> taskId, BuildingPlaceholder placeholder, ResourceManager.IResourceReservation resourceReservation)
         {
             Id = taskId;
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
             resourceConsumer =
-                new ResourceConsumer(placeholder.Game, resourceTicket, Constants.Game.Worker.WorkerSpeed);
+                new ResourceConsumer(placeholder.Game, resourceReservation, Constants.Game.Worker.WorkerSpeed);
         }
 
         public void SetBuilding(Building building)
@@ -80,6 +80,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 Finished = true;
                 return;
             }
+            resourceConsumer.PrepareIfNeeded();
             resourceConsumer.Update();
             if (building != null)
             {
