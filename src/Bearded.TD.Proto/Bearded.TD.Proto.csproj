@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Bearded.TD.Proto</RootNamespace>
     <AssemblyName>Bearded.TD.Proto</AssemblyName>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
   </PropertyGroup>

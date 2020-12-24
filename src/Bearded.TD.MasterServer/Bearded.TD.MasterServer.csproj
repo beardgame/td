@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
   </PropertyGroup>

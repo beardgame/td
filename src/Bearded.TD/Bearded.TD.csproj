@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
     <AssemblyName>Bearded.TD</AssemblyName>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <LangVersion>preview</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
