@@ -86,7 +86,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             components.Update(elapsedTime);
         }
 
-        public void Draw(GeometryManager geometries)
+        public void Draw(CoreDrawers geometries)
         {
             const float lineWidth = .15f;
 

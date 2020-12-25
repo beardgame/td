@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Simulation
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw(GeometryManager geometries);
+        public abstract void Draw(CoreDrawers geometries);
 
         public void Delete()
         {

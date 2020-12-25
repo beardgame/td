@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
             => Blueprint.GetComponentsForGhost();
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             var primitiveDrawer = geometries.Primitives;
             var anyTileOutsideWorkerNetwork = false;

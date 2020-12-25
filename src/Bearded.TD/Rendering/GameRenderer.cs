@@ -20,7 +20,7 @@ namespace Bearded.TD.Rendering
     sealed class GameRenderer
     {
         private readonly GameInstance game;
-        private readonly GeometryManager geometries;
+        private readonly CoreDrawers geometries;
         private readonly LevelRenderer levelRenderer;
         private readonly FluidGeometry waterGeometry;
 
@@ -33,7 +33,7 @@ namespace Bearded.TD.Rendering
         public GameRenderer(GameInstance game, RenderContext renderContext)
         {
             this.game = game;
-            geometries = renderContext.Geometries;
+            geometries = renderContext.Drawers;
 
             // TODO: this should not stay hardcoded forever
             var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];

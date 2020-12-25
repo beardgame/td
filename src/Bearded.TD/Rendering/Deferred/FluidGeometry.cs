@@ -45,14 +45,14 @@ namespace Bearded.TD.Rendering.Deferred
 
             renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
                 new IRenderSetting[]{
-                context.Surfaces.ViewMatrix,
-                context.Surfaces.ProjectionMatrix,
-                context.Surfaces.Time,
-                context.Surfaces.FarPlaneBaseCorner,
-                context.Surfaces.FarPlaneUnitX,
-                context.Surfaces.FarPlaneUnitY,
-                context.Surfaces.CameraPosition,
-                context.Surfaces.DepthBuffer
+                context.Settings.ViewMatrix,
+                context.Settings.ProjectionMatrix,
+                context.Settings.Time,
+                context.Settings.FarPlaneBaseCorner,
+                context.Settings.FarPlaneUnitX,
+                context.Settings.FarPlaneUnitY,
+                context.Settings.CameraPosition,
+                context.DeferredRenderer.DepthBuffer
                 }.Concat(material.ArrayTextures.Select(
                     // TODO: find out why the below ! are needed?
                     (t, i) => new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))

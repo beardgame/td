@@ -101,7 +101,8 @@ namespace Bearded.TD.Rendering.Loading
 
         public IRendererShader CreateRendererShader(IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
         {
-            var shaderManager = context.Surfaces.Shaders;
+            // TODO: use mod specific shader managers (tricky bit: hot reload)
+            var shaderManager = context.Shaders.ShaderManager;
 
             var shadersToAdd = shaders.Where(s => !shaderManager.Contains(s.Type, s.FriendlyName)).ToList();
 
@@ -132,23 +133,7 @@ namespace Bearded.TD.Rendering.Loading
             {
                 var (type, file, name) = data;
 
-#if DEBUG
-                file = adjustToReloadable(file);
-#endif
-
                 return new ShaderFile(type, file, name);
-            }
-
-            string adjustToReloadable(string file)
-            {
-                // point at shader files in the actual repo instead of the binary folder for easy live shader editing
-
-                var newFile = SurfaceManager.AdjustPathToReloadable(file);
-
-                if (File.Exists(newFile))
-                    return newFile;
-
-                return file;
             }
         }
 

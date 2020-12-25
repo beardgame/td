@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 
         public override void Update(TimeSpan elapsedTime) { }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             healthComponent.Match(health =>
             {

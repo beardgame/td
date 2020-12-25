@@ -1,11 +1,13 @@
 using System;
 using System.Drawing;
+using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Pipelines;
+using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
-using amulware.Graphics.ShaderManagement;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
+using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -45,18 +47,25 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        private readonly ShaderManager shaders;
-        private readonly SurfaceManager surfaces;
-        private readonly Vector2Uniform levelUpSampleUVOffset = new Vector2Uniform("uvOffset");
-        private readonly Vector2Uniform gBufferResolution = new Vector2Uniform("resolution");
+        private readonly CoreShaders shaders;
+        private readonly CoreRenderSettings surfaces;
+        private readonly Vector2Uniform levelUpSampleUVOffset = new("uvOffset");
+        private readonly Vector2Uniform gBufferResolution = new("resolution");
         private readonly IPipeline<RenderState> pipeline;
 
         private ViewportSize viewport;
 
-        public DeferredRenderer(SurfaceManager surfaceManager)
+        public IRenderSetting DepthBuffer { get; }
+
+        public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; } = new();
+        public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
+
+        public DeferredRenderer(
+            CoreRenderSettings settings,
+            CoreShaders coreShaders)
         {
-            surfaces = surfaceManager;
-            shaders = surfaceManager.Shaders;
+            surfaces = settings;
+            shaders = coreShaders;
 
             void upscaleNearest(Texture.Target t)
             {
@@ -80,12 +89,6 @@ namespace Bearded.TD.Rendering
                 Composition = Texture(PixelInternalFormat.Rgba),
             };
 
-            // TODO: this injection is ugly and fragile, let's find a better way
-            surfaceManager.InjectDeferredBuffer(
-                textures.Normal.Texture,
-                textures.Depth.Texture,
-                gBufferResolution);
-
             var targets = new
             {
                 GeometryLowRes = RenderTargetWithDepthAndColors(
@@ -100,6 +103,10 @@ namespace Bearded.TD.Rendering
                 UpscaleDepth = RenderTargetWithColors(textures.Depth),
                 UpscaleDepthMask = RenderTargetWithDepthAndColors(textures.DepthMask),
             };
+
+            DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
+
+            var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(settings, textures.Normal);
 
 
             var resizedBuffers = InOrder(
@@ -144,12 +151,12 @@ namespace Bearded.TD.Rendering
                         .SetCullMode(RenderBack),
                     InOrder(
                         ClearColor(),
-                        Render(surfaces.PointLightRenderer, surfaces.SpotLightRenderer)
+                        Render(pointLightRenderer, spotLightRenderer)
                     )),
                 WithContext(
                     c => c.BindRenderTarget(targets.Composition),
                     InOrder(
-                        PostProcess(getShader("deferred/compose"), out _,
+                        PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
                             // TODO: it should be much easier to quickly pass in a couple of textures
                             new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
                             new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture)
@@ -168,7 +175,7 @@ namespace Bearded.TD.Rendering
             var fullRender = compositedFrame.Then(
                 WithContext(
                     c => c.BindRenderTarget(s => s.FinalRenderTarget),
-                    PostProcess(getShader("deferred/copy"), out _,
+                    PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
                         new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
                         levelUpSampleUVOffset)
                     )
@@ -183,6 +190,26 @@ namespace Bearded.TD.Rendering
             // exposes the PipeLineTexture objects which can then be used as input for future steps
             // and that would possibly allow us to write things more like a tree of actual dependencies
             // instead of of a linear chain of commands
+        }
+
+        private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
+            CoreRenderSettings settings, PipelineTexture normalBuffer)
+        {
+            var neededSettings = new IRenderSetting[]
+            {
+                settings.ViewMatrix, settings.ProjectionMatrix,
+                settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
+                new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
+                DepthBuffer, gBufferResolution
+            };
+
+            var pointLight = BatchedRenderer.From(PointLights.ToRenderable(), neededSettings);
+            shaders.GetShaderProgram("deferred/pointlight").UseOnRenderer(pointLight);
+
+            var spotLight = BatchedRenderer.From(Spotlights.ToRenderable(), neededSettings);
+            shaders.GetShaderProgram("deferred/spotlight").UseOnRenderer(spotLight);
+
+            return (pointLight, spotLight);
         }
 
         public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
@@ -236,8 +263,8 @@ namespace Bearded.TD.Rendering
             var translation = viewMatrix.Row3;
 
             var levelTranslation = new Vector2(
-                Mathf.RoundToInt(translation.X / pixelStep) * pixelStep,
-                Mathf.RoundToInt(translation.Y / pixelStep) * pixelStep
+                MoreMath.RoundToInt(translation.X / pixelStep) * pixelStep,
+                MoreMath.RoundToInt(translation.Y / pixelStep) * pixelStep
             );
 
             viewMatrix.Row3.Xy = levelTranslation;
@@ -252,21 +279,18 @@ namespace Bearded.TD.Rendering
         {
             return WithContext(
                 c => c.BindRenderTarget(target),
-                PostProcess(getShader(shaderName), out _,
+                PostProcess(shaders.GetShaderProgram(shaderName), out _,
                     new TextureUniform("inputTexture", TextureUnit.Texture0,
                         texture.Texture),
                     levelUpSampleUVOffset)
             );
         }
 
-        private IRendererShader getShader(string name)
-        {
-            if (shaders.TryGetRendererShader(name, out var shader))
-            {
-                return shader;
-            }
 
-            throw new ArgumentException("Shader with name not found.", nameof(name));
+        public void ClearAll()
+        {
+            PointLights.Clear();
+            Spotlights.Clear();
         }
     }
 }

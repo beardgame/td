@@ -189,7 +189,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             return passability[tile].PassableDirections;
         }
 
-        public void DrawDebug(GeometryManager geometries, bool drawWeights)
+        public void DrawDebug(CoreDrawers geometries, bool drawWeights)
         {
             var shapeDrawer = geometries.ConsoleBackground;
             var textDrawer = geometries.InGameConsoleFont;

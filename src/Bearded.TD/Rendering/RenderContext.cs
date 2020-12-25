@@ -6,18 +6,24 @@ using Bearded.Utilities.Threading;
 
 namespace Bearded.TD.Rendering
 {
-    class RenderContext
+    sealed class RenderContext
     {
-        public SurfaceManager Surfaces { get; }
-        public GeometryManager Geometries { get; }
+        public CoreShaders Shaders { get; }
+        public CoreRenderers Renderers { get; }
+        public DeferredRenderer DeferredRenderer { get; }
+        public CoreRenderSettings Settings { get; }
+        public CoreDrawers Drawers { get; }
         public FrameCompositor Compositor { get; }
         public IGraphicsLoader GraphicsLoader { get; }
 
         public RenderContext(IActionQueue glActionQueue, Logger logger)
         {
-            Surfaces = new SurfaceManager();
-            Compositor = new FrameCompositor(logger, Surfaces);
-            Geometries = new GeometryManager(Surfaces);
+            Shaders = new CoreShaders();
+            Settings = new CoreRenderSettings();
+            Renderers = new CoreRenderers(Shaders, Settings);
+            DeferredRenderer = new DeferredRenderer(Settings, Shaders);
+            Compositor = new FrameCompositor(logger, Settings, Shaders, Renderers);
+            Drawers = new CoreDrawers(Renderers, DeferredRenderer);
             GraphicsLoader = new GraphicsLoader(this, glActionQueue, logger);
         }
 

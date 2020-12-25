@@ -16,6 +16,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
 {
     sealed class HeightmapToLevelRenderer
     {
+        //TODO: organise fields
         private readonly int tileMapWidth;
         private float gridVerticesPerTile;
         private readonly Material material;
@@ -117,13 +118,13 @@ namespace Bearded.TD.Rendering.Deferred.Level
             var renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
                 new IRenderSetting[]
                 {
-                    context.Surfaces.ViewMatrixLevel,
-                    context.Surfaces.ProjectionMatrix,
-                    context.Surfaces.FarPlaneDistance,
+                    context.Settings.ViewMatrixLevel,
+                    context.Settings.ProjectionMatrix,
+                    context.Settings.FarPlaneDistance,
                     heightmapRenderer.HeightmapRadiusUniform,
                     heightmapRenderer.HeightmapPixelSizeUVUniform,
                     heightmapRenderer.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
-                    context.Surfaces.CameraPosition,
+                    context.Settings.CameraPosition,
                     heightScaleUniform,
                     heightOffsetUniform
                 }.Concat(material.ArrayTextures.Select((t, i) =>

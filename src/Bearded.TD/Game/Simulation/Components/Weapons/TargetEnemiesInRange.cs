@@ -138,7 +138,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                 .FirstOrDefault();
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             tileRangeDrawer?.Draw();
         }

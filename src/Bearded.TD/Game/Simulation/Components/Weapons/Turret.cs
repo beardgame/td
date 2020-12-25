@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             weapon.Update(elapsedTime);
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             const float lineWidth = .2f;
 

@@ -107,7 +107,7 @@ namespace Bearded.TD.Game.Simulation.Units
             }
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             var drawer = geometries.ConsoleBackground;
 

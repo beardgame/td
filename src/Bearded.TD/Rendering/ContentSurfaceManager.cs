@@ -43,9 +43,9 @@ namespace Bearded.TD.Rendering
         private IRenderer makeSpriteSetRenderer(RenderContext context, SpriteSet spriteSet)
         {
             return spriteSet.Sprites.CreateRendererWithSettings(
-                context.Surfaces.ProjectionMatrix,
-                context.Surfaces.ViewMatrix,
-                context.Surfaces.FarPlaneDistance
+                context.Settings.ProjectionMatrix,
+                context.Settings.ViewMatrix,
+                context.Settings.FarPlaneDistance
             );
         }
 

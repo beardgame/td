@@ -73,7 +73,7 @@ namespace Bearded.TD
 
             renderContext = new RenderContext(glActionQueue, logger);
 
-            var geometries = renderContext.Geometries;
+            var geometries = renderContext.Drawers;
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {

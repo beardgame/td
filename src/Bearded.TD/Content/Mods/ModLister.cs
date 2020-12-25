@@ -11,17 +11,11 @@ namespace Bearded.TD.Content.Mods
 {
     sealed class ModLister
     {
-        public List<ModMetadata> GetAll(string path = "assets/mods/")
+        public List<ModMetadata> GetAll()
         {
+            var path = Constants.Paths.Content.Asset("mods/");
+
             var dir = new DirectoryInfo(path);
-
-            #if DEBUG
-
-            dir = new DirectoryInfo(
-                SurfaceManager.AdjustPathToReloadable(dir.FullName)
-            );
-
-            #endif
 
             if (!dir.Exists)
                 throw new ArgumentException($"Mod path '{path}' does not exist.");

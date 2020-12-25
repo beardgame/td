@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Simulation
         }
 
         public override void Update(TimeSpan elapsedTime) { }
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             geometries.PointLight.Draw(Position.NumericValue.WithZ(3), 5, Color.Pink);
         }

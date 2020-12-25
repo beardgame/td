@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Meta
             nextUpdate = game.State.Time + timeBetweenSyncs;
         }
 
-        public void DrawCursors(GeometryManager geometries)
+        public void DrawCursors(CoreDrawers geometries)
         {
             geometries.PointLight.Draw(
                 game.PlayerInput.CursorPosition.NumericValue.WithZ(playerCursorLightHeight),

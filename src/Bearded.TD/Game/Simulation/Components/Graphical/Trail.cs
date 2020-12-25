@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
             tracer.Update(Owner.Game.Time, Owner.Position);
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             renderTrail(tracer, Parameters, Owner.Game);
         }
@@ -68,7 +68,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
                     Delete();
             }
 
-            public override void Draw(GeometryManager geometries)
+            public override void Draw(CoreDrawers geometries)
             {
                 renderTrail(tracer, parameters, Game);
             }

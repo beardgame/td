@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.Components
             components.Update(elapsedTime);
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             components.Draw(geometries);
         }

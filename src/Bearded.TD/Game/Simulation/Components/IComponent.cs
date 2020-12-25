@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Components
     interface IComponent
     {
         void Update(TimeSpan elapsedTime);
-        void Draw(GeometryManager geometries);
+        void Draw(CoreDrawers geometries);
 
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);
         void ApplyUpgradeEffect(IUpgradeEffect effect);

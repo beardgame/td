@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
         {
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
         }
     }

@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using amulware.Graphics;
+using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Pipelines;
 using amulware.Graphics.Pipelines.Context;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
+using amulware.Graphics.Shapes;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -14,12 +16,15 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 using Rectangle = System.Drawing.Rectangle;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
     sealed class HeightmapRenderer
     {
+        //TODO: organise fields
         private readonly int tileMapWidth;
         private float heightMapPixelsPerTile;
         private readonly Tiles.Level level;
@@ -35,7 +40,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
         private bool isHeightmapGenerated;
         private readonly IPipeline<int> renderHeightmapAtResolution;
 
-        public HeightmapRenderer(GameInstance game)
+        private readonly IndexedTrianglesMeshBuilder<ColorVertexData> heightmapBaseMeshBuilder;
+        private readonly Renderer heightmapBaseRenderer;
+        private readonly ShapeDrawer2<ColorVertexData, Void> heightmapBaseDrawer;
+
+        public HeightmapRenderer(GameInstance game, RenderContext context)
         {
             geometryLayer = game.State.GeometryLayer;
 
@@ -67,6 +76,20 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
             heightmapSplats = findHeightmapSplats(game);
             heightMapSplatRenderer = heightmapSplats.CreateRendererWithSettings(HeightmapRadiusUniform);
+
+            (heightmapBaseMeshBuilder, heightmapBaseRenderer, heightmapBaseDrawer) = initialiseBaseDrawing(context);
+        }
+
+        private (IndexedTrianglesMeshBuilder<ColorVertexData>, Renderer, ShapeDrawer2<ColorVertexData, Void>)
+            initialiseBaseDrawing(RenderContext context)
+        {
+            var meshBuilder = new IndexedTrianglesMeshBuilder<ColorVertexData>();
+            var baseRenderer = Renderer.From(meshBuilder.ToRenderable(), HeightmapRadiusUniform);
+            var baseDrawer = new ShapeDrawer2<ColorVertexData, Void>(meshBuilder, (p, _) => new ColorVertexData(p, default));
+
+            context.Shaders.GetShaderProgram("terrain-base").UseOnRenderer(baseRenderer);
+
+            return (meshBuilder, baseRenderer, baseDrawer);
         }
 
         public TextureUniform GetHeightmapUniform(string name, TextureUnit unit)
@@ -93,6 +116,9 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public void CleanUp()
         {
+            heightmapBaseMeshBuilder.Dispose();
+            heightmapBaseRenderer.Dispose();
+
             heightmapTarget.Dispose();
             heightmap.Dispose();
         }
@@ -126,36 +152,22 @@ namespace Bearded.TD.Rendering.Deferred.Level
             // - make sure cliffs read easily (do we have to turn the grid by 30 degrees to line up with tile edges?)
             // - make it prettier (try some more detailed sprites, add some variations, try different sprites for different transition types)
 
-            var splat = heightmapSplats.GetSprite("splat-hex");
-
             var allTiles = Tilemap.EnumerateTilemapWith(level.Radius).Select(t => (Tile: t, Info: geometryLayer[t]));
 
             var count = 0;
-            foreach (var (tile, info) in
-                // ReSharper disable PossibleMultipleEnumeration
-                // ReSharper disable once InvokeAsExtensionMethod
-                Enumerable.Concat(
-                    allTiles.Where(t => t.Info.Type == TileType.Crevice),
-                    allTiles.Where(t => t.Info.Type == TileType.Floor)
-                )
-                // ReSharper restore PossibleMultipleEnumeration
-            )
+            foreach (var (tile, info) in allTiles)
             {
                 var p = Tiles.Level.GetPosition(tile).NumericValue
                     .WithZ(info.DrawInfo.Height.NumericValue);
 
-                var size = Constants.Game.World.HexagonWidth * 2 / Math.Max(splat.BaseSize.X, splat.BaseSize.Y);
-
-                var angle = StaticRandom.Int(0, 6) * 60.Degrees();
-
-                splat.Draw(p, Color.White, size, angle.Radians);
+                heightmapBaseDrawer.FillCircle(p, Constants.Game.World.HexagonSide, default, 6);
 
                 count++;
 
                 if (count > 10000)
                 {
-                    heightMapSplatRenderer.Render();
-                    heightmapSplats.MeshBuilder.Clear();
+                    heightmapBaseRenderer.Render();
+                    heightmapBaseMeshBuilder.Clear();
                     count = 0;
                 }
             }

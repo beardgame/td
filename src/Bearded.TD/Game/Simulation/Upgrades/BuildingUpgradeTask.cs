@@ -62,6 +62,6 @@ namespace Bearded.TD.Game.Simulation.Upgrades
             }
         }
 
-        public override void Draw(GeometryManager geometries) { }
+        public override void Draw(CoreDrawers geometries) { }
     }
 }

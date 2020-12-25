@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Components
                 component.Update(elapsedTime);
         }
 
-        public void Draw(GeometryManager geometries)
+        public void Draw(CoreDrawers geometries)
         {
             foreach (var component in components)
                 component.Draw(geometries);

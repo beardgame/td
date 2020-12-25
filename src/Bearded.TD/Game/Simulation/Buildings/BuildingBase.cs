@@ -107,12 +107,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Components.Update(elapsedTime);
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             Components.Draw(geometries);
         }
 
-        protected void DrawTiles(GeometryManager geometries, Color color)
+        protected void DrawTiles(CoreDrawers geometries, Color color)
         {
             foreach (var tile in Footprint.OccupiedTiles)
             {
@@ -120,13 +120,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        protected void DrawTile(GeometryManager geometries, Color color, Tile tile)
+        protected void DrawTile(CoreDrawers geometries, Color color, Tile tile)
         {
             geometries.Primitives.FillCircle(
                 Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 
-        protected void DrawBuildingName(GeometryManager geometries, Color color)
+        protected void DrawBuildingName(CoreDrawers geometries, Color color)
         {
             geometries.InGameConsoleFont.DrawLine(
                 xyz: Position.NumericValue,

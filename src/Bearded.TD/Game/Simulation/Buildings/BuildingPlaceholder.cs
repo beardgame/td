@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return AbortTask.Request(Faction, workerTask);
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
             //DrawTiles(geometries, Color.Cyan * 0.25f);
             base.Draw(geometries);

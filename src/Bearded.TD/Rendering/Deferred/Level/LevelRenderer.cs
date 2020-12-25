@@ -14,7 +14,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         public LevelRenderer(
             GameInstance game, RenderContext context, Material material)
         {
-            heightmapRenderer = new HeightmapRenderer(game);
+            heightmapRenderer = new HeightmapRenderer(game, context);
             heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, heightmapRenderer);
 
             resizeIfNeeded();

@@ -8,7 +8,7 @@ using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 
 namespace Bearded.TD.Rendering
 {
-    sealed class GeometryManager
+    sealed class CoreDrawers
     {
         public IShapeDrawer2<Color> Primitives { get; }
 
@@ -21,18 +21,18 @@ namespace Bearded.TD.Rendering
         public PointLightGeometry PointLight { get; }
         public SpotlightGeometry Spotlight { get; }
 
-        public GeometryManager(SurfaceManager surfaces)
+        public CoreDrawers(CoreRenderers renderers, DeferredRenderer deferredRenderer)
         {
             Primitives = new ShapeDrawer2<ColorVertexData, Color>(
-                surfaces.Primitives, (xyz, color) => new ColorVertexData(xyz, color));
+                renderers.Primitives, (xyz, color) => new ColorVertexData(xyz, color));
             ConsoleBackground = new ShapeDrawer2<ColorVertexData, Color>(
-                surfaces.ConsoleBackground, (xyz, color) => new ColorVertexData(xyz, color));
+                renderers.ConsoleBackground, (xyz, color) => new ColorVertexData(xyz, color));
 
-            ConsoleFont = createTextDrawerWithDefaults(surfaces.ConsoleFont, surfaces.ConsoleFontMeshBuilder);
+            ConsoleFont = createTextDrawerWithDefaults(renderers.ConsoleFont, renderers.ConsoleFontMeshBuilder);
             InGameConsoleFont = ConsoleFont.With(unitDownDP: -Vector3.UnitY);
-            UIFont = createTextDrawerWithDefaults(surfaces.UIFont, surfaces.UIFontMeshBuilder);
-            PointLight = new PointLightGeometry(surfaces.PointLights);
-            Spotlight = new SpotlightGeometry(surfaces.Spotlights);
+            UIFont = createTextDrawerWithDefaults(renderers.UIFont, renderers.UIFontMeshBuilder);
+            PointLight = new PointLightGeometry(deferredRenderer.PointLights);
+            Spotlight = new SpotlightGeometry(deferredRenderer.Spotlights);
         }
 
         private static TextDrawerWithDefaults<Color> createTextDrawerWithDefaults(

@@ -27,6 +27,32 @@ namespace Bearded.TD
 
             public static readonly string UserSettingsFile = SettingsDirectory + "/usersettings.json";
             public static readonly string LogFile = SettingsDirectory + "/debug.log";
+
+            public static class Content
+            {
+                private static readonly string workingDir =
+                    adjustPathToReloadableIfDebug(Directory.GetCurrentDirectory() + "/");
+
+                public static string Asset(string path) => workingDir + "assets/" + path;
+
+                private static string adjustPathToReloadableIfDebug(string file)
+                {
+#if !DEBUG
+                    return file;
+#endif
+                    // point at asset files in the actual repo instead of the binary folder for easy live editing
+
+                    // your\td\path
+                    // \bin\Bearded.TD\Debug\ -> \src\Bearded.TD\
+                    // assets\file.ext
+
+                    var newFile = file
+                        .Replace("\\", "/")
+                        .Replace("/bin/Bearded.TD/Debug/", "/src/Bearded.TD/");
+
+                    return newFile;
+                }
+            }
         }
     }
 }

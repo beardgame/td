@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             }
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
         }
 

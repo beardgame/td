@@ -62,7 +62,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             }
         }
 
-        public override void Draw(GeometryManager geometries)
+        public override void Draw(CoreDrawers geometries)
         {
         }
     }
