@@ -36,9 +36,9 @@ namespace Bearded.TD.Rendering
 
             public RenderTarget FinalRenderTarget { get; }
 
-            public ContentSurfaceManager Content { get; }
+            public ContentRenderers Content { get; }
 
-            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget, ContentSurfaceManager content)
+            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget, ContentRenderers content)
             {
                 Resolution = resolution;
                 LowResResolution = lowResResolution;
@@ -48,7 +48,7 @@ namespace Bearded.TD.Rendering
         }
 
         private readonly CoreShaders shaders;
-        private readonly CoreRenderSettings surfaces;
+        private readonly CoreRenderSettings settings;
         private readonly Vector2Uniform levelUpSampleUVOffset = new("uvOffset");
         private readonly Vector2Uniform gBufferResolution = new("resolution");
         private readonly IPipeline<RenderState> pipeline;
@@ -64,7 +64,7 @@ namespace Bearded.TD.Rendering
             CoreRenderSettings settings,
             CoreShaders coreShaders)
         {
-            surfaces = settings;
+            this.settings = settings;
             shaders = coreShaders;
 
             void upscaleNearest(Texture.Target t)
@@ -217,9 +217,9 @@ namespace Bearded.TD.Rendering
             var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
             gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
 
-            deferredLayer.DeferredSurfaces.LevelRenderer.PrepareForRender();
+            deferredLayer.ContentRenderers.LevelRenderer.PrepareForRender();
 
-            var state = new RenderState(resolution, lowResResolution, target, deferredLayer.DeferredSurfaces);
+            var state = new RenderState(resolution, lowResResolution, target, deferredLayer.ContentRenderers);
 
             pipeline.Execute(state);
 
@@ -259,7 +259,7 @@ namespace Bearded.TD.Rendering
         {
             var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
 
-            var viewMatrix = surfaces.ViewMatrix.Value;
+            var viewMatrix = settings.ViewMatrix.Value;
             var translation = viewMatrix.Row3;
 
             var levelTranslation = new Vector2(
@@ -268,7 +268,7 @@ namespace Bearded.TD.Rendering
             );
 
             viewMatrix.Row3.Xy = levelTranslation;
-            surfaces.ViewMatrixLevel.Value = viewMatrix;
+            settings.ViewMatrixLevel.Value = viewMatrix;
 
             var offset = (levelTranslation - translation.Xy) / (cameraDistance * 2);
             offset.X = offset.X / viewport.Width * viewport.Height;

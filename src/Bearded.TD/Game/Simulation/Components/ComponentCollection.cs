@@ -44,10 +44,10 @@ namespace Bearded.TD.Game.Simulation.Components
                 component.Update(elapsedTime);
         }
 
-        public void Draw(CoreDrawers geometries)
+        public void Draw(CoreDrawers drawers)
         {
             foreach (var component in components)
-                component.Draw(geometries);
+                component.Draw(drawers);
         }
     }
 }

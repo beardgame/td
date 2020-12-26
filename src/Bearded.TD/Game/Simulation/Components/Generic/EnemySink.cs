@@ -23,11 +23,11 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 
         public override void Update(TimeSpan elapsedTime) { }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             healthComponent.Match(health =>
             {
-                geometries.InGameConsoleFont.DrawLine(
+                drawers.InGameConsoleFont.DrawLine(
                     xyz: Owner.Position.NumericValue,
                     text: health.CurrentHealth.ToString(),
                     fontHeight: 1,

@@ -102,7 +102,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             tileWalker.Update(elapsedTime, 3.UnitsPerSecond());
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("halo");

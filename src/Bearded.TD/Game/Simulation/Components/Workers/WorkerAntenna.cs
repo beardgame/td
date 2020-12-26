@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
             }
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             if (!(Owner is ISelectable selectable && selectable.SelectionState != SelectionState.Default))
                 return;

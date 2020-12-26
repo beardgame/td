@@ -73,20 +73,20 @@ namespace Bearded.TD
 
             renderContext = new RenderContext(glActionQueue, logger);
 
-            var geometries = renderContext.Drawers;
+            var drawers = renderContext.Drawers;
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {
-                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(geometries.ConsoleBackground, geometries.ConsoleFont)),
+                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
                     (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(geometries.ConsoleBackground, geometries.UIFont)),
-                    (typeof(TextInput), new TextInputRenderer(geometries.ConsoleBackground, geometries.UIFont)),
-                    (typeof(Label), new LabelRenderer(geometries.UIFont)),
-                    (typeof(Border), new BoxRenderer(geometries.ConsoleBackground, Color.White)),
-                    (typeof(BackgroundBox), new BackgroundBoxRenderer(geometries.ConsoleBackground)),
-                    (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(geometries.ConsoleBackground)),
-                    (typeof(Dot), new DotRenderer(geometries.ConsoleBackground)),
-                    (typeof(Control), new FallbackBoxRenderer(geometries.ConsoleBackground)),
+                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
+                    (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
+                    (typeof(Label), new LabelRenderer(drawers.UIFont)),
+                    (typeof(Border), new BoxRenderer(drawers.ConsoleBackground, Color.White)),
+                    (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
+                    (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
+                    (typeof(Dot), new DotRenderer(drawers.ConsoleBackground)),
+                    (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
                 });
 
             dependencyResolver.Add(renderContext.GraphicsLoader);

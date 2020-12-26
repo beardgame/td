@@ -15,14 +15,14 @@ namespace Bearded.TD.Rendering
     using SpriteRenderers =
         ReadOnlyCollection<(IRenderer Renderer, ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> MeshBuilder)>;
 
-    sealed class ContentSurfaceManager : IDisposable
+    sealed class ContentRenderers : IDisposable
     {
         public LevelRenderer LevelRenderer { get; }
         public ImmutableArray<FluidGeometry> FluidGeometries { get; }
 
         private readonly Dictionary<SpriteDrawGroup, SpriteRenderers> groupedAndSortedRenderers;
 
-        public ContentSurfaceManager(RenderContext context, LevelRenderer levelRenderer,
+        public ContentRenderers(RenderContext context, LevelRenderer levelRenderer,
             ReadonlyBlueprintCollection<SpriteSet> spriteSets,
             IEnumerable<FluidGeometry> fluidGeometries)
         {

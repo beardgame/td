@@ -38,9 +38,9 @@ namespace Bearded.TD.Game.Simulation.Components
             components.Update(elapsedTime);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            components.Draw(geometries);
+            components.Draw(drawers);
         }
 
         IEnumerable<TComponent> IComponentOwner<ComponentGameObject>.GetComponents<TComponent>() => components.Get<TComponent>();

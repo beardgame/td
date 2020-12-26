@@ -86,7 +86,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             components.Update(elapsedTime);
         }
 
-        public void Draw(CoreDrawers geometries)
+        public void Draw(CoreDrawers drawers)
         {
             const float lineWidth = .15f;
 
@@ -94,7 +94,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             // geometries.Primitives.DrawLine(
             //     Position.NumericValue - v, Position.NumericValue + v * 2, lineWidth, Color.Red);
 
-            components.Draw(geometries);
+            components.Draw(drawers);
         }
 
         IEnumerable<TComponent> IComponentOwner<Weapon>.GetComponents<TComponent>() => components.Get<TComponent>();

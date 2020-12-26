@@ -21,7 +21,7 @@ namespace Bearded.TD.UI.Controls
         public float FarPlaneDistance => game.Camera.FarPlaneDistance;
 
         public float Time => (float)game.State.Time.NumericValue;
-        public ContentSurfaceManager DeferredSurfaces => renderer.DeferredSurfaces;
+        public ContentRenderers ContentRenderers => renderer.ContentRenderers;
 
         public GameWorldControl(GameInstance game, RenderContext renderContext)
         {

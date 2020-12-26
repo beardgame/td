@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         {
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
         }
     }

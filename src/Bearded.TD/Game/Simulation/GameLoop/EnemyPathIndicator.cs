@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             trail.Update(Game.Time, Position.WithZ(h + 0.1.U()), deleteAt != null);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("circle-soft");

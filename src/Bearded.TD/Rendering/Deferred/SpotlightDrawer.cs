@@ -8,7 +8,7 @@ using OpenTK.Mathematics;
 namespace Bearded.TD.Rendering.Deferred
 {
 
-    class SpotlightGeometry
+    class SpotlightDrawer
     {
         private readonly struct Parameters
         {
@@ -30,7 +30,7 @@ namespace Bearded.TD.Rendering.Deferred
 
         private readonly ShapeDrawer3<SpotlightVertex, Parameters> drawer;
 
-        public SpotlightGeometry(IIndexedTrianglesMeshBuilder<SpotlightVertex, ushort> meshBuilder)
+        public SpotlightDrawer(IIndexedTrianglesMeshBuilder<SpotlightVertex, ushort> meshBuilder)
         {
             drawer = new ShapeDrawer3<SpotlightVertex, Parameters>(
                 meshBuilder,

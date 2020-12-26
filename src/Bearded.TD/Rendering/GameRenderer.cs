@@ -20,7 +20,7 @@ namespace Bearded.TD.Rendering
     sealed class GameRenderer
     {
         private readonly GameInstance game;
-        private readonly CoreDrawers geometries;
+        private readonly CoreDrawers drawers;
         private readonly LevelRenderer levelRenderer;
         private readonly FluidGeometry waterGeometry;
 
@@ -28,12 +28,12 @@ namespace Bearded.TD.Rendering
         private readonly TextDrawerWithDefaults<Color> debugGeometryTextDrawer;
         private readonly TextDrawerWithDefaults<Color> debugCoordinateTextDrawer;
 
-        public ContentSurfaceManager DeferredSurfaces { get; }
+        public ContentRenderers ContentRenderers { get; }
 
         public GameRenderer(GameInstance game, RenderContext renderContext)
         {
             this.game = game;
-            geometries = renderContext.Drawers;
+            drawers = renderContext.Drawers;
 
             // TODO: this should not stay hardcoded forever
             var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];
@@ -43,25 +43,25 @@ namespace Bearded.TD.Rendering
 
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
-            DeferredSurfaces = new ContentSurfaceManager(
+            ContentRenderers = new ContentRenderers(
                 renderContext,
                 levelRenderer,
                 game.Blueprints.Sprites,
                 new [] { waterGeometry }
             );
 
-            shapeDrawer = geometries.Primitives;
-            debugGeometryTextDrawer = geometries.ConsoleFont.With(
+            shapeDrawer = drawers.Primitives;
+            debugGeometryTextDrawer = drawers.ConsoleFont.With(
                 fontHeight: .3f * HexagonSide, parameters: Color.Orange, alignHorizontal: .5f);
-            debugCoordinateTextDrawer = geometries.ConsoleFont.With(
+            debugCoordinateTextDrawer = drawers.ConsoleFont.With(
                 fontHeight: .3f * HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
         }
 
         public void Render()
         {
-            DeferredSurfaces.ClearAll();
+            ContentRenderers.ClearAll();
 
-            game.PlayerCursors.DrawCursors(geometries);
+            game.PlayerCursors.DrawCursors(drawers);
             drawAmbientLight();
             drawGameObjects();
             drawDebug();
@@ -71,7 +71,7 @@ namespace Bearded.TD.Rendering
         {
             var radius = game.State.Level.Radius;
 
-            geometries.PointLight.Draw(
+            drawers.PointLight.Draw(
                 new Vector3(-radius * 2, radius * 2, radius),
                 radius * 10, Color.White * 0.2f
             );
@@ -81,7 +81,7 @@ namespace Bearded.TD.Rendering
         {
             foreach (var obj in game.State.GameObjects)
             {
-                obj.Draw(geometries);
+                obj.Draw(drawers);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Bearded.TD.Rendering
             var debugPathfinding = settings.Pathfinding;
             if (debugPathfinding > 0)
             {
-                game.State.Navigator.DrawDebug(geometries, debugPathfinding > 1);
+                game.State.Navigator.DrawDebug(drawers, debugPathfinding > 1);
             }
 
             if (settings.SimpleFluid)
@@ -283,7 +283,7 @@ namespace Bearded.TD.Rendering
         {
             levelRenderer.CleanUp();
             waterGeometry.CleanUp();
-            DeferredSurfaces.Dispose();
+            ContentRenderers.Dispose();
             GraphicsUnloader.CleanUp(game.Blueprints);
         }
 

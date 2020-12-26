@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Simulation.Components.Movement
 
         public void OnAdded(EnemyUnit owner, ComponentEvents events) => throw new InvalidOperationException();
         public void Update(TimeSpan elapsedTime) => throw new InvalidOperationException();
-        public void Draw(CoreDrawers geometries) => throw new InvalidOperationException();
+        public void Draw(CoreDrawers drawers) => throw new InvalidOperationException();
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
         public void ApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
         public bool RemoveUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();

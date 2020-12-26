@@ -112,11 +112,11 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             if (!combustable.IsOnFire) return;
 
-            geometries.PointLight.Draw(
+            drawers.PointLight.Draw(
                 Owner.Position.NumericValue,
                 1.5f * fireRenderStrength,
                 Color.OrangeRed * fireRenderStrength

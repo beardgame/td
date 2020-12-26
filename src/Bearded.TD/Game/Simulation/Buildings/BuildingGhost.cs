@@ -40,9 +40,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
             => Blueprint.GetComponentsForGhost();
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            var primitiveDrawer = geometries.Primitives;
+            var primitiveDrawer = drawers.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
             var workerNetwork = Faction.WorkerNetwork;
@@ -65,7 +65,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 var color = baseColor * 0.5f;
-                DrawTile(geometries, color, tile);
+                DrawTile(drawers, color, tile);
 
                 if (!isTileValidForBuilding)
                     continue;
@@ -99,7 +99,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
             }
 
-            base.Draw(geometries);
+            base.Draw(drawers);
         }
 
         private void renderWorkerNetworkBorderCloseBy(Unit maxDistance, Color baseColor)

@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
         {
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             var p = Owner.Position.NumericValue;
             p.Z += Parameters.HeightOffset.NumericValue;

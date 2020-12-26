@@ -107,28 +107,28 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Components.Update(elapsedTime);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            Components.Draw(geometries);
+            Components.Draw(drawers);
         }
 
-        protected void DrawTiles(CoreDrawers geometries, Color color)
+        protected void DrawTiles(CoreDrawers drawers, Color color)
         {
             foreach (var tile in Footprint.OccupiedTiles)
             {
-                DrawTile(geometries, color, tile);
+                DrawTile(drawers, color, tile);
             }
         }
 
-        protected void DrawTile(CoreDrawers geometries, Color color, Tile tile)
+        protected void DrawTile(CoreDrawers drawers, Color color, Tile tile)
         {
-            geometries.Primitives.FillCircle(
+            drawers.Primitives.FillCircle(
                 Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 
-        protected void DrawBuildingName(CoreDrawers geometries, Color color)
+        protected void DrawBuildingName(CoreDrawers drawers, Color color)
         {
-            geometries.InGameConsoleFont.DrawLine(
+            drawers.InGameConsoleFont.DrawLine(
                 xyz: Position.NumericValue,
                 text: Blueprint.Name,
                 parameters: color,

@@ -18,8 +18,8 @@ namespace Bearded.TD.Rendering
 
         public TextDrawerWithDefaults<Color> UIFont { get; }
 
-        public PointLightGeometry PointLight { get; }
-        public SpotlightGeometry Spotlight { get; }
+        public PointLightDrawer PointLight { get; }
+        public SpotlightDrawer Spotlight { get; }
 
         public CoreDrawers(CoreRenderers renderers, DeferredRenderer deferredRenderer)
         {
@@ -31,8 +31,8 @@ namespace Bearded.TD.Rendering
             ConsoleFont = createTextDrawerWithDefaults(renderers.ConsoleFont, renderers.ConsoleFontMeshBuilder);
             InGameConsoleFont = ConsoleFont.With(unitDownDP: -Vector3.UnitY);
             UIFont = createTextDrawerWithDefaults(renderers.UIFont, renderers.UIFontMeshBuilder);
-            PointLight = new PointLightGeometry(deferredRenderer.PointLights);
-            Spotlight = new SpotlightGeometry(deferredRenderer.Spotlights);
+            PointLight = new PointLightDrawer(deferredRenderer.PointLights);
+            Spotlight = new SpotlightDrawer(deferredRenderer.Spotlights);
         }
 
         private static TextDrawerWithDefaults<Color> createTextDrawerWithDefaults(

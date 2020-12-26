@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             weapon.Update(elapsedTime);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             const float lineWidth = .2f;
 
@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             // geometries.Primitives.DrawLine(
             //     Position.NumericValue - v, Position.NumericValue + v, lineWidth, Color.Green);
 
-            weapon.Draw(geometries);
+            weapon.Draw(drawers);
         }
 
         Weapon ITurret.Weapon => weapon;

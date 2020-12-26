@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Components.Movement
             tileWalker.Update(elapsedTime, Parameters.MovementSpeed);
         }
 
-        public override void Draw(CoreDrawers geometries) { }
+        public override void Draw(CoreDrawers drawers) { }
 
         public void OnTileChanged(Tile oldTile, Tile newTile)
         {

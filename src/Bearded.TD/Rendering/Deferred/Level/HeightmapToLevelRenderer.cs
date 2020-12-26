@@ -75,11 +75,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
             gridRadius = (int) (gridWidth - 1) / 2;
             gridToWorld = 1 / scale;
 
-            resizeSurface();
+            rebuildMesh();
         }
 
 
-        private void resizeSurface()
+        private void rebuildMesh()
         {
             /* Vertex layout
              * -- v3

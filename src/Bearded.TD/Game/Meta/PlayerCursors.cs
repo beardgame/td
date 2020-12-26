@@ -46,9 +46,9 @@ namespace Bearded.TD.Game.Meta
             nextUpdate = game.State.Time + timeBetweenSyncs;
         }
 
-        public void DrawCursors(CoreDrawers geometries)
+        public void DrawCursors(CoreDrawers drawers)
         {
-            geometries.PointLight.Draw(
+            drawers.PointLight.Draw(
                 game.PlayerInput.CursorPosition.NumericValue.WithZ(playerCursorLightHeight),
                 radius: playerCursorLightRadius,
                 color: Color.White * 0.4f
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Meta
             foreach (var (player, tile) in latestKnownCursorPosition)
             {
                 if (player == game.Me) continue;
-                geometries.PointLight.Draw(
+                drawers.PointLight.Draw(
                     Level.GetPosition(tile).NumericValue.WithZ(otherCursorLightHeight),
                     radius: otherCursorLightRadius,
                     color: player.Color

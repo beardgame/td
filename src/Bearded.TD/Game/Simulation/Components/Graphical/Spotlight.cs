@@ -21,9 +21,9 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
         {
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            geometries.Spotlight.Draw(
+            drawers.Spotlight.Draw(
                 Owner.Position.NumericValue,
                 Owner.Direction.Vector.WithZ(-0.5f / Parameters.Radius.NumericValue).Normalized(),
                 Parameters.Radius.NumericValue,

@@ -140,12 +140,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             var alpha = IsCompleted ? 1 : (float)(buildProgress * 0.9);
             //DrawTiles(geometries, drawColors[SelectionState] * alpha);
             //DrawBuildingName(geometries, Color.Black);
-            base.Draw(geometries);
+            base.Draw(drawers);
         }
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>

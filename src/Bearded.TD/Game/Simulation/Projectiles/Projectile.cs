@@ -103,14 +103,14 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             components.Update(elapsedTime);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            components.Draw(geometries);
+            components.Draw(drawers);
 
             if (!UserSettings.Instance.Debug.ProjectileDots)
                 return;
 
-            geometries.Primitives.FillRectangle(
+            drawers.Primitives.FillRectangle(
                 Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f), Color.Yellow);
         }
 

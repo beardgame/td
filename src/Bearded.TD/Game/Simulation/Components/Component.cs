@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw(CoreDrawers geometries);
+        public abstract void Draw(CoreDrawers drawers);
 
         public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(Parameters);
 
@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw(CoreDrawers geometries);
+        public abstract void Draw(CoreDrawers drawers);
 
         public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
 

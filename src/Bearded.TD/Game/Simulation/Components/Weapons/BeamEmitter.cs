@@ -97,14 +97,14 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             ));
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             if (!drawBeam)
             {
                 return;
             }
 
-            var shapeDrawer = geometries.ConsoleBackground;
+            var shapeDrawer = drawers.ConsoleBackground;
             var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
 
             foreach (var (start, end, factor) in beamSegments)

@@ -16,6 +16,6 @@ namespace Bearded.TD.UI.Layers
         float CameraDistance { get; }
         float FarPlaneDistance { get; }
         float Time { get; }
-        ContentSurfaceManager DeferredSurfaces { get; }
+        ContentRenderers ContentRenderers { get; }
     }
 }

@@ -6,11 +6,11 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred
 {
-    class PointLightGeometry
+    class PointLightDrawer
     {
         private readonly ShapeDrawer3<PointLightVertex, (Vector3, float, Color)> drawer;
 
-        public PointLightGeometry(IIndexedTrianglesMeshBuilder<PointLightVertex, ushort> meshBuilder)
+        public PointLightDrawer(IIndexedTrianglesMeshBuilder<PointLightVertex, ushort> meshBuilder)
         {
             drawer = new ShapeDrawer3<PointLightVertex, (Vector3 Center, float RadiusSquared, Color Color)>(
                 meshBuilder, (xyz, p) => new PointLightVertex(xyz, p.Center, p.RadiusSquared, p.Color));

@@ -50,10 +50,10 @@ namespace Bearded.TD.Game.Simulation.Workers
             Delete();
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             var color = .5f * (SelectionState == SelectionState.Focused ? Color.DarkViolet : Color.MediumVioletRed);
-            geometries.ConsoleBackground.FillCircle(
+            drawers.ConsoleBackground.FillCircle(
                 Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 

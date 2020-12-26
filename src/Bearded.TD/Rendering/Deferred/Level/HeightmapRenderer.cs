@@ -146,7 +146,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             // TODO:
             // - implement hard edge base layer using solid geometry and no textures
-            //   - surface man shader + simple coloured vertex
+            //   - core shader + simple coloured vertex
             // - create simple smooth and stepped transition splat sprites
             // - use splats to render all tile transitions (try different orders)
             // - make sure cliffs read easily (do we have to turn the grid by 30 degrees to line up with tile edges?)

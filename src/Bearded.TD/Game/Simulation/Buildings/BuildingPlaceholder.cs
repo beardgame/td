@@ -61,10 +61,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return AbortTask.Request(Faction, workerTask);
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
             //DrawTiles(geometries, Color.Cyan * 0.25f);
-            base.Draw(geometries);
+            base.Draw(drawers);
         }
     }
 }

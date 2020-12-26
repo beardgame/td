@@ -107,9 +107,9 @@ namespace Bearded.TD.Game.Simulation.Units
             }
         }
 
-        public override void Draw(CoreDrawers geometries)
+        public override void Draw(CoreDrawers drawers)
         {
-            var drawer = geometries.ConsoleBackground;
+            var drawer = drawers.ConsoleBackground;
 
             drawer.FillCircle(Position.NumericValue, Radius.NumericValue, blueprint.Color, 6);
 
@@ -121,7 +121,7 @@ namespace Bearded.TD.Game.Simulation.Units
             drawer.FillRectangle(
                 Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1 * p, .1f), healthColor);
 
-            components.Draw(geometries);
+            components.Draw(drawers);
         }
 
         public bool CanApplyEffect(IUpgradeEffect effect) => effect.CanApplyTo(components);
