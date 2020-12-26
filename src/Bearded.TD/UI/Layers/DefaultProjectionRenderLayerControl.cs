@@ -1,11 +1,12 @@
-﻿using Bearded.Utilities;
+﻿using System;
+using Bearded.Utilities;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.UI.Layers
 {
     abstract class DefaultProjectionRenderLayerControl : RenderLayerCompositeControl
     {
-        private const float fovy = Mathf.PiOver2;
+        private const float fovy = MathConstants.PiOver2;
         private const float zNear = .1f;
         private const float zFar = 1024f;
 
@@ -13,7 +14,7 @@ namespace Bearded.TD.UI.Layers
         {
             get
             {
-                var yMax = zNear * Mathf.Tan(.5f * fovy);
+                var yMax = zNear * MathF.Tan(.5f * fovy);
                 var yMin = -yMax;
                 var xMax = yMax * ViewportSize.AspectRatio;
                 var xMin = yMin * ViewportSize.AspectRatio;

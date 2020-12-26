@@ -501,7 +501,7 @@ namespace Bearded.TD.Game.Generation
                 // Use uniformly distributed vectors to force better gradient distribution.
                 const int numSamples = 12;
                 vectors = Enumerable.Range(0, numSamples)
-                    .Select(i => Direction2.FromRadians(Mathf.TwoPi * i / numSamples).Vector)
+                    .Select(i => Direction2.FromRadians(MathConstants.TwoPi * i / numSamples).Vector)
                     .ToArray();
             }
 
@@ -510,7 +510,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var maxDeviationFromCenter = (tilemap.Radius + 1) * Constants.Game.World.HexagonDiameter;
 
-                var gradientArrayDimension = Mathf.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 2;
+                var gradientArrayDimension = MoreMath.CeilToInt(2 * maxDeviationFromCenter / gridSize) + 2;
                 var gradientArray = createRandomGradientGrid(gradientArrayDimension);
 
                 var sourceMap = new Tilemap<double>(tilemap.Radius);

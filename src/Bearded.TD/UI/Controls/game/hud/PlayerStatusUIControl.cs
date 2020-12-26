@@ -68,7 +68,7 @@ namespace Bearded.TD.UI.Controls
         private static Color pingToColor(int ping)
         {
             const float redHue = 0;
-            const float greenHue = 2 * Mathf.Pi / 3;
+            const float greenHue = 2 * MathConstants.Pi / 3;
 
             var t = ping.Clamped(0, 500) * 0.002f;
 

@@ -68,7 +68,7 @@ namespace Bearded.TD.Game.Camera
                 goalPosition = Maybe.Nothing;
             }
 
-            var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
+            var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
             camera.Position -= snapFactor * error;
         }
 
@@ -104,7 +104,7 @@ namespace Bearded.TD.Game.Camera
                 error = newGoalDistance - maxCameraDistance;
             }
 
-            var snapFactor = 1 - Mathf.Pow(1e-8f, args.ElapsedTimeInSf);
+            var snapFactor = 1 - MathF.Pow(1e-8f, args.ElapsedTimeInSf);
 
             newGoalDistance -= error * snapFactor;
 
@@ -117,7 +117,7 @@ namespace Bearded.TD.Game.Camera
         private void moveCameraDistanceToGoalDistance(UpdateEventArgs args)
         {
             var error = camera.Distance - goalDistance;
-            var snapFactor = 1 - Mathf.Pow(1e-6f, args.ElapsedTimeInSf);
+            var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
             if (Math.Abs(error) < 0.02f)
             {
                 snapFactor = 1;
@@ -138,7 +138,7 @@ namespace Bearded.TD.Game.Camera
             if (camera.Position.NumericValue.LengthSquared <= currentMaxCameraRadius.Squared())
                 return;
 
-            var snapBackFactor = 1 - Mathf.Pow(0.01f, args.ElapsedTimeInSf);
+            var snapBackFactor = 1 - MathF.Pow(0.01f, args.ElapsedTimeInSf);
             var goalPos = new Position2(camera.Position.NumericValue.Normalized() * currentMaxCameraRadius);
             var error = goalPos - camera.Position;
             camera.Position += error * snapBackFactor;

@@ -112,7 +112,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             var buildProgress = resourceConsumer.PercentageDone;
             DebugAssert.State.Satisfies(buildProgress <= 1);
-            var expectedHealthGiven = Mathf.CeilToInt(buildProgress * maxHealth);
+            var expectedHealthGiven = MoreMath.CeilToInt(buildProgress * maxHealth);
             if (expectedHealthGiven == 0)
             {
                 return;
