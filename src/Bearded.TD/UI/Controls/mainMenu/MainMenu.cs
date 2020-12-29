@@ -8,8 +8,8 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class MainMenu : NavigationNode<Void>
     {
-        private Logger logger;
-        private IGraphicsLoader graphicsLoader;
+        private Logger logger = null!;
+        private IGraphicsLoader graphicsLoader = null!;
 
         protected override void Initialize(DependencyResolver dependencies, Void _)
         {

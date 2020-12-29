@@ -45,9 +45,6 @@ namespace Bearded.TD.UI.Controls
                 .Subscribe(container => gameUI.EntityStatusOpened += _ => container.IsVisible = true));
 
             gamePausedControl = new GamePausedControl {IsVisible = false}
-                .Anchor(a => a
-                    .Top(margin: 0, height: 96)
-                    .Left(relativePercentage: .5, margin: -120, width: 240))
                 .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked);
             Add(gamePausedControl);

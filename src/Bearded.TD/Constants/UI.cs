@@ -30,6 +30,11 @@ namespace Bearded.TD
                 public const double InputWidth = Button.Width;
             }
 
+            public static class Menu
+            {
+                public const double Width = 300;
+            }
+
             public static class NavBar
             {
                 public const double Height = 48;

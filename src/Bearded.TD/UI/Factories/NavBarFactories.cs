@@ -22,16 +22,16 @@ namespace Bearded.TD.UI.Factories
 
             public Builder WithBackButton(VoidEventHandler onBack) => WithBackButton("Back", onBack);
 
-            public Builder WithBackButton(string label, VoidEventHandler onBack, Binding<bool>? enabledBinding = null)
+            public Builder WithBackButton(string label, VoidEventHandler onBack, Binding<bool>? isEnabled = null)
             {
-                backAction = new ButtonAction(label, onBack, enabledBinding);
+                backAction = new ButtonAction(label, onBack, isEnabled);
                 return this;
             }
 
             public Builder WithForwardButton(
-                string label, VoidEventHandler onForward, Binding<bool>? enabledBinding = null)
+                string label, VoidEventHandler onForward, Binding<bool>? isEnabled = null)
             {
-                forwardAction = new ButtonAction(label, onForward, enabledBinding);
+                forwardAction = new ButtonAction(label, onForward, isEnabled);
                 return this;
             }
 
@@ -40,48 +40,24 @@ namespace Bearded.TD.UI.Factories
                 var control = new CompositeControl();
                 if (backAction != null)
                 {
-                    var button = ButtonFactories
+                    control.Add(ButtonFactories
                         .Button(b => b.WithLabel(backAction.Label).WithOnClick(backAction.OnClick))
                         .Anchor(a => a
                             .Left(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height));
-                    if (backAction.EnabledBinding != null)
-                    {
-                        button.IsEnabled = backAction.EnabledBinding.Value;
-                        backAction.EnabledBinding.SourceUpdated += enabled => button.IsEnabled = enabled;
-                    }
-                    control.Add(button);
+                            .Bottom(height: Constants.UI.Button.Height))
+                        .BindIsEnabled(backAction.IsEnabled));
                 }
                 if (forwardAction != null)
                 {
-                    var button = ButtonFactories
+                    control.Add(ButtonFactories
                         .Button(b => b.WithLabel(forwardAction.Label).WithOnClick(forwardAction.OnClick))
                         .Anchor(a => a
                             .Right(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height));
-                    if (forwardAction.EnabledBinding != null)
-                    {
-                        button.IsEnabled = forwardAction.EnabledBinding.Value;
-                        forwardAction.EnabledBinding.SourceUpdated += enabled => button.IsEnabled = enabled;
-                    }
-                    control.Add(button);
+                            .Bottom(height: Constants.UI.Button.Height))
+                        .BindIsEnabled(forwardAction.IsEnabled));
                 }
 
                 return control;
-            }
-
-            private sealed record ButtonAction
-            {
-                public string Label { get; }
-                public VoidEventHandler OnClick { get; }
-                public Binding<bool>? EnabledBinding { get; }
-
-                public ButtonAction(string label, VoidEventHandler onClick, Binding<bool>? enabledBinding)
-                {
-                    Label = label;
-                    OnClick = onClick;
-                    EnabledBinding = enabledBinding;
-                }
             }
         }
     }
