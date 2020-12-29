@@ -100,6 +100,7 @@ using Bearded.Utilities;
                 string @namespace, string className, string interfaceName) => $@"
 namespace {@namespace}
 {{
+    [ParametersModifiable(typeof({interfaceName}))]
     sealed class {className} : ModifiableBase<{className}>, {interfaceName}
     {{
         private readonly {interfaceName} template;
