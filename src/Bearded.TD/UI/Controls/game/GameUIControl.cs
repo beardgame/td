@@ -89,7 +89,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onGameOver()
         {
-            Add(new GameOverControl("you lose")
+            Add(new GameEndControl("you lose")
                 .Anchor(a => a
                     .Top(margin: 0, height: 64)
                     .Left(relativePercentage: .5, margin: - 120, width: 240))
@@ -98,7 +98,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onGameVictory()
         {
-            Add(new GameOverControl("you win")
+            Add(new GameEndControl("you win")
                 .Anchor(a => a
                     .Top(margin: 0, height: 64)
                     .Left(relativePercentage: .5, margin: - 120, width: 240))

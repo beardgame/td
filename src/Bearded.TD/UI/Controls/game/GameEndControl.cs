@@ -6,11 +6,11 @@ using static Bearded.TD.UI.Factories.LegacyDefault;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class GameOverControl : CompositeControl
+    sealed class GameEndControl : CompositeControl
     {
         public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
-        public GameOverControl(string text)
+        public GameEndControl(string text)
         {
             Add(new BackgroundBox { Color = .5f * Color.Black });
             Add(new Label { Color = Color.PaleVioletRed, FontSize = 24, Text = text }.Anchor(a => a
