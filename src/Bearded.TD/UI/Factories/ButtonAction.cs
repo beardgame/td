@@ -1,5 +1,4 @@
 using Bearded.TD.Utilities;
-using Bearded.UI.Controls;
 using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Factories

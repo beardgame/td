@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -7,6 +8,8 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameUIControl : CompositeControl
     {
+        private readonly Binding<bool> isGameRunning = new(true);
+
         private readonly GameUI gameUI;
         private readonly GamePausedControl gamePausedControl;
         private readonly TechnologyUIControl technologyUIControl;
@@ -24,18 +27,20 @@ namespace Bearded.TD.UI.Controls
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
-                    .Top(margin: -200, height: 400, relativePercentage: .5)));
+                    .Top(margin: -200, height: 400, relativePercentage: .5))
+                .BindIsVisible(isGameRunning));
             var gameStatusControl = new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 180))
-                .Subscribe(ctrl => ctrl.TechnologyButtonClicked += () => technologyUIControl.IsVisible = true);
+                .Subscribe(ctrl => ctrl.TechnologyButtonClicked += () => technologyUIControl.IsVisible = true)
+                .BindIsVisible(isGameRunning);
             Add(gameStatusControl);
-            var playerStatusControl = new PlayerStatusUIControl(gameUI.PlayerStatusUI)
+            Add(new PlayerStatusUIControl(gameUI.PlayerStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
-                    .Below(gameStatusControl, height: 100));
-            Add(playerStatusControl);
+                    .Below(gameStatusControl, height: 100))
+                .BindIsVisible(isGameRunning));
             Add(new CompositeControl { IsVisible = false }
                 .Anchor(a => a
                     .Right(width: 200)
@@ -79,12 +84,36 @@ namespace Bearded.TD.UI.Controls
                     technologyUIControl.IsVisible = !technologyUIControl.IsVisible;
                     break;
                 case Keys.Escape:
-                    gamePausedControl.IsVisible = !gamePausedControl.IsVisible;
+                    if (technologyUIControl.IsVisible)
+                    {
+                        technologyUIControl.IsVisible = false;
+                    }
+                    else if (isGameRunning.Value)
+                    {
+                        onGamePause();
+                    }
+                    else
+                    {
+                        onGameResume();
+                    }
                     break;
                 default:
                     return false;
             }
             return true;
+        }
+
+        private void onGamePause()
+        {
+            isGameRunning.SetFromSource(false);
+            gameUI.Game.SelectionManager.ResetSelection();
+            gamePausedControl.IsVisible = true;
+        }
+
+        private void onGameResume()
+        {
+            isGameRunning.SetFromSource(true);
+            gamePausedControl.IsVisible = false;
         }
 
         private void onGameOver()
