@@ -35,12 +35,11 @@ namespace Bearded.TD.Rendering
             this.renderers = renderers;
             deferredRenderer = new DeferredRenderer(settings, shaders);
 
-            renderLayer = Do(prepareForRender)
-                .Then(WithContext(
+            renderLayer = WithContext(
                     c => c.BindRenderTarget(s => s.Target)
-                        .SetScissorRegion(s =>
-                            ScissorRegion.SingleOrFullTarget(s.Layer.RenderOptions.ClipDrawRegion)),
+                        .SetScissorRegion(s => ScissorRegion.SingleOrFullTarget(s.Layer.RenderOptions.ClipDrawRegion)),
                     InOrder(
+                        Do(s => settings.SetSettingsFor(s.Layer)),
                         Do(tryRenderDeferred),
                         WithContext(c => c.SetBlendMode(Premultiplied),
                             Render(
@@ -48,33 +47,29 @@ namespace Bearded.TD.Rendering
                                 renderers.ConsoleBackgroundRenderer,
                                 renderers.UIFontRenderer,
                                 renderers.ConsoleFontRenderer)
-                        )
+                        ),
+                        Do(renderers.ClearAll)
                     )
-                ));
-        }
-
-        private void prepareForRender(State state)
-        {
-            settings.SetSettingsFor(state.Layer);
-            renderers.ClearAll();
-            deferredRenderer.ClearAll();
-            state.Layer.Draw();
+                );
         }
 
         private void tryRenderDeferred(State state)
         {
-            if (state.Layer is IDeferredRenderLayer deferredLayer)
-            {
-                deferredRenderer.RenderLayer(deferredLayer, state.Target);
+            if (state.Layer is not IDeferredRenderLayer deferredLayer)
+                return;
 
-                // TODO: not implemented yet
-                //if (UserSettings.Instance.Debug.Deferred)
-                //    deferredRenderer.RenderDebug();
-            }
+            deferredRenderer.RenderLayer(deferredLayer, state.Target);
+
+            // TODO: not implemented yet
+            //if (UserSettings.Instance.Debug.Deferred)
+            //    deferredRenderer.RenderDebug();
+
+            deferredRenderer.ClearAll();
         }
 
         public void RenderLayer(IRenderLayer layer, RenderTarget renderTarget)
         {
+            layer.Draw();
             renderLayer.Execute(new State(layer, renderTarget));
         }
 
