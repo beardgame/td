@@ -1,7 +1,7 @@
 using System;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
@@ -39,6 +39,13 @@ namespace Bearded.TD.Game.Simulation.Resources
             }
         }
 
+        public void CompleteIfNeeded()
+        {
+            PrepareIfNeeded();
+            State.Satisfies(reservation.IsCommitted);
+            reservation.ClaimResources(reservation.ResourcesLeftToClaim);
+        }
+
         public void Update()
         {
             if (consumptionStartTime == null)
@@ -56,7 +63,7 @@ namespace Bearded.TD.Game.Simulation.Resources
             var actualResourcesConsumed = resourcesRequested - reservation.ResourcesLeftToClaim;
             var resourcesToClaim = expectedResourcesConsumed - actualResourcesConsumed;
 
-            DebugAssert.State.Satisfies(resourcesToClaim >= ResourceAmount.Zero);
+            State.Satisfies(resourcesToClaim >= ResourceAmount.Zero);
 
             reservation.ClaimResources(resourcesToClaim);
         }
