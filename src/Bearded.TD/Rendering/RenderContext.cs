@@ -22,7 +22,7 @@ namespace Bearded.TD.Rendering
             Settings = new CoreRenderSettings();
             Renderers = new CoreRenderers(Shaders, Settings);
             DeferredRenderer = new DeferredRenderer(Settings, Shaders);
-            Compositor = new FrameCompositor(logger, Settings, Shaders, Renderers);
+            Compositor = new FrameCompositor(logger, Settings, Shaders, Renderers, DeferredRenderer);
             Drawers = new CoreDrawers(Renderers, DeferredRenderer);
             GraphicsLoader = new GraphicsLoader(this, glActionQueue, logger);
         }

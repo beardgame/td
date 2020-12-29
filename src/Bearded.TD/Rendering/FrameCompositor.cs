@@ -15,11 +15,12 @@ namespace Bearded.TD.Rendering
         private readonly LayerRenderer layerRenderer;
         public ViewportSize ViewPort { get; private set; }
 
-        public FrameCompositor(Logger logger, CoreRenderSettings settings, CoreShaders shaders, CoreRenderers renderers)
+        public FrameCompositor(Logger logger, CoreRenderSettings settings, CoreShaders shaders, CoreRenderers renderers,
+            DeferredRenderer deferredRenderer)
         {
             // TODO: use mod specific shader managers and hot reload them separately
             shaderReloader = new DebugOnlyShaderReloader(shaders.ShaderManager, logger);
-            layerRenderer = new LayerRenderer(settings, renderers, shaders);
+            layerRenderer = new LayerRenderer(settings, renderers, deferredRenderer);
         }
 
         public void SetViewportSize(ViewportSize viewPort)

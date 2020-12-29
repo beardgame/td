@@ -24,16 +24,12 @@ namespace Bearded.TD.Rendering
             }
         }
 
-        private readonly CoreRenderSettings settings;
-        private readonly CoreRenderers renderers;
         private readonly DeferredRenderer deferredRenderer;
         private readonly IPipeline renderLayer;
 
-        public LayerRenderer(CoreRenderSettings settings, CoreRenderers renderers, CoreShaders shaders)
+        public LayerRenderer(CoreRenderSettings settings, CoreRenderers renderers, DeferredRenderer deferredRenderer)
         {
-            this.settings = settings;
-            this.renderers = renderers;
-            deferredRenderer = new DeferredRenderer(settings, shaders);
+            this.deferredRenderer = deferredRenderer;
 
             renderLayer = WithContext(
                     c => c.BindRenderTarget(s => s.Target)
