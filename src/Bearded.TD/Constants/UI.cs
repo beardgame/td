@@ -52,6 +52,7 @@ namespace Bearded.TD
                 public const float LineHeight = 20;
 
                 public static readonly Color TextColor = Color.White;
+                public static readonly Color DisabledTextColor = TextColor * 0.7f;
             }
         }
     }

@@ -18,10 +18,10 @@ namespace Bearded.TD.Rendering.UI
 
         public void Render(ButtonBackgroundEffect control)
         {
-            if (!control.MouseIsOver)
+            if (!control.MouseIsOver || !control.ButtonIsEnabled)
                 return;
 
-            if (control.Parent is Button button && !button.IsEnabled)
+            if (control.Parent is Button {IsEnabled: false})
                 return;
 
             var frame = control.Frame;

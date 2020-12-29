@@ -23,7 +23,7 @@ namespace Bearded.TD.UI.Factories
         {
             button.Add(labelControl);
             button.Add(new Border());
-            button.Add(new ButtonBackgroundEffect());
+            button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
             return button;
         }
     }

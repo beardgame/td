@@ -1,3 +1,4 @@
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 
@@ -14,39 +15,73 @@ namespace Bearded.TD.UI.Factories
             return layout;
         }
 
-        public class Builder
+        public sealed class Builder
         {
-            private Maybe<(string, VoidEventHandler)> backAction = Maybe.Nothing;
-            private Maybe<(string, VoidEventHandler)> forwardAction = Maybe.Nothing;
+            private ButtonAction? backAction;
+            private ButtonAction? forwardAction;
 
             public Builder WithBackButton(VoidEventHandler onBack) => WithBackButton("Back", onBack);
 
-            public Builder WithBackButton(string label, VoidEventHandler onBack)
+            public Builder WithBackButton(string label, VoidEventHandler onBack, Binding<bool>? enabledBinding = null)
             {
-                backAction = Maybe.Just((label, onBack));
+                backAction = new ButtonAction(label, onBack, enabledBinding);
                 return this;
             }
 
-            public Builder WithForwardButton(string label, VoidEventHandler onForward)
+            public Builder WithForwardButton(
+                string label, VoidEventHandler onForward, Binding<bool>? enabledBinding = null)
             {
-                forwardAction = Maybe.Just((label, onForward));
+                forwardAction = new ButtonAction(label, onForward, enabledBinding);
                 return this;
             }
 
             public Control Build()
             {
                 var control = new CompositeControl();
-                backAction.Match(tuple => control.Add(
-                    ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
+                if (backAction != null)
+                {
+                    var button = ButtonFactories
+                        .Button(b => b.WithLabel(backAction.Label).WithOnClick(backAction.OnClick))
                         .Anchor(a => a
                             .Left(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height))));
-                forwardAction.Match(tuple => control.Add(
-                    ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
+                            .Bottom(height: Constants.UI.Button.Height));
+                    if (backAction.EnabledBinding != null)
+                    {
+                        button.IsEnabled = backAction.EnabledBinding.Value;
+                        backAction.EnabledBinding.SourceUpdated += enabled => button.IsEnabled = enabled;
+                    }
+                    control.Add(button);
+                }
+                if (forwardAction != null)
+                {
+                    var button = ButtonFactories
+                        .Button(b => b.WithLabel(forwardAction.Label).WithOnClick(forwardAction.OnClick))
                         .Anchor(a => a
                             .Right(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height))));
+                            .Bottom(height: Constants.UI.Button.Height));
+                    if (forwardAction.EnabledBinding != null)
+                    {
+                        button.IsEnabled = forwardAction.EnabledBinding.Value;
+                        forwardAction.EnabledBinding.SourceUpdated += enabled => button.IsEnabled = enabled;
+                    }
+                    control.Add(button);
+                }
+
                 return control;
+            }
+
+            private sealed record ButtonAction
+            {
+                public string Label { get; }
+                public VoidEventHandler OnClick { get; }
+                public Binding<bool>? EnabledBinding { get; }
+
+                public ButtonAction(string label, VoidEventHandler onClick, Binding<bool>? enabledBinding)
+                {
+                    Label = label;
+                    OnClick = onClick;
+                    EnabledBinding = enabledBinding;
+                }
             }
         }
     }
