@@ -106,7 +106,7 @@ namespace Bearded.TD.Rendering
 
             DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
 
-            var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(settings, textures.Normal);
+            var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
 
 
             var resizedBuffers = InOrder(
@@ -193,9 +193,9 @@ namespace Bearded.TD.Rendering
         }
 
         private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
-            CoreRenderSettings settings, PipelineTexture normalBuffer)
+            PipelineTexture normalBuffer)
         {
-            var neededSettings = new IRenderSetting[]
+            var neededSettings = new[]
             {
                 settings.ViewMatrix, settings.ProjectionMatrix,
                 settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
