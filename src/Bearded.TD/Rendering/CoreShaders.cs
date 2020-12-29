@@ -29,6 +29,7 @@ namespace Bearded.TD.Rendering
                 "deferred/copyDepth",
                 "deferred/pointlight",
                 "deferred/spotlight",
+                "terrain-base",
             }.ForEach(name => shaders.RegisterRendererShaderFromAllShadersWithName(name));
         }
 

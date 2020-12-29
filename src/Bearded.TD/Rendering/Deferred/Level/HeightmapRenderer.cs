@@ -68,7 +68,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                             .SetViewport(r => new Rectangle(0, 0, r, r))
                             .SetBlendMode(BlendMode.Premultiplied),
                         Pipeline<int>.InOrder(
-                            Pipeline<int>.ClearColor(Constants.Rendering.WallHeight, 0, 0, 0),
+                            Pipeline<int>.ClearColor(0, 0, 0, 0),
                             Pipeline<int>.Do(_ => renderHeightmapInBatches())
                         )
                     )
@@ -171,9 +171,8 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     count = 0;
                 }
             }
-
-            heightMapSplatRenderer.Render();
-            heightmapSplats.MeshBuilder.Clear();
+            heightmapBaseRenderer.Render();
+            heightmapBaseMeshBuilder.Clear();
         }
     }
 }

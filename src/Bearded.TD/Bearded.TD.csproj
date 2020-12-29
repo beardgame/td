@@ -30,6 +30,12 @@
 
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="assets\shaders\terrain-base.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\shaders\terrain-base.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
