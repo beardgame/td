@@ -30,7 +30,7 @@ namespace Bearded.TD.UI.Controls
 
             Add(new BackgroundBox());
             Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
-            Add(LegacyDefault.Button("close", 16)
+            Add(ButtonFactories.Button("close")
                 .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
                 .Subscribe(btn => btn.Clicked += _ => CloseButtonClicked?.Invoke()));
 
@@ -133,7 +133,7 @@ namespace Bearded.TD.UI.Controls
                 Color = Constants.Game.GameUI.TechPointsColor, FontSize = 18, TextAnchor = Label.TextAnchorLeft
             };
 
-            private readonly Label unlockButtonLabel = new Label {FontSize = 16};
+            private string unlockButtonLabel = "";
             private readonly Button unlockButton;
 
             private readonly ListControl unlocksList;
@@ -152,7 +152,7 @@ namespace Bearded.TD.UI.Controls
                 Add(new Label("Required technologies:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
                     .Anchor(a => a.Bottom(margin: 128, height: 32)));
 
-                unlockButton = new Button().WithDefaultStyle(unlockButtonLabel);
+                unlockButton = ButtonFactories.Button(() => unlockButtonLabel);
                 Add(unlockButton.Anchor(a => a.Top(height: 32, margin: 4).Right(margin: 8, width: 200)));
                 unlockButton.Clicked += onUnlockButtonClicked;
 
@@ -227,17 +227,17 @@ namespace Bearded.TD.UI.Controls
                 switch (technologyStatus)
                 {
                     case TechnologyUIModel.TechnologyStatus.Unlocked:
-                        unlockButtonLabel.Text = "Unlocked";
+                        unlockButtonLabel = "Unlocked";
                         break;
                     case TechnologyUIModel.TechnologyStatus.Queued:
-                        unlockButtonLabel.Text = $"Queued ({model.QueuePositionFor(tech)})";
+                        unlockButtonLabel = $"Queued ({model.QueuePositionFor(tech)})";
                         break;
                     case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
-                        unlockButtonLabel.Text = "Unlock";
+                        unlockButtonLabel = "Unlock";
                         break;
                     case TechnologyUIModel.TechnologyStatus.MissingResources:
                     case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                        unlockButtonLabel.Text = "Queue";
+                        unlockButtonLabel = "Queue";
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
