@@ -159,7 +159,7 @@ namespace {@namespace}
             public static string StaticConstructor(
                 string className, IEnumerable<ParametersPropertyDefinition> modifiableParameters)
             {
-                var attributeTuples = string.Join(",\n",
+                var attributeTuples = string.Join(",",
                     modifiableParameters.Select(p => staticConstructorAttributeTuple(p.AttributeType, p.Name)));
                 return $@"
         static {className}()
@@ -175,8 +175,7 @@ namespace {@namespace}
             private static string staticConstructorAttributeTuple(string attributeType, string propertyName)
             {
                 return $@"
-                    ({attributeType}, instance => instance.{toCamelCase(propertyName)})
-";
+                    ({attributeType}, instance => instance.{toCamelCase(propertyName)})";
             }
 
             public static string CreateModifiableMethod(string interfaceName, string className) => $@"
