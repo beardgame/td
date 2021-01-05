@@ -32,6 +32,7 @@ namespace Bearded.TD.UI.Factories
         {
             private Func<string>? labelProvider;
             private VoidEventHandler? onClick;
+            private bool isDisabled;
 
             public Builder WithLabel(string label)
             {
@@ -51,12 +52,18 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
+            public Builder MakeDisabled()
+            {
+                isDisabled = true;
+                return this;
+            }
+
             public Button Build()
             {
                 State.Satisfies(labelProvider != null);
 
                 // ReSharper disable once UseObjectOrCollectionInitializer
-                var button = new Button();
+                var button = new Button {IsEnabled = !isDisabled};
 
                 button.Add(new DynamicLabel(labelProvider!, colorProvider) { FontSize = Constants.UI.Button.FontSize });
                 button.Add(new DynamicBorder(colorProvider));

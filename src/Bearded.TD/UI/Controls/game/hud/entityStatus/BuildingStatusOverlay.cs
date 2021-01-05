@@ -11,6 +11,8 @@ namespace Bearded.TD.UI.Controls
     {
         public IPlacedBuilding Building { get; private set; } = null!;
 
+        // TODO: invoke this event when the placeholder is replaced by the building instead of closing overlay
+        public event VoidEventHandler? BuildingSet;
         public event VoidEventHandler? BuildingUpdated;
 
         public (int CurrentHealth, int MaxHealth)? BuildingHealth

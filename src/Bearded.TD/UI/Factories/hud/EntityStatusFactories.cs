@@ -23,6 +23,7 @@ namespace Bearded.TD.UI.Factories
         {
             private Binding<string>? entityName;
             private VoidEventHandler? onCloseHandler;
+            private Control? contentControl;
             private readonly List<(string, Binding<string>, Binding<Color>?)> textAttributes = new();
 
             public Builder WithName(Binding<string> name)
@@ -34,6 +35,12 @@ namespace Bearded.TD.UI.Factories
             public Builder WithCloseAction(VoidEventHandler onClose)
             {
                 onCloseHandler = onClose;
+                return this;
+            }
+
+            public Builder WithContent(Control content)
+            {
+                contentControl = content;
                 return this;
             }
 
@@ -68,6 +75,11 @@ namespace Bearded.TD.UI.Factories
                 if (textAttributes.Count > 0)
                 {
                     layout.DockFixedSizeToTop(buildTextAttributes(out var height), height);
+                }
+
+                if (contentControl != null)
+                {
+                    layout.FillContent(contentControl);
                 }
 
                 return control;
