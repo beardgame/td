@@ -7,12 +7,12 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
-using static Bearded.TD.UI.Factories.LegacyDefault;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
+using static Bearded.TD.UI.Factories.ButtonFactories;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameDebugOverlayControl : DefaultRenderLayerControl
+    sealed class GameDebugOverlayControl : DefaultRenderLayerControl
     {
         private bool minimized;
 
@@ -59,7 +59,7 @@ namespace Bearded.TD.UI.Controls
             RenderAsLayer(router);
         }
 
-        private class ActionListItemSource : IListItemSource
+        private sealed class ActionListItemSource : IListItemSource
         {
             private readonly ReadOnlyCollection<Item> items;
 

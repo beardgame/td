@@ -33,6 +33,7 @@ namespace Bearded.TD.Game
 
         public IEnumerable<ISerializableCommand<GameInstance>> Generate()
         {
+            yield return InitializeTypes.Command();
             yield return CreateGameState.Command(game, gameSettings);
             yield return AddFaction.Command(game, new Faction(
                 game.Ids.GetNext<Faction>(),

@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using System;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
@@ -6,10 +7,18 @@ using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
-    class ButtonBackgroundEffect : Control
+    sealed class ButtonBackgroundEffect : Control
     {
+        private readonly Func<bool> isButtonEnabled;
+
+        public bool ButtonIsEnabled => isButtonEnabled();
         public bool MouseIsOver { get; private set; }
         public bool MouseIsDown { get; private set; }
+
+        public ButtonBackgroundEffect(Func<bool> isButtonEnabled)
+        {
+            this.isButtonEnabled = isButtonEnabled;
+        }
 
         protected override void OnAddingToParent()
         {

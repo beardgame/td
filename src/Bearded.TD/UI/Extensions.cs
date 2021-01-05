@@ -1,3 +1,4 @@
+using Bearded.TD.Utilities;
 using Bearded.UI;
 using Bearded.UI.Controls;
 
@@ -26,5 +27,12 @@ namespace Bearded.TD.UI
 
         public static Anchor WithAddedOffset(this Anchor anchor, double offset) =>
             new Anchor(anchor.Percentage, anchor.Offset + offset);
+
+        public static Control BindIsVisible(this Control control, Binding<bool> isVisible)
+        {
+            control.IsVisible = isVisible.Value;
+            isVisible.SourceUpdated += visible => control.IsVisible = visible;
+            return control;
+        }
     }
 }

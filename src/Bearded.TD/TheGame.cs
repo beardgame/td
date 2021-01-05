@@ -82,7 +82,7 @@ namespace Bearded.TD
                     (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
                     (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
                     (typeof(Label), new LabelRenderer(drawers.UIFont)),
-                    (typeof(Border), new BoxRenderer(drawers.ConsoleBackground, Color.White)),
+                    (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
                     (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
                     (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
                     (typeof(Dot), new DotRenderer(drawers.ConsoleBackground)),

@@ -26,7 +26,7 @@ namespace Bearded.TD.UI.Factories
         public static PristineLayout BuildLayout(this IControlParent parent) =>
             new PristineLayout(parent);
 
-        public static IColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
+        public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
 
         public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
             new ScrollableColumnLayout(parent);
@@ -77,8 +77,19 @@ namespace Bearded.TD.UI.Factories
             private void dockToTop(Control control, Anchor divider)
             {
                 control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(Vertical.Top, divider)));
-                Vertical = new VerticalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Vertical.Bottom));
                 Parent.Add(control);
+                moveTopAnchor(divider.WithAddedOffset(LayoutMargin));
+            }
+
+            public Layout ClearSpaceTop(double height)
+            {
+                moveTopAnchor(Vertical.Top.WithAddedOffset(height));
+                return this;
+            }
+
+            private void moveTopAnchor(Anchor divider)
+            {
+                Vertical = new VerticalAnchors(new Anchors(divider, Vertical.Bottom));
             }
 
             public Layout DockFixedSizeToBottom(Control control, double height)
@@ -96,8 +107,19 @@ namespace Bearded.TD.UI.Factories
             private void dockToBottom(Control control, Anchor divider)
             {
                 control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(divider, Vertical.Bottom)));
-                Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider.WithAddedOffset(-LayoutMargin)));
                 Parent.Add(control);
+                moveBottomAnchor(divider.WithAddedOffset(-LayoutMargin));
+            }
+
+            public Layout ClearSpaceBottom(double height)
+            {
+                moveBottomAnchor(Vertical.Bottom.WithAddedOffset(-height));
+                return this;
+            }
+
+            private void moveBottomAnchor(Anchor divider)
+            {
+                Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider));
             }
 
             public Layout DockFixedSizeToLeft(Control control, double width)
@@ -115,8 +137,19 @@ namespace Bearded.TD.UI.Factories
             private void dockToLeft(Control control, Anchor divider)
             {
                 control.Anchor(_ => new AnchorTemplate(new Anchors(Horizontal.Left, divider), Vertical));
-                Horizontal = new HorizontalAnchors(new Anchors(divider.WithAddedOffset(LayoutMargin), Horizontal.Right));
                 Parent.Add(control);
+                moveLeftAnchor(divider.WithAddedOffset(LayoutMargin));
+            }
+
+            public Layout ClearSpaceLeft(double width)
+            {
+                moveLeftAnchor(Horizontal.Left.WithAddedOffset(width));
+                return this;
+            }
+
+            private void moveLeftAnchor(Anchor divider)
+            {
+                Horizontal = new HorizontalAnchors(new Anchors(divider, Horizontal.Right));
             }
 
             public Layout DockFixedSizeToRight(Control control, double width)
@@ -134,8 +167,19 @@ namespace Bearded.TD.UI.Factories
             private void dockToRight(Control control, Anchor divider)
             {
                 control.Anchor(_ => new AnchorTemplate(new Anchors(divider, Horizontal.Right), Vertical));
-                Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider.WithAddedOffset(-LayoutMargin)));
                 Parent.Add(control);
+                moveRightAnchor(divider.WithAddedOffset(-LayoutMargin));
+            }
+
+            public Layout ClearSpaceRight(double width)
+            {
+                moveRightAnchor(Horizontal.Right.WithAddedOffset(-width));
+                return this;
+            }
+
+            private void moveRightAnchor(Anchor divider)
+            {
+                Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider));
             }
 
             public void FillContent(Control control)
@@ -150,10 +194,11 @@ namespace Bearded.TD.UI.Factories
             IColumnLayout Add(Control control, double height);
         }
 
-        private sealed class FixedColumnLayout : IColumnLayout
+        public sealed class FixedColumnLayout : IColumnLayout
         {
             private readonly IControlParent parent;
-            private double contentHeight;
+
+            public double Height { get; private set; }
 
             public FixedColumnLayout(IControlParent parent)
             {
@@ -162,8 +207,8 @@ namespace Bearded.TD.UI.Factories
 
             public IColumnLayout Add(Control control, double height)
             {
-                parent.Add(control.Anchor(a => a.Top(contentHeight, height)));
-                contentHeight += height;
+                parent.Add(control.Anchor(a => a.Top(Height, height)));
+                Height += height;
                 return this;
             }
         }

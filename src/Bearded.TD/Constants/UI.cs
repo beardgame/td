@@ -30,6 +30,11 @@ namespace Bearded.TD
                 public const double InputWidth = Button.Width;
             }
 
+            public static class Menu
+            {
+                public const double Width = 300;
+            }
+
             public static class NavBar
             {
                 public const double Height = 48;
@@ -52,6 +57,7 @@ namespace Bearded.TD
                 public const float LineHeight = 20;
 
                 public static readonly Color TextColor = Color.White;
+                public static readonly Color DisabledTextColor = TextColor * 0.7f;
             }
         }
     }

@@ -28,14 +28,35 @@ namespace Bearded.TD.Content.Mods
             }
         }
 
-        private readonly Stopwatch stopwatch = new Stopwatch();
-        private readonly Dictionary<string, TimeSpan> blueprintsLoadingStartTimes = new Dictionary<string, TimeSpan>();
-        private readonly List<string> blueprintsLoading = new List<string>();
-        private readonly List<BlueprintLoadingProfile> blueprintsLoaded =
-            new List<BlueprintLoadingProfile>();
+        private readonly Stopwatch stopwatch = new();
+        private readonly Dictionary<string, TimeSpan> blueprintsLoadingStartTimes = new();
 
-        public ImmutableArray<string> LoadingBlueprints => ImmutableArray.CreateRange(blueprintsLoading);
-        public ImmutableArray<BlueprintLoadingProfile> LoadedBlueprints => ImmutableArray.CreateRange(blueprintsLoaded);
+        private readonly object blueprintsLoadingLock = new();
+        private readonly List<string> blueprintsLoading = new();
+        private readonly object blueprintsLoadedLock = new();
+        private readonly List<BlueprintLoadingProfile> blueprintsLoaded = new();
+
+        public ImmutableArray<string> LoadingBlueprints
+        {
+            get
+            {
+                lock (blueprintsLoadingLock)
+                {
+                    return ImmutableArray.CreateRange(blueprintsLoading);
+                }
+            }
+        }
+
+        public ImmutableArray<BlueprintLoadingProfile> LoadedBlueprints
+        {
+            get
+            {
+                lock (blueprintsLoadedLock)
+                {
+                    return ImmutableArray.CreateRange(blueprintsLoaded);
+                }
+            }
+        }
 
         public TimeSpan TotalElapsedTime => stopwatch.Elapsed;
 
@@ -53,10 +74,13 @@ namespace Bearded.TD.Content.Mods
         public void FinishLoading()
         {
             checkStopwatchRunning();
-            if (blueprintsLoading.Count > 0)
+            lock (blueprintsLoadingLock)
             {
-                throw new InvalidOperationException(
-                    "Mod loading finished but some blueprints haven't finished loading.");
+                if (blueprintsLoading.Count > 0)
+                {
+                    throw new InvalidOperationException(
+                        "Mod loading finished but some blueprints haven't finished loading.");
+                }
             }
             stopwatch.Stop();
         }
@@ -65,7 +89,10 @@ namespace Bearded.TD.Content.Mods
         public void StartLoadingBlueprint(string path)
         {
             checkStopwatchRunning();
-            blueprintsLoading.Add(path);
+            lock (blueprintsLoadingLock)
+            {
+                blueprintsLoading.Add(path);
+            }
             blueprintsLoadingStartTimes.Add(path, stopwatch.Elapsed);
         }
 
@@ -96,9 +123,15 @@ namespace Bearded.TD.Content.Mods
             var startTime = blueprintsLoadingStartTimes[path];
             var now = stopwatch.Elapsed;
             var elapsed = now - startTime;
-            blueprintsLoading.Remove(path);
+            lock (blueprintsLoadingLock)
+            {
+                blueprintsLoading.Remove(path);
+            }
             blueprintsLoadingStartTimes.Remove(path);
-            blueprintsLoaded.Add(new BlueprintLoadingProfile(path, elapsed, result));
+            lock (blueprintsLoadedLock)
+            {
+                blueprintsLoaded.Add(new BlueprintLoadingProfile(path, elapsed, result));
+            }
         }
 
         private void checkStopwatchRunning()

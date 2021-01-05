@@ -1,7 +1,5 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -11,46 +9,41 @@ namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class FinishBuildingUpgrade
     {
-        public static ISerializableCommand<GameInstance> Command(Building building, IUpgradeBlueprint upgrade)
-            => new Implementation(building, upgrade);
+        public static ISerializableCommand<GameInstance> Command(BuildingUpgradeTask task) =>
+            new Implementation(task);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly Building building;
-            private readonly IUpgradeBlueprint upgrade;
+            private readonly BuildingUpgradeTask task;
 
-            public Implementation(Building building, IUpgradeBlueprint upgrade)
+            public Implementation(BuildingUpgradeTask task)
             {
-                this.building = building;
-                this.upgrade = upgrade;
+                this.task = task;
             }
 
-            public void Execute() => building.ApplyUpgrade(upgrade);
+            public void Execute() => task.Complete();
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(building, upgrade);
+            public ICommandSerializer<GameInstance> Serializer => new Serializer(task);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private Id<Building> building;
-            private ModAwareId upgrade;
+            private Id<BuildingUpgradeTask> task;
 
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(Building building, IUpgradeBlueprint upgrade)
+            public Serializer(BuildingUpgradeTask task)
             {
-                this.building = building.Id;
-                this.upgrade = upgrade.Id;
+                this.task = task.Id;
             }
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game.State.Find(building), game.Blueprints.Upgrades[upgrade]);
+            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
+                new Implementation(game.State.Find(task));
 
             public void Serialize(INetBufferStream stream)
             {
-                stream.Serialize(ref building);
-                stream.Serialize(ref upgrade);
+                stream.Serialize(ref task);
             }
         }
     }

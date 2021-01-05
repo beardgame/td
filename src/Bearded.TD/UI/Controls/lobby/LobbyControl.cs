@@ -19,6 +19,8 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class LobbyControl : CompositeControl
     {
+        private readonly Binding<bool> readyEnabled = new();
+
         public LobbyControl(Lobby model)
         {
             var lobbyDetailsControl = new LobbyDetailsControl(model);
@@ -27,7 +29,7 @@ namespace Bearded.TD.UI.Controls
                 .ForFullScreen()
                 .AddNavBar(b => b
                     .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked)
-                    .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked))
+                    .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked, readyEnabled))
                 .AddMainSidebar(c => fillSidebar(c, model))
                 .AddTabs(t => t
                     .AddButton("Game settings", lobbyDetailsControl.ShowGameSettings)
@@ -35,6 +37,16 @@ namespace Bearded.TD.UI.Controls
                 .FillContent(lobbyDetailsControl);
 
             lobbyDetailsControl.ShowGameSettings();
+
+            model.LoadingUpdated += () => updateReadyButton(model);
+        }
+
+        private void updateReadyButton(Lobby model)
+        {
+            if (readyEnabled.Value != model.CanToggleReady)
+            {
+                readyEnabled.SetFromSource(model.CanToggleReady);
+            }
         }
 
         private static void fillSidebar(IControlParent sidebar, Lobby model)

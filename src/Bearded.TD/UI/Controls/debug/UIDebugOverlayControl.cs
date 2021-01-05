@@ -9,17 +9,17 @@ using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using static Bearded.TD.UI.Factories.LegacyDefault;
+using static Bearded.TD.UI.Factories.ButtonFactories;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls
 {
-    class UIDebugOverlayControl : DefaultRenderLayerControl
+    sealed class UIDebugOverlayControl : DefaultRenderLayerControl
     {
-        public class Highlight : Control
+        public sealed class Highlight : Control
         {
-            public string Name { get; private set; }
+            public string Name { get; private set; } = "";
             public float Alpha { get; private set; }
             public double TextY { get; private set; }
 
@@ -43,14 +43,13 @@ namespace Bearded.TD.UI.Controls
 
         private const double margin = 4;
         private const double buttonDimension = 20;
-        private const double fontSize = 16;
         private const double controlBoxWidth = 200;
         private const double controlBoxHeight = 400;
 
         private readonly CompositeControl highlightParent;
-        private readonly List<Highlight> highlights = new List<Highlight>();
+        private readonly List<Highlight> highlights = new();
         private readonly CompositeControl controlBox;
-        private readonly ListControl highlightList  = new ListControl();
+        private readonly ListControl highlightList  = new();
 
         private bool moveControlBox;
 
@@ -63,10 +62,10 @@ namespace Bearded.TD.UI.Controls
             controlBox = new CompositeControl
             {
                 new BackgroundBox(),
-                Button("move", fontSize)
+                Button("move")
                     .Anchor(a => a.Top(margin, buttonDimension).Right(margin + buttonDimension + margin).Left(margin))
                     .Subscribe(b => b.Clicked += toggleMoveControlBox),
-                Button("x", fontSize)
+                Button("x")
                     .Anchor(a => a.Top(margin, buttonDimension).Right(margin, buttonDimension))
                     .Subscribe(b => b.Clicked += model.Close),
                 highlightList.Anchor(a => a.Top(margin + buttonDimension + margin).Bottom(margin).Left(margin).Right(margin))
@@ -159,7 +158,7 @@ namespace Bearded.TD.UI.Controls
             while (parent is Control parentControl)
                 parent = parentControl.Parent;
 
-            return parent;
+            return parent!;
         }
 
         private void showControlChain(List<Control> controlChain)
@@ -196,7 +195,7 @@ namespace Bearded.TD.UI.Controls
             highlightList.ItemSource = new HighlightListItemSource(controlChain);
         }
 
-        private class HighlightListItemSource : IListItemSource
+        private sealed class HighlightListItemSource : IListItemSource
         {
             private readonly List<Control> controls;
 

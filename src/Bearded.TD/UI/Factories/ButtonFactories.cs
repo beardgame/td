@@ -1,9 +1,11 @@
 using System;
+using amulware.Graphics;
 using Bearded.TD.UI.Controls;
-using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI.Button;
+using static Bearded.TD.Constants.UI.Text;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Factories
 {
@@ -28,24 +30,19 @@ namespace Bearded.TD.UI.Factories
 
         public sealed class Builder
         {
-            private Control? labelControl;
+            private Func<string>? labelProvider;
             private VoidEventHandler? onClick;
+            private bool isDisabled;
 
             public Builder WithLabel(string label)
             {
-                labelControl = new Label(label)
-                {
-                    FontSize = FontSize
-                };
+                labelProvider = () => label;
                 return this;
             }
 
             public Builder WithLabel(Func<string> labelFunc)
             {
-                labelControl = new DynamicLabel(labelFunc)
-                {
-                    FontSize = FontSize
-                };
+                labelProvider = labelFunc;
                 return this;
             }
 
@@ -55,15 +52,30 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
+            public Builder MakeDisabled()
+            {
+                isDisabled = true;
+                return this;
+            }
+
             public Button Build()
             {
-                DebugAssert.State.Satisfies(labelControl != null);
-                var button = new Button {labelControl, new Border(), new ButtonBackgroundEffect()};
+                State.Satisfies(labelProvider != null);
+
+                // ReSharper disable once UseObjectOrCollectionInitializer
+                var button = new Button {IsEnabled = !isDisabled};
+
+                button.Add(new DynamicLabel(labelProvider!, colorProvider) { FontSize = Constants.UI.Button.FontSize });
+                button.Add(new DynamicBorder(colorProvider));
+                button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
+
                 if (onClick != null)
                 {
                     button.Clicked += _ => onClick();
                 }
                 return button;
+
+                Color colorProvider() => button.IsEnabled ? TextColor : DisabledTextColor;
             }
         }
     }

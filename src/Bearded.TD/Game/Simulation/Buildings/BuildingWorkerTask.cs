@@ -62,6 +62,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             // Make sure to apply remaining progress before it is no longer possible.
             // Note that we can assume building is set, because the StartBuildingConstruction command has been called.
 
+            resourceConsumer.CompleteIfNeeded();
             var healthRemaining = maxHealth - healthGiven;
             building!.SetBuildProgress(1, healthRemaining);
             building.Completing -= onBuildingCompleting;

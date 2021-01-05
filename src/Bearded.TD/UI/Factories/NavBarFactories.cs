@@ -1,3 +1,4 @@
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 
@@ -14,38 +15,48 @@ namespace Bearded.TD.UI.Factories
             return layout;
         }
 
-        public class Builder
+        public sealed class Builder
         {
-            private Maybe<(string, VoidEventHandler)> backAction = Maybe.Nothing;
-            private Maybe<(string, VoidEventHandler)> forwardAction = Maybe.Nothing;
+            private ButtonAction? backAction;
+            private ButtonAction? forwardAction;
 
             public Builder WithBackButton(VoidEventHandler onBack) => WithBackButton("Back", onBack);
 
-            public Builder WithBackButton(string label, VoidEventHandler onBack)
+            public Builder WithBackButton(string label, VoidEventHandler onBack, Binding<bool>? isEnabled = null)
             {
-                backAction = Maybe.Just((label, onBack));
+                backAction = new ButtonAction(label, onBack, isEnabled);
                 return this;
             }
 
-            public Builder WithForwardButton(string label, VoidEventHandler onForward)
+            public Builder WithForwardButton(
+                string label, VoidEventHandler onForward, Binding<bool>? isEnabled = null)
             {
-                forwardAction = Maybe.Just((label, onForward));
+                forwardAction = new ButtonAction(label, onForward, isEnabled);
                 return this;
             }
 
             public Control Build()
             {
                 var control = new CompositeControl();
-                backAction.Match(tuple => control.Add(
-                    ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
+                if (backAction != null)
+                {
+                    control.Add(ButtonFactories
+                        .Button(b => b.WithLabel(backAction.Label).WithOnClick(backAction.OnClick))
                         .Anchor(a => a
                             .Left(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height))));
-                forwardAction.Match(tuple => control.Add(
-                    ButtonFactories.Button(b => b.WithLabel(tuple.Item1).WithOnClick(tuple.Item2))
+                            .Bottom(height: Constants.UI.Button.Height))
+                        .BindIsEnabled(backAction.IsEnabled));
+                }
+                if (forwardAction != null)
+                {
+                    control.Add(ButtonFactories
+                        .Button(b => b.WithLabel(forwardAction.Label).WithOnClick(forwardAction.OnClick))
                         .Anchor(a => a
                             .Right(width: Constants.UI.Button.Width)
-                            .Bottom(height: Constants.UI.Button.Height))));
+                            .Bottom(height: Constants.UI.Button.Height))
+                        .BindIsEnabled(forwardAction.IsEnabled));
+                }
+
                 return control;
             }
         }

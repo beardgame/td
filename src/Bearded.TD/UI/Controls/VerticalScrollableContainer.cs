@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Controls
     sealed class VerticalScrollableContainer : CompositeControl
     {
         private readonly CompositeControl clippingContainer = new ViewportClippingLayerControl();
-        private readonly CompositeControl contentContainer = new CompositeControl();
+        private readonly CompositeControl contentContainer = new();
         private double scrollOffset;
         private double contentHeight;
 
