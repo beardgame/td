@@ -45,7 +45,7 @@ namespace Bearded.TD.UI.Factories
                     throw new InvalidOperationException("Close action must be set on each menu.");
                 }
 
-                var control = new CompositeControl()
+                var control = new CompositeControl
                 {
                     new BackgroundBox()
                 };
