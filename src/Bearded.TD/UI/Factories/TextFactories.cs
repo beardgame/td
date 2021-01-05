@@ -9,15 +9,34 @@ namespace Bearded.TD.UI.Factories
 {
     static class TextFactories
     {
-        public static Label Header(string text, Color? color = null) => new(text)
+        public static Label Header(string text, Color? color = null) =>
+            Header(Binding.Create(text), color == null ? null : Binding.Create(color.Value));
+
+        public static Label Header(Binding<string> text, Binding<Color>? color = null)
         {
-            Color = color ?? TextColor,
-            FontSize = HeaderFontSize,
-            TextAnchor = Controls.Label.TextAnchorLeft
-        };
+            var label = new Label(text.Value)
+            {
+                Color = color?.Value ?? TextColor,
+                FontSize = HeaderFontSize,
+                TextAnchor = Controls.Label.TextAnchorLeft
+            };
+            text.SourceUpdated += newText => label.Text = newText;
+            if (color != null)
+            {
+                color.SourceUpdated += newColor => label.Color = newColor;
+            }
+
+            return label;
+        }
 
         public static Layouts.IColumnLayout AddHeader(
             this Layouts.IColumnLayout columnLayout, string text, Color? color = null)
+        {
+            return columnLayout.Add(Header(text, color), HeaderLineHeight);
+        }
+
+        public static Layouts.IColumnLayout AddHeader(
+            this Layouts.IColumnLayout columnLayout, Binding<string> text, Binding<Color>? color = null)
         {
             return columnLayout.Add(Header(text, color), HeaderLineHeight);
         }
@@ -40,10 +59,14 @@ namespace Bearded.TD.UI.Factories
             Binding<string> rightText,
             double? verticalAnchor = null,
             Color? leftColor = null,
-            Color? rightColor = null)
+            Binding<Color>? rightColor = null)
         {
-            var valueLabel = Label(rightText.Value, new Vector2d(1, verticalAnchor ?? 0.5), rightColor);
+            var valueLabel = Label(rightText.Value, new Vector2d(1, verticalAnchor ?? 0.5), rightColor?.Value);
             rightText.SourceUpdated += newValue => valueLabel.Text = newValue;
+            if (rightColor != null)
+            {
+                rightColor.SourceUpdated += newValue => valueLabel.Color = newValue;
+            }
 
             return new CompositeControl
             {
@@ -57,7 +80,7 @@ namespace Bearded.TD.UI.Factories
             string leftText,
             Binding<string> rightText,
             Color? leftColor = null,
-            Color? rightColor = null)
+            Binding<Color>? rightColor = null)
         {
             return columnLayout.Add(
                 ValueLabel(leftText, rightText, leftColor: leftColor, rightColor: rightColor), LineHeight);

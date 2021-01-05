@@ -26,12 +26,16 @@ namespace Bearded.TD.UI.Controls
             var content = new CompositeControl().Anchor(a => a.MarginAllSides(4));
             content.BuildFixedColumn()
                 .AddHeader($"{model.FactionName}", model.FactionColor)
-                .AddValueLabel("Resources:", resourcesAmount, rightColor: Constants.Game.GameUI.ResourcesColor)
-                .AddValueLabel("Tech points:", techPointsAmount, rightColor: Constants.Game.GameUI.TechPointsColor)
+                .AddValueLabel(
+                    "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor))
+                .AddValueLabel(
+                    "Tech points:", techPointsAmount, rightColor: Binding.Create(Constants.Game.GameUI.TechPointsColor))
                 .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
                 .AddValueLabel("Wave:", waveNumber)
                 .AddValueLabel("Next spawn:", timeUntilSpawn)
-                .AddValueLabel("Resources this wave:", waveResources, rightColor: Constants.Game.GameUI.ResourcesColor);
+                .AddValueLabel(
+                    "Resources this wave:",
+                    waveResources, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor));
             this.BuildLayout().ForContentBox().FillContent(content);
 
             model.StatusChanged += updateLabels;
