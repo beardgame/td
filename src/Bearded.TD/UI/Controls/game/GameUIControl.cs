@@ -8,6 +8,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameUIControl : CompositeControl
     {
+        private readonly Binding<bool> isEntityStatusOpen = new(false);
         private readonly Binding<bool> isGameRunning = new(true);
 
         private readonly GameUI gameUI;
@@ -22,13 +23,13 @@ namespace Bearded.TD.UI.Controls
             CanBeFocused = true;
 
             Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
-            Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
-                .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
             Add(new ActionBarControl(gameUI.ActionBar)
                 .Anchor(a => a
                     .Left(width: 160)
                     .Top(margin: -200, height: 400, relativePercentage: .5))
-                .BindIsVisible(isGameRunning));
+                .BindIsVisible(Binding.Combine(
+                    isGameRunning, isEntityStatusOpen,
+                    (gameRunning, entityStatusOpen) => gameRunning && !entityStatusOpen)));
             var gameStatusControl = new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
@@ -46,8 +47,10 @@ namespace Bearded.TD.UI.Controls
                     .Right(width: 200)
                     .Bottom(height: 320))
                 .Subscribe(gameUI.SetEntityStatusContainer)
-                .Subscribe(container => gameUI.EntityStatusClosed += () => container.IsVisible = false)
-                .Subscribe(container => gameUI.EntityStatusOpened += _ => container.IsVisible = true));
+                .BindIsVisible(isEntityStatusOpen));
+
+            gameUI.EntityStatusOpened += _ => isEntityStatusOpen.SetFromSource(true);
+            gameUI.EntityStatusClosed += () => isEntityStatusOpen.SetFromSource(false);
 
             gamePausedControl = new GamePausedControl {IsVisible = false}
                 .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
@@ -62,6 +65,13 @@ namespace Bearded.TD.UI.Controls
                     .Left(margin: 80))
                 .Subscribe(ctrl => ctrl.CloseButtonClicked += () => ctrl.IsVisible = false);
             Add(technologyUIControl);
+
+            var overlayControl = new Overlay();
+            Add(overlayControl);
+            gameUI.SetOverlayControl(overlayControl);
+
+            Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
+                .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
 
             gameUI.FocusReset += Focus;
             gameUI.GameLeft += Unfocus;

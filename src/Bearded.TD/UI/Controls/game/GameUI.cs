@@ -20,10 +20,12 @@ namespace Bearded.TD.UI.Controls
     sealed class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
         IListener<GameOverTriggered>, IListener<GameVictoryTriggered>, IListener<BuildingConstructionStarted>
     {
-        public GameInstance Game { get; private set; }
-        private GameRunner runner;
-        private InputManager inputManager;
-        private FocusManager focusManager;
+        private readonly UIUpdater uiUpdater = new();
+
+        public GameInstance Game { get; private set; } = null!;
+        private GameRunner runner = null!;
+        private InputManager inputManager = null!;
+        private FocusManager focusManager = null!;
 
         public GameNotificationsUI NotificationsUI { get; }
         public ActionBar ActionBar { get; }
@@ -38,9 +40,10 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? GameOverTriggered;
         public event VoidEventHandler? GameLeft;
 
-        private NavigationController entityStatusNavigation;
+        private NavigationController? entityStatusNavigation;
+        private NavigationController? oldEntityStatusNavigation;
 
-        private GameDebugOverlay debugOverlay;
+        private GameDebugOverlay? debugOverlay;
 
         public GameUI()
         {
@@ -101,6 +104,7 @@ namespace Bearded.TD.UI.Controls
             runner.HandleInput(inputState);
             runner.Update(args);
 
+            uiUpdater.Update(args);
             NotificationsUI.Update();
             GameStatusUI.Update();
             PlayerStatusUI.Update();
@@ -129,9 +133,29 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public void SetEntityStatusContainer(IControlParent controlParent)
+        public void SetOverlayControl(IControlParent overlay)
         {
             DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
+
+            var dependencies = new DependencyResolver();
+            dependencies.Add(Game);
+            dependencies.Add(uiUpdater);
+
+            var (models, views) = NavigationFactories.ForBoth()
+                .Add<BuildingStatusOverlay, IPlacedBuilding>(m => new BuildingStatusOverlayControl(m))
+                .ToDictionaries();
+
+            entityStatusNavigation = new NavigationController(
+                overlay,
+                dependencies,
+                models,
+                views);
+            entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
+        }
+
+        public void SetEntityStatusContainer(IControlParent controlParent)
+        {
+            DebugAssert.State.Satisfies(oldEntityStatusNavigation == null, "Can only initialize entity status UI once.");
 
             var dependencies = new DependencyResolver();
             dependencies.Add(Game);
@@ -141,12 +165,12 @@ namespace Bearded.TD.UI.Controls
                 .Add<WorkerStatusUI, Faction>(m => new WorkerStatusUIControl(m))
                 .ToDictionaries();
 
-            entityStatusNavigation = new NavigationController(
+            oldEntityStatusNavigation = new NavigationController(
                 controlParent,
                 dependencies,
                 models,
                 views);
-            entityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
+            oldEntityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
         }
 
         private void onObjectSelected(ISelectable selectedObject)
@@ -154,10 +178,11 @@ namespace Bearded.TD.UI.Controls
             switch (selectedObject)
             {
                 case IPlacedBuilding building:
-                    entityStatusNavigation.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
+                    oldEntityStatusNavigation!.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
+                    entityStatusNavigation!.ReplaceAll<BuildingStatusOverlay, IPlacedBuilding>(building);
                     break;
                 case Worker worker:
-                    entityStatusNavigation.ReplaceAll<WorkerStatusUI, Faction>(worker.Faction);
+                    oldEntityStatusNavigation!.ReplaceAll<WorkerStatusUI, Faction>(worker.Faction);
                     break;
                 default:
                     return;
@@ -168,7 +193,8 @@ namespace Bearded.TD.UI.Controls
 
         private void onObjectDeselected(ISelectable t)
         {
-            entityStatusNavigation.CloseAll();
+            oldEntityStatusNavigation?.CloseAll();
+            entityStatusNavigation?.CloseAll();
             EntityStatusClosed?.Invoke();
         }
 
