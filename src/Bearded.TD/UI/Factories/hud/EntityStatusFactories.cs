@@ -63,7 +63,7 @@ namespace Bearded.TD.UI.Factories
                     .DockFixedSizeToTop(TextFactories.Header(entityName!), Constants.UI.Text.HeaderLineHeight)
                     .DockFixedSizeToBottom(
                         ButtonFactories.Button(b => b.WithLabel("Close").WithOnClick(onCloseHandler)),
-                        Constants.UI.Text.LineHeight);
+                        Constants.UI.Button.Height);
 
                 if (textAttributes.Count > 0)
                 {
