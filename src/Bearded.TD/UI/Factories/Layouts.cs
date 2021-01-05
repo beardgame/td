@@ -26,7 +26,7 @@ namespace Bearded.TD.UI.Factories
         public static PristineLayout BuildLayout(this IControlParent parent) =>
             new PristineLayout(parent);
 
-        public static IColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
+        public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
 
         public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
             new ScrollableColumnLayout(parent);
@@ -194,10 +194,11 @@ namespace Bearded.TD.UI.Factories
             IColumnLayout Add(Control control, double height);
         }
 
-        private sealed class FixedColumnLayout : IColumnLayout
+        public sealed class FixedColumnLayout : IColumnLayout
         {
             private readonly IControlParent parent;
-            private double contentHeight;
+
+            public double Height { get; private set; }
 
             public FixedColumnLayout(IControlParent parent)
             {
@@ -206,8 +207,8 @@ namespace Bearded.TD.UI.Factories
 
             public IColumnLayout Add(Control control, double height)
             {
-                parent.Add(control.Anchor(a => a.Top(contentHeight, height)));
-                contentHeight += height;
+                parent.Add(control.Anchor(a => a.Top(Height, height)));
+                Height += height;
                 return this;
             }
         }
