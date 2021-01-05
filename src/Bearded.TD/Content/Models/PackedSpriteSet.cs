@@ -5,17 +5,23 @@ using System.Linq;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
+using amulware.Graphics.Vertices;
 using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Loading;
 
 namespace Bearded.TD.Content.Models
 {
+
     // TODO: this should probably be in Rendering.Loading and exposed via an interface, like ISprite
     sealed class PackedSpriteSet : IDisposable
     {
         private readonly ImmutableArray<TextureUniform> textures;
         private readonly IDictionary<string, ISprite> sprites;
-        private readonly Shader shader;
 
+        // TODO: extract these. sprite sets should only be the textures and templates for drawing sprites
+        // someone else links a sprite set up with a shader and vertex format to make it drawable
+        // see WithVertex() below for a start!
+        private readonly Shader shader;
         public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> MeshBuilder { get; }
 
         public PackedSpriteSet(
@@ -33,6 +39,13 @@ namespace Bearded.TD.Content.Models
         public ISprite GetSprite(string name)
         {
             return sprites[name];
+        }
+
+        public DrawableSpriteSet<TVertex, TVertexData> WithVertex<TVertex, TVertexData>(
+            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+            where TVertex : struct, IVertexData
+        {
+            return DrawableSpriteSet.Create(textures, sprites, shader, createVertex);
         }
 
         public IRenderer CreateRendererWithSettings(params IRenderSetting[] additionalSettings)

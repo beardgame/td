@@ -15,6 +15,7 @@ namespace Bearded.TD.Rendering.Loading
         private readonly Vector2 halfBaseSize;
 
         public Vector2 BaseSize { get; }
+        public UVRectangle UV => uv;
 
         public Sprite(IIndexedTrianglesMeshBuilder<UVColorVertex, ushort> meshBuilder, UVRectangle uv, Vector2 baseSize)
         {

@@ -1,40 +1,49 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using amulware.Graphics;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Pipelines;
 using amulware.Graphics.Pipelines.Context;
 using amulware.Graphics.Rendering;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.Shapes;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
+using Bearded.Utilities.Linq;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static Bearded.TD.Game.Simulation.World.TileType;
 using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 using Rectangle = System.Drawing.Rectangle;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
+    using static Pipeline;
+    using static Pipeline<int>;
+
     sealed class HeightmapRenderer
     {
+        private readonly int splatSeedOffset;
+
         //TODO: organise fields
         private readonly int tileMapWidth;
         private float heightMapPixelsPerTile;
         private readonly Tiles.Level level;
         private readonly GeometryLayer geometryLayer;
+        private readonly PassabilityLayer passabilityLayer;
         private readonly float heightMapWorldSize;
         public FloatUniform HeightmapRadiusUniform { get; } = new("heightmapRadius");
         public FloatUniform HeightmapPixelSizeUVUniform { get; } = new("heightmapPixelSizeUV");
         private readonly PipelineTexture heightmap;
         private readonly PipelineRenderTarget heightmapTarget; // H
-        private readonly PackedSpriteSet heightmapSplats;
+        private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> heightmapSplats;
         private readonly IRenderer heightMapSplatRenderer;
         private int heightMapResolution;
         private bool isHeightmapGenerated;
@@ -46,30 +55,32 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public HeightmapRenderer(GameInstance game, RenderContext context)
         {
+            splatSeedOffset = game.GameSettings.Seed;
             geometryLayer = game.State.GeometryLayer;
+            passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
             level = game.State.Level;
             tileMapWidth = level.Radius * 2 + 1;
             heightMapWorldSize = tileMapWidth * Constants.Game.World.HexagonWidth;
 
-            heightmap = Pipeline.Texture(PixelInternalFormat.R16f, setup: t =>
+            heightmap = Texture(PixelInternalFormat.R16f, setup: t =>
             {
                 t.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
                 t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
             });
 
-            heightmapTarget = Pipeline.RenderTargetWithColors(heightmap);
+            heightmapTarget = RenderTargetWithColors(heightmap);
 
             renderHeightmapAtResolution =
-                Pipeline<int>.InOrder(
-                    Pipeline<int>.Resize(r => new Vector2i(r, r), heightmap),
-                    Pipeline<int>.WithContext(c => c
+                InOrder(
+                    Resize(r => new Vector2i(r, r), heightmap),
+                    WithContext(c => c
                             .BindRenderTarget(heightmapTarget)
                             .SetViewport(r => new Rectangle(0, 0, r, r))
                             .SetBlendMode(BlendMode.Premultiplied),
-                        Pipeline<int>.InOrder(
-                            Pipeline<int>.ClearColor(0, 0, 0, 0),
-                            Pipeline<int>.Do(_ => renderHeightmapInBatches())
+                        InOrder(
+                            ClearColor(0, 0, 0, 0),
+                            Do(renderHeightmap)
                         )
                     )
                 );
@@ -97,7 +108,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
             return new(name, unit, heightmap.Texture);
         }
 
-        public void Resize(float scale)
+        public void SetScale(float scale)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (heightMapPixelsPerTile == scale)
@@ -123,17 +134,25 @@ namespace Bearded.TD.Rendering.Deferred.Level
             heightmap.Dispose();
         }
 
-        private static PackedSpriteSet findHeightmapSplats(GameInstance game)
+        private static DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> findHeightmapSplats(GameInstance game)
         {
-            return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites;
+            return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites
+                .WithVertex<HeightmapSplatVertex, (float MinH, float MaxH)>(
+                    (position, uv, data) => new HeightmapSplatVertex(position.Xy, uv, data.MinH, data.MaxH)
+                    );
+        }
+
+        public void TileChanged(Tile tile)
+        {
+            // TODO: redraw only tiles that have changed instead of everything
+
+            isHeightmapGenerated = false;
         }
 
         public void EnsureHeightmapIsUpToDate()
         {
             if (isHeightmapGenerated)
             {
-                // TODO: redraw tiles that have changed if any
-
                 return;
             }
 
@@ -142,23 +161,21 @@ namespace Bearded.TD.Rendering.Deferred.Level
             isHeightmapGenerated = true;
         }
 
-        private void renderHeightmapInBatches()
+        private void renderHeightmap()
         {
-            // TODO:
-            // - implement hard edge base layer using solid geometry and no textures
-            //   - core shader + simple coloured vertex
-            // - create simple smooth and stepped transition splat sprites
-            // - use splats to render all tile transitions (try different orders)
-            // - make sure cliffs read easily (do we have to turn the grid by 30 degrees to line up with tile edges?)
-            // - make it prettier (try some more detailed sprites, add some variations, try different sprites for different transition types)
+            renderTileBaseHeights();
+            renderTransitions();
+        }
 
+        private void renderTileBaseHeights()
+        {
             var allTiles = Tilemap.EnumerateTilemapWith(level.Radius).Select(t => (Tile: t, Info: geometryLayer[t]));
 
             var count = 0;
             foreach (var (tile, info) in allTiles)
             {
                 var p = Tiles.Level.GetPosition(tile).NumericValue
-                    .WithZ(info.DrawInfo.Height.NumericValue);
+                    .WithZ(tileHeight(info));
 
                 heightmapBaseDrawer.FillCircle(p, Constants.Game.World.HexagonSide, default, 6);
 
@@ -171,8 +188,89 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     count = 0;
                 }
             }
+
             heightmapBaseRenderer.Render();
             heightmapBaseMeshBuilder.Clear();
         }
+
+        private static readonly (Direction Direction, Vector2 Offset, Vector2 UnitX, Vector2 UnitY)[] transitionDirections =
+            new []{
+                Direction.Right,
+                Direction.UpRight,
+                Direction.UpLeft,
+            }.Select(d => (
+                Direction: d,
+                Offset: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
+                UnitX: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
+                UnitY: d.Vector().PerpendicularLeft * Constants.Game.World.HexagonDiameter * 0.5f
+                )).ToArray();
+
+        private void renderTransitions()
+        {
+            var smoothTransitions = getSpritesWithPrefix("transition-smooth");
+            var harshTransitions = getSpritesWithPrefix("transition-harsh");
+            var floorWallTransitions = getSpritesWithPrefix("transition-floor-wall");
+            var creviceFloorTransitions = getSpritesWithPrefix("transition-crevice-floor");
+
+            var allTiles = Tilemap.EnumerateTilemapWith(level.Radius).Select(t => (Tile: t, Info: geometryLayer[t]));
+
+            foreach (var (tile, info) in allTiles)
+            {
+                var p0 = Tiles.Level.GetPosition(tile);
+                var passableDirections = passabilityLayer[tile].PassableDirections;
+                var height = tileHeight(info);
+
+                foreach (var (direction, offset, unitX, unitY) in transitionDirections)
+                {
+                    var random = new Random((tile.X + tile.Y * level.Radius * 3) * 3 + (int)direction + splatSeedOffset);
+
+                    var neighbour = tile.Neighbour(direction);
+
+                    if (!level.IsValid(neighbour))
+                        continue;
+
+                    var neighbourInfo = geometryLayer[neighbour];
+                    var neighbourHeight = tileHeight(neighbourInfo);
+
+                    var transitions = (info.Type, neighbourInfo.Type) switch
+                    {
+                        (Floor, Floor) when passableDirections.Includes(direction) => smoothTransitions,
+                        (Floor, Floor) => harshTransitions,
+                        (Wall, Wall) => smoothTransitions,
+                        (Crevice, Crevice) => smoothTransitions,
+                        (Wall, _) => floorWallTransitions,
+                        (_, Wall) => floorWallTransitions,
+                        (Crevice, Floor) => creviceFloorTransitions,
+                        (Floor, Crevice) => creviceFloorTransitions,
+                        _ => throw new InvalidOperationException("Encountered unknown tile type.")
+                    };
+
+                    var splat = transitions.RandomElement(random);
+
+                    var splatCenter = (p0.NumericValue + offset).WithZ(0);
+
+                    var invertTransition = neighbourHeight < height;
+                    var (uX, heights) = invertTransition
+                        ? (-unitX, (neighbourHeight, height))
+                        : (unitX, (height, neighbourHeight));
+                    var uY = unitY * random.NextSign();
+
+                    splat.Draw(splatCenter, uX, uY, heights);
+                }
+            }
+
+            heightMapSplatRenderer.Render();
+            heightmapSplats.Clear();
+
+            List<DrawableSprite<HeightmapSplatVertex, (float, float)>> getSpritesWithPrefix(string prefix)
+                => heightmapSplats.AllSprites.Where(s => s.Name.StartsWith(prefix)).Select(s => s.Sprite).ToList();
+        }
+
+        private static float tileHeight(DrawableTileGeometry info) =>
+            info.Type switch
+            {
+                Wall => Constants.Rendering.WallHeight,
+                _ => info.DrawInfo.Height.NumericValue
+            };
     }
 }

@@ -200,7 +200,7 @@ void main()
     vec3 floorColor, floorNormal;
     getFloorColor(fPosition, fNormal, floorColor, floorNormal);
     
-    float flatness = smoothstep(0.6, 0.9, fNormal.z);
+    float flatness = smoothstep(0.75, 1, fNormal.z);
 
     vec3 diffuse, normal;
 

@@ -23,7 +23,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public void HandleEvent(TileDrawInfoChanged @event)
         {
-            // TODO: mark tile to be redrawn (call down to heightmap renderer)
+            heightmapRenderer.TileChanged(@event.Tile);
         }
 
         public void PrepareForRender()
@@ -42,7 +42,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             var settings = UserSettings.Instance.Graphics;
 
-            heightmapRenderer.Resize(settings.TerrainHeightmapResolution);
+            heightmapRenderer.SetScale(settings.TerrainHeightmapResolution);
             heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
         }
 
