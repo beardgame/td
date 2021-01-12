@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using amulware.Graphics;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
@@ -68,7 +67,7 @@ namespace Bearded.TD.UI.Controls
             upgradeSelection.IsVisible = false;
 
             updateBuildingAttributes();
-            upgradeOverview.SetBuilding(model.Building as Building, model.CanPlayerUpgradeBuilding);
+            upgradeOverview.SetUpgrades(model.BuildingUpgrades, model.CanPlayerUpgradeBuilding);
             onBuildingUpdated();
             onUpgradesUpdated();
         }
@@ -76,11 +75,11 @@ namespace Bearded.TD.UI.Controls
         private void onBuildingUpdated()
         {
             updateHealth();
-            upgradeOverview.UpdateAppliedUpgrades();
         }
 
         private void onUpgradesUpdated()
         {
+            upgradeOverview.UpdateAppliedUpgrades(true);
             upgradeSelection.SetUpgrades(model.AvailableUpgrades);
         }
 
@@ -102,8 +101,8 @@ namespace Bearded.TD.UI.Controls
             private readonly ListControl list;
             private UpgradeOverviewItems listItems;
 
-            private Building? building;
-            private ImmutableArray<IUpgradeBlueprint> appliedUpgrades = ImmutableArray<IUpgradeBlueprint>.Empty;
+            private IReadOnlyCollection<BuildingStatusOverlay.BuildingUpgradeModel> upgrades
+                = new List<BuildingStatusOverlay.BuildingUpgradeModel>().AsReadOnly();
             private bool canUpgrade;
 
             public event VoidEventHandler? ChooseUpgradeButtonClicked;
@@ -111,31 +110,31 @@ namespace Bearded.TD.UI.Controls
             public UpgradeOverviewControl()
             {
                 list = new ListControl(new ViewportClippingLayerControl());
-                listItems = new UpgradeOverviewItems(appliedUpgrades, canUpgrade);
+                listItems = new UpgradeOverviewItems(upgrades.ToImmutableArray(), canUpgrade);
                 listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
                 Add(list);
             }
 
-            public void SetBuilding(Building? building, bool canUpgrade)
+            public void SetUpgrades(
+                IReadOnlyCollection<BuildingStatusOverlay.BuildingUpgradeModel> upgrades, bool canUpgrade)
             {
-                this.building = building;
+                this.upgrades = upgrades;
                 this.canUpgrade = canUpgrade;
                 UpdateAppliedUpgrades(true);
             }
 
             public void UpdateAppliedUpgrades(bool forceReload = false)
             {
-                var oldAppliedUpgradesCount = appliedUpgrades.Length;
-                appliedUpgrades =
-                    building?.AppliedUpgrades.ToImmutableArray() ?? ImmutableArray<IUpgradeBlueprint>.Empty;
+                var newUpgrades = upgrades.ToImmutableArray();
 
-                if (oldAppliedUpgradesCount == appliedUpgrades.Length && !forceReload)
+                if (listItems.ItemCount - 1 == newUpgrades.Length && !forceReload)
                 {
                     return;
                 }
 
                 listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
-                listItems = new UpgradeOverviewItems(appliedUpgrades, canUpgrade);
+                listItems.DestroyAll();
+                listItems = new UpgradeOverviewItems(newUpgrades, canUpgrade);
                 listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
                 list.ItemSource = listItems;
             }
@@ -148,14 +147,16 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class UpgradeOverviewItems : IListItemSource
         {
-            private readonly ImmutableArray<IUpgradeBlueprint> appliedUpgrades;
+            private readonly Dictionary<int, Binding<double>> progressBindings = new();
+            private readonly ImmutableArray<BuildingStatusOverlay.BuildingUpgradeModel> appliedUpgrades;
             private readonly bool canUpgrade;
 
             public int ItemCount => appliedUpgrades.Length + 1;
 
             public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
-            public UpgradeOverviewItems(ImmutableArray<IUpgradeBlueprint> upgrades, bool canUpgrade)
+            public UpgradeOverviewItems(
+                ImmutableArray<BuildingStatusOverlay.BuildingUpgradeModel> upgrades, bool canUpgrade)
             {
                 appliedUpgrades = upgrades;
                 this.canUpgrade = canUpgrade;
@@ -170,9 +171,7 @@ namespace Bearded.TD.UI.Controls
                     // TODO: it should be possible to queue upgrades for building placeholders
                     return ButtonFactories.Button(b =>
                     {
-                        b
-                            .WithLabel("Choose upgrade")
-                            .WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
+                        b.WithLabel("Choose upgrade").WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
                         if (!canUpgrade)
                         {
                             b.MakeDisabled();
@@ -181,12 +180,45 @@ namespace Bearded.TD.UI.Controls
                     });
                 }
 
-                // TODO: show queued upgrades
-
-                return ButtonFactories.Button(b => b.WithLabel(appliedUpgrades[index].Name).MakeDisabled());
+                var model = appliedUpgrades[index];
+                var progressBinding = model.IsFinished ? null : Binding.Create(model.Progress);
+                if (progressBinding != null)
+                {
+                    model.ProgressUpdated += progressBinding.SetFromSource;
+                    progressBindings[index] = progressBinding;
+                }
+                return ButtonFactories.Button(b =>
+                {
+                    b.WithLabel(model.Blueprint.Name);
+                    if (progressBinding == null)
+                    {
+                        b.MakeDisabled();
+                    }
+                    else
+                    {
+                        b.WithProgressBar(progressBinding);
+                    }
+                    return b;
+                });
             }
 
-            public void DestroyItemControlAt(int index, Control control) { }
+            public void DestroyAll()
+            {
+                foreach (var (i, binding) in progressBindings)
+                {
+                    appliedUpgrades[i].ProgressUpdated -= binding.SetFromSource;
+                }
+                progressBindings.Clear();
+            }
+
+            public void DestroyItemControlAt(int index, Control control)
+            {
+                if (progressBindings.TryGetValue(index, out var binding))
+                {
+                    appliedUpgrades[index].ProgressUpdated -= binding.SetFromSource;
+                    progressBindings.Remove(index);
+                }
+            }
         }
 
         private sealed class UpgradeSelectionControl : CompositeControl

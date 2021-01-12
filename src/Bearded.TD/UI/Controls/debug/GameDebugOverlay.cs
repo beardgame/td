@@ -13,10 +13,10 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls
 {
-    class GameDebugOverlay : NavigationNode<Void>
+    sealed class GameDebugOverlay : NavigationNode<Void>
     {
-        private Logger logger;
-        private readonly List<Item> items = new List<Item>();
+        private Logger? logger;
+        private readonly List<Item> items = new();
 
         public ReadOnlyCollection<Item> Items { get; }
 
@@ -60,11 +60,11 @@ namespace Bearded.TD.UI.Controls
                             return (Item)null;
 
                         if (field.FieldType == typeof(bool))
-                            return new BoolSetting(field.Name, logger);
+                            return new BoolSetting(field.Name, logger!);
 
                         if (field.GetCustomAttributes(typeof(SettingOptionsAttribute), false).FirstOrDefault()
                             is SettingOptionsAttribute attribute)
-                            return new OptionsSetting(field.Name, attribute.Options, logger);
+                            return new OptionsSetting(field.Name, attribute.Options, logger!);
 
                         return null;
                     }
@@ -76,14 +76,14 @@ namespace Bearded.TD.UI.Controls
 
             void addCommands(params string[] commands)
             {
-                items.AddRange(commands.Select(c => new Command(c, logger)));
+                items.AddRange(commands.Select(c => new Command(c, logger!)));
             }
         }
 
         public void Close(Button.ClickEventArgs _)
         {
             UserSettings.Instance.Debug.GameDebugScreen = false;
-            UserSettings.Save(logger);
+            UserSettings.Save(logger!);
         }
 
         public override void Terminate()
@@ -97,7 +97,7 @@ namespace Bearded.TD.UI.Controls
         {
             protected void RunCommand(string command, Logger logger)
             {
-                logger.Debug.Log($"Debug UI runs: {command}");
+                logger.Debug!.Log($"Debug UI runs: {command}");
                 var splitCommand = command.Split(' ');
                 ConsoleCommands.TryRun(splitCommand[0], logger,
                     new CommandParameters(splitCommand.Skip(1).ToArray()));
@@ -141,7 +141,7 @@ namespace Bearded.TD.UI.Controls
             public string Name => setting;
             public T Value { get; }
 
-            public Setting(string setting, Logger logger)
+            protected Setting(string setting, Logger logger)
             {
                 this.setting = setting;
                 this.logger = logger;
@@ -149,12 +149,12 @@ namespace Bearded.TD.UI.Controls
                 Value = (T)
                     typeof(UserSettings.DebugSettings)
                         .GetField(setting)
-                        .GetValue(UserSettings.Instance.Debug);
+                        ?.GetValue(UserSettings.Instance.Debug);
             }
 
             protected void Set(T value)
             {
-                RunCommand($"setting debug.{setting} {value.ToString().ToLower()}", logger);
+                RunCommand($"setting debug.{setting} {value?.ToString()?.ToLower()}", logger);
             }
         }
 

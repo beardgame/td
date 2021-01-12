@@ -45,8 +45,13 @@ namespace Bearded.TD.UI.Controls
         {
             minimized = !minimized;
 
-            var height = minimized ? 4 + 16 + 4 : 400;
-            this.Anchor(a => a.Top(10, height).Left(200, 200));
+            const int expandedHeight = 400;
+            const int minimizedHeight = 4 + 16 + 4;
+
+            var height = minimized ? minimizedHeight : expandedHeight;
+            this.Anchor(a => a
+                .Bottom(margin: 30 + expandedHeight - height, height: height)
+                .Right(width: 200));
         }
 
         protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)

@@ -42,12 +42,6 @@ namespace Bearded.TD.UI.Controls
                     .Right(width: 200)
                     .Below(gameStatusControl, height: 100))
                 .BindIsVisible(isGameRunning));
-            Add(new CompositeControl { IsVisible = false }
-                .Anchor(a => a
-                    .Right(width: 200)
-                    .Bottom(height: 320))
-                .Subscribe(gameUI.SetEntityStatusContainer)
-                .BindIsVisible(isEntityStatusOpen));
 
             gameUI.EntityStatusOpened += _ => isEntityStatusOpen.SetFromSource(true);
             gameUI.EntityStatusClosed += () => isEntityStatusOpen.SetFromSource(false);
