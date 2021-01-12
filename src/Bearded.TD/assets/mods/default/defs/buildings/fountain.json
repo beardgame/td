@@ -4,6 +4,7 @@
   "footprint" : "single",
   "cost" : 5,
   "components" : [
+    { "id" : "foundation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 200 } },
     {
       "id" : "waterGenerator",

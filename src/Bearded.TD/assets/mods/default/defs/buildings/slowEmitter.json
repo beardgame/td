@@ -4,6 +4,7 @@
   "footprint" : "triangle",
   "cost" : 150,
   "components" : [
+    { "id" : "foundation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 250 } },
     {
       "id" : "statusEffectEmitter",
