@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

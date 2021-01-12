@@ -15,18 +15,25 @@ using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.UI.Controls
 {
+    [UsedImplicitly]
     sealed class BuildingStatusOverlay
         : UpdateableNavigationNode<IPlacedBuilding>,
+            IListener<BuildingUpgradeFinished>,
             IListener<BuildingUpgradeQueued>,
             IListener<UpgradeTechnologyUnlocked>
     {
         private GameInstance? game;
         private Faction? playerFaction;
 
+        private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
+        private readonly List<(BuildingUpgradeTask Task, BuildingUpgradeModel Model)> monitoredBuildingUpgrades = new();
+
         public IPlacedBuilding Building { get; private set; } = null!;
+        public IReadOnlyCollection<BuildingUpgradeModel> BuildingUpgrades { get; }
 
         // TODO: invoke this event when the placeholder is replaced by the building instead of closing overlay
         public event VoidEventHandler? BuildingSet;
@@ -68,6 +75,10 @@ namespace Bearded.TD.UI.Controls
                 return building.GetApplicableUpgrades().WhereNot(upgradesInProgress.Contains);
             }
         }
+        public BuildingStatusOverlay()
+        {
+            BuildingUpgrades = buildingUpgrades.AsReadOnly();
+        }
 
         protected override void Initialize(DependencyResolver dependencies, IPlacedBuilding building)
         {
@@ -78,12 +89,37 @@ namespace Bearded.TD.UI.Controls
             game = dependencies.Resolve<GameInstance>();
             playerFaction = game.Me.Faction;
 
+            game.Meta.Events.Subscribe<BuildingUpgradeFinished>(this);
             game.Meta.Events.Subscribe<BuildingUpgradeQueued>(this);
             game.Meta.Events.Subscribe<UpgradeTechnologyUnlocked>(this);
+
+            if (Building is not Building builtBuilding)
+            {
+                return;
+            }
+
+            var appliedUpgrades = builtBuilding.AppliedUpgrades;
+            var upgradesInProgress = builtBuilding.UpgradesInProgress;
+
+            var finishedUpgrades = appliedUpgrades.WhereNot(u => upgradesInProgress.Any(t => t.Upgrade == u));
+
+            foreach (var u in finishedUpgrades)
+            {
+                buildingUpgrades.Add(new BuildingUpgradeModel(u, 1));
+            }
+            foreach (var task in upgradesInProgress)
+            {
+                addAndMonitorUpgrade(task);
+            }
         }
 
         public override void Update(UpdateEventArgs args)
         {
+            foreach (var (task, model) in monitoredBuildingUpgrades)
+            {
+                model.Progress = task.ProgressPercentage;
+            }
+
             BuildingUpdated?.Invoke();
         }
 
@@ -92,12 +128,37 @@ namespace Bearded.TD.UI.Controls
             UpgradesUpdated?.Invoke();
         }
 
+        public void HandleEvent(BuildingUpgradeFinished @event)
+        {
+            if (@event.Building != Building)
+            {
+                return;
+            }
+
+            var i = monitoredBuildingUpgrades.FindIndex(tuple => tuple.Task.Upgrade == @event.Upgrade);
+            if (i == -1)
+            {
+#if DEBUG
+                throw new InvalidOperationException();
+#else
+                    return;
+#endif
+            }
+
+            monitoredBuildingUpgrades[i].Model.Progress = 1;
+            monitoredBuildingUpgrades.RemoveAt(i);
+            UpgradesUpdated?.Invoke();
+        }
+
         public void HandleEvent(BuildingUpgradeQueued @event)
         {
-            if (@event.Building == Building)
+            if (@event.Building != Building)
             {
-                UpgradesUpdated?.Invoke();
+                return;
             }
+
+            addAndMonitorUpgrade(@event.Task);
+            UpgradesUpdated?.Invoke();
         }
 
         public void QueueUpgrade(IUpgradeBlueprint upgrade)
@@ -110,10 +171,18 @@ namespace Bearded.TD.UI.Controls
             game.Request(UpgradeBuilding.Request, building, upgrade);
         }
 
+        private void addAndMonitorUpgrade(BuildingUpgradeTask task)
+        {
+            var model = new BuildingUpgradeModel(task.Upgrade, task.ProgressPercentage);
+            buildingUpgrades.Add(model);
+            monitoredBuildingUpgrades.Add((task, model));
+        }
+
         public override void Terminate()
         {
             Building.Deleting -= Close;
 
+            game?.Meta.Events.Unsubscribe<BuildingUpgradeFinished>(this);
             game?.Meta.Events.Unsubscribe<BuildingUpgradeQueued>(this);
             game?.Meta.Events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
 
@@ -123,6 +192,39 @@ namespace Bearded.TD.UI.Controls
         public void Close()
         {
             Navigation.Exit();
+        }
+
+        public sealed class BuildingUpgradeModel
+        {
+            public IUpgradeBlueprint Blueprint { get; }
+
+            private double progress;
+
+            public double Progress
+            {
+                get => progress;
+                set
+                {
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    if (progress == value)
+                    {
+                        return;
+                    }
+
+                    progress = value;
+                    ProgressUpdated?.Invoke(value);
+                }
+            }
+
+            public bool IsFinished => progress >= 1;
+
+            public event GenericEventHandler<double>? ProgressUpdated;
+
+            public BuildingUpgradeModel(IUpgradeBlueprint blueprint, double progress)
+            {
+                Blueprint = blueprint;
+                this.progress = progress;
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Upgrades;
 
-namespace Bearded.TD.Game.Simulation.Buildings
+namespace Bearded.TD.Game.Simulation.Upgrades
 {
     readonly struct BuildingUpgradeFinished : IGlobalEvent
     {

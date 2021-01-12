@@ -2,6 +2,7 @@ using System;
 using amulware.Graphics;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI.Button;
@@ -33,6 +34,7 @@ namespace Bearded.TD.UI.Factories
         {
             private Func<string>? labelProvider;
             private (int CostAmount, Color Color)? cost;
+            private (Binding<double> Progress, Color? Color)? progressBar;
             private VoidEventHandler? onClick;
             private bool isDisabled;
 
@@ -57,6 +59,12 @@ namespace Bearded.TD.UI.Factories
             public Builder WithTechCost(int amount)
             {
                 cost = (amount, Constants.Game.GameUI.TechPointsColor);
+                return this;
+            }
+
+            public Builder WithProgressBar(Binding<double> progress, Color? color = null)
+            {
+                progressBar = (progress, color);
                 return this;
             }
 
@@ -93,7 +101,20 @@ namespace Bearded.TD.UI.Factories
                 }
 
                 button.Add(new DynamicBorder(colorProvider));
-                button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
+
+                if (progressBar.HasValue)
+                {
+                    var color = progressBar.Value.Color ?? Color.White * .25f;
+                    var barControl = new BackgroundBox(color)
+                        .Anchor(a => a.Right(relativePercentage: progressBar.Value.Progress.Value));
+                    button.Add(barControl);
+                    progressBar.Value.Progress.SourceUpdated += progress =>
+                        barControl.Anchor(a => a.Left(relativePercentage: progress));
+                }
+                else
+                {
+                    button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
+                }
 
                 if (onClick != null)
                 {
