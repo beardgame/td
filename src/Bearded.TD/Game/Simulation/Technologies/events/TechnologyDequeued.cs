@@ -2,7 +2,7 @@ using Bearded.TD.Game.Simulation.Events;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    struct TechnologyDequeued : IGlobalEvent
+    readonly struct TechnologyDequeued : IGlobalEvent
     {
         public ITechnologyBlueprint Technology { get; }
 

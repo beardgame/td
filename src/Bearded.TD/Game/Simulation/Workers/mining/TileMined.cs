@@ -4,7 +4,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    struct TileMined : IGlobalEvent
+    readonly struct TileMined : IGlobalEvent
     {
         public Faction Faction { get; }
         public Tile Tile { get; }

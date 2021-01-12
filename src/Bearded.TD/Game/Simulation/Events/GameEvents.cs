@@ -1,34 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Bearded.TD.Game.Simulation.Events
 {
     abstract class GameEvents<TEventInterface> where TEventInterface : IEvent
     {
-        private readonly Dictionary<Type, object> listenerLists = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> listenerLists = new();
 
         public void Subscribe<TEvent>(IListener<TEvent> listener)
-            where TEvent : TEventInterface
+            where TEvent : struct, TEventInterface
         {
             getListeners<TEvent>().Add(listener);
         }
 
         public void Unsubscribe<TEvent>(IListener<TEvent> listener)
-            where TEvent : TEventInterface
+            where TEvent : struct, TEventInterface
         {
             if (hasListeners<TEvent>(out var listeners))
                 listeners.Remove(listener);
         }
 
         public void Send<TEvent>(TEvent @event)
-            where TEvent : TEventInterface
+            where TEvent : struct, TEventInterface
         {
             if (hasListeners<TEvent>(out var listeners))
                 send(@event, listeners);
         }
 
-        private static void send<TEvent>(TEvent @event, List<IListener<TEvent>> listeners)
-            where TEvent : TEventInterface
+        private static void send<TEvent>(TEvent @event, IEnumerable<IListener<TEvent>> listeners)
+            where TEvent : struct, TEventInterface
         {
             foreach (var listener in listeners)
             {
@@ -37,10 +38,12 @@ namespace Bearded.TD.Game.Simulation.Events
         }
 
         private List<IListener<TEvent>> getListeners<TEvent>()
-            where TEvent : TEventInterface
+            where TEvent : struct, TEventInterface
         {
             if (hasListeners(out List<IListener<TEvent>> listeners))
+            {
                 return listeners;
+            }
 
             listeners = new List<IListener<TEvent>>();
             listenerLists.Add(typeof(TEvent), listeners);
@@ -48,8 +51,8 @@ namespace Bearded.TD.Game.Simulation.Events
             return listeners;
         }
 
-        private bool hasListeners<TEvent>(out List<IListener<TEvent>> listeners)
-            where TEvent : TEventInterface
+        private bool hasListeners<TEvent>([NotNullWhen(returnValue: true)] out List<IListener<TEvent>>? listeners)
+            where TEvent : struct, TEventInterface
         {
             if (listenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
             {

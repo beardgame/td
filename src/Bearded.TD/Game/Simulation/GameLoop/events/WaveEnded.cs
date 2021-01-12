@@ -4,7 +4,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameLoop
 {
-    sealed record WaveEnded : IGlobalEvent
+    readonly struct WaveEnded : IGlobalEvent
     {
         public Id<WaveScript> WaveId { get; }
         public Faction TargetFaction { get; }

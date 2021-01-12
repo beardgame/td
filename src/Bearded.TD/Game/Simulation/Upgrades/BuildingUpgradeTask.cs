@@ -34,6 +34,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades
                 Building.Faction.Resources.ReserveResources(new ResourceManager.ResourceRequest(Upgrade.Cost)),
                 Constants.Game.Worker.UpgradeSpeed);
             Building.RegisterBuildingUpgradeTask(this);
+            Game.Meta.Events.Send(new BuildingUpgradeQueued(Building, this));
         }
 
         protected override void OnDelete()

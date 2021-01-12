@@ -2,7 +2,7 @@ using Bearded.TD.Game.Simulation.Events;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    struct BuildingConstructionFinished : IGlobalEvent
+    readonly struct BuildingConstructionFinished : IGlobalEvent
     {
         public Building Building { get; }
 

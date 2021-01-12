@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using amulware.Graphics;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -7,6 +8,7 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls
 {
@@ -15,6 +17,7 @@ namespace Bearded.TD.UI.Controls
         private readonly BuildingStatusOverlay model;
 
         private readonly UpgradeOverviewControl upgradeOverview = new();
+        private readonly UpgradeSelectionControl upgradeSelection = new();
 
         private readonly Binding<string> name = new();
         private readonly Binding<string> ownerName = new();
@@ -33,32 +36,52 @@ namespace Bearded.TD.UI.Controls
                     .AddTextAttribute("Owned by", ownerName, ownerColor)
                     .AddTextAttribute("Health", health)
                     .WithContent(upgradeOverview)
-                    .WithCloseAction(model.Close));
+                    .WithCloseAction(model.Close))
+                .DockFixedSizeToLeft(upgradeSelection, Constants.UI.Menu.Width);
 
             onBuildingSet();
 
             model.BuildingSet += onBuildingSet;
             model.BuildingUpdated += onBuildingUpdated;
+            model.UpgradesUpdated += onUpgradesUpdated;
 
             upgradeOverview.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
+            upgradeSelection.UpgradeSelected += onUpgradeSelected;
         }
 
         private void onChooseUpgradeButtonClicked()
         {
-            throw new System.NotImplementedException();
+            State.Satisfies(model.CanPlayerUpgradeBuilding);
+
+            upgradeSelection.IsVisible = !upgradeSelection.IsVisible;
+        }
+
+        private void onUpgradeSelected(IUpgradeBlueprint upgrade)
+        {
+            State.Satisfies(model.CanPlayerUpgradeBuilding);
+
+            model.QueueUpgrade(upgrade);
         }
 
         private void onBuildingSet()
         {
+            upgradeSelection.IsVisible = false;
+
             updateBuildingAttributes();
-            upgradeOverview.SetBuilding(model.Building as Building);
+            upgradeOverview.SetBuilding(model.Building as Building, model.CanPlayerUpgradeBuilding);
             onBuildingUpdated();
+            onUpgradesUpdated();
         }
 
         private void onBuildingUpdated()
         {
             updateHealth();
             upgradeOverview.UpdateAppliedUpgrades();
+        }
+
+        private void onUpgradesUpdated()
+        {
+            upgradeSelection.SetUpgrades(model.AvailableUpgrades);
         }
 
         private void updateBuildingAttributes()
@@ -81,20 +104,22 @@ namespace Bearded.TD.UI.Controls
 
             private Building? building;
             private ImmutableArray<IUpgradeBlueprint> appliedUpgrades = ImmutableArray<IUpgradeBlueprint>.Empty;
+            private bool canUpgrade;
 
             public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
             public UpgradeOverviewControl()
             {
                 list = new ListControl(new ViewportClippingLayerControl());
-                listItems = new UpgradeOverviewItems(appliedUpgrades);
+                listItems = new UpgradeOverviewItems(appliedUpgrades, canUpgrade);
                 listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
                 Add(list);
             }
 
-            public void SetBuilding(Building? building)
+            public void SetBuilding(Building? building, bool canUpgrade)
             {
                 this.building = building;
+                this.canUpgrade = canUpgrade;
                 UpdateAppliedUpgrades(true);
             }
 
@@ -110,7 +135,7 @@ namespace Bearded.TD.UI.Controls
                 }
 
                 listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
-                listItems = new UpgradeOverviewItems(appliedUpgrades);
+                listItems = new UpgradeOverviewItems(appliedUpgrades, canUpgrade);
                 listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
                 list.ItemSource = listItems;
             }
@@ -124,14 +149,16 @@ namespace Bearded.TD.UI.Controls
         private sealed class UpgradeOverviewItems : IListItemSource
         {
             private readonly ImmutableArray<IUpgradeBlueprint> appliedUpgrades;
+            private readonly bool canUpgrade;
 
             public int ItemCount => appliedUpgrades.Length + 1;
 
             public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
-            public UpgradeOverviewItems(ImmutableArray<IUpgradeBlueprint> upgrades)
+            public UpgradeOverviewItems(ImmutableArray<IUpgradeBlueprint> upgrades, bool canUpgrade)
             {
                 appliedUpgrades = upgrades;
+                this.canUpgrade = canUpgrade;
             }
 
             public double HeightOfItemAt(int index) => Constants.UI.Button.Height;
@@ -140,11 +167,18 @@ namespace Bearded.TD.UI.Controls
             {
                 if (index == appliedUpgrades.Length)
                 {
-                    // TODO: don't show button if you can't upgrade this building
                     // TODO: it should be possible to queue upgrades for building placeholders
-                    return ButtonFactories.Button(b => b
-                        .WithLabel("Choose upgrade")
-                        .WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke()));
+                    return ButtonFactories.Button(b =>
+                    {
+                        b
+                            .WithLabel("Choose upgrade")
+                            .WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
+                        if (!canUpgrade)
+                        {
+                            b.MakeDisabled();
+                        }
+                        return b;
+                    });
                 }
 
                 // TODO: show queued upgrades
@@ -157,11 +191,35 @@ namespace Bearded.TD.UI.Controls
 
         private sealed class UpgradeSelectionControl : CompositeControl
         {
-            // TODO: figure out how to have standardized buttons with a cost
+            private readonly CompositeControl buttonContainer = new();
+
+            public event GenericEventHandler<IUpgradeBlueprint>? UpgradeSelected;
 
             public UpgradeSelectionControl()
             {
+                Add(new BackgroundBox());
+                this.BuildLayout()
+                    .ForContentBox()
+                    .FillContent(buttonContainer);
+            }
 
+            public void SetUpgrades(IEnumerable<IUpgradeBlueprint> upgrades)
+            {
+                buttonContainer.RemoveAllChildren();
+
+                var layout = buttonContainer.BuildScrollableColumn();
+                foreach (var u in upgrades)
+                {
+                    layout.Add(
+                        ButtonFactories.Button(
+                            b => b.WithLabel(u.Name).WithResourceCost(u.Cost).WithOnClick(() => onUpgradeClicked(u))),
+                        Constants.UI.Button.Height);
+                }
+            }
+
+            private void onUpgradeClicked(IUpgradeBlueprint upgrade)
+            {
+                UpgradeSelected?.Invoke(upgrade);
             }
         }
     }

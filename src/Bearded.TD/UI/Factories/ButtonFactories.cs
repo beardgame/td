@@ -1,5 +1,6 @@
 using System;
 using amulware.Graphics;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -31,6 +32,7 @@ namespace Bearded.TD.UI.Factories
         public sealed class Builder
         {
             private Func<string>? labelProvider;
+            private (int CostAmount, Color Color)? cost;
             private VoidEventHandler? onClick;
             private bool isDisabled;
 
@@ -43,6 +45,18 @@ namespace Bearded.TD.UI.Factories
             public Builder WithLabel(Func<string> labelFunc)
             {
                 labelProvider = labelFunc;
+                return this;
+            }
+
+            public Builder WithResourceCost(ResourceAmount amount)
+            {
+                cost = (amount.NumericValue, Constants.Game.GameUI.ResourcesColor);
+                return this;
+            }
+
+            public Builder WithTechCost(int amount)
+            {
+                cost = (amount, Constants.Game.GameUI.TechPointsColor);
                 return this;
             }
 
@@ -65,7 +79,19 @@ namespace Bearded.TD.UI.Factories
                 // ReSharper disable once UseObjectOrCollectionInitializer
                 var button = new Button {IsEnabled = !isDisabled};
 
-                button.Add(new DynamicLabel(labelProvider!, colorProvider) { FontSize = Constants.UI.Button.FontSize });
+                var label = new DynamicLabel(labelProvider!, colorProvider) {FontSize = Constants.UI.Button.FontSize};
+                button.Add(label);
+
+                if (cost.HasValue)
+                {
+                    label.Anchor(a => a.Top(margin: Margin).Bottom(relativePercentage: .4));
+                    button.Add(new Label(cost.Value.CostAmount.ToString())
+                    {
+                        Color = cost.Value.Color,
+                        FontSize = CostFontSize,
+                    }.Anchor(a => a.Bottom(margin: Margin).Top(relativePercentage: .6)));
+                }
+
                 button.Add(new DynamicBorder(colorProvider));
                 button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
 

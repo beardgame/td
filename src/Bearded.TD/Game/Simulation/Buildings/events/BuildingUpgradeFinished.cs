@@ -3,7 +3,7 @@ using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    struct BuildingUpgradeFinished : IGlobalEvent
+    readonly struct BuildingUpgradeFinished : IGlobalEvent
     {
         public Building Building { get; }
         public IUpgradeBlueprint Upgrade { get; }

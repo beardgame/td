@@ -3,7 +3,7 @@ using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    struct UpgradeTechnologyUnlocked : IGlobalEvent
+    readonly struct UpgradeTechnologyUnlocked : IGlobalEvent
     {
         public TechnologyManager TechnologyManager { get; }
         public IUpgradeBlueprint Blueprint { get; }

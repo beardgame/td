@@ -3,7 +3,7 @@ using Bearded.TD.Game.Simulation.Events;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    struct BuildingTechnologyUnlocked : IGlobalEvent
+    readonly struct BuildingTechnologyUnlocked : IGlobalEvent
     {
         public TechnologyManager TechnologyManager { get; }
         public IBuildingBlueprint Blueprint { get; }

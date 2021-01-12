@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameLoop
 {
-    sealed record WaveScheduled : IGlobalEvent
+    readonly struct WaveScheduled : IGlobalEvent
     {
         public Id<WaveScript> WaveId { get; }
         public string WaveName { get; }
