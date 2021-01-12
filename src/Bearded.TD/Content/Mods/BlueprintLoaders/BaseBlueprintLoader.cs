@@ -21,7 +21,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected abstract string RelativePath { get; }
 
-        protected virtual DependencySelector SelectDependency { get; } = null;
+        protected virtual DependencySelector? SelectDependency { get; } = null;
 
         protected BaseBlueprintLoader(BlueprintLoadingContext context)
         {
@@ -57,14 +57,14 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var totalPath = Path.Combine(Context.Meta.Directory.FullName, RelativePath);
 
             if (!Directory.Exists(totalPath))
-                return new FileInfo[0];
+                return Array.Empty<FileInfo>();
 
             return Context.Meta
                 .Directory
                 .GetDirectories(RelativePath, SearchOption.TopDirectoryOnly)
                 .SingleOrDefault()
                 ?.GetFiles("*.json", SearchOption.AllDirectories)
-                ?? new FileInfo[0];
+                ?? Array.Empty<FileInfo>();
         }
 
         protected virtual List<TBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
@@ -139,6 +139,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         protected void LogException(Exception exception, string customMessage)
         {
             LogError(customMessage);
+
+            if (exception.StackTrace == null)
+                return;
+
             LogDebug(exception.StackTrace);
         }
 
