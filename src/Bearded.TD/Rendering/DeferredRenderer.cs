@@ -26,6 +26,7 @@ namespace Bearded.TD.Rendering
 
     class DeferredRenderer
     {
+        private static readonly SpriteDrawGroup[] worldLowResDrawGroups = { LowResLevelDetail };
         private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
         private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
 
@@ -126,7 +127,8 @@ namespace Bearded.TD.Rendering
                     InOrder(
                         ClearColor(),
                         ClearDepth(),
-                        Do(s => s.Content.LevelRenderer.RenderAll())
+                        Do(s => s.Content.LevelRenderer.RenderAll()),
+                        Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup))
                         )),
                 // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling
                 // compositing two different pipelines with most steps shared should be easy

@@ -1,0 +1,19 @@
+﻿{
+  "id" : "foundations",
+  "drawGroup" : "LowResLevelDetail",
+  "shader" : "building",
+  "pixelate" : true,
+  "textureSamplers" :
+  [
+    {
+      "sampler" : "diffuse",
+      "prefix" : "",
+      "suffix" : ""
+    },
+    {
+      "sampler" : "normal",
+      "prefix" : "",
+      "suffix" : "-normal"
+    }
+  ]
+}
