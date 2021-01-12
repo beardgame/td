@@ -3,7 +3,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.World
 {
-    struct TileDrawInfoChanged : IGlobalEvent
+    readonly struct TileDrawInfoChanged : IGlobalEvent
     {
         public Tile Tile { get; }
 

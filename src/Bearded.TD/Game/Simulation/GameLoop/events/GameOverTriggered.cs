@@ -2,5 +2,5 @@
 
 namespace Bearded.TD.Game.Simulation.GameLoop
 {
-    struct GameOverTriggered : IGlobalEvent {}
+    readonly struct GameOverTriggered : IGlobalEvent {}
 }

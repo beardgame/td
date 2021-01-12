@@ -77,7 +77,7 @@ namespace Bearded.TD.UI.Controls
         }
 
         private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
-            where T : IGlobalEvent =>
+            where T : struct, IGlobalEvent =>
             new NotificationListener<T>(
                 this,
                 @event => new Notification(
@@ -87,7 +87,8 @@ namespace Bearded.TD.UI.Controls
                     isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
 
         private NotificationListener<T> textAndGameObjectEventListener<T>(
-            Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor) where T : IGlobalEvent =>
+            Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor)
+            where T : struct, IGlobalEvent =>
                 new NotificationListener<T>(
                     this,
                     @event => new Notification(
@@ -134,7 +135,7 @@ namespace Bearded.TD.UI.Controls
             void Unsubscribe(GlobalGameEvents events);
         }
 
-        private class NotificationListener<T> : IListener<T>, INotificationListener where T : IGlobalEvent
+        private class NotificationListener<T> : IListener<T>, INotificationListener where T : struct, IGlobalEvent
         {
             private readonly GameNotificationsUI parent;
             private readonly Func<T, Notification> eventTransformer;

@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    struct BuildingCreated : IGlobalEvent
+    readonly struct BuildingCreated : IGlobalEvent
     {
         public Building Building { get; }
 
