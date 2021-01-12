@@ -4,7 +4,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Meta;
@@ -41,7 +40,6 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? GameLeft;
 
         private NavigationController? entityStatusNavigation;
-        private NavigationController? oldEntityStatusNavigation;
 
         private GameDebugOverlay? debugOverlay;
 
@@ -153,36 +151,15 @@ namespace Bearded.TD.UI.Controls
             entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
         }
 
-        public void SetEntityStatusContainer(IControlParent controlParent)
-        {
-            DebugAssert.State.Satisfies(oldEntityStatusNavigation == null, "Can only initialize entity status UI once.");
-
-            var dependencies = new DependencyResolver();
-            dependencies.Add(Game);
-
-            var (models, views) = NavigationFactories.ForBoth()
-                .Add<BuildingStatusUI, IPlacedBuilding>(m => new BuildingStatusUIControl(m))
-                .Add<WorkerStatusUI, Faction>(m => new WorkerStatusUIControl(m))
-                .ToDictionaries();
-
-            oldEntityStatusNavigation = new NavigationController(
-                controlParent,
-                dependencies,
-                models,
-                views);
-            oldEntityStatusNavigation.Exited += Game.SelectionManager.ResetSelection;
-        }
-
         private void onObjectSelected(ISelectable selectedObject)
         {
             switch (selectedObject)
             {
                 case IPlacedBuilding building:
-                    oldEntityStatusNavigation!.ReplaceAll<BuildingStatusUI, IPlacedBuilding>(building);
                     entityStatusNavigation!.ReplaceAll<BuildingStatusOverlay, IPlacedBuilding>(building);
                     break;
-                case Worker worker:
-                    oldEntityStatusNavigation!.ReplaceAll<WorkerStatusUI, Faction>(worker.Faction);
+                case Worker:
+                    // TODO: add a worker status screen
                     break;
                 default:
                     return;
@@ -193,7 +170,6 @@ namespace Bearded.TD.UI.Controls
 
         private void onObjectDeselected(ISelectable t)
         {
-            oldEntityStatusNavigation?.CloseAll();
             entityStatusNavigation?.CloseAll();
             EntityStatusClosed?.Invoke();
         }
