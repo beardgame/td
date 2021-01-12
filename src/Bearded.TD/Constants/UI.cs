@@ -11,6 +11,8 @@ namespace Bearded.TD
             public static class Button
             {
                 public const float FontSize = 18;
+                public const float CostFontSize = 14;
+
                 public const double Height = 32;
                 public const double Width = 160;
                 public const double Margin = 4;
