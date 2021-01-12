@@ -5,7 +5,6 @@ using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
@@ -21,12 +20,14 @@ namespace Bearded.TD.Content.Models
             Id = id;
         }
 
-        public void InjectActualBlueprint(ComponentOwnerBlueprint blueprint)
+        public void InjectActualBlueprint(ComponentOwnerBlueprint actualBlueprint)
         {
-            DebugAssert.State.Satisfies(this.blueprint == null, "Cannot inject blueprint more than once.");
-            DebugAssert.Argument.Satisfies(blueprint.Id == Id, "Id of injected blueprint must match.");
+            if (blueprint != null)
+                throw new InvalidOperationException("Cannot inject blueprint more than once.");
+            if (actualBlueprint.Id != Id)
+                throw new InvalidOperationException("Id of injected blueprint must match.");
 
-            this.blueprint = blueprint;
+            blueprint = actualBlueprint;
         }
 
         IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint!.GetComponents<T>();
