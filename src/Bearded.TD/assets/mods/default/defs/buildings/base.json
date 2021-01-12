@@ -1,21 +1,22 @@
 {
-    "id" : "base",
-    "name" : "Main Base",
-    "footprint" : "seven",
-    "cost" : 1,
-    "components" : [
-        { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
-        { "id" :  "sink" },
-        { "id" :  "gameOverOnDestroy" },
-        {
-            "id" : "workerHub",
-            "parameters" : { "numWorkers" : 2 }
-        },
-        {
-            "id" : "workerAntenna",
-            "onPlaceholder" :  true,
-            "onGhost": true,
-            "parameters" : { "workerRange" : 12 }
-        }
-    ]
+  "id" : "base",
+  "name" : "Main Base",
+  "footprint" : "seven",
+  "cost" : 1,
+  "components" : [
+    { "id" : "foundation" },
+    { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
+    { "id" :  "sink" },
+    { "id" :  "gameOverOnDestroy" },
+    {
+      "id" : "workerHub",
+      "parameters" : { "numWorkers" : 2 }
+    },
+    {
+      "id" : "workerAntenna",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : { "workerRange" : 12 }
+    }
+  ]
 }

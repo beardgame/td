@@ -4,29 +4,12 @@
   "footprint": "single",
   "cost": 15,
   "components": [
+    { "id" : "foundation" },
     {
       "id": "health",
       "parameters": {
         "initialHealth": 1,
         "maxHealth": 100
-      }
-    },
-    {
-      "id": "sprite",
-      "parameters": {
-        "sprite": "buildings.base-32px",
-        "color": "White",
-        "heightOffset": 0.01,
-        "size" : 2
-      }
-    },
-    {
-      "id": "sprite",
-      "parameters": {
-        "sprite": "buildings.base-32px",
-        "color": "White",
-        "heightOffset": 0.1,
-        "size" : 1.8
       }
     }
   ]

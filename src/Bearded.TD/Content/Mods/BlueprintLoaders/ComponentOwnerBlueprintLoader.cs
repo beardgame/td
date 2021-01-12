@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         private readonly ComponentOwnerProxyBlueprintResolver componentOwnerProxyBlueprintCollector;
         private readonly DependencyConverter<IComponentOwnerBlueprint> dependencyConverter;
         private readonly Dictionary<ModAwareId, (ComponentOwnerBlueprint Blueprint, FileInfo File, List<ComponentOwnerBlueprintProxy> Dependencies)>
-            dependenciesByBlueprintId = new Dictionary<ModAwareId, (ComponentOwnerBlueprint, FileInfo, List<ComponentOwnerBlueprintProxy>)>();
+            dependenciesByBlueprintId = new();
 
         protected override string RelativePath => "defs/blueprints";
 

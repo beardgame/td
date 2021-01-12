@@ -1,18 +1,19 @@
 {
-    "id" : "beamTurret",
-    "name" : "Beam Turret",
-    "footprint" : "triangle",
-    "cost" : 75,
-    "components" : [
-        { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
-        {
-            "id" : "turret",
-            "onPlaceholder" :  true,
-            "onGhost": true,
-            "parameters" : {
-                "weapon" : "beamWeapon",
-                "height" : 0.2
-            }
-        }
-    ]
+  "id" : "beamTurret",
+  "name" : "Beam Turret",
+  "footprint" : "triangle",
+  "cost" : 75,
+  "components" : [
+    { "id" : "foundation" },
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
+    {
+      "id" : "turret",
+      "onPlaceholder" :  true,
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "beamWeapon",
+        "height" : 0.2
+      }
+    }
+  ]
 }
