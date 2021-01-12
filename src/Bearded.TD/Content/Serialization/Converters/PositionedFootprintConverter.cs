@@ -1,24 +1,18 @@
-using Bearded.TD.Content.Mods;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
-using Newtonsoft.Json;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
     sealed class PositionedFootprintConverter : JsonConverterBase<PositionedFootprint>
     {
-        private readonly IDependencyResolver<FootprintGroup> footprintDependencyResolver;
-
-        public PositionedFootprintConverter(IDependencyResolver<FootprintGroup> footprintDependencyResolver)
+        protected override PositionedFootprint ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            this.footprintDependencyResolver = footprintDependencyResolver;
-        }
-
-        protected override PositionedFootprint ReadJson(JsonReader reader, JsonSerializer serializer)
-        {
-            var jsonModel = serializer.Deserialize<JsonModel>(reader);
-            var footprint = footprintDependencyResolver.Resolve(jsonModel.Group);
-            return footprint.Positioned(jsonModel.Index, jsonModel.RootTile);
+            var jsonModel = JsonSerializer.Deserialize<JsonModel>(ref reader, options);
+            var footprint = JsonSerializer.Deserialize<FootprintGroup>(jsonModel.Group);
+            return footprint!.Positioned(jsonModel.Index, jsonModel.RootTile);
         }
 
         private readonly struct JsonModel
@@ -27,6 +21,7 @@ namespace Bearded.TD.Content.Serialization.Converters
             public Tile RootTile { get; }
             public int Index { get; }
 
+            [UsedImplicitly]
             [JsonConstructor]
             public JsonModel(string group, Tile rootTile, int index = 0)
             {

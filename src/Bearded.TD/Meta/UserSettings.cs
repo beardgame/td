@@ -1,6 +1,7 @@
-﻿using Bearded.TD.Game;
+﻿using System.Text.Json.Serialization;
+using Bearded.TD.Game;
 using Bearded.Utilities;
-using Newtonsoft.Json;
+
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable ConvertToConstant.Global
 
@@ -29,13 +30,13 @@ namespace Bearded.TD.Meta
         // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings Dump;
 
-        public MiscSettings Misc = new MiscSettings();
-        public UISettings UI = new UISettings();
-        public GraphicsSettings Graphics = new GraphicsSettings();
-        public DebugSettings Debug = new DebugSettings();
-        public GameSettings.Builder LastGameSettings = new GameSettings.Builder();
+        public MiscSettings Misc = new();
+        public UISettings UI = new();
+        public GraphicsSettings Graphics = new();
+        public DebugSettings Debug = new();
+        public GameSettings.Builder LastGameSettings = new();
 
-        public class MiscSettings
+        public sealed class MiscSettings
         {
             public string Username = "";
             public string SavedNetworkAddress = "";
@@ -46,12 +47,12 @@ namespace Bearded.TD.Meta
             public int? MapGenSeed = null;
         }
 
-        public class UISettings
+        public sealed class UISettings
         {
             public float UIScale = 1f;
         }
 
-        public class GraphicsSettings
+        public sealed class GraphicsSettings
         {
             public float SuperSample = 1f;
 
@@ -59,7 +60,7 @@ namespace Bearded.TD.Meta
             public float TerrainMeshResolution = 5;
         }
 
-        public class DebugSettings
+        public sealed class DebugSettings
         {
             public bool GameDebugScreen = false;
 

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.Linq;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Mods
 {
@@ -30,7 +29,12 @@ namespace Bearded.TD.Content.Mods
 
         private ModMetadata load(FileInfo modFile)
         {
-            var meta = JsonConvert.DeserializeObject<Metadata>(File.ReadAllText(modFile.FullName));
+            var meta = JsonSerializer.Deserialize<Metadata>(
+                File.ReadAllText(modFile.FullName), Constants.Serialization.DefaultJsonSerializerOptions);
+            if (meta == null)
+            {
+                throw new InvalidDataException("Metadata was not parsed correctly");
+            }
 
             return new ModMetadata(meta, modFile.Directory);
         }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Bearded.TD.Tiles;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
@@ -16,23 +16,25 @@ namespace Bearded.TD.Content.Serialization.Converters
                 .Append((name: "base", step: new Step()))
                 .ToDictionary(d => d.name, d => d.step);
 
-        protected override Step ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override Step ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonToken.String)
-                return fromString(reader);
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                return fromString(ref reader);
+            }
 
-            throw new InvalidDataException($"Expected string value, encountered {reader.TokenType} when parsing step.");
+            throw new JsonException($"Expected string value, encountered {reader.TokenType} when parsing step.");
         }
 
-        private static Step fromString(JsonReader reader)
+        private static Step fromString(ref Utf8JsonReader reader)
         {
-            var value = (string)reader.Value;
+            var value = reader.GetString() ?? "";
             var name = value.ToLowerInvariant();
 
             if (namedDirections.TryGetValue(name, out var step))
                 return step;
 
-            throw new InvalidDataException($"Encountered unknown step name {value}");
+            throw new JsonException($"Encountered unknown step name {value}");
         }
     }
 }

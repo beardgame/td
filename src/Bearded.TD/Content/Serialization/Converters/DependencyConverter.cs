@@ -1,28 +1,72 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Bearded.TD.Content.Mods;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    class DependencyConverter<T> : JsonConverterBase<T>
+    sealed class DependencyConverterFactory : JsonConverterFactory
     {
-        private readonly IDependencyResolver<T> dependencyResolver;
+        private readonly Dictionary<Type, object> resolversByType = new();
+        private readonly Dictionary<Type, JsonConverter> cache = new();
 
-        public DependencyConverter(IDependencyResolver<T> dependencyResolver)
+        public void RegisterDependencyResolver<T>(IDependencyResolver<T> resolver)
         {
-            this.dependencyResolver = dependencyResolver;
+            resolversByType[typeof(T)] = resolver;
         }
 
-        protected override T ReadJson(JsonReader reader, JsonSerializer serializer)
+        public void UnregisterDependencyResolver<T>()
         {
-            if (reader.TokenType != JsonToken.String)
+            resolversByType.Remove(typeof(T));
+            cache.Remove(typeof(T));
+        }
+
+        public override bool CanConvert(Type typeToConvert) => resolversByType.ContainsKey(typeToConvert);
+
+        public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (cache.TryGetValue(typeToConvert, out var converter))
             {
-                throw new InvalidDataException(
-                        $"Expected string value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+                return converter;
             }
 
-            return dependencyResolver.Resolve(Convert.ToString(reader.Value));
+            if (!resolversByType.TryGetValue(typeToConvert, out var resolver))
+            {
+                throw new ArgumentException($"Cannot create converter for unsupported type {typeToConvert.Name}");
+            }
+
+            converter = (JsonConverter) Activator.CreateInstance(
+                typeof(DependencyConverter<>).MakeGenericType(typeToConvert),
+                bindingAttr: BindingFlags.Instance | BindingFlags.Public,
+                binder: null,
+                args: new[] {resolver},
+                culture: null);
+            cache[typeToConvert] = converter;
+
+            return converter;
+        }
+
+        private sealed class DependencyConverter<T> : JsonConverterBase<T>
+        {
+            private readonly IDependencyResolver<T> dependencyResolver;
+
+            public DependencyConverter(IDependencyResolver<T> dependencyResolver)
+            {
+                this.dependencyResolver = dependencyResolver;
+            }
+
+            protected override T ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
+            {
+                if (reader.TokenType != JsonTokenType.String)
+                {
+                    throw new JsonException(
+                        $"Expected string value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+                }
+
+                return dependencyResolver.Resolve(reader.GetString()!);
+            }
         }
     }
 }

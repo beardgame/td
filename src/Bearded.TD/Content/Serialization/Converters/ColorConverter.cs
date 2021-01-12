@@ -1,74 +1,66 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using amulware.Graphics;
-using Bearded.Utilities;
-using Newtonsoft.Json;
-using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
     sealed class ColorConverter : JsonConverterBase<Color>
     {
-        protected override Color ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override Color ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonToken.String)
+            if (reader.TokenType == JsonTokenType.String)
             {
-                var s = (string)reader.Value;
+                var s = reader.GetString();
 
                 foreach (var field in typeof(Color).GetFields())
                 {
-                    if (field.IsStatic && field.FieldType == typeof(Color)
+                    if (field.IsStatic
+                        && field.FieldType == typeof(Color)
                         && field.Name.Equals(s, StringComparison.InvariantCultureIgnoreCase))
-                        return (Color)field.GetValue(null);
+                    {
+                        return (Color) field.GetValue(null);
+                    }
                 }
 
                 try
                 {
                     return new Color(Convert.ToUInt32(s, 16));
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     throw new InvalidDataException("Color has unknown or invalid string value.");
                 }
             }
 
-            if (reader.TokenType == JsonToken.StartArray)
+            if (reader.TokenType == JsonTokenType.StartArray)
             {
                 reader.Read();
 
-                var r = readByte(reader);
-                var g = readByte(reader);
-                var b = readByte(reader);
-                var a = tryReadByte(reader);
+                var r = readByte(ref reader);
+                var g = readByte(ref reader);
+                var b = readByte(ref reader);
+                var a = reader.TryGetByte(out var alpha) ? alpha : (byte) 255;
 
-                if (reader.TokenType == JsonToken.EndArray)
+                if (reader.TokenType == JsonTokenType.EndArray)
                 {
-                    return new Color(r, g, b, a.ValueOrDefault(255));
+                    return new Color(r, g, b, a);
                 }
             }
 
-            throw new InvalidDataException("Colour has no or invalid value.");
+            throw new JsonException("Color has no or invalid value.");
         }
 
-        private static byte readByte(JsonReader reader)
+        private static byte readByte(ref Utf8JsonReader reader)
         {
-            return tryReadByte(reader)
-                .Match(
-                    b => b,
-                    () => throw new InvalidDataException(
-                        $"Expected number value, encountered {reader.TokenType} when parsing Color component (expecting integer).")
-                );
-        }
+            if (!reader.TryGetByte(out var b))
+            {
+                throw new JsonException(
+                    "Expected number value, " +
+                    $"encountered {reader.TokenType} when parsing Color component (expecting byte).");
+            }
 
-        private static Maybe<byte> tryReadByte(JsonReader reader)
-        {
-            if (reader.TokenType != JsonToken.Integer)
-                return Nothing;
-
-            var b = Convert.ToByte(reader.Value);
-            reader.Read();
-
-            return Just(b);
+            return b;
         }
     }
 }

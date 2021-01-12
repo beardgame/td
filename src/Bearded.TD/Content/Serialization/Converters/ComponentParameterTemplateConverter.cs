@@ -1,9 +1,10 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    sealed class ComponentParameterTemplateConverter : JsonConverter
+    sealed class ComponentParameterTemplateConverter : JsonConverter<object>
     {
         private readonly Type interfaceType;
         private readonly Type templateType;
@@ -14,16 +15,14 @@ namespace Bearded.TD.Content.Serialization.Converters
             this.templateType = templateType;
         }
 
-        public override bool CanWrite { get; } = false;
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
         {
             throw new InvalidOperationException();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
         {
-            return serializer.Deserialize(reader, templateType);
+            return JsonSerializer.Deserialize(ref reader, templateType, options);
         }
 
         public override bool CanConvert(Type objectType) => objectType == interfaceType;

@@ -1,6 +1,6 @@
+using System.Text.Json.Serialization;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Simulation.Rules.Technologies
 {

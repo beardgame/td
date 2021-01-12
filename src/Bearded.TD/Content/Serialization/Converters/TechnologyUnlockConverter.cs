@@ -1,14 +1,15 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    sealed class TechnologyUnlockConverter : JsonConverter
+    sealed class TechnologyUnlockConverter : JsonConverter<ITechnologyUnlock>
     {
         private readonly IDependencyResolver<IBuildingBlueprint> buildingResolver;
         private readonly IDependencyResolver<IUpgradeBlueprint> upgradeResolver;
@@ -21,15 +22,18 @@ namespace Bearded.TD.Content.Serialization.Converters
             this.upgradeResolver = upgradeResolver;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
+        public override void Write(Utf8JsonWriter writer, ITechnologyUnlock value, JsonSerializerOptions options) =>
             throw new NotImplementedException();
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override ITechnologyUnlock Read(
+            ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
         {
-            var jsonModel = serializer.Deserialize<TechnologyBlueprint.TechnologyUnlock>(reader);
+            var jsonModel = JsonSerializer.Deserialize<TechnologyBlueprint.TechnologyUnlock>(ref reader, options);
+            if (jsonModel == null)
+            {
+                throw new JsonException("Could not parse technology unlock.");
+            }
             return jsonModel.ToGameModel(buildingResolver, upgradeResolver);
         }
-
-        public override bool CanConvert(Type objectType) => objectType == typeof(ITechnologyUnlock);
     }
 }

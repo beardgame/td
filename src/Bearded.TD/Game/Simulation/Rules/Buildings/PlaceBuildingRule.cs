@@ -1,7 +1,7 @@
+using System.Text.Json.Serialization;
 using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.World;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Simulation.Rules.Buildings
 {

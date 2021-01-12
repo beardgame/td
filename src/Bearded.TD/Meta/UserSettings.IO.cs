@@ -1,22 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using Bearded.Utilities.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace Bearded.TD.Meta
 {
     sealed partial class UserSettings
     {
-        private static readonly JsonSerializer serializer = makeSerializer();
+        private static readonly JsonSerializerOptions serializerOptions = makeSerializerOptions();
 
-        private static JsonSerializer makeSerializer()
+        private static JsonSerializerOptions makeSerializerOptions()
         {
-            var s = new JsonSerializer();
-            s.Converters.Add(new StringEnumConverter());
-            s.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            s.Formatting = Formatting.Indented;
+            var s = new JsonSerializerOptions(Constants.Serialization.DefaultJsonSerializerOptions)
+            {
+                Converters = {Constants.Serialization.StringEnumConverter}
+            };
             return s;
         }
 
@@ -28,7 +26,8 @@ namespace Bearded.TD.Meta
             {
                 using (var reader = File.OpenText(Constants.Paths.UserSettingsFile))
                 {
-                    Instance = serializer.Deserialize<UserSettings>(new JsonTextReader(reader));
+                    Instance = JsonSerializer.Deserialize<UserSettings>(reader.ReadToEnd(), serializerOptions)
+                        ?? throw new InvalidDataException("Could not parse user settings");
                     SettingsChanged?.Invoke();
                 }
                 logger.Trace?.Log("Finished loading user settings.");
@@ -47,19 +46,18 @@ namespace Bearded.TD.Meta
 
             try
             {
-                using (var writer = new StringWriter())
+                var jsonString = JsonSerializer.Serialize(Instance, serializerOptions);
+
+                var fileName = Constants.Paths.UserSettingsFile;
+                var dirName = Path.GetDirectoryName(fileName);
+
+                // ReSharper disable AssignNullToNotNullAttribute
+                if (!Directory.Exists(dirName))
                 {
-                    serializer.Serialize(writer, Instance);
-
-                    var fileName = Constants.Paths.UserSettingsFile;
-                    var dirName = Path.GetDirectoryName(fileName);
-
-                    // ReSharper disable AssignNullToNotNullAttribute
-                    if (!Directory.Exists(dirName))
-                        Directory.CreateDirectory(dirName);
-                    // ReSharper restore AssignNullToNotNullAttribute
-                    File.WriteAllText(fileName, writer.ToString());
+                    Directory.CreateDirectory(dirName);
                 }
+                // ReSharper restore AssignNullToNotNullAttribute
+                File.WriteAllText(fileName, jsonString);
                 logger.Trace?.Log("Finished saving user settings.");
                 return true;
             }
@@ -70,9 +68,6 @@ namespace Bearded.TD.Meta
             return false;
         }
 
-        private static UserSettings getDefaultInstance()
-        {
-            return new UserSettings();
-        }
+        private static UserSettings getDefaultInstance() => new();
     }
 }

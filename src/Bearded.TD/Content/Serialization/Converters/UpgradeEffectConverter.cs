@@ -1,10 +1,9 @@
-using System;
 using System.IO;
+using System.Text.Json;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
@@ -17,22 +16,31 @@ namespace Bearded.TD.Content.Serialization.Converters
             Component = 2,
         }
 
-        protected override IUpgradeEffect ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override IUpgradeEffect ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            var json = JObject.Load(reader);
+            var json = JsonDocument.ParseValue(ref reader);
 
-            var type = json
-                .GetValue("type", StringComparison.OrdinalIgnoreCase)
-                ?.ToObject<UpgradeEffectType>(serializer) ?? UpgradeEffectType.Unknown;
+            var type = UpgradeEffectType.Unknown;
+            if (json.RootElement.TryGetProperty("type", out var typeJson))
+            {
+                type = JsonSerializer.Deserialize<UpgradeEffectType>(typeJson.GetRawText(), options);
+            }
+
+            if (!json.RootElement.TryGetProperty("parameters", out var parametersJson))
+            {
+                parametersJson = new JsonElement();
+            }
 
             switch (type)
             {
                 case UpgradeEffectType.Modification:
-                    var parameters = new ModificationParameters();
-                    serializer.Populate(json.GetValue("parameters").CreateReader(), parameters);
+                    var parameters =
+                        JsonSerializer.Deserialize<ModificationParameters>(parametersJson.GetRawText(), options)
+                        ?? throw new JsonException("Could not parse modification");
                     return new ParameterModifiable(parameters.AttributeType, getModification(parameters));
                 case UpgradeEffectType.Component:
-                    var component = serializer.Deserialize<IComponent>(json.GetValue("parameters").CreateReader());
+                    var component = JsonSerializer.Deserialize<IComponent>(parametersJson.GetRawText(), options)
+                        ?? throw new JsonException("Could not parse component");
                     return new ComponentModifiable(component);
                 default:
                     throw new InvalidDataException("Upgrade effect must have a valid type.");
@@ -54,7 +62,8 @@ namespace Bearded.TD.Content.Serialization.Converters
             }
         }
 
-        private class ModificationParameters
+        [UsedImplicitly]
+        private sealed class ModificationParameters
         {
             public enum ModificationMode
             {

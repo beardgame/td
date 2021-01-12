@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Components;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders
 {
-    class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint, Void>
+    sealed class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint, Void>
     {
         private readonly ComponentOwnerProxyBlueprintResolver componentOwnerProxyBlueprintCollector;
-        private readonly DependencyConverter<IComponentOwnerBlueprint> dependencyConverter;
         private readonly Dictionary<ModAwareId, (ComponentOwnerBlueprint Blueprint, FileInfo File, List<ComponentOwnerBlueprintProxy> Dependencies)>
-            dependenciesByBlueprintId = new Dictionary<ModAwareId, (ComponentOwnerBlueprint, FileInfo, List<ComponentOwnerBlueprintProxy>)>();
+            dependenciesByBlueprintId = new();
 
         protected override string RelativePath => "defs/blueprints";
 
@@ -24,7 +22,6 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         public ComponentOwnerBlueprintLoader(BlueprintLoadingContext context) : base(context)
         {
             componentOwnerProxyBlueprintCollector = new ComponentOwnerProxyBlueprintResolver(Context.Meta, Context.LoadedDependencies);
-            dependencyConverter = new DependencyConverter<IComponentOwnerBlueprint>(componentOwnerProxyBlueprintCollector);
         }
 
         public override ReadonlyBlueprintCollection<IComponentOwnerBlueprint> LoadBlueprints()
@@ -44,13 +41,13 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         private List<IComponentOwnerBlueprint> loadBlueprints()
         {
-            Context.Serializer.Converters.Add(dependencyConverter);
+            Context.AddDependencyResolver(componentOwnerProxyBlueprintCollector);
 
             var files = GetJsonFiles();
 
             var blueprints = LoadBlueprintsFromFiles(files);
 
-            Context.Serializer.Converters.Remove(dependencyConverter);
+            Context.RemoveDependencyResolver<IComponentOwnerBlueprint>();
 
             return blueprints;
         }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using Bearded.TD.Content.Serialization.Converters;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders
 {
@@ -10,24 +10,36 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
     {
         public ModLoadingContext Context { get; }
         public ModMetadata Meta { get; }
-        public JsonSerializer Serializer { get; }
+        public JsonSerializerOptions SerializerOptions { get; }
         public ReadOnlyCollection<Mod> LoadedDependencies { get; }
 
-        private readonly Dictionary<Type, object> dependencyResolvers = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> dependencyResolvers = new();
+        private readonly DependencyConverterFactory dependencyConverterFactory;
 
-        public BlueprintLoadingContext(ModLoadingContext context, ModMetadata meta, JsonSerializer serializer,
+        public BlueprintLoadingContext(
+            ModLoadingContext context,
+            ModMetadata meta,
+            JsonSerializerOptions serializerOptions,
+            DependencyConverterFactory dependencyConverterFactory,
             ReadOnlyCollection<Mod> loadedDependencies)
         {
             Context = context;
             Meta = meta;
-            Serializer = serializer;
+            SerializerOptions = serializerOptions;
+            this.dependencyConverterFactory = dependencyConverterFactory;
             LoadedDependencies = loadedDependencies;
         }
 
         public void AddDependencyResolver<T>(IDependencyResolver<T> dependencyResolver)
         {
             dependencyResolvers[typeof(T)] = dependencyResolver;
-            Serializer.Converters.Add(new DependencyConverter<T>(dependencyResolver));
+            dependencyConverterFactory.RegisterDependencyResolver(dependencyResolver);
+        }
+
+        public void RemoveDependencyResolver<T>()
+        {
+            dependencyResolvers.Remove(typeof(T));
+            dependencyConverterFactory.UnregisterDependencyResolver<T>();
         }
 
         public IDependencyResolver<T> FindDependencyResolver<T>() =>

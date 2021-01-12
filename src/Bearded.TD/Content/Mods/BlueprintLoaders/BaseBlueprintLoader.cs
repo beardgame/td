@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Utilities;
-using Newtonsoft.Json;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders
@@ -21,7 +21,9 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected abstract string RelativePath { get; }
 
-        protected virtual DependencySelector SelectDependency { get; } = null;
+        protected virtual DependencySelector? SelectDependency { get; } = null;
+
+        protected virtual JsonSerializerOptions SerializerOptions => Context.SerializerOptions;
 
         protected BaseBlueprintLoader(BlueprintLoadingContext context)
         {
@@ -124,9 +126,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected TJsonModel ParseJsonModel(FileInfo file)
         {
-            var text = file.OpenText();
-            var reader = new JsonTextReader(text);
-            return Context.Serializer.Deserialize<TJsonModel>(reader);
+            var text = file.OpenText().ReadToEnd();
+            return JsonSerializer.Deserialize<TJsonModel>(text, Context.SerializerOptions);
         }
 
         protected virtual TResolvers GetDependencyResolvers(FileInfo file)
@@ -139,7 +140,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         protected void LogException(Exception exception, string customMessage)
         {
             LogError(customMessage);
-            LogDebug(exception.StackTrace);
+            if (exception.StackTrace != null)
+            {
+                LogDebug(exception.StackTrace);
+            }
         }
 
         protected void LogError(string message)

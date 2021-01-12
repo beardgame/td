@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
@@ -8,7 +9,6 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using Newtonsoft.Json;
 using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBlueprint;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
@@ -29,7 +29,6 @@ namespace Bearded.TD.Content.Mods
             private readonly ModLoadingContext context;
             private readonly ModMetadata meta;
             private readonly ReadOnlyCollection<Mod> loadedDependencies;
-            private JsonSerializer serializer;
 
             public Loader(ModLoadingContext context, ModMetadata meta, ReadOnlyCollection<Mod> loadedDependencies)
             {
@@ -47,9 +46,9 @@ namespace Bearded.TD.Content.Mods
             {
                 context.Profiler.StartLoading();
 
-                configureSerializer();
-
-                var loadingContext = new BlueprintLoadingContext(context, meta, serializer, loadedDependencies);
+                var serializerOptions = createSerializerOptions(out var dependencyConverterFactory);
+                var loadingContext = new BlueprintLoadingContext(
+                    context, meta, serializerOptions, dependencyConverterFactory, loadedDependencies);
 
                 var tags = new UpgradeTagResolver(meta, loadedDependencies);
 
@@ -84,35 +83,48 @@ namespace Bearded.TD.Content.Mods
                     tags.GetForCurrentMod());
             }
 
-            private void configureSerializer()
+            private JsonSerializerOptions createSerializerOptions(
+                out DependencyConverterFactory dependencyConverterFactory)
             {
-                serializer = new JsonSerializer();
-                serializer.Converters.AddRange(
-                    new StepConverter(),
-                    new TileConverter(),
-                    new SpaceTime1Converter<Unit>(v => v.U()),
-                    new SpaceTime1Converter<Speed>(SpaceTimeExtensions.UnitsPerSecond),
-                    new SpaceTime1Converter<TimeSpan>(v => ((double) v).S()),
-                    new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()),
-                    new SpaceTime1Converter<Direction2>(Direction2.FromDegrees),
-                    new SpaceTime1Converter<Angle>(Angle.FromDegrees),
-                    new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
-                    new SpaceTime1Converter<Volume>(v => new Volume(v)),
-                    new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)),
-                    new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
-                    new SpaceTime1Converter<Energy>(d => new Energy(d)),
-                    new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
-                    new SpaceTime1Converter<ResourceAmount>(d => ((int) d).Resources()),
-                    new SpaceTime1Converter<ResourceRate>(d => ((int) d).ResourcesPerSecond()),
-                    new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
-                    new ColorConverter(),
-                    BehaviorConverterFactory.ForBuildingComponents(),
-                    BehaviorConverterFactory.ForBaseComponents(),
-                    BehaviorConverterFactory.ForGameRules(),
-                    new UpgradeEffectConverter()
-                );
+                dependencyConverterFactory = new DependencyConverterFactory();
+                var serializerOptions = new JsonSerializerOptions(Constants.Serialization.DefaultJsonSerializerOptions)
+                {
+                    Converters =
+                    {
+                        Constants.Serialization.StringEnumConverter,
+                        new StepConverter(),
+                        new TileConverter(),
+                        new SpaceTime1Converter<Unit>(v => v.U()),
+                        new SpaceTime1Converter<Speed>(SpaceTimeExtensions.UnitsPerSecond),
+                        new SpaceTime1Converter<TimeSpan>(v => ((double) v).S()),
+                        new SpaceTime1Converter<Frequency>(v => ((double) v).PerSecond()),
+                        new SpaceTime1Converter<Direction2>(Direction2.FromDegrees),
+                        new SpaceTime1Converter<Angle>(Angle.FromDegrees),
+                        new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
+                        new SpaceTime1Converter<Volume>(v => new Volume(v)),
+                        new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)),
+                        new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
+                        new SpaceTime1Converter<Energy>(d => new Energy(d)),
+                        new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
+                        new SpaceTime1Converter<ResourceAmount>(d => ((int) d).Resources()),
+                        new SpaceTime1Converter<ResourceRate>(d => ((int) d).ResourcesPerSecond()),
+                        new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
+                        new ColorConverter(),
+                        BehaviorConverterFactory.ForBuildingComponents(),
+                        BehaviorConverterFactory.ForBaseComponents(),
+                        BehaviorConverterFactory.ForGameRules(),
+                        new UpgradeEffectConverter(),
+                        new PositionedFootprintConverter(),
+                        dependencyConverterFactory
+                    }
+                };
+
                 foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
-                    serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
+                {
+                    serializerOptions.Converters.Add(new ComponentParameterTemplateConverter(key, value));
+                }
+
+                return serializerOptions;
             }
         }
     }

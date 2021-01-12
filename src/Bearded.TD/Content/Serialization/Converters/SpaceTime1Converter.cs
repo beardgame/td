@@ -1,6 +1,5 @@
 ﻿using System;
-using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
@@ -13,12 +12,15 @@ namespace Bearded.TD.Content.Serialization.Converters
             convert = constructor;
         }
 
-        protected override T ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override T ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
-                return convert(Convert.ToSingle(reader.Value));
+            if (!reader.TryGetSingle(out var raw))
+            {
+                throw new JsonException(
+                    $"Expected number value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+            }
 
-            throw new InvalidDataException($"Expected number value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+            return convert(raw);
         }
     }
 }

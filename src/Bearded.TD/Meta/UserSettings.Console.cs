@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Meta
 {
@@ -75,9 +74,8 @@ namespace Bearded.TD.Meta
                 currentObject = field.GetValue(currentObject);
             }
 
-            var writer = new StringWriter();
-            serializer.Serialize(writer, currentObject);
-            var jsonLines = writer.ToString().Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries);
+            var jsonString = JsonSerializer.Serialize(currentObject, serializerOptions);
+            var jsonLines = jsonString.Split(lineEndingChars, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in jsonLines)
             {
@@ -92,10 +90,10 @@ namespace Bearded.TD.Meta
             var json = jsonBefore + p.Args[1] + jsonAfter;
             try
             {
-                serializer.Populate(new StringReader(json), Instance);
+                //serializerOptions.Populate(new StringReader(json), Instance);
                 SettingsChanged?.Invoke();
             }
-            catch (JsonReaderException e)
+            catch (JsonException e)
             {
                 logger.Warning?.Log($"Encountered error parsing setting: {e.Message}");
                 return;

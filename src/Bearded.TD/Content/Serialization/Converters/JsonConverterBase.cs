@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    abstract class JsonConverterBase<T> : JsonConverter
+    abstract class JsonConverterBase<T> : JsonConverter<T>
     {
         private static readonly Type nullableType = typeof(T).IsValueType
             ? typeof(Nullable<>).MakeGenericType(typeof(T))
@@ -13,36 +14,40 @@ namespace Bearded.TD.Content.Serialization.Converters
         public override bool CanConvert(Type objectType)
             => typeof(T).IsAssignableFrom(objectType) || objectType == nullableType;
 
-        public override object ReadJson(JsonReader reader, Type objectType,
-            object existingValue, JsonSerializer serializer)
+        public override T? Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonToken.Null)
+            if (reader.TokenType == JsonTokenType.Null)
             {
-                if (objectType == nullableType)
-                    return null;
+                if (typeToConvert == nullableType)
+                {
+                    return default;
+                }
 
-                throw new InvalidDataException($"Cannot convert null value to {objectType}.");
+                throw new InvalidDataException($"Cannot convert null value to {typeToConvert}.");
             }
 
-            return ReadJson(reader, serializer);
+            return ReadJson(ref reader, options);
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(
+            Utf8JsonWriter writer,
+            T? value,
+            JsonSerializerOptions options)
         {
             if (value == null)
+            {
                 throw new ArgumentNullException(nameof(value));
+            }
 
-            if (!(value is T))
-                throw new ArgumentException(
-                    $"Unexpected value when converting. Expected {typeof(T).FullName}, got {value.GetType().FullName}."
-                );
-
-            WriteJson(writer, (T) value, serializer);
+            WriteJson(writer, (T) value, options);
         }
 
-        protected abstract T ReadJson(JsonReader reader, JsonSerializer serializer);
+        protected abstract T ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options);
 
-        protected virtual void WriteJson(JsonWriter writer, T value, JsonSerializer serializer)
+        protected virtual void WriteJson(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
             throw new InvalidOperationException($"Cannot serialise {typeof(T).FullName}.");
         }

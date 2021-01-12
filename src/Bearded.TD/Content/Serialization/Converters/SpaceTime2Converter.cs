@@ -1,10 +1,9 @@
 using System;
-using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
-    class SpaceTime2Converter<T> : JsonConverterBase<T>
+    sealed class SpaceTime2Converter<T> : JsonConverterBase<T>
     {
         private readonly Func<float, float, T> convert;
 
@@ -13,38 +12,41 @@ namespace Bearded.TD.Content.Serialization.Converters
             convert = constructor;
         }
 
-        protected override T ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override T ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            readArrayToken(reader, JsonToken.StartArray);
+            readArrayToken(ref reader, JsonTokenType.StartArray);
 
-            var x = readNumber(reader);
-            var y = readNumber(reader);
+            var x = readNumber(ref reader);
+            var y = readNumber(ref reader);
 
-            confirmArrayToken(reader, JsonToken.EndArray);
+            confirmArrayToken(ref reader, JsonTokenType.EndArray);
 
             return convert(x, y);
         }
 
-        private static void readArrayToken(JsonReader reader, JsonToken arrayToken)
+        private static void readArrayToken(ref Utf8JsonReader reader, JsonTokenType arrayToken)
         {
-            confirmArrayToken(reader, arrayToken);
+            confirmArrayToken(ref reader, arrayToken);
             reader.Read();
         }
 
-        private static void confirmArrayToken(JsonReader reader, JsonToken arrayToken)
+        private static void confirmArrayToken(ref Utf8JsonReader reader, JsonTokenType arrayToken)
         {
             if (reader.TokenType != arrayToken)
-                throw new InvalidDataException(
+            {
+                throw new JsonException(
                     $"Expected two component array, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+            }
         }
 
-        private static float readNumber(JsonReader reader)
+        private static float readNumber(ref Utf8JsonReader reader)
         {
-            if (reader.TokenType != JsonToken.Float && reader.TokenType != JsonToken.Integer)
-                throw new InvalidDataException(
+            if (!reader.TryGetSingle(out var number))
+            {
+                throw new JsonException(
                     $"Expected number value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+            }
 
-            var number = Convert.ToSingle(reader.Value);
             reader.Read();
 
             return number;

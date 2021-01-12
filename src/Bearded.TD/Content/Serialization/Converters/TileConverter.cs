@@ -1,18 +1,17 @@
-using System.IO;
+using System.Text.Json;
 using Bearded.TD.Tiles;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
     sealed class TileConverter : JsonConverterBase<Tile>
     {
-        protected override Tile ReadJson(JsonReader reader, JsonSerializer serializer)
+        protected override Tile ReadJson(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
-            var coords = serializer.Deserialize<int[]>(reader);
+            var coords = JsonSerializer.Deserialize<int[]>(ref reader, options);
 
-            if (coords.Length != 2)
+            if (coords == null || coords.Length != 2)
             {
-                throw new InvalidDataException("Tiles must have exactly two coordinates.");
+                throw new JsonException("Tiles must have exactly two coordinates.");
             }
 
             return new Tile(coords[0], coords[1]);

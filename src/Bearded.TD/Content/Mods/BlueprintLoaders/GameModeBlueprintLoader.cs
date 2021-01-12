@@ -1,5 +1,5 @@
+using System.Text.Json;
 using Bearded.TD.Content.Serialization.Converters;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -12,22 +12,18 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
     {
         protected override string RelativePath => "defs/gamemodes";
 
-        public GameModeBlueprintLoader(BlueprintLoadingContext context) : base(context)
+        protected override JsonSerializerOptions SerializerOptions
         {
+            get
+            {
+                var options = new JsonSerializerOptions(base.SerializerOptions);
+                options.Converters.Add(new TechnologyUnlockConverter(
+                    Context.FindDependencyResolver<IBuildingBlueprint>(),
+                    Context.FindDependencyResolver<IUpgradeBlueprint>()));
+                return options;
+            }
         }
 
-        public override ReadonlyBlueprintCollection<IGameModeBlueprint> LoadBlueprints()
-        {
-            var converter = new TechnologyUnlockConverter(
-                Context.FindDependencyResolver<IBuildingBlueprint>(),
-                Context.FindDependencyResolver<IUpgradeBlueprint>());
-            Context.Serializer.Converters.Add(converter);
-
-            var blueprints = base.LoadBlueprints();
-
-            Context.Serializer.Converters.Remove(converter);
-
-            return blueprints;
-        }
+        public GameModeBlueprintLoader(BlueprintLoadingContext context) : base(context) { }
     }
 }
