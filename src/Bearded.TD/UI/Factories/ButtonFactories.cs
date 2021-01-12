@@ -84,12 +84,12 @@ namespace Bearded.TD.UI.Factories
 
                 if (cost.HasValue)
                 {
-                    label.Anchor(a => a.Top(relativePercentage: .6));
+                    label.Anchor(a => a.Top(margin: Margin).Bottom(relativePercentage: .4));
                     button.Add(new Label(cost.Value.CostAmount.ToString())
                     {
                         Color = cost.Value.Color,
                         FontSize = CostFontSize,
-                    }.Anchor(a => a.Bottom(relativePercentage: .4)));
+                    }.Anchor(a => a.Bottom(margin: Margin).Top(relativePercentage: .6)));
                 }
 
                 button.Add(new DynamicBorder(colorProvider));
