@@ -47,7 +47,8 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
                     return;
                 }
 
-                target.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner));
+                var result = target.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner));
+                Events.Send(new CausedDamage(target, result));
                 nextAttack += 1 / Parameters.AttackRate;
             }
         }

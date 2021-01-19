@@ -90,11 +90,12 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
         private void damageEnemy(EnemyUnit enemy, double damagePerSecond, TimeSpan elapsedTime)
         {
-            enemy.Damage(new DamageInfo(
+            var result = enemy.Damage(new DamageInfo(
                 StaticRandom.Discretise((float) (damagePerSecond * elapsedTime.NumericValue)),
                 DamageType.Energy,
                 Weapon.Owner as Building
             ));
+            Events.Send(new CausedDamage(enemy, result));
         }
 
         public override void Draw(CoreDrawers drawers)

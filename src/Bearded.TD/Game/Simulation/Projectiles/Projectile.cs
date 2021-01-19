@@ -21,13 +21,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
+    sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
     {
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
-        private readonly ComponentEvents events = new ComponentEvents();
+        private readonly ComponentEvents events = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
 
@@ -56,7 +56,9 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             foreach (var upgrade in DamageSource.AppliedUpgrades)
             {
                 if (!upgrade.CanApplyTo(components))
+                {
                     continue;
+                }
 
                 upgrade.ApplyTo(components);
             }
@@ -94,11 +96,13 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                     Delete();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
             }
 
             if (Deleted)
+            {
                 return;
+            }
 
             components.Update(elapsedTime);
         }
@@ -108,7 +112,9 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             components.Draw(drawers);
 
             if (!UserSettings.Instance.Debug.ProjectileDots)
+            {
                 return;
+            }
 
             drawers.Primitives.FillRectangle(
                 Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f), Color.Yellow);

@@ -1,8 +1,9 @@
+using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Units;
 
-namespace Bearded.TD.Game.Simulation.Components.Events
+namespace Bearded.TD.Game.Simulation.Projectiles
 {
-    struct HitEnemy : IComponentEvent
+    readonly struct HitEnemy : IComponentEvent
     {
         public EnemyUnit Enemy { get; }
 

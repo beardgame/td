@@ -1,6 +1,5 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Projectiles;
@@ -12,12 +11,10 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components.Damage
 {
     [Component("splashDamageOnHit")]
-    class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,
+    sealed class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,
         IListener<HitLevel>, IListener<HitEnemy>
     {
-        public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters)
-        {
-        }
+        public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters) {}
 
         protected override void Initialize()
         {
@@ -46,9 +43,12 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
                 if ((enemy.Position - center).LengthSquared > distanceSquared)
+                {
                     continue;
+                }
 
-                enemy.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
+                var result = enemy.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
+                Events.Send(new CausedDamage(enemy, result));
             }
         }
 
