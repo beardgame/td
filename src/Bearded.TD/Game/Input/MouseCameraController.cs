@@ -5,7 +5,6 @@ using Bearded.TD.Game.Camera;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.Game.Input

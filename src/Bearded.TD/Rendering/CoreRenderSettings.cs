@@ -1,7 +1,5 @@
 ﻿using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Textures;
 using Bearded.TD.UI.Layers;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering
