@@ -9,19 +9,21 @@ namespace Bearded.TD.Game.Simulation
     abstract class GameObject : IDeletable
     {
         private GameState? game;
+        // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
+        // Separate nullable field for lazy initialisation in Add.
         public GameState Game => game!;
 
         public bool Deleted { get; private set; }
         public event VoidEventHandler? Deleting;
 
-        public void Add(GameState game)
+        public void Add(GameState gameState)
         {
-            if (game.ObjectBeingAdded != this || this.game != null)
+            if (gameState.ObjectBeingAdded != this || game != null)
             {
                 throw new Exception("Tried adding game object to game in unexpected circumstances.");
             }
 
-            this.game = game;
+            game = gameState;
             OnAdded();
         }
 

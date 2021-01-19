@@ -24,13 +24,13 @@ namespace Bearded.TD.Game.Simulation
     [GameRuleOwner]
     sealed class GameState
     {
-        private readonly Stack<GameObject> objectsBeingAdded = new Stack<GameObject>();
-        public GameObject ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
+        private readonly Stack<GameObject> objectsBeingAdded = new();
+        public GameObject? ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
 
-        private readonly DeletableObjectList<GameObject> gameObjects = new DeletableObjectList<GameObject>();
-        private readonly Dictionary<Type, object> lists = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, object> dictionaries = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, object> singletons = new Dictionary<Type, object>();
+        private readonly DeletableObjectList<GameObject> gameObjects = new();
+        private readonly Dictionary<Type, object> lists = new();
+        private readonly Dictionary<Type, object> dictionaries = new();
+        private readonly Dictionary<Type, object> singletons = new();
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
 
@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Simulation
         public MultipleSinkNavigationSystem Navigator { get; }
 
         // Should only be used to communicate between game objects internally.
-        public IdManager GamePlayIds { get; } = new IdManager();
+        public IdManager GamePlayIds { get; } = new();
 
         public GeometryLayer GeometryLayer { get; }
         public FluidLayer FluidLayer { get; }
@@ -53,11 +53,15 @@ namespace Bearded.TD.Game.Simulation
 
         public WaveDirector WaveDirector { get; }
 
-        private bool isLoading = true;
+        private bool finishedLoading;
 
-        private readonly IdCollection<Faction> factions = new IdCollection<Faction>();
-        public ReadOnlyCollection<Faction> Factions => factions.AsReadOnly;
-        public Faction RootFaction { get; private set; }
+        private readonly IdCollection<Faction> factions = new();
+        public ReadOnlyCollection<Faction> Factions { get; }
+
+        private Faction? rootFaction;
+        // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
+        // Separate nullable field for lazy initialisation in AddFaction. Needs to be set during loading.
+        public Faction RootFaction => rootFaction!;
 
         public GameState(GameMeta meta, GameSettings gameSettings)
         {
@@ -74,19 +78,30 @@ namespace Bearded.TD.Game.Simulation
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
+            Factions = factions.AsReadOnly;
 
             WaveDirector = new WaveDirector(this);
         }
 
         public void FinishLoading()
         {
-            if (!isLoading)
+            validateLoadingCanBeFinished();
+
+            Navigator.Initialise();
+            finishedLoading = true;
+        }
+
+        private void validateLoadingCanBeFinished()
+        {
+            if (finishedLoading)
             {
                 throw new Exception("Can only finish loading game state once.");
             }
 
-            Navigator.Initialise();
-            isLoading = false;
+            if (rootFaction == null)
+            {
+                throw new InvalidOperationException("Root faction must be set during game loading.");
+            }
         }
 
         public void Add(GameObject obj)
@@ -96,6 +111,8 @@ namespace Bearded.TD.Game.Simulation
                 throw new Exception("Sad!");
             }
 
+            // ReSharper disable once HeuristicUnreachableCode
+            // obj.Game is secretly nullable, but we want to spare ourselves ! operators in every single class
             gameObjects.Add(obj);
             objectsBeingAdded.Push(obj);
             obj.Add(this);
@@ -121,7 +138,7 @@ namespace Bearded.TD.Game.Simulation
             where T : class
         {
             singletons.TryGetValue(typeof(T), out var obj);
-            return (T)obj;
+            return (T)obj ?? throw new InvalidOperationException($"Singleton {typeof(T)} not found.");
         }
 
         public void ListAs<T>(T obj)
@@ -186,20 +203,22 @@ namespace Bearded.TD.Game.Simulation
 
         public void AddFaction(Faction faction)
         {
-            factions.Add(faction);
-            if (faction.Parent != null) return;
-
-            if (RootFaction != null)
+            if (faction.Parent == null)
             {
-                throw new Exception("Can only have one root faction. All other factions need parents.");
+                if (rootFaction != null)
+                {
+                    throw new Exception("Can only have one root faction. All other factions need parents.");
+                }
+
+                rootFaction = faction;
             }
 
-            RootFaction = faction;
+            factions.Add(faction);
         }
 
         public void Advance(TimeSpan elapsedTime)
         {
-            if (isLoading)
+            if (!finishedLoading)
             {
                 throw new Exception("Must finish loading before advancing game state.");
             }
