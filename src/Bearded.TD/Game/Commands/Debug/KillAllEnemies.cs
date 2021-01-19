@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var enemy in game.State.GameObjects.OfType<EnemyUnit>())
                 {
-                    enemy.Execute(killingBlowFaction);
+                    enemy.Kill(killingBlowFaction);
                 }
             }
 

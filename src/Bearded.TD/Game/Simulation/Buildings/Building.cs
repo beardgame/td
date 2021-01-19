@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
@@ -27,6 +28,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public Id<Building> Id { get; }
 
+        private readonly DamageExecutor damageExecutor;
+
         public bool IsCompleted { get; private set; }
         private bool isDead;
 
@@ -38,6 +41,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id = id;
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
+            damageExecutor = new DamageExecutor(Events);
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
@@ -45,7 +49,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void Damage(DamageInfo damage)
         {
-            Events.Send(new TakeDamage(damage));
+            damageExecutor.Damage(damage);
         }
 
         public void OnDeath()

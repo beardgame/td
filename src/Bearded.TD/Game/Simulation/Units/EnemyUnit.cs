@@ -39,6 +39,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
+        private readonly DamageExecutor damageExecutor;
         private Unit radius;
 
         private readonly ComponentEvents events = new();
@@ -65,6 +66,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             components = new ComponentCollection<EnemyUnit>(this, events);
             enemyMovement = new EnemyMovementDummy(currentTile);
+            damageExecutor = new DamageExecutor(events);
         }
 
         protected override void OnAdded()
@@ -131,8 +133,8 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public void Damage(DamageInfo damageInfo)
         {
-            lastDamageSource = damageInfo.Source;
-            events.Send(new TakeDamage(damageInfo));
+            lastDamageSource = damageInfo.Source ?? lastDamageSource;
+            damageExecutor.Damage(damageInfo);
         }
 
         public void OnDeath()
@@ -140,7 +142,7 @@ namespace Bearded.TD.Game.Simulation.Units
             isDead = true;
         }
 
-        public void Execute(Faction? killingBlowFaction)
+        public void Kill(Faction? killingBlowFaction)
         {
             Game.Meta.Events.Send(new EnemyKilled(this, killingBlowFaction));
             Delete();

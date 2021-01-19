@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         Component<T, IHealthComponentParameter>,
         ISyncable,
         IListener<HealDamage>,
-        IListener<TakeDamage>
+        IPreviewListener<TakeDamage>
         where T : IMortal
     {
         public int CurrentHealth { get; private set; }
@@ -43,19 +43,22 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             onHealed(@event.Amount);
         }
 
-        public void HandleEvent(TakeDamage @event)
+        public void PreviewEvent(ref TakeDamage @event)
         {
+            var oldHealth = CurrentHealth;
             onDamaged(@event.Damage);
+            var damageDone = oldHealth - CurrentHealth;
+            @event = @event.DamageAdded(damageDone);
         }
 
         private void onDamaged(DamageInfo damage)
         {
             if (damage.Amount > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
+            {
                 return;
+            }
 
             changeHealth(-damage.Amount);
-
-            Events.Send(new TookDamage(damage));
         }
 
         private void onHealed(int health)
