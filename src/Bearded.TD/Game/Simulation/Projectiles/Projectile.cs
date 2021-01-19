@@ -5,6 +5,8 @@ using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
@@ -21,7 +23,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [ComponentOwner]
-    sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
+    sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>, IListener<CausedDamage>
     {
         public Building DamageSource { get; }
 
@@ -37,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
         {
             this.blueprint = blueprint;
             DamageSource = damageSource;
@@ -62,6 +64,11 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
                 upgrade.ApplyTo(components);
             }
+        }
+
+        public void HandleEvent(CausedDamage @event)
+        {
+            DamageSource.AttributeDamage(@event.Target, @event.Result);
         }
 
         public override void Update(TimeSpan elapsedTime)

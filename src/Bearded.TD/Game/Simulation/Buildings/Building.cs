@@ -45,6 +45,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
+        public void AttributeDamage(IMortal target, DamageResult damageResult)
+        {
+            Events.Send(new CausedDamage(target, damageResult));
+        }
+
         public DamageResult Damage(DamageInfo damage)
         {
             return damageExecutor.Damage(damage);

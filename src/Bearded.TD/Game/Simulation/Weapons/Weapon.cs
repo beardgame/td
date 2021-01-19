@@ -3,6 +3,8 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Components.Weapons;
+using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
@@ -14,13 +16,13 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [ComponentOwner]
-    class Weapon : IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>
+    sealed class Weapon : IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
     {
         private readonly ITurret turret;
-        private readonly Building ownerAsBuilding;
+        private readonly Building? ownerAsBuilding;
 
         private readonly ComponentCollection<Weapon> components;
-        private readonly ComponentEvents events = new ComponentEvents();
+        private readonly ComponentEvents events = new();
 
         public Maybe<Direction2> AimDirection { get; private set; }
         private Angle currentDirectionOffset;
@@ -51,6 +53,10 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(components);
 
+        public void HandleEvent(CausedDamage @event)
+        {
+            ownerAsBuilding?.AttributeDamage(@event.Target, @event.Result);
+        }
 
         public void AimIn(Direction2 direction)
         {
@@ -75,7 +81,9 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public void Update(TimeSpan elapsedTime)
         {
             if (ownerAsBuilding == null || !ownerAsBuilding.IsCompleted)
+            {
                 return;
+            }
 
             // TODO: component order currently matters - if the order is inverted, the weapon will not shoot
             // this needs a proper solution (event/subscription based system?) to handle communication between components
@@ -88,12 +96,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void Draw(CoreDrawers drawers)
         {
-            const float lineWidth = .15f;
-
-            var v = (CurrentDirection.Vector * lineWidth).WithZ();
-            // geometries.Primitives.DrawLine(
-            //     Position.NumericValue - v, Position.NumericValue + v * 2, lineWidth, Color.Red);
-
             components.Draw(drawers);
         }
 
