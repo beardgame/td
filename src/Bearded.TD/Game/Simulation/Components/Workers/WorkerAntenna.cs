@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
         where T : GameObject, IFactioned, IPositionable
     {
         private Building ownerAsBuilding;
-        private bool isInitialised;
+        private bool isInitialized;
 
         public Position2 Position => Owner.Position.XY();
 
@@ -27,31 +27,31 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         public WorkerAntenna(IWorkerAntennaParameters parameters) : base(parameters) {}
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             ownerAsBuilding = Owner as Building;
-            initialiseIfOwnerIsCompletedBuilding();
+            initializeIfOwnerIsCompletedBuilding();
         }
 
-        private void initialiseIfOwnerIsCompletedBuilding()
+        private void initializeIfOwnerIsCompletedBuilding()
         {
             if (ownerAsBuilding?.IsCompleted ?? false)
-                initialiseInternal();
+                initializeInternal();
         }
 
-        private void initialiseInternal()
+        private void initializeInternal()
         {
             WorkerRange = Parameters.WorkerRange;
             Owner.Faction.WorkerNetwork.RegisterAntenna(Owner.Game, this);
             Owner.Deleting += () => Owner.Faction.WorkerNetwork.UnregisterAntenna(Owner.Game, this);
-            isInitialised = true;
+            isInitialized = true;
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (!isInitialised)
+            if (!isInitialized)
             {
-                initialiseIfOwnerIsCompletedBuilding();
+                initializeIfOwnerIsCompletedBuilding();
             }
 
             if (Parameters.WorkerRange != WorkerRange)

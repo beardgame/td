@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         public DamageBuildingsInRange(IDamageBuildingsInRangeParameters parameters) : base(parameters) { }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             resetAttackTime();
         }

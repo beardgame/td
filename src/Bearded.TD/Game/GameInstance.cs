@@ -164,7 +164,7 @@ namespace Bearded.TD.Game
             Meta.SetBlueprints(Blueprints);
         }
 
-        public void InitialiseState(GameState state)
+        public void InitializeState(GameState state)
         {
             if (this.state != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");

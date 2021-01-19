@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             Events.Subscribe(this);
         }

@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             if(Parameters.OnHitEnemy)
                 Events.Subscribe<HitEnemy>(this);

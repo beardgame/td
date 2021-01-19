@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             MaxHealth = parameters.MaxHealth;
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             Events.Subscribe<HealDamage>(this);
             Events.Subscribe<TakeDamage>(this);

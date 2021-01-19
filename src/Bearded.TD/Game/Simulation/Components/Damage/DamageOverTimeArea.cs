@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             damageSource = Owner.FindInComponentOwnerTree<IDamageOwner>()
                 .ValueOrDefault(new DummyDamageOwner(Owner.Game.RootFaction));

@@ -114,12 +114,12 @@ namespace Bearded.TD.Tiles
          *
          */
 
-        public Tilemap(int radius, Func<Tile, TValue> initialiseTile)
+        public Tilemap(int radius, Func<Tile, TValue> initializeTile)
             : this(radius)
         {
             foreach (var tile in this)
             {
-                this[tile] = initialiseTile(tile);
+                this[tile] = initializeTile(tile);
             }
         }
 

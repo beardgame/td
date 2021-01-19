@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
-        protected override void Initialise() {}
+        protected override void Initialize() {}
 
         public override void Update(TimeSpan elapsedTime)
         {

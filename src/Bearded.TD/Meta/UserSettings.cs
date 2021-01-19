@@ -16,7 +16,7 @@ namespace Bearded.TD.Meta
 
         static UserSettings()
         {
-            initialiseCommandParameters();
+            initializeCommandParameters();
         }
 
         // ReSharper disable once MemberCanBePrivate.Global

@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             ownerAsDirected = Maybe.FromNullable(Owner as IDirected);
         }

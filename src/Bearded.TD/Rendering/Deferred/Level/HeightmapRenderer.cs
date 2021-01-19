@@ -88,11 +88,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
             heightmapSplats = findHeightmapSplats(game);
             heightMapSplatRenderer = heightmapSplats.CreateRendererWithSettings(HeightmapRadiusUniform);
 
-            (heightmapBaseMeshBuilder, heightmapBaseRenderer, heightmapBaseDrawer) = initialiseBaseDrawing(context);
+            (heightmapBaseMeshBuilder, heightmapBaseRenderer, heightmapBaseDrawer) = initializeBaseDrawing(context);
         }
 
         private (IndexedTrianglesMeshBuilder<ColorVertexData>, Renderer, ShapeDrawer2<ColorVertexData, Void>)
-            initialiseBaseDrawing(RenderContext context)
+            initializeBaseDrawing(RenderContext context)
         {
             var meshBuilder = new IndexedTrianglesMeshBuilder<ColorVertexData>();
             var baseRenderer = Renderer.From(meshBuilder.ToRenderable(), HeightmapRadiusUniform);

@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
     class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
         where T : GameObject
     {
-        protected override void Initialise()
+        protected override void Initialize()
         {
             Events.Subscribe(this);
         }
