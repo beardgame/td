@@ -50,7 +50,6 @@ namespace Bearded.TD.Game.Simulation.Units
         private bool isDead;
 
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
-        public Faction Faction => Game.RootFaction;
 
         public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
