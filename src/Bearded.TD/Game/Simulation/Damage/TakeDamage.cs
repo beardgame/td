@@ -1,7 +1,7 @@
-using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Components.Events;
 using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Simulation.Components.Events
+namespace Bearded.TD.Game.Simulation.Damage
 {
     readonly struct TakeDamage : IComponentPreviewEvent
     {

@@ -1,7 +1,6 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Events;

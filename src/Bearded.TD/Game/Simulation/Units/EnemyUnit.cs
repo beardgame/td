@@ -131,10 +131,10 @@ namespace Bearded.TD.Game.Simulation.Units
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
-        public void Damage(DamageInfo damageInfo)
+        public DamageResult Damage(DamageInfo damageInfo)
         {
             lastDamageSource = damageInfo.Source ?? lastDamageSource;
-            damageExecutor.Damage(damageInfo);
+            return damageExecutor.Damage(damageInfo);
         }
 
         public void OnDeath()

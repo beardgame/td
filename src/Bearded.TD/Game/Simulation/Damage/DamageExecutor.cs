@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Components.Events;
-using Bearded.TD.Game.Simulation.Damage;
 
-namespace Bearded.TD.Game.Simulation.Components.Damage
+namespace Bearded.TD.Game.Simulation.Damage
 {
     sealed class DamageExecutor
     {
@@ -12,10 +11,11 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             this.events = events;
         }
 
-        public void Damage(DamageInfo damageInfo)
+        public DamageResult Damage(DamageInfo damageInfo)
         {
             var takeDamage = new TakeDamage(damageInfo);
             events.Preview(ref takeDamage);
+            return new DamageResult(takeDamage.DamageTaken);
         }
     }
 }

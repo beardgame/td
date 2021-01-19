@@ -4,8 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Damage;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -47,9 +45,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
-        public void Damage(DamageInfo damage)
+        public DamageResult Damage(DamageInfo damage)
         {
-            damageExecutor.Damage(damage);
+            return damageExecutor.Damage(damage);
         }
 
         public void OnDeath()
