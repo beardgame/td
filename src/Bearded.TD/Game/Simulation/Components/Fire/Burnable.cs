@@ -18,8 +18,8 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
     sealed class Burnable<T> : Component<T, IBurnableParameters>, IPreviewListener<TakeDamage>, IListener<Spark>
         where T : GameObject, IPositionable
     {
-        private IDamageOwner? lastFireHitOwner;
-        private IDamageOwner? damageSource;
+        private IDamageSource? lastFireHitOwner;
+        private IDamageSource? damageSource;
 
         private Combustable combustable = null!;
         private double damagePerFuel;

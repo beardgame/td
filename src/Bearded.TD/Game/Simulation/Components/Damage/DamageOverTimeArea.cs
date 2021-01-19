@@ -12,14 +12,13 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
     sealed class DamageOverTimeArea<T> : Component<T, IDamageOverTimeAreaParameters>
         where T : GameObject, IPositionable, IComponentOwner
     {
-        private IDamageOwner damageSource = null!;
+        private IDamageSource? damageSource;
 
         public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters) {}
 
         protected override void Initialize()
         {
-            damageSource = Owner.FindInComponentOwnerTree<IDamageOwner>()
-                .ValueOrDefault(new DummyDamageOwner(Owner.Game.RootFaction));
+            damageSource = Owner.FindInComponentOwnerTree<IDamageSource>().ValueOrDefault(() => null);
         }
 
         public override void Update(TimeSpan elapsedTime)

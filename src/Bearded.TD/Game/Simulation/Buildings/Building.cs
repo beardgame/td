@@ -17,7 +17,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
+    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageSource
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
@@ -48,6 +48,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void AttributeDamage(IMortal target, DamageResult damageResult)
         {
             Events.Send(new CausedDamage(target, damageResult));
+        }
+
+        public void AttributeKill(IMortal target)
+        {
+            Events.Send(new CausedKill(target));
         }
 
         public DamageResult Damage(DamageInfo damage)

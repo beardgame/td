@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Simulation.Units
         IMortal,
         IPositionable,
         ISyncable,
-        IDamageOwner
+        IDamageSource
     {
         public Id<EnemyUnit> Id { get; }
 
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Simulation.Units
         public bool IsMoving => enemyMovement.IsMoving;
         public Circle CollisionCircle => new(Position.XY(), radius);
 
-        private IDamageOwner? lastDamageSource;
+        private IDamageSource? lastDamageSource;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
@@ -101,7 +101,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             if (isDead)
             {
-                this.Sync(KillUnit.Command, this, lastDamageSource?.Faction);
+                this.Sync(KillUnit.Command, this, lastDamageSource);
             }
         }
 
@@ -142,10 +142,21 @@ namespace Bearded.TD.Game.Simulation.Units
             isDead = true;
         }
 
-        public void Kill(Faction? killingBlowFaction)
+        public void Kill(IDamageSource? damageSource)
         {
-            Game.Meta.Events.Send(new EnemyKilled(this, killingBlowFaction));
+            Game.Meta.Events.Send(new EnemyKilled(this, damageSource));
+            damageSource?.AttributeKill(this);
             Delete();
+        }
+
+        public void AttributeDamage(IMortal target, DamageResult damageResult)
+        {
+            events.Send(new CausedDamage(target, damageResult));
+        }
+
+        public void AttributeKill(IMortal target)
+        {
+            events.Send(new CausedKill(target));
         }
 
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();

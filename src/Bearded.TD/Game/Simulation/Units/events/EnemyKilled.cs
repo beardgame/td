@@ -1,17 +1,17 @@
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 
 namespace Bearded.TD.Game.Simulation.Units
 {
     readonly struct EnemyKilled : IGlobalEvent
     {
         public EnemyUnit Unit { get; }
-        public Faction? KillingFaction { get; }
+        public IDamageSource? DamageSource { get; }
 
-        public EnemyKilled(EnemyUnit unit, Faction? killingFaction)
+        public EnemyKilled(EnemyUnit unit, IDamageSource? damageSource)
         {
             Unit = unit;
-            KillingFaction = killingFaction;
+            DamageSource = damageSource;
         }
     }
 }

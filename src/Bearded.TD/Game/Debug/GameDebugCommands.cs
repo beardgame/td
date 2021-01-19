@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Commands.Debug;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
@@ -27,7 +28,7 @@ namespace Bearded.TD.Game.Debug
         private static void killAll(Logger logger, CommandParameters _) => run(logger, gameInstance =>
         {
             gameInstance.RequestDispatcher.Dispatch(
-                gameInstance.Me, KillAllEnemies.Request(gameInstance, gameInstance.Me.Faction));
+                gameInstance.Me, KillAllEnemies.Request(gameInstance, DivineIntervention.DamageSource));
         });
 
         [Command("game.repairall")]
