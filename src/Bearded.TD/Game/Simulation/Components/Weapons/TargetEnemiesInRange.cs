@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
             if (Owner.Owner is ISelectable owner)

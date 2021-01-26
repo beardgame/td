@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
     {
         private bool sparked;
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
         }
 

@@ -1,6 +1,6 @@
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -8,20 +8,25 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Components.Generic
 {
     [Component("spawnObjectOnHit")]
-    class SpawnObjectOnHit<T> : Component<T, ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
+    sealed class SpawnObjectOnHit<T>
+        : Component<T, ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
         where T : GameObject, IPositionable, IComponentOwner
     {
         public SpawnObjectOnHit(ISpawnObjectOnHitParameters parameters) : base(parameters)
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
-            if(Parameters.OnHitEnemy)
+            if (Parameters.OnHitEnemy)
+            {
                 Events.Subscribe<HitEnemy>(this);
+            }
 
-            if(Parameters.OnHitLevel)
+            if (Parameters.OnHitLevel)
+            {
                 Events.Subscribe<HitLevel>(this);
+            }
         }
 
         public void HandleEvent(HitLevel @event)

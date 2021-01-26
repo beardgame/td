@@ -15,7 +15,7 @@ namespace Bearded.TD.Meta
         private static readonly Assembly thisAssembly = typeof(UserSettings).Assembly;
         private static readonly char[] lineEndingChars = {'\n', '\r'};
 
-        private static void initialiseCommandParameters()
+        private static void initializeCommandParameters()
         {
             var allParameters = getFieldsOf(typeof(UserSettings)).ToList();
 

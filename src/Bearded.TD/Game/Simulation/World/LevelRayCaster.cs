@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Simulation.World
 
         public void StartEnumeratingTiles(Level level, Ray ray)
         {
-            initialise(ray, Level.GetTile(ray.Start));
+            initialize(ray, Level.GetTile(ray.Start));
             firstMove = true;
         }
 
@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Simulation.World
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void initialise(Ray ray, Tile startTile)
+        private void initialize(Ray ray, Tile startTile)
         {
             var startTilePosition = Level.GetPosition(startTile);
             var relativeStartTilePosition = (ray.Start - startTilePosition).NumericValue;

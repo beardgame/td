@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -18,7 +17,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageOwner
+    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageSource
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
@@ -26,6 +25,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
         public Id<Building> Id { get; }
+
+        private readonly DamageExecutor damageExecutor;
 
         public bool IsCompleted { get; private set; }
         private bool isDead;
@@ -38,14 +39,25 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id = id;
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
+            damageExecutor = new DamageExecutor(Events);
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
-        public void Damage(DamageInfo damage)
+        public void AttributeDamage(IMortal target, DamageResult damageResult)
         {
-            Events.Send(new TakeDamage(damage));
+            Events.Send(new CausedDamage(target, damageResult));
+        }
+
+        public void AttributeKill(IMortal target)
+        {
+            Events.Send(new CausedKill(target));
+        }
+
+        public DamageResult Damage(DamageInfo damage)
+        {
+            return damageExecutor.Damage(damage);
         }
 
         public void OnDeath()

@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
             public void Execute()
             {
-                game.InitialiseState(new GameState(game.Meta, gameSettings));
+                game.InitializeState(new GameState(game.Meta, gameSettings));
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);

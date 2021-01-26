@@ -80,7 +80,7 @@ namespace Bearded.TD.Utilities.Console
                 parameterCompletion.Add(parameterId, new PrefixTrie(prefixes));
         }
 
-        public static void Initialise()
+        public static void Initialize()
         {
             if (Prefixes != null)
                 throw new Exception("Do not initialise more than once!");

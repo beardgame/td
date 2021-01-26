@@ -9,19 +9,16 @@ using static Bearded.TD.Constants.Game.World;
 namespace Bearded.TD.Game.Simulation.Components.Damage
 {
     [Component("damageOverTimeArea")]
-    class DamageOverTimeArea<T> : Component<T, IDamageOverTimeAreaParameters>
+    sealed class DamageOverTimeArea<T> : Component<T, IDamageOverTimeAreaParameters>
         where T : GameObject, IPositionable, IComponentOwner
     {
-        private IDamageOwner damageSource;
+        private IDamageSource? damageSource;
 
-        public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters)
-        {
-        }
+        public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters) {}
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
-            damageSource = Owner.FindInComponentOwnerTree<IDamageOwner>()
-                .ValueOrDefault(new DummyDamageOwner(Owner.Game.RootFaction));
+            damageSource = Owner.FindInComponentOwnerTree<IDamageSource>().ValueOrDefault(() => null);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -56,7 +53,8 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
                     if (distanceSquared < rangeSquared)
                     {
-                        unit.Damage(damageInfo);
+                        var result = unit.Damage(damageInfo);
+                        Events.Send(new CausedDamage(unit, result));
                     }
                 }
             }

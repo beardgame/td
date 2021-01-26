@@ -64,7 +64,7 @@ namespace Bearded.TD
         {
             Serializers<Player, GameInstance>.Initialize();
 
-            ConsoleCommands.Initialise();
+            ConsoleCommands.Initialize();
             UserSettings.Load(logger);
             UserSettings.Save(logger);
 

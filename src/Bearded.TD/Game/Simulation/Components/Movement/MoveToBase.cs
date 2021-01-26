@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Components.Movement
 
         public MoveToBase(IMoveToBaseParameters parameters) : base(parameters) { }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             tileWalker = new TileWalker(this, Owner.Game.Level, Owner.CurrentTile);
             passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.WalkingUnit);

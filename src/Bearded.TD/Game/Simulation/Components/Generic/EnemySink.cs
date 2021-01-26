@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
     {
         private Maybe<Health<Building>> healthComponent;
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             foreach (var tile in Owner.OccupiedTiles)
                 Owner.Game.Navigator.AddSink(tile);

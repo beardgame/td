@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Components.Water
         {
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
         }
 

@@ -87,7 +87,7 @@ namespace Bearded.TD.Game.Simulation
         {
             validateLoadingCanBeFinished();
 
-            Navigator.Initialise();
+            Navigator.Initialize();
             finishedLoading = true;
         }
 

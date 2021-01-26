@@ -5,6 +5,8 @@ using amulware.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
@@ -21,13 +23,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [ComponentOwner]
-    class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>
+    sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>, IListener<CausedDamage>
     {
         public Building DamageSource { get; }
 
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly ComponentCollection<Projectile> components;
-        private readonly ComponentEvents events = new ComponentEvents();
+        private readonly ComponentEvents events = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
 
@@ -37,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
         {
             this.blueprint = blueprint;
             DamageSource = damageSource;
@@ -56,10 +58,17 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             foreach (var upgrade in DamageSource.AppliedUpgrades)
             {
                 if (!upgrade.CanApplyTo(components))
+                {
                     continue;
+                }
 
                 upgrade.ApplyTo(components);
             }
+        }
+
+        public void HandleEvent(CausedDamage @event)
+        {
+            DamageSource.AttributeDamage(@event.Target, @event.Result);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -94,11 +103,13 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                     Delete();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
             }
 
             if (Deleted)
+            {
                 return;
+            }
 
             components.Update(elapsedTime);
         }
@@ -108,7 +119,9 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             components.Draw(drawers);
 
             if (!UserSettings.Instance.Debug.ProjectileDots)
+            {
                 return;
+            }
 
             drawers.Primitives.FillRectangle(
                 Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f), Color.Yellow);

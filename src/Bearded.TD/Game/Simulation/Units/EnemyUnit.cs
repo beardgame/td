@@ -33,12 +33,13 @@ namespace Bearded.TD.Game.Simulation.Units
         IMortal,
         IPositionable,
         ISyncable,
-        IDamageOwner
+        IDamageSource
     {
         public Id<EnemyUnit> Id { get; }
 
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
+        private readonly DamageExecutor damageExecutor;
         private Unit radius;
 
         private readonly ComponentEvents events = new();
@@ -49,14 +50,13 @@ namespace Bearded.TD.Game.Simulation.Units
         private bool isDead;
 
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
-        public Faction Faction => Game.RootFaction;
 
         public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
         public bool IsMoving => enemyMovement.IsMoving;
         public Circle CollisionCircle => new(Position.XY(), radius);
 
-        private IDamageOwner? lastDamageSource;
+        private IDamageSource? lastDamageSource;
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
@@ -65,6 +65,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             components = new ComponentCollection<EnemyUnit>(this, events);
             enemyMovement = new EnemyMovementDummy(currentTile);
+            damageExecutor = new DamageExecutor(events);
         }
 
         protected override void OnAdded()
@@ -99,7 +100,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             if (isDead)
             {
-                this.Sync(KillUnit.Command, this, lastDamageSource?.Faction);
+                this.Sync(KillUnit.Command, this, lastDamageSource);
             }
         }
 
@@ -129,10 +130,10 @@ namespace Bearded.TD.Game.Simulation.Units
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
-        public void Damage(DamageInfo damageInfo)
+        public DamageResult Damage(DamageInfo damageInfo)
         {
-            lastDamageSource = damageInfo.Source;
-            events.Send(new TakeDamage(damageInfo));
+            lastDamageSource = damageInfo.Source ?? lastDamageSource;
+            return damageExecutor.Damage(damageInfo);
         }
 
         public void OnDeath()
@@ -140,10 +141,21 @@ namespace Bearded.TD.Game.Simulation.Units
             isDead = true;
         }
 
-        public void Execute(Faction? killingBlowFaction)
+        public void Kill(IDamageSource? damageSource)
         {
-            Game.Meta.Events.Send(new EnemyKilled(this, killingBlowFaction));
+            Game.Meta.Events.Send(new EnemyKilled(this, damageSource));
+            damageSource?.AttributeKill(this);
             Delete();
+        }
+
+        public void AttributeDamage(IMortal target, DamageResult damageResult)
+        {
+            events.Send(new CausedDamage(target, damageResult));
+        }
+
+        public void AttributeKill(IMortal target)
+        {
+            events.Send(new CausedKill(target));
         }
 
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();

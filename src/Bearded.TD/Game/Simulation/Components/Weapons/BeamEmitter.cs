@@ -6,7 +6,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -25,8 +24,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
         private const double minDamagePerSecond = .05;
 
         private bool drawBeam;
-        private readonly List<(Position2 start, Position2 end, float damageFactor)> beamSegments =
-            new List<(Position2 start, Position2 end, float damageFactor)>();
+        private readonly List<(Position2 start, Position2 end, float damageFactor)> beamSegments = new();
 
         public BeamEmitter(IBeamEmitterParameters parameters)
             : base(parameters)
@@ -88,13 +86,14 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             }
         }
 
-        private void damageEnemy(EnemyUnit enemy, double damagePerSecond, TimeSpan elapsedTime)
+        private void damageEnemy(IMortal enemy, double damagePerSecond, TimeSpan elapsedTime)
         {
-            enemy.Damage(new DamageInfo(
+            var result = enemy.Damage(new DamageInfo(
                 StaticRandom.Discretise((float) (damagePerSecond * elapsedTime.NumericValue)),
                 DamageType.Energy,
                 Weapon.Owner as Building
             ));
+            Events.Send(new CausedDamage(enemy, result));
         }
 
         public override void Draw(CoreDrawers drawers)

@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
             tracer = new TrailTracer(parameters.Timeout);
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             if (Parameters.SurviveObjectDeletion)
             {

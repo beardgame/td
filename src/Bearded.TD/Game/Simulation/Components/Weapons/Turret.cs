@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             weapon = new Weapon(Parameters.Weapon, this);
         }

@@ -22,12 +22,7 @@ namespace Bearded.TD.Game.Commands.Debug
                     building.GetComponents<Health<Building>>()
                         .MaybeSingle()
                         .Match(health => building.Damage(
-                            new DamageInfo(
-                                -health.MaxHealth,
-                                DamageType.DivineIntervention,
-                                new DummyDamageOwner(Game.State.RootFaction)
-                                )
-                            ));
+                            new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention, null)));
                 }
             }
         }

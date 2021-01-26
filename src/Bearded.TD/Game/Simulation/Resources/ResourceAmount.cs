@@ -1,6 +1,5 @@
 using System;
 using Bearded.TD.Utilities.SpaceTime;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {

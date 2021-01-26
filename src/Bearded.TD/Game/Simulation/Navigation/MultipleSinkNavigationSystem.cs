@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
                 graph[tile] = none;
         }
 
-        public void Initialise()
+        public void Initialize()
         {
             events.Subscribe(this);
         }

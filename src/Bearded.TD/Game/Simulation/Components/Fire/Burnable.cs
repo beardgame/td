@@ -1,7 +1,6 @@
 using System;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Events;
@@ -16,13 +15,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components.Fire
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IPreviewListener<TakeDamage>, IListener<Spark>
         where T : GameObject, IPositionable
     {
-        private IDamageOwner lastFireHitOwner;
-        private IDamageOwner damageSource;
+        private IDamageSource? lastFireHitOwner;
+        private IDamageSource? damageSource;
 
-        private Combustable combustable;
+        private Combustable combustable = null!;
         private double damagePerFuel;
 
         private float fireRenderStrengthGoal = 1;
@@ -31,7 +30,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             combustable = new Combustable(
                 Parameters.FuelAmount,
@@ -42,7 +41,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             combustable.Extinguished += onExtinguished;
 
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Events.Subscribe<TookDamage>(this);
+            Events.Subscribe<TakeDamage>(this);
             Events.Subscribe<Spark>(this);
         }
 
@@ -51,7 +50,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             Events.Send(new FireExtinguished());
         }
 
-        public void HandleEvent(TookDamage @event)
+        public void PreviewEvent(ref TakeDamage @event)
         {
             if (dealingDamageToOwner)
                 return;
@@ -76,7 +75,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
                     break;
             }
 
-            lastFireHitOwner = damage.Source;
+            lastFireHitOwner = damage.Source ?? lastFireHitOwner;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -90,12 +89,12 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
 
             combustable.Update(elapsedTime);
 
-            if (!combustable.IsOnFire) return;
-
-            if (damageSource == null)
+            if (!combustable.IsOnFire)
             {
-                damageSource = lastFireHitOwner;
+                return;
             }
+
+            damageSource ??= lastFireHitOwner;
 
             var damage = new DamageInfo(
                 StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
@@ -103,7 +102,8 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
                 damageSource);
 
             dealingDamageToOwner = true;
-            Events.Send(new TakeDamage(damage));
+            var takeDamage = new TakeDamage(damage);
+            Events.Preview(ref takeDamage);
             dealingDamageToOwner = false;
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
