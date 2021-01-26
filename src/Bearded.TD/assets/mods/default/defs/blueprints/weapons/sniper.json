@@ -14,7 +14,7 @@
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "sniperProjectile",
-                "muzzleVelocity" : 50,
+                "muzzleSpeed" : 50,
                 "fireRate" : 1
             }
         },

@@ -14,7 +14,7 @@ namespace Bearded.TD.Content.Models
 
         // TODO: This should be muzzleSPEED
         [Modifiable(10.0)]
-        Speed MuzzleVelocity { get; }
+        Speed MuzzleSpeed { get; }
 
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
