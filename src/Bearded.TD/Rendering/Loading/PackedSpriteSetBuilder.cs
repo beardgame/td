@@ -3,11 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
-using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.RenderSettings;
 using amulware.Graphics.Textures;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
@@ -21,8 +19,8 @@ namespace Bearded.TD.Rendering.Loading
     {
         private readonly int width;
         private readonly int height;
-        private readonly Dictionary<string, byte[]> samplerData = new Dictionary<string, byte[]>();
-        private readonly Dictionary<string, Rectangle> nameToRectangle = new Dictionary<string, Rectangle>();
+        private readonly Dictionary<string, byte[]> samplerData = new();
+        private readonly Dictionary<string, Rectangle> nameToRectangle = new();
 
         public PackedSpriteSetBuilder(List<string> samplers, int width, int height)
         {
@@ -74,21 +72,17 @@ namespace Bearded.TD.Rendering.Loading
                 premultiply.Transform(ref bytes, ref w, ref h);
             });
 
-            // TODO: mesh builder should not be a responsibility of the packed sprite set so we can use multiple mesh
-            //     builders for different use cases using the same sprites.
-            var (textureUniforms, meshBuilder) = glActions.RunAndReturn(() => createGlEntities(pixelate));
-            var sprites = createSprites(meshBuilder);
+            var textureUniforms = glActions.RunAndReturn(() => createGlEntities(pixelate));
+            var sprites = createSprites();
 
             return new PackedSpriteSet(
                 textureUniforms,
-                meshBuilder,
                 sprites,
                 shader
             );
         }
 
-        private (List<TextureUniform>, ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>)
-            createGlEntities(bool pixelate)
+        private List<TextureUniform> createGlEntities(bool pixelate)
         {
             var textureUniforms = samplerData.Select(
                 (kvp, i) =>
@@ -111,29 +105,27 @@ namespace Bearded.TD.Rendering.Loading
                 }
             ).ToList();
 
-            var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
-
-            return (textureUniforms, meshBuilder);
+            return textureUniforms;
         }
 
-        private Dictionary<string, ISprite> createSprites(IIndexedTrianglesMeshBuilder<UVColorVertex, ushort> meshBuilder)
+        private Dictionary<string, ISprite> createSprites()
         {
             return nameToRectangle.ToDictionary(
                 pair => pair.Key,
-                pair => createSprite(meshBuilder, pair.Value)
+                pair => createSprite(pair.Value)
             );
         }
 
-        private ISprite createSprite(IIndexedTrianglesMeshBuilder<UVColorVertex, ushort> meshBuilder, Rectangle rectangle)
+        private ISprite createSprite(Rectangle rectangle)
         {
             var uv = toUvRectangle(rectangle);
 
-            return new Sprite(meshBuilder, uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
+            return new Sprite(uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
         }
 
         private UVRectangle toUvRectangle(Rectangle rect)
         {
-            return new UVRectangle(
+            return new (
                 (float)rect.Left / width, (float)rect.Right / width,
                 (float)rect.Top / height, (float)rect.Bottom / height);
         }

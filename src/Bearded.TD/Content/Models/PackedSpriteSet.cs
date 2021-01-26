@@ -18,20 +18,17 @@ namespace Bearded.TD.Content.Models
         private readonly ImmutableArray<TextureUniform> textures;
         private readonly IDictionary<string, ISprite> sprites;
 
-        // TODO: extract these. sprite sets should only be the textures and templates for drawing sprites
-        // someone else links a sprite set up with a shader and vertex format to make it drawable
-        // see WithVertex() below for a start!
+        // TODO: this should only serve as a 'default shader' and maybe not even that,
+        // but not having it we need to specify it everywhere where we refer to the sprite and it gets a mess
+        // the implicit association with between shader code and vertex fields is also not represented anywhere :/
         private readonly Shader shader;
-        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> MeshBuilder { get; }
 
         public PackedSpriteSet(
             IEnumerable<TextureUniform> textures,
-            ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> meshBuilder,
             IDictionary<string, ISprite> sprites,
             Shader shader)
         {
             this.textures = textures.ToImmutableArray();
-            MeshBuilder = meshBuilder;
             this.sprites = sprites;
             this.shader = shader;
         }
@@ -48,18 +45,6 @@ namespace Bearded.TD.Content.Models
             return DrawableSpriteSet.Create(textures, sprites, shader, createVertex);
         }
 
-        public IRenderer CreateRendererWithSettings(params IRenderSetting[] additionalSettings)
-        {
-            var renderer = BatchedRenderer.From(
-                MeshBuilder.ToRenderable(),
-                textures.Concat(additionalSettings)
-                );
-
-            shader.RendererShader.UseOnRenderer(renderer);
-
-            return renderer;
-        }
-
         // TODO: Not obvious what should disposed here and what not - maybe better to just have a dispose bag per mod?
         public void Dispose()
         {
@@ -67,7 +52,6 @@ namespace Bearded.TD.Content.Models
             {
                 textureUniform.Value.Dispose();
             }
-            MeshBuilder.Dispose();
         }
     }
 }
