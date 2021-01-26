@@ -169,7 +169,6 @@ namespace Bearded.TD.Game
             if (this.state != null)
                 throw new InvalidOperationException("Cannot override the game state once set.");
 
-            // TODO: Start() is a better place for this, but the game mode is currently in blueprints
             gatherBlueprints();
 
             this.state = state;

@@ -22,9 +22,10 @@ namespace Bearded.TD.Content.Serialization.Converters
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
-            throw new NotImplementedException();
+            throw new NotSupportedException();
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jsonModel = serializer.Deserialize<TechnologyBlueprint.TechnologyUnlock>(reader);
             return jsonModel.ToGameModel(buildingResolver, upgradeResolver);
