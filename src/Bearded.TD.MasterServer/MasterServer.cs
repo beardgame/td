@@ -20,8 +20,6 @@ namespace Bearded.TD.MasterServer
         private readonly Dictionary<long, Lobby> lobbiesById = new();
         private long lastLobbyPrune;
 
-        private Thread? runThread;
-
         public MasterServer(CommandLineOptions options, Logger logger)
         {
             this.logger = logger;
@@ -35,22 +33,6 @@ namespace Bearded.TD.MasterServer
         }
 
         public void Start()
-        {
-            if (runThread != null)
-            {
-                throw new NotSupportedException("Cannot run a master server more than once.");
-            }
-            runThread = new Thread(runAsync);
-            runThread.Start();
-        }
-
-        public void Stop()
-        {
-            runThread?.Interrupt();
-            runThread = null;
-        }
-
-        private void runAsync()
         {
             while (true)
             {

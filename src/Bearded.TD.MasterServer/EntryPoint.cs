@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.Utilities.IO;
+﻿using Bearded.Utilities.IO;
 using CommandLine;
 
 namespace Bearded.TD.MasterServer
@@ -16,18 +15,6 @@ namespace Bearded.TD.MasterServer
             var server = new MasterServer(options, new Logger());
 
             server.Start();
-
-            Console.WriteLine("Master server started. Press 'Q' to quit.");
-            while (true)
-            {
-                var key = Console.ReadKey();
-                if (key.Key == ConsoleKey.Q)
-                {
-                    break;
-                }
-            }
-
-            server.Stop();
         }
     }
 }
