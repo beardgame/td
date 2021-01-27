@@ -15,15 +15,19 @@ namespace Bearded.TD.MasterServer
         {
             var server = new MasterServer(options, new Logger());
 
-            server.Run();
+            server.Start();
 
             Console.WriteLine("Master server started. Press 'Q' to quit.");
             while (true)
             {
                 var key = Console.ReadKey();
                 if (key.Key == ConsoleKey.Q)
+                {
                     break;
+                }
             }
+
+            server.Stop();
         }
     }
 }

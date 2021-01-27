@@ -9,7 +9,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.MasterServer
 {
-    class MasterServer
+    sealed class MasterServer
     {
         private const long staleLobbyAgeSeconds = 30;
         private const long secondsBetweenLobbyPrunes = 5;
@@ -17,8 +17,10 @@ namespace Bearded.TD.MasterServer
         private readonly Logger logger;
         private readonly NetPeer peer;
 
-        private readonly Dictionary<long, Lobby> lobbiesById = new Dictionary<long, Lobby>();
+        private readonly Dictionary<long, Lobby> lobbiesById = new();
         private long lastLobbyPrune;
+
+        private Thread? runThread;
 
         public MasterServer(CommandLineOptions options, Logger logger)
         {
@@ -32,22 +34,42 @@ namespace Bearded.TD.MasterServer
 			peer.Start();
         }
 
-        public void Run()
+        public void Start()
+        {
+            if (runThread != null)
+            {
+                throw new NotSupportedException("Cannot run a master server more than once.");
+            }
+            runThread = new Thread(runAsync);
+            runThread.Start();
+        }
+
+        public void Stop()
+        {
+            runThread?.Interrupt();
+            runThread = null;
+        }
+
+        private void runAsync()
         {
             while (true)
             {
-                while (peer.ReadMessage(out var msg))
+                // Wait until we receive a new message, but at most 5 seconds at a time to ensure we prune lobbies
+                // regularly.
+                if (peer.MessageReceivedEvent.WaitOne(5000))
                 {
-                    handleIncomingMessage(msg);
+                    while (peer.ReadMessage(out var msg))
+                    {
+                        handleIncomingMessage(msg);
+                    }
                 }
 
                 if (DateTimeOffset.Now.ToUnixTimeSeconds() - lastLobbyPrune >= secondsBetweenLobbyPrunes)
                 {
                     pruneLobbies();
                 }
-
-                Thread.Sleep(100);
             }
+            // ReSharper disable once FunctionNeverReturns
         }
 
         private void handleIncomingMessage(NetIncomingMessage msg)
@@ -86,7 +108,7 @@ namespace Bearded.TD.MasterServer
                     registerLobby(request.RegisterLobby, endpoint);
                     break;
                 case Proto.MasterServerMessage.RequestOneofCase.ListLobbies:
-                    listLobbies(request.ListLobbies, endpoint);
+                    listLobbies(endpoint);
                     break;
                 case Proto.MasterServerMessage.RequestOneofCase.IntroduceToLobby:
                     introduceToLobby(request.IntroduceToLobby, endpoint);
@@ -114,7 +136,7 @@ namespace Bearded.TD.MasterServer
 			lobbiesById.Add(request.Lobby.Id, lobby);
         }
 
-        private void listLobbies(Proto.ListLobbiesRequest request, IPEndPoint endpoint)
+        private void listLobbies(IPEndPoint endpoint)
         {
             logger.Debug?.Log("Received a request for lobby list.");
             foreach (var lobby in lobbiesById.Values)

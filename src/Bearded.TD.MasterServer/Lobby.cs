@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Bearded.TD.MasterServer
 {
-    class Lobby
+    sealed class Lobby
     {
         public Proto.Lobby LobbyProto { get; }
         public IPEndPoint InternalEndPoint { get; }
