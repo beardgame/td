@@ -17,12 +17,12 @@ namespace Bearded.TD.Game.Simulation.GameLoop
         private static readonly TimeSpan trailTimeout = 1.S();
 
         private readonly Tile startTile;
-        private TileWalker tileWalker;
-        private PassabilityLayer passabilityLayer;
-        private readonly TrailTracer trail = new TrailTracer(trailTimeout, newPartDistanceThreshold: 2.U());
+        private TileWalker? tileWalker;
+        private PassabilityLayer passabilityLayer = null!;
+        private readonly TrailTracer trail = new(trailTimeout, newPartDistanceThreshold: 2.U());
 
-        public Position2 Position => tileWalker?.Position ?? Level.GetPosition(CurrentTile);
-        public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
+        private Position2 position => tileWalker?.Position ?? Level.GetPosition(currentTile);
+        private Tile currentTile => tileWalker?.CurrentTile ?? startTile;
 
         private Instant? deleteAt;
 
@@ -36,7 +36,6 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             base.OnAdded();
 
             tileWalker = new TileWalker(this, Game.Level, startTile);
-
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
         }
 
@@ -44,16 +43,16 @@ namespace Bearded.TD.Game.Simulation.GameLoop
         {
             if (deleteAt == null)
             {
-                tileWalker.Update(elapsedTime, Constants.Game.Enemy.PathIndicatorSpeed);
+                tileWalker!.Update(elapsedTime, Constants.Game.Enemy.PathIndicatorSpeed);
             }
             else if (Game.Time > deleteAt)
             {
                 Delete();
             }
 
-            var h = Game.GeometryLayer[CurrentTile].DrawInfo.Height;
+            var h = Game.GeometryLayer[currentTile].DrawInfo.Height;
 
-            trail.Update(Game.Time, Position.WithZ(h + 0.1.U()), deleteAt != null);
+            trail.Update(Game.Time, position.WithZ(h + 0.1.U()), deleteAt != null);
         }
 
         public override void Draw(CoreDrawers drawers)
@@ -61,15 +60,15 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.Sprites.GetSprite("circle-soft");
 
-            TrailRenderer.DrawTrail(trail, sprite, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha(0));
+            TrailRenderer.DrawTrail(trail, sprite, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha());
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
         public Direction GetNextDirection()
         {
-            var desiredDirection = Game.Navigator.GetDirections(CurrentTile);
-            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            var desiredDirection = Game.Navigator.GetDirections(currentTile);
+            var isPassable = passabilityLayer[currentTile.Neighbour(desiredDirection)].IsPassable;
 
             if (!isPassable)
                 deleteAfterTimeout();
