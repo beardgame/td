@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
@@ -10,11 +12,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Synchronization
 {
-    class ServerGameSynchronizer : IGameSynchronizer
+    sealed class ServerGameSynchronizer : IGameSynchronizer
     {
-        private static readonly TimeSpan timeBetweenSyncs = new TimeSpan(.5);
+        private static readonly TimeSpan timeBetweenSyncs = 0.5.S();
 
-        private readonly Dictionary<Type, object> synchronizers = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> synchronizers = new();
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         private readonly Logger logger;
         private Instant nextSync = Instant.Zero;
@@ -24,7 +26,8 @@ namespace Bearded.TD.Game.Synchronization
             this.commandDispatcher = commandDispatcher;
             this.logger = logger;
 
-            synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncUnits.Command));
+            synchronizers.Add(typeof(Building), new Synchronizer<Building>(SyncBuildings.Command));
+            synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncEnemies.Command));
         }
 
         public void RegisterSyncable<T>(T syncable)
@@ -59,9 +62,9 @@ namespace Bearded.TD.Game.Synchronization
             void SendBatch(ICommandDispatcher<GameInstance> commandDispatcher);
         }
 
-        private class Synchronizer<T> : ISynchronizer where T : IDeletable
+        private sealed class Synchronizer<T> : ISynchronizer where T : IDeletable
         {
-            private readonly Queue<T> queue = new Queue<T>();
+            private readonly Queue<T> queue = new();
 
             private readonly Func<IEnumerable<T>, ISerializableCommand<GameInstance>> commandCreator;
             private readonly int batchSize;

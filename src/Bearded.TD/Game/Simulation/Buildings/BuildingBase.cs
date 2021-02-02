@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private PositionedFootprint footprint;
 
         protected ComponentCollection<T> Components { get; }
-        protected ComponentEvents Events { get; } = new ComponentEvents();
+        protected ComponentEvents Events { get; } = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
 

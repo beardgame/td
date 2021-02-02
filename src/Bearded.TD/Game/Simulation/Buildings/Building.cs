@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Commands;
@@ -9,6 +10,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
@@ -18,12 +20,14 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageSource
+    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageSource, IMortal, ISyncable
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
         private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
+
+        private ImmutableArray<ISyncable> syncables;
 
         public Id<Building> Id { get; }
 
@@ -69,10 +73,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             Game.IdAs(this);
+            Game.Meta.Synchronizer.RegisterSyncable(this);
 
             OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
 
             base.OnAdded();
+
+            syncables = Components.Get<ISyncable>().ToImmutableArray();
         }
 
         public void SetBuildProgress(double newBuildProgress, int healthAdded)
@@ -142,5 +149,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
             Faction.Technology?.GetApplicableUpgradesFor(this) ?? Enumerable.Empty<IUpgradeBlueprint>();
+
+        public IStateToSync GetCurrentStateToSync() =>
+            new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }
