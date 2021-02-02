@@ -25,7 +25,7 @@ namespace Bearded.TD.Game
         public GameScheduler? Scheduler { get; }
         public GameMeta Meta { get; }
 
-        public ChatLog ChatLog { get; } = new ChatLog();
+        public ChatLog ChatLog { get; } = new();
         public PlayerCursors PlayerCursors { get; }
         public IdManager Ids { get; }
         public LevelDebugMetadata LevelDebugMetadata { get; }
@@ -47,7 +47,7 @@ namespace Bearded.TD.Game
         private SelectionManager? selectionManager;
         public SelectionManager SelectionManager => selectionManager!;
 
-        private readonly IdCollection<Player> players = new IdCollection<Player>();
+        private readonly IdCollection<Player> players = new();
         public ReadOnlyCollection<Player> Players => players.AsReadOnly;
         public ReadOnlyCollection<Player> SortedPlayers
         {
