@@ -6,6 +6,7 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Utilities;
@@ -43,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
-            => Blueprint.GetComponentsForBuilding();
+            => Blueprint.GetComponentsForBuilding().Append(new StatisticCollector<Building>());
 
         public void AttributeDamage(IMortal target, DamageResult damageResult)
         {
