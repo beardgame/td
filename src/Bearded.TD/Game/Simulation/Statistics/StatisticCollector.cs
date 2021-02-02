@@ -52,10 +52,7 @@ namespace Bearded.TD.Game.Simulation.Statistics
 
         public bool RemoveUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
 
-        public IStateToSync GetCurrentStateToSync()
-        {
-            throw new NotImplementedException();
-        }
+        public IStateToSync GetCurrentStateToSync() => new StatisticCollectorStateToSync(this);
 
         private class StatisticCollectorStateToSync : IStateToSync
         {
