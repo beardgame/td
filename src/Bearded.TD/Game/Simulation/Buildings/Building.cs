@@ -6,7 +6,9 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
@@ -20,18 +22,27 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IDamageSource, IMortal, ISyncable
+    sealed class Building :
+        PlacedBuildingBase<Building>,
+        IIdable<Building>,
+        IDamageSource,
+        IListener<ReportAdded>,
+        IMortal,
+        IReportSubject,
+        ISyncable
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
         private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
-        private ImmutableArray<ISyncable> syncables;
-
         public Id<Building> Id { get; }
 
         private readonly DamageExecutor damageExecutor;
+        private readonly List<IReport> reports = new();
+        private ImmutableArray<ISyncable> syncables;
+
+        public IReadOnlyCollection<IReport> Reports { get; }
 
         public bool IsCompleted { get; private set; }
         private bool isDead;
@@ -45,6 +56,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
             damageExecutor = new DamageExecutor(Events);
+            Reports = reports.AsReadOnly();
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
@@ -65,6 +77,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
+        public void HandleEvent(ReportAdded @event) => reports.Add(@event.Report);
+
         public void OnDeath()
         {
             isDead = true;
@@ -76,6 +90,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Game.Meta.Synchronizer.RegisterSyncable(this);
 
             OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
+
+            Events.Subscribe(this);
 
             base.OnAdded();
 

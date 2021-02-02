@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Simulation.Statistics
 
         public IStateToSync GetCurrentStateToSync() => new StatisticCollectorStateToSync(this);
 
-        private class StatisticCollectorStateToSync : IStateToSync
+        private sealed class StatisticCollectorStateToSync : IStateToSync
         {
             private readonly StatisticCollector<T> source;
             private long totalDamage;
@@ -77,6 +77,23 @@ namespace Bearded.TD.Game.Simulation.Statistics
             {
                 source.totalDamage = totalDamage;
                 source.totalKills = totalKills;
+            }
+        }
+
+        private class StatisticsReport : IStatisticsReport
+        {
+            public long TotalDamage => source.totalDamage;
+            public long TotalKills => source.totalKills;
+            public long CurrentWaveDamage => source.currentWaveDamage;
+            public long CurrentWaveKills => source.currentWaveKills;
+            public long PreviousWaveDamage => source.previousWaveDamage;
+            public long PreviousWaveKills => source.previousWaveKills;
+
+            private readonly StatisticCollector<T> source;
+
+            public StatisticsReport(StatisticCollector<T> source)
+            {
+                this.source = source;
             }
         }
     }
