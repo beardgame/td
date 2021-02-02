@@ -111,6 +111,8 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                         if (game.Time >= script.SpawnStart)
                         {
                             phase = Phase.Spawning;
+                            game.Meta.Events.Send(
+                                new WaveStarted(script.Id, script.DisplayName));
                             updateResources();
                             updateSpawnQueue();
                         }

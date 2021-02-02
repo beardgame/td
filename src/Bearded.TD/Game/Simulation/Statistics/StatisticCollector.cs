@@ -3,21 +3,41 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics
 {
-    sealed class StatisticCollector<T> : IComponent<T>
+    sealed class StatisticCollector<T> : IComponent<T> where T : GameObject
     {
         private long totalDamage;
         private long totalKills;
 
+        private long currentWaveDamage;
+        private long currentWaveKills;
+
+        private long previousWaveDamage;
+        private long previousWaveKills;
+
         public void OnAdded(T owner, ComponentEvents events)
         {
-            events.Subscribe(Listener.ForEvent<CausedDamage>(e => totalDamage += e.Result.DamageTaken));
-            events.Subscribe(Listener.ForEvent<CausedKill>(_ => totalKills++));
+            events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
+            {
+                totalDamage += e.Result.DamageTaken;
+                currentWaveDamage += e.Result.DamageTaken;
+            }));
+            events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
+            {
+                totalKills++;
+                currentWaveKills++;
+            }));
+            owner.Game.Meta.Events.Subscribe(Listener.ForEvent<WaveStarted>(_ =>
+            {
+                (previousWaveDamage, currentWaveDamage) = (currentWaveDamage, 0);
+                (previousWaveKills, currentWaveKills) = (currentWaveKills, 0);
+            }));
         }
 
         public void Update(TimeSpan elapsedTime) {}
