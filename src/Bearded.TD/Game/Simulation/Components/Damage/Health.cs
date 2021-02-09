@@ -2,6 +2,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Meta;
@@ -34,6 +35,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         {
             Events.Subscribe<HealDamage>(this);
             Events.Subscribe<TakeDamage>(this);
+            Events.Send(new ReportAdded(new HealthReport(this)));
         }
 
         public void HandleEvent(HealDamage @event)
@@ -124,6 +126,19 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             public void Apply()
             {
                 source.CurrentHealth = new HitPoints(currentHealth);
+            }
+        }
+
+        private sealed class HealthReport : IHealthReport
+        {
+            public HitPoints CurrentHealth => source.CurrentHealth;
+            public HitPoints MaxHealth => source.MaxHealth;
+
+            private readonly Health<T> source;
+
+            public HealthReport(Health<T> source)
+            {
+                this.source = source;
             }
         }
     }

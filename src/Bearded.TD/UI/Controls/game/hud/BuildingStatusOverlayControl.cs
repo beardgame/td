@@ -28,7 +28,6 @@ namespace Bearded.TD.UI.Controls
         private readonly Binding<string> name = new();
         private readonly Binding<string> ownerName = new();
         private readonly Binding<Color> ownerColor = new();
-        private readonly Binding<string> health = new();
         private readonly Binding<IReportSubject> reports = new();
 
         public BuildingStatusOverlayControl(BuildingStatusOverlay model)
@@ -41,7 +40,6 @@ namespace Bearded.TD.UI.Controls
                 .AddEntityStatus(b => b
                     .WithName(name)
                     .AddTextAttribute("Owned by", ownerName, ownerColor)
-                    .AddTextAttribute("Health", health)
                     .WithReports(reports, new ReportControlFactory(model.Pulse))
                     .WithContent(upgradeOverview)
                     .WithCloseAction(model.Close))
@@ -50,7 +48,6 @@ namespace Bearded.TD.UI.Controls
             onBuildingSet();
 
             model.BuildingSet += onBuildingSet;
-            model.Pulse.Heartbeat += onBuildingUpdated;
             model.UpgradesUpdated += onUpgradesUpdated;
 
             upgradeOverview.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
@@ -78,13 +75,7 @@ namespace Bearded.TD.UI.Controls
             updateBuildingAttributes();
             reports.SetFromSource(model.Building as IReportSubject ?? new EmptyReportSubject());
             upgradeOverview.SetUpgrades(model.BuildingUpgrades, model.CanPlayerUpgradeBuilding);
-            onBuildingUpdated();
             onUpgradesUpdated();
-        }
-
-        private void onBuildingUpdated()
-        {
-            updateHealth();
         }
 
         private void onUpgradesUpdated()
@@ -98,12 +89,6 @@ namespace Bearded.TD.UI.Controls
             name.SetFromSource(model.Building.Blueprint.Name);
             ownerName.SetFromSource(model.Building.Faction.Name);
             ownerColor.SetFromSource(model.Building.Faction.Color);
-        }
-
-        private void updateHealth()
-        {
-            var h = model.BuildingHealth;
-            health.SetFromSource(h == null ? "N/A" : $"{h.Value.CurrentHealth} / {h.Value.MaxHealth}");
         }
 
         private sealed class UpgradeOverviewControl : CompositeControl

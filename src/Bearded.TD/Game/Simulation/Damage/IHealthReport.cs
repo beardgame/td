@@ -1,8 +1,10 @@
+using Bearded.TD.Game.Simulation.Reports;
+
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    interface IHealthReport
+    interface IHealthReport : IReport
     {
-        public HitPoints CurrentHitPoints { get; }
-        public HitPoints MaxHitPoints { get; }
+        public HitPoints CurrentHealth { get; }
+        public HitPoints MaxHealth { get; }
     }
 }

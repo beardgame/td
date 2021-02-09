@@ -1,4 +1,5 @@
 using System;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.UI.Factories;
@@ -29,7 +30,9 @@ namespace Bearded.TD.UI.Controls
         {
             return report switch
             {
+                IHealthReport healthReport => new HealthReportControl(healthReport),
                 IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
+
                 _ => throw new InvalidOperationException($"Cannot create control for report {report}")
             };
         }
