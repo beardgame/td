@@ -7,11 +7,11 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
@@ -28,6 +28,7 @@ namespace Bearded.TD.UI.Controls
     {
         private GameInstance? game;
         private Faction? playerFaction;
+        private Pulse pulse = null!;
 
         private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
         private readonly List<(BuildingUpgradeTask Task, BuildingUpgradeModel Model)> monitoredBuildingUpgrades = new();
@@ -35,29 +36,12 @@ namespace Bearded.TD.UI.Controls
         public IPlacedBuilding Building { get; private set; } = null!;
         public IReadOnlyCollection<BuildingUpgradeModel> BuildingUpgrades { get; }
 
+        public GameInstance Game => game!;
+        public IPulse Pulse => pulse;
+
         // TODO: invoke this event when the placeholder is replaced by the building instead of closing overlay
         public event VoidEventHandler? BuildingSet;
-        public event VoidEventHandler? BuildingUpdated;
         public event VoidEventHandler? UpgradesUpdated;
-
-        public (int CurrentHealth, int MaxHealth)? BuildingHealth
-        {
-            get
-            {
-                if (!(Building is Building b))
-                {
-                    return null;
-                }
-
-                var health = b.GetComponents<Health<Building>>().FirstOrDefault();
-                if (health == null)
-                {
-                    return null;
-                }
-
-                return (health.CurrentHealth, health.MaxHealth);
-            }
-        }
 
         public bool CanPlayerUpgradeBuilding =>
             playerFaction != null && ((Building as Building)?.CanBeUpgradedBy(playerFaction) ?? false);
@@ -75,6 +59,7 @@ namespace Bearded.TD.UI.Controls
                 return building.GetApplicableUpgrades().WhereNot(upgradesInProgress.Contains);
             }
         }
+
         public BuildingStatusOverlay()
         {
             BuildingUpgrades = buildingUpgrades.AsReadOnly();
@@ -88,6 +73,7 @@ namespace Bearded.TD.UI.Controls
 
             game = dependencies.Resolve<GameInstance>();
             playerFaction = game.Me.Faction;
+            pulse = new Pulse(game.State, Constants.UI.Statistics.TimeBetweenUIUpdates);
 
             game.Meta.Events.Subscribe<BuildingUpgradeFinished>(this);
             game.Meta.Events.Subscribe<BuildingUpgradeQueued>(this);
@@ -119,8 +105,7 @@ namespace Bearded.TD.UI.Controls
             {
                 model.Progress = task.ProgressPercentage;
             }
-
-            BuildingUpdated?.Invoke();
+            pulse.Update();
         }
 
         public void HandleEvent(UpgradeTechnologyUnlocked @event)

@@ -62,7 +62,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
 
             var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
-            var velocityXY = direction * Parameters.MuzzleVelocity;
+            var velocityXY = direction * Parameters.MuzzleSpeed;
 
             Game.Add(
                 new Projectile(
@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             var difference = targeter.Target.Position - Weapon.Position;
             var distance = difference.Length;
             // TODO: the division below should work in spacetime
-            var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleVelocity.NumericValue);
+            var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleSpeed.NumericValue);
             // TODO: TimeSpan.Squared would be nice to have
             var expectedDrop = Constants.Game.Physics.Gravity * expectedTimeToTarget * expectedTimeToTarget * 0.5f;
             var heightDifference = difference.Z;

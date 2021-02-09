@@ -47,6 +47,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             Velocity = velocity;
 
             components = new ComponentCollection<Projectile>(this, events);
+            events.Subscribe(this);
         }
 
         protected override void OnAdded()

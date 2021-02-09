@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
             {
                 drawers.InGameConsoleFont.DrawLine(
                     xyz: Owner.Position.NumericValue,
-                    text: health.CurrentHealth.ToString(),
+                    text: health.CurrentHealth.NumericValue.ToString(),
                     fontHeight: 1,
                     alignHorizontal: .5f,
                     alignVertical: .5f,

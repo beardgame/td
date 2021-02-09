@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 gameState.Add(building);
                 building.GetComponents<Health<Building>>()
                     .MaybeSingle()
-                    .Match(health => building.SetBuildProgress(1, health.MaxHealth - 1));
+                    .Match(health => building.SetBuildProgress(1, health.MaxHealth - new HitPoints(1)));
                 building.SetBuildCompleted();
             }
 

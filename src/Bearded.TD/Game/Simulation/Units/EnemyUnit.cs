@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Components.Movement;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
@@ -85,7 +84,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             syncables = components.Get<ISyncable>().ToImmutableArray();
 
-            radius = ((MathF.Atan(.005f * (health.MaxHealth - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
+            radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         }
 
         protected override void OnDelete()

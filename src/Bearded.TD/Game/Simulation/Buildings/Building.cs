@@ -1,13 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Components.Statistics;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
@@ -17,7 +22,14 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    sealed class Building : PlacedBuildingBase<Building>, IIdable<Building>, IMortal, IDamageSource
+    sealed class Building :
+        PlacedBuildingBase<Building>,
+        IIdable<Building>,
+        IDamageSource,
+        IListener<ReportAdded>,
+        IMortal,
+        IReportSubject,
+        ISyncable
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
@@ -27,6 +39,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public Id<Building> Id { get; }
 
         private readonly DamageExecutor damageExecutor;
+        private readonly List<IReport> reports = new();
+        private ImmutableArray<ISyncable> syncables;
+
+        public IReadOnlyCollection<IReport> Reports { get; }
 
         public bool IsCompleted { get; private set; }
         private bool isDead;
@@ -40,10 +56,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
             damageExecutor = new DamageExecutor(Events);
+            Reports = reports.AsReadOnly();
+            reports.Add(new UpgradeReport(this));
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
-            => Blueprint.GetComponentsForBuilding();
+            => Blueprint.GetComponentsForBuilding().Append(new StatisticCollector<Building>());
 
         public void AttributeDamage(IMortal target, DamageResult damageResult)
         {
@@ -60,6 +78,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
+        public void HandleEvent(ReportAdded @event)
+        {
+            // Use an Insert to ensure that the upgrades report is always last.
+            reports.Insert(reports.Count - 1, @event.Report);
+        }
+
         public void OnDeath()
         {
             isDead = true;
@@ -68,13 +92,18 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             Game.IdAs(this);
+            Game.Meta.Synchronizer.RegisterSyncable(this);
 
             OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
 
+            Events.Subscribe(this);
+
             base.OnAdded();
+
+            syncables = Components.Get<ISyncable>().ToImmutableArray();
         }
 
-        public void SetBuildProgress(double newBuildProgress, int healthAdded)
+        public void SetBuildProgress(double newBuildProgress, HitPoints healthAdded)
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             Events.Send(new HealDamage(healthAdded));
@@ -141,5 +170,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
             Faction.Technology?.GetApplicableUpgradesFor(this) ?? Enumerable.Empty<IUpgradeBlueprint>();
+
+        public IStateToSync GetCurrentStateToSync() =>
+            new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }

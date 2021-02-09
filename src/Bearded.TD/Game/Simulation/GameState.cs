@@ -22,7 +22,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation
 {
     [GameRuleOwner]
-    sealed class GameState
+    sealed class GameState : ITimeSource
     {
         private readonly Stack<GameObject> objectsBeingAdded = new();
         public GameObject? ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();

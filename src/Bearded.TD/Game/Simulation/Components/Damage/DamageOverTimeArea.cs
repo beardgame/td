@@ -25,12 +25,12 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         {
             var damageThisFrame = StaticRandom.Discretise(
                 (float)(Parameters.DamagePerSecond * elapsedTime.NumericValue)
-                );
+                ).HitPoints();
 
             damageAllEnemiesInArea(damageThisFrame);
         }
 
-        private void damageAllEnemiesInArea(int damage)
+        private void damageAllEnemiesInArea(HitPoints damage)
         {
             var level = Owner.Game.Level;
             var centerTile = Level.GetTile(Owner.Position);

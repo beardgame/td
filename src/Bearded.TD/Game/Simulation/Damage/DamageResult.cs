@@ -2,9 +2,9 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     readonly struct DamageResult
     {
-        public int DamageTaken { get; }
+        public HitPoints DamageTaken { get; }
 
-        public DamageResult(int damageTaken)
+        public DamageResult(HitPoints damageTaken)
         {
             DamageTaken = damageTaken;
         }

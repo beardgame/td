@@ -68,10 +68,10 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             switch (damage.Type)
             {
                 case DamageType.Energy:
-                    combustable.HitWithFire(damage.Amount * EnergyPerEnergyDamage);
+                    combustable.HitWithFire(damage.Amount.NumericValue * EnergyPerEnergyDamage);
                     break;
                 case DamageType.Fire:
-                    combustable.HitWithFire(damage.Amount * EnergyPerFireDamage);
+                    combustable.HitWithFire(damage.Amount.NumericValue * EnergyPerFireDamage);
                     break;
             }
 
@@ -97,7 +97,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             damageSource ??= lastFireHitOwner;
 
             var damage = new DamageInfo(
-                StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)),
+                StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)).HitPoints(),
                 DamageType.Fire,
                 damageSource);
 

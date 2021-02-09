@@ -4,9 +4,9 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     readonly struct HealDamage : IComponentEvent
     {
-        public int Amount { get; }
+        public HitPoints Amount { get; }
 
-        public HealDamage(int amount)
+        public HealDamage(HitPoints amount)
         {
             Amount = amount;
         }

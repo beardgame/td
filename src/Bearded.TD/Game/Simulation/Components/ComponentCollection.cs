@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Components
     {
         private readonly TOwner owner;
         private readonly ComponentEvents events;
-        private readonly List<IComponent<TOwner>> components = new List<IComponent<TOwner>>();
+        private readonly List<IComponent<TOwner>> components = new();
 
         public IReadOnlyCollection<IComponent<TOwner>> Components { get; }
 

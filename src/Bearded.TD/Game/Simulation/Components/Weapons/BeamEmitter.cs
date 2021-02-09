@@ -21,8 +21,10 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
     [Component("beamEmitter")]
     sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>
     {
+        private static readonly TimeSpan damageTimeSpan = 0.1.S();
         private const double minDamagePerSecond = .05;
 
+        private Instant? lastDamageTime;
         private bool drawBeam;
         private readonly List<(Position2 start, Position2 end, float damageFactor)> beamSegments = new();
 
@@ -33,17 +35,20 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {
+            lastDamageTime = null;
             drawBeam = false;
         }
 
         protected override void UpdateShooting(TimeSpan elapsedTime)
         {
-            emitBeam(elapsedTime);
+            lastDamageTime ??= Game.Time;
+
+            emitBeam();
 
             drawBeam = true;
         }
 
-        private void emitBeam(TimeSpan elapsedTime)
+        private void emitBeam()
         {
             var ray = new Ray(
                 Weapon.Position.XY(),
@@ -73,7 +78,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                         {
                             var damagePerSecond = damageFactor * Parameters.DamagePerSecond;
                             enemy.Match(
-                                e => damageEnemy(e, damagePerSecond, elapsedTime),
+                                e => tryDamageEnemy(e, damagePerSecond),
                                 () => throw new InvalidOperationException());
 
                             beamSegments.Add((lastEnd, point, damageFactor));
@@ -86,13 +91,25 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             }
         }
 
-        private void damageEnemy(IMortal enemy, double damagePerSecond, TimeSpan elapsedTime)
+        private void tryDamageEnemy(IMortal enemy, double damagePerSecond)
         {
+            if (lastDamageTime == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var timeSinceLastDamage = Game.Time - lastDamageTime.Value;
+            if (timeSinceLastDamage < damageTimeSpan)
+            {
+                return;
+            }
+
             var result = enemy.Damage(new DamageInfo(
-                StaticRandom.Discretise((float) (damagePerSecond * elapsedTime.NumericValue)),
+                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
                 DamageType.Energy,
                 Weapon.Owner as Building
             ));
+            lastDamageTime = Game.Time;
             Events.Send(new CausedDamage(enemy, result));
         }
 
