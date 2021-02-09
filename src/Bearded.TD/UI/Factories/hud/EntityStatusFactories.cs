@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using amulware.Graphics;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -23,6 +24,8 @@ namespace Bearded.TD.UI.Factories
         {
             private Binding<string>? entityName;
             private VoidEventHandler? onCloseHandler;
+            private Binding<IReportSubject>? reportSubject;
+            private IReportControlFactory? reportFactory;
             private Control? contentControl;
             private readonly List<(string, Binding<string>, Binding<Color>?)> textAttributes = new();
 
@@ -35,6 +38,13 @@ namespace Bearded.TD.UI.Factories
             public Builder WithCloseAction(VoidEventHandler onClose)
             {
                 onCloseHandler = onClose;
+                return this;
+            }
+
+            public Builder WithReports(Binding<IReportSubject> reports, IReportControlFactory factory)
+            {
+                reportSubject = reports;
+                reportFactory = factory;
                 return this;
             }
 
@@ -77,9 +87,15 @@ namespace Bearded.TD.UI.Factories
                     layout.DockFixedSizeToTop(buildTextAttributes(out var height), height);
                 }
 
+                // TODO: replace with reports
                 if (contentControl != null)
                 {
-                    layout.FillContent(contentControl);
+                    layout.DockFixedSizeToTop(contentControl, 400);
+                }
+
+                if (reportSubject != null)
+                {
+                    layout.FillContent(buildReports());
                 }
 
                 return control;
@@ -96,6 +112,29 @@ namespace Bearded.TD.UI.Factories
 
                 height = column.Height;
                 return control;
+            }
+
+            private Control buildReports()
+            {
+                var disposer = new Disposer();
+                var control = new CompositeControl();
+                reportSubject!.SourceUpdated += updateReports;
+                if (reportSubject.Value != null)
+                {
+                    updateReports(reportSubject.Value);
+                }
+                return control;
+
+                void updateReports(IReportSubject subject)
+                {
+                    control.RemoveAllChildren();
+                    disposer.DisposeAndReset();
+                    var column = control.BuildScrollableColumn();
+                    foreach (var r in subject.Reports)
+                    {
+                        column.Add(reportFactory!.CreateForReport(r, disposer, out var height), height);
+                    }
+                }
             }
         }
     }
