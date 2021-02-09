@@ -7,8 +7,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components.Damage;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -38,30 +36,12 @@ namespace Bearded.TD.UI.Controls
         public IPlacedBuilding Building { get; private set; } = null!;
         public IReadOnlyCollection<BuildingUpgradeModel> BuildingUpgrades { get; }
 
+        public GameInstance Game => game!;
         public IPulse Pulse => pulse;
 
         // TODO: invoke this event when the placeholder is replaced by the building instead of closing overlay
         public event VoidEventHandler? BuildingSet;
         public event VoidEventHandler? UpgradesUpdated;
-
-        public (HitPoints CurrentHealth, HitPoints MaxHealth)? BuildingHealth
-        {
-            get
-            {
-                if (!(Building is Building b))
-                {
-                    return null;
-                }
-
-                var health = b.GetComponents<Health<Building>>().FirstOrDefault();
-                if (health == null)
-                {
-                    return null;
-                }
-
-                return (health.CurrentHealth, health.MaxHealth);
-            }
-        }
 
         public bool CanPlayerUpgradeBuilding =>
             playerFaction != null && ((Building as Building)?.CanBeUpgradedBy(playerFaction) ?? false);

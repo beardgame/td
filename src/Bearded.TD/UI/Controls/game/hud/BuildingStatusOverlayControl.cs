@@ -40,7 +40,7 @@ namespace Bearded.TD.UI.Controls
                 .AddEntityStatus(b => b
                     .WithName(name)
                     .AddTextAttribute("Owned by", ownerName, ownerColor)
-                    .WithReports(reports, new ReportControlFactory(model.Pulse))
+                    .WithReports(reports, new ReportControlFactory(model.Game, model.Pulse))
                     .WithContent(upgradeOverview)
                     .WithCloseAction(model.Close))
                 .DockFixedSizeToLeft(upgradeSelection, Constants.UI.Menu.Width);

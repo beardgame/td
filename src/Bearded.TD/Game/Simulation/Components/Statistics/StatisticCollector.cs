@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
@@ -50,9 +49,9 @@ namespace Bearded.TD.Game.Simulation.Components.Statistics
 
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
 
-        public void ApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
+        public void ApplyUpgradeEffect(IUpgradeEffect effect) { }
 
-        public bool RemoveUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
+        public bool RemoveUpgradeEffect(IUpgradeEffect effect) => false;
 
         public IStateToSync GetCurrentStateToSync() => new StatisticCollectorStateToSync(this);
 

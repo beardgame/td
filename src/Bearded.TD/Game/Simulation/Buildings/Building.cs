@@ -57,6 +57,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
             damageExecutor = new DamageExecutor(Events);
             Reports = reports.AsReadOnly();
+            reports.Add(new UpgradeReport(this));
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
@@ -77,7 +78,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
-        public void HandleEvent(ReportAdded @event) => reports.Add(@event.Report);
+        public void HandleEvent(ReportAdded @event)
+        {
+            // Use an Insert to ensure that the upgrades report is always last.
+            reports.Insert(reports.Count - 1, @event.Report);
+        }
 
         public void OnDeath()
         {

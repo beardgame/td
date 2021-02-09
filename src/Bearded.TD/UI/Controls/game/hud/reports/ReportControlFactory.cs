@@ -1,7 +1,9 @@
 using System;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -10,10 +12,12 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class ReportControlFactory : IReportControlFactory
     {
+        private readonly GameInstance game;
         private readonly IPulse pulse;
 
-        public ReportControlFactory(IPulse pulse)
+        public ReportControlFactory(GameInstance game, IPulse pulse)
         {
+            this.game = game;
             this.pulse = pulse;
         }
 
@@ -26,12 +30,13 @@ namespace Bearded.TD.UI.Controls
             return control;
         }
 
-        private static ReportControl createForReport(IReport report)
+        private ReportControl createForReport(IReport report)
         {
             return report switch
             {
                 IHealthReport healthReport => new HealthReportControl(healthReport),
                 IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
+                IUpgradeReport upgradeReport => new UpgradeReportControl(upgradeReport.CreateInstance(game)),
 
                 _ => throw new InvalidOperationException($"Cannot create control for report {report}")
             };
