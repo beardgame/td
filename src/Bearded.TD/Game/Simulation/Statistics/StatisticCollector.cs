@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
@@ -40,6 +41,7 @@ namespace Bearded.TD.Game.Simulation.Statistics
                 (previousWaveDamage, currentWaveDamage) = (currentWaveDamage, 0);
                 (previousWaveKills, currentWaveKills) = (currentWaveKills, 0);
             }));
+            events.Send(new ReportAdded(new StatisticsReport(this)));
         }
 
         public void Update(TimeSpan elapsedTime) {}
@@ -80,7 +82,7 @@ namespace Bearded.TD.Game.Simulation.Statistics
             }
         }
 
-        private class StatisticsReport : IStatisticsReport
+        private sealed class StatisticsReport : IStatisticsReport
         {
             public long TotalDamage => source.totalDamage;
             public long TotalKills => source.totalKills;
