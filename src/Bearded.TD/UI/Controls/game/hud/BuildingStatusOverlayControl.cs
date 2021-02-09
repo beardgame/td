@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using amulware.Graphics;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
@@ -11,6 +12,12 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls
 {
+    // 2. We don't even need a special case for upgrades any more. Those should just be a special kind of report as
+    //    well, this means that the entity status will only have a list of reports, which it can build into a
+    //    scrollable column layout. The hardest thing will be that each of these reports may have to be able to open the
+    //    secondary panel right of the main panel. The best way to solve this is probably using another Navigation
+    //    controller.
+
     sealed class BuildingStatusOverlayControl : CompositeControl
     {
         private readonly BuildingStatusOverlay model;
@@ -22,6 +29,7 @@ namespace Bearded.TD.UI.Controls
         private readonly Binding<string> ownerName = new();
         private readonly Binding<Color> ownerColor = new();
         private readonly Binding<string> health = new();
+        private readonly Binding<IReportSubject> reports = new();
 
         public BuildingStatusOverlayControl(BuildingStatusOverlay model)
         {
@@ -34,6 +42,7 @@ namespace Bearded.TD.UI.Controls
                     .WithName(name)
                     .AddTextAttribute("Owned by", ownerName, ownerColor)
                     .AddTextAttribute("Health", health)
+                    .WithReports(reports, new ReportControlFactory(model.Pulse))
                     .WithContent(upgradeOverview)
                     .WithCloseAction(model.Close))
                 .DockFixedSizeToLeft(upgradeSelection, Constants.UI.Menu.Width);
@@ -41,7 +50,7 @@ namespace Bearded.TD.UI.Controls
             onBuildingSet();
 
             model.BuildingSet += onBuildingSet;
-            model.BuildingUpdated += onBuildingUpdated;
+            model.Pulse.Heartbeat += onBuildingUpdated;
             model.UpgradesUpdated += onUpgradesUpdated;
 
             upgradeOverview.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
@@ -67,6 +76,7 @@ namespace Bearded.TD.UI.Controls
             upgradeSelection.IsVisible = false;
 
             updateBuildingAttributes();
+            reports.SetFromSource(model.Building as IReportSubject ?? new EmptyReportSubject());
             upgradeOverview.SetUpgrades(model.BuildingUpgrades, model.CanPlayerUpgradeBuilding);
             onBuildingUpdated();
             onUpgradesUpdated();
