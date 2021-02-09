@@ -12,7 +12,7 @@ namespace Bearded.TD.Content.Models
 
         TimeSpan Timeout { get; }
 
-        ISprite Sprite { get; }
+        ISpriteBlueprint Sprite { get; }
 
         Color Color { get; }
     }

@@ -29,7 +29,7 @@ namespace Bearded.TD.Content.Mods
                 packedSpriteSet);
         }
 
-        private static PackedSpriteSet loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,
+        private static ISpriteSetImplementation loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,
             Serialization.Models.SpriteSet jsonModel)
         {
             var samplers = getSamplers(jsonModel);

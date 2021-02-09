@@ -3,6 +3,7 @@ using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -23,8 +24,9 @@ namespace Bearded.TD.Rendering.InGameUI
         {
             const float z = 0.2f;
 
+            // TODO: This should not be hard coded
             var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite = sprites.Sprites.GetSprite("halo");
+            var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
 
             var offsetOuter = new Unit(Constants.Game.World.HexagonSide);
             var lineWidthU = new Unit(lineWidth);

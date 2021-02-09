@@ -30,7 +30,7 @@ namespace Bearded.TD.Rendering.Loading
             this.logger = logger;
         }
 
-        public PackedSpriteSet CreateSpriteSet(IEnumerable<string> samplers,
+        public ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
             IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
             Shader shader, bool pixelate, string id)
         {

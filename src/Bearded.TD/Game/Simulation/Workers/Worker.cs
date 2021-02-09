@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -105,9 +106,9 @@ namespace Bearded.TD.Game.Simulation.Workers
         public override void Draw(CoreDrawers drawers)
         {
             var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite = sprites.Sprites.GetSprite("halo");
+            var sprite = sprites.GetSprite("halo").MakeConcreteWith(Game.Meta.SpriteRenderers, UVColorVertex.Create);
 
-            sprite.Draw(Position.NumericValue.WithZ(0.1f), Faction.Color, 0.5f);
+            sprite.Draw(Position.NumericValue.WithZ(0.1f), 0.5f, Faction.Color);
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) { }

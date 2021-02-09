@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using amulware.Graphics.Rendering;
+using amulware.Graphics.RenderSettings;
+using amulware.Graphics.Vertices;
+using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities.Linq;
+
+namespace Bearded.TD.Rendering
+{
+    using Renderers = List<(int DrawOrderKey, IRenderer Renderer)>;
+
+    sealed class SpriteRenderers
+    {
+        private sealed class DrawOrderKeyComparer : IComparer<(int DrawOrderKey, IRenderer Renderer)>
+        {
+            public int Compare((int DrawOrderKey, IRenderer Renderer) x, (int DrawOrderKey, IRenderer Renderer) y)
+            {
+                return x.DrawOrderKey.CompareTo(y.DrawOrderKey);
+            }
+        }
+
+        private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
+
+        private readonly Dictionary<SpriteSet, Dictionary<(Type, Type), object>> knownSpriteSets = new();
+        private readonly Dictionary<SpriteDrawGroup, Renderers> renderersByDrawGroup =
+            Enum.GetValues<SpriteDrawGroup>().ToDictionary(g => g, _ => new Renderers());
+
+        private readonly IRenderSetting[] defaultRenderSettings;
+
+        public SpriteRenderers(RenderContext context)
+        {
+            defaultRenderSettings = new IRenderSetting[]
+            {
+                context.Settings.ProjectionMatrix,
+                context.Settings.ViewMatrix,
+                context.Settings.FarPlaneDistance
+            };
+        }
+
+        public DrawableSpriteSet<TVertex, TVertexData> GetOrCreateDrawableSpriteSetFor<TVertex, TVertexData>(
+            SpriteSet spriteSet, Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
+            where TVertex : struct, IVertexData
+        {
+            var typeKey = (typeof(TVertex), typeof(TVertexData));
+
+            var spriteSets = knownSpriteSets.GetValueOrInsertNewDefaultFor(spriteSet);
+
+            var drawable = (DrawableSpriteSet<TVertex, TVertexData>)
+                spriteSets.GetOrInsert(typeKey, createDrawableAndRegisterDefaultRenderer);
+
+            return drawable;
+
+            DrawableSpriteSet<TVertex, TVertexData> createDrawableAndRegisterDefaultRenderer()
+            {
+                var d = createDrawable();
+                createAndRegisterRenderer(spriteSet, d);
+                return d;
+            }
+        }
+
+        public IRenderer CreateCustomRendererFor<TVertex, TVertexData>(
+                DrawableSpriteSet<TVertex, TVertexData> drawable,
+                IRenderSetting[] customRenderSettings)
+            where TVertex : struct, IVertexData
+        {
+            var renderer = drawable.CreateRendererWithSettings(
+                customRenderSettings.Concat(defaultRenderSettings)
+            );
+
+            return renderer;
+        }
+
+        private void createAndRegisterRenderer<TVertex, TVertexData>(
+            SpriteSet spriteSet, DrawableSpriteSet<TVertex, TVertexData> drawable)
+            where TVertex : struct, IVertexData
+        {
+            var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
+
+            var renderers = renderersByDrawGroup[spriteSet.DrawGroup];
+
+            renderers.AddSorted((spriteSet.DrawGroupOrderKey, renderer), drawOrderKeyComparer);
+        }
+
+        public void RenderDrawGroup(SpriteDrawGroup group)
+        {
+            foreach (var (_, renderer) in renderersByDrawGroup[group])
+            {
+                renderer.Render();
+                // TODO: should we clear the related mesh builder here?
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var spriteSet in knownSpriteSets.Values)
+            {
+                foreach (var drawableSpriteSet in spriteSet.Values.Cast<IDisposable>())
+                {
+                    drawableSpriteSet.Dispose();
+                }
+            }
+
+            foreach (var drawGroup in renderersByDrawGroup.Values)
+            {
+                foreach (var (_, renderer) in drawGroup)
+                {
+                    renderer.Dispose();
+                }
+            }
+        }
+
+        public void ClearAll()
+        {
+            foreach (var spriteSet in knownSpriteSets.Values)
+            {
+                foreach (var drawableSpriteSet in spriteSet.Values.Cast<IClearable>())
+                {
+                    drawableSpriteSet.Clear();
+                }
+            }
+        }
+    }
+}

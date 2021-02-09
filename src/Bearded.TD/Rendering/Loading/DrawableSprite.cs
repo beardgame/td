@@ -1,13 +1,12 @@
-using System;
 using amulware.Graphics.MeshBuilders;
 using amulware.Graphics.Vertices;
+using Bearded.TD.Content.Models;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Loading
 {
-    // TODO: compare to ISprite interface and see what makes sense to have
-    sealed class DrawableSprite<TVertex, TVertexData>
+    sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertexData>
         where TVertex : struct, IVertexData
     {
         public delegate TVertex CreateSprite(Vector3 position, Vector2 uv, TVertexData data);
@@ -15,26 +14,24 @@ namespace Bearded.TD.Rendering.Loading
         private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
         private readonly CreateSprite createVertex;
         private readonly UVRectangle uv;
+        private readonly Vector2 baseSize;
 
         public DrawableSprite(
             IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
             CreateSprite createVertex,
-            UVRectangle uv)
+            SpriteParameters spriteParameters)
         {
             this.meshBuilder = meshBuilder;
             this.createVertex = createVertex;
-            this.uv = uv;
+            uv = spriteParameters.UV;
+            baseSize = spriteParameters.BaseSize;
         }
 
-        public void Draw(Vector3 center, float width, float height, float angle, TVertexData data)
+        public void Draw(Vector3 center, float scale, float angle, TVertexData data)
         {
-            var halfWidth = width * 0.5f;
-            var halfHeight = height * 0.5f;
-
-            var unitX = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle)) * halfWidth;
-            var unitY = new Vector2(-unitX.Y, unitX.X) * halfHeight;
-
-            Draw(center, unitX, unitY, data);
+            ((IDrawableSprite<TVertexData>)this).Draw(
+                center, baseSize.X * scale, baseSize.Y * scale, angle, data
+                );
         }
 
         public void Draw(Vector3 center, Vector2 radiusX, Vector2 radiusY, TVertexData data)
@@ -52,11 +49,39 @@ namespace Bearded.TD.Rendering.Loading
 
             var z = center.Z;
 
+            ((IDrawableSprite<TVertexData>) this).DrawQuad(
+                v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data
+            );
+        }
+
+        public void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft,
+            TVertexData topLeftData, TVertexData topRightData, TVertexData bottomRightData, TVertexData bottomLeftData)
+        {
             meshBuilder.AddQuad(
-                createVertex(v0.WithZ(z), uv.TopLeft, data),
-                createVertex(v1.WithZ(z), uv.TopRight, data),
-                createVertex(v2.WithZ(z), uv.BottomRight, data),
-                createVertex(v3.WithZ(z), uv.BottomLeft, data)
+                createVertex(topLeft, uv.TopLeft, topLeftData),
+                createVertex(topRight, uv.TopRight, topRightData),
+                createVertex(bottomRight, uv.BottomRight, bottomRightData),
+                createVertex(bottomLeft, uv.BottomLeft, bottomLeftData)
+            );
+        }
+
+        public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
+            TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
+        {
+            meshBuilder.AddQuad(
+                createVertex(p0, transformUV(uv0), data0),
+                createVertex(p1, transformUV(uv1), data1),
+                createVertex(p2, transformUV(uv2), data2),
+                createVertex(p3, transformUV(uv3), data3)
+            );
+        }
+
+        private Vector2 transformUV(Vector2 localUV)
+        {
+            return Vector2.Lerp(
+                Vector2.Lerp(uv.TopLeft, uv.TopRight, localUV.X),
+                Vector2.Lerp(uv.BottomLeft, uv.BottomRight, localUV.X),
+                localUV.Y
             );
         }
     }

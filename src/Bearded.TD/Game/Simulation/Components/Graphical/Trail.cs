@@ -6,10 +6,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components.Graphical
 {
     [Component("trail")]
-    class Trail<T> : Component<T, ITrailParameters>
+    sealed class Trail<T> : Component<T, ITrailParameters>
         where T : GameObject, IPositionable
     {
         private readonly TrailTracer tracer;
+        private TrailDrawer drawer = null!;
 
         public Trail(ITrailParameters parameters) : base(parameters)
         {
@@ -22,11 +23,13 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
             {
                 Owner.Deleting += persistTrail;
             }
+
+            drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
         }
 
         private void persistTrail()
         {
-            var obj = new PersistentTrail(Parameters, tracer, Owner.Position);
+            var obj = new PersistentTrail(drawer, Parameters, tracer, Owner.Position);
             Owner.Game.Add(obj);
         }
 
@@ -37,19 +40,22 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
 
         public override void Draw(CoreDrawers drawers)
         {
-            renderTrail(tracer, Parameters, Owner.Game);
+            drawTrail(drawer, tracer, Parameters, Owner.Game);
         }
 
 
-        class PersistentTrail : GameObject
+        sealed class PersistentTrail : GameObject
         {
+            private readonly TrailDrawer drawer;
             private readonly ITrailParameters parameters;
             private readonly TrailTracer tracer;
             private readonly Position3 position;
             private Instant deleteAt;
 
-            public PersistentTrail(ITrailParameters parameters, TrailTracer tracer, Position3 position)
+            public PersistentTrail(TrailDrawer drawer, ITrailParameters parameters, TrailTracer tracer,
+                Position3 position)
             {
+                this.drawer = drawer;
                 this.parameters = parameters;
                 this.tracer = tracer;
                 this.position = position;
@@ -70,14 +76,14 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
 
             public override void Draw(CoreDrawers drawers)
             {
-                renderTrail(tracer, parameters, Game);
+                drawTrail(drawer, tracer, parameters, Game);
             }
         }
 
-        private static void renderTrail(TrailTracer tracer, ITrailParameters parameters, GameState game)
+        private static void drawTrail(TrailDrawer drawer, TrailTracer tracer, ITrailParameters parameters, GameState game)
         {
-            TrailRenderer.DrawTrail(
-                tracer, parameters.Sprite, parameters.Width.NumericValue,
+            drawer.DrawTrail(
+                tracer, parameters.Width.NumericValue,
                 game.Time, parameters.Timeout,
                 parameters.Color
             );

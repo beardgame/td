@@ -3,6 +3,8 @@ using amulware.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -32,7 +34,8 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
                 .Sprites[ModAwareId.ForDefaultMod("foundations")]
                 // this can remain hardcoded I think, at least for now
                 // later we may want to depend on parameters for tower specific config
-                .Sprites.GetSprite("side");
+                .GetSprite("side")
+                .MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
 
             // TODO: the height should be in the parameters, and z0 should possibly be the lowest tile height or even lower to prevent gaps with terrain
             var z0 = Owner.Position.Z.NumericValue;

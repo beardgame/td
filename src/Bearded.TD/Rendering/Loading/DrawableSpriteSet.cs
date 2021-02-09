@@ -14,7 +14,7 @@ namespace Bearded.TD.Rendering.Loading
     {
         public static DrawableSpriteSet<TVertex, TVertexData> Create<TVertex, TVertexData>(
             ImmutableArray<TextureUniform> textures,
-            IDictionary<string, ISprite> baseSprites,
+            ImmutableDictionary<string, SpriteParameters> baseSprites,
             Shader shader,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
             where TVertex : struct, IVertexData
@@ -22,13 +22,13 @@ namespace Bearded.TD.Rendering.Loading
             var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<TVertex>();
             var sprites = baseSprites.ToDictionary(
                 kvp => kvp.Key,
-                kvp => new DrawableSprite<TVertex, TVertexData>(meshBuilder, createVertex, ((Sprite) kvp.Value).UV)
+                kvp => new DrawableSprite<TVertex, TVertexData>(meshBuilder, createVertex, kvp.Value)
             );
             return new DrawableSpriteSet<TVertex, TVertexData>(meshBuilder, shader, sprites, textures);
         }
     }
 
-    sealed class DrawableSpriteSet<TVertex, TVertexData> : IDisposable
+    sealed class DrawableSpriteSet<TVertex, TVertexData> : IDisposable, IClearable
         where TVertex : struct, IVertexData
     {
         private readonly ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder;
@@ -37,6 +37,7 @@ namespace Bearded.TD.Rendering.Loading
         private readonly ImmutableArray<TextureUniform> textures;
 
         // TODO: might be worth hiding TVertex behind an IMeshBuilder interface
+        // and/or hide this class behind a IDrawableSpriteSet<TVertexData> - except.. do we actually use it anywhere?
         public DrawableSpriteSet(
             ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
             Shader shader,
@@ -49,7 +50,7 @@ namespace Bearded.TD.Rendering.Loading
             this.textures = textures;
         }
 
-        public DrawableSprite<TVertex, TVertexData> GetSprite(string name)
+        public IDrawableSprite<TVertexData> GetSprite(string name)
         {
             return sprites[name];
         }
@@ -58,6 +59,11 @@ namespace Bearded.TD.Rendering.Loading
             => sprites.Select(kvp => (kvp.Key, kvp.Value));
 
         public IRenderer CreateRendererWithSettings(params IRenderSetting[] additionalSettings)
+        {
+            return CreateRendererWithSettings(additionalSettings.AsEnumerable());
+        }
+
+        public IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> additionalSettings)
         {
             var renderer = BatchedRenderer.From(
                 meshBuilder.ToRenderable(),

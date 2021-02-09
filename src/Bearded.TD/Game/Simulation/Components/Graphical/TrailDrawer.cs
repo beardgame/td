@@ -2,6 +2,10 @@ using System;
 using System.Linq;
 using amulware.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -9,10 +13,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components.Graphical
 {
-    static class TrailRenderer
+    sealed class TrailDrawer
     {
-        public static void DrawTrail(
-            TrailTracer trail, ISprite sprite, float width,
+        private readonly IDrawableSprite<Color> sprite;
+
+        public TrailDrawer(GameState game, ISpriteBlueprint sprite)
+        {
+            this.sprite = sprite.MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
+        }
+
+        public void DrawTrail(
+            TrailTracer trail, float width,
             Instant currentTime, TimeSpan timeOut, Color color
             )
         {
@@ -34,7 +45,7 @@ namespace Bearded.TD.Game.Simulation.Components.Graphical
             }
         }
 
-        private static (Vector3 Left, Vector3 Right, Color Color) vertexLocationsFor(
+        private (Vector3 Left, Vector3 Right, Color Color) vertexLocationsFor(
             TrailTracer.Part part, float width,
             Instant currentTime, TimeSpan timeOut,
             Color color)

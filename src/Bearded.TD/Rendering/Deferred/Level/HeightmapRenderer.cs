@@ -85,8 +85,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     )
                 );
 
-            heightmapSplats = findHeightmapSplats(game);
-            heightMapSplatRenderer = heightmapSplats.CreateRendererWithSettings(HeightmapRadiusUniform);
+            (heightmapSplats, heightMapSplatRenderer) = findHeightmapSplats(game);
 
             (heightmapBaseMeshBuilder, heightmapBaseRenderer, heightmapBaseDrawer) = initializeBaseDrawing(context);
         }
@@ -134,12 +133,14 @@ namespace Bearded.TD.Rendering.Deferred.Level
             heightmap.Dispose();
         }
 
-        private static DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> findHeightmapSplats(GameInstance game)
+        private (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer) findHeightmapSplats(GameInstance game)
         {
-            return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")].Sprites
-                .WithVertex<HeightmapSplatVertex, (float MinH, float MaxH)>(
-                    (position, uv, data) => new HeightmapSplatVertex(position.Xy, uv, data.MinH, data.MaxH)
-                    );
+            return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")]
+                .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
+                    game.Meta.SpriteRenderers,
+                    HeightmapSplatVertex.Create,
+                    HeightmapRadiusUniform
+                );
         }
 
         public void TileChanged(Tile tile)

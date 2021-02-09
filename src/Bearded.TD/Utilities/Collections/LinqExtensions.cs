@@ -1,11 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Utilities.Collections
 {
     static class LinqExtensions
     {
+        public static TValue GetOrInsert<TKey, TValue>(this Dictionary<TKey, TValue> dictionary,
+            TKey key, Func<TValue> getValueToInsert)
+        {
+            if (dictionary.TryGetValue(key, out var value))
+                return value;
+
+            value = getValueToInsert();
+            dictionary.Add(key, value);
+            return value;
+        }
+
+        public static TValue GetValueOrInsertNewDefaultFor<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
+            where TValue : new()
+        {
+            if (dictionary.TryGetValue(key, out var value))
+                return value;
+
+            value = new TValue();
+            dictionary.Add(key, value);
+            return value;
+        }
+
+        public static Maybe<TValue> MaybeValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        {
+            return dictionary.TryGetValue(key, out var value) ? Maybe.Just(value) : Maybe.Nothing;
+        }
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (var item in source)

@@ -8,7 +8,7 @@ namespace Bearded.TD.Content.Models
     {
         Color Color { get; }
 
-        ISprite Sprite { get; }
+        ISpriteBlueprint Sprite { get; }
 
         [Modifiable(1)]
         Unit Size { get; }

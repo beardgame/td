@@ -108,7 +108,7 @@ namespace Bearded.TD.Rendering.Loading
             return textureUniforms;
         }
 
-        private Dictionary<string, ISprite> createSprites()
+        private Dictionary<string, SpriteParameters> createSprites()
         {
             return nameToRectangle.ToDictionary(
                 pair => pair.Key,
@@ -116,11 +116,11 @@ namespace Bearded.TD.Rendering.Loading
             );
         }
 
-        private ISprite createSprite(Rectangle rectangle)
+        private SpriteParameters createSprite(Rectangle rectangle)
         {
             var uv = toUvRectangle(rectangle);
 
-            return new Sprite(uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
+            return new SpriteParameters(uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
         }
 
         private UVRectangle toUvRectangle(Rectangle rect)

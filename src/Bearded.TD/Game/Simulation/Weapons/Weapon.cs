@@ -16,7 +16,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [ComponentOwner]
-    sealed class Weapon : IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
+    sealed class Weapon : IGameObject, IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
     {
         private readonly ITurret turret;
         private readonly Building? ownerAsBuilding;
@@ -37,6 +37,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public GameObject Owner => turret.Owner;
         public Position3 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
+
+        public GameState Game => Owner.Game;
 
         public Weapon(IComponentOwnerBlueprint blueprint, ITurret turret)
         {

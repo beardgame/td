@@ -44,10 +44,9 @@ namespace Bearded.TD.Rendering
             waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
             ContentRenderers = new ContentRenderers(
-                renderContext,
                 levelRenderer,
-                game.Blueprints.Sprites,
-                new [] { waterGeometry }
+                new [] { waterGeometry },
+                game.Meta.SpriteRenderers
             );
 
             shapeDrawer = drawers.Primitives;

@@ -6,6 +6,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
+using Bearded.TD.Rendering;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -19,6 +20,7 @@ namespace Bearded.TD.UI.Controls
         private Logger logger;
         private IGraphicsLoader graphicsLoader;
         private ClientNetworkInterface networkInterface;
+        private RenderContext renderContext;
 
         public IList<Proto.Lobby> Lobbies { get; } = new List<Proto.Lobby>();
 
@@ -31,6 +33,7 @@ namespace Bearded.TD.UI.Controls
 
             logger = dependencies.Resolve<Logger>();
             graphicsLoader = dependencies.Resolve<IGraphicsLoader>();
+            renderContext = dependencies.Resolve<RenderContext>();
 
             networkInterface = new ClientNetworkInterface();
             networkInterface.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
@@ -105,7 +108,7 @@ namespace Bearded.TD.UI.Controls
                 new ClientGameContext(networkInterface, logger),
                 new ContentManager(logger, graphicsLoader, new ModLister().GetAll()),
                 new Player(info.Id, playerName) { ConnectionState = PlayerConnectionState.Connecting },
-                null);
+                null, renderContext);
 
             Navigation.Replace<Lobby, LobbyManager>(
                 new ClientLobbyManager(game, networkInterface), this);

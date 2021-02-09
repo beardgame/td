@@ -7,7 +7,7 @@ using Bearded.TD.Game;
 
 namespace Bearded.TD.Content.Mods
 {
-    sealed class SpriteResolver : IDependencyResolver<ISprite>
+    sealed class SpriteResolver : IDependencyResolver<ISpriteBlueprint>
     {
         private readonly ModMetadata thisMod;
         private readonly ReadonlyBlueprintCollection<SpriteSet> thisModsSpriteSets;
@@ -21,10 +21,10 @@ namespace Bearded.TD.Content.Mods
             mods = otherMods.ToDictionary(m => m.Id);
         }
 
-        public ISprite Resolve(string id)
+        public ISpriteBlueprint Resolve(string id)
             => Resolve(ModAwareSpriteId.FromNameInMod(id, thisMod));
 
-        public ISprite Resolve(ModAwareSpriteId id)
+        public ISpriteBlueprint Resolve(ModAwareSpriteId id)
         {
             // TODO: consider extracting shared branching from ModAwareDependencyResolver
             // (but note that it is using a different id type)
@@ -50,13 +50,13 @@ namespace Bearded.TD.Content.Mods
             throw new InvalidDataException($"Unknown mod in identifier {id}");
         }
 
-        private ISprite spriteFrom(ReadonlyBlueprintCollection<SpriteSet> sets, ModAwareSpriteId id)
+        private ISpriteBlueprint spriteFrom(ReadonlyBlueprintCollection<SpriteSet> sets, ModAwareSpriteId id)
         {
             var spriteId = id.Id;
 
             var set = sets[id.SpriteSet];
 
-            return set.Sprites.GetSprite(spriteId);
+            return set.GetSprite(spriteId);
         }
     }
 }

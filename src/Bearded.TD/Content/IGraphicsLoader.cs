@@ -11,7 +11,7 @@ namespace Bearded.TD.Content
 {
     interface IGraphicsLoader
     {
-        PackedSpriteSet CreateSpriteSet(IEnumerable<string> samplers,
+        ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
             IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
             Shader shader,
             bool pixelate, string id);

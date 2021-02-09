@@ -1,9 +1,10 @@
 using System.Runtime.InteropServices;
 using amulware.Graphics;
 using amulware.Graphics.Vertices;
+using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 
-namespace Bearded.TD.Rendering.Deferred
+namespace Bearded.TD.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
     readonly struct UVColorVertex : IVertexData
@@ -11,6 +12,9 @@ namespace Bearded.TD.Rendering.Deferred
         private readonly Vector3 position;
         private readonly Vector2 uv;
         private readonly Color color;
+
+        public static DrawableSprite<UVColorVertex, Color>.CreateSprite Create { get; } =
+            (p, uv, color) => new UVColorVertex(p, uv, color);
 
         public UVColorVertex(Vector3 position, Vector2 uv, Color color)
         {

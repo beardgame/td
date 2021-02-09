@@ -1,5 +1,7 @@
+using System;
 using System.Runtime.InteropServices;
 using amulware.Graphics.Vertices;
+using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 using static amulware.Graphics.Vertices.VertexData;
 
@@ -12,6 +14,9 @@ namespace Bearded.TD.Rendering.Vertices
         private readonly Vector2 uv;
         private readonly float minHeight;
         private readonly float maxHeight;
+
+        public static DrawableSprite<HeightmapSplatVertex, (float, float)>.CreateSprite Create { get; } =
+            (p, uv, minMax) => new HeightmapSplatVertex(p.Xy, uv, minMax.Item1, minMax.Item2);
 
         public HeightmapSplatVertex(Vector2 position, Vector2 uv, float minHeight, float maxHeight)
         {

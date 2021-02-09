@@ -11,6 +11,7 @@ using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -81,7 +82,8 @@ namespace Bearded.TD.Game
 
         private readonly PlayerManager? playerManager;
 
-        public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids)
+        public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids,
+            RenderContext renderContext)
         {
             RequestDispatcher = context.RequestDispatcher;
             context.DataMessageHandlerInitializer(this);
@@ -95,7 +97,11 @@ namespace Bearded.TD.Game
 
             PlayerCursors = new PlayerCursors(this);
             playerManager = context.PlayerManagerFactory(this);
-            Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids);
+            Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids,
+                // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
+                new SpriteRenderers(renderContext));
+
+
         }
 
         public void SetGameSettings(GameSettings gameSettings)

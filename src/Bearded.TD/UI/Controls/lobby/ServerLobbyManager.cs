@@ -8,6 +8,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.MasterServer;
+using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
@@ -65,7 +66,7 @@ namespace Bearded.TD.UI.Controls
         public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
 
         public static ServerLobbyManager Create(
-            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader)
+            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
         {
             var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
             // TODO: move somewhere else/read from settings
@@ -78,7 +79,7 @@ namespace Bearded.TD.UI.Controls
             };
 
             return new ServerLobbyManager(
-                new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids),
+                new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids, renderContext),
                 networkInterface);
         }
     }

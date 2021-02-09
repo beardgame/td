@@ -89,6 +89,7 @@ namespace Bearded.TD
                     (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
                 });
 
+            dependencyResolver.Add(renderContext);
             dependencyResolver.Add(renderContext.GraphicsLoader);
 
             inputManager = new InputManager(NativeWindow);

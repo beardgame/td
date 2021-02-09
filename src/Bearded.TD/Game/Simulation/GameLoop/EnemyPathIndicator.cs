@@ -25,6 +25,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
         public Tile CurrentTile => tileWalker?.CurrentTile ?? startTile;
 
         private Instant? deleteAt;
+        private TrailDrawer drawer = null!;
 
         public EnemyPathIndicator(Tile currentTile)
         {
@@ -38,6 +39,9 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             tileWalker = new TileWalker(this, Game.Level, startTile);
 
             passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
+
+            var sprite = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("circle-soft");
+            drawer = new TrailDrawer(Game, sprite);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -58,10 +62,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
         public override void Draw(CoreDrawers drawers)
         {
-            var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite = sprites.Sprites.GetSprite("circle-soft");
-
-            TrailRenderer.DrawTrail(trail, sprite, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha(0));
+            drawer.DrawTrail(trail, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha(0));
         }
 
         public void OnTileChanged(Tile oldTile, Tile newTile) { }
