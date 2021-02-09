@@ -8,6 +8,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -43,7 +44,7 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? BuildingSet;
         public event VoidEventHandler? UpgradesUpdated;
 
-        public (int CurrentHealth, int MaxHealth)? BuildingHealth
+        public (HitPoints CurrentHealth, HitPoints MaxHealth)? BuildingHealth
         {
             get
             {

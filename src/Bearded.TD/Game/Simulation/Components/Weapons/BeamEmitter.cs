@@ -105,7 +105,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             }
 
             var result = enemy.Damage(new DamageInfo(
-                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)),
+                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
                 DamageType.Energy,
                 Weapon.Owner as Building
             ));

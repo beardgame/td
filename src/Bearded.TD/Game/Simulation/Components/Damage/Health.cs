@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
@@ -8,7 +7,7 @@ using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
+using Bearded.TD.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components.Damage
@@ -21,9 +20,9 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
         IPreviewListener<TakeDamage>
         where T : IMortal
     {
-        public int CurrentHealth { get; private set; }
-        public int MaxHealth { get; private set; }
-        public double HealthPercentage => (double) CurrentHealth / MaxHealth;
+        public HitPoints CurrentHealth { get; private set; }
+        public HitPoints MaxHealth { get; private set; }
+        public double HealthPercentage => CurrentHealth / MaxHealth;
 
         public Health(IHealthComponentParameter parameters) : base(parameters)
         {
@@ -52,7 +51,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         private void onDamaged(DamageInfo damage)
         {
-            if (damage.Amount > 0 && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
+            if (damage.Amount > HitPoints.Zero && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
             {
                 return;
             }
@@ -60,19 +59,19 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             changeHealth(-damage.Amount);
         }
 
-        private void onHealed(int health)
+        private void onHealed(HitPoints health)
         {
             changeHealth(health);
         }
 
-        private void changeHealth(int healthChange)
+        private void changeHealth(HitPoints healthChange)
         {
-            CurrentHealth = (CurrentHealth + healthChange).Clamped(0, MaxHealth);
+            CurrentHealth = DiscreteSpaceTime1Math.Clamp(CurrentHealth + healthChange, HitPoints.Zero, MaxHealth);
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (CurrentHealth <= 0)
+            if (CurrentHealth <= HitPoints.Zero)
             {
                 Owner.OnDeath();
             }
@@ -100,7 +99,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             else
             {
                 MaxHealth = Parameters.MaxHealth;
-                CurrentHealth = Math.Min(CurrentHealth, MaxHealth);
+                CurrentHealth = DiscreteSpaceTime1Math.Min(CurrentHealth, MaxHealth);
             }
         }
 
@@ -114,7 +113,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             public HealthSynchronizedState(Health<T> source)
             {
                 this.source = source;
-                currentHealth = source.CurrentHealth;
+                currentHealth = source.CurrentHealth.NumericValue;
             }
 
             public void Serialize(INetBufferStream stream)
@@ -124,7 +123,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
             public void Apply()
             {
-                source.CurrentHealth = currentHealth;
+                source.CurrentHealth = new HitPoints(currentHealth);
             }
         }
     }

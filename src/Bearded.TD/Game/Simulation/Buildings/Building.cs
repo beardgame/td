@@ -10,7 +10,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
@@ -99,7 +98,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             syncables = Components.Get<ISyncable>().ToImmutableArray();
         }
 
-        public void SetBuildProgress(double newBuildProgress, int healthAdded)
+        public void SetBuildProgress(double newBuildProgress, HitPoints healthAdded)
         {
             DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
             Events.Send(new HealDamage(healthAdded));

@@ -6,15 +6,17 @@ namespace Bearded.TD.Game.Simulation.Damage
     readonly struct TakeDamage : IComponentPreviewEvent
     {
         public DamageInfo Damage { get; }
-        public int DamageTaken { get; }
+        public HitPoints DamageTaken { get; }
 
-        public TakeDamage(DamageInfo damage, int damageTaken = 0)
+        public TakeDamage(DamageInfo damage) : this(damage, HitPoints.Zero) {}
+
+        public TakeDamage(DamageInfo damage, HitPoints damageTaken)
         {
             Damage = damage;
             DamageTaken = damageTaken;
         }
 
-        public TakeDamage DamageAdded(int damageAmount)
+        public TakeDamage DamageAdded(HitPoints damageAmount)
         {
             Argument.Satisfies(DamageTaken + damageAmount <= Damage.Amount);
             return new TakeDamage(Damage, DamageTaken + damageAmount);

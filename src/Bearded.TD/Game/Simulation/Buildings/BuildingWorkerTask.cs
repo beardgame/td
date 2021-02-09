@@ -3,6 +3,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Tiles;
@@ -20,8 +21,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private BuildingPlaceholder? placeholder;
         private Building? building;
 
-        private int healthGiven = 1;
-        private int maxHealth = 1;
+        private HitPoints healthGiven = new(1);
+        private HitPoints maxHealth = new(1);
 
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {blueprint.Name}";
@@ -29,7 +30,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public Maybe<ISelectable> Selectable => placeholder != null
             ? Maybe.Just<ISelectable>(placeholder)
             : Maybe.Just<ISelectable>(building);
-        public double PercentCompleted => building == null ? 0 : (double) healthGiven / maxHealth;
+        public double PercentCompleted => building == null ? 0 : healthGiven / maxHealth;
         public bool CanAbort => placeholder != null;
         public bool Finished { get; private set; }
 
@@ -113,8 +114,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             var buildProgress = resourceConsumer.PercentageDone;
             DebugAssert.State.Satisfies(buildProgress <= 1);
-            var expectedHealthGiven = MoreMath.CeilToInt(buildProgress * maxHealth);
-            if (expectedHealthGiven == 0)
+            var expectedHealthGiven = new HitPoints(MoreMath.CeilToInt(buildProgress * maxHealth.NumericValue));
+            if (expectedHealthGiven == HitPoints.Zero)
             {
                 return;
             }

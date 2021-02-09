@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -102,6 +103,7 @@ namespace Bearded.TD.Content.Mods
                     new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
                     new SpaceTime1Converter<Energy>(d => new Energy(d)),
                     new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
+                    new SpaceTime1Converter<HitPoints>(d => ((int) d).HitPoints()),
                     new SpaceTime1Converter<ResourceAmount>(d => ((int) d).Resources()),
                     new SpaceTime1Converter<ResourceRate>(d => ((int) d).ResourcesPerSecond()),
                     new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),

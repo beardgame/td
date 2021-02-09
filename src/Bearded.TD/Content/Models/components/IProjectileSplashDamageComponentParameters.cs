@@ -1,12 +1,13 @@
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Content.Models
 {
-    public interface IProjectileSplashDamageComponentParameters : IParametersTemplate<IProjectileSplashDamageComponentParameters>
+    interface IProjectileSplashDamageComponentParameters : IParametersTemplate<IProjectileSplashDamageComponentParameters>
     {
         [Modifiable(Type = AttributeType.Damage)]
-        int Damage { get; }
+        HitPoints Damage { get; }
 
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }

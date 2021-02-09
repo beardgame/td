@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
@@ -32,6 +33,10 @@ namespace Bearded.TD.Game.Simulation.Components
         [ConvertsAttribute]
         public static AttributeConverter<Frequency> FrequencyConverter =
             new(d => new Frequency(d), f => f.NumericValue);
+
+        [ConvertsAttribute]
+        public static AttributeConverter<HitPoints> HitPointsConverter =
+            new(d => new HitPoints((int) d), h => h.NumericValue);
 
         [ConvertsAttribute]
         public static AttributeConverter<ResourceAmount> ResourceAmountConverter =
