@@ -1,17 +1,17 @@
 using System;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Statistics
+namespace Bearded.TD.Game.Simulation.Components.Statistics
 {
     sealed class StatisticCollector<T> : IComponent<T>, ISyncable where T : GameObject
     {
