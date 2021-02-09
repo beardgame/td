@@ -73,7 +73,7 @@ namespace Bearded.TD.UI.Controls
 
             game = dependencies.Resolve<GameInstance>();
             playerFaction = game.Me.Faction;
-            pulse = new Pulse(game.State, 0.5.S());
+            pulse = new Pulse(game.State, Constants.UI.Statistics.TimeBetweenUIUpdates);
 
             game.Meta.Events.Subscribe<BuildingUpgradeFinished>(this);
             game.Meta.Events.Subscribe<BuildingUpgradeQueued>(this);

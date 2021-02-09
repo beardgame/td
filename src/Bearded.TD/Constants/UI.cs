@@ -1,4 +1,6 @@
 ﻿using amulware.Graphics;
+using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD
 {
@@ -40,6 +42,11 @@ namespace Bearded.TD
             public static class NavBar
             {
                 public const double Height = 48;
+            }
+
+            public static class Statistics
+            {
+                public static readonly TimeSpan TimeBetweenUIUpdates = 0.25.S();
             }
 
             public static class TabBar
