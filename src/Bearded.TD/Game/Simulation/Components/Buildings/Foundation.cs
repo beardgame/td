@@ -50,8 +50,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
         private void drawTile(Tile tile, float z0, float z1)
         {
-            const float uvScale = 1f / HexagonDiameter;
-
+            // TODO: cache the geometry
             var center = Level
                 .GetPosition(tile)
                 .NumericValue;
@@ -61,6 +60,11 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
                 drawWall(z0, z1, i, center);
             }
 
+            drawTop(z1, center);
+        }
+
+        private void drawTop(float z1, Vector2 center)
+        {
             var data = (Vector3.UnitZ, Vector3.UnitX, Color.White);
 
             spriteTop.DrawQuad(
