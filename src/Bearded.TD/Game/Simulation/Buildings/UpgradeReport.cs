@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
@@ -38,12 +39,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             private readonly Faction playerFaction;
 
             private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
+            private readonly List<IUpgradeBlueprint> buildingAvailableUpgrades = new();
 
             public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
+            public IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
 
             public bool CanPlayerUpgradeBuilding => building.CanBeUpgradedBy(playerFaction);
 
             public event VoidEventHandler? UpgradesUpdated;
+            public event VoidEventHandler? AvailableUpgradesUpdated;
 
             public UpgradeReportInstance(Building building, GameInstance game)
             {
@@ -71,7 +75,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 Upgrades = buildingUpgrades.AsReadOnly();
-
+                AvailableUpgrades = buildingAvailableUpgrades.AsReadOnly();
+                updateAvailableUpgrades();
             }
 
             public void Dispose()
@@ -99,6 +104,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 buildingUpgrades[i].MarkFinished();
+                UpgradesUpdated?.Invoke();
             }
 
             public void HandleEvent(BuildingUpgradeQueued @event)
@@ -109,12 +115,23 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 buildingUpgrades.Add(new BuildingUpgradeModel(@event.Upgrade, @event.Task));
+                buildingAvailableUpgrades.Remove(@event.Upgrade);
                 UpgradesUpdated?.Invoke();
+                AvailableUpgradesUpdated?.Invoke();
             }
 
             public void HandleEvent(UpgradeTechnologyUnlocked @event)
             {
-                UpgradesUpdated?.Invoke();
+                updateAvailableUpgrades();
+                AvailableUpgradesUpdated?.Invoke();
+            }
+
+            private void updateAvailableUpgrades()
+            {
+                buildingAvailableUpgrades.Clear();
+                var upgradesInProgress = building.UpgradesInProgress.Select(t => t.Upgrade).ToImmutableHashSet();
+                buildingAvailableUpgrades
+                    .AddRange(building.GetApplicableUpgrades().WhereNot(upgradesInProgress.Contains));
             }
 
             public void QueueUpgrade(IUpgradeBlueprint upgrade)

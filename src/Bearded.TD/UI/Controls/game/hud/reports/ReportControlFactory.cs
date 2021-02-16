@@ -21,22 +21,24 @@ namespace Bearded.TD.UI.Controls
             this.pulse = pulse;
         }
 
-        public Control CreateForReport(IReport report, Disposer disposer, out double height)
+        public Control CreateForReport(
+            IReport report, Disposer disposer, ControlContainer detailsContainer, out double height)
         {
-            var control = createForReport(report);
+            var control = createForReport(report, detailsContainer);
             height = control.Height;
             pulse.Heartbeat += control.Update;
             disposer.AddDisposable(new ReportDisposer(control, pulse));
             return control;
         }
 
-        private ReportControl createForReport(IReport report)
+        private ReportControl createForReport(IReport report, ControlContainer detailsContainer)
         {
             return report switch
             {
                 IHealthReport healthReport => new HealthReportControl(healthReport),
                 IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
-                IUpgradeReport upgradeReport => new UpgradeReportControl(upgradeReport.CreateInstance(game)),
+                IUpgradeReport upgradeReport =>
+                    new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
 
                 _ => throw new InvalidOperationException($"Cannot create control for report {report}")
             };

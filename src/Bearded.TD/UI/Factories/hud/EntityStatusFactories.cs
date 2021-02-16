@@ -16,7 +16,10 @@ namespace Bearded.TD.UI.Factories
         {
             var builder = new Builder();
             builderFunc(builder);
-            layout.DockFixedSizeToLeft(builder.Build(), Constants.UI.Menu.Width);
+            var details = new ControlContainer { new BackgroundBox() };
+            layout
+                .DockFixedSizeToLeft(builder.Build(details), Constants.UI.Menu.Width)
+                .DockFixedSizeToLeft(details, Constants.UI.Menu.Width);
             return layout;
         }
 
@@ -26,7 +29,6 @@ namespace Bearded.TD.UI.Factories
             private VoidEventHandler? onCloseHandler;
             private Binding<IReportSubject>? reportSubject;
             private IReportControlFactory? reportFactory;
-            private Control? contentControl;
             private readonly List<(string, Binding<string>, Binding<Color>?)> textAttributes = new();
 
             public Builder WithName(Binding<string> name)
@@ -48,19 +50,13 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
-            public Builder WithContent(Control content)
-            {
-                contentControl = content;
-                return this;
-            }
-
             public Builder AddTextAttribute(string description, Binding<string> value, Binding<Color>? color = null)
             {
                 textAttributes.Add((description, value, color));
                 return this;
             }
 
-            public Control Build()
+            public Control Build(ControlContainer detailsContainer)
             {
                 if (entityName == null)
                 {
@@ -87,15 +83,9 @@ namespace Bearded.TD.UI.Factories
                     layout.DockFixedSizeToTop(buildTextAttributes(out var height), height);
                 }
 
-                // TODO: replace with reports
-                if (contentControl != null)
-                {
-                    layout.DockFixedSizeToTop(contentControl, 400);
-                }
-
                 if (reportSubject != null)
                 {
-                    layout.FillContent(buildReports());
+                    layout.FillContent(buildReports(detailsContainer));
                 }
 
                 return control;
@@ -114,7 +104,7 @@ namespace Bearded.TD.UI.Factories
                 return control;
             }
 
-            private Control buildReports()
+            private Control buildReports(ControlContainer detailsContainer)
             {
                 var disposer = new Disposer();
                 var control = new CompositeControl();
@@ -132,7 +122,8 @@ namespace Bearded.TD.UI.Factories
                     var column = control.BuildScrollableColumn();
                     foreach (var r in subject.Reports)
                     {
-                        column.Add(reportFactory!.CreateForReport(r, disposer, out var height), height);
+                        column.Add(
+                            reportFactory!.CreateForReport(r, disposer, detailsContainer, out var height), height);
                     }
                 }
             }
