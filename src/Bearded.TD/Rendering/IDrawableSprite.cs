@@ -32,6 +32,14 @@ namespace Bearded.TD.Rendering
         void DrawQuad(
             Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3,
             Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
+            TVertexData data)
+        {
+            DrawQuad(p0, p1, p2, p3, uv0, uv1, uv2, uv3, data, data, data, data);
+        }
+
+        void DrawQuad(
+            Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3,
+            Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
             TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3);
     }
 }

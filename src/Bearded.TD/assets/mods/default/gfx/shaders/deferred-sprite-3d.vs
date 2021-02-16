@@ -25,7 +25,7 @@ void main()
     gl_Position = position;
 
     fragmentNormal = vertexNormal;
-    fragmentNormal = vertexTangent;
+    fragmentTangent = vertexTangent;
 	fragmentColor = vertexColor;
 	fragmentUV = vertexUV;
 	fragmentDepth = -viewPosition.z / farPlaneDistance;

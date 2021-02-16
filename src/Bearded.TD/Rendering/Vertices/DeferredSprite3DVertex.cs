@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
+using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 
@@ -9,6 +10,11 @@ namespace Bearded.TD.Rendering.Vertices
     [StructLayout(LayoutKind.Sequential)]
     readonly struct DeferredSprite3DVertex : IVertexData
     {
+        public static DrawableSprite<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)>
+            .CreateSprite Create { get; } =
+                (position, uv, data) => new DeferredSprite3DVertex(
+                    position, data.Normal, data.Tangent, uv, data.Color);
+
         private readonly Vector3 position;
         private readonly Vector3 normal;
         private readonly Vector3 tangent;
@@ -32,6 +38,6 @@ namespace Bearded.TD.Rendering.Vertices
             MakeAttributeTemplate<Vector3>("vertexTangent"),
             MakeAttributeTemplate<Vector2>("vertexUV"),
             MakeAttributeTemplate<Color>("vertexColor")
-            );
+        );
     }
 }

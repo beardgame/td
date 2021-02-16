@@ -26,7 +26,7 @@ void main()
 	vec3 fTangent = normalize(fragmentTangent);
 	vec3 fBiTangent = cross(fNormal, fTangent);
 
-	vec3 rotatedNormal = normal.x * fBiTangent + normal.y * fBiTangent + normal.z * fNormal;
+	vec3 rotatedNormal = normal.x * fTangent + normal.y * fBiTangent + normal.z * fNormal;
 
     outRGBA = rgba;
     outNormal = vec4(rotatedNormal * 0.5 + 0.5, 1) * rgba.a;
