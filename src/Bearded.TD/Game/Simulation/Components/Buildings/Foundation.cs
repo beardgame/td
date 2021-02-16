@@ -3,12 +3,12 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
+using static Bearded.TD.Constants.Game.World;
 using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Simulation.Components.Buildings
@@ -16,17 +16,20 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
     [Component("foundation")]
     sealed class Foundation : Component<Building>
     {
-        private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> sprite = null!;
+        private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteSide = null!;
+        private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteTop = null!;
+
 
         protected override void Initialize()
         {
-            sprite = Owner.Game.Meta.Blueprints
-                // TODO: don't hardcode this, specify in parameters
-                .Sprites[ModAwareId.ForDefaultMod("foundations")]
-                // this can remain hardcoded I think, at least for now
-                // later we may want to depend on parameters for tower specific config
-                .GetSprite("side")
+            // TODO: don't hardcode this, specify in parameters
+            var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("foundations")]
                 .MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create);
+
+            // this can remain hardcoded I think, at least for now
+            // later we may want to depend on parameters for tower specific config
+            spriteSide = sprites.GetSprite("side");
+            spriteTop = sprites.GetSprite("top");
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -47,6 +50,8 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
         private void drawTile(Tile tile, float z0, float z1)
         {
+            const float uvScale = 1f / HexagonDiameter;
+
             var center = Level
                 .GetPosition(tile)
                 .NumericValue;
@@ -56,25 +61,28 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
                 drawWall(z0, z1, i, center);
             }
 
-            // TODO: use a separate sprite to read from
-            var uv = new Vector2(0.5f, 0.5f);
-
             var data = (Vector3.UnitZ, Vector3.UnitX, Color.White);
 
-            sprite.DrawQuad(
+            spriteTop.DrawQuad(
                 (center + cornerVectors[0] * 0.8f).WithZ(z1),
                 (center + cornerVectors[1] * 0.8f).WithZ(z1),
                 (center + cornerVectors[2] * 0.8f).WithZ(z1),
                 (center + cornerVectors[3] * 0.8f).WithZ(z1),
-                uv, uv, uv, uv,
+                cornerUVs[0],
+                cornerUVs[1],
+                cornerUVs[2],
+                cornerUVs[3],
                 data
             );
-            sprite.DrawQuad(
+            spriteTop.DrawQuad(
                 (center + cornerVectors[3] * 0.8f).WithZ(z1),
                 (center + cornerVectors[4] * 0.8f).WithZ(z1),
                 (center + cornerVectors[5] * 0.8f).WithZ(z1),
                 (center + cornerVectors[6] * 0.8f).WithZ(z1),
-                uv, uv, uv, uv,
+                cornerUVs[3],
+                cornerUVs[4],
+                cornerUVs[5],
+                cornerUVs[6],
                 data
             );
         }
@@ -93,18 +101,24 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
             var tangentY = p1 - p0;
             var normal = Vector3.Cross(tangentX, tangentY);
 
-            sprite.DrawQuad(
+            spriteSide.DrawQuad(
                 p0, p1, p2, p3,
-                new Vector2(0, 0),
                 new Vector2(0, 1),
-                new Vector2(1, 1),
+                new Vector2(0, 0),
                 new Vector2(1, 0),
+                new Vector2(1, 1),
                 (normal, tangentX, Color.White)
             );
         }
 
         private static readonly Vector2[] cornerVectors =
-            Extensions.Directions.Append(Direction.Right).Select(d => d.CornerBefore() * Constants.Game.World.HexagonSide).ToArray();
+            Extensions.Directions.Append(Direction.Right).Select(d => d.CornerBefore() * HexagonSide).ToArray();
+
+        private static readonly Vector2[] cornerUVs =
+            cornerVectors
+                .Select(c => (c + new Vector2(HexagonSide)) / HexagonDiameter)
+                .Select(xy => new Vector2(xy.X, 1 - xy.Y))
+                .ToArray();
 
     }
 }
