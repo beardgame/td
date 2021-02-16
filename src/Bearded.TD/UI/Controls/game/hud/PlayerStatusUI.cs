@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.Utilities;

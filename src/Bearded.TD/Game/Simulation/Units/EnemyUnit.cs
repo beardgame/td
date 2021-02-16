@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using amulware.Graphics;
-using amulware.Graphics.Shapes;
+using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;

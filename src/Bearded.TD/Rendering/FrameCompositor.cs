@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
-using amulware.Graphics.Pipelines.Context;
-using amulware.Graphics.Textures;
+using Bearded.Graphics.Pipelines.Context;
+using Bearded.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
 using OpenTK.Graphics.OpenGL;
-using Color = amulware.Graphics.Color;
+using Color = Bearded.Graphics.Color;
 
 namespace Bearded.TD.Rendering
 {

@@ -1,4 +1,4 @@
-﻿using amulware.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;

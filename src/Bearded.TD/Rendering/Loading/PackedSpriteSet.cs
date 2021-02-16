@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Rendering.Loading

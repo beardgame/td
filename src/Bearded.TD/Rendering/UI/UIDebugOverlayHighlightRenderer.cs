@@ -1,6 +1,6 @@
-using amulware.Graphics;
-using amulware.Graphics.Shapes;
-using amulware.Graphics.Text;
+using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
+using Bearded.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;

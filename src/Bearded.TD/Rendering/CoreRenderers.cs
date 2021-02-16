@@ -1,12 +1,12 @@
 using System.Drawing;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Text;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Text;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
-using Font = amulware.Graphics.Text.Font;
+using Font = Bearded.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering
 {

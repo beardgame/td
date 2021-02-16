@@ -1,5 +1,5 @@
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.Utilities;
 using OpenTK.Mathematics;

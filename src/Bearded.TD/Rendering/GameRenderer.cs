@@ -1,7 +1,7 @@
 using System;
-using amulware.Graphics;
-using amulware.Graphics.Shapes;
-using amulware.Graphics.Text;
+using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
+using Bearded.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Navigation;

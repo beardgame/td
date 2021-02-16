@@ -1,5 +1,5 @@
 using System;
-using amulware.Graphics.ShaderManagement;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Rendering

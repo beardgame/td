@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.InGameUI;

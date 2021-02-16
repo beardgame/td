@@ -1,4 +1,4 @@
-﻿using amulware.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;

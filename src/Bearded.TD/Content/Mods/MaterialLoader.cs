@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using amulware.Graphics.Textures;
+using Bearded.Graphics.Textures;
 
 namespace Bearded.TD.Content.Mods
 {

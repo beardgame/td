@@ -1,5 +1,5 @@
 ﻿using System;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

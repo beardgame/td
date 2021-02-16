@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using amulware.Graphics;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics;
+using Bearded.Graphics.Vertices;
 using OpenTK.Mathematics;
-using static amulware.Graphics.Vertices.VertexData;
+using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Deferred
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using amulware.Graphics;
-using amulware.Graphics.Shapes;
+using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;

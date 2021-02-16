@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;

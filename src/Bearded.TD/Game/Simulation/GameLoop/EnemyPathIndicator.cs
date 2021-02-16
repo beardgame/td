@@ -1,4 +1,4 @@
-﻿using amulware.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components.Graphical;
 using Bearded.TD.Game.Simulation.Navigation;

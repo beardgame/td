@@ -1,7 +1,7 @@
 using System;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 

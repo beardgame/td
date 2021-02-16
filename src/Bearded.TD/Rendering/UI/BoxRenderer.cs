@@ -1,5 +1,5 @@
-﻿using amulware.Graphics;
-using amulware.Graphics.Shapes;
+﻿using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using amulware.Graphics.ShaderManagement;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Rendering

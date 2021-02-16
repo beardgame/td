@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
+using Bearded.Graphics;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;

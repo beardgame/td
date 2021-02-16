@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
-using static amulware.Graphics.Vertices.VertexData;
+using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Vertices
 {

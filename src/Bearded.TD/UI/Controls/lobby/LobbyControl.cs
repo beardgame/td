@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;

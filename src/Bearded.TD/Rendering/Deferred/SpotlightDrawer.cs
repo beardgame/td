@@ -1,7 +1,7 @@
 ﻿using System;
-using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Shapes;
+using Bearded.Graphics;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Shapes;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 

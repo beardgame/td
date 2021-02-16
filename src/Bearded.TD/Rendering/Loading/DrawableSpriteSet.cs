@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Rendering.Loading

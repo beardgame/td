@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "amulware.Graphics", "libs\awgraphics\src\amulware.Graphics\amulware.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics", "libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Proto", "src\Bearded.TD.Proto\Bearded.TD.Proto.csproj", "{4862BBB1-839D-4831-9985-D3399C8C2DED}"
 EndProject

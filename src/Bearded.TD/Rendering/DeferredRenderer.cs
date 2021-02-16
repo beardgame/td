@@ -1,10 +1,10 @@
 using System;
 using System.Drawing;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Pipelines;
-using amulware.Graphics.Rendering;
-using amulware.Graphics.RenderSettings;
-using amulware.Graphics.Textures;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Pipelines;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
@@ -14,13 +14,13 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using static amulware.Graphics.Pipelines.Context.CullMode;
+using static Bearded.Graphics.Pipelines.Context.CullMode;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
 {
-    using static amulware.Graphics.Pipelines.Context.BlendMode;
-    using static amulware.Graphics.Pipelines.Context.DepthMode;
+    using static Bearded.Graphics.Pipelines.Context.BlendMode;
+    using static Bearded.Graphics.Pipelines.Context.DepthMode;
     using static Pipeline;
     using static Pipeline<DeferredRenderer.RenderState>;
 

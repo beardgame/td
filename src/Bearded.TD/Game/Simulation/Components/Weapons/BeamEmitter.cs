@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using amulware.Graphics;
-using amulware.Graphics.Shapes;
+using Bearded.Graphics;
+using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;

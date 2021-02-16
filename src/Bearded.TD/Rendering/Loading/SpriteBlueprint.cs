@@ -1,4 +1,4 @@
-﻿using amulware.Graphics.Vertices;
+﻿using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Rendering.Loading

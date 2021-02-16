@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
-using amulware.Graphics;
-using amulware.Graphics.Vertices;
+using Bearded.Graphics;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 

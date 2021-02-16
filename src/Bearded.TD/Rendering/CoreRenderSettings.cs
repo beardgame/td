@@ -1,4 +1,4 @@
-﻿using amulware.Graphics.RenderSettings;
+﻿using Bearded.Graphics.RenderSettings;
 using Bearded.TD.UI.Layers;
 using OpenTK.Mathematics;
 

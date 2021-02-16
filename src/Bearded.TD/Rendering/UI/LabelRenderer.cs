@@ -1,5 +1,5 @@
-﻿using amulware.Graphics;
-using amulware.Graphics.Text;
+﻿using Bearded.Graphics;
+using Bearded.Graphics.Text;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;

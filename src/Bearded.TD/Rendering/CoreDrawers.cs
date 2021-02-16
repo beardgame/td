@@ -1,7 +1,7 @@
-﻿using amulware.Graphics;
-using amulware.Graphics.MeshBuilders;
-using amulware.Graphics.Shapes;
-using amulware.Graphics.Text;
+﻿using Bearded.Graphics;
+using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Shapes;
+using Bearded.Graphics.Text;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Mathematics;

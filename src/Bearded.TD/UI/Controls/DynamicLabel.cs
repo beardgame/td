@@ -1,5 +1,5 @@
 ﻿using System;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls

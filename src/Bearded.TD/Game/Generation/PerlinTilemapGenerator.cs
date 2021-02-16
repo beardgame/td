@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;

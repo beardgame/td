@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using amulware.Graphics.ShaderManagement;
-using amulware.Graphics.Textures;
+using Bearded.Graphics.ShaderManagement;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
 using Shader = Bearded.TD.Content.Models.Shader;

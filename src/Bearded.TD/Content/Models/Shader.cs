@@ -1,4 +1,4 @@
-using amulware.Graphics.ShaderManagement;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 

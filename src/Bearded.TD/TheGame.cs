@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
@@ -25,7 +25,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
-using Window = amulware.Graphics.Windowing.Window;
+using Window = Bearded.Graphics.Windowing.Window;
 
 namespace Bearded.TD
 {

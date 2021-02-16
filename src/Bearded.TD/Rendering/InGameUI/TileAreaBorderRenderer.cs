@@ -1,5 +1,5 @@
 using System;
-using amulware.Graphics;
+using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.World;
