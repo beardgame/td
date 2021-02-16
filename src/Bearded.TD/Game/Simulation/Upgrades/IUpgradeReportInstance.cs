@@ -8,8 +8,10 @@ namespace Bearded.TD.Game.Simulation.Upgrades
     {
         bool CanPlayerUpgradeBuilding { get; }
         IReadOnlyCollection<IUpgradeModel> Upgrades { get; }
+        IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
 
         event VoidEventHandler? UpgradesUpdated;
+        event VoidEventHandler? AvailableUpgradesUpdated;
 
         void QueueUpgrade(IUpgradeBlueprint upgrade);
 
