@@ -179,12 +179,12 @@ namespace Bearded.TD.Rendering
                     c => c.BindRenderTarget(s => s.FinalRenderTarget),
                     PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
                         new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
-                        levelUpSampleUVOffset)
+                        new Vector2Uniform("uvOffset", Vector2.Zero)
+                        )
                     )
             );
 
             pipeline = fullRender;
-
 
             // TODO: it would be neat to have some steps have a more semantic associated output
             // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
@@ -282,9 +282,9 @@ namespace Bearded.TD.Rendering
             return WithContext(
                 c => c.BindRenderTarget(target),
                 PostProcess(shaders.GetShaderProgram(shaderName), out _,
-                    new TextureUniform("inputTexture", TextureUnit.Texture0,
-                        texture.Texture),
-                    levelUpSampleUVOffset)
+                    new TextureUniform("inputTexture", TextureUnit.Texture0, texture.Texture),
+                    levelUpSampleUVOffset
+                    )
             );
         }
 

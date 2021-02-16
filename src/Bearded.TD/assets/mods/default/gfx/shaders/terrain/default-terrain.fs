@@ -6,7 +6,7 @@ uniform sampler2DArray normalTextures;
 uniform float farPlaneDistance;
 uniform vec3 cameraPosition;
 
-uniform mat4 view;
+uniform mat4 viewLevel;
 
 uniform float heightScale;
 
@@ -222,6 +222,6 @@ void main()
 
     // check if this is actually in 0-1 space between camera and far plane
     // it probably is not because we don't take near distance into account properly
-    float depth = -(view * vec4(fPosition, 1)).z / farPlaneDistance;
+    float depth = -(viewLevel * vec4(fPosition, 1)).z / farPlaneDistance;
     outDepth = vec4(depth, 0, 0, rgba.a);
 }

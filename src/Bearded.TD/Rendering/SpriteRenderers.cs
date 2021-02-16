@@ -37,7 +37,8 @@ namespace Bearded.TD.Rendering
             {
                 context.Settings.ProjectionMatrix,
                 context.Settings.ViewMatrix,
-                context.Settings.FarPlaneDistance
+                context.Settings.FarPlaneDistance,
+                context.Settings.ViewMatrixLevel
             };
         }
 

@@ -3,7 +3,7 @@
 uniform sampler2D heightmap;
 
 uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 viewLevel;
 
 uniform float heightmapRadius;
 
@@ -37,7 +37,7 @@ void main()
     p.z += height;
 
 
-	vec4 viewPosition = view * vec4(p, 1.0);
+	vec4 viewPosition = viewLevel * vec4(p, 1.0);
 	vec4 position = projection * viewPosition;
     gl_Position = position;
 
