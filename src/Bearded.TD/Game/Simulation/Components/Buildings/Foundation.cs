@@ -14,11 +14,13 @@ using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Simulation.Components.Buildings
 {
+    using Sprite = IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)>;
+
     [Component("foundation")]
     sealed class Foundation : Component<Building, IFoundationParameters>
     {
-        private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteSide = null!;
-        private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteTop = null!;
+        private Sprite spriteSide = null!;
+        private Sprite spriteTop = null!;
 
         public Foundation(IFoundationParameters parameters) : base(parameters)
         {
@@ -71,26 +73,21 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
         {
             var data = (Vector3.UnitZ, Vector3.UnitX, Color.White);
 
+            drawTopQuad(z1, center, data, 0);
+            drawTopQuad(z1, center, data, 3);
+        }
+
+        private void drawTopQuad(float z1, Vector2 center, (Vector3 Normal, Vector3 Tangent, Color Color) data, int cornerOffset)
+        {
             spriteTop.DrawQuad(
-                (center + cornerVectors[0] * 0.8f).WithZ(z1),
-                (center + cornerVectors[1] * 0.8f).WithZ(z1),
-                (center + cornerVectors[2] * 0.8f).WithZ(z1),
-                (center + cornerVectors[3] * 0.8f).WithZ(z1),
-                cornerUVs[0],
-                cornerUVs[1],
-                cornerUVs[2],
-                cornerUVs[3],
-                data
-            );
-            spriteTop.DrawQuad(
-                (center + cornerVectors[3] * 0.8f).WithZ(z1),
-                (center + cornerVectors[4] * 0.8f).WithZ(z1),
-                (center + cornerVectors[5] * 0.8f).WithZ(z1),
-                (center + cornerVectors[6] * 0.8f).WithZ(z1),
-                cornerUVs[3],
-                cornerUVs[4],
-                cornerUVs[5],
-                cornerUVs[6],
+                (center + cornerVectors[cornerOffset + 0] * 0.8f).WithZ(z1),
+                (center + cornerVectors[cornerOffset + 1] * 0.8f).WithZ(z1),
+                (center + cornerVectors[cornerOffset + 2] * 0.8f).WithZ(z1),
+                (center + cornerVectors[cornerOffset + 3] * 0.8f).WithZ(z1),
+                cornerUVs[cornerOffset + 0],
+                cornerUVs[cornerOffset + 1],
+                cornerUVs[cornerOffset + 2],
+                cornerUVs[cornerOffset + 3],
                 data
             );
         }
@@ -127,6 +124,5 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
                 .Select(c => (c + new Vector2(HexagonSide)) / HexagonDiameter)
                 .Select(xy => new Vector2(xy.X, 1 - xy.Y))
                 .ToArray();
-
     }
 }
