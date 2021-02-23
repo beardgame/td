@@ -4,32 +4,26 @@ using System.Linq;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
     sealed class WorkerManager
     {
         private readonly WorkerNetwork network;
-        private readonly List<Worker> allWorkers = new List<Worker>();
-        private readonly Queue<Worker> idleWorkers = new Queue<Worker>();
-        private readonly List<IWorkerTask> tasks = new List<IWorkerTask>();
-        private readonly IdDictionary<IWorkerTask> tasksById = new IdDictionary<IWorkerTask>();
-        private readonly Dictionary<IWorkerTask, Worker> workerAssignments = new Dictionary<IWorkerTask, Worker>();
+        private readonly List<IWorkerComponent> allWorkers = new();
+        private readonly Queue<IWorkerComponent> idleWorkers = new();
+        private readonly List<IWorkerTask> tasks = new();
+        private readonly IdDictionary<IWorkerTask> tasksById = new();
+        private readonly Dictionary<IWorkerTask, IWorkerComponent> workerAssignments = new();
 
-        public int NumWorkers => allWorkers.Count;
-        public int NumIdleWorkers => idleWorkers.Count;
-        public IList<IWorkerTask> QueuedTasks { get; }
-
-        // Fires when workers are added OR removed.
-        public event VoidEventHandler? WorkersUpdated;
-        // Fires when the task queue changes in any way.
-        public event VoidEventHandler? TasksUpdated;
+        private int numWorkers => allWorkers.Count;
 
         public WorkerManager(WorkerNetwork network)
         {
             this.network = network;
             network.NetworkChanged += onNetworkChanged;
-            QueuedTasks = tasks.AsReadOnly();
+            tasks.AsReadOnly();
         }
 
         public IWorkerTask TaskFor(Id<IWorkerTask> id) => tasksById[id];
@@ -46,16 +40,14 @@ namespace Bearded.TD.Game.Simulation.Workers
             }
         }
 
-        public void RegisterWorker(Worker worker)
+        public void RegisterWorker(IWorkerComponent worker)
         {
             allWorkers.Add(worker);
-            WorkersUpdated?.Invoke();
         }
 
-        public void UnregisterWorker(Worker worker)
+        public void UnregisterWorker(IWorkerComponent worker)
         {
             allWorkers.Remove(worker);
-            WorkersUpdated?.Invoke();
         }
 
         public void RegisterTask(IWorkerTask task)
@@ -63,19 +55,18 @@ namespace Bearded.TD.Game.Simulation.Workers
             tasks.Add(task);
             tasksById.Add(task);
             tryAssignTaskToFirstIdleWorker(task);
-            TasksUpdated?.Invoke();
         }
 
         public void ReturnTask(IWorkerTask task)
         {
-            DebugAssert.Argument.Satisfies(!task.Finished);
+            Argument.Satisfies(!task.Finished);
             workerAssignments.Remove(task);
             tryAssignTaskToFirstIdleWorker(task);
         }
 
-        public void RequestTask(Worker worker)
+        public void RequestTask(IWorkerComponent worker)
         {
-            DebugAssert.Argument.Satisfies(() => allWorkers.Contains(worker));
+            Argument.Satisfies(() => allWorkers.Contains(worker));
             tasks.Where(isUnassignedTaskInAntennaRange).MaybeFirst().Match(
                 task => assignTask(worker, task),
                 () => idleWorkers.Enqueue(worker));
@@ -89,13 +80,13 @@ namespace Bearded.TD.Game.Simulation.Workers
             }
         }
 
-        private void assignTask(Worker worker, IWorkerTask task)
+        private void assignTask(IWorkerComponent worker, IWorkerTask task)
         {
             worker.AssignTask(task);
             workerAssignments.Add(task, worker);
         }
 
-        public void SuspendTask(IWorkerTask task)
+        private void suspendTask(IWorkerTask task)
         {
             if (!workerAssignments.TryGetValue(task, out var worker))
                 throw new InvalidOperationException("Cannot suspend a task that is not currently assigned.");
@@ -104,14 +95,13 @@ namespace Bearded.TD.Game.Simulation.Workers
             // Note: the worker will immediately look for a new task. That task could be the same task, which is why we
             // delete the assignment first.
             worker.SuspendCurrentTask();
-            TasksUpdated?.Invoke();
         }
 
         public void AbortTask(IWorkerTask task)
         {
             var deletedFromList = tasks.Remove(task);
             tasksById.Remove(task);
-            DebugAssert.State.Satisfies(deletedFromList);
+            State.Satisfies(deletedFromList);
             task.OnAbort();
 
             if (workerAssignments.TryGetValue(task, out var worker))
@@ -121,17 +111,15 @@ namespace Bearded.TD.Game.Simulation.Workers
                 // we delete the task and assignment first.
                 worker.SuspendCurrentTask();
             }
-            TasksUpdated?.Invoke();
         }
 
         public void FinishTask(IWorkerTask task)
         {
-            DebugAssert.Argument.Satisfies(workerAssignments.ContainsKey(task));
+            Argument.Satisfies(workerAssignments.ContainsKey(task));
             workerAssignments.Remove(task);
             var deletedFromList = tasks.Remove(task);
             tasksById.Remove(task);
-            DebugAssert.State.Satisfies(deletedFromList);
-            TasksUpdated?.Invoke();
+            State.Satisfies(deletedFromList);
         }
 
         public void BumpTaskToTop(IWorkerTask task)
@@ -139,10 +127,8 @@ namespace Bearded.TD.Game.Simulation.Workers
             tasks.Remove(task);
             tasks.Insert(0, task);
 
-            TasksUpdated?.Invoke();
-
             // Make sure the bumped task is picked up if possible.
-            if (!workerAssignments.ContainsKey(task) && NumWorkers > 0)
+            if (!workerAssignments.ContainsKey(task) && numWorkers > 0)
             {
                 tickleLatestWorker();
             }
@@ -155,7 +141,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             var lastAssignedTask = tasks.Where(workerAssignments.ContainsKey).LastOrDefault();
             if (lastAssignedTask != null)
             {
-                SuspendTask(lastAssignedTask);
+                suspendTask(lastAssignedTask);
             }
         }
 

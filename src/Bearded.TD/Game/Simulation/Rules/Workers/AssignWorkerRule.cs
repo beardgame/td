@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Workers;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Rules.Workers
 {
@@ -12,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
     sealed class AssignWorkerRule : GameRule, IListener<WorkerAdded>
     {
         private WorkerDistributionMethod distributionMethod = WorkerDistributionMethod.Neutral;
-        private readonly Dictionary<Faction, Queue<Faction>> childFactions = new Dictionary<Faction, Queue<Faction>>();
+        private readonly Dictionary<Faction, Queue<Faction>> childFactions = new();
 
         protected override void RegisterEvents(GlobalGameEvents events, GameSettings gameSettings)
         {
@@ -23,6 +22,17 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
             events.Subscribe(this);
         }
 
+        protected override void Execute(GameState gameState)
+        {
+            base.Execute(gameState);
+
+            var factionsByParent = gameState.Factions.ToLookup(f => f.Parent);
+            foreach (var faction in gameState.Factions.Where(f => f.HasWorkerNetwork))
+            {
+                childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
+            }
+        }
+
         public void HandleEvent(WorkerAdded @event)
         {
             var hubFaction = @event.Worker.HubOwner.Faction;
@@ -30,13 +40,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
             switch (distributionMethod)
             {
                 case WorkerDistributionMethod.RoundRobin:
-                    if (!childFactions.TryGetValue(hubFaction, out var queue))
-                    {
-                        queue = new Queue<Faction>();
-                        childFactions[hubFaction] = queue;
-                        @event.Worker.Game.Factions.Where(f => f.Parent == hubFaction).ForEach(queue.Enqueue);
-                    }
-
+                    var queue = childFactions[hubFaction];
                     if (queue.Count == 0)
                     {
                         @event.Worker.AssignToFaction(hubFaction);

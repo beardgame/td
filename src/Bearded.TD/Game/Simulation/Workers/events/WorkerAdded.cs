@@ -4,9 +4,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     readonly struct WorkerAdded : IGlobalEvent
     {
-        public Worker Worker { get; }
+        public IWorkerComponent Worker { get; }
 
-        public WorkerAdded(Worker worker)
+        public WorkerAdded(IWorkerComponent worker)
         {
             Worker = worker;
         }
