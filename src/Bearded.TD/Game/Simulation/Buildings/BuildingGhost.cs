@@ -32,9 +32,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void ResetSelection()
             => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Focus(SelectionManager selectionManager)
+        public override void Focus()
             => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Select(SelectionManager selectionManager)
+        public override void Select()
             => throw new InvalidOperationException(selectionIsImmutable);
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()

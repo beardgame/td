@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Factions;
@@ -12,7 +11,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers
 {
     [ComponentOwner]
-    sealed class Worker : GameObject, IComponentOwner<Worker>, ISelectable
+    sealed class Worker : GameObject, IComponentOwner<Worker>
     {
         private readonly ComponentEvents events = new();
         private readonly ComponentCollection<Worker> components;
@@ -24,8 +23,6 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public Position2 Position { get; set; } = Position2.Zero;
         public Tile CurrentTile { get; set; }
-
-        public SelectionState SelectionState { get; private set; }
 
         public Worker(IFactioned hubOwner)
         {
@@ -48,19 +45,6 @@ namespace Bearded.TD.Game.Simulation.Workers
         public override void Draw(CoreDrawers drawers)
         {
             components.Draw(drawers);
-        }
-
-        public void ResetSelection()
-        {
-            SelectionState = SelectionState.Default;
-        }
-
-        public void Focus(SelectionManager selectionManager) {}
-
-        public void Select(SelectionManager selectionManager)
-        {
-            selectionManager.CheckCurrentlySelected(this);
-            SelectionState = SelectionState.Selected;
         }
 
         IEnumerable<TComponent> IComponentOwner<Worker>.GetComponents<TComponent>() => components.Get<TComponent>();

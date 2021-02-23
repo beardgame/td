@@ -62,11 +62,11 @@ namespace Bearded.TD.Game.Simulation.Workers
             SelectionState = SelectionState.Default;
         }
 
-        public void Focus(SelectionManager selectionManager)
+        public void Focus()
         {
             SelectionState = SelectionState.Focused;
         }
 
-        public void Select(SelectionManager selectionManager) {}
+        public void Select() {}
     }
 }

@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Workers;
+﻿using Bearded.TD.Game.Meta;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using static Bearded.Utilities.Maybe;
 
@@ -41,13 +38,9 @@ namespace Bearded.TD.Game.Input
             var building = Game.State.BuildingLayer.GetBuildingFor(tile);
             if (building != null) return Just<ISelectable>(building);
 
-            // The following calculations may expensive and if we can't focus these on hover anyway, might as well skip.
-            if (!forClick) return Nothing;
+            // TODO: replace with a better selection layer system
 
-            return Game.State.Enumerate<Worker>()
-                .Where(w => w.CurrentTile == tile)
-                .Cast<ISelectable>()
-                .MaybeFirst();
+            return Nothing;
         }
     }
 }

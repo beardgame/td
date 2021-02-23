@@ -5,7 +5,6 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
@@ -158,9 +157,7 @@ namespace Bearded.TD.UI.Controls
                 case IPlacedBuilding building:
                     entityStatusNavigation!.ReplaceAll<BuildingStatusOverlay, IPlacedBuilding>(building);
                     break;
-                case Worker:
-                    // TODO: add a worker status screen
-                    break;
+                // TODO: add a worker status screen
                 default:
                     return;
             }
