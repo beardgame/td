@@ -32,9 +32,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         protected override void Initialize()
         {
-            HubOwner = Owner.FindInComponentOwnerTree<IFactioned>()
-                .ValueOrFailure(default(Bearded.Utilities.Void))
-                .ResultOrThrow(_ => new InvalidDataException());
+            Owner.FindInComponentOwnerTree<IFactioned>().Match(
+                onValue: owner => HubOwner = owner,
+                onNothing: () => throw new InvalidDataException());
             tileWalker = new TileWalker(this, Owner.Game.Level, Tile.Origin);
             // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
             Owner.Game.Meta.Events.Send(new WorkerAdded(this));
