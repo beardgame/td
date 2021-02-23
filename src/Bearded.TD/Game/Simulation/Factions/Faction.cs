@@ -2,19 +2,19 @@
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
     sealed class Faction : IIdable<Faction>
     {
         private readonly Color? color;
-        private readonly ResourceManager resources;
+        private readonly ResourceManager? resources;
         private readonly TechnologyManager? technology;
-        private readonly WorkerNetwork workerNetwork;
-        private readonly WorkerManager workers;
+        private readonly WorkerNetwork? workerNetwork;
+        private readonly WorkerManager? workers;
 
         public Id<Faction> Id { get; }
         public Faction? Parent { get; }
@@ -23,10 +23,10 @@ namespace Bearded.TD.Game.Simulation.Factions
         public bool HasWorkers { get; }
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
-        public ResourceManager Resources => resources ?? Parent?.Resources;
+        public ResourceManager? Resources => resources ?? Parent?.Resources;
         public TechnologyManager? Technology => technology ?? Parent?.Technology;
-        public WorkerNetwork WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
-        public WorkerManager Workers => workers ?? Parent?.Workers;
+        public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
+        public WorkerManager? Workers => workers ?? Parent?.Workers;
 
         public Faction(
             Id<Faction> id,
@@ -57,8 +57,8 @@ namespace Bearded.TD.Game.Simulation.Factions
             }
             if (hasWorkers)
             {
-                DebugAssert.State.Satisfies(WorkerNetwork != null);
-                workers = new WorkerManager(WorkerNetwork);
+                State.Satisfies(WorkerNetwork != null);
+                workers = new WorkerManager(WorkerNetwork!);
             }
         }
     }

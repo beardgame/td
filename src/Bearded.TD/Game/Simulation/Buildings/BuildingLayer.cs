@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -51,13 +52,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        public IPlacedBuilding GetBuildingFor(Tile tile)
+        public IPlacedBuilding? GetBuildingFor(Tile tile)
         {
             buildingLookup.TryGetValue(tile, out var building);
             return building;
         }
 
-        public bool TryGetMaterializedBuilding(Tile tile, out Building building)
+        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out Building? building)
         {
             building = GetBuildingFor(tile) as Building;
             return building != null;
@@ -78,6 +79,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             throw new InvalidOperationException();
         }
 
-        public IPlacedBuilding this[Tile tile] => GetBuildingFor(tile);
+        public IPlacedBuilding? this[Tile tile] => GetBuildingFor(tile);
     }
 }
