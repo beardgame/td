@@ -34,7 +34,6 @@ namespace Bearded.TD.Game.Simulation.Workers
         {
             base.OnAdded();
             components.Add(new WorkerComponent());
-            Game.ListAs(this);
         }
 
         public override void Update(TimeSpan elapsedTime)
