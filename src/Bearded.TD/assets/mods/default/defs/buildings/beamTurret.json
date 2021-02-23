@@ -4,7 +4,7 @@
   "footprint" : "triangle",
   "cost" : 75,
   "components" : [
-    { "id" : "foundation" },
+    { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     {
       "id" : "turret",

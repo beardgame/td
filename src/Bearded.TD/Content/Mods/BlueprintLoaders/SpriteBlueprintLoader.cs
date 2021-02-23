@@ -11,6 +11,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected override string RelativePath => "gfx/sprites";
 
+        protected override DependencySelector? SelectDependency { get; } =  m => m.Blueprints.Sprites;
+
         public SpriteBlueprintLoader(BlueprintLoadingContext context) : base(context)
         {
             loader = new SpriteSetLoader(context.Context, context.Meta);
@@ -18,6 +20,8 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
 
         protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<SpriteSet> blueprintCollection)
         {
+            base.SetupDependencyResolver(blueprintCollection);
+
             Context.AddDependencyResolver(
                 new SpriteResolver(Context.Meta, blueprintCollection, Context.LoadedDependencies));
         }

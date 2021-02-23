@@ -1,5 +1,6 @@
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Rendering;
@@ -14,17 +15,20 @@ using Extensions = Bearded.TD.Tiles.Extensions;
 namespace Bearded.TD.Game.Simulation.Components.Buildings
 {
     [Component("foundation")]
-    sealed class Foundation : Component<Building>
+    sealed class Foundation : Component<Building, IFoundationParameters>
     {
         private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteSide = null!;
         private IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)> spriteTop = null!;
 
+        public Foundation(IFoundationParameters parameters) : base(parameters)
+        {
+        }
 
         protected override void Initialize()
         {
             // TODO: don't hardcode this, specify in parameters
-            var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("foundations")]
-                .MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create);
+            var sprites = Parameters.Sprites.MakeConcreteWith(
+                Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create);
 
             // this can remain hardcoded I think, at least for now
             // later we may want to depend on parameters for tower specific config
@@ -38,9 +42,9 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
         public override void Draw(CoreDrawers drawers)
         {
-            // TODO: the height should be in the parameters, and z0 should possibly be the lowest tile height or even lower to prevent gaps with terrain
+            // TODO: z0 should possibly be the lowest tile height or even lower to prevent gaps with terrain
             var z0 = Owner.Position.Z.NumericValue;
-            var z1 = z0 + 0.1f;
+            var z1 = z0 + Parameters.Height.NumericValue;
 
             foreach (var tile in Owner.OccupiedTiles)
             {

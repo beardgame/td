@@ -4,7 +4,7 @@
   "footprint": "single",
   "cost": 15,
   "components": [
-    { "id" : "foundation" },
+    { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     {
       "id": "health",
       "parameters": {

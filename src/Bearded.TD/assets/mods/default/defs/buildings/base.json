@@ -4,7 +4,7 @@
   "footprint" : "seven",
   "cost" : 1,
   "components" : [
-    { "id" : "foundation" },
+    { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
     { "id" :  "sink" },
     { "id" :  "gameOverOnDestroy" },
