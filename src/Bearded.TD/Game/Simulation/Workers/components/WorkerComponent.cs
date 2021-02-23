@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
@@ -10,15 +11,15 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("worker")]
     // TODO: make generic
-    sealed class WorkerComponent : Component<Worker>, ITileWalkerOwner, IWorkerComponent
+    sealed class WorkerComponent : Component<ComponentGameObject>, ITileWalkerOwner, IWorkerComponent
     {
         private Faction? faction;
         private WorkerState? currentState;
@@ -27,10 +28,13 @@ namespace Bearded.TD.Game.Simulation.Workers
         private TileWalker tileWalker = null!;
 
         public Tile CurrentTile => tileWalker.CurrentTile;
-        public IFactioned HubOwner => Owner.HubOwner;
+        public IFactioned HubOwner { get; private set; } = null!;
 
         protected override void Initialize()
         {
+            HubOwner = Owner.FindInComponentOwnerTree<IFactioned>()
+                .ValueOrFailure(default(Bearded.Utilities.Void))
+                .ResultOrThrow(_ => new InvalidDataException());
             tileWalker = new TileWalker(this, Owner.Game.Level, Tile.Origin);
             // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
             Owner.Game.Meta.Events.Send(new WorkerAdded(this));
@@ -46,8 +50,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             currentState?.Update(elapsedTime);
             tileWalker.Update(elapsedTime, Constants.Game.Worker.MovementSpeed);
 
-            Owner.Position = tileWalker.Position;
-            Owner.CurrentTile = tileWalker.CurrentTile;
+            Owner.Position = tileWalker.Position.WithZ(0.1f);
 
             Owner.Deleting += onDelete;
         }
@@ -58,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             var sprite =
                 sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
 
-            sprite.Draw(Owner.Position.NumericValue.WithZ(0.1f), 0.5f, faction?.Color ?? Color.White);
+            sprite.Draw(Owner.Position.NumericValue, 0.5f, faction?.Color ?? Color.White);
         }
 
         public void AssignToFaction(Faction faction)

@@ -13,13 +13,14 @@ namespace Bearded.TD.Game.Simulation.Components
     {
         private readonly IComponentOwnerBlueprint blueprint;
         public Maybe<IComponentOwner> Parent { get; }
-        public Position3 Position { get; private set; }
+        public Position3 Position { get; set; }
         public Direction2 Direction { get; private set; }
 
         private readonly ComponentCollection<ComponentGameObject> components;
-        private readonly ComponentEvents events = new ComponentEvents();
+        private readonly ComponentEvents events = new();
 
-        public ComponentGameObject(IComponentOwnerBlueprint blueprint, IComponentOwner? parent, Position3 position, Direction2 direction)
+        public ComponentGameObject(
+            IComponentOwnerBlueprint blueprint, IComponentOwner? parent, Position3 position, Direction2 direction)
         {
             this.blueprint = blueprint;
             Direction = direction;

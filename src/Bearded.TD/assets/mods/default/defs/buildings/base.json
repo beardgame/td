@@ -10,7 +10,10 @@
     { "id" :  "gameOverOnDestroy" },
     {
       "id" : "workerHub",
-      "parameters" : { "numWorkers" : 2 }
+      "parameters" : {
+        "numWorkers" : 2,
+        "drone" : "worker"
+      }
     },
     {
       "id" : "workerAntenna",
