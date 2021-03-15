@@ -67,8 +67,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public abstract void ResetSelection();
-        public abstract void Focus(SelectionManager selectionManager);
-        public abstract void Select(SelectionManager selectionManager);
+        public abstract void Focus();
+        public abstract void Select();
 
         protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
         {

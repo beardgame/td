@@ -1,63 +1,67 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    [ComponentOwner]
-    sealed class Worker : GameObject, IComponentOwner<Worker>, ITileWalkerOwner, ISelectable
+    [Component("worker")]
+    // TODO: make generic
+    sealed class WorkerComponent : Component<ComponentGameObject>, ITileWalkerOwner, IWorkerComponent
     {
-        private readonly ComponentEvents events = new();
-        private readonly ComponentCollection<Worker> components;
-
-        private TileWalker? tileWalker;
-
-        // TODO: this should be the worker hub
-        public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
-
-        public IFactioned HubOwner { get; }
         private Faction? faction;
-
-        private Position2 position => tileWalker?.Position ?? Position2.Zero;
-        public Tile CurrentTile => tileWalker?.CurrentTile ?? Level.GetTile(Position2.Zero);
-
-        public SelectionState SelectionState { get; private set; }
-
         private WorkerState? currentState;
         private IEnumerable<Tile> taskTiles = Enumerable.Empty<Tile>();
 
-        public Worker(IFactioned hubOwner)
-        {
-            components = new ComponentCollection<Worker>(this, events);
+        private TileWalker tileWalker = null!;
 
-            HubOwner = hubOwner;
+        public Tile CurrentTile => tileWalker.CurrentTile;
+        public IFactioned HubOwner { get; private set; } = null!;
+
+        protected override void Initialize()
+        {
+            Owner.FindInComponentOwnerTree<IFactioned>().Match(
+                onValue: owner => HubOwner = owner,
+                onNothing: () => throw new InvalidDataException());
+            tileWalker = new TileWalker(this, Owner.Game.Level, Tile.Origin);
+            // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
+            Owner.Game.Meta.Events.Send(new WorkerAdded(this));
         }
 
-        protected override void OnAdded()
+        private void onDelete()
         {
-            base.OnAdded();
+            faction?.Workers?.UnregisterWorker(this);
+        }
 
-            tileWalker = new TileWalker(this, Game.Level, Tile.Origin);
+        public override void Update(TimeSpan elapsedTime)
+        {
+            currentState?.Update(elapsedTime);
+            tileWalker.Update(elapsedTime, Constants.Game.Worker.MovementSpeed);
 
-            Game.ListAs(this);
+            Owner.Position = tileWalker.Position.WithZ(0.1f);
 
-            Game.Meta.Events.Send(new WorkerAdded(this));
+            Owner.Deleting += onDelete;
+        }
+
+        public override void Draw(CoreDrawers drawers)
+        {
+            var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
+            var sprite =
+                sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
+
+            sprite.Draw(Owner.Position.NumericValue, 0.5f, faction?.Color ?? Color.White);
         }
 
         public void AssignToFaction(Faction faction)
@@ -65,10 +69,6 @@ namespace Bearded.TD.Game.Simulation.Workers
             if (faction.Workers == null)
             {
                 throw new InvalidOperationException("Cannot assign worker to a faction without worker manager");
-            }
-            if (faction.Resources == null)
-            {
-                throw new InvalidOperationException("Cannot assign worker to a faction without resources");
             }
 
             if (this.faction != null)
@@ -89,7 +89,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 throw new InvalidOperationException("Cannot assign tasks to a worker not assigned to a faction");
             }
-            setState(WorkerState.ExecuteTask(faction.Workers!, this, faction.Resources!, task));
+            setState(WorkerState.ExecuteTask(faction.Workers!, this, task));
         }
 
         public void SuspendCurrentTask()
@@ -120,27 +120,6 @@ namespace Bearded.TD.Game.Simulation.Workers
             taskTiles = newTaskTiles;
         }
 
-        protected override void OnDelete()
-        {
-            base.OnDelete();
-
-            faction?.Workers?.UnregisterWorker(this);
-        }
-
-        public override void Update(TimeSpan elapsedTime)
-        {
-            currentState?.Update(elapsedTime);
-            tileWalker?.Update(elapsedTime, 3.UnitsPerSecond());
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-            var sprites = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite = sprites.GetSprite("halo").MakeConcreteWith(Game.Meta.SpriteRenderers, UVColorVertex.Create);
-
-            sprite.Draw(position.NumericValue.WithZ(0.1f), 0.5f, faction?.Color ?? Color.White);
-        }
-
         public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
         public Direction GetNextDirection()
@@ -151,25 +130,17 @@ namespace Bearded.TD.Game.Simulation.Workers
             }
 
             var goalTile = taskTiles.MinBy(tile => tile.DistanceTo(CurrentTile));
-            var diff = Level.GetPosition(goalTile) - position;
+            var diff = Level.GetPosition(goalTile) - tileWalker.Position;
             return diff.Direction.Hexagonal();
         }
+    }
 
-        public void ResetSelection()
-        {
-            SelectionState = SelectionState.Default;
-        }
-
-        public void Focus(SelectionManager selectionManager) {}
-
-        public void Select(SelectionManager selectionManager)
-        {
-            selectionManager.CheckCurrentlySelected(this);
-            SelectionState = SelectionState.Selected;
-        }
-
-        IEnumerable<TComponent> IComponentOwner<Worker>.GetComponents<TComponent>() => components.Get<TComponent>();
-
-        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
+    interface IWorkerComponent
+    {
+        Tile CurrentTile { get; }
+        IFactioned HubOwner { get; }
+        void AssignToFaction(Faction faction);
+        void AssignTask(IWorkerTask task);
+        void SuspendCurrentTask();
     }
 }

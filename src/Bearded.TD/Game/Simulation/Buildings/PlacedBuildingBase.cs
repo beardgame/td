@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
@@ -27,15 +26,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             selectionState = SelectionState.Default;
         }
 
-        public override void Focus(SelectionManager selectionManager)
+        public override void Focus()
         {
-            selectionManager.CheckCurrentlyFocused(this);
             selectionState = SelectionState.Focused;
         }
 
-        public override void Select(SelectionManager selectionManager)
+        public override void Select()
         {
-            selectionManager.CheckCurrentlySelected(this);
             selectionState = SelectionState.Selected;
         }
 

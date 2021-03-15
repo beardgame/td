@@ -5,7 +5,7 @@
         SelectionState SelectionState { get; }
 
         void ResetSelection();
-        void Focus(SelectionManager selectionManager);
-        void Select(SelectionManager selectionManager);
+        void Focus();
+        void Select();
     }
 }

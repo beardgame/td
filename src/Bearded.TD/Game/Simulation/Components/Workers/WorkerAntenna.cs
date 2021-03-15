@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
     sealed class WorkerAntenna<T> : Component<T, IWorkerAntennaParameters>, IWorkerAntenna
         where T : GameObject, IFactioned, IPositionable
     {
-        private Building ownerAsBuilding;
+        private Building? ownerAsBuilding;
         private bool isInitialized;
 
         public Position2 Position => Owner.Position.XY();
@@ -42,8 +42,8 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
         private void initializeInternal()
         {
             WorkerRange = Parameters.WorkerRange;
-            Owner.Faction.WorkerNetwork.RegisterAntenna(Owner.Game, this);
-            Owner.Deleting += () => Owner.Faction.WorkerNetwork.UnregisterAntenna(Owner.Game, this);
+            Owner.Faction.WorkerNetwork?.RegisterAntenna(Owner.Game, this);
+            Owner.Deleting += () => Owner.Faction.WorkerNetwork?.UnregisterAntenna(Owner.Game, this);
             isInitialized = true;
         }
 
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
             if (Parameters.WorkerRange != WorkerRange)
             {
                 WorkerRange = Parameters.WorkerRange;
-                Owner.Faction.WorkerNetwork.OnAntennaRangeUpdated(Owner.Game);
+                Owner.Faction.WorkerNetwork?.OnAntennaRangeUpdated(Owner.Game);
             }
         }
 
@@ -68,8 +68,8 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
             var alpha = (selectable.SelectionState == SelectionState.Selected ? 0.5f : 0.25f);
 
-            var workerNetwork = Owner.Faction.WorkerNetwork;
-            var networkBorder = TileAreaBorder.From(Owner.Game.Level, workerNetwork.IsInRange);
+            var networkBorder =
+                TileAreaBorder.From(Owner.Game.Level, t => Owner.Faction.WorkerNetwork?.IsInRange(t) ?? false);
 
             TileAreaBorderRenderer.Render(Owner.Game, networkBorder, Color.DodgerBlue * alpha);
 

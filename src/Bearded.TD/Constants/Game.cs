@@ -61,6 +61,7 @@ namespace Bearded.TD
 
             public static class Worker
             {
+                public static readonly Speed MovementSpeed = 3.UnitsPerSecond();
                 public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
                 public static readonly ResourceRate WorkerSpeed = 15.ResourcesPerSecond();
                 public static readonly TimeSpan MiningDuration = 8.S();

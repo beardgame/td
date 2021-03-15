@@ -9,18 +9,18 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     abstract class WorkerState
     {
-        public static WorkerState Idle(WorkerManager manager, Worker worker) => new IdleWorkerState(manager, worker);
-        public static WorkerState ExecuteTask(
-            WorkerManager manager, Worker worker, ResourceManager resources, IWorkerTask task)
-            => new ExecutingWorkerState(manager, worker, resources, task);
+        public static WorkerState Idle(WorkerManager manager, IWorkerComponent worker) =>
+            new IdleWorkerState(manager, worker);
+        public static WorkerState ExecuteTask(WorkerManager manager, IWorkerComponent worker, IWorkerTask task) =>
+            new ExecutingWorkerState(manager, worker, task);
 
         public event GenericEventHandler<WorkerState>? StateChanged;
         public event GenericEventHandler<IEnumerable<Tile>>? TaskTilesChanged;
 
         private WorkerManager manager { get; }
-        private Worker worker { get; }
+        private IWorkerComponent worker { get; }
 
-        private WorkerState(WorkerManager manager, Worker worker)
+        private WorkerState(WorkerManager manager, IWorkerComponent worker)
         {
             this.manager = manager;
             this.worker = worker;
@@ -34,9 +34,9 @@ namespace Bearded.TD.Game.Simulation.Workers
         private void moveToState(WorkerState newState) => StateChanged?.Invoke(newState);
         private void setTaskTiles(IEnumerable<Tile> taskTiles) => TaskTilesChanged?.Invoke(taskTiles);
 
-        private class IdleWorkerState : WorkerState
+        private sealed class IdleWorkerState : WorkerState
         {
-            public IdleWorkerState(WorkerManager manager, Worker worker) : base(manager, worker) { }
+            public IdleWorkerState(WorkerManager manager, IWorkerComponent worker) : base(manager, worker) { }
 
             public override void Update(TimeSpan elapsedTime) { }
 
@@ -49,16 +49,13 @@ namespace Bearded.TD.Game.Simulation.Workers
             public override void Stop() {}
         }
 
-        private class ExecutingWorkerState : WorkerState
+        private sealed class ExecutingWorkerState : WorkerState
         {
-            private readonly ResourceManager resources;
             private readonly IWorkerTask task;
 
-            public ExecutingWorkerState(
-                WorkerManager manager, Worker worker, ResourceManager resources, IWorkerTask task)
+            public ExecutingWorkerState(WorkerManager manager, IWorkerComponent worker, IWorkerTask task)
                 : base(manager, worker)
             {
-                this.resources = resources;
                 this.task = task;
             }
 
