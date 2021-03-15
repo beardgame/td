@@ -11,6 +11,7 @@ namespace Bearded.TD.UI.Controls
         {
             Add(new BackgroundBox(Color.DarkSlateBlue));
             this.BuildLayout().AddMenu(b => b
+                .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
                 .AddMenuAction("Host game", model.OnHostGameButtonClicked)
                 .AddMenuAction("Join game", model.OnJoinGameButtonClicked)
                 .AddMenuAction("Options", () => { }, new Binding<bool>(false))

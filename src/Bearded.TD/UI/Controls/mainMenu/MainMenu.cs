@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Content;
+﻿using System;
+using Bearded.TD.Content;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
 using Bearded.UI.Navigation;
@@ -20,11 +21,25 @@ namespace Bearded.TD.UI.Controls
             renderContext = dependencies.Resolve<RenderContext>();
         }
 
+        public void OnQuickGameButtonClicked()
+        {
+            startLobby(ServerLobbyManager.CreateWithReadyPlayer);
+        }
+
         public void OnHostGameButtonClicked()
+        {
+            startLobby(ServerLobbyManager.Create);
+        }
+
+        private void startLobby(
+            Func<ServerNetworkInterface, Logger, IGraphicsLoader,
+            RenderContext, ServerLobbyManager> lobbyManagerFactory
+            )
         {
             var network = new ServerNetworkInterface();
             network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-            Navigation.Replace<Lobby, LobbyManager>(ServerLobbyManager.Create(network, logger, graphicsLoader, renderContext), this);
+            var lobbyManager = lobbyManagerFactory(network, logger, graphicsLoader, renderContext);
+            Navigation.Replace<Lobby, LobbyManager>(lobbyManager, this);
         }
 
         public void OnJoinGameButtonClicked() => Navigation.Replace<LobbyList>(this);

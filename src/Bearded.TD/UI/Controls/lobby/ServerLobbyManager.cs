@@ -20,6 +20,7 @@ namespace Bearded.TD.UI.Controls
 
         private readonly ServerMasterServer masterServer;
         private float secondsUntilNextHeartbeat;
+        private bool forceReady;
 
         public override bool CanChangeGameSettings => true;
 
@@ -35,6 +36,11 @@ namespace Bearded.TD.UI.Controls
         public override void Update(UpdateEventArgs args)
         {
             base.Update(args);
+
+            if (forceReady && Game.ContentManager.IsFinishedLoading)
+            {
+                Game.Me.ConnectionState = PlayerConnectionState.Ready;
+            }
 
             if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
             {
@@ -64,6 +70,15 @@ namespace Bearded.TD.UI.Controls
         }
 
         public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
+
+        public static ServerLobbyManager CreateWithReadyPlayer(
+            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader,
+            RenderContext renderContext)
+        {
+            var m = Create(networkInterface, logger, graphicsLoader, renderContext);
+            m.forceReady = true;
+            return m;
+        }
 
         public static ServerLobbyManager Create(
             ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
