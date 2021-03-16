@@ -17,26 +17,35 @@ namespace Bearded.TD.Meta
 
         private static void initializeCommandParameters()
         {
-            var allParameters = getFieldsOf(typeof(UserSettings)).ToList();
+            var allParameters = getFieldsAndPropertiesOf(typeof(UserSettings)).ToList();
 
             ConsoleCommands.AddParameterCompletion(settingParameterCompletionName, allParameters);
         }
 
-        private static IEnumerable<string> getFieldsOf(Type type)
+        private static IEnumerable<string> getFieldsAndPropertiesOf(Type type)
         {
-            return type.GetFields()
-                .Where(f => f.FieldType != typeof(UserSettings))
-                .SelectMany(field =>
+            return type.GetMembers()
+                .Where(m => m is FieldInfo || m is PropertyInfo)
+                .Select(m => (Name: m.Name.ToLower(), Type: fieldOrPropertyType(m)))
+                .Where(m => m.Type != typeof(UserSettings))
+                .SelectMany(m =>
                 {
-                    var fieldName = field.Name.ToLower();
-                    var fieldType = field.FieldType;
+                    var (memberName, memberType) = m;
 
-                    if (fieldType.Assembly != thisAssembly || fieldType.IsEnum)
-                        return new[] {fieldName};
+                    if (memberType.Assembly != thisAssembly || memberType.IsEnum || memberType.IsValueType)
+                        return new[] {memberName};
 
-                    return getFieldsOf(fieldType).Select(suffix => $"{fieldName}.{suffix}");
+                    return getFieldsAndPropertiesOf(memberType).Select(suffix => $"{memberName}.{suffix}");
                 });
         }
+
+        private static Type fieldOrPropertyType(MemberInfo memberInfo) =>
+            memberInfo switch
+            {
+                FieldInfo f => f.FieldType,
+                PropertyInfo p => p.PropertyType,
+                _ => throw new InvalidOperationException()
+            };
 
         [Command("setting", settingParameterCompletionName)]
         private static void settingCommand(Logger logger, CommandParameters p)
@@ -63,16 +72,22 @@ namespace Bearded.TD.Meta
 
             foreach (var name in splitSettingName)
             {
-                var field = currentObject.GetType().GetField(name,
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+                var member = currentObject.GetType().GetMember(name,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
+                    .FirstOrDefault();
 
-                if (field == null)
+                currentObject = member switch
+                {
+                    FieldInfo field => field.GetValue(currentObject),
+                    PropertyInfo property => property.GetValue(currentObject),
+                    _ => null
+                };
+
+                if (currentObject == null)
                 {
                     logger.Warning?.Log($"Could not find setting path part '{name}'");
                     return;
                 }
-
-                currentObject = field.GetValue(currentObject);
             }
 
             var writer = new StringWriter();
@@ -100,6 +115,7 @@ namespace Bearded.TD.Meta
                 logger.Warning?.Log($"Encountered error parsing setting: {e.Message}");
                 return;
             }
+
             Save(logger);
         }
 
