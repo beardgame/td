@@ -1,0 +1,17 @@
+{
+    "id" : "noEnemies",
+    "name" : "No enemies, for all your level generation needs",
+    "rules" : [
+        {
+            "id" : "placeBuilding",
+            "parameters" : {
+                "building" : "default.base",
+                "footprint" : {
+                    "group" : "default.seven",
+                    "rootTile" : [0, 0]
+                }
+            }
+        },
+        { "id" : "assignWorkers" }
+    ]
+}
