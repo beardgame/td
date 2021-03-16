@@ -42,8 +42,6 @@ namespace Bearded.TD.Meta
             public string MasterServerAddress = "localhost";
 
             public bool ShowTraceMessages = true;
-
-            public int? MapGenSeed = null;
         }
 
         public class UISettings
