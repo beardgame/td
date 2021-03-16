@@ -24,7 +24,6 @@ namespace Bearded.TD.Game
         public ContentManager ContentManager { get; }
         public Player Me { get; }
         public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
-        public GameScheduler? Scheduler { get; }
         public GameMeta Meta { get; }
 
         public ChatLog ChatLog { get; } = new();
