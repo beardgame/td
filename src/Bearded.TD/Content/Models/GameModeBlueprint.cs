@@ -13,7 +13,7 @@ namespace Bearded.TD.Content.Models
         public string Name { get; }
         public ReadOnlyCollection<IGameRuleFactory<GameState>> Rules { get; }
 
-        public GameModeBlueprint(ModAwareId id, string name, IEnumerable<IGameRuleFactory<GameState>> rules)
+        public GameModeBlueprint(ModAwareId id, string name, IEnumerable<IGameRuleFactory<GameState>>? rules)
         {
             Id = id;
             Name = name;
