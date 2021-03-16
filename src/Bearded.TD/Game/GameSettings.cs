@@ -1,3 +1,4 @@
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -7,6 +8,7 @@ namespace Bearded.TD.Game
     interface IGameSettings
     {
         int Seed { get; }
+        ModAwareId? GameMode { get; }
         int LevelSize { get; }
         WorkerDistributionMethod WorkerDistributionMethod { get; }
         LevelGenerationMethod LevelGenerationMethod { get; }
@@ -15,6 +17,7 @@ namespace Bearded.TD.Game
     sealed class GameSettings : IGameSettings
     {
         public int Seed { get; }
+        public ModAwareId? GameMode { get; }
         public int LevelSize { get; }
         public WorkerDistributionMethod WorkerDistributionMethod { get; }
         public LevelGenerationMethod LevelGenerationMethod { get; }
@@ -22,6 +25,7 @@ namespace Bearded.TD.Game
         private GameSettings(IGameSettings builder)
         {
             Seed = builder.Seed;
+            GameMode = builder.GameMode;
             LevelSize = builder.LevelSize;
             WorkerDistributionMethod = builder.WorkerDistributionMethod;
             LevelGenerationMethod = builder.LevelGenerationMethod;
@@ -30,6 +34,7 @@ namespace Bearded.TD.Game
         public sealed class Builder : IGameSettings
         {
             public int Seed { get; set; }
+            public ModAwareId? GameMode { get; set; }
             public int LevelSize { get; set; }
             public WorkerDistributionMethod WorkerDistributionMethod { get; set; }
             public LevelGenerationMethod LevelGenerationMethod { get; set; }
@@ -38,6 +43,7 @@ namespace Bearded.TD.Game
             {
                 // Initialize default values
                 Seed = StaticRandom.Int();
+                GameMode = null;
                 LevelSize = 32;
                 WorkerDistributionMethod = WorkerDistributionMethod.Neutral;
                 LevelGenerationMethod = LevelGenerationMethod.Default;
@@ -47,17 +53,19 @@ namespace Bearded.TD.Game
             {
                 // Copy values
                 Seed = includeRandomAttributes ? template.Seed : StaticRandom.Int();
+                GameMode = template.GameMode;
                 LevelSize = template.LevelSize;
                 WorkerDistributionMethod = template.WorkerDistributionMethod;
                 LevelGenerationMethod = template.LevelGenerationMethod;
             }
 
-            public GameSettings Build() => new GameSettings(this);
+            public GameSettings Build() => new(this);
         }
 
-        public class Serializer
+        public sealed class Serializer
         {
             private int seed;
+            private ModAwareId gameMode;
             private int levelSize;
             private byte workerDistributionMethod;
             private byte levelGenerationMethod;
@@ -65,6 +73,7 @@ namespace Bearded.TD.Game
             public Serializer(IGameSettings gameSettings)
             {
                 seed = gameSettings.Seed;
+                gameMode = gameSettings.GameMode ?? ModAwareId.Invalid;
                 levelSize = gameSettings.LevelSize;
                 workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
                 levelGenerationMethod = (byte) gameSettings.LevelGenerationMethod;
@@ -73,14 +82,16 @@ namespace Bearded.TD.Game
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref seed);
+                stream.Serialize(ref gameMode);
                 stream.Serialize(ref levelSize);
                 stream.Serialize(ref workerDistributionMethod);
                 stream.Serialize(ref levelGenerationMethod);
             }
 
-            public Builder ToGameSettingsBuilder() => new Builder
+            public Builder ToGameSettingsBuilder() => new()
             {
                 Seed = seed,
+                GameMode = gameMode.IsValid ? gameMode : null,
                 LevelSize = levelSize,
                 WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
                 LevelGenerationMethod = (LevelGenerationMethod) levelGenerationMethod,

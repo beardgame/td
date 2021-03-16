@@ -56,10 +56,6 @@ namespace Bearded.TD.UI.Controls
                 : new GameSettings.Builder();
             if (CanChangeGameSettings)
             {
-                if (UserSettings.Instance.Misc.MapGenSeed.HasValue)
-                {
-                    gameSettings.Seed = UserSettings.Instance.Misc.MapGenSeed.Value;
-                }
                 lobbyManager.UpdateGameSettings(gameSettings.Build());
             }
 

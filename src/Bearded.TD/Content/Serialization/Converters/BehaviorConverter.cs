@@ -12,15 +12,15 @@ namespace Bearded.TD.Content.Serialization.Converters
     static class BehaviorConverterFactory
     {
         public static BehaviorConverter<IBuildingComponent> ForBuildingComponents()
-            => new BehaviorConverter<IBuildingComponent>(ComponentFactories.ParameterTypesForComponentsById
+            => new(ComponentFactories.ParameterTypesForComponentsById
                 .ToDictionary(t => t.Key, t => typeof(BuildingComponent<>).MakeGenericType(t.Value)));
 
         public static BehaviorConverter<IComponent> ForBaseComponents()
-            => new BehaviorConverter<IComponent>(ComponentFactories.ParameterTypesForComponentsById
+            => new(ComponentFactories.ParameterTypesForComponentsById
                 .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));
 
         public static BehaviorConverter<IGameRule> ForGameRules()
-            => new BehaviorConverter<IGameRule>(GameRuleFactories.ParameterTypesForComponentsById
+            => new(GameRuleFactories.ParameterTypesForComponentsById
                 .ToDictionary(t => t.Key, t => typeof(Models.GameRule<>).MakeGenericType(t.Value)));
     }
 

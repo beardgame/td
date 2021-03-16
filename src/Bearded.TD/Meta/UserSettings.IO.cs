@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Bearded.TD.Content.Serialization.Converters;
 using Bearded.Utilities.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -14,6 +15,7 @@ namespace Bearded.TD.Meta
         private static JsonSerializer makeSerializer()
         {
             var s = new JsonSerializer();
+            s.Converters.Add(new ModAwareIdConverter());
             s.Converters.Add(new StringEnumConverter());
             s.ContractResolver = new CamelCasePropertyNamesContractResolver();
             s.Formatting = Formatting.Indented;
