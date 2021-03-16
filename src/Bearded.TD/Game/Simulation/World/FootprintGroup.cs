@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.World
     {
         public ModAwareId Id { get; }
 
-        public static FootprintGroup Single { get; } = new FootprintGroup(new ModAwareId("", ""), Footprint.Single);
+        public static FootprintGroup Single { get; } = new FootprintGroup(ModAwareId.Invalid, Footprint.Single);
 
         public ReadOnlyCollection<Footprint> Footprints { get; }
         public ReadOnlyCollection<Angle> Orientations { get; }
