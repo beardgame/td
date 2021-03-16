@@ -1,5 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.GameLoop;
+using Bearded.TD.Game.Simulation;
 using static Bearded.TD.Game.GameLoop.ChapterScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
@@ -7,28 +8,30 @@ namespace Bearded.TD.Game.GameLoop
 {
     sealed class GameScheduler
     {
-        // TODO: these should be populated from mod files
-        private const int chaptersPerGame = 5;
-        private const int wavesPerChapter = 5;
-
-        private readonly GameInstance game;
+        private readonly GameState game;
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         private readonly ChapterScheduler chapterScheduler;
+        private readonly GameRequirements gameRequirements;
 
         private bool gameStarted;
         private int chaptersStarted;
 
-        public GameScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher, ChapterScheduler chapterScheduler)
+        public GameScheduler(
+            GameState game,
+            ICommandDispatcher<GameInstance> commandDispatcher,
+            ChapterScheduler chapterScheduler,
+            GameRequirements gameRequirements)
         {
             this.game = game;
             this.commandDispatcher = commandDispatcher;
             this.chapterScheduler = chapterScheduler;
+            this.gameRequirements = gameRequirements;
             chapterScheduler.ChapterEnded += onChapterEnded;
         }
 
         private void onChapterEnded()
         {
-            if (chaptersStarted < chaptersPerGame)
+            if (chaptersStarted < gameRequirements.ChaptersPerGame)
             {
                 requestChapter();
             }
@@ -56,9 +59,11 @@ namespace Bearded.TD.Game.GameLoop
 
         private void requestChapter()
         {
-            State.Satisfies(chaptersStarted < chaptersPerGame);
+            State.Satisfies(chaptersStarted < gameRequirements.WavesPerChapter);
             var chapterNumber = ++chaptersStarted;
-            chapterScheduler.StartChapter(new ChapterRequirements(chapterNumber, wavesPerChapter));
+            chapterScheduler.StartChapter(new ChapterRequirements(chapterNumber, gameRequirements.ChaptersPerGame));
         }
+
+        public sealed record GameRequirements(int ChaptersPerGame, int WavesPerChapter);
     }
 }

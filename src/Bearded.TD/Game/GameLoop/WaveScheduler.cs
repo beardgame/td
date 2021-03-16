@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.GameLoop;
+using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
@@ -20,13 +21,13 @@ namespace Bearded.TD.Game.GameLoop
     sealed class WaveScheduler : IListener<WaveEnded>
     {
         private readonly Random random = new();
-        private readonly GameInstance game;
+        private readonly GameState game;
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
         public event VoidEventHandler? WaveEnded;
 
         private Id<WaveScript>? activeWave;
 
-        public WaveScheduler(GameInstance game, ICommandDispatcher<GameInstance> commandDispatcher)
+        public WaveScheduler(GameState game, ICommandDispatcher<GameInstance> commandDispatcher)
         {
             this.game = game;
             this.commandDispatcher = commandDispatcher;
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.GameLoop
 
         public void OnGameStart()
         {
-            game.State.Meta.Events.Subscribe(this);
+            game.Meta.Events.Subscribe(this);
         }
 
         public void HandleEvent(WaveEnded @event)
@@ -52,7 +53,7 @@ namespace Bearded.TD.Game.GameLoop
         {
             State.Satisfies(activeWave == null, "We only support one simultaneous wave right now");
 
-            var dormantSpawnLocations = game.State.Enumerate<SpawnLocation>().Where(s => !s.IsAwake).ToList();
+            var dormantSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => !s.IsAwake).ToList();
             if (dormantSpawnLocations.Count > 0)
             {
                 commandDispatcher.Dispatch(WakeUpSpawnLocation.Command(dormantSpawnLocations.RandomElement()));
@@ -68,16 +69,16 @@ namespace Bearded.TD.Game.GameLoop
             var (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration) = generateWaveParameters(requirements);
 
             return new WaveScript(
-                game.Ids.GetNext<WaveScript>(),
+                game.Meta.Ids.GetNext<WaveScript>(),
                 $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
-                game.Me.Faction,
-                game.State.Time + requirements.DowntimeDuration,
+                game.Meta.Me.Faction,
+                game.Time + requirements.DowntimeDuration,
                 spawnDuration,
                 requirements.Resources,
                 spawnLocations,
                 enemiesPerSpawn,
                 blueprint,
-                game.Ids.GetBatch<EnemyUnit>(spawnLocations.Length * enemiesPerSpawn));
+                game.Meta.Ids.GetBatch<EnemyUnit>(spawnLocations.Length * enemiesPerSpawn));
         }
 
         private (IUnitBlueprint blueprint, int enemiesPerSpawn, ImmutableArray<SpawnLocation> spawnLocations, TimeSpan spawnDuration)
@@ -98,7 +99,7 @@ namespace Bearded.TD.Game.GameLoop
             var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprint.Value);
             var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
 
-            var activeSpawnLocations = game.State.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
+            var activeSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
             State.Satisfies(activeSpawnLocations.Count > 0);
 
             var minSequentialSpawnTime = numEnemies * MinTimeBetweenSpawns;
@@ -141,7 +142,7 @@ namespace Bearded.TD.Game.GameLoop
             var result = Array.BinarySearch(probabilities, t);
 
             var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-            return game.Blueprints.Units[definition.BlueprintId];
+            return game.Meta.Blueprints.Units[definition.BlueprintId];
         }
 
         public sealed class WaveRequirements

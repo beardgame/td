@@ -169,21 +169,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             }
         }
 
-        private sealed record EnemySpawn
-        {
-            public Id<EnemyUnit> UnitId { get; }
-            public IUnitBlueprint UnitBlueprint { get; }
-            public SpawnLocation SpawnLocation { get; }
-            public Instant Time { get; }
-
-            public EnemySpawn(
-                Id<EnemyUnit> unitId, IUnitBlueprint unitBlueprint, SpawnLocation spawnLocation, Instant time)
-            {
-                UnitId = unitId;
-                UnitBlueprint = unitBlueprint;
-                SpawnLocation = spawnLocation;
-                Time = time;
-            }
-        }
+        private sealed record EnemySpawn(
+            Id<EnemyUnit> UnitId, IUnitBlueprint UnitBlueprint, SpawnLocation SpawnLocation, Instant Time);
     }
 }

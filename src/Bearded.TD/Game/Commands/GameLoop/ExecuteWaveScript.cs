@@ -1,6 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.GameLoop;
+using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
@@ -9,15 +10,15 @@ namespace Bearded.TD.Game.Commands.GameLoop
 {
     static class ExecuteWaveScript
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, WaveScript script)
+        public static ISerializableCommand<GameInstance> Command(GameState game, WaveScript script)
             => new Implementation(game, script);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly GameInstance game;
+            private readonly GameState game;
             private readonly WaveScript script;
 
-            public Implementation(GameInstance game, WaveScript script)
+            public Implementation(GameState game, WaveScript script)
             {
                 this.game = game;
                 this.script = script;
@@ -25,7 +26,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
 
             public void Execute()
             {
-                game.State.WaveDirector.ExecuteScript(script);
+                game.WaveDirector.ExecuteScript(script);
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(script);
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, scriptSerializer.ToWaveScript(game));
+                => new Implementation(game.State, scriptSerializer.ToWaveScript(game));
 
             public void Serialize(INetBufferStream stream)
             {

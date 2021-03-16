@@ -31,7 +31,6 @@ namespace Bearded.TD.Game
         {
             if (!isGameStarted)
             {
-                game.Scheduler?.StartGame();
                 isGameStarted = true;
             }
 

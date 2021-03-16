@@ -46,7 +46,8 @@ namespace Bearded.TD.Game
             foreach (var command in setupFactions())
                 yield return command;
 
-            yield return ApplyGameRules.Command(game, game.Blueprints.GameModes[ModAwareId.ForDefaultMod("default")]);
+            var gameMode = game.Blueprints.GameModes[gameSettings.GameMode ?? ModAwareId.ForDefaultMod("default")];
+            yield return ApplyGameRules.Command(game, gameMode);
 
             var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 

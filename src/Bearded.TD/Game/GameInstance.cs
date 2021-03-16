@@ -11,6 +11,7 @@ using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
@@ -87,7 +88,6 @@ namespace Bearded.TD.Game
         {
             RequestDispatcher = context.RequestDispatcher;
             context.DataMessageHandlerInitializer(this);
-            Scheduler = context.GameSchedulerFactory(this);
             ContentManager = contentManager;
             Me = me;
             Ids = ids;
@@ -99,7 +99,7 @@ namespace Bearded.TD.Game
             playerManager = context.PlayerManagerFactory(this);
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids,
                 // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
-                new SpriteRenderers(renderContext));
+                new SpriteRenderers(renderContext), me);
 
 
         }
@@ -153,6 +153,7 @@ namespace Bearded.TD.Game
 
             Status = GameStatus.Playing;
             setAllPlayerConnectionStates(PlayerConnectionState.Playing);
+            Meta.Events.Send(new GameStarted());
         }
 
         private void gatherBlueprints()

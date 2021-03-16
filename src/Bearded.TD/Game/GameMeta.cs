@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Synchronization;
@@ -22,14 +23,18 @@ namespace Bearded.TD.Game
         public Blueprints Blueprints => blueprints!;
 
         public SpriteRenderers SpriteRenderers { get; }
+        public Player Me { get; }
 
-        public GameMeta(Logger logger, IDispatcher<GameInstance> dispatcher, IGameSynchronizer synchronizer, IdManager ids, SpriteRenderers spriteRenderers)
+        public GameMeta(
+            Logger logger, IDispatcher<GameInstance> dispatcher, IGameSynchronizer synchronizer, IdManager ids,
+            SpriteRenderers spriteRenderers, Player me)
         {
             Logger = logger;
             Synchronizer = synchronizer;
             Dispatcher = dispatcher;
             Ids = ids;
             SpriteRenderers = spriteRenderers;
+            Me = me;
         }
 
         public void SetBlueprints(Blueprints blueprints)
