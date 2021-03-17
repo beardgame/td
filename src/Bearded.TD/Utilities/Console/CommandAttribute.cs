@@ -8,7 +8,7 @@ namespace Bearded.TD.Utilities.Console
     class CommandAttribute : Attribute
     {
         public string Name { get; }
-        public string ParameterCompletion { get; }
+        public string? ParameterCompletion { get; }
 
         public CommandAttribute(string name, string parameterCompletion = null)
         {

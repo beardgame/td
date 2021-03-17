@@ -47,9 +47,10 @@ namespace Bearded.TD.Utilities.Console
 
         private static Dictionary<string, Command> dictionary;
 
-        private static readonly Dictionary<string, PrefixTrie> parameterCompletion = new Dictionary<string, PrefixTrie>();
+        private static readonly Dictionary<string, PrefixTrie> parameterCompletion = new();
 
-        public static PrefixTrie Prefixes { get; private set; }
+        private static PrefixTrie? prefixes;
+        public static PrefixTrie Prefixes => prefixes!;
 
         public static bool TryRun(string command, Logger logger, CommandParameters parameters)
         {
@@ -58,7 +59,7 @@ namespace Bearded.TD.Utilities.Console
             return true;
         }
 
-        public static PrefixTrie ParameterPrefixesFor(string command)
+        public static PrefixTrie? ParameterPrefixesFor(string command)
         {
             if (!dictionary.TryGetValue(command, out var c))
                 return null;
@@ -68,8 +69,8 @@ namespace Bearded.TD.Utilities.Console
 
             lock (parameterCompletion)
             {
-                return parameterCompletion.TryGetValue(c.Attribute.ParameterCompletion, out var prefixes)
-                    ? prefixes
+                return parameterCompletion.TryGetValue(c.Attribute.ParameterCompletion, out var prefixTrie)
+                    ? prefixTrie
                     : null;
             }
         }
@@ -82,7 +83,7 @@ namespace Bearded.TD.Utilities.Console
 
         public static void Initialize()
         {
-            if (Prefixes != null)
+            if (prefixes != null)
                 throw new Exception("Do not initialise more than once!");
 
             var commands = Assembly.GetExecutingAssembly().GetTypes()
@@ -102,7 +103,7 @@ namespace Bearded.TD.Utilities.Console
             dictionary.AddRange(commands.Select(
                 c => new KeyValuePair<string, Command>(c.Attribute.Name, new Command(c.Action, c.Attribute))));
 
-            Prefixes = new PrefixTrie(commands.Select(c => c.Attribute.Name));
+            prefixes = new PrefixTrie(commands.Select(c => c.Attribute.Name));
 
             AddParameterCompletion("allAvailableCommands", commands.Select(c => c.Attribute.Name));
         }
