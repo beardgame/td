@@ -27,26 +27,9 @@ namespace Bearded.TD.Utilities.Console
             }
         }
 
-        private class Command
-        {
-            private readonly Action<Logger, CommandParameters> action;
+        private sealed record Command(Action<Logger, CommandParameters> Run, CommandAttribute Attribute);
 
-            public CommandAttribute Attribute { get; }
-
-            public Command(Action<Logger, CommandParameters> action, CommandAttribute attribute)
-            {
-                this.action = action;
-                Attribute = attribute;
-            }
-
-            public void Run(Logger logger, CommandParameters args)
-            {
-                action(logger, args);
-            }
-        }
-
-        private static Dictionary<string, Command> dictionary;
-
+        private static readonly Dictionary<string, Command> dictionary = new();
         private static readonly Dictionary<string, PrefixTrie> parameterCompletion = new();
 
         private static PrefixTrie? prefixes;
@@ -54,7 +37,8 @@ namespace Bearded.TD.Utilities.Console
 
         public static bool TryRun(string command, Logger logger, CommandParameters parameters)
         {
-            if (!dictionary.TryGetValue(command, out var c)) return false;
+            if (!dictionary.TryGetValue(command, out var c))
+                return false;
             c.Run(logger, parameters);
             return true;
         }
@@ -89,17 +73,15 @@ namespace Bearded.TD.Utilities.Console
             var commands = Assembly.GetExecutingAssembly().GetTypes()
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
                 .Where(m => m.GetCustomAttributes(typeof (CommandAttribute), false).Any())
-                .Select(m => new
-                {
-                    Attribute = (CommandAttribute)m.GetCustomAttributes(typeof (CommandAttribute), false).First(),
-                    Action = (Action<Logger, CommandParameters>)Delegate.CreateDelegate(typeof(Action<Logger, CommandParameters>), m)
-                })
+                .Select(m => (
+                    Attribute: (CommandAttribute)m.GetCustomAttributes(typeof (CommandAttribute), false).First(),
+                    Action: (Action<Logger, CommandParameters>)Delegate.CreateDelegate(typeof(Action<Logger, CommandParameters>), m)
+                ))
 #if !DEBUG
                 .Where(c => !(c.Attribute is DebugCommandAttribute))
 #endif
                 .ToList();
 
-            dictionary = new Dictionary<string, Command>(commands.Count);
             dictionary.AddRange(commands.Select(
                 c => new KeyValuePair<string, Command>(c.Attribute.Name, new Command(c.Action, c.Attribute))));
 
