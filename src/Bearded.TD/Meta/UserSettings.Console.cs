@@ -16,7 +16,7 @@ namespace Bearded.TD.Meta
         private static readonly char[] lineEndingChars = {'\n', '\r'};
 
         [CommandParameterCompletion(settingParameterCompletionName)]
-        public static IEnumerable<string> CommandParameters()
+        private static IEnumerable<string> commandParameters()
         {
             return getFieldsAndPropertiesOf(typeof(UserSettings));
         }

@@ -1,8 +1,10 @@
 using System;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Utilities.Console
 {
     [AttributeUsage(AttributeTargets.Method)]
+    [MeansImplicitUse]
     class CommandParameterCompletionAttribute : Attribute
     {
         public string Name { get; }
