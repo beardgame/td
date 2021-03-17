@@ -14,11 +14,6 @@ namespace Bearded.TD.Meta
 
         public static void RaiseSettingsChanged() => SettingsChanged?.Invoke();
 
-        static UserSettings()
-        {
-            initializeCommandParameters();
-        }
-
         // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings()
         {

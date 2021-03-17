@@ -70,12 +70,20 @@ namespace Bearded.TD.Utilities.Console
             if (prefixes != null)
                 throw new Exception("Do not initialise more than once!");
 
+            initializeCommands();
+
+            initializeParameterCompletions();
+        }
+
+        private static void initializeCommands()
+        {
             var commands = Assembly.GetExecutingAssembly().GetTypes()
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
-                .Where(m => m.GetCustomAttributes(typeof (CommandAttribute), false).Any())
+                .Where(m => m.GetCustomAttributes(typeof(CommandAttribute), false).Any())
                 .Select(m => (
-                    Attribute: (CommandAttribute)m.GetCustomAttributes(typeof (CommandAttribute), false).First(),
-                    Action: (Action<Logger, CommandParameters>)Delegate.CreateDelegate(typeof(Action<Logger, CommandParameters>), m)
+                    Attribute: (CommandAttribute) m.GetCustomAttributes(typeof(CommandAttribute), false).First(),
+                    Action: (Action<Logger, CommandParameters>) Delegate.CreateDelegate(
+                        typeof(Action<Logger, CommandParameters>), m)
                 ))
 #if !DEBUG
                 .Where(c => !(c.Attribute is DebugCommandAttribute))
@@ -90,5 +98,20 @@ namespace Bearded.TD.Utilities.Console
             AddParameterCompletion("allAvailableCommands", commands.Select(c => c.Attribute.Name));
         }
 
+        private static void initializeParameterCompletions()
+        {
+            var parameterCompletions = Assembly.GetExecutingAssembly().GetTypes()
+                .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
+                .Where(m => m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).Any())
+                .Select(m => (
+                    Name: ((CommandParameterCompletionAttribute)m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).First()).Name,
+                    Parameters: (IEnumerable<string>)m.Invoke(null, null)
+                    ));
+
+            foreach (var (name, parameters) in parameterCompletions)
+            {
+                AddParameterCompletion(name, parameters);
+            }
+        }
     }
 }

@@ -15,11 +15,10 @@ namespace Bearded.TD.Meta
         private static readonly Assembly thisAssembly = typeof(UserSettings).Assembly;
         private static readonly char[] lineEndingChars = {'\n', '\r'};
 
-        private static void initializeCommandParameters()
+        [CommandParameterCompletion(settingParameterCompletionName)]
+        public static IEnumerable<string> CommandParameters()
         {
-            var allParameters = getFieldsAndPropertiesOf(typeof(UserSettings)).ToList();
-
-            ConsoleCommands.AddParameterCompletion(settingParameterCompletionName, allParameters);
+            return getFieldsAndPropertiesOf(typeof(UserSettings));
         }
 
         private static IEnumerable<string> getFieldsAndPropertiesOf(Type type)
