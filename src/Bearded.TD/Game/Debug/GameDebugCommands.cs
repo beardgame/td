@@ -50,6 +50,8 @@ namespace Bearded.TD.Game.Debug
 
             logger.Debug?.Log($"Generating new tilemap with method {method} and seed {seed}.");
 
+            gameInstance.LevelDebugMetadata.Clear();
+
             var generator = TilemapGenerator.From(method, logger, gameInstance.LevelDebugMetadata);
 
             var tilemap  = generator.Generate(gameInstance.GameSettings.LevelSize, seed);

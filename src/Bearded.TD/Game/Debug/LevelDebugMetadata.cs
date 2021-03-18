@@ -34,5 +34,10 @@ namespace Bearded.TD.Game.Debug
                 Color = color;
             }
         }
+
+        public void Clear()
+        {
+            segments.Clear();
+        }
     }
 }
