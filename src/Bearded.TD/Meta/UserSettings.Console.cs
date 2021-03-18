@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Bearded.TD.Utilities.Console;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Newtonsoft.Json;
 
@@ -75,17 +76,17 @@ namespace Bearded.TD.Meta
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                     .FirstOrDefault();
 
-                currentObject = member switch
+                switch (member)
                 {
-                    FieldInfo field => field.GetValue(currentObject),
-                    PropertyInfo property => property.GetValue(currentObject),
-                    _ => null
-                };
-
-                if (currentObject == null)
-                {
-                    logger.Warning?.Log($"Could not find setting path part '{name}'");
-                    return;
+                    case FieldInfo field:
+                        currentObject = field.GetValue(currentObject);
+                        break;
+                    case PropertyInfo property:
+                        currentObject = property.GetValue(currentObject);
+                        break;
+                    default:
+                        logger.Warning?.Log($"Could not find setting path part '{name}'");
+                        return;
                 }
             }
 
