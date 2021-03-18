@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Game.Generation;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
@@ -15,7 +17,8 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class GameDebugOverlay : NavigationNode<Void>
     {
-        private Logger? logger;
+        private readonly LocalBool randomiseTilemapGenerationSeed = new("randomise seed");
+        private Logger logger;
         private readonly List<Item> items = new();
 
         public ReadOnlyCollection<Item> Items { get; }
@@ -30,6 +33,7 @@ namespace Bearded.TD.UI.Controls
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
             logger = dependencies.Resolve<Logger>();
+            randomiseTilemapGenerationSeed.ValueChanged += onItemsChanged;
 
             UserSettings.SettingsChanged += resetItems;
 
@@ -51,6 +55,17 @@ namespace Bearded.TD.UI.Controls
                 "debug.ui"
             );
 
+            items.Add(new Header("LEVEL GENERATION"));
+
+            items.Add(randomiseTilemapGenerationSeed);
+
+            items.AddRange(
+                Enum.GetNames<LevelGenerationMethod>()
+                    .Select(m => new ParameterisedCommand($"game.generateterrain {m}", logger,
+                        () => randomiseTilemapGenerationSeed.Value ? "random" : ""))
+                    .ToArray()
+                );
+
             items.Add(new Header("SETTINGS"));
 
             items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(
@@ -60,11 +75,11 @@ namespace Bearded.TD.UI.Controls
                             return (Item)null;
 
                         if (field.FieldType == typeof(bool))
-                            return new BoolSetting(field.Name, logger!);
+                            return new BoolSetting(field.Name, logger);
 
                         if (field.GetCustomAttributes(typeof(SettingOptionsAttribute), false).FirstOrDefault()
                             is SettingOptionsAttribute attribute)
-                            return new OptionsSetting(field.Name, attribute.Options, logger!);
+                            return new OptionsSetting(field.Name, attribute.Options, logger);
 
                         return null;
                     }
@@ -76,14 +91,14 @@ namespace Bearded.TD.UI.Controls
 
             void addCommands(params string[] commands)
             {
-                items.AddRange(commands.Select(c => new Command(c, logger!)));
+                items.AddRange(commands.Select(c => new Command(c, logger)));
             }
         }
 
         public void Close(Button.ClickEventArgs _)
         {
             UserSettings.Instance.Debug.GameDebugScreen = false;
-            UserSettings.Save(logger!);
+            UserSettings.Save(logger);
         }
 
         public override void Terminate()
@@ -93,14 +108,19 @@ namespace Bearded.TD.UI.Controls
             UserSettings.SettingsChanged -= resetItems;
         }
 
+        private void onItemsChanged()
+        {
+            ItemsChanged?.Invoke();
+        }
+
         public abstract class Item
         {
             protected void RunCommand(string command, Logger logger)
             {
                 logger.Debug!.Log($"Debug UI runs: {command}");
-                var splitCommand = command.Split(' ');
+                var splitCommand = command.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                 ConsoleCommands.TryRun(splitCommand[0], logger,
-                    new CommandParameters(splitCommand.Skip(1).ToArray()));
+                    new CommandParameters(splitCommand.Skip(1).ToImmutableArray()));
             }
         }
 
@@ -114,22 +134,38 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public sealed class Command : Item
+        public class Command : Item
         {
-            private readonly Logger logger;
-            private readonly string command;
+            protected Logger Logger { get; }
+            protected string CommandName { get; }
 
-            public string Name => command;
+            public string Name => CommandName;
 
             public Command(string command, Logger logger)
             {
-                this.logger = logger;
-                this.command = command;
+                Logger = logger;
+                CommandName = command;
             }
 
-            public void Call()
+            public virtual void Call()
             {
-                RunCommand(command, logger);
+                RunCommand(CommandName, Logger);
+            }
+        }
+
+        public sealed class ParameterisedCommand : Command
+        {
+            private readonly Func<string> getParameters;
+
+            public ParameterisedCommand(string command, Logger logger, Func<string> getParameters)
+                : base(command, logger)
+            {
+                this.getParameters = getParameters;
+            }
+
+            public override void Call()
+            {
+                RunCommand($"{CommandName} {getParameters()}", Logger);
             }
         }
 
@@ -158,7 +194,7 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public sealed class BoolSetting : Setting<bool>
+        sealed class BoolSetting : Setting<bool>, IBoolSetting
         {
             public BoolSetting(string setting, Logger logger) : base(setting, logger)
             {
@@ -183,6 +219,31 @@ namespace Bearded.TD.UI.Controls
             {
                 Set(Options[index]);
             }
+        }
+        sealed class LocalBool : Item, IBoolSetting
+        {
+            public string Name { get; }
+            public bool Value { get; private set; }
+
+            public event VoidEventHandler ValueChanged;
+
+            public LocalBool(string name)
+            {
+                Name = name;
+            }
+
+            public void Toggle()
+            {
+                Value = !Value;
+                ValueChanged?.Invoke();
+            }
+        }
+
+        public interface IBoolSetting
+        {
+            string Name { get; }
+            bool Value { get; }
+            void Toggle();
         }
     }
 }

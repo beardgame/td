@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Meta;
@@ -119,12 +120,12 @@ namespace Bearded.TD.UI.Controls
         public void OnCommandExecuted(string command)
         {
             addToHistory(command);
-            
+
             printInfo($"> {command}");
 
-            var split = command.Split(space, StringSplitOptions.RemoveEmptyEntries);
+            var split = command.Split(space, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             if (split.Length == 0) return;
-            var args = split.Skip(1).ToArray();
+            var args = split.Skip(1).ToImmutableArray();
 
             if (!ConsoleCommands.TryRun(split[0], logger, new CommandParameters(args)))
             {
@@ -146,7 +147,7 @@ namespace Bearded.TD.UI.Controls
         public string GetPreviousCommandInHistory(string currentCommand)
         {
             if (commandHistory.Count == 0 || commandHistoryIndex == 0) return currentCommand;
-            
+
             if (commandHistoryIndex == -1)
             {
                 commandHistory.Add(currentCommand);
@@ -181,7 +182,7 @@ namespace Bearded.TD.UI.Controls
             var trimmed = incompleteCommand.TrimStart();
 
             if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand, printAlternatives);
-            
+
             var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
 
             if (extended == null)

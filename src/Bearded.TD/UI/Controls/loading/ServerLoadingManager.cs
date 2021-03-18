@@ -53,17 +53,7 @@ namespace Bearded.TD.UI.Controls
 
         private ITilemapGenerator getTilemapGenerator()
         {
-            switch (Game.GameSettings.LevelGenerationMethod)
-            {
-                case LevelGenerationMethod.Legacy:
-                    return new DefaultTilemapGenerator(Logger, Game.LevelDebugMetadata);
-                case LevelGenerationMethod.Perlin:
-                    return new PerlinTilemapGenerator(Logger, Game.LevelDebugMetadata);
-                case LevelGenerationMethod.Empty:
-                    return new EmptyTilemapGenerator();
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return TilemapGenerator.From(Game.GameSettings.LevelGenerationMethod, Logger, Game.LevelDebugMetadata);
         }
     }
 }

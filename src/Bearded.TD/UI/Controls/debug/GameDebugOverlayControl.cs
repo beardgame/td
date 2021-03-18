@@ -85,7 +85,7 @@ namespace Bearded.TD.UI.Controls
                 {
                     Header header => new Label {Text = header.Name, FontSize = 16},
                     Command command => button(command.Name, command.Call),
-                    BoolSetting boolSetting => checkbox(boolSetting.Name, boolSetting.Value, boolSetting.Toggle),
+                    IBoolSetting boolSetting => checkbox(boolSetting.Name, boolSetting.Value, boolSetting.Toggle),
                     OptionsSetting optionsSetting => multiSelect(optionsSetting),
                     _ => throw new ArgumentOutOfRangeException()
                 };

@@ -51,7 +51,7 @@ namespace Bearded.TD.Game
 
             var tilemapTypes = tilemapGenerator.Generate(gameSettings.LevelSize, gameSettings.Seed);
 
-            var tilemapDrawInfos = drawInfosFromTypes(tilemapTypes);
+            var tilemapDrawInfos = DrawInfosFromTypes(tilemapTypes);
 
             yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
             yield return BlockTilesForBuilding.Command(
@@ -201,7 +201,7 @@ namespace Bearded.TD.Game
             }
         }
 
-        private Tilemap<TileDrawInfo> drawInfosFromTypes(Tilemap<TileGeometry> tileGeometries)
+        public static Tilemap<TileDrawInfo> DrawInfosFromTypes(Tilemap<TileGeometry> tileGeometries)
         {
             var drawInfos = new Tilemap<TileDrawInfo>(tileGeometries.Radius);
 

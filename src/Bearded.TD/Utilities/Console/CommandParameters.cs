@@ -1,12 +1,6 @@
-﻿namespace Bearded.TD.Utilities.Console
-{
-    sealed class CommandParameters
-    {
-        public string[] Args { get; }
+﻿using System.Collections.Immutable;
 
-        public CommandParameters(string[] args)
-        {
-            Args = args;
-        }
-    }
+namespace Bearded.TD.Utilities.Console
+{
+    sealed record CommandParameters(ImmutableArray<string> Args);
 }
