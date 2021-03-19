@@ -22,11 +22,32 @@ namespace Bearded.TD.Rendering.InGameUI
         public static void Render(GameState game, TileAreaBorder border,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
-            const float z = 0.2f;
-
             // TODO: This should not be hard coded
             var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
+
+            render(border, getLineColor, sprite, lineWidth);
+        }
+
+        public static void Render(CoreDrawers drawers, TileAreaBorder border,
+            Color color, float lineWidth = 0.3f)
+        {
+            Render(drawers, border, _ => color, lineWidth);
+        }
+
+        public static void Render(CoreDrawers drawers, TileAreaBorder border,
+            Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
+        {
+            render(border, getLineColor, drawers.CustomPrimitives, lineWidth);
+        }
+
+        private static void render(
+            TileAreaBorder border,
+            Func<Position2, Color?> getLineColor,
+            IDrawableSprite<Color> sprite,
+            float lineWidth)
+        {
+            const float z = 0.2f;
 
             var offsetOuter = new Unit(Constants.Game.World.HexagonSide);
             var lineWidthU = new Unit(lineWidth);
@@ -60,7 +81,7 @@ namespace Bearded.TD.Rendering.InGameUI
                     new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     argb1, argb2, argb2, argb1
-                    );
+                );
             });
         }
     }

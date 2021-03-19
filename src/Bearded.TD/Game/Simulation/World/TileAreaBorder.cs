@@ -7,14 +7,13 @@ namespace Bearded.TD.Game.Simulation.World
 {
     class TileAreaBorder
     {
-        public struct Part
+        public readonly struct Part
         {
-
             public Tile Tile { get; }
             public Direction Direction { get; }
             public bool BeforeIsConvex { get; }
             public bool AfterIsConvex { get; }
-            
+
             public Part(Tile tile, Direction direction, bool beforeIsConvex, bool afterIsConvex)
             {
                 Tile = tile;
@@ -49,7 +48,7 @@ namespace Bearded.TD.Game.Simulation.World
 
         public static TileAreaBorder From(IEnumerable<Tile> area)
             => From(new HashSet<Tile>(area));
-        
+
         public static TileAreaBorder From(HashSet<Tile> area)
         {
             var edges = area.SelectMany(
@@ -62,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.World
                             ))
                 )
                 .ToList();
-            
+
             return new TileAreaBorder(edges);
         }
 
