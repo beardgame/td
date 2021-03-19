@@ -26,7 +26,7 @@ namespace Bearded.TD.Rendering.InGameUI
             var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
 
-            render(border, getLineColor, sprite, lineWidth);
+            Render(border, getLineColor, sprite, lineWidth);
         }
 
         public static void Render(CoreDrawers drawers, TileAreaBorder border,
@@ -38,14 +38,14 @@ namespace Bearded.TD.Rendering.InGameUI
         public static void Render(CoreDrawers drawers, TileAreaBorder border,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
-            render(border, getLineColor, drawers.CustomPrimitives, lineWidth);
+            Render(border, getLineColor, drawers.CustomPrimitives, lineWidth);
         }
 
-        private static void render(
+        public static void Render(
             TileAreaBorder border,
             Func<Position2, Color?> getLineColor,
             IDrawableSprite<Color> sprite,
-            float lineWidth)
+            float lineWidth = 0.3f)
         {
             const float z = 0.2f;
 
