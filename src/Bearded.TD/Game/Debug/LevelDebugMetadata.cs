@@ -1,43 +1,41 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Debug
 {
     sealed class LevelDebugMetadata
     {
-        private readonly List<DebugLineSegment> segments = new List<DebugLineSegment>();
+        public record Data;
+        public sealed record LineSegment(Position2 From, Position2 To, Color Color) : Data;
+        public sealed record AreaBorder(TileAreaBorder Border, Color Color) : Data;
 
-        public ReadOnlyCollection<DebugLineSegment> Segments { get; }
+        private readonly List<Data> data = new();
 
-        public LevelDebugMetadata()
+        public void Add(Position2 from, Position2 to, Color color)
         {
-            Segments = segments.AsReadOnly();
+            data.Add(new LineSegment(from, to, color));
         }
 
-        public void AddSegment(Position2 from, Position2 to, Color color)
+        public void Add(TileAreaBorder border, Color color)
         {
-            segments.Add(new DebugLineSegment(from, to, color));
+            data.Add(new AreaBorder(border, color));
         }
 
-        public readonly struct DebugLineSegment
+        public void Visit(Action<Data> visit)
         {
-            public Position2 From { get; }
-            public Position2 To { get; }
-            public Color Color { get; }
-
-            public DebugLineSegment(Position2 from, Position2 to, Color color)
+            // TODO: use a visitor interface or multiple visitor actions for each type for type safety?
+            foreach (var d in data)
             {
-                From = from;
-                To = to;
-                Color = color;
+                visit(d);
             }
         }
 
         public void Clear()
         {
-            segments.Clear();
+            data.Clear();
         }
     }
 }

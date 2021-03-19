@@ -13,38 +13,44 @@ namespace Bearded.TD.Rendering.InGameUI
 {
     static class TileAreaBorderRenderer
     {
-        public static void Render(GameState game, TileAreaBorder border,
+        public static void Render( TileAreaBorder border, GameState game,
             Color color, float lineWidth = 0.3f)
         {
-            Render(game, border, _ => color, lineWidth);
+            Render(border, game, _ => color, lineWidth);
         }
 
-        public static void Render(GameState game, TileAreaBorder border,
+        public static void Render( TileAreaBorder border, GameState game,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
             // TODO: This should not be hard coded
             var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
 
-            Render(border, getLineColor, sprite, lineWidth);
+            Render(border, sprite, getLineColor, lineWidth);
         }
 
-        public static void Render(CoreDrawers drawers, TileAreaBorder border,
+        public static void Render(TileAreaBorder border, CoreDrawers drawers,
             Color color, float lineWidth = 0.3f)
         {
-            Render(drawers, border, _ => color, lineWidth);
+            Render(border, drawers, _ => color, lineWidth);
         }
 
-        public static void Render(CoreDrawers drawers, TileAreaBorder border,
+        public static void Render(TileAreaBorder border, CoreDrawers drawers,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
-            Render(border, getLineColor, drawers.CustomPrimitives, lineWidth);
+            Render(border, drawers.CustomPrimitives, getLineColor, lineWidth);
+        }
+
+        public static void Render(TileAreaBorder border, IDrawableSprite<Color> sprite,
+            Color color, float lineWidth = 0.3f)
+        {
+            Render(border, sprite, _ => color, lineWidth);
         }
 
         public static void Render(
             TileAreaBorder border,
-            Func<Position2, Color?> getLineColor,
             IDrawableSprite<Color> sprite,
+            Func<Position2, Color?> getLineColor,
             float lineWidth = 0.3f)
         {
             const float z = 0.2f;

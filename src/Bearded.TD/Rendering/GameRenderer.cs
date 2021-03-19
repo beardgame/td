@@ -4,10 +4,12 @@ using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Deferred.Level;
+using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
@@ -234,10 +236,20 @@ namespace Bearded.TD.Rendering
 
         private void drawDebugLevelMetadata()
         {
-            foreach (var segment in game.LevelDebugMetadata.Segments)
-            {
-                shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
-            }
+            game.LevelDebugMetadata.Visit(data =>
+                {
+                    switch (data)
+                    {
+                        case LevelDebugMetadata.AreaBorder border:
+                            TileAreaBorderRenderer.Render(border.Border, drawers.CustomPrimitives, border.Color);
+                            break;
+                        case LevelDebugMetadata.LineSegment segment:
+                            shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(data));
+                    }
+                });
         }
 
         private void drawDebugCoordinates()

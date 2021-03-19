@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Simulation.Components
             {
                 var border = TileAreaBorder.From(tiles);
 
-                TileAreaBorderRenderer.Render(game, border,
+                TileAreaBorderRenderer.Render(border, game,
                     Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.5f : 0.25f)
                 );
             });

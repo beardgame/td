@@ -109,7 +109,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var workerNetwork = Faction.WorkerNetwork;
             var networkBorder = TileAreaBorder.From(Game.Level, workerNetwork.IsInRange);
 
-            TileAreaBorderRenderer.Render(Game, networkBorder, getLineColor);
+            TileAreaBorderRenderer.Render(networkBorder, Game, getLineColor);
 
             Color? getLineColor(Position2 point)
             {

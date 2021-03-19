@@ -274,7 +274,7 @@ namespace Bearded.TD.Game.Generation
 #if DEBUG
                 foreach (var (from, to) in impassableSegments)
                 {
-                    levelDebugMetadata.AddSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Red);
+                    levelDebugMetadata.Add(Level.GetPosition(from), Level.GetPosition(to), Color.Red);
                 }
 #endif
 
@@ -284,7 +284,7 @@ namespace Bearded.TD.Game.Generation
                 foreach (var (from, to) in paths)
                 {
 #if DEBUG
-                    levelDebugMetadata.AddSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua);
+                    levelDebugMetadata.Add(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua);
 #endif
                     var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableArray.Create(from));
                     digAlongShortestPath(from, to, pathFindingResult);
@@ -381,7 +381,7 @@ namespace Bearded.TD.Game.Generation
                     tilesOnPaths.Add(new UnorderedPair<Tile>(curr, parent));
 
 #if DEBUG
-                    levelDebugMetadata.AddSegment(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
+                    levelDebugMetadata.Add(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
 #endif
 
                     curr = parent;

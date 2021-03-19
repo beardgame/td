@@ -92,7 +92,7 @@ namespace Bearded.TD.Game.Generation
             private void clearTunnel(Tile start, Tile goal)
             {
 #if DEBUG
-                levelDebugMetadata.AddSegment(Level.GetPosition(start), Level.GetPosition(goal), Color.Aqua);
+                levelDebugMetadata.Add(Level.GetPosition(start), Level.GetPosition(goal), Color.Aqua);
 #endif
 
                 var goalPosition = Level.GetPosition(goal);
