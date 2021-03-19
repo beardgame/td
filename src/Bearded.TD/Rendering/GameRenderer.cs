@@ -14,6 +14,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Game.World;
 
@@ -246,8 +247,10 @@ namespace Bearded.TD.Rendering
                         case LevelDebugMetadata.LineSegment segment:
                             shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
                             break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(data));
+                        case LevelDebugMetadata.Tile tile:
+                            var xyz = Level.GetPosition(tile.XY).WithZ(tile.Z).NumericValue;
+                            shapeDrawer.FillCircle(xyz, HexagonSide, tile.Color, 6);
+                            break;
                     }
                 });
         }

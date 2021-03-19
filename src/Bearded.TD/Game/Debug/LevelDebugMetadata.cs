@@ -11,6 +11,7 @@ namespace Bearded.TD.Game.Debug
         public record Data;
         public sealed record LineSegment(Position2 From, Position2 To, Color Color) : Data;
         public sealed record AreaBorder(TileAreaBorder Border, Color Color) : Data;
+        public sealed record Tile(Bearded.TD.Tiles.Tile XY, Unit Z, Color Color) : Data;
 
         private readonly List<Data> data = new();
 
@@ -22,6 +23,11 @@ namespace Bearded.TD.Game.Debug
         public void Add(TileAreaBorder border, Color color)
         {
             data.Add(new AreaBorder(border, color));
+        }
+
+        public void Add(Bearded.TD.Tiles.Tile tile, Color color, Unit z = default)
+        {
+            data.Add(new Tile(tile, z, color));
         }
 
         public void Visit(Action<Data> visit)
