@@ -8,11 +8,12 @@ namespace Bearded.TD.Game.Generation
     {
         public static ITilemapGenerator From(LevelGenerationMethod method, Logger logger, LevelDebugMetadata metadata)
         {
-            return  method switch
+            return method switch
             {
                 LevelGenerationMethod.Legacy => new DefaultTilemapGenerator(logger, metadata),
                 LevelGenerationMethod.Perlin => new PerlinTilemapGenerator(logger, metadata),
                 LevelGenerationMethod.Empty => new EmptyTilemapGenerator(),
+                LevelGenerationMethod.Semantic => new SemanticTilemapGenerator(logger, metadata),
                 _ => throw new ArgumentOutOfRangeException(nameof(method), "Unsupported method")
             };
         }
