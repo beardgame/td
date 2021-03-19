@@ -16,6 +16,8 @@ using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
+using static Bearded.TD.Game.Debug.LevelDebugMetadata;
+using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
@@ -274,7 +276,7 @@ namespace Bearded.TD.Game.Generation
 #if DEBUG
                 foreach (var (from, to) in impassableSegments)
                 {
-                    levelDebugMetadata.Add(Level.GetPosition(from), Level.GetPosition(to), Color.Red);
+                    levelDebugMetadata.Add(new LineSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Red));
                 }
 #endif
 
@@ -284,7 +286,7 @@ namespace Bearded.TD.Game.Generation
                 foreach (var (from, to) in paths)
                 {
 #if DEBUG
-                    levelDebugMetadata.Add(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua);
+                    levelDebugMetadata.Add(new LineSegment(Level.GetPosition(from), Level.GetPosition(to), Color.Aqua));
 #endif
                     var pathFindingResult = createPathFindingTilemapToTile(to, ImmutableArray.Create(from));
                     digAlongShortestPath(from, to, pathFindingResult);
@@ -381,7 +383,7 @@ namespace Bearded.TD.Game.Generation
                     tilesOnPaths.Add(new UnorderedPair<Tile>(curr, parent));
 
 #if DEBUG
-                    levelDebugMetadata.Add(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime);
+                    levelDebugMetadata.Add(new LineSegment(Level.GetPosition(curr), Level.GetPosition(parent), Color.Lime));
 #endif
 
                     curr = parent;

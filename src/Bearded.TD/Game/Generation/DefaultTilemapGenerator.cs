@@ -13,8 +13,10 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Debug.LevelDebugMetadata;
 using static Bearded.TD.Game.Simulation.World.TileType;
 using static Bearded.TD.Tiles.Directions;
+using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
@@ -92,7 +94,7 @@ namespace Bearded.TD.Game.Generation
             private void clearTunnel(Tile start, Tile goal)
             {
 #if DEBUG
-                levelDebugMetadata.Add(Level.GetPosition(start), Level.GetPosition(goal), Color.Aqua);
+                levelDebugMetadata.Add(new LineSegment(Level.GetPosition(start), Level.GetPosition(goal), Color.Aqua));
 #endif
 
                 var goalPosition = Level.GetPosition(goal);

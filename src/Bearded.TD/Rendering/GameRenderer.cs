@@ -244,6 +244,12 @@ namespace Bearded.TD.Rendering
                         case LevelDebugMetadata.AreaBorder border:
                             TileAreaBorderRenderer.Render(border.Border, drawers.CustomPrimitives, border.Color);
                             break;
+                        case LevelDebugMetadata.Circle circle:
+                            shapeDrawer.DrawCircle(circle.Center.NumericValue, circle.Radius.NumericValue, circle.LineWidth.NumericValue, circle.Color);
+                            break;
+                        case LevelDebugMetadata.Disk disk:
+                            shapeDrawer.FillCircle(disk.Center.NumericValue, disk.Radius.NumericValue, disk.Color);
+                            break;
                         case LevelDebugMetadata.LineSegment segment:
                             shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
                             break;
@@ -251,6 +257,7 @@ namespace Bearded.TD.Rendering
                             var xyz = Level.GetPosition(tile.XY).WithZ(tile.Z).NumericValue;
                             shapeDrawer.FillCircle(xyz, HexagonSide, tile.Color, 6);
                             break;
+
                     }
                 });
         }

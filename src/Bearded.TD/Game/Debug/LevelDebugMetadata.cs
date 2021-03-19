@@ -12,22 +12,14 @@ namespace Bearded.TD.Game.Debug
         public sealed record LineSegment(Position2 From, Position2 To, Color Color) : Data;
         public sealed record AreaBorder(TileAreaBorder Border, Color Color) : Data;
         public sealed record Tile(Bearded.TD.Tiles.Tile XY, Unit Z, Color Color) : Data;
+        public sealed record Circle(Position2 Center, Unit Radius, Unit LineWidth, Color Color) : Data;
+        public sealed record Disk(Position2 Center, Unit Radius, Color Color) : Data;
 
         private readonly List<Data> data = new();
 
-        public void Add(Position2 from, Position2 to, Color color)
+        public void Add(Data data)
         {
-            data.Add(new LineSegment(from, to, color));
-        }
-
-        public void Add(TileAreaBorder border, Color color)
-        {
-            data.Add(new AreaBorder(border, color));
-        }
-
-        public void Add(Bearded.TD.Tiles.Tile tile, Color color, Unit z = default)
-        {
-            data.Add(new Tile(tile, z, color));
+            this.data.Add(data);
         }
 
         public void Visit(Action<Data> visit)
