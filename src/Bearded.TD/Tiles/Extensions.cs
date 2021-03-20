@@ -99,10 +99,10 @@ namespace Bearded.TD.Tiles
         public static Direction Next(this Direction direction) => (Direction)((int)direction % 6 + 1);
         public static Direction Previous(this Direction direction) => (Direction)(((int)direction + 4) % 6 + 1);
 
-        private static Directions toDirections(this Direction direction) => (Directions) (1 << ((int) direction - 1));
-        public static bool Includes(this Directions directions, Direction direction) => directions.HasFlag(direction.toDirections());
-        public static Directions And(this Directions directions, Direction direction) => directions | direction.toDirections();
-        public static Directions Except(this Directions directions, Direction direction) => directions & ~direction.toDirections();
+        public static Directions ToDirections(this Direction direction) => (Directions) (1 << ((int) direction - 1));
+        public static bool Includes(this Directions directions, Direction direction) => directions.HasFlag(direction.ToDirections());
+        public static Directions And(this Directions directions, Direction direction) => directions | direction.ToDirections();
+        public static Directions Except(this Directions directions, Direction direction) => directions & ~direction.ToDirections();
         public static Directions Union(this Directions directions, Directions directions2) => directions | directions2;
         public static Directions Except(this Directions directions, Directions directions2) => directions & ~directions2;
         public static Directions Intersect(this Directions directions, Directions directions2) => directions & directions2;

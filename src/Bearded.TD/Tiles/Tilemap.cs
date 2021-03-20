@@ -160,5 +160,12 @@ namespace Bearded.TD.Tiles
         public IEnumerator<Tile> GetEnumerator() => Tilemap.EnumerateTilemapWith(Radius).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public Tilemap<TValue> Clone()
+        {
+            var clone = new Tilemap<TValue>(Radius);
+            Array.Copy(tiles, clone.tiles, tiles.Length);
+            return clone;
+        }
     }
 }
