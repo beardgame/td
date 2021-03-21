@@ -269,16 +269,18 @@ namespace Bearded.TD.Game.Generation
             public int ConnectedComponents { get; }
             public List<int> ConnectionCountsHistogram { get; }
             public int AcuteConnectionAngleCount { get; }
+            public int ConnectionTriangleCount { get; }
 
             public double Value { get; }
 
             private Fitness(int nodeCount, int connectedComponents, List<int> connectionCountsHistogram,
-                int acuteConnectionAngleCount, double value)
+                int acuteConnectionAngleCount, int connectionTriangleCount, double value)
             {
                 NodeCount = nodeCount;
                 ConnectedComponents = connectedComponents;
                 ConnectionCountsHistogram = connectionCountsHistogram;
                 AcuteConnectionAngleCount = acuteConnectionAngleCount;
+                ConnectionTriangleCount = connectionTriangleCount;
                 Value = value;
             }
 
@@ -289,6 +291,7 @@ $@"== FITNESS ==
 Nodes: {NodeCount}
 Components: {ConnectedComponents}
 Acute angles: {AcuteConnectionAngleCount}
+Triangles: {ConnectionTriangleCount}
 Connection histogram:
 " + string.Join('\n', ConnectionCountsHistogram.Select((c, i) => $"{i}: {c.ToString().PadLeft(3)} - {c * 100 / NodeCount}%"))
 + $@"
@@ -306,6 +309,7 @@ Fitness:{Value}
                     .Select(i => connectedCounts.TryGetValue(i, out var count) ? count : 0).ToList();
 
                 var acuteConnectionAngleCount = countAcuteConnectionAngles(tilemap);
+                var connectionTriangleCount = countConnectionTriangles(tilemap);
 
                 var idealHistogram = new[]
                 {
@@ -325,13 +329,34 @@ Fitness:{Value}
                 var componentsPenalty = connectedComponents * nodeCount;
                 var histogramDistancePenalty = histogramDistance;
                 var acuteConnectionAnglePenalty = acuteConnectionAngleCount * 0;
+                var connectionTrianglePenalty = connectionTriangleCount;
 
                 var fitness = 0
                     - componentsPenalty
                     - histogramDistancePenalty
-                    - acuteConnectionAnglePenalty;
+                    - acuteConnectionAnglePenalty
+                    - connectionTrianglePenalty;
 
-                return new Fitness(nodeCount, connectedComponents, connectedCountsHistogram, acuteConnectionAngleCount, fitness);
+                return new Fitness(nodeCount, connectedComponents, connectedCountsHistogram, acuteConnectionAngleCount, connectionTriangleCount, fitness);
+            }
+
+            private static int countConnectionTriangles(Tilemap<LogicalNode?> tilemap)
+            {
+                var count = 0;
+
+                foreach (var (tile, node) in tilemap.Select(t => (t, tilemap[t])).Where(t => t.Item2 != null))
+                {
+                    var connected = node.ConnectedTo;
+                    foreach (var direction in Tiles.Extensions.Directions)
+                    {
+                        if (connected.Includes(direction)
+                            && connected.Includes(direction.Next())
+                            && tilemap[tile.Neighbour(direction)]!.ConnectedTo.Includes(direction.Next().Next()))
+                            count++;
+                    }
+                }
+
+                return count;
             }
 
             private static int countAcuteConnectionAngles(Tilemap<LogicalNode?> tilemap)
