@@ -52,11 +52,14 @@ namespace Bearded.TD.UI.Controls
             logger.Logged -= fireLoggerEntryEvent;
         }
 
+        private static readonly char[] newLineCharacters = {'\r', '\n'};
+
         public override void Update(UpdateEventArgs args)
         {
             while (loggerEntriesAdded.TryDequeue(out var entry))
             {
-                foreach (var line in entry.Text.Split(Environment.NewLine))
+                var lines = entry.Text.Split(newLineCharacters, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
                 {
                     LogEntryAdded?.Invoke(new Logger.Entry(line, entry.Severity, entry.Time));
                 }
