@@ -2,7 +2,11 @@
     "id" : "worker",
     "components" : [
         {
-            "id" : "worker"
+            "id" : "worker",
+            "parameters" : {
+                "movementSpeed" : 3,
+                "buildingSpeed" : 15
+            }
         }
     ]
 }

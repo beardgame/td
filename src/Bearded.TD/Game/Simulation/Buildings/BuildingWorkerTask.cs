@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
@@ -9,7 +10,7 @@ using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -35,13 +36,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public bool Finished { get; private set; }
 
         public BuildingWorkerTask(
-            Id<IWorkerTask> taskId, BuildingPlaceholder placeholder, ResourceManager.IResourceReservation resourceReservation)
+            Id<IWorkerTask> taskId,
+            BuildingPlaceholder placeholder,
+            ResourceManager.IResourceReservation resourceReservation)
         {
             Id = taskId;
             this.placeholder = placeholder;
             blueprint = placeholder.Blueprint;
-            resourceConsumer =
-                new ResourceConsumer(placeholder.Game, resourceReservation, Constants.Game.Worker.WorkerSpeed);
+            resourceConsumer = new ResourceConsumer(placeholder.Game, resourceReservation, 0.ResourcesPerSecond());
         }
 
         public void SetBuilding(Building building)
@@ -70,7 +72,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Finished = true;
         }
 
-        public void Progress(TimeSpan elapsedTime)
+        public void Progress(TimeSpan elapsedTime, IWorkerParameters workerParameters)
         {
             if (placeholder != null && resourceConsumer.CanConsume)
             {
@@ -82,6 +84,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 Finished = true;
                 return;
             }
+
+            if (workerParameters.BuildingSpeed != resourceConsumer.ConsumptionRate)
+            {
+                resourceConsumer.UpdateConsumptionRate(workerParameters.BuildingSpeed);
+            }
+
             resourceConsumer.PrepareIfNeeded();
             resourceConsumer.Update();
             if (building != null)

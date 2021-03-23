@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
@@ -63,7 +62,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 if (!task.Finished && worker.CurrentTile.NeighboursToTiles(task.Tiles))
                 {
-                    task.Progress(elapsedTime);
+                    task.Progress(elapsedTime, worker.Parameters);
                 }
                 if (task.Finished)
                 {

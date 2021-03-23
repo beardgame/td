@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -16,7 +17,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         bool CanAbort { get; }
         bool Finished { get; }
 
-        void Progress(TimeSpan elapsedTime);
+        void Progress(TimeSpan elapsedTime, IWorkerParameters workerParameters);
         void OnAbort();
     }
 }

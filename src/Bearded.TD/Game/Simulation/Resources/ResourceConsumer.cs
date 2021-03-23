@@ -10,7 +10,8 @@ namespace Bearded.TD.Game.Simulation.Resources
         private readonly Func<Instant> currentTimeProvider;
         private readonly ResourceManager.IResourceReservation reservation;
         private readonly ResourceAmount resourcesRequested;
-        private readonly ResourceRate consumptionRate;
+
+        public ResourceRate ConsumptionRate { get; private set; }
 
         private Instant? consumptionStartTime;
         private Instant time => currentTimeProvider();
@@ -27,8 +28,13 @@ namespace Bearded.TD.Game.Simulation.Resources
         {
             this.currentTimeProvider = currentTimeProvider;
             this.reservation = reservation;
-            this.consumptionRate = consumptionRate;
+            ConsumptionRate = consumptionRate;
             resourcesRequested = reservation.ResourcesLeftToClaim;
+        }
+
+        public void UpdateConsumptionRate(ResourceRate newRate)
+        {
+            ConsumptionRate = newRate;
         }
 
         public void PrepareIfNeeded()
@@ -59,7 +65,7 @@ namespace Bearded.TD.Game.Simulation.Resources
 
             var expectedResourcesConsumed = DiscreteSpaceTime1Math.Min(
                 resourcesRequested,
-                consumptionRate.InTime(time - consumptionStartTime.Value));
+                ConsumptionRate.InTime(time - consumptionStartTime.Value));
             var actualResourcesConsumed = resourcesRequested - reservation.ResourcesLeftToClaim;
             var resourcesToClaim = expectedResourcesConsumed - actualResourcesConsumed;
 

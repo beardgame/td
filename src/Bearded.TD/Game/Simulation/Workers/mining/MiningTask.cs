@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -40,7 +41,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             originalDrawInfo = geometry[tile].DrawInfo;
         }
 
-        public void Progress(TimeSpan elapsedTime)
+        public void Progress(TimeSpan elapsedTime, IWorkerParameters _)
         {
             miningProgress += elapsedTime;
             if (Finished)

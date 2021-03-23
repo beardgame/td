@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("worker")]
     // TODO: make generic
-    sealed class WorkerComponent : Component<ComponentGameObject>, ITileWalkerOwner, IWorkerComponent
+    sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent
     {
         private Faction? faction;
         private WorkerState? currentState;
@@ -29,6 +30,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public Tile CurrentTile => tileWalker.CurrentTile;
         public IFactioned HubOwner { get; private set; } = null!;
+        public new IWorkerParameters Parameters => base.Parameters;
+
+        public WorkerComponent(IWorkerParameters parameters) : base(parameters) { }
 
         protected override void Initialize()
         {
@@ -48,7 +52,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         public override void Update(TimeSpan elapsedTime)
         {
             currentState?.Update(elapsedTime);
-            tileWalker.Update(elapsedTime, Constants.Game.Worker.MovementSpeed);
+            tileWalker.Update(elapsedTime, Parameters.MovementSpeed);
 
             Owner.Position = tileWalker.Position.WithZ(0.1f);
 
@@ -139,6 +143,7 @@ namespace Bearded.TD.Game.Simulation.Workers
     {
         Tile CurrentTile { get; }
         IFactioned HubOwner { get; }
+        IWorkerParameters Parameters { get; }
         void AssignToFaction(Faction faction);
         void AssignTask(IWorkerTask task);
         void SuspendCurrentTask();
