@@ -1,9 +1,4 @@
-﻿using Bearded.TD.Game.Meta;
-using Bearded.TD.Tiles;
-using Bearded.Utilities;
-using static Bearded.Utilities.Maybe;
-
-namespace Bearded.TD.Game.Input
+﻿namespace Bearded.TD.Game.Input
 {
     sealed class DefaultInteractionHandler : InteractionHandler
     {
@@ -13,34 +8,35 @@ namespace Bearded.TD.Game.Input
         {
             var currentFootprint = cursor.CurrentFootprint;
             if (!currentFootprint.IsValid(Game.State.Level))
+            {
                 return;
+            }
 
+            var selectable = Game.State.SelectionLayer.SelectableForTile(currentFootprint.RootTile);
             var clicked = cursor.Click.Hit;
-            getSelectableForTile(currentFootprint.RootTile, clicked).Match(
-                onValue: selectable =>
+
+            if (selectable != null)
+            {
+                if (clicked)
                 {
-                    if (clicked)
-                        Game.SelectionManager.SelectObject(selectable);
-                    else
-                        Game.SelectionManager.FocusObject(selectable);
-                },
-                onNothing: () =>
+                    Game.SelectionManager.SelectObject(selectable);
+                }
+                else
                 {
-                    if (clicked)
-                        Game.SelectionManager.ResetSelection();
-                    else
-                        Game.SelectionManager.ResetFocus();
-                });
-        }
-
-        private Maybe<ISelectable> getSelectableForTile(Tile tile, bool forClick)
-        {
-            var building = Game.State.BuildingLayer.GetBuildingFor(tile);
-            if (building != null) return Just<ISelectable>(building);
-
-            // TODO: replace with a better selection layer system
-
-            return Nothing;
+                    Game.SelectionManager.FocusObject(selectable);
+                }
+            }
+            else
+            {
+                if (clicked)
+                {
+                    Game.SelectionManager.ResetSelection();
+                }
+                else
+                {
+                    Game.SelectionManager.ResetFocus();
+                }
+            }
         }
     }
 }

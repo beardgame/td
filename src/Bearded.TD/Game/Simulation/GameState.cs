@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
@@ -49,6 +50,7 @@ namespace Bearded.TD.Game.Simulation
         public BuildingLayer BuildingLayer { get; }
         public BuildingPlacementLayer BuildingPlacementLayer { get; }
         public MiningLayer MiningLayer { get; }
+        public SelectionLayer SelectionLayer { get; }
         public PassabilityManager PassabilityManager { get; }
 
         public WaveDirector WaveDirector { get; }
@@ -76,6 +78,7 @@ namespace Bearded.TD.Game.Simulation
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
                 new Lazy<PassabilityLayer>(() => PassabilityManager.GetLayer(Passability.WalkingUnit)));
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
+            SelectionLayer = new SelectionLayer(BuildingLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
             Factions = factions.AsReadOnly;
