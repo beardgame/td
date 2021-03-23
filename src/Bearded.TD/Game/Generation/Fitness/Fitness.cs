@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Bearded.TD.Game.Generation.Fitness
 {
-    sealed class Fitness<T>
+    sealed class Fitness<T> : IComparable<Fitness<T>>
     {
         private readonly ImmutableArray<FitnessComponent<T>> components;
         public double Value { get; }
@@ -38,6 +38,11 @@ namespace Bearded.TD.Game.Generation.Fitness
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        public int CompareTo(Fitness<T>? other)
+        {
+            return other == null ? 1 : Value.CompareTo(other.Value);
         }
     }
 }
