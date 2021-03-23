@@ -6,9 +6,9 @@ using Bearded.TD.Game.Simulation.Rules;
 namespace Bearded.TD.Game.GameLoop
 {
     [GameRule("scheduleGame")]
-    sealed class ScheduleGameRule : GameRule<ScheduleGameRule.Parameters>
+    sealed class ScheduleGame : GameRule<ScheduleGame.Parameters>
     {
-        public ScheduleGameRule(Parameters parameters) : base(parameters) {}
+        public ScheduleGame(Parameters parameters) : base(parameters) {}
 
         protected override void Execute(GameState gameState, Parameters parameters)
         {

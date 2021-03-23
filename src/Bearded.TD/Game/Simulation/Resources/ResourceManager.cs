@@ -22,7 +22,6 @@ namespace Bearded.TD.Game.Simulation.Resources
         public ResourceManager(Logger logger)
         {
             this.logger = logger;
-            CurrentResources = Constants.Game.WaveGeneration.InitialResources;
         }
 
         public void ProvideResources(ResourceAmount amount)

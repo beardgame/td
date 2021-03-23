@@ -21,6 +21,12 @@
                 ]
             }
         },
+        {
+            "id" : "grantResourcesOnStart",
+            "parameters" : {
+                "amount" : 240
+            }
+        },
         { "id" : "assignWorkers" },
         { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
         {

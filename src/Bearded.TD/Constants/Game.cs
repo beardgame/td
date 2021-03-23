@@ -54,7 +54,6 @@ namespace Bearded.TD
                 public const double WaveValueErrorFactor = 0.1;
                 public const double WaveValueMultiplier = 1.3;
 
-                public static readonly ResourceAmount InitialResources = 240.Resources();
                 public static readonly ResourceAmount FirstWaveResources = 200.Resources();
                 public static readonly double WaveResourcesMultiplier = 1.2;
             }
