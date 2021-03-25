@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Generation.Fitness;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -18,6 +19,18 @@ using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
+    record LogicalNode(int MinimumConnectionCount, int MaximumConnectionCount, Directions ConnectedTo)
+    {
+        public LogicalNode WithConnection(Direction d)
+            => this with {ConnectedTo = ConnectedTo.And(d)};
+
+        public LogicalNode WithoutConnection(Direction d)
+            => this with {ConnectedTo = ConnectedTo.Except(d)};
+
+        public LogicalNode WithInverseConnection(Direction d)
+            => this with {ConnectedTo = ConnectedTo ^ d.ToDirections()};
+    }
+
     sealed class SemanticTilemapGenerator : ITilemapGenerator
     {
         private readonly Logger logger;
@@ -44,18 +57,6 @@ namespace Bearded.TD.Game.Generation
                 Radius = radius;
                 ConnectionPoints.AddRange(connectionPoints);
             }
-        }
-
-        record LogicalNode(int MinimumConnectionCount, int MaximumConnectionCount, Directions ConnectedTo)
-        {
-            public LogicalNode WithConnection(Direction d)
-                => this with {ConnectedTo = ConnectedTo.And(d)};
-
-            public LogicalNode WithoutConnection(Direction d)
-                => this with {ConnectedTo = ConnectedTo.Except(d)};
-
-            public LogicalNode WithInverseConnection(Direction d)
-                => this with { ConnectedTo = ConnectedTo ^ d.ToDirections()};
         }
 
         public Tilemap<TileGeometry> Generate(int radius, int seed)
@@ -208,7 +209,7 @@ namespace Bearded.TD.Game.Generation
         {
             logger.Debug?.Log("Optimising logical tilemap");
             var currentBest = logicalTilemap;
-            var currentFitness = Fitness.From(currentBest);
+            var currentFitness = fitnessFunction.FitnessOf(currentBest);
 
             logger.Debug?.Log($"Initial fitness\n{currentFitness}");
 
@@ -222,9 +223,9 @@ namespace Bearded.TD.Game.Generation
 
                 var mutated = mutate(currentBest, 3, random);
 
-                var mutatedFitness = Fitness.From(mutated);
+                var mutatedFitness = fitnessFunction.FitnessOf(mutated);
 
-                if (mutatedFitness.Value > currentFitness.Value)
+                if (mutatedFitness.Value < currentFitness.Value)
                 {
                     currentBest = mutated;
                     currentFitness = mutatedFitness;
@@ -241,6 +242,13 @@ namespace Bearded.TD.Game.Generation
 
             return currentBest;
         }
+
+        private FitnessFunction<Tilemap<LogicalNode?>> fitnessFunction = FitnessFunction.From(
+            LogicalTilemapFitness.ConnectedComponentsCount,
+            LogicalTilemapFitness.ConnectedTrianglesCount,
+            LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
+                new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0})
+        );
 
         private Tilemap<LogicalNode?> mutate(Tilemap<LogicalNode?> currentBest, int mutations, Random random)
         {
@@ -261,150 +269,6 @@ namespace Bearded.TD.Game.Generation
             }
 
             return copy;
-        }
-
-        class Fitness
-        {
-            public int NodeCount { get; }
-            public int ConnectedComponents { get; }
-            public List<int> ConnectionCountsHistogram { get; }
-            public int AcuteConnectionAngleCount { get; }
-            public int ConnectionTriangleCount { get; }
-
-            public double Value { get; }
-
-            private Fitness(int nodeCount, int connectedComponents, List<int> connectionCountsHistogram,
-                int acuteConnectionAngleCount, int connectionTriangleCount, double value)
-            {
-                NodeCount = nodeCount;
-                ConnectedComponents = connectedComponents;
-                ConnectionCountsHistogram = connectionCountsHistogram;
-                AcuteConnectionAngleCount = acuteConnectionAngleCount;
-                ConnectionTriangleCount = connectionTriangleCount;
-                Value = value;
-            }
-
-            public override string ToString()
-            {
-                return
-$@"== FITNESS ==
-Nodes: {NodeCount}
-Components: {ConnectedComponents}
-Acute angles: {AcuteConnectionAngleCount}
-Triangles: {ConnectionTriangleCount}
-Connection histogram:
-" + string.Join('\n', ConnectionCountsHistogram.Select((c, i) => $"{i}: {c.ToString().PadLeft(3)} - {c * 100 / NodeCount}%"))
-+ $@"
-Fitness:{Value}
-=============";
-            }
-
-            public static Fitness From(Tilemap<LogicalNode?> tilemap)
-            {
-                var nodeCount = tilemap.Select(t => tilemap[t]).NotNull().Count();
-                var connectedComponents = countConnectedComponents(tilemap);
-                var connectedCounts = tilemap.Select(t => tilemap[t]).NotNull()
-                    .GroupBy(n => n.ConnectedTo.Enumerate().Count()).ToDictionary(g => g.Key, g => g.Count());
-                var connectedCountsHistogram = Enumerable.Range(0, 7)
-                    .Select(i => connectedCounts.TryGetValue(i, out var count) ? count : 0).ToList();
-
-                var acuteConnectionAngleCount = countAcuteConnectionAngles(tilemap);
-                var connectionTriangleCount = countConnectionTriangles(tilemap);
-
-                var idealHistogram = new[]
-                {
-                    0,
-                    0.15, // 1
-                    0.2, // 2
-                    0.45, // 3
-                    0.2, // 4
-                    0,
-                    0
-                }.Select(p => nodeCount * p).ToList();
-
-                var histogramDistance = idealHistogram
-                    .Zip(connectedCountsHistogram, (ideal, actual) => Math.Abs(ideal - actual))
-                    .Sum();
-
-                var componentsPenalty = connectedComponents * nodeCount;
-                var histogramDistancePenalty = histogramDistance;
-                var acuteConnectionAnglePenalty = acuteConnectionAngleCount * 0;
-                var connectionTrianglePenalty = connectionTriangleCount;
-
-                var fitness = 0
-                    - componentsPenalty
-                    - histogramDistancePenalty
-                    - acuteConnectionAnglePenalty
-                    - connectionTrianglePenalty;
-
-                return new Fitness(nodeCount, connectedComponents, connectedCountsHistogram, acuteConnectionAngleCount, connectionTriangleCount, fitness);
-            }
-
-            private static int countConnectionTriangles(Tilemap<LogicalNode?> tilemap)
-            {
-                var count = 0;
-
-                foreach (var (tile, node) in tilemap.Select(t => (t, tilemap[t])).Where(t => t.Item2 != null))
-                {
-                    var connected = node.ConnectedTo;
-                    foreach (var direction in Tiles.Extensions.Directions)
-                    {
-                        if (connected.Includes(direction)
-                            && connected.Includes(direction.Next())
-                            && tilemap[tile.Neighbour(direction)]!.ConnectedTo.Includes(direction.Next().Next()))
-                            count++;
-                    }
-                }
-
-                return count;
-            }
-
-            private static int countAcuteConnectionAngles(Tilemap<LogicalNode?> tilemap)
-            {
-                var count = 0;
-
-                foreach (var node in tilemap.Select(t => tilemap[t]).NotNull())
-                {
-                    var connected = node.ConnectedTo;
-                    count += Tiles.Extensions.Directions
-                        .Count(direction =>
-                            connected.Includes(direction) &&
-                            connected.Includes(direction.Next())
-                            );
-                }
-
-                return count;
-            }
-
-            private static int countConnectedComponents(Tilemap<LogicalNode?> tilemap)
-            {
-                var componentCount = 0;
-                var seen = new HashSet<Tile>();
-                foreach (var tile in tilemap)
-                {
-                    if (seen.Contains(tile) || tilemap[tile] == null)
-                        continue;
-
-                    fillFrom(tile);
-                    componentCount++;
-                }
-
-                return componentCount;
-
-                void fillFrom(Tile tile)
-                {
-                    if (!seen.Add(tile))
-                    {
-                        return;
-                    }
-
-                    var node = tilemap[tile];
-                    foreach (var direction in node.ConnectedTo.Enumerate())
-                    {
-                        fillFrom(tile.Neighbour(direction));
-                    }
-                }
-            }
         }
 
         private void relax(List<Node> nodes, Unit radius)
