@@ -22,10 +22,16 @@ namespace Bearded.TD.Game.Generation.Fitness
             }
 
             public override string Name => "Composite Fitness";
+
             public override Fitness<T> FitnessOf(T instance)
             {
                 var components = functions.Select(f => f.FitnessOf(instance)).ToImmutableArray();
                 return new CompositeFitness<T>(this, components.Sum(c => c.Value), components);
+            }
+
+            protected override double CalculateFitness(T instance)
+            {
+                throw new NotImplementedException();
             }
         }
         private sealed class CompositeFitness<T> : Fitness<T>
@@ -62,7 +68,8 @@ namespace Bearded.TD.Game.Generation.Fitness
     {
         public abstract string Name { get; }
 
-        public abstract Fitness<T> FitnessOf(T instance);
+        public virtual Fitness<T> FitnessOf(T instance) => new(this, CalculateFitness(instance));
+        protected abstract double CalculateFitness(T instance);
 
         public static FitnessFunction<T> operator *(FitnessFunction<T> function, double scalar)
             => new ScaledFitnessFunction(function, scalar);
@@ -83,9 +90,9 @@ namespace Bearded.TD.Game.Generation.Fitness
 
             public override string Name => $"{function.Name} * {scalar}";
 
-            public override Fitness<T> FitnessOf(T instance)
+            protected override double CalculateFitness(T instance)
             {
-                throw new NotImplementedException();
+                return function.CalculateFitness(instance) * scalar;
             }
         }
     }
