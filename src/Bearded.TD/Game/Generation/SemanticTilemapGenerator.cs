@@ -195,7 +195,7 @@ namespace Bearded.TD.Game.Generation
             }
 
 
-            var areas = nodes.ToDictionary(n => n, _ => new List<Tile>());
+            var areas = nodes.ToDictionary(n => n, _ => new HashSet<Tile>());
 
             foreach (var tile in Tilemap.EnumerateTilemapWith(radius))
             {
@@ -203,7 +203,17 @@ namespace Bearded.TD.Game.Generation
 
                 var node = nodes.MinBy(n => ((tilePosition - n.Position).Length - n.Radius).NumericValue);
 
+                var distanceToNodeSquared = (tilePosition - node.Position).LengthSquared;
+
+                if (distanceToNodeSquared > node.Radius.Squared)
+                    continue;
+
                 areas[node].Add(tile);
+            }
+
+            foreach (var nodeArea in areas.Values)
+            {
+                erode(nodeArea);
             }
 
             foreach (var (_, tiles) in areas)
@@ -215,6 +225,15 @@ namespace Bearded.TD.Game.Generation
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
             return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
+        }
+
+        private void erode(HashSet<Tile> area)
+        {
+            var tilesToErode = area.Where(n => !n.PossibleNeighbours().All(area.Contains)).ToList();
+            foreach (var tileToErode in tilesToErode)
+            {
+                area.Remove(tileToErode);
+            }
         }
 
         private static List<Connection> createNodeConnections(Tilemap<LogicalNode?> logicalTilemap, Dictionary<Tile, Node> nodes)
