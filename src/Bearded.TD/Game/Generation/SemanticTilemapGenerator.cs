@@ -59,6 +59,18 @@ namespace Bearded.TD.Game.Generation
             }
         }
 
+        class Connection
+        {
+            public Node Node1 { get; }
+            public Node Node2 { get; }
+
+            public Connection(Node node1, Node node2)
+            {
+                Node1 = node1;
+                Node2 = node2;
+            }
+        }
+
         public Tilemap<TileGeometry> Generate(int radius, int seed)
         {
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
@@ -67,7 +79,7 @@ namespace Bearded.TD.Game.Generation
             var random = new Random(seed);
 
             var area = Tilemap.TileCountForRadius(radius);
-            var areaPerNode = 12 * 12;
+            var areaPerNode = 14 * 14;
             var nodeCount = area / areaPerNode;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
@@ -130,44 +142,35 @@ namespace Bearded.TD.Game.Generation
                 var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
                 metadata.Add(new Disk(
                     center,
-                    nodeRadius, Color.Bisque * 0.1f
+                    nodeRadius, Color.Bisque * 0.05f
                 ));
                 foreach (var connectedDirection in node.ConnectedTo.Enumerate())
                 {
                     metadata.Add(new LineSegment(center, center + connectedDirection.Vector() * nodeRadius,
-                        Color.Lime * 0.25f));
+                        Color.Lime * 0.1f));
                 }
             }
 
-            /*
-            var unitRadius = radius * HexagonWidth.U();
-
-            var nodes = Enumerable.Range(0, nodeCount).Select(_ =>
+            var nodes = new List<Node>();
+            var nodeDictionary = new Dictionary<Tile, Node>();
+            foreach (var tile in logicalTilemap)
             {
-                var dir = Direction2.FromDegrees(random.NextFloat(360));
-                var d = random.NextFloat().Sqrted() * unitRadius;
-                var p = Position2.Zero + dir * d;
+                var node = logicalTilemap[tile];
+                if (node == null)
+                    continue;
 
-                var r = random.NormalFloat(1, 0.2f).Clamped(0.75f, 1.2f) * nodeRadius;
+                var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
 
-                var connectionPointCountMean = r.NumericValue / 2;
-                var connectionPointCount = MoreMath.RoundToInt(random.NormalFloat(connectionPointCountMean, 1))
-                    .Clamped((int)(connectionPointCountMean * 0.75f), (int)(connectionPointCountMean * 1.5f));
+                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>());
+                nodes.Add(n);
+                nodeDictionary.Add(tile, n);
+            }
 
-                var connectionPointInterval = Angle.FromDegrees(360f / connectionPointCount);
-                var connectionPoints = Enumerable.Range(0, connectionPointCount)
-                    .Select(i =>
-                    {
-                        var minAngle = Direction2.Zero + connectionPointInterval * i;
-                        var angle = minAngle + random.NextFloat(0.8f) * connectionPointInterval;
+            var connections = createNodeConnections(logicalTilemap, nodeDictionary);
 
-                        return new PolarPosition(r.NumericValue - HexagonWidth, angle);
-                    });
 
-                return new Node(p, r, connectionPoints);
-            }).ToList();
 
-            relax(nodes, radius.U());
+            relax(nodes, connections, radius.U());
 
             foreach (var node in nodes)
             {
@@ -180,6 +183,15 @@ namespace Bearded.TD.Game.Generation
 
                     metadata.Add(new Disk(p, 1.U(), Color.Red * 0.5f));
                 }
+            }
+
+            foreach (var connection in connections)
+            {
+                metadata.Add(new LineSegment(
+                    connection.Node1.Position,
+                    connection.Node2.Position,
+                    Color.Azure * 0.5f
+                    ));
             }
 
 
@@ -198,11 +210,40 @@ namespace Bearded.TD.Game.Generation
             {
                 metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.Beige * 0.5f));
             }
-            */
+
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
             return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
+        }
+
+        private static List<Connection> createNodeConnections(Tilemap<LogicalNode?> logicalTilemap, Dictionary<Tile, Node> nodes)
+        {
+            var connections = new List<Connection>();
+            foreach (var tile in logicalTilemap)
+            {
+                var node = logicalTilemap[tile];
+                if (node == null)
+                    continue;
+
+                tryDirection(tile, node, Direction.Right);
+                tryDirection(tile, node, Direction.UpRight);
+                tryDirection(tile, node, Direction.UpLeft);
+            }
+
+            return connections;
+
+            void tryDirection(Tile tile, LogicalNode node, Direction dir)
+            {
+                if (!node.ConnectedTo.Includes(dir))
+                    return;
+
+                var neighborTile = tile.Neighbour(dir);
+                if (logicalTilemap.IsValidTile(neighborTile) && logicalTilemap[neighborTile] is { } neighbor)
+                {
+                    connections.Add(new Connection(nodes[tile], nodes[neighborTile]));
+                }
+            }
         }
 
         private Tilemap<LogicalNode?> optimize(Tilemap<LogicalNode?> logicalTilemap, Random random)
@@ -271,7 +312,7 @@ namespace Bearded.TD.Game.Generation
             return copy;
         }
 
-        private void relax(List<Node> nodes, Unit radius)
+        private void relax(List<Node> nodes, List<Connection> connections, Unit radius)
         {
             var allPairs =
                 (from n1 in nodes
@@ -280,18 +321,37 @@ namespace Bearded.TD.Game.Generation
 
             foreach (var _ in Enumerable.Range(0, 100))
             {
+                foreach (var connection in connections)
+                {
+                    var diff = connection.Node1.Position - connection.Node2.Position;
+                    var dSquared = diff.LengthSquared;
+
+                    var maxD = connection.Node1.Radius + connection.Node2.Radius;
+                    var maxDSquared = maxD.Squared;
+
+                    if (maxDSquared > dSquared)
+                        continue;
+
+                    var forceMagnitude = (dSquared.NumericValue - maxDSquared.NumericValue).U() * 0.01f;
+
+                    var forceOnN1 = diff / dSquared.Sqrt() * -forceMagnitude;
+
+                    connection.Node1.Position += forceOnN1;
+                    connection.Node2.Position -= forceOnN1;
+                }
+
                 foreach (var (n1, n2) in allPairs)
                 {
                     var diff = n1.Position - n2.Position;
                     var dSquared = diff.LengthSquared;
 
-                    var maxD = n1.Radius + n2.Radius;
-                    var maxDSquared = maxD.Squared;
+                    var minD = n1.Radius + n2.Radius;
+                    var minDSquared = minD.Squared;
 
-                    if (maxDSquared < dSquared)
+                    if (minDSquared < dSquared)
                         continue;
 
-                    var forceMagnitude = (maxDSquared.NumericValue - dSquared.NumericValue).U() * 0.01f;
+                    var forceMagnitude = (minDSquared.NumericValue - dSquared.NumericValue).U() * 0.01f;
 
                     var forceOnN1 = diff / dSquared.Sqrt() * forceMagnitude;
 
@@ -312,7 +372,7 @@ namespace Bearded.TD.Game.Generation
                             continue;
 
                         var forceMagnitude =
-                            (lineDistance.NumericValue.Squared() - projection.NumericValue.Squared()).U() * 0.1f;
+                            (lineDistance.NumericValue.Squared() - projection.NumericValue.Squared()).U() * 0.01f;
 
                         node.Position += lineNormal * forceMagnitude;
                     }
