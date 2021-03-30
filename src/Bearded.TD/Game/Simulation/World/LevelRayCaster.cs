@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.World
         public Tile Current => tile;
         public float CurrentRayFactor => currentRayFactor;
 
-        public void StartEnumeratingTiles(Level level, Ray ray)
+        public void StartEnumeratingTiles(Ray ray)
         {
             initialize(ray, Level.GetTile(ray.Start));
             firstMove = true;

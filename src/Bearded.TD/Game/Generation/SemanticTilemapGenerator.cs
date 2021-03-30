@@ -7,6 +7,7 @@ using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Fitness;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
@@ -79,7 +80,7 @@ namespace Bearded.TD.Game.Generation
             var random = new Random(seed);
 
             var area = Tilemap.TileCountForRadius(radius);
-            var areaPerNode = 14 * 14;
+            var areaPerNode = 10 * 10;
             var nodeCount = area / areaPerNode;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
@@ -97,14 +98,16 @@ namespace Bearded.TD.Game.Generation
             var outerRingTotalNodes = logicalTileMapRadius * 6;
             var outerRingActualNodes = outerRingTotalNodes - emptyLogicalNodes;
             var outerRingNodeStep = (float) outerRingActualNodes / outerRingTotalNodes;
+            var outerRingOffset = random.Next(outerRingTotalNodes);
 
             var logicalTilemap = new Tilemap<LogicalNode?>(logicalTileMapRadius);
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTileMapRadius - 1).Concat(
                 Tilemap.GetRingCenteredAt(Tile.Origin, logicalTileMapRadius)
                     .Where((_, i) =>
                     {
-                        var currentStepValue = (int) (i * outerRingNodeStep);
-                        var nextStepValue = (int) ((i + 1) * outerRingNodeStep);
+                        var j = (i + outerRingOffset) % outerRingTotalNodes;
+                        var currentStepValue = (int) (j * outerRingNodeStep);
+                        var nextStepValue = (int) ((j + 1) * outerRingNodeStep);
 
                         return currentStepValue != nextStepValue;
                     })
@@ -174,7 +177,7 @@ namespace Bearded.TD.Game.Generation
 
             foreach (var node in nodes)
             {
-                metadata.Add(new Circle(node.Position, node.Radius, 0.3.U(), Color.Cyan * 0.5f));
+                metadata.Add(new LevelDebugMetadata.Circle(node.Position, node.Radius, 0.3.U(), Color.Cyan * 0.5f));
                 foreach (var connectionPoint in node.ConnectionPoints)
                 {
                     var p = node.Position + new Difference2(
@@ -195,7 +198,7 @@ namespace Bearded.TD.Game.Generation
             }
 
 
-            var areas = nodes.ToDictionary(n => n, _ => new HashSet<Tile>());
+            var nodeAreas = nodes.ToDictionary(n => n, _ => new HashSet<Tile>());
 
             foreach (var tile in Tilemap.EnumerateTilemapWith(radius))
             {
@@ -208,23 +211,60 @@ namespace Bearded.TD.Game.Generation
                 if (distanceToNodeSquared > node.Radius.Squared)
                     continue;
 
-                areas[node].Add(tile);
+                nodeAreas[node].Add(tile);
             }
 
-            foreach (var nodeArea in areas.Values)
+            foreach (var nodeArea in nodeAreas.Values)
             {
                 erode(nodeArea);
             }
 
-            foreach (var (_, tiles) in areas)
+            var connectionAreas = new Dictionary<Connection, HashSet<Tile>>();
+
+            foreach (var connection in connections)
+            {
+                var areaFrom = nodeAreas[connection.Node1];
+                var areaTo = nodeAreas[connection.Node2];
+
+                var rayCaster = new LevelRayCaster();
+                rayCaster.StartEnumeratingTiles(new Ray(connection.Node1.Position, connection.Node2.Position - connection.Node1.Position));
+
+                var connectionArea = new HashSet<Tile>();
+
+                foreach (var tile in rayCaster)
+                {
+                    if (areaFrom.Contains(tile))
+                        continue;
+
+                    if (areaTo.Contains(tile))
+                        break;
+
+                    connectionArea.Add(tile);
+                }
+                connectionAreas.Add(connection, connectionArea);
+            }
+
+            foreach (var (_, tiles) in nodeAreas)
             {
                 metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.Beige * 0.5f));
+            }
+
+            foreach (var (_, tiles) in connectionAreas)
+            {
+                metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.IndianRed * 0.5f));
             }
 
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
-            return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
+            var finalTilemap = new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
+
+            foreach (var tile in nodeAreas.Values.Concat(connectionAreas.Values).SelectMany(x => x))
+            {
+                finalTilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
+            }
+
+            return finalTilemap;
         }
 
         private void erode(HashSet<Tile> area)
