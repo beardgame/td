@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -37,7 +38,7 @@ namespace Bearded.TD.Game.Generation
 
         IEnumerable<NodeTag> Tags => Enumerable.Empty<NodeTag>();
 
-        void Generate(GenerationContext context)
+        void Generate(NodeGenerationContext context)
         {
         }
 
@@ -88,25 +89,38 @@ namespace Bearded.TD.Game.Generation
         }
     }
 
-    class ConnectionCountNodeBehaviour : INodeBehavior
+    class ClearAllTiles : INodeBehavior
     {
-        public FitnessFunction<(Tilemap<LogicalNode?> Tilemap, Tile NodeTile)>? DonateFitnessFunction()
+        public void Generate(NodeGenerationContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Generate(GenerationContext context)
-        {
-            throw new NotImplementedException();
+            foreach (var t in context.Tiles)
+            {
+                context.Set(t, new TileGeometry(TileType.Floor, 0, 0.U()));
+            }
         }
     }
 
-    class GenerationContext
+    class NodeGenerationContext
     {
-        // easy read and write access to node's tiles (doesn't allow changing other tiles)
+        private readonly Tilemap<TileGeometry> tilemap;
+
+        public ImmutableHashSet<Tile> Tiles { get; }
+
         // info about connections, etc.
 
+        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles)
+        {
+            this.tilemap = tilemap;
+            Tiles = tiles.ToImmutableHashSet();
+        }
 
+        public void Set(Tile tile, TileGeometry geometry)
+        {
+            if (!Tiles.Contains(tile))
+                throw new ArgumentException("May not write to tile outside node.", nameof(tile));
+
+            tilemap[tile] = geometry;
+        }
     }
 
     record LogicalNode(NodeBlueprint Blueprint, Directions ConnectedTo)
@@ -143,7 +157,8 @@ namespace Bearded.TD.Game.Generation
 
             public List<PolarPosition> ConnectionPoints { get; } = new();
 
-            public Node(Position2 position, Unit radius, IEnumerable<PolarPosition> connectionPoints, LogicalNode logical)
+            public Node(Position2 position, Unit radius, IEnumerable<PolarPosition> connectionPoints,
+                LogicalNode logical)
             {
                 Position = position;
                 Radius = radius;
@@ -192,9 +207,16 @@ namespace Bearded.TD.Game.Generation
             var outerRingNodeStep = (float) outerRingActualNodes / outerRingTotalNodes;
             var outerRingOffset = random.Next(outerRingTotalNodes);
 
-            var baseBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(new BaseNodeBehavior(), new ForceToCenter(), new DontBeAdjacentToTag(new NodeTag("spawner"))));
-            var spawnerBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(new SpawnerNodeBehavior()));
-            var emptyBlueprint =  new NodeBlueprint(ImmutableArray<INodeBehavior>.Empty);
+            var baseBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
+                new BaseNodeBehavior(),
+                new ForceToCenter(),
+                new DontBeAdjacentToTag(new NodeTag("spawner")),
+                new ClearAllTiles()));
+            var spawnerBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
+                new SpawnerNodeBehavior(),
+                new ClearAllTiles()));
+            var emptyBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
+                new ClearAllTiles()));
 
             var spawnerFraction = 0.5;
             var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
@@ -274,7 +296,8 @@ namespace Bearded.TD.Game.Generation
 
                 var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
 
-                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>(), node);
+                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>(),
+                    node);
                 nodes.Add(n);
                 nodeDictionary.Add(tile, n);
             }
@@ -282,8 +305,9 @@ namespace Bearded.TD.Game.Generation
             var connections = createNodeConnections(logicalTilemap, nodeDictionary);
 
 
-
             relax(nodes, connections, radius.U());
+
+            const float metaLineHeight = 0.5f;
 
             foreach (var node in nodes)
             {
@@ -292,7 +316,7 @@ namespace Bearded.TD.Game.Generation
                 {
                     var p = node.Position + new Difference2(
                         new PolarPosition(connectionPoint.R, connectionPoint.Angle + node.Orientation).ToVector2()
-                        );
+                    );
 
                     metadata.Add(new Disk(p, 1.U(), Color.Red * 0.5f));
                 }
@@ -300,10 +324,10 @@ namespace Bearded.TD.Game.Generation
                 foreach (var (behavior, i) in node.Logical.Blueprint.Behaviors.Indexed())
                 {
                     metadata.Add(new Text(
-                        node.Position + new Difference2(0, i),
+                        node.Position - new Difference2(0, i * metaLineHeight),
                         behavior.Name ?? "",
-                        Color.Cyan * 0.5f, 0, 1.U()
-                        ));
+                        Color.Cyan * 0.5f, 0, metaLineHeight.U()
+                    ));
                 }
             }
 
@@ -313,7 +337,7 @@ namespace Bearded.TD.Game.Generation
                     connection.Node1.Position,
                     connection.Node2.Position,
                     Color.Azure * 0.5f
-                    ));
+                ));
             }
 
 
@@ -346,7 +370,8 @@ namespace Bearded.TD.Game.Generation
                 var areaTo = nodeAreas[connection.Node2];
 
                 var rayCaster = new LevelRayCaster();
-                rayCaster.StartEnumeratingTiles(new Ray(connection.Node1.Position, connection.Node2.Position - connection.Node1.Position));
+                rayCaster.StartEnumeratingTiles(new Ray(connection.Node1.Position,
+                    connection.Node2.Position - connection.Node1.Position));
 
                 var connectionArea = new HashSet<Tile>();
 
@@ -360,6 +385,7 @@ namespace Bearded.TD.Game.Generation
 
                     connectionArea.Add(tile);
                 }
+
                 connectionAreas.Add(connection, connectionArea);
             }
 
@@ -378,7 +404,16 @@ namespace Bearded.TD.Game.Generation
 
             var finalTilemap = new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
 
-            foreach (var tile in nodeAreas.Values.Concat(connectionAreas.Values).SelectMany(x => x))
+            foreach (var (node, tiles) in nodeAreas)
+            {
+                var context = new NodeGenerationContext(finalTilemap, tiles);
+                foreach (var behavior in node.Logical.Blueprint.Behaviors)
+                {
+                    behavior.Generate(context);
+                }
+            }
+
+            foreach (var tile in connectionAreas.Values.SelectMany(x => x))
             {
                 finalTilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
             }
@@ -395,7 +430,8 @@ namespace Bearded.TD.Game.Generation
             }
         }
 
-        private static List<Connection> createNodeConnections(Tilemap<LogicalNode?> logicalTilemap, Dictionary<Tile, Node> nodes)
+        private static List<Connection> createNodeConnections(Tilemap<LogicalNode?> logicalTilemap,
+            Dictionary<Tile, Node> nodes)
         {
             var connections = new List<Connection>();
             foreach (var tile in logicalTilemap)
@@ -477,7 +513,8 @@ namespace Bearded.TD.Game.Generation
             SwitchNodeBlueprint = 2
         }
 
-        private static readonly ImmutableArray<MutationType> mutationTypes = Enum.GetValues<MutationType>().ToImmutableArray();
+        private static readonly ImmutableArray<MutationType> mutationTypes =
+            Enum.GetValues<MutationType>().ToImmutableArray();
 
         private Tilemap<LogicalNode?> mutate(Tilemap<LogicalNode?> currentBest, int mutations, Random random)
         {
