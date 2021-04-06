@@ -9,7 +9,7 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public abstract class TilemapGeneratorTests
     {
-        private const int minRadius = 10;
+        private const int minRadius = 20;
 
         internal abstract ITilemapGenerator Generator { get; }
 
