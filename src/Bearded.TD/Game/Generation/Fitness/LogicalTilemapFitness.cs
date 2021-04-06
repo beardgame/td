@@ -16,6 +16,23 @@ namespace Bearded.TD.Game.Generation.Fitness
         public static FF ConnectedComponentsCount { get; } = new ConnectedComponents();
         public static FF ConnectedTrianglesCount { get; } = new ConnectedTriangles();
 
+        public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
+
+        private class NodeBehavior : FF
+        {
+            public override string Name => "Node Behaviour";
+
+            protected override double CalculateFitness(Tilemap tilemap)
+            {
+                return (
+                    from tile in tilemap
+                    let node = tilemap[tile]
+                    where node != null
+                    select node.Blueprint.Behaviors.Sum(b => b.GetFitnessPenalty(tilemap, tile))
+                ).Sum();
+            }
+        }
+
         public static FF ConnectionDegreeHistogramDifference(IEnumerable<double> idealHistogram) =>
             new ConnectionDegreeHistogram(idealHistogram);
 
@@ -23,6 +40,7 @@ namespace Bearded.TD.Game.Generation.Fitness
         {
             private readonly ImmutableArray<double> targetHistogram;
             public override string Name => "Connection Degree Histogram Difference";
+
             public ConnectionDegreeHistogram(IEnumerable<double> idealHistogram)
             {
                 var builder = ImmutableArray.CreateBuilder<double>(7);
@@ -39,6 +57,7 @@ namespace Bearded.TD.Game.Generation.Fitness
 
                 targetHistogram = builder.MoveToImmutable();
             }
+
             protected override double CalculateFitness(Tilemap tilemap)
             {
                 var actualHistogram = new int[7];
@@ -112,7 +131,7 @@ namespace Bearded.TD.Game.Generation.Fitness
                     componentCount++;
                 }
 
-                return componentCount;
+                return componentCount * 100;
 
                 void fillFrom(Tile tile)
                 {

@@ -7,6 +7,28 @@ namespace Bearded.TD.Game.Generation.Fitness
 {
     static class FitnessFunction
     {
+        public static FitnessFunction<T> From<T>(Func<T, double> function, string name)
+        {
+            return new LambdaFitnessFunction<T>(function, name);
+        }
+
+        private sealed class LambdaFitnessFunction<T> : FitnessFunction<T>
+        {
+            private readonly Func<T, double> function;
+            public override string Name { get; }
+
+            public LambdaFitnessFunction(Func<T, double> function, string name)
+            {
+                this.function = function;
+                Name = name;
+            }
+
+            protected override double CalculateFitness(T instance)
+            {
+                return function(instance);
+            }
+        }
+
         public static FitnessFunction<T> From<T>(params FitnessFunction<T>[] functions)
         {
             return new CompositeFitnessFunction<T>(functions);

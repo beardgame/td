@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Fitness;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -16,11 +19,97 @@ using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
+using Extensions = Bearded.TD.Tiles.Extensions;
 using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
-    record LogicalNode(int MinimumConnectionCount, int MaximumConnectionCount, Directions ConnectedTo)
+    record NodeBlueprint(ImmutableArray<INodeBehavior> Behaviors)
+    {
+        private ImmutableHashSet<NodeTag>? tags;
+
+        public ImmutableHashSet<NodeTag> Tags => tags ??= Behaviors.SelectMany(b => b.Tags).ToImmutableHashSet();
+    }
+
+    interface INodeBehavior
+    {
+        double GetFitnessPenalty(Tilemap<LogicalNode?> tilemap, Tile nodeTile) => 0;
+
+        IEnumerable<NodeTag> Tags => Enumerable.Empty<NodeTag>();
+
+        void Generate(GenerationContext context)
+        {
+        }
+
+        // TODO: maybe wanna add ImmutableArray<string> Tags { get; } (not 'string' though)
+
+        string Name => Regex.Replace(GetType().Name, "(Node)?(Behaviou?r)?$", "");
+    }
+
+    record NodeTag(string Name);
+
+    class BaseNodeBehavior : INodeBehavior
+    {
+        public IEnumerable<NodeTag> Tags { get; } = ImmutableArray.Create(new NodeTag("base"));
+    }
+
+    class ForceToCenter : INodeBehavior
+    {
+        public double GetFitnessPenalty(Tilemap<LogicalNode?> tilemap, Tile nodeTile)
+        {
+            return nodeTile.Radius * 1000;
+        }
+    }
+
+    class SpawnerNodeBehavior : INodeBehavior
+    {
+        public IEnumerable<NodeTag> Tags { get; } = ImmutableArray.Create(new NodeTag("spawner"));
+    }
+
+    class DontBeAdjacentToTag : INodeBehavior
+    {
+        private readonly NodeTag tagToAvoid;
+
+        public DontBeAdjacentToTag(NodeTag tagToAvoid)
+        {
+            this.tagToAvoid = tagToAvoid;
+        }
+
+        public double GetFitnessPenalty(Tilemap<LogicalNode?> tilemap, Tile nodeTile)
+        {
+            var node = tilemap[nodeTile];
+
+            var connectedNodes = Extensions.Directions
+                .Where(d => node!.ConnectedTo.Includes(d))
+                .Select(nodeTile.Neighbour)
+                .Select(t => tilemap[t]);
+
+            return connectedNodes.Count(n => n!.Blueprint.Tags.Contains(tagToAvoid)) * 100;
+        }
+    }
+
+    class ConnectionCountNodeBehaviour : INodeBehavior
+    {
+        public FitnessFunction<(Tilemap<LogicalNode?> Tilemap, Tile NodeTile)>? DonateFitnessFunction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Generate(GenerationContext context)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class GenerationContext
+    {
+        // easy read and write access to node's tiles (doesn't allow changing other tiles)
+        // info about connections, etc.
+
+
+    }
+
+    record LogicalNode(NodeBlueprint Blueprint, Directions ConnectedTo)
     {
         public LogicalNode WithConnection(Direction d)
             => this with {ConnectedTo = ConnectedTo.And(d)};
@@ -45,6 +134,8 @@ namespace Bearded.TD.Game.Generation
 
         class Node
         {
+            public LogicalNode Logical { get; }
+
             public Position2 Position { get; set; }
             public Unit Radius { get; set; }
 
@@ -52,10 +143,11 @@ namespace Bearded.TD.Game.Generation
 
             public List<PolarPosition> ConnectionPoints { get; } = new();
 
-            public Node(Position2 position, Unit radius, IEnumerable<PolarPosition> connectionPoints)
+            public Node(Position2 position, Unit radius, IEnumerable<PolarPosition> connectionPoints, LogicalNode logical)
             {
                 Position = position;
                 Radius = radius;
+                Logical = logical;
                 ConnectionPoints.AddRange(connectionPoints);
             }
         }
@@ -81,7 +173,7 @@ namespace Bearded.TD.Game.Generation
 
             var area = Tilemap.TileCountForRadius(radius);
             var areaPerNode = 10 * 10;
-            var nodeCount = area / areaPerNode;
+            var nodeCount = area / areaPerNode / 2;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
             logger.Trace?.Log($"Attempting to generate {nodeCount} nodes");
@@ -100,8 +192,25 @@ namespace Bearded.TD.Game.Generation
             var outerRingNodeStep = (float) outerRingActualNodes / outerRingTotalNodes;
             var outerRingOffset = random.Next(outerRingTotalNodes);
 
+            var baseBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(new BaseNodeBehavior(), new ForceToCenter(), new DontBeAdjacentToTag(new NodeTag("spawner"))));
+            var spawnerBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(new SpawnerNodeBehavior()));
+            var emptyBlueprint =  new NodeBlueprint(ImmutableArray<INodeBehavior>.Empty);
+
+            var spawnerFraction = 0.5;
+            var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
+            var emptyCount = nodeCount - spawnerCount - 1;
+
+            var nodesToPutDown = Enumerable.Repeat(emptyBlueprint, emptyCount)
+                .Concat(Enumerable.Repeat(spawnerBlueprint, spawnerCount))
+                .Concat(baseBlueprint.Yield())
+                .ToList();
+
+            nodesToPutDown.Shuffle(random);
+
+
             var logicalTilemap = new Tilemap<LogicalNode?>(logicalTileMapRadius);
-            foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTileMapRadius - 1).Concat(
+
+            var tilesThatShouldHaveNodes = Tilemap.EnumerateTilemapWith(logicalTileMapRadius - 1).Concat(
                 Tilemap.GetRingCenteredAt(Tile.Origin, logicalTileMapRadius)
                     .Where((_, i) =>
                     {
@@ -110,10 +219,11 @@ namespace Bearded.TD.Game.Generation
                         var nextStepValue = (int) ((j + 1) * outerRingNodeStep);
 
                         return currentStepValue != nextStepValue;
-                    })
-            ))
+                    }));
+
+            foreach (var (tile, nodeBlueprint) in tilesThatShouldHaveNodes.Zip(nodesToPutDown))
             {
-                logicalTilemap[tile] = new LogicalNode(1, 4, Directions.None);
+                logicalTilemap[tile] = new LogicalNode(nodeBlueprint, Directions.None);
             }
 
             foreach (var tile in logicalTilemap)
@@ -164,7 +274,7 @@ namespace Bearded.TD.Game.Generation
 
                 var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
 
-                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>());
+                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>(), node);
                 nodes.Add(n);
                 nodeDictionary.Add(tile, n);
             }
@@ -185,6 +295,15 @@ namespace Bearded.TD.Game.Generation
                         );
 
                     metadata.Add(new Disk(p, 1.U(), Color.Red * 0.5f));
+                }
+
+                foreach (var (behavior, i) in node.Logical.Blueprint.Behaviors.Indexed())
+                {
+                    metadata.Add(new Text(
+                        node.Position + new Difference2(0, i),
+                        behavior.Name ?? "",
+                        Color.Cyan * 0.5f, 0, 1.U()
+                        ));
                 }
             }
 
@@ -313,7 +432,8 @@ namespace Bearded.TD.Game.Generation
 
             logger.Debug?.Log($"Initial fitness\n{currentFitness}");
 
-            var generatedCount = 100;
+            var generatedCount = 500;
+            var mutationsPerGeneration = 5;
             var acceptedCount = 0;
             var lastImprovement = -1;
 
@@ -321,7 +441,7 @@ namespace Bearded.TD.Game.Generation
             {
                 // mutations: connect / disconnect, switch nodes
 
-                var mutated = mutate(currentBest, 3, random);
+                var mutated = mutate(currentBest, mutationsPerGeneration, random);
 
                 var mutatedFitness = fitnessFunction.FitnessOf(mutated);
 
@@ -343,12 +463,21 @@ namespace Bearded.TD.Game.Generation
             return currentBest;
         }
 
-        private FitnessFunction<Tilemap<LogicalNode?>> fitnessFunction = FitnessFunction.From(
+        private static readonly FitnessFunction<Tilemap<LogicalNode?>> fitnessFunction = FitnessFunction.From(
             LogicalTilemapFitness.ConnectedComponentsCount,
             LogicalTilemapFitness.ConnectedTrianglesCount,
+            LogicalTilemapFitness.NodeBehaviorFitness,
             LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
                 new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0})
         );
+
+        enum MutationType
+        {
+            ToggleConnection = 1,
+            SwitchNodeBlueprint = 2
+        }
+
+        private static readonly ImmutableArray<MutationType> mutationTypes = Enum.GetValues<MutationType>().ToImmutableArray();
 
         private Tilemap<LogicalNode?> mutate(Tilemap<LogicalNode?> currentBest, int mutations, Random random)
         {
@@ -356,6 +485,8 @@ namespace Bearded.TD.Game.Generation
 
             foreach (var _ in Enumerable.Range(0, mutations))
             {
+                var mutation = mutationTypes.RandomElement(random);
+
                 var tile = copy.RandomElement(random);
                 if (copy[tile] == null)
                     continue;
@@ -364,8 +495,24 @@ namespace Bearded.TD.Game.Generation
                 if (!copy.IsValidTile(neighborTile) || copy[neighborTile] == null)
                     continue;
 
-                copy[tile] = copy[tile].WithInverseConnection(direction);
-                copy[neighborTile] = copy[neighborTile].WithInverseConnection(direction.Opposite());
+                switch (mutation)
+                {
+                    case MutationType.ToggleConnection:
+
+                        copy[tile] = copy[tile].WithInverseConnection(direction);
+                        copy[neighborTile] = copy[neighborTile].WithInverseConnection(direction.Opposite());
+
+                        break;
+                    case MutationType.SwitchNodeBlueprint:
+
+                        var tileBlueprint = copy[tile].Blueprint;
+                        copy[tile] = copy[tile] with {Blueprint = copy[neighborTile].Blueprint};
+                        copy[neighborTile] = copy[neighborTile] with {Blueprint = tileBlueprint};
+
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
             return copy;

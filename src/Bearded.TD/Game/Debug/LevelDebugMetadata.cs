@@ -15,6 +15,8 @@ namespace Bearded.TD.Game.Debug
         public sealed record Circle(Position2 Center, Unit Radius, Unit LineWidth, Color Color) : Data;
         public sealed record Disk(Position2 Center, Unit Radius, Color Color) : Data;
 
+        public sealed record Text(Position2 Position, string Value, Color Color, float? AlignX = null, Unit? FontHeight = null) : Data;
+
         private readonly List<Data> data = new();
 
         public void Add(Data data)

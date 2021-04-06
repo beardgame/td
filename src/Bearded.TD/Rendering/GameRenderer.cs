@@ -53,9 +53,9 @@ namespace Bearded.TD.Rendering
             );
 
             shapeDrawer = drawers.Primitives;
-            debugGeometryTextDrawer = drawers.ConsoleFont.With(
+            debugGeometryTextDrawer = drawers.InGameConsoleFont.With(
                 fontHeight: .3f * HexagonSide, parameters: Color.Orange, alignHorizontal: .5f);
-            debugCoordinateTextDrawer = drawers.ConsoleFont.With(
+            debugCoordinateTextDrawer = drawers.InGameConsoleFont.With(
                 fontHeight: .3f * HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
         }
 
@@ -253,10 +253,14 @@ namespace Bearded.TD.Rendering
                         case LevelDebugMetadata.LineSegment segment:
                             shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
                             break;
+                        case LevelDebugMetadata.Text text:
+                            debugGeometryTextDrawer.DrawLine(text.Color, text.Position.WithZ(0).NumericValue, text.Value, text.FontHeight?.NumericValue, text.AlignX);
+                            break;
                         case LevelDebugMetadata.Tile tile:
                             var xyz = Level.GetPosition(tile.XY).WithZ(tile.Z).NumericValue;
                             shapeDrawer.FillCircle(xyz, HexagonSide, tile.Color, 6);
                             break;
+
 
                     }
                 });
