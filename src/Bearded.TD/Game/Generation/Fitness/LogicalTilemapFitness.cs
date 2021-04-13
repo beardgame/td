@@ -7,8 +7,8 @@ using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Generation.Fitness
 {
-    using Tilemap = Tilemap<LogicalNode?>;
-    using FF = FitnessFunction<Tilemap<LogicalNode?>>;
+    using Tilemap = LogicalTilemap;
+    using FF = FitnessFunction<LogicalTilemap>;
 
     static class LogicalTilemapFitness
     {
@@ -25,10 +25,10 @@ namespace Bearded.TD.Game.Generation.Fitness
             protected override double CalculateFitness(Tilemap tilemap)
             {
                 return (
-                    from tile in tilemap
+                    from tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
                     let node = tilemap[tile]
-                    where node != null
-                    select node.Blueprint.Behaviors.Sum(b => b.GetFitnessPenalty(tilemap, tile))
+                    where node.Blueprint != null
+                    select node.Blueprint!.Behaviors.Sum(b => b.GetFitnessPenalty(tilemap, tile))
                 ).Sum();
             }
         }
@@ -63,7 +63,8 @@ namespace Bearded.TD.Game.Generation.Fitness
                 var actualHistogram = new int[7];
                 var tileCount = 0;
 
-                foreach (var tile in tilemap.Select(t => tilemap[t]).NotNull())
+                foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+                    .Select(t => tilemap[t]).Where(n => n.Blueprint != null))
                 {
                     var connections = tile.ConnectedTo.Enumerate().Count();
                     actualHistogram[connections]++;
@@ -86,7 +87,8 @@ namespace Bearded.TD.Game.Generation.Fitness
             {
                 var count = 0;
 
-                foreach (var (tile, node) in tilemap.Select(t => (t, tilemap[t])).Where(t => t.Item2 != null))
+                foreach (var (tile, node) in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+                    .Select(t => (t, tilemap[t])))
                 {
                     var connected = node.ConnectedTo;
                     count += Tiles.Extensions.Directions.Count(direction
@@ -105,8 +107,8 @@ namespace Bearded.TD.Game.Generation.Fitness
 
             protected override double CalculateFitness(Tilemap tilemap)
             {
-                return tilemap
-                    .Select(t => tilemap[t]).NotNull()
+                return Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+                    .Select(t => tilemap[t])
                     .Select(node => node.ConnectedTo)
                     .Sum(connected => Tiles.Extensions.Directions.Count(direction
                         => connected.Includes(direction)
@@ -122,9 +124,9 @@ namespace Bearded.TD.Game.Generation.Fitness
             {
                 var componentCount = 0;
                 var seen = new HashSet<Tile>();
-                foreach (var tile in tilemap)
+                foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius))
                 {
-                    if (seen.Contains(tile) || tilemap[tile] == null)
+                    if (seen.Contains(tile) || tilemap[tile].Blueprint == null)
                         continue;
 
                     fillFrom(tile);
@@ -139,7 +141,7 @@ namespace Bearded.TD.Game.Generation.Fitness
                         return;
 
                     var node = tilemap[tile];
-                    foreach (var direction in node!.ConnectedTo.Enumerate())
+                    foreach (var direction in node.ConnectedTo.Enumerate())
                     {
                         fillFrom(tile.Neighbour(direction));
                     }
