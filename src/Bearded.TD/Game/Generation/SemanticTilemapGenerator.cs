@@ -236,7 +236,12 @@ namespace Bearded.TD.Game.Generation
                 logicalNodes[tile] = nodeBlueprint;
             }
 
-            var logicalTilemap = LogicalTilemap.From(logicalNodes);
+            var normalizedDirections = new[] {Direction.Right, Direction.UpRight, Direction.UpLeft};
+            var logicalMacroFeatures = Tilemap.EnumerateTilemapWith(logicalTileMapRadius)
+                .RandomSubset(10, random)
+                .ToDictionary(t => (t, normalizedDirections.RandomElement(random)), _ => new Crevice() as MacroFeature);
+
+            var logicalTilemap = LogicalTilemap.From(logicalNodes, logicalMacroFeatures);
 
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
@@ -269,6 +274,15 @@ namespace Bearded.TD.Game.Generation
                 {
                     metadata.Add(new LineSegment(center, center + connectedDirection.Vector() * nodeRadius,
                         Color.Lime * 0.1f));
+                }
+
+                const float toOuterRadius = 2 / 1.73205080757f;
+                foreach (var (direction, feature) in node.MacroFeatures)
+                {
+                    var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
+                    var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;
+
+                    metadata.Add(new LineSegment(before, after, Color.Beige * 0.1f));
                 }
             }
 
@@ -496,7 +510,8 @@ namespace Bearded.TD.Game.Generation
         enum MutationType
         {
             ToggleConnection = 1,
-            SwitchNodeBlueprint = 2
+            SwitchNodeBlueprint = 2,
+            SwapMacroFeatures = 3,
         }
 
         private static readonly ImmutableArray<MutationType> mutationTypes =
@@ -506,32 +521,63 @@ namespace Bearded.TD.Game.Generation
         {
             var copy = currentBest.Clone();
 
-            foreach (var _ in Enumerable.Range(0, mutations))
+            var mutationsMade = 0;
+            while (mutationsMade < mutations)
             {
                 var mutation = mutationTypes.RandomElement(random);
 
-                var tile = Tilemap.EnumerateTilemapWith(copy.Radius).RandomElement(random);
-                if (copy[tile].Blueprint == null)
-                    continue;
-                var direction = Extensions.Directions.RandomElement(random);
-                var neighborTile = tile.Neighbour(direction);
-                if (!copy.IsValidTile(neighborTile) || copy[neighborTile].Blueprint == null)
-                    continue;
-
-                switch (mutation)
+                var success = mutation switch
                 {
-                    case MutationType.ToggleConnection:
-                        copy.InvertConnectivity(tile, direction);
-                        break;
-                    case MutationType.SwitchNodeBlueprint:
-                        copy.SwapNodes(tile, neighborTile);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    MutationType.ToggleConnection => tryToggleConnection(random, copy),
+                    MutationType.SwitchNodeBlueprint => trySwitchBlueprint(random, copy),
+                    MutationType.SwapMacroFeatures => trySwapMacroFeatures(random, copy),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                if (success)
+                    mutationsMade++;
             }
 
             return copy;
+        }
+
+        private bool trySwapMacroFeatures(Random random, LogicalTilemap tilemap)
+        {
+            var tile = Tilemap.EnumerateTilemapWith(tilemap.Radius).RandomElement(random);
+            var node = tilemap[tile];
+            if (node.MacroFeatures.IsEmpty)
+                return false;
+
+            var direction1 = node.MacroFeatures.Keys.RandomElement(random);
+            var direction2 = Extensions.Directions.Except(direction1.Yield()).RandomElement(random);
+
+            tilemap.SwitchMacroFeatures(tile, direction1, direction2);
+            return true;
+        }
+
+        private bool tryToggleConnection(Random random, LogicalTilemap tilemap)
+        {
+            return tryCallOnCollectedTilesWithBlueprint(random, tilemap, tilemap.InvertConnectivity);
+        }
+
+        private bool trySwitchBlueprint(Random random, LogicalTilemap tilemap)
+        {
+            return tryCallOnCollectedTilesWithBlueprint(
+                random, tilemap, (t, d) => tilemap.SwapNodes(t, t.Neighbour(d)));
+        }
+
+        private bool tryCallOnCollectedTilesWithBlueprint(Random random, LogicalTilemap tilemap, Action<Tile, Direction> action)
+        {
+            var tile = Tilemap.EnumerateTilemapWith(tilemap.Radius).RandomElement(random);
+            if (tilemap[tile].Blueprint == null)
+                return false;
+            var direction = Extensions.Directions.RandomElement(random);
+            var neighborTile = tile.Neighbour(direction);
+            if (!tilemap.IsValidTile(neighborTile) || tilemap[neighborTile].Blueprint == null)
+                return false;
+
+            action(tile, direction);
+            return true;
         }
 
         private void relax(List<Node> nodes, List<Connection> connections, Unit radius)

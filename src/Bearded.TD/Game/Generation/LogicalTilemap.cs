@@ -1,21 +1,27 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
+using Google.Protobuf;
 
 namespace Bearded.TD.Game.Generation
 {
-    record LogicalNode(NodeBlueprint? Blueprint, Directions ConnectedTo)
+    sealed record LogicalNode(NodeBlueprint? Blueprint, Directions ConnectedTo,
+        ImmutableDictionary<Direction, MacroFeature> MacroFeatures)
     {
     }
 
-    record EdgeFeatures(bool IsConnected, MacroFeature? Feature)
+    sealed record EdgeFeatures(bool IsConnected, MacroFeature? Feature)
     {
         public static EdgeFeatures Default { get; } = new(false, null);
     }
 
     record MacroFeature;
 
-    class LogicalTilemap
+    record Crevice : MacroFeature;
+
+    sealed class LogicalTilemap
     {
         record TileNode(NodeBlueprint? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
         {
@@ -30,12 +36,28 @@ namespace Bearded.TD.Game.Generation
 
         public int Radius { get; }
 
-        public static LogicalTilemap From(Tilemap<NodeBlueprint?> nodes)
+        public static LogicalTilemap From(Tilemap<NodeBlueprint?> nodes,
+            IDictionary<(Tile Tile, Direction Direction), MacroFeature> macroFeatures)
         {
-            var tiles = new Tilemap<TileNode>(nodes.Radius + 1, tile =>
-                nodes.IsValidTile(tile) ? TileNode.DefaultWith(nodes[tile]) : TileNode.Default);
+            var macroFeaturesLookup =
+                macroFeatures.ToDictionary(kvp => normalize(kvp.Key.Tile, kvp.Key.Direction), kvp => kvp.Value);
+
+            var tiles = new Tilemap<TileNode>(nodes.Radius + 1,
+                tile =>
+                {
+                    var node = nodes.IsValidTile(tile) ? nodes[tile] : null;
+
+                    return new TileNode(
+                        node,
+                        edgeFeatures(tile, Direction.Right),
+                        edgeFeatures(tile, Direction.UpRight),
+                        edgeFeatures(tile, Direction.UpLeft));
+                });
 
             return new(tiles);
+
+            EdgeFeatures edgeFeatures(Tile tile, Direction direction)
+                => new(false, macroFeaturesLookup.GetValueOrDefault((tile, direction)));
         }
 
         private LogicalTilemap(Tilemap<TileNode> tiles)
@@ -49,14 +71,14 @@ namespace Bearded.TD.Game.Generation
 
         public LogicalNode this[Tile tile]
         {
-            get
-            {
-                return new LogicalNode(
-                    tiles[tile].Node, Extensions.Directions
-                        .Where(d => this[tile, d].IsConnected)
-                        .Aggregate(Directions.None, (directions, direction) => directions.And(direction))
-                );
-            }
+            get => new(
+                tiles[tile].Node,
+                Extensions.Directions
+                    .Where(d => this[tile, d].IsConnected)
+                    .Aggregate(Directions.None, (directions, direction) => directions.And(direction)),
+                Extensions.Directions
+                    .Where(d => this[tile, d].Feature != null)
+                    .ToImmutableDictionary(d => d, d => this[tile, d].Feature));
         }
 
         public void InvertConnectivity(Tile tile, Direction direction)
@@ -75,8 +97,18 @@ namespace Bearded.TD.Game.Generation
             tiles[tile2] = node2 with {Node = node1.Node};
         }
 
+        public void SwitchMacroFeatures(Tile tile, Direction direction1, Direction direction2)
+        {
+            var edge1 = this[tile, direction1];
+            var edge2 = this[tile, direction2];
+
+            setEdgeFeatures(tile, direction1, edge1 with {Feature = edge2.Feature});
+            setEdgeFeatures(tile, direction2, edge2 with {Feature = edge1.Feature});
+        }
+
         private void setEdgeFeatures(Tile tile, Direction direction, EdgeFeatures features)
         {
+            (tile, direction) = normalize(tile, direction);
             switch (direction)
             {
                 case Direction.Right:
@@ -88,11 +120,6 @@ namespace Bearded.TD.Game.Generation
                 case Direction.UpLeft:
                     tiles[tile] = tiles[tile] with {UpLeft = features};
                     break;
-                case Direction.Left:
-                case Direction.DownLeft:
-                case Direction.DownRight:
-                    setEdgeFeatures(tile.Neighbour(direction), direction.Opposite(), features);
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
@@ -102,16 +129,25 @@ namespace Bearded.TD.Game.Generation
         {
             get
             {
+                (tile, direction) = normalize(tile, direction);
                 return direction switch
                 {
                     Direction.Right => tiles[tile].Right,
                     Direction.UpRight => tiles[tile].UpRight,
                     Direction.UpLeft => tiles[tile].UpLeft,
-                    Direction.Left or Direction.DownLeft or Direction.DownRight =>
-                        this[tile.Neighbour(direction), direction.Opposite()],
                     _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
                 };
             }
+        }
+
+        private static (Tile Tile, Direction Direction) normalize(Tile tile, Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Left or Direction.DownLeft or Direction.DownRight =>
+                    (tile.Neighbour(direction), direction.Opposite()),
+                _ => (tile, direction)
+            };
         }
 
         public LogicalTilemap Clone() => new(tiles.Clone());

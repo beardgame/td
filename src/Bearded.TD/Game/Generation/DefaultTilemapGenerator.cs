@@ -272,7 +272,7 @@ namespace Bearded.TD.Game.Generation
                     if (tiles.Count <= 3) continue;
 
                     foreach (var t in tiles)
-                        set(t, Crevice);
+                        set(t, TileType.Crevice);
                 }
             }
 
