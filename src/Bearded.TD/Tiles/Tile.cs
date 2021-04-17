@@ -2,9 +2,9 @@
 
 namespace Bearded.TD.Tiles
 {
-    struct Tile
+    readonly struct Tile
     {
-        public static Tile Origin = new Tile(0, 0);
+        public static Tile Origin = new(0, 0);
 
         public int X { get; }
         public int Y { get; }
@@ -19,8 +19,9 @@ namespace Bearded.TD.Tiles
             ? Math.Abs(X + Y)
             : Math.Max(Math.Abs(X), Math.Abs(Y));
 
+        public TileEdge Edge(Direction direction) => TileEdge.From(this, direction);
         public Tile Neighbour(Direction direction) => Offset(direction.Step());
-        public Tile Offset(Step step) => new Tile(X + step.X, Y + step.Y);
+        public Tile Offset(Step step) => new(X + step.X, Y + step.Y);
 
         public int DistanceTo(Tile other)
         {
@@ -65,7 +66,7 @@ namespace Bearded.TD.Tiles
             return (xx, yy, zz);
         }
 
-        public static Tile FromXYZ(int _, int y, int z) => new Tile(-y, -z);
+        public static Tile FromXYZ(int _, int y, int z) => new(-y, -z);
 
         public void Deconstruct(out int x, out int y) => (x, y) = (X, Y);
     }

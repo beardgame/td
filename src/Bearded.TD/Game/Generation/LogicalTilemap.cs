@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
-using Google.Protobuf;
 
 namespace Bearded.TD.Game.Generation
 {
@@ -24,12 +23,17 @@ namespace Bearded.TD.Game.Generation
     sealed class LogicalTilemap
     {
         record TileNode(NodeBlueprint? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
+            : IModifiableTileEdges<TileNode, EdgeFeatures>
         {
             public static TileNode Default { get; } =
                 new(null, EdgeFeatures.Default, EdgeFeatures.Default, EdgeFeatures.Default);
 
             public static TileNode DefaultWith(NodeBlueprint? node) =>
                 node == null ? Default : Default with {Node = node};
+
+            public TileNode WithRight(EdgeFeatures data) => this with {Right = data};
+            public TileNode WithUpRight(EdgeFeatures data) => this with {UpRight = data};
+            public TileNode WithUpLeft(EdgeFeatures data) => this with {UpLeft = data};
         }
 
         private readonly Tilemap<TileNode> tiles;
@@ -37,11 +41,8 @@ namespace Bearded.TD.Game.Generation
         public int Radius { get; }
 
         public static LogicalTilemap From(Tilemap<NodeBlueprint?> nodes,
-            IDictionary<(Tile Tile, Direction Direction), MacroFeature> macroFeatures)
+            IReadOnlyDictionary<TileEdge, MacroFeature> macroFeatures)
         {
-            var macroFeaturesLookup =
-                macroFeatures.ToDictionary(kvp => normalize(kvp.Key.Tile, kvp.Key.Direction), kvp => kvp.Value);
-
             var tiles = new Tilemap<TileNode>(nodes.Radius + 1,
                 tile =>
                 {
@@ -57,7 +58,7 @@ namespace Bearded.TD.Game.Generation
             return new(tiles);
 
             EdgeFeatures edgeFeatures(Tile tile, Direction direction)
-                => new(false, macroFeaturesLookup.GetValueOrDefault((tile, direction)));
+                => new(false, macroFeatures.GetValueOrDefault(TileEdge.From(tile, direction)));
         }
 
         private LogicalTilemap(Tilemap<TileNode> tiles)
@@ -69,24 +70,24 @@ namespace Bearded.TD.Game.Generation
 
         public bool IsValidTile(Tile tile) => tile.Radius <= Radius;
 
-        public LogicalNode this[Tile tile]
-        {
-            get => new(
+        public LogicalNode this[Tile tile] =>
+            new(
                 tiles[tile].Node,
                 Extensions.Directions
-                    .Where(d => this[tile, d].IsConnected)
+                    .Where(d => this[tile.Edge(d)].IsConnected)
                     .Aggregate(Directions.None, (directions, direction) => directions.And(direction)),
                 Extensions.Directions
-                    .Where(d => this[tile, d].Feature != null)
-                    .ToImmutableDictionary(d => d, d => this[tile, d].Feature));
+                    .Where(d => this[tile.Edge(d)].Feature != null)
+                    .ToImmutableDictionary(d => d, d => this[tile.Edge(d)].Feature));
+
+        public void InvertConnectivity(TileEdge edge)
+        {
+            var features = this[edge];
+            var newFeatures = features with {IsConnected = !features.IsConnected};
+            setEdgeFeatures(edge, newFeatures);
         }
 
-        public void InvertConnectivity(Tile tile, Direction direction)
-        {
-            var edge = this[tile, direction];
-            var newEdge = edge with {IsConnected = !edge.IsConnected};
-            setEdgeFeatures(tile, direction, newEdge);
-        }
+        public void SwapNodes((Tile, Tile) tiles) => SwapNodes(tiles.Item1, tiles.Item2);
 
         public void SwapNodes(Tile tile1, Tile tile2)
         {
@@ -99,56 +100,22 @@ namespace Bearded.TD.Game.Generation
 
         public void SwitchMacroFeatures(Tile tile, Direction direction1, Direction direction2)
         {
-            var edge1 = this[tile, direction1];
-            var edge2 = this[tile, direction2];
+            var edge1 = TileEdge.From(tile, direction1);
+            var edge2 = TileEdge.From(tile, direction2);
 
-            setEdgeFeatures(tile, direction1, edge1 with {Feature = edge2.Feature});
-            setEdgeFeatures(tile, direction2, edge2 with {Feature = edge1.Feature});
+            var feature1 = this[edge1];
+            var feature2 = this[edge2];
+
+            setEdgeFeatures(edge1, feature1 with {Feature = feature2.Feature});
+            setEdgeFeatures(edge2, feature2 with {Feature = feature1.Feature});
         }
 
-        private void setEdgeFeatures(Tile tile, Direction direction, EdgeFeatures features)
+        private void setEdgeFeatures(TileEdge edge, EdgeFeatures features)
         {
-            (tile, direction) = normalize(tile, direction);
-            switch (direction)
-            {
-                case Direction.Right:
-                    tiles[tile] = tiles[tile] with {Right = features};
-                    break;
-                case Direction.UpRight:
-                    tiles[tile] = tiles[tile] with {UpRight = features};
-                    break;
-                case Direction.UpLeft:
-                    tiles[tile] = tiles[tile] with {UpLeft = features};
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-            }
+            edge.ModifyEdgeIn(tiles, features);
         }
 
-        public EdgeFeatures this[Tile tile, Direction direction]
-        {
-            get
-            {
-                (tile, direction) = normalize(tile, direction);
-                return direction switch
-                {
-                    Direction.Right => tiles[tile].Right,
-                    Direction.UpRight => tiles[tile].UpRight,
-                    Direction.UpLeft => tiles[tile].UpLeft,
-                    _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
-                };
-            }
-        }
-
-        private static (Tile Tile, Direction Direction) normalize(Tile tile, Direction direction)
-        {
-            return direction switch
-            {
-                Direction.Left or Direction.DownLeft or Direction.DownRight =>
-                    (tile.Neighbour(direction), direction.Opposite()),
-                _ => (tile, direction)
-            };
-        }
+        public EdgeFeatures this[TileEdge edge] => edge.GetEdgeFrom<TileNode, EdgeFeatures>(tiles);
 
         public LogicalTilemap Clone() => new(tiles.Clone());
     }

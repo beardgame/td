@@ -239,7 +239,7 @@ namespace Bearded.TD.Game.Generation
             var normalizedDirections = new[] {Direction.Right, Direction.UpRight, Direction.UpLeft};
             var logicalMacroFeatures = Tilemap.EnumerateTilemapWith(logicalTileMapRadius)
                 .RandomSubset(10, random)
-                .ToDictionary(t => (t, normalizedDirections.RandomElement(random)), _ => new Crevice() as MacroFeature);
+                .ToDictionary(t => t.Edge(normalizedDirections.RandomElement(random)), _ => new Crevice() as MacroFeature);
 
             var logicalTilemap = LogicalTilemap.From(logicalNodes, logicalMacroFeatures);
 
@@ -255,7 +255,7 @@ namespace Bearded.TD.Game.Generation
                     return logicalTilemap.IsValidTile(n) && logicalTilemap[n].Blueprint != null;
                 }).RandomElement(random);
 
-                logicalTilemap.InvertConnectivity(tile, randomValidDirection);
+                logicalTilemap.InvertConnectivity(tile.Edge(randomValidDirection));
             }
 
             logicalTilemap = optimize(logicalTilemap, random);
@@ -563,10 +563,10 @@ namespace Bearded.TD.Game.Generation
         private bool trySwitchBlueprint(Random random, LogicalTilemap tilemap)
         {
             return tryCallOnCollectedTilesWithBlueprint(
-                random, tilemap, (t, d) => tilemap.SwapNodes(t, t.Neighbour(d)));
+                random, tilemap, e => tilemap.SwapNodes(e.AdjacentTiles));
         }
 
-        private bool tryCallOnCollectedTilesWithBlueprint(Random random, LogicalTilemap tilemap, Action<Tile, Direction> action)
+        private bool tryCallOnCollectedTilesWithBlueprint(Random random, LogicalTilemap tilemap, Action<TileEdge> action)
         {
             var tile = Tilemap.EnumerateTilemapWith(tilemap.Radius).RandomElement(random);
             if (tilemap[tile].Blueprint == null)
@@ -576,7 +576,7 @@ namespace Bearded.TD.Game.Generation
             if (!tilemap.IsValidTile(neighborTile) || tilemap[neighborTile].Blueprint == null)
                 return false;
 
-            action(tile, direction);
+            action(tile.Edge(direction));
             return true;
         }
 
