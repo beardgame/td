@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Linq;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Generation.Fitness
 {
@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Generation.Fitness
     {
         public static FF AcuteAnglesCount { get; } = new AcuteAngles();
         public static FF ConnectedComponentsCount { get; } = new ConnectedComponents();
+        public static FF DisconnectedCrevices { get; } = new ConnectedCrevices();
         public static FF ConnectedTrianglesCount { get; } = new ConnectedTriangles();
 
         public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
@@ -148,5 +149,59 @@ namespace Bearded.TD.Game.Generation.Fitness
                 }
             }
         }
+
+
+        private class ConnectedCrevices : FF
+        {
+            public override string Name => "Connected Crevices";
+            protected override double CalculateFitness(LogicalTilemap tilemap)
+            {
+                var corners = enumerateCorners(tilemap);
+
+                var penalty = 0;
+
+                foreach (var corner in corners)
+                {
+                    var edges = corner.IncidentEdges;
+
+                    var incidentCrevices = edges.Enumerate().Count(e => tilemap[e].Feature is Crevice);
+
+                    penalty += incidentCrevices switch
+                    {
+                        1 => 2,
+                        3 => 1,
+                        _ => 0,
+                    };
+                }
+
+                return penalty;
+            }
+
+            private IEnumerable<TileCorner> enumerateCorners(LogicalTilemap tilemap)
+            {
+                var virtualRadius = tilemap.Radius + 1;
+
+                foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(virtualRadius))
+                {
+                    if (tile.Neighbour(Direction.UpRight).Radius > virtualRadius)
+                        continue;
+
+                    if (tile.Neighbour(Direction.Right).Radius <= virtualRadius)
+                    {
+                        yield return TileCorner.FromTileAndDirectionBefore(tile, Direction.Right);
+                    }
+
+                    if (tile.Neighbour(Direction.UpLeft).Radius <= virtualRadius)
+                    {
+                        yield return TileCorner.FromTileAndDirectionBefore(tile, Direction.UpRight);
+                    }
+                }
+            }
+
+        }
+
+
+
     }
+
 }

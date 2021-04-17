@@ -33,7 +33,20 @@ namespace Bearded.TD.Tiles
             this.corner = corner;
         }
 
-
+        public (TileEdge Edge1, TileEdge Edge2, TileEdge Edge3) IncidentEdges => corner switch
+        {
+            Corner.UpRight => (
+                TileEdge.From(tile.Neighbour(Direction.Right), Direction.UpLeft),
+                TileEdge.From(tile, Direction.UpRight),
+                TileEdge.From(tile, Direction.Right)
+            ),
+            Corner.Up => (
+                TileEdge.From(tile.Neighbour(Direction.UpLeft), Direction.Right),
+                TileEdge.From(tile, Direction.UpLeft),
+                TileEdge.From(tile, Direction.UpRight)
+            ),
+            _ => throw new InvalidOperationException()
+        };
 
         public static bool operator ==(TileCorner left, TileCorner right) => left.Equals(right);
         public static bool operator !=(TileCorner left, TileCorner right) => !left.Equals(right);

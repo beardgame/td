@@ -134,24 +134,38 @@ namespace Bearded.TD.Game.Generation
             this.metadata = metadata;
         }
 
-        class Node
+        class RelaxationCircle
         {
-            public LogicalNode Logical { get; }
-
             public Position2 Position { get; set; }
-            public Unit Radius { get; set; }
+            public Unit Radius { get; }
 
-            public Angle Orientation { get; set; }
-
-            public List<PolarPosition> ConnectionPoints { get; } = new();
-
-            public Node(Position2 position, Unit radius, IEnumerable<PolarPosition> connectionPoints,
-                LogicalNode logical)
+            public RelaxationCircle(Position2 position, Unit radius)
             {
                 Position = position;
                 Radius = radius;
+            }
+        }
+
+        enum SpringBehavior
+        {
+            Push,
+            Pull,
+        }
+
+        record Spring(RelaxationCircle Circle1, RelaxationCircle Circle2, SpringBehavior Behavior,
+            float ForceMultiplier = 1, Unit Overlap = default)
+        {
+            public Unit TargetDistance => Circle1.Radius + Circle2.Radius - Overlap;
+        }
+
+        class Node : RelaxationCircle
+        {
+            public LogicalNode Logical { get; }
+
+            public Node(Position2 position, Unit radius, LogicalNode logical)
+                : base(position, radius)
+            {
                 Logical = logical;
-                ConnectionPoints.AddRange(connectionPoints);
             }
         }
 
@@ -177,6 +191,7 @@ namespace Bearded.TD.Game.Generation
             var area = Tilemap.TileCountForRadius(radius);
             var areaPerNode = 10 * 10;
             var nodeCount = area / areaPerNode / 2;
+            var creviceCount = nodeCount;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
             logger.Trace?.Log($"Attempting to generate {nodeCount} nodes");
@@ -238,7 +253,8 @@ namespace Bearded.TD.Game.Generation
 
             var normalizedDirections = new[] {Direction.Right, Direction.UpRight, Direction.UpLeft};
             var logicalMacroFeatures = Tilemap.EnumerateTilemapWith(logicalTileMapRadius)
-                .RandomSubset(10, random)
+                // this selection won't work for larger numbers of crevices
+                .RandomSubset(creviceCount, random)
                 .ToDictionary(t => t.Edge(normalizedDirections.RandomElement(random)), _ => new Crevice() as MacroFeature);
 
             var logicalTilemap = LogicalTilemap.From(logicalNodes, logicalMacroFeatures);
@@ -263,9 +279,20 @@ namespace Bearded.TD.Game.Generation
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
                 var node = logicalTilemap[tile];
+
+                var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
+
+                const float toOuterRadius = 2 / 1.73205080757f;
+                foreach (var (direction, feature) in node.MacroFeatures)
+                {
+                    var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
+                    var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;
+
+                    metadata.Add(new LineSegment(before, after, Color.Beige * 0.1f));
+                }
+
                 if (node.Blueprint == null)
                     continue;
-                var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
                 metadata.Add(new Disk(
                     center,
                     nodeRadius, Color.Bisque * 0.05f
@@ -276,14 +303,6 @@ namespace Bearded.TD.Game.Generation
                         Color.Lime * 0.1f));
                 }
 
-                const float toOuterRadius = 2 / 1.73205080757f;
-                foreach (var (direction, feature) in node.MacroFeatures)
-                {
-                    var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
-                    var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;
-
-                    metadata.Add(new LineSegment(before, after, Color.Beige * 0.1f));
-                }
             }
 
             var nodes = new List<Node>();
@@ -296,30 +315,81 @@ namespace Bearded.TD.Game.Generation
 
                 var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
 
-                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), Enumerable.Empty<PolarPosition>(),
-                    node);
+                var n = new Node(center, nodeRadius * random.NextFloat(0.75f, 1.2f), node);
                 nodes.Add(n);
                 nodeDictionary.Add(tile, n);
             }
 
             var connections = createNodeConnections(logicalTilemap, nodeDictionary);
 
+            var connectionSprings = connections.Select(c => new Spring(c.Node1, c.Node2, SpringBehavior.Pull));
+            var nodePairAvoidanceSprings =
+                from n1 in nodes
+                from n2 in nodes.TakeWhile(n => n != n1)
+                select new Spring(n1, n2, SpringBehavior.Push);
 
-            relax(nodes, connections, radius.U());
+            var crevices = new List<TileEdge>();
+            var creviceCircles = new List<RelaxationCircle>();
+            var creviceCircleLookup = new MultiDictionary<TileEdge, RelaxationCircle>();
+            var creviceByCircle = new Dictionary<RelaxationCircle, TileEdge>();
+            var creviceSprings = new List<Spring>();
+            foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
+            {
+                var node = logicalTilemap[tile];
+                foreach (var (direction, feature) in node.MacroFeatures)
+                {
+                    if (feature is not Crevice crevice)
+                        continue;
+                    var edge = tile.Edge(direction);
+                    if (creviceCircleLookup.ContainsKey(edge))
+                        continue;
+
+                    crevices.Add(edge);
+
+                    const float toOuterRadius = 2 / 1.73205080757f;
+                    var p1 = Position2.Zero +
+                        (Level.GetPosition(tile).NumericValue * 2 + direction.CornerBefore() * toOuterRadius) * nodeRadius;
+                    var p1to2 = (direction.CornerAfter() - direction.CornerBefore()) * toOuterRadius * nodeRadius;
+
+
+                    var count = 5;
+
+                    var circles = Enumerable.Range(0, count).Select(i =>
+                    {
+                        var p = p1 + p1to2 * (i / (float) (count - 1));
+                        return new RelaxationCircle(p, 1.5.U());
+                    }).ToList();
+
+                    creviceCircles.AddRange(circles);
+                    circles.ForEach(c => creviceCircleLookup.Add(edge, c));
+                    circles.ForEach(c => creviceByCircle.Add(c, edge));
+                    creviceSprings.AddRange(Enumerable.Range(0, count - 1).Select(
+                        i => new Spring(circles[i], circles[i + 1], SpringBehavior.Pull, 5, 0.5.U())
+                        ));
+                }
+            }
+
+            var creviceNodeAvoidanceSprings =
+                from n in nodes
+                from c in creviceCircles
+                select new Spring(n, c, SpringBehavior.Push, Overlap:1.U());
+
+            var allSprings = connectionSprings
+                .Concat(nodePairAvoidanceSprings)
+                .Concat(creviceSprings)
+                .Concat(creviceNodeAvoidanceSprings);
+            var allCircles = nodes.Concat(creviceCircles).ToList();
+
+            relax(allCircles, allSprings, radius.U());
 
             const float metaLineHeight = 0.5f;
 
-            foreach (var node in nodes)
+            foreach (var circle in allCircles)
             {
-                metadata.Add(new LevelDebugMetadata.Circle(node.Position, node.Radius, 0.3.U(), Color.Cyan * 0.5f));
-                foreach (var connectionPoint in node.ConnectionPoints)
-                {
-                    var p = node.Position + new Difference2(
-                        new PolarPosition(connectionPoint.R, connectionPoint.Angle + node.Orientation).ToVector2()
-                    );
+                metadata.Add(new LevelDebugMetadata.Circle(circle.Position, circle.Radius, 0.3.U(), Color.Cyan * 0.5f));
 
-                    metadata.Add(new Disk(p, 1.U(), Color.Red * 0.5f));
-                }
+                if (circle is not Node node)
+                    continue;
 
                 foreach (var (behavior, i) in node.Logical.Blueprint.Behaviors.Indexed())
                 {
@@ -362,6 +432,34 @@ namespace Bearded.TD.Game.Generation
                 erode(nodeArea);
             }
 
+            var creviceAreas = crevices.ToDictionary(c => c, _ => new HashSet<Tile>());
+            foreach (var tile in Tilemap.EnumerateTilemapWith(radius))
+            {
+                var tilePosition = Level.GetPosition(tile);
+
+                var node = creviceCircles.MinBy(n => ((tilePosition - n.Position).Length - n.Radius).NumericValue);
+
+                var distanceToNodeSquared = (tilePosition - node.Position).LengthSquared;
+
+                if (distanceToNodeSquared > node.Radius.Squared)
+                    continue;
+
+                var crevice = creviceByCircle[node];
+
+                creviceAreas[crevice].Add(tile);
+            }
+
+            foreach (var (crevice, creviceArea) in creviceAreas)
+            {
+                foreach (var (node, nodeArea) in nodeAreas)
+                {
+                    foreach (var tile in creviceArea)
+                    {
+                        nodeArea.Remove(tile);
+                    }
+                }
+            }
+
             var connectionAreas = new Dictionary<Connection, HashSet<Tile>>();
 
             foreach (var connection in connections)
@@ -394,6 +492,11 @@ namespace Bearded.TD.Game.Generation
                 metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.Beige * 0.5f));
             }
 
+            foreach (var (_, tiles) in creviceAreas)
+            {
+                metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.Brown * 0.5f));
+            }
+
             foreach (var (_, tiles) in connectionAreas)
             {
                 metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), Color.IndianRed * 0.5f));
@@ -411,6 +514,11 @@ namespace Bearded.TD.Game.Generation
                 {
                     behavior.Generate(context);
                 }
+            }
+
+            foreach (var tile in creviceAreas.Values.SelectMany(x => x))
+            {
+                finalTilemap[tile] = new TileGeometry(TileType.Crevice, 1, -5.U());
             }
 
             foreach (var tile in connectionAreas.Values.SelectMany(x => x))
@@ -501,6 +609,7 @@ namespace Bearded.TD.Game.Generation
 
         private static readonly FitnessFunction<LogicalTilemap> fitnessFunction = FitnessFunction.From(
             LogicalTilemapFitness.ConnectedComponentsCount,
+            LogicalTilemapFitness.DisconnectedCrevices,
             LogicalTilemapFitness.ConnectedTrianglesCount,
             LogicalTilemapFitness.NodeBehaviorFitness,
             LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
@@ -580,47 +689,39 @@ namespace Bearded.TD.Game.Generation
             return true;
         }
 
-        private void relax(List<Node> nodes, List<Connection> connections, Unit radius)
+        private void relax(IEnumerable<RelaxationCircle> circles, IEnumerable<Spring> springs, Unit radius)
         {
-            var allPairs =
-                (from n1 in nodes
-                    from n2 in nodes.TakeWhile(n => n != n1)
-                    select (n1, n2)).ToList();
+            var nodes = circles.ToList();
+            var connections = springs.ToList();
 
             foreach (var _ in Enumerable.Range(0, 100))
             {
                 foreach (var connection in connections)
                 {
-                    var diff = connection.Node1.Position - connection.Node2.Position;
-                    var dSquared = diff.LengthSquared;
+                    var (n1, n2) = (connection.Circle1, connection.Circle2);
 
-                    var maxD = connection.Node1.Radius + connection.Node2.Radius;
-                    var maxDSquared = maxD.Squared;
-
-                    if (maxDSquared > dSquared)
-                        continue;
-
-                    var forceMagnitude = (dSquared.NumericValue - maxDSquared.NumericValue).U() * 0.01f;
-
-                    var forceOnN1 = diff / dSquared.Sqrt() * -forceMagnitude;
-
-                    connection.Node1.Position += forceOnN1;
-                    connection.Node2.Position -= forceOnN1;
-                }
-
-                foreach (var (n1, n2) in allPairs)
-                {
                     var diff = n1.Position - n2.Position;
                     var dSquared = diff.LengthSquared;
 
-                    var minD = n1.Radius + n2.Radius;
-                    var minDSquared = minD.Squared;
+                    var targetD = connection.TargetDistance;
+                    var targetDSquared = targetD.Squared;
 
-                    if (minDSquared < dSquared)
-                        continue;
+                    switch (connection.Behavior)
+                    {
+                        case SpringBehavior.Push:
+                            if (targetDSquared < dSquared)
+                                continue;
+                            break;
+                        case SpringBehavior.Pull:
+                            if (targetDSquared > dSquared)
+                                continue;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
 
-                    var forceMagnitude = (minDSquared.NumericValue - dSquared.NumericValue).U() * 0.01f;
-
+                    var forceMagnitude = (targetDSquared.NumericValue - dSquared.NumericValue).U() * 0.01f *
+                            connection.ForceMultiplier;
                     var forceOnN1 = diff / dSquared.Sqrt() * forceMagnitude;
 
                     n1.Position += forceOnN1;
