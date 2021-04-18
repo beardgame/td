@@ -46,19 +46,19 @@ namespace Bearded.TD
         private NavigationController navigationController;
 
         public TheGame(Logger logger)
-         : base(
-             new NativeWindowSettings
-                 {
-                     Size = new Vector2i(1280, 720),
-                     API = ContextAPI.OpenGL, APIVersion = new Version(3, 2),
-                     WindowState = WindowState.Normal
-                 }
-             )
         {
             this.logger = logger;
 
             instance = this;
         }
+
+        protected override NativeWindowSettings GetSettings() =>
+            new()
+            {
+                Size = new Vector2i(1280, 720),
+                API = ContextAPI.OpenGL, APIVersion = new Version(3, 2),
+                WindowState = WindowState.Normal
+            };
 
         protected override void OnLoad()
         {
