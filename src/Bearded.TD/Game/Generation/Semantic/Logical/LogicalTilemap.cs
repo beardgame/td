@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic
+namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     sealed record LogicalNode(
         NodeBlueprint? Blueprint,
