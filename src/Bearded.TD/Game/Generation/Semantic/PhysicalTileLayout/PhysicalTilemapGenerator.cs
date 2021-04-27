@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.Generation.Semantic;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -18,43 +16,8 @@ using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
 using Tile = Bearded.TD.Tiles.Tile;
 
-namespace Bearded.TD.Game.Generation.Semantic
+namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
-    class RelaxationCircle
-    {
-        public Position2 Position { get; set; }
-        public Unit Radius { get; }
-
-        public RelaxationCircle(Position2 position, Unit radius)
-        {
-            Position = position;
-            Radius = radius;
-        }
-    }
-
-    enum SpringBehavior
-    {
-        Push,
-        Pull,
-    }
-
-    record Spring(RelaxationCircle Circle1, RelaxationCircle Circle2, SpringBehavior Behavior,
-        float ForceMultiplier = 1, Unit Overlap = default)
-    {
-        public Unit TargetDistance => Circle1.Radius + Circle2.Radius - Overlap;
-    }
-
-    class Node : RelaxationCircle
-    {
-        public LogicalNode Logical { get; }
-
-        public Node(Position2 position, Unit radius, LogicalNode logical)
-            : base(position, radius)
-        {
-            Logical = logical;
-        }
-    }
-
     class Connection
     {
         public Node Node1 { get; }
@@ -80,33 +43,7 @@ namespace Bearded.TD.Game.Generation.Semantic
 
         public Tilemap<TileGeometry> Generate(LogicalTilemap logicalTilemap, Random random, int radius, Unit nodeRadius)
         {
-            foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
-            {
-                var node = logicalTilemap[tile];
 
-                var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
-
-                const float toOuterRadius = 2 / 1.73205080757f;
-                foreach (var (direction, feature) in node.MacroFeatures)
-                {
-                    var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
-                    var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;
-
-                    metadata.Add(new LineSegment(before, after, Color.Beige * 0.1f));
-                }
-
-                if (node.Blueprint == null)
-                    continue;
-                metadata.Add(new Disk(
-                    center,
-                    nodeRadius, Color.Bisque * 0.05f
-                ));
-                foreach (var connectedDirection in node.ConnectedTo.Enumerate())
-                {
-                    metadata.Add(new LineSegment(center, center + connectedDirection.Vector() * nodeRadius,
-                        Color.Lime * 0.1f));
-                }
-            }
 
             var nodes = new List<Node>();
             var nodeDictionary = new Dictionary<Tile, Node>();

@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic;
+using Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -56,6 +57,35 @@ namespace Bearded.TD.Game.Generation
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
             var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(random, radius);
+
+            // todo: adopt this into LogicalTilemapGenerator?
+            foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
+            {
+                var node = logicalTilemap[tile];
+
+                var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
+
+                const float toOuterRadius = 2 / 1.73205080757f;
+                foreach (var (direction, feature) in node.MacroFeatures)
+                {
+                    var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
+                    var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;
+
+                    metadata.Add(new LineSegment(before, after, Color.Beige * 0.1f));
+                }
+
+                if (node.Blueprint == null)
+                    continue;
+                metadata.Add(new Disk(
+                    center,
+                    nodeRadius, Color.Bisque * 0.05f
+                ));
+                foreach (var connectedDirection in node.ConnectedTo.Enumerate())
+                {
+                    metadata.Add(new LineSegment(center, center + connectedDirection.Vector() * nodeRadius,
+                        Color.Lime * 0.1f));
+                }
+            }
 
             var physicalTilemap = new PhysicalTilemapGenerator(logger, metadata)
                 .Generate(logicalTilemap, random, radius, nodeRadius);
