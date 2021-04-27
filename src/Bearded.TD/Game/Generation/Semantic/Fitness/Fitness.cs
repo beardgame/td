@@ -1,6 +1,6 @@
 using System;
 
-namespace Bearded.TD.Game.Generation.Fitness
+namespace Bearded.TD.Game.Generation.Semantic.Fitness
 {
     class Fitness<T> : IComparable<Fitness<T>>
     {

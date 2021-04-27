@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace Bearded.TD.Game.Generation.Fitness
+namespace Bearded.TD.Game.Generation.Semantic.Fitness
 {
     static class FitnessFunction
     {

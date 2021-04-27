@@ -5,7 +5,7 @@ using System.Linq;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Game.Generation.Fitness
+namespace Bearded.TD.Game.Generation.Semantic.Fitness
 {
     using Tilemap = LogicalTilemap;
     using FF = FitnessFunction<LogicalTilemap>;
