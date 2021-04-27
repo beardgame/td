@@ -6,20 +6,22 @@ using System.Linq;
 namespace Bearded.TD.Utilities.Collections
 {
     sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, IList<TValue>>>
+        where TKey : notnull
     {
-        private static readonly TValue[] empty = {};
+        private static readonly TValue[] empty = Array.Empty<TValue>();
 
-        private readonly Dictionary<TKey, IList<TValue>> inner = new Dictionary<TKey, IList<TValue>>();
+        private readonly Dictionary<TKey, IList<TValue>> inner = new();
 
         public bool ContainsKey(TKey key) => inner.ContainsKey(key);
 
         public void Add(TKey key, TValue value)
         {
-            if (!ContainsKey(key))
+            if (!inner.TryGetValue(key, out var list))
             {
-                inner.Add(key, new List<TValue>());
+                list = new List<TValue>();
+                inner.Add(key, list);
             }
-            inner[key].Add(value);
+            list.Add(value);
         }
 
         public bool RemoveAll(TKey key)
@@ -34,15 +36,15 @@ namespace Bearded.TD.Utilities.Collections
 
         public int RemoveWhere(TKey key, Predicate<TValue> match)
         {
-            if (!ContainsKey(key)) return 0;
-            var list = inner[key];
-            if (list.Count == 0) return 0;
+            if (!inner.TryGetValue(key, out var list) || list.Count == 0)
+                return 0;
+
             if (list is List<TValue> listImpl)
             {
                 return listImpl.RemoveAll(match);
             }
 
-            var toRemove = list.Where(elmt => match(elmt)).ToList();
+            var toRemove = list.Where(x => match(x)).ToList();
             foreach (var value in toRemove)
             {
                 list.Remove(value);
