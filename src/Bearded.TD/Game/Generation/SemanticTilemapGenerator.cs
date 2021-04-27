@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic;
+using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;

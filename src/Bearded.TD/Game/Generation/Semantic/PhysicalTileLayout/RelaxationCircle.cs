@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
