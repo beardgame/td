@@ -2,26 +2,10 @@ using System;
 
 namespace Bearded.TD.Game.Generation.Semantic.Fitness
 {
-    class Fitness<T> : IComparable<Fitness<T>>
+    record Fitness<T>(FitnessFunction<T> Function, double Value) : IComparable<Fitness<T>>
     {
-        public double Value { get; }
+        public override string ToString() => $"- {Function.Name}: {Value}";
 
-        public FitnessFunction<T> Function { get; }
-
-        public Fitness(FitnessFunction<T> function, double value)
-        {
-            Function = function;
-            Value = value;
-        }
-
-        public override string ToString()
-        {
-            return $"- {Function.Name}: {Value}";
-        }
-
-        public int CompareTo(Fitness<T>? other)
-        {
-            return other == null ? 1 : Value.CompareTo(other.Value);
-        }
+        public int CompareTo(Fitness<T>? other) => ReferenceEquals(null, other) ? 1 : Value.CompareTo(other.Value);
     }
 }

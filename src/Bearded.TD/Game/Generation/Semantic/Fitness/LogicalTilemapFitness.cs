@@ -10,7 +10,7 @@ using Bearded.TD.Utilities;
 namespace Bearded.TD.Game.Generation.Semantic.Fitness
 {
     using Tilemap = LogicalTilemap;
-    using FF = FitnessFunction<LogicalTilemap>;
+    using FF = SimpleFitnessFunction<LogicalTilemap>;
 
     static class LogicalTilemapFitness
     {
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
 
         public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
 
-        private class NodeBehavior : FF
+        private sealed class NodeBehavior : FF
         {
             public override string Name => "Node Behaviour";
 
@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
         public static FF ConnectionDegreeHistogramDifference(IEnumerable<double> idealHistogram) =>
             new ConnectionDegreeHistogram(idealHistogram);
 
-        private class ConnectionDegreeHistogram : FF
+        private sealed class ConnectionDegreeHistogram : FF
         {
             private readonly ImmutableArray<double> targetHistogram;
             public override string Name => "Connection Degree Histogram Difference";
@@ -74,15 +74,15 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
                     tileCount++;
                 }
 
-                var distance = Enumerable
-                    .Zip(targetHistogram, actualHistogram, (target, actual) => Math.Abs(target * tileCount - actual))
+                var distance = targetHistogram
+                    .Zip(actualHistogram, (target, actual) => Math.Abs(target * tileCount - actual))
                     .Sum();
 
                 return distance;
             }
         }
 
-        private class ConnectedTriangles : FF
+        private sealed class ConnectedTriangles : FF
         {
             public override string Name => "Connected Triangles";
 
@@ -94,7 +94,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
                     .Select(t => (t, tilemap[t])))
                 {
                     var connected = node.ConnectedTo;
-                    count += Tiles.Extensions.Directions.Count(direction
+                    count += Extensions.Directions.Count(direction
                         => connected.Includes(direction)
                         && connected.Includes(direction.Next())
                         && tilemap[tile.Neighbour(direction)]!.ConnectedTo.Includes(direction.Next().Next()));
@@ -104,7 +104,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
             }
         }
 
-        private class AcuteAngles : FF
+        private sealed class AcuteAngles : FF
         {
             public override string Name => "Acute Angles";
 
@@ -113,13 +113,13 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
                 return Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
                     .Select(t => tilemap[t])
                     .Select(node => node.ConnectedTo)
-                    .Sum(connected => Tiles.Extensions.Directions.Count(direction
+                    .Sum(connected => Extensions.Directions.Count(direction
                         => connected.Includes(direction)
                         && connected.Includes(direction.Next())));
             }
         }
 
-        private class ConnectedComponents : FF
+        private sealed class ConnectedComponents : FF
         {
             public override string Name => "Connected Components";
 
@@ -152,8 +152,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
             }
         }
 
-
-        private class ConnectedCrevices : FF
+        private sealed class ConnectedCrevices : FF
         {
             public override string Name => "Connected Crevices";
             protected override double CalculateFitness(LogicalTilemap tilemap)
@@ -201,9 +200,5 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
             }
 
         }
-
-
-
     }
-
 }
