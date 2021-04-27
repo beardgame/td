@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic
 {
-    sealed record LogicalNode(NodeBlueprint? Blueprint, Directions ConnectedTo,
-        ImmutableDictionary<Direction, MacroFeature> MacroFeatures)
-    {
-    }
+    sealed record LogicalNode(
+        NodeBlueprint? Blueprint,
+        Directions ConnectedTo,
+        ImmutableDictionary<Direction, MacroFeature> MacroFeatures);
 
     sealed record EdgeFeatures(bool IsConnected, MacroFeature? Feature)
     {

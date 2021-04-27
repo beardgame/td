@@ -9,7 +9,7 @@ using Bearded.Utilities.SpaceTime;
 using Extensions = Bearded.TD.Tiles.Extensions;
 using Tile = Bearded.TD.Tiles.Tile;
 
-namespace Bearded.TD.Game.Generation.Semantic
+namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
 
     record NodeBlueprint(ImmutableArray<INodeBehavior> Behaviors)

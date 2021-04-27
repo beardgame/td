@@ -7,7 +7,7 @@ using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Extensions = Bearded.TD.Tiles.Extensions;
 
-namespace Bearded.TD.Game.Generation.Semantic
+namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     sealed class LogicalTilemapOptimizer
     {
