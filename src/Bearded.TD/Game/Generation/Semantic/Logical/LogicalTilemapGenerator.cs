@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Generation.Semantic.Fitness;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
+using static Bearded.TD.Game.Generation.Semantic.Logical.LogicalTilemapMutations;
 using Extensions = Bearded.TD.Tiles.Extensions;
 
 namespace Bearded.TD.Game.Generation.Semantic.Logical
@@ -19,11 +21,26 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             float CreviceToNodeRatio = 1,
             float SpawnerFraction = 0.5f);
 
+        private static readonly ImmutableArray<ILogicalTilemapMutation> mutations =
+            ImmutableArray.Create<ILogicalTilemapMutation>(
+                new SwapMacroFeatures(),
+                new ToggleConnection(),
+                new SwapBlueprints());
+
+        private static readonly FitnessFunction<LogicalTilemap> fitnessFunction = FitnessFunction.From(
+            LogicalTilemapFitness.ConnectedComponentsCount,
+            LogicalTilemapFitness.DisconnectedCrevices,
+            LogicalTilemapFitness.ConnectedTrianglesCount,
+            LogicalTilemapFitness.NodeBehaviorFitness,
+            LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
+                new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0})
+        );
+
         private readonly LogicalTilemapOptimizer optimizer;
 
         public LogicalTilemapGenerator(Logger logger)
         {
-            optimizer = new LogicalTilemapOptimizer(logger);
+            optimizer = new LogicalTilemapOptimizer(logger, mutations, fitnessFunction);
         }
 
         public LogicalTilemap Generate(Random random, int radius)
