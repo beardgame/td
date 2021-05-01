@@ -4,9 +4,11 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
+    [UsedImplicitly]
     sealed class GameModeBlueprint : IConvertsTo<IGameModeBlueprint, Void>
     {
         public string Id { get; set; }

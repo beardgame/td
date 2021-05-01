@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    [UsedImplicitly]
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class ComponentOwnerBlueprint : IConvertsTo<Content.Models.ComponentOwnerBlueprint, Void>
     {
         public string Id { get; set; }
@@ -15,7 +15,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public Content.Models.ComponentOwnerBlueprint ToGameModel(ModMetadata modMetadata, Void _)
         {
-            return new Content.Models.ComponentOwnerBlueprint(ModAwareId.FromNameInMod(Id, modMetadata), Components);
+            return new(ModAwareId.FromNameInMod(Id, modMetadata), Components);
         }
     }
 }

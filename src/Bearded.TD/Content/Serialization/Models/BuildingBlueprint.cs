@@ -2,12 +2,13 @@
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
+using JetBrains.Annotations;
 
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class BuildingBlueprint
         : IConvertsTo<Content.Models.BuildingBlueprint, UpgradeTagResolver>
     {
@@ -20,7 +21,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public Content.Models.BuildingBlueprint ToGameModel(ModMetadata modMetadata, UpgradeTagResolver tags)
         {
-            return new Content.Models.BuildingBlueprint(
+            return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Footprint,
