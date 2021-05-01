@@ -1,0 +1,7 @@
+{
+    "id" : "spawner",
+    "behaviors" : [
+        { "id" : "spawner" },
+        { "id" : "makeAllTilesFloor" }
+    ]
+}
