@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.TD.Game.Generation.Semantic.Logical;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {

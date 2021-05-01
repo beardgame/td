@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
-using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Logical
+namespace Bearded.TD.Game.Generation.Semantic.Features
 {
     interface INodeBehavior
     {
