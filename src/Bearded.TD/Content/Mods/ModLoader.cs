@@ -63,6 +63,7 @@ namespace Bearded.TD.Content.Mods
                 var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
                 var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
                 var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
+                var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
                 var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
                 context.Profiler.FinishLoading();
@@ -81,6 +82,7 @@ namespace Bearded.TD.Content.Mods
                     componentOwners,
                     upgrades,
                     technologies,
+                    levelNodes,
                     gameModes,
                     tags.GetForCurrentMod());
             }
