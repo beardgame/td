@@ -34,8 +34,10 @@ namespace Bearded.TD.Game.Generation
             this.debugMetadata = debugMetadata;
         }
 
-        public Tilemap<TileGeometry> Generate(int radius, int seed)
+        public Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed)
         {
+            var radius = parameters.Radius;
+
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
 

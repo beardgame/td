@@ -6,9 +6,9 @@ namespace Bearded.TD.Game.Generation
 {
     sealed class EmptyTilemapGenerator : ITilemapGenerator
     {
-        public Tilemap<TileGeometry> Generate(int radius, int seed)
+        public Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed)
         {
-            return new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
+            return new(parameters.Radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Game.Simulation.Rules
 {
@@ -6,5 +7,6 @@ namespace Bearded.TD.Game.Simulation.Rules
     {
         string Name { get; }
         ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
+        NodeGroup Nodes { get; }
     }
 }

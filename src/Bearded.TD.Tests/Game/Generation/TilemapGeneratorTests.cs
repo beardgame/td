@@ -1,4 +1,5 @@
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -9,6 +10,8 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public abstract class TilemapGeneratorTests
     {
+        private static readonly NodeGroup nodes =
+            new NodeGroup.Leaf(new TestNodeBlueprint(), new NodeGroup.RandomizedNumber(1, null, null));
         private const int minRadius = 20;
 
         internal abstract ITilemapGenerator Generator { get; }
@@ -21,7 +24,7 @@ namespace Bearded.TD.Tests.Game.Generation
             if (r < minRadius)
                 return;
 
-            var tilemap = Generator.Generate(r, seed);
+            var tilemap = Generator.Generate(new LevelGenerationParameters(r, nodes), seed);
 
             tilemap.Radius.Should().Be(r);
         }
@@ -34,8 +37,8 @@ namespace Bearded.TD.Tests.Game.Generation
             if (r < minRadius)
                 return;
 
-            var firstTilemap = Generator.Generate(r, seed);
-            var secondTilemap = Generator.Generate(r, seed);
+            var firstTilemap = Generator.Generate(new LevelGenerationParameters(r, nodes), seed);
+            var secondTilemap = Generator.Generate(new LevelGenerationParameters(r, nodes), seed);
 
             assertTilemapsEqual(firstTilemap, secondTilemap);
         }

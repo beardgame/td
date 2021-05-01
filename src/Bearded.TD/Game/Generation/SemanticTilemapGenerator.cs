@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic;
 using Bearded.TD.Game.Generation.Semantic.Logical;
@@ -44,8 +45,10 @@ namespace Bearded.TD.Game.Generation
             this.metadata = metadata;
         }
 
-        public Tilemap<TileGeometry> Generate(int radius, int seed)
+        public Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed)
         {
+            var radius = parameters.Radius;
+
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
 
@@ -57,7 +60,7 @@ namespace Bearded.TD.Game.Generation
             var creviceCount = nodeCount;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
-            var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(random, radius);
+            var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(parameters, random);
 
             // todo: adopt this into LogicalTilemapGenerator?
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))

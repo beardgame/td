@@ -46,9 +46,9 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             optimizer = new LogicalTilemapOptimizer(logger, mutations, fitnessFunction);
         }
 
-        public LogicalTilemap Generate(Random random, int radius)
+        public LogicalTilemap Generate(LevelGenerationParameters parameters, Random random)
         {
-            var logicalTilemap = generateInitialTilemap(radius, new Settings(), random);
+            var logicalTilemap = generateInitialTilemap(parameters.Radius, new Settings(), random);
 
             logicalTilemap = optimizer.Optimize(logicalTilemap, random);
 

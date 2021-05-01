@@ -20,7 +20,7 @@ using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
-    class DefaultTilemapGenerator : ITilemapGenerator
+    sealed class DefaultTilemapGenerator : ITilemapGenerator
     {
         private readonly Logger logger;
         private readonly LevelDebugMetadata levelDebugMetadata;
@@ -31,8 +31,10 @@ namespace Bearded.TD.Game.Generation
             this.levelDebugMetadata = levelDebugMetadata;
         }
 
-        public Tilemap<TileGeometry> Generate(int radius, int seed)
+        public Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed)
         {
+            var radius = parameters.Radius;
+
             logger.Debug?.Log($"Started generating map with radius {radius} and seed {seed}");
             var timer = Stopwatch.StartNew();
             var typeTilemap = new Tilemap<TileType>(radius);
@@ -67,7 +69,7 @@ namespace Bearded.TD.Game.Generation
             return tilemap;
         }
 
-        private class Generator
+        private sealed class Generator
         {
             private readonly Tilemap<TileType> tilemap;
             private readonly Random random;
