@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
-using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -18,11 +16,12 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     sealed class LogicalTilemapGenerator
     {
+        private readonly Logger logger;
+
         private sealed record Settings(
             int AreaPerNode = 10 * 10,
             float NodeFillRatio = 0.5f,
-            float CreviceToNodeRatio = 1,
-            float SpawnerFraction = 0.5f);
+            float CreviceToNodeRatio = 1);
 
         private static readonly ImmutableArray<ILogicalTilemapMutation> mutations =
             ImmutableArray.Create<ILogicalTilemapMutation>(
@@ -43,27 +42,28 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
         public LogicalTilemapGenerator(Logger logger)
         {
+            this.logger = logger;
             optimizer = new LogicalTilemapOptimizer(logger, mutations, fitnessFunction);
         }
 
         public LogicalTilemap Generate(LevelGenerationParameters parameters, Random random)
         {
-            var logicalTilemap = generateInitialTilemap(parameters.Radius, new Settings(), random);
+            var logicalTilemap = generateInitialTilemap(parameters.Radius, parameters.Nodes, new Settings(), random);
 
             logicalTilemap = optimizer.Optimize(logicalTilemap, random);
 
             return logicalTilemap;
         }
 
-        private static LogicalTilemap generateInitialTilemap(int radius, Settings settings, Random random)
+        private LogicalTilemap generateInitialTilemap(int radius, NodeGroup nodes, Settings settings, Random random)
         {
-            var (areaPerNode, nodeFillRatio, creviceToNodeRatio, spawnerFraction) = settings;
+            var (areaPerNode, nodeFillRatio, creviceToNodeRatio) = settings;
             var totalArea = Tilemap.TileCountForRadius(radius);
             var nodeCount = MoreMath.FloorToInt(nodeFillRatio * totalArea / areaPerNode);
 
             var tilemapRadius = lowestRadiusFittingTileCount(nodeCount);
 
-            var nodesToPutDown = chooseNodes(nodeCount, spawnerFraction).ToList();
+            var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToList();
             var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
 
             var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
@@ -126,30 +126,6 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                 });
 
             return interior.Concat(partialOuterRing);
-        }
-
-        private static IEnumerable<Node> chooseNodes(int nodeCount, float spawnerFraction)
-        {
-            var baseBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior<Node>>(
-                    new BaseNodeBehavior(),
-                    new ForceToCenter(),
-                    new AvoidTagAdjacency(new AvoidTagAdjacency.BehaviorParameters(new NodeTag("spawner"))),
-                    new MakeAllTilesFloor()));
-            var spawnerBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior<Node>>(
-                    new SpawnerNodeBehavior(),
-                    new MakeAllTilesFloor()));
-            var emptyBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior<Node>>(
-                    new MakeAllTilesFloor()));
-
-            var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
-            var emptyCount = nodeCount - spawnerCount - 1;
-
-            return Enumerable.Repeat(emptyBlueprint, emptyCount)
-                .Concat(Enumerable.Repeat(spawnerBlueprint, spawnerCount))
-                .Concat(baseBlueprint.Yield());
         }
 
         private static Dictionary<TileEdge, MacroFeature> generateInitialMacroFeatures(
