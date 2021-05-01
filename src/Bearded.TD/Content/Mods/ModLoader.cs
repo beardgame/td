@@ -114,6 +114,7 @@ namespace Bearded.TD.Content.Mods
                     BehaviorConverterFactory.ForBaseComponents(),
                     BehaviorConverterFactory.ForGameRules(),
                     BehaviorConverterFactory.ForNodeBehaviors(),
+                    new NodeTagConverter(),
                     new UpgradeEffectConverter()
                 );
                 foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
