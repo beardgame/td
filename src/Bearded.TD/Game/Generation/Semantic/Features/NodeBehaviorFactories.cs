@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Bearded.TD.Content.Behaviors;
+using Bearded.TD.Content.Models;
 using Template = Bearded.TD.Content.Serialization.Models.INodeBehavior;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
@@ -21,7 +22,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         public static IDictionary<string, Type> ParameterTypesForComponentsById => factories.ParameterTypesById;
 
         public static INodeBehaviorFactory CreateNodeBehaviorFactory(Template template) =>
-            (factories.CreateBehaviorFactory<NodeBlueprint>(template) as INodeBehaviorFactory)!;
+            (factories.CreateBehaviorFactory<Node>(template) as INodeBehaviorFactory)!;
 
         // ReSharper disable once UnusedTypeParameter
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(

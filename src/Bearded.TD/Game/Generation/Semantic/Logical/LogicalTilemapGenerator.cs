@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
 using Bearded.TD.Tiles;
@@ -60,7 +62,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
             var tilemapRadius = lowestRadiusFittingTileCount(nodeCount);
 
-            var nodesToPutDown = chooseBlueprints(nodeCount, spawnerFraction).ToList();
+            var nodesToPutDown = chooseNodes(nodeCount, spawnerFraction).ToList();
             var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
 
             var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
@@ -73,13 +75,13 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             return logicalTilemap;
         }
 
-        private static Tilemap<NodeBlueprint?> generateInitialNodes(
-            int tilemapRadius, ICollection<NodeBlueprint> nodesToPutDown, Random random)
+        private static Tilemap<Node?> generateInitialNodes(
+            int tilemapRadius, ICollection<Node> nodesToPutDown, Random random)
         {
             var tilesThatShouldHaveNodes =
                 chooseTilesThatShouldHaveNodes(tilemapRadius, nodesToPutDown.Count, random).ToList();
             tilesThatShouldHaveNodes.Shuffle();
-            var tilemap = new Tilemap<NodeBlueprint?>(tilemapRadius);
+            var tilemap = new Tilemap<Node?>(tilemapRadius);
             foreach (var (tile, nodeBlueprint) in tilesThatShouldHaveNodes.Zip(nodesToPutDown))
             {
                 tilemap[tile] = nodeBlueprint;
@@ -125,18 +127,21 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             return interior.Concat(partialOuterRing);
         }
 
-        private static IEnumerable<NodeBlueprint> chooseBlueprints(int nodeCount, float spawnerFraction)
+        private static IEnumerable<Node> chooseNodes(int nodeCount, float spawnerFraction)
         {
-            var baseBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new BaseNodeBehavior(),
-                new ForceToCenter(),
-                new DontBeAdjacentToTag(new NodeTag("spawner")),
-                new ClearAllTiles()));
-            var spawnerBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new SpawnerNodeBehavior(),
-                new ClearAllTiles()));
-            var emptyBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new ClearAllTiles()));
+            var baseBlueprint = new Node(ModAwareId.Invalid,
+                ImmutableArray.Create<INodeBehavior>(
+                    new BaseNodeBehavior(),
+                    new ForceToCenter(),
+                    new DontBeAdjacentToTag(new NodeTag("spawner")),
+                    new ClearAllTiles()));
+            var spawnerBlueprint = new Node(ModAwareId.Invalid,
+                ImmutableArray.Create<INodeBehavior>(
+                    new SpawnerNodeBehavior(),
+                    new ClearAllTiles()));
+            var emptyBlueprint = new Node(ModAwareId.Invalid,
+                ImmutableArray.Create<INodeBehavior>(
+                    new ClearAllTiles()));
 
             var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
             var emptyCount = nodeCount - spawnerCount - 1;

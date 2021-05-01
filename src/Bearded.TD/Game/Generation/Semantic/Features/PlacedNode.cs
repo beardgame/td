@@ -4,7 +4,7 @@ using Bearded.TD.Tiles;
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {
     sealed record PlacedNode(
-        NodeBlueprint? Blueprint,
+        Node? Blueprint,
         Directions ConnectedTo,
         ImmutableDictionary<Direction, MacroFeature> MacroFeatures);
 }

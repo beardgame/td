@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
                 .Select(nodeTile.Neighbour)
                 .Select(t => context[t]);
 
-            return connectedNodes.Count(n => n.Blueprint!.Tags.Contains(tagToAvoid)) * 100;
+            return connectedNodes.Count(n => n.Blueprint!.AllTags.Contains(tagToAvoid)) * 100;
         }
     }
 

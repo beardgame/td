@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    [UsedImplicitly]
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class GameModeBlueprint : IConvertsTo<IGameModeBlueprint, Void>
     {
         public string Id { get; set; }

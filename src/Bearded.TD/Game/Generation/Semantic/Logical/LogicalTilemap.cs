@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
     sealed class LogicalTilemap : INodeFitnessContext
     {
         private sealed record TileNode(
-                NodeBlueprint? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
+                Node? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
             : IModifiableTileEdges<TileNode, EdgeFeatures>
         {
             public TileNode WithRight(EdgeFeatures data) => this with {Right = data};
@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
         }
 
         public static LogicalTilemap From(
-            Tilemap<NodeBlueprint?> nodes,
+            Tilemap<Node?> nodes,
             IReadOnlyDictionary<TileEdge, MacroFeature> macroFeatures)
         {
             var tiles = new Tilemap<TileNode>(
