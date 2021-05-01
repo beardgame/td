@@ -88,8 +88,8 @@ namespace Bearded.TD.Game.Generation
                 }
             }
 
-            var physicalTilemap = new PhysicalTilemapGenerator(logger, metadata)
-                .Generate(logicalTilemap, random, radius, nodeRadius);
+            var physicalTilemap = new PhysicalTilemapGenerator(logger, metadata, nodeRadius)
+                .Generate(logicalTilemap, random, radius);
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
