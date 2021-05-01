@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
 
     sealed class ForceToCenter : INodeBehavior
     {
-        public double GetFitnessPenalty(LogicalTilemap tilemap, Tile nodeTile)
+        public double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile)
         {
             return nodeTile.Radius * 1000;
         }
@@ -37,14 +36,14 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             this.tagToAvoid = tagToAvoid;
         }
 
-        public double GetFitnessPenalty(LogicalTilemap tilemap, Tile nodeTile)
+        public double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile)
         {
-            var node = tilemap[nodeTile];
+            var node = context[nodeTile];
 
             var connectedNodes = Extensions.Directions
                 .Where(d => node!.ConnectedTo.Includes(d))
                 .Select(nodeTile.Neighbour)
-                .Select(t => tilemap[t]);
+                .Select(t => context[t]);
 
             return connectedNodes.Count(n => n.Blueprint!.Tags.Contains(tagToAvoid)) * 100;
         }

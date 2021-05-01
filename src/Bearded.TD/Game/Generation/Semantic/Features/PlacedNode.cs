@@ -1,10 +1,9 @@
 using System.Collections.Immutable;
-using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Logical
+namespace Bearded.TD.Game.Generation.Semantic.Features
 {
-    sealed record LogicalNode(
+    sealed record PlacedNode(
         NodeBlueprint? Blueprint,
         Directions ConnectedTo,
         ImmutableDictionary<Direction, MacroFeature> MacroFeatures);

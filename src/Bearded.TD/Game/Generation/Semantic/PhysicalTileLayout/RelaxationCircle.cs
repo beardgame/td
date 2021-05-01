@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Generation.Semantic.Logical;
+using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
@@ -17,9 +17,9 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
     class Node : RelaxationCircle
     {
-        public LogicalNode Logical { get; }
+        public PlacedNode Logical { get; }
 
-        public Node(Position2 position, Unit radius, LogicalNode logical)
+        public Node(Position2 position, Unit radius, PlacedNode logical)
             : base(position, radius)
         {
             Logical = logical;

@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     sealed class LogicalTilemapGenerator
     {
-        sealed record Settings(
+        private sealed record Settings(
             int AreaPerNode = 10 * 10,
             float NodeFillRatio = 0.5f,
             float CreviceToNodeRatio = 1,

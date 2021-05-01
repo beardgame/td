@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
-using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
@@ -10,7 +9,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         string Name => Regex.Replace(GetType().Name, "(Node)?(Behaviou?r)?$", "");
         ImmutableArray<NodeTag> Tags => ImmutableArray<NodeTag>.Empty;
 
-        double GetFitnessPenalty(LogicalTilemap tilemap, Tile nodeTile) => 0;
+        double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile) => 0;
         void Generate(NodeGenerationContext context) {}
     }
 }
