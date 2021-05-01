@@ -81,7 +81,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
         {
             var tilesThatShouldHaveNodes =
                 chooseTilesThatShouldHaveNodes(tilemapRadius, nodesToPutDown.Count, random).ToList();
-            tilesThatShouldHaveNodes.Shuffle();
+            tilesThatShouldHaveNodes.Shuffle(random);
             var tilemap = new Tilemap<Node?>(tilemapRadius);
             foreach (var (tile, nodeBlueprint) in tilesThatShouldHaveNodes.Zip(nodesToPutDown))
             {
