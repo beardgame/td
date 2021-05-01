@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             ImmutableArray.Create<ILogicalTilemapMutation>(
                 new SwapMacroFeatures(),
                 new ToggleConnection(),
-                new SwapBlueprints());
+                new SwapNodes());
 
         private static readonly FitnessFunction<LogicalTilemap> fitnessFunction = FitnessFunction.From(
             LogicalTilemapFitness.ConnectedComponentsCount,
