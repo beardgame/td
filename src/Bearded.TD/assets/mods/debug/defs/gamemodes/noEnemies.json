@@ -13,5 +13,10 @@
             }
         },
         { "id" : "assignWorkers" }
+    ],
+    "levelNodes" : [
+        { "id" : "default.base", "fixedNumber" : 1 },
+        { "id" : "default.empty", "weight" : 1 },
+        { "id" : "default.spawner", "weight" : 1 }
     ]
 }
