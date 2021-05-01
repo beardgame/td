@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {
     [AttributeUsage(AttributeTargets.Class)]
-    [BaseTypeRequired(typeof(INodeBehavior))]
+    [BaseTypeRequired(typeof(INodeBehavior<>))]
     [MeansImplicitUse]
     sealed class NodeBehaviorAttribute : Attribute, IBehaviorAttribute
     {

@@ -4,12 +4,13 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {
-    interface INodeBehavior
+    // ReSharper disable once UnusedTypeParameter
+    interface INodeBehavior<TOwner>
     {
         string Name => Regex.Replace(GetType().Name, "(Node)?(Behaviou?r)?$", "");
-        ImmutableArray<NodeTag> Tags => ImmutableArray<NodeTag>.Empty;
+        ImmutableArray<NodeTag> Tags { get; }
 
-        double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile) => 0;
-        void Generate(NodeGenerationContext context) {}
+        double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile);
+        void Generate(NodeGenerationContext context);
     }
 }

@@ -7,9 +7,9 @@ namespace Bearded.TD.Content.Models
     sealed class NodeBlueprint : INodeBlueprint
     {
         public ModAwareId Id { get; }
-        public ImmutableArray<INodeBehaviorFactory> Behaviors { get; }
+        public ImmutableArray<INodeBehaviorFactory<Node>> Behaviors { get; }
 
-        public NodeBlueprint(ModAwareId id, ImmutableArray<INodeBehaviorFactory> behaviors)
+        public NodeBlueprint(ModAwareId id, ImmutableArray<INodeBehaviorFactory<Node>> behaviors)
         {
             Id = id;
             Behaviors = behaviors;

@@ -6,6 +6,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
+using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -130,18 +131,18 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
         private static IEnumerable<Node> chooseNodes(int nodeCount, float spawnerFraction)
         {
             var baseBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior>(
+                ImmutableArray.Create<INodeBehavior<Node>>(
                     new BaseNodeBehavior(),
                     new ForceToCenter(),
-                    new DontBeAdjacentToTag(new NodeTag("spawner")),
-                    new ClearAllTiles()));
+                    new AvoidTagAdjacency(new AvoidTagAdjacency.BehaviorParameters(new NodeTag("spawner"))),
+                    new MakeAllTilesFloor()));
             var spawnerBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior>(
+                ImmutableArray.Create<INodeBehavior<Node>>(
                     new SpawnerNodeBehavior(),
-                    new ClearAllTiles()));
+                    new MakeAllTilesFloor()));
             var emptyBlueprint = new Node(ModAwareId.Invalid,
-                ImmutableArray.Create<INodeBehavior>(
-                    new ClearAllTiles()));
+                ImmutableArray.Create<INodeBehavior<Node>>(
+                    new MakeAllTilesFloor()));
 
             var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
             var emptyCount = nodeCount - spawnerCount - 1;

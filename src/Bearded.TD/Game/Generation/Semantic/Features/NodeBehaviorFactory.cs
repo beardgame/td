@@ -2,22 +2,22 @@ using System;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {
-    interface INodeBehaviorFactory
+    interface INodeBehaviorFactory<TOwner>
     {
-        INodeBehavior Create();
+        INodeBehavior<TOwner> Create();
     }
 
-    sealed class NodeBehaviorFactory<TParameters> : INodeBehaviorFactory
+    sealed class NodeBehaviorFactory<TOwner, TParameters> : INodeBehaviorFactory<TOwner>
     {
         private readonly TParameters parameters;
-        private readonly Func<TParameters, INodeBehavior> factory;
+        private readonly Func<TParameters, INodeBehavior<TOwner>> factory;
 
-        public NodeBehaviorFactory(TParameters parameters, Func<TParameters, INodeBehavior> factory)
+        public NodeBehaviorFactory(TParameters parameters, Func<TParameters, INodeBehavior<TOwner>> factory)
         {
             this.parameters = parameters;
             this.factory = factory;
         }
 
-        public INodeBehavior Create() => factory(parameters);
+        public INodeBehavior<TOwner> Create() => factory(parameters);
     }
 }

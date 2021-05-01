@@ -7,7 +7,6 @@ using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using INodeBehavior = Bearded.TD.Content.Serialization.Models.INodeBehavior;
 
 namespace Bearded.TD.Content.Serialization.Converters
 {
@@ -27,7 +26,7 @@ namespace Bearded.TD.Content.Serialization.Converters
 
         public static BehaviorConverter<INodeBehavior> ForNodeBehaviors()
             => new(NodeBehaviorFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(INodeBehavior).MakeGenericType(t.Value)));
+                .ToDictionary(t => t.Key, t => typeof(Models.NodeBehavior<>).MakeGenericType(t.Value)));
     }
 
     sealed class BehaviorConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
