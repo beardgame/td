@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         public void GenerateTiles(Tilemap<TileGeometry> tilemap) => Feature.GenerateTiles(tilemap, Tiles);
     }
 
-    sealed record NodeFeature(LogicalNode Node) : Feature
+    sealed record NodeFeature(PlacedNode Node) : Feature
     {
         public override void GenerateTiles(Tilemap<TileGeometry> tilemap, ImmutableHashSet<Tile> tiles)
         {

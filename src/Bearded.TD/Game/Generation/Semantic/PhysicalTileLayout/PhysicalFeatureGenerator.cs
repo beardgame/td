@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
             return connections;
 
-            void tryDirection(Tile tile, LogicalNode node, Direction dir)
+            void tryDirection(Tile tile, PlacedNode node, Direction dir)
             {
                 if (!node.ConnectedTo.Includes(dir))
                     return;
