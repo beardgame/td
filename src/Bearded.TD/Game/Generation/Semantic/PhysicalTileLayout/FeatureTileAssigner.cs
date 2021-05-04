@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.Linq;
+using static Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout.PhysicalFeature;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
@@ -17,12 +18,12 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             this.tilemapRadius = tilemapRadius;
         }
 
-        public List<FeatureWithTiles> AssignFeatures(IEnumerable<IFeatureWithArea> features)
+        public List<TiledFeature> AssignFeatures(IEnumerable<PhysicalFeature> features)
         {
-            var byType = features.ToLookup(f => f.Feature.GetType());
-            var nodes = byType[typeof(NodeFeature)].ToList();
-            var crevices = byType[typeof(CreviceFeature)].ToList();
-            var connections = byType[typeof(ConnectionFeature)];
+            var featureList = features as ICollection<PhysicalFeature> ?? features.ToList();
+            var nodes = featureList.OfType<Node>().ToList();
+            var crevices = featureList.OfType<Crevice>().ToList();
+            var connections = featureList.OfType<Connection>().ToList();
 
             var nodesWithAreas = assignTilesToClosestContainingCircleArea(nodes);
             var nodesWithAreasAfterErosion = erode(nodesWithAreas).ToList();
@@ -37,15 +38,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         }
 
 
-        private IEnumerable<FeatureWithTiles> assignTilesToClosestContainingCircleArea(
-            ICollection<IFeatureWithArea> features, IEnumerable<Tile>? tilesToAvoid = null)
+        private IEnumerable<TiledFeature> assignTilesToClosestContainingCircleArea(
+            IReadOnlyCollection<IFeatureWithCircles> features, IEnumerable<Tile>? tilesToAvoid = null)
         {
             // TODO: 🐎 refactor to iterate tiles around circles instead and keep a tilemap with closest node for each tile
             // we may need to use a shared tilemap with other features for this so connections can assign tiles to nodes,
             // and similar
             var featureAreas = features.ToDictionary(f => f, _ => new HashSet<Tile>());
             var allCircles = features
-                .SelectMany(f => ((CirclesArea) f.Area).Circles.Select(c => (Circle: c, Feature: f)))
+                .SelectMany(f => f.Circles.Select(c => (Circle: c, Feature: f)))
                 .ToList();
 
             var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ??
@@ -69,21 +70,21 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 featureAreas[feature].Add(tile);
             }
 
-            return features.Select(f => f.Feature.WithTiles(featureAreas[f]));
+            return features.Select(f => f.WithTiles(featureAreas[f]));
         }
 
-        private IEnumerable<FeatureWithTiles> assignTilesAlongLingSegments(
-            IEnumerable<IFeatureWithArea> features, IEnumerable<Tile>? tilesToAvoid = null)
+        private IEnumerable<TiledFeature> assignTilesAlongLingSegments(
+            IEnumerable<Connection> features, IEnumerable<Tile>? tilesToAvoid = null)
         {
             var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ??
                 ImmutableHashSet.CreateRange(tilesToAvoid ?? ImmutableHashSet<Tile>.Empty);
 
             foreach (var feature in features)
             {
-                var (from, to) = (LineSegmentArea)feature.Area;
+                var (from, to) = feature;
 
                 var rayCaster = new LevelRayCaster();
-                rayCaster.StartEnumeratingTiles(new Ray(from.Position, to.Position - from.Position));
+                rayCaster.StartEnumeratingTiles(new Ray(from.Circle.Position, to.Circle.Position));
 
                 var featureArea = new List<Tile>();
                 var adding = false;
@@ -106,11 +107,11 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     featureArea.Add(tile);
                 }
 
-                yield return feature.Feature.WithTiles(featureArea);
+                yield return feature.WithTiles(featureArea);
             }
         }
 
-        private IEnumerable<FeatureWithTiles> erode(IEnumerable<FeatureWithTiles> features)
+        private IEnumerable<TiledFeature> erode(IEnumerable<TiledFeature> features)
         {
             return features
                 .Select(f => f.Feature.WithTiles(f.Tiles.Where(t => t.PossibleNeighbours().All(f.Tiles.Contains))));

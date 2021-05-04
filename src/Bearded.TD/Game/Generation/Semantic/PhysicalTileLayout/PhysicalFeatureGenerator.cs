@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Logical;
@@ -18,7 +19,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             this.nodeRadius = nodeRadius;
         }
 
-        public List<IFeatureWithArea> GenerateFeaturesWithAreasInInitialLocation(
+        public List<PhysicalFeature> GenerateFeaturesWithAreasInInitialLocation(
             LogicalTilemap logicalTilemap, Random random)
         {
             var nodesByLogicalTile = createNodeFeatures(logicalTilemap, random);
@@ -27,15 +28,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             var crevices = createCreviceFeatures(logicalTilemap);
 
             return nodesByLogicalTile.Values
-                .Concat<IFeatureWithArea>(connections)
+                .Concat<PhysicalFeature>(connections)
                 .Concat(crevices)
                 .ToList();
         }
 
-        private Dictionary<Tile, FeatureWithArea<CirclesArea>> createNodeFeatures(
+        private Dictionary<Tile, PhysicalFeature.Node> createNodeFeatures(
             LogicalTilemap logicalTilemap, Random random)
         {
-            var nodes = new Dictionary<Tile, FeatureWithArea<CirclesArea>>();
+            var nodes = new Dictionary<Tile, PhysicalFeature.Node>();
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
                 var node = logicalTilemap[tile];
@@ -52,7 +53,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                 var circle = new RelaxationCircle(center, nodeRadius * random.NextFloat(0.75f, 1.2f));
 
-                var n = new NodeFeature(node).WithArea(new CirclesArea(circle));
+                var n = new PhysicalFeature.Node(node.Blueprint, ImmutableArray.Create(circle));
 
                 nodes.Add(tile, n);
             }
@@ -60,11 +61,11 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             return nodes;
         }
 
-        private List<FeatureWithArea<LineSegmentArea>> createNodeConnectionFeatures(
+        private List<PhysicalFeature.Connection> createNodeConnectionFeatures(
             LogicalTilemap logicalTilemap,
-            Dictionary<Tile, FeatureWithArea<CirclesArea>> nodes)
+            Dictionary<Tile, PhysicalFeature.Node> nodes)
         {
-            var connections = new List<FeatureWithArea<LineSegmentArea>>();
+            var connections = new List<PhysicalFeature.Connection>();
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
                 var node = logicalTilemap[tile];
@@ -86,19 +87,18 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 var neighborTile = tile.Neighbour(dir);
 
                 // TODO: look for closest connectable circle once we use multiple circles per node
-                var area = new LineSegmentArea(
-                    nodes[tile].Area.Circles.First(),
-                    nodes[neighborTile].Area.Circles.First());
+                var from = new NodeCircle(nodes[tile], 0);
+                var to = new NodeCircle(nodes[neighborTile], 0);
 
-                var connection = new ConnectionFeature().WithArea(area);
+                var connection = new PhysicalFeature.Connection(from, to);
 
                 connections.Add(connection);
             }
         }
 
-        private List<FeatureWithArea<CirclesArea>> createCreviceFeatures(LogicalTilemap logicalTilemap)
+        private List<PhysicalFeature.Crevice> createCreviceFeatures(LogicalTilemap logicalTilemap)
         {
-            var crevices = new List<FeatureWithArea<CirclesArea>>();
+            var crevices = new List<PhysicalFeature.Crevice>();
             var seenEdges = new HashSet<TileEdge>();
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
@@ -128,8 +128,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         return new RelaxationCircle(p, 1.5.U());
                     });
 
-                    var creviceFeature = new CreviceFeature()
-                        .WithArea(new CirclesArea(circles));
+                    var creviceFeature = new PhysicalFeature.Crevice(ImmutableArray.CreateRange(circles));
 
                     crevices.Add(creviceFeature);
                 }

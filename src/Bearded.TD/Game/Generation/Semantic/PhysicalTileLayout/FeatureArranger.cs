@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout.PhysicalFeature;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
@@ -16,9 +17,9 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             this.tilemapRadius = tilemapRadius;
         }
 
-        public void ArrangeFeatures(IEnumerable<IFeatureWithArea> features)
+        public void ArrangeFeatures(IEnumerable<PhysicalFeature> features)
         {
-            var featuresEnumerated = features as ICollection<IFeatureWithArea> ?? features.ToList();
+            var featuresEnumerated = features as ICollection<PhysicalFeature> ?? features.ToList();
 
             var circles = getAllCircles(featuresEnumerated);
             var springs = getAllSprings(featuresEnumerated);
@@ -28,29 +29,26 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             system.Relax();
         }
 
-        private IEnumerable<Spring> getAllSprings(ICollection<IFeatureWithArea> features)
+        private IEnumerable<Spring> getAllSprings(ICollection<PhysicalFeature> features)
         {
-            var nodesWithTheirCircles = features
-                .Where(f => f.Feature is NodeFeature)
-                .Select(f => (Feature: f, ((CirclesArea) f.Area).Circles))
-                .ToList();
+            var allNodes = features.OfType<Node>();
 
             return features.SelectMany(
-                f => f.Feature switch
+                f => f switch
                 {
-                    ConnectionFeature when f.Area is LineSegmentArea line =>
-                        new Spring(line.From, line.To, SpringBehavior.Pull).Yield(),
-                    CreviceFeature when f.Area is CirclesArea(var circles) =>
-                        nodesWithTheirCircles
+                    Connection(var from, var to) =>
+                        new Spring(from.Circle, to.Circle, SpringBehavior.Pull).Yield(),
+                    Crevice(var circles) =>
+                        allNodes
                             .SelectMany(n => pushAll(circles, n.Circles, 1.U()))
                             .Concat(Enumerable.Range(0, circles.Length - 1).Select(
                                 i => new Spring(circles[i], circles[i + 1], SpringBehavior.Pull, 5, 0.5.U())
                             )),
-                    NodeFeature when f.Area is CirclesArea area =>
-                        nodesWithTheirCircles
-                            .TakeWhile(n => n.Feature != f)
-                            .SelectMany(n => pushAll(area.Circles, n.Circles)),
-                    _ => throw new InvalidOperationException($"Did not expect {f.Feature.GetType()} with {f.Area.GetType()}")
+                    Node(_, var circles) =>
+                        allNodes
+                            .TakeWhile(n => n != f)
+                            .SelectMany(n => pushAll(circles, n.Circles)),
+                    _ => throw new NotImplementedException()
                 });
         }
 
@@ -65,12 +63,9 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 select new Spring(c1, c2, SpringBehavior.Push, Overlap: overlap);
         }
 
-        private IEnumerable<RelaxationCircle> getAllCircles(IEnumerable<IFeatureWithArea> features)
+        private IEnumerable<RelaxationCircle> getAllCircles(IEnumerable<PhysicalFeature> features)
         {
-            return features.SelectMany(
-                f => f.Area is CirclesArea area
-                    ? area.Circles
-                    : Enumerable.Empty<RelaxationCircle>());
+            return features.OfType<IFeatureWithCircles>().SelectMany(f => f.Circles);
         }
     }
 }

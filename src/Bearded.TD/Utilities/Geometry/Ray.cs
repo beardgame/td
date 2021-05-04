@@ -2,10 +2,14 @@
 
 namespace Bearded.TD.Utilities.Geometry
 {
-    struct Ray
+    readonly struct Ray
     {
         public Position2 Start { get; }
         public Difference2 Direction { get; }
+
+        public Ray(Position2 start, Position2 end) : this(start, end - start)
+        {
+        }
 
         public Ray(Position2 start, Difference2 direction)
         {
