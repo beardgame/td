@@ -2,6 +2,12 @@
     "id" : "spawner",
     "behaviors" : [
         { "id" : "spawner" },
-        { "id" : "makeAllTilesFloor" }
+        { "id" : "makeAllTilesFloor" },
+        {
+            "id" : "spawnCrystals",
+            "parameters" : {
+                "blueprints" : [ "crystal-cyan0", "crystal-cyan1", "crystal-cyan2", "crystal-cyan3" ]
+            }
+        }
     ]
 }

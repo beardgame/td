@@ -19,6 +19,8 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
 
         public ImmutableHashSet<Tile> Tiles { get; }
 
+        public Random Random { get; }
+
         // info about connections, etc.
 
         public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles)
@@ -27,6 +29,14 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             commandAccumulator = new LevelGenerationCommandAccumulator();
             this.tilemap = tilemap;
             Tiles = tiles.ToImmutableHashSet();
+            // TODO: likewise: this should be set from the constructor parameters
+            Random = new Random();
+        }
+
+        public TileGeometry Get(Tile tile)
+        {
+            // TODO: is there a reason why you couldn't read outside of your node?
+            return tilemap[tile];
         }
 
         public void Set(Tile tile, TileGeometry geometry)

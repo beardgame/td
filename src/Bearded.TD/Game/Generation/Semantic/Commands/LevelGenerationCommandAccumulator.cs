@@ -18,14 +18,14 @@ namespace Bearded.TD.Game.Generation.Semantic.Commands
             commands.Add(new PlaceBuilding(blueprint, footprint));
         }
 
-        public ImmutableArray<CommandFactory> ToCommandFactories()
-        {
-            return commands.Select(cmd => cmd.ToCommandFactory()).ToImmutableArray();
-        }
-
         public void PlaceGameObject(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
         {
             commands.Add(new PlaceGameObject(blueprint, position, direction));
+        }
+
+        public ImmutableArray<CommandFactory> ToCommandFactories()
+        {
+            return commands.Select(cmd => cmd.ToCommandFactory()).ToImmutableArray();
         }
     }
 }
