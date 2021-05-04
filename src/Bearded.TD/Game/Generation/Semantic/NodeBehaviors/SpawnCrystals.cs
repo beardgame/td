@@ -20,8 +20,6 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            base.Generate(context);
-
             foreach (var tile in context.Tiles)
             {
                 var centerGeometry = context.Get(tile);
