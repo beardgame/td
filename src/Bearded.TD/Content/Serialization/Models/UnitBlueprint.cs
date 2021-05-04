@@ -5,11 +5,13 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using JetBrains.Annotations;
 
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Bearded.TD.Content.Serialization.Models
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class UnitBlueprint : IConvertsTo<Content.Models.UnitBlueprint, Void>
     {
         public string Id { get; set; }
@@ -24,7 +26,7 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public Content.Models.UnitBlueprint ToGameModel(ModMetadata modMetadata, Void _)
         {
-            return new Content.Models.UnitBlueprint(
+            return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Health,

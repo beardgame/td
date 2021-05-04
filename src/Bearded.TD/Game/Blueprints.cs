@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
@@ -24,6 +25,7 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
         public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
+        public ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes { get; }
         public ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes { get; }
 
         public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
@@ -35,6 +37,7 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
             ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
+            ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
             ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes)
         {
             Shaders = shaders;
@@ -46,6 +49,7 @@ namespace Bearded.TD.Game
             ComponentOwners = componentOwners;
             Upgrades = upgrades;
             Technologies = technologies;
+            LevelNodes = levelNodes;
             GameModes = gameModes;
         }
 
@@ -62,6 +66,7 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.ComponentOwners),
                 flatten(list, b => b.Upgrades),
                 flatten(list, b => b.Technologies),
+                flatten(list, b => b.LevelNodes),
                 flatten(list, b => b.GameModes)
                 );
         }

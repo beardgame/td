@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Generation.Semantic.Logical;
+using Bearded.TD.Game.Generation.Semantic.Fitness;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Game.Generation.Semantic.Fitness
+namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     using Tilemap = LogicalTilemap;
     using FF = SimpleFitnessFunction<LogicalTilemap>;
@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Fitness
 
         public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
 
-        private sealed class NodeBehavior : FF
+        private sealed class NodeBehavior : SimpleFitnessFunction<LogicalTilemap>
         {
             public override string Name => "Node Behaviour";
 

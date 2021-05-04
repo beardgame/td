@@ -5,6 +5,6 @@ namespace Bearded.TD.Game.Generation
 {
     interface ITilemapGenerator
     {
-        Tilemap<TileGeometry> Generate(int radius, int seed);
+        Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed);
     }
 }

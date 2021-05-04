@@ -6,10 +6,11 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class TechnologyBlueprint
         : IConvertsTo<Content.Models.TechnologyBlueprint, TechnologyBlueprint.DependencyResolvers>
     {
@@ -17,11 +18,11 @@ namespace Bearded.TD.Content.Serialization.Models
         public string Name { get; set; }
         public int Cost { get; set; }
         public List<TechnologyUnlock> Unlocks { get; set; }
-        public List<string> RequiredTechs { get; set; } = new List<string>();
+        public List<string> RequiredTechs { get; set; } = new();
 
         public Content.Models.TechnologyBlueprint ToGameModel(ModMetadata modMetadata, DependencyResolvers resolvers)
         {
-            return new Content.Models.TechnologyBlueprint(
+            return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Cost,

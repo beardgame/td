@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, SpriteSetLoader)>
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    sealed class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, SpriteSetLoader)>
     {
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         public class TextureSampler
         {
             public string Sampler { get; set; }

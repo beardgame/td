@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
 using Bearded.TD.Tiles;
@@ -15,17 +16,18 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
     sealed class LogicalTilemapGenerator
     {
-        sealed record Settings(
+        private readonly Logger logger;
+
+        private sealed record Settings(
             int AreaPerNode = 10 * 10,
             float NodeFillRatio = 0.5f,
-            float CreviceToNodeRatio = 1,
-            float SpawnerFraction = 0.5f);
+            float CreviceToNodeRatio = 1);
 
         private static readonly ImmutableArray<ILogicalTilemapMutation> mutations =
             ImmutableArray.Create<ILogicalTilemapMutation>(
                 new SwapMacroFeatures(),
                 new ToggleConnection(),
-                new SwapBlueprints());
+                new SwapNodes());
 
         private static readonly FitnessFunction<LogicalTilemap> fitnessFunction = FitnessFunction.From(
             LogicalTilemapFitness.ConnectedComponentsCount,
@@ -40,27 +42,28 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
         public LogicalTilemapGenerator(Logger logger)
         {
+            this.logger = logger;
             optimizer = new LogicalTilemapOptimizer(logger, mutations, fitnessFunction);
         }
 
-        public LogicalTilemap Generate(Random random, int radius)
+        public LogicalTilemap Generate(LevelGenerationParameters parameters, Random random)
         {
-            var logicalTilemap = generateInitialTilemap(radius, new Settings(), random);
+            var logicalTilemap = generateInitialTilemap(parameters.Radius, parameters.Nodes, new Settings(), random);
 
             logicalTilemap = optimizer.Optimize(logicalTilemap, random);
 
             return logicalTilemap;
         }
 
-        private static LogicalTilemap generateInitialTilemap(int radius, Settings settings, Random random)
+        private LogicalTilemap generateInitialTilemap(int radius, NodeGroup nodes, Settings settings, Random random)
         {
-            var (areaPerNode, nodeFillRatio, creviceToNodeRatio, spawnerFraction) = settings;
+            var (areaPerNode, nodeFillRatio, creviceToNodeRatio) = settings;
             var totalArea = Tilemap.TileCountForRadius(radius);
             var nodeCount = MoreMath.FloorToInt(nodeFillRatio * totalArea / areaPerNode);
 
             var tilemapRadius = lowestRadiusFittingTileCount(nodeCount);
 
-            var nodesToPutDown = chooseBlueprints(nodeCount, spawnerFraction).ToList();
+            var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToList();
             var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
 
             var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
@@ -73,13 +76,13 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             return logicalTilemap;
         }
 
-        private static Tilemap<NodeBlueprint?> generateInitialNodes(
-            int tilemapRadius, ICollection<NodeBlueprint> nodesToPutDown, Random random)
+        private static Tilemap<Node?> generateInitialNodes(
+            int tilemapRadius, ICollection<Node> nodesToPutDown, Random random)
         {
             var tilesThatShouldHaveNodes =
                 chooseTilesThatShouldHaveNodes(tilemapRadius, nodesToPutDown.Count, random).ToList();
-            tilesThatShouldHaveNodes.Shuffle();
-            var tilemap = new Tilemap<NodeBlueprint?>(tilemapRadius);
+            tilesThatShouldHaveNodes.Shuffle(random);
+            var tilemap = new Tilemap<Node?>(tilemapRadius);
             foreach (var (tile, nodeBlueprint) in tilesThatShouldHaveNodes.Zip(nodesToPutDown))
             {
                 tilemap[tile] = nodeBlueprint;
@@ -123,27 +126,6 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                 });
 
             return interior.Concat(partialOuterRing);
-        }
-
-        private static IEnumerable<NodeBlueprint> chooseBlueprints(int nodeCount, float spawnerFraction)
-        {
-            var baseBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new BaseNodeBehavior(),
-                new ForceToCenter(),
-                new DontBeAdjacentToTag(new NodeTag("spawner")),
-                new ClearAllTiles()));
-            var spawnerBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new SpawnerNodeBehavior(),
-                new ClearAllTiles()));
-            var emptyBlueprint = new NodeBlueprint(ImmutableArray.Create<INodeBehavior>(
-                new ClearAllTiles()));
-
-            var spawnerCount = MoreMath.RoundToInt(nodeCount * spawnerFraction);
-            var emptyCount = nodeCount - spawnerCount - 1;
-
-            return Enumerable.Repeat(emptyBlueprint, emptyCount)
-                .Concat(Enumerable.Repeat(spawnerBlueprint, spawnerCount))
-                .Concat(baseBlueprint.Yield());
         }
 
         private static Dictionary<TileEdge, MacroFeature> generateInitialMacroFeatures(

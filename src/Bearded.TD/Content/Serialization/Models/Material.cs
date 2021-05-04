@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Mods;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class Material : IConvertsTo<Content.Models.Material, (FileInfo, MaterialLoader)>
     {
         public string Id { get; set; }
@@ -23,6 +25,7 @@ namespace Bearded.TD.Content.Serialization.Models
             return new Content.Models.Material(ModAwareId.FromNameInMod(Id, modMetadata), Shader, textures);
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         public class NamedTextureFileArray
         {
             public string Name { get; set; }

@@ -9,18 +9,17 @@ namespace Bearded.TD.Game.Simulation.Rules
     static class GameRuleFactories
     {
         private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(GameRuleFactories)
-            .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static);
+            .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static)!;
 
         private static readonly BehaviorFactories<IGameRule, GameRuleAttribute, GameRuleOwnerAttribute, VoidParameters> factories =
-            new BehaviorFactories<IGameRule, GameRuleAttribute, GameRuleOwnerAttribute, VoidParameters>(typeof(IGameRule<>),
-                makeFactoryFactoryMethodInfo);
+            new(typeof(IGameRule<>), makeFactoryFactoryMethodInfo);
 
         public static void Initialize() => factories.Initialize();
 
         public static IDictionary<string, Type> ParameterTypesForComponentsById => factories.ParameterTypesById;
 
         public static IGameRuleFactory<TOwner> CreateGameRuleFactory<TOwner>(IGameRule template) =>
-            factories.CreateBehaviorFactory<GameState>(template) as IGameRuleFactory<TOwner>;
+            (factories.CreateBehaviorFactory<GameState>(template) as IGameRuleFactory<TOwner>)!;
 
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
             Func<TParameters, IGameRule<TOwner>> constructor)

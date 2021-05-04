@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             }
         }
 
-        public sealed class SwapBlueprints : ILogicalTilemapMutation
+        public sealed class SwapNodes : ILogicalTilemapMutation
         {
             public bool TryMutate(LogicalTilemap tilemap, Random random)
             {

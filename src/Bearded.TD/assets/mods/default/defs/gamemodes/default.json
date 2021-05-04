@@ -36,5 +36,10 @@
                 "wavesPerChapter" : 5
             }
         }
+    ],
+    "levelNodes" : [
+        { "id" : "base", "fixedNumber" : 1 },
+        { "id" : "empty", "weight" : 1 },
+        { "id" : "spawner", "weight" : 1 }
     ]
 }

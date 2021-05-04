@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands.Debug;
 using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Generation;
@@ -9,8 +9,6 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedParameter.Local
 
 namespace Bearded.TD.Game.Debug
 {
@@ -54,7 +52,10 @@ namespace Bearded.TD.Game.Debug
 
             var generator = TilemapGenerator.From(method, logger, gameInstance.LevelDebugMetadata);
 
-            var tilemap  = generator.Generate(gameInstance.GameSettings.LevelSize, seed);
+            var gameMode = gameInstance.Blueprints.GameModes[gameInstance.GameSettings.GameMode
+                ?? ModAwareId.ForDefaultMod("default")];
+            var tilemap = generator.Generate(
+                new LevelGenerationParameters(gameInstance.GameSettings.LevelSize, gameMode.Nodes), seed);
             var drawInfos = GameStateBuilder.DrawInfosFromTypes(tilemap);
 
             gameInstance.Meta.Dispatcher.RunOnlyOnServer(FillTilemap.Command, gameInstance, tilemap, drawInfos);

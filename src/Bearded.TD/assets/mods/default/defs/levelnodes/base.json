@@ -1,0 +1,9 @@
+{
+    "id" : "base",
+    "behaviors" : [
+        { "id" : "base" },
+        { "id" : "forceToCenter" },
+        { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "base" } },
+        { "id" : "makeAllTilesFloor" }
+    ]
+}

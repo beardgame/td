@@ -6,10 +6,10 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Logical
 {
-    sealed class LogicalTilemap
+    sealed class LogicalTilemap : INodeFitnessContext
     {
         private sealed record TileNode(
-                NodeBlueprint? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
+                Node? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
             : IModifiableTileEdges<TileNode, EdgeFeatures>
         {
             public TileNode WithRight(EdgeFeatures data) => this with {Right = data};
@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
         }
 
         public static LogicalTilemap From(
-            Tilemap<NodeBlueprint?> nodes,
+            Tilemap<Node?> nodes,
             IReadOnlyDictionary<TileEdge, MacroFeature> macroFeatures)
         {
             var tiles = new Tilemap<TileNode>(
@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
         public bool IsValidTile(Tile tile) => tile.Radius <= Radius;
 
-        public LogicalNode this[Tile tile] =>
+        public PlacedNode this[Tile tile] =>
             new(
                 tiles[tile].Node,
                 Extensions.Directions

@@ -1,14 +1,16 @@
 using System.IO;
 using Bearded.TD.Content.Mods;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Content.Serialization.Models
 {
-    class Shader : IConvertsTo<Content.Models.Shader, (FileInfo, ShaderLoader)>
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    sealed class Shader : IConvertsTo<Content.Models.Shader, (FileInfo, ShaderLoader)>
     {
         public string Id { get; set; }
         public string VertexShader { get; set; }
         public string FragmentShader { get; set; }
-        
+
         public Content.Models.Shader ToGameModel(ModMetadata contextMeta, (FileInfo, ShaderLoader) resolver)
         {
             var (fileInfo, shaderLoader) = resolver;
