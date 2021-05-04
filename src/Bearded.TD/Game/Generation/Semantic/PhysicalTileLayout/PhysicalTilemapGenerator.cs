@@ -7,7 +7,6 @@ using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
 
@@ -15,25 +14,14 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
     sealed class PhysicalTilemapGenerator
     {
-        private readonly Logger logger;
         private readonly LevelDebugMetadata metadata;
         private readonly Unit nodeRadius;
 
-        public PhysicalTilemapGenerator(Logger logger, LevelDebugMetadata metadata, Unit nodeRadius)
+        public PhysicalTilemapGenerator(LevelDebugMetadata metadata, Unit nodeRadius)
         {
-            this.logger = logger;
             this.metadata = metadata;
             this.nodeRadius = nodeRadius;
         }
-
-        private sealed record CreviceData(
-            List<TileEdge> Crevices,
-            List<RelaxationCircle> Circles,
-            MultiDictionary<TileEdge, RelaxationCircle> CircleLookup,
-            Dictionary<RelaxationCircle, TileEdge> CreviceByCircle,
-            List<Spring> Springs
-        );
-
 
         public Tilemap<TileGeometry> Generate(LogicalTilemap logicalTilemap, Random random, int radius)
         {
@@ -95,14 +83,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         if (feature.Feature is NodeFeature node)
                         {
                             const float lineHeight = 0.5f;
-                            var p = circles.Aggregate(Difference2.Zero, (p, c) => p + (c.Position - Position2.Zero))
-                                / circles.Length + Position2.Zero;
+                            var center = Position2.Zero + circles
+                                    .Aggregate(Difference2.Zero, (p, c) => p + (c.Position - Position2.Zero))
+                                / circles.Length;
 
                             foreach (var (behavior, i) in node.Node.Blueprint!.Behaviors.Indexed())
                             {
                                 metadata.Add(new Text(
-                                    p - new Difference2(0, i * lineHeight),
-                                    behavior.Name ?? "",
+                                    center - new Difference2(0, i * lineHeight),
+                                    behavior.Name,
                                     Color.Cyan * 0.5f, 0, lineHeight.U()
                                 ));
                             }

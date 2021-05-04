@@ -21,11 +21,6 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         public List<IFeatureWithArea> GenerateFeaturesWithAreasInInitialLocation(
             LogicalTilemap logicalTilemap, Random random)
         {
-            return createAllFeatures(logicalTilemap, random).ToList();
-        }
-
-        private IEnumerable<IFeatureWithArea> createAllFeatures(LogicalTilemap logicalTilemap, Random random)
-        {
             var nodesByLogicalTile = createNodeFeatures(logicalTilemap, random);
             var connections = createNodeConnectionFeatures(logicalTilemap, nodesByLogicalTile);
 
@@ -33,7 +28,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
             return nodesByLogicalTile.Values
                 .Concat<IFeatureWithArea>(connections)
-                .Concat(crevices);
+                .Concat(crevices)
+                .ToList();
         }
 
         private Dictionary<Tile, FeatureWithArea<CirclesArea>> createNodeFeatures(
@@ -88,9 +84,6 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     return;
 
                 var neighborTile = tile.Neighbour(dir);
-                // TODO: these checks don't seem necessary. let's verify that!
-                //if (!logicalTilemap.IsValidTile(neighborTile) || logicalTilemap[neighborTile] is null)
-                //    return;
 
                 // TODO: look for closest connectable circle once we use multiple circles per node
                 var area = new LineSegmentArea(

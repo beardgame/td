@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
