@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 Connection c => TiledFeature.From(c, tiles),
                 Crevice c => TiledFeature.From(c, tiles),
                 Node n => TiledFeature.From(n, tiles),
-                _ => throw new NotImplementedException()
+                _ => throw new NotSupportedException()
             };
 
         public sealed record Node(Features.Node Blueprint, ImmutableArray<RelaxationCircle> Circles)

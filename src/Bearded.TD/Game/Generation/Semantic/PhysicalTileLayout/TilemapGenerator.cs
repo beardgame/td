@@ -17,14 +17,14 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             {
                 switch (feature)
                 {
-                    case PhysicalFeature.Connection connection:
+                    case PhysicalFeature.Connection:
                         foreach (var tile in tiles)
                         {
                             tilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
                         }
 
                         break;
-                    case PhysicalFeature.Crevice crevice:
+                    case PhysicalFeature.Crevice:
                         foreach (var tile in tiles)
                         {
                             tilemap[tile] = new TileGeometry(TileType.Crevice, 1, -5.U());
@@ -40,7 +40,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new NotSupportedException();
                 }
             }
 

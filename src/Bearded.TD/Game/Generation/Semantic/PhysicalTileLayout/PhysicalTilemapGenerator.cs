@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -50,7 +49,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     PhysicalFeature.Connection => Color.Beige,
                     PhysicalFeature.Crevice => Color.Brown,
                     PhysicalFeature.Node => Color.IndianRed,
-                    _ => throw new ArgumentOutOfRangeException(nameof(feature))
+                    _ => throw new NotSupportedException()
                 };
 
                 metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), color * 0.5f));

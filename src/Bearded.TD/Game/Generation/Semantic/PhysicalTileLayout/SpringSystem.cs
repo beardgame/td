@@ -25,6 +25,18 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
         public void Relax()
         {
+            // TODO: this algorithm needs various improvements:
+            // - add up all forces on all circles every step and then move all circles at once
+            // - limit how far a circle can be pushed in a single frame to avoid too fast movement
+            // - decrease max movement over time to arrive at stable solution
+            // TODO: we could also try increasing performance:
+            // - pre-calculate current distances between springs and split push and pull springs
+            //   - then, because of known max movement (accumulated), we only have to iterate springs that could possibly overlap
+            //   - benchmark if this is actually worth it
+            //   - may have to fiddle with how often spring distances are re-calculated for optimal performance
+            //     - perhaps make this depend on how many springs were iterated that weren't in range after all
+            //     - or just use some sort of min-heap and keep updating it as we iterate so springs get re-sorted all the time
+
             foreach (var _ in Enumerable.Range(0, 100))
             {
                 foreach (var spring in springs)
@@ -37,19 +49,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     var targetD = spring.TargetDistance;
                     var targetDSquared = targetD.Squared;
 
-                    switch (spring.Behavior)
+                    var springIsActive = spring.Behavior switch
                     {
-                        case SpringBehavior.Push:
-                            if (targetDSquared < dSquared)
-                                continue;
-                            break;
-                        case SpringBehavior.Pull:
-                            if (targetDSquared > dSquared)
-                                continue;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                        SpringBehavior.Push => targetDSquared >= dSquared,
+                        SpringBehavior.Pull => targetDSquared <= dSquared,
+                        _ => throw new NotSupportedException()
+                    };
+
+                    if (!springIsActive)
+                        continue;
 
                     var forceMagnitude = (targetDSquared.NumericValue - dSquared.NumericValue).U() * 0.01f *
                         spring.ForceMultiplier;
