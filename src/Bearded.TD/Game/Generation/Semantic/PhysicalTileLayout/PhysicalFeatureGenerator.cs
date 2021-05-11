@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -87,8 +88,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 var neighborTile = tile.Neighbour(dir);
 
                 // TODO: look for closest connectable circle once we use multiple circles per node
-                var from = new NodeCircle(nodes[tile], 0);
-                var to = new NodeCircle(nodes[neighborTile], 0);
+                var from = new FeatureCircle(nodes[tile], 0);
+                var to = new FeatureCircle(nodes[neighborTile], 0);
 
                 var connection = new PhysicalFeature.Connection(from, to);
 

@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
 
         private IEnumerable<TiledFeature> assignTilesToClosestContainingCircleArea(
-            IReadOnlyCollection<IFeatureWithCircles> features, IEnumerable<Tile>? tilesToAvoid = null)
+            IReadOnlyCollection<WithCircles> features, IEnumerable<Tile>? tilesToAvoid = null)
         {
             // TODO: 🐎 refactor to iterate tiles around circles instead and keep a tilemap with closest node for each tile
             // we may need to use a shared tilemap with other features for this so connections can assign tiles to nodes,
