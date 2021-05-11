@@ -6,11 +6,11 @@ using Newtonsoft.Json;
 namespace Bearded.TD.Game.Simulation.Rules.Buildings
 {
     [GameRule("placeBuilding")]
-    sealed class PlaceBuildingRule : GameRule<PlaceBuildingRule.Parameters>
+    sealed class PlaceBuildingRule : GameRule<PlaceBuildingRule.RuleParameters>
     {
-        public PlaceBuildingRule(Parameters parameters) : base(parameters) {}
+        public PlaceBuildingRule(RuleParameters parameters) : base(parameters) {}
 
-        protected override void Execute(GameState owner, Parameters parameters)
+        protected override void Execute(GameState owner, RuleParameters parameters)
         {
             owner.Meta.Dispatcher.RunOnlyOnServer(() => PlopBuilding.Command(
                 owner,
@@ -20,13 +20,13 @@ namespace Bearded.TD.Game.Simulation.Rules.Buildings
                 parameters.Footprint));
         }
 
-        public readonly struct Parameters
+        public readonly struct RuleParameters
         {
             public IBuildingBlueprint Building { get; }
             public PositionedFootprint Footprint { get; }
 
             [JsonConstructor]
-            public Parameters(IBuildingBlueprint building, PositionedFootprint footprint)
+            public RuleParameters(IBuildingBlueprint building, PositionedFootprint footprint)
             {
                 Building = building;
                 Footprint = footprint;

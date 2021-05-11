@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 namespace Bearded.TD.Game.Simulation.Rules.Technologies
 {
     [GameRule("grantTechPointsOnWaveEnd")]
-    sealed class GrantTechPointsOnWaveEnd : GameRule<GrantTechPointsOnWaveEnd.Parameters>
+    sealed class GrantTechPointsOnWaveEnd : GameRule<GrantTechPointsOnWaveEnd.RuleParameters>
     {
-        public GrantTechPointsOnWaveEnd(Parameters parameters) : base(parameters) { }
+        public GrantTechPointsOnWaveEnd(RuleParameters parameters) : base(parameters) { }
 
         protected override void RegisterEvents(
-            GlobalGameEvents events, GameSettings gameSettings, Parameters parameters)
+            GlobalGameEvents events, GameSettings gameSettings, RuleParameters parameters)
         {
             base.RegisterEvents(events, gameSettings, parameters);
             events.Subscribe(new Listener(parameters.Amount));
@@ -31,12 +31,12 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
             }
         }
 
-        public readonly struct Parameters
+        public readonly struct RuleParameters
         {
             public int Amount { get; }
 
             [JsonConstructor]
-            public Parameters(int? amount = null)
+            public RuleParameters(int? amount = null)
             {
                 Amount = amount ?? 1;
             }

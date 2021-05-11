@@ -9,11 +9,11 @@ using Newtonsoft.Json;
 namespace Bearded.TD.Game.Simulation.Rules.Resources
 {
     [GameRule("grantResourcesOnStart")]
-    sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.Parameters>
+    sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParameters>
     {
-        public GrantResourcesOnStart(Parameters parameters) : base(parameters) { }
+        public GrantResourcesOnStart(RuleParameters parameters) : base(parameters) { }
 
-        protected override void Execute(GameState game, Parameters parameters)
+        protected override void Execute(GameState game, RuleParameters parameters)
         {
             game.Meta.Events.Subscribe(new Listener(game.Factions, parameters.Amount));
         }
@@ -38,12 +38,12 @@ namespace Bearded.TD.Game.Simulation.Rules.Resources
             }
         }
 
-        public readonly struct Parameters
+        public readonly struct RuleParameters
         {
             public ResourceAmount Amount { get; }
 
             [JsonConstructor]
-            public Parameters(ResourceAmount amount)
+            public RuleParameters(ResourceAmount amount)
             {
                 Amount = amount;
             }
