@@ -9,11 +9,9 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
     {
         public GrantTechPointsOnWaveEnd(RuleParameters parameters) : base(parameters) { }
 
-        protected override void RegisterEvents(
-            GlobalGameEvents events, GameSettings gameSettings, RuleParameters parameters)
+        public override void Initialize(GameRuleContext context)
         {
-            base.RegisterEvents(events, gameSettings, parameters);
-            events.Subscribe(new Listener(parameters.Amount));
+            context.Events.Subscribe(new Listener(Parameters.Amount));
         }
 
         private sealed class Listener : IListener<WaveEnded>

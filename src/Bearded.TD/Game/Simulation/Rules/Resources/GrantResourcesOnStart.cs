@@ -13,9 +13,9 @@ namespace Bearded.TD.Game.Simulation.Rules.Resources
     {
         public GrantResourcesOnStart(RuleParameters parameters) : base(parameters) { }
 
-        protected override void Execute(GameState game, RuleParameters parameters)
+        public override void Initialize(GameRuleContext context)
         {
-            game.Meta.Events.Subscribe(new Listener(game.Factions, parameters.Amount));
+            context.Events.Subscribe(new Listener(context.Factions, Parameters.Amount));
         }
 
         private sealed class Listener : IListener<GameStarted>

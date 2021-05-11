@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Rules;
@@ -6,27 +5,27 @@ using Bearded.TD.Game.Simulation.Rules;
 namespace Bearded.TD.Game.GameLoop
 {
     [GameRule("scheduleGame")]
-    sealed class ScheduleGame : GameRule<ScheduleGame.Parameters>
+    sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     {
-        public ScheduleGame(Parameters parameters) : base(parameters) {}
+        public ScheduleGame(RuleParameters parameters) : base(parameters) {}
 
-        protected override void Execute(GameState gameState, Parameters parameters)
+        public override void Initialize(GameRuleContext context)
         {
-            gameState.Meta.Dispatcher.RunOnlyOnServer(commandDispatcher =>
+            context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
             {
-                var waveScheduler = new WaveScheduler(gameState, commandDispatcher);
+                var waveScheduler = new WaveScheduler(context.GameState, commandDispatcher);
                 var chapterScheduler = new ChapterScheduler(waveScheduler);
-                var (chaptersPerGame, wavesPerChapter) = parameters;
+                var (chaptersPerGame, wavesPerChapter) = Parameters;
                 var gameScheduler = new GameScheduler(
-                    gameState,
+                    context.GameState,
                     commandDispatcher,
                     chapterScheduler,
                     new GameScheduler.GameRequirements(chaptersPerGame, wavesPerChapter));
-                gameState.Meta.Events.Subscribe(new Listener(gameScheduler));
+                context.Events.Subscribe(new Listener(gameScheduler));
             });
         }
 
-        public sealed record Parameters(int ChaptersPerGame, int WavesPerChapter);
+        public sealed record RuleParameters(int ChaptersPerGame, int WavesPerChapter);
 
         private sealed class Listener : IListener<GameStarted>
         {

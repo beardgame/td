@@ -10,14 +10,14 @@ namespace Bearded.TD.Game.Simulation.Rules.Buildings
     {
         public PlaceBuildingRule(RuleParameters parameters) : base(parameters) {}
 
-        protected override void Execute(GameState owner, RuleParameters parameters)
+        public override void Initialize(GameRuleContext context)
         {
-            owner.Meta.Dispatcher.RunOnlyOnServer(() => PlopBuilding.Command(
-                owner,
-                owner.RootFaction,
-                owner.Meta.Ids.GetNext<Building>(),
-                parameters.Building,
-                parameters.Footprint));
+            context.Dispatcher.RunOnlyOnServer(() => PlopBuilding.Command(
+                context.GameState,
+                context.RootFaction,
+                context.Ids.GetNext<Building>(),
+                Parameters.Building,
+                Parameters.Footprint));
         }
 
         public readonly struct RuleParameters

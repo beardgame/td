@@ -13,21 +13,14 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
         private WorkerDistributionMethod distributionMethod = WorkerDistributionMethod.Neutral;
         private readonly Dictionary<Faction, Queue<Faction>> childFactions = new();
 
-        protected override void RegisterEvents(GlobalGameEvents events, GameSettings gameSettings)
+        public override void Initialize(GameRuleContext context)
         {
-            base.RegisterEvents(events, gameSettings);
-
             // TODO: this should use its own internal setting, rather than having a global game settings file
-            distributionMethod = gameSettings.WorkerDistributionMethod;
-            events.Subscribe(this);
-        }
+            distributionMethod = context.GameSettings.WorkerDistributionMethod;
+            context.Events.Subscribe(this);
 
-        protected override void Execute(GameState gameState)
-        {
-            base.Execute(gameState);
-
-            var factionsByParent = gameState.Factions.ToLookup(f => f.Parent);
-            foreach (var faction in gameState.Factions.Where(f => f.HasWorkerNetwork))
+            var factionsByParent = context.Factions.ToLookup(f => f.Parent);
+            foreach (var faction in context.Factions.Where(f => f.HasWorkerNetwork))
             {
                 childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
             }
