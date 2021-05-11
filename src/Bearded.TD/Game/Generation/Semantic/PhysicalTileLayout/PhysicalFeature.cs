@@ -20,13 +20,13 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 _ => throw new NotSupportedException()
             };
 
-        public sealed record Node(Features.Node Blueprint, ImmutableArray<RelaxationCircle> Circles)
+        public sealed record Node(Features.Node Blueprint, ImmutableArray<Circle> Circles)
             : PhysicalFeature, IFeatureWithCircles;
 
         public sealed record Connection(NodeCircle From, NodeCircle To)
             : PhysicalFeature;
 
-        public sealed record Crevice(ImmutableArray<RelaxationCircle> Circles)
+        public sealed record Crevice(ImmutableArray<Circle> Circles)
             : PhysicalFeature, IFeatureWithCircles;
 
         public virtual bool Equals(PhysicalFeature? other) => ReferenceEquals(this, other);
@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
     interface IFeatureWithCircles
     {
         // TODO: this should be using an immutable circle type - the mutability should be container to the system that needs it
-        public ImmutableArray<RelaxationCircle> Circles { get; }
+        public ImmutableArray<Circle> Circles { get; }
         TiledFeature WithTiles(IEnumerable<Tile> tiles);
     }
 
@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         public PhysicalFeature.Node Node { get; }
         private readonly int index;
 
-        public RelaxationCircle Circle => Node.Circles[index];
+        public Circle Circle => Node.Circles[index];
 
         public NodeCircle(PhysicalFeature.Node node, int index)
         {

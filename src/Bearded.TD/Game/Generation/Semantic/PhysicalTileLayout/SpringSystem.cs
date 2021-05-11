@@ -13,10 +13,10 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
     sealed class SpringSystem
     {
         private readonly Unit radius;
-        private readonly ImmutableArray<RelaxationCircle> vertices;
+        private readonly ImmutableArray<Circle> vertices;
         private readonly ImmutableArray<Spring> springs;
 
-        public SpringSystem(IEnumerable<RelaxationCircle> circles, IEnumerable<Spring> springs, Unit radius)
+        public SpringSystem(IEnumerable<Circle> circles, IEnumerable<Spring> springs, Unit radius)
         {
             this.radius = radius;
             vertices = circles.ToImmutableArray();
@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 {
                     var (n1, n2) = (spring.Circle1, spring.Circle2);
 
-                    var diff = n1.Position - n2.Position;
+                    var diff = n1.Center - n2.Center;
                     var dSquared = diff.LengthSquared;
 
                     var targetD = spring.TargetDistance;
@@ -63,8 +63,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         spring.ForceMultiplier;
                     var forceOnN1 = diff / dSquared.Sqrt() * forceMagnitude;
 
-                    n1.Position += forceOnN1;
-                    n2.Position -= forceOnN1;
+                    n1.Center += forceOnN1;
+                    n2.Center -= forceOnN1;
                 }
 
                 foreach (var vertex in vertices)
@@ -74,7 +74,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         var lineNormal = direction.CornerAfter();
                         var lineDistance = HexagonDistanceY * radius - vertex.Radius;
 
-                        var projection = Vector2.Dot(lineNormal, vertex.Position.NumericValue).U();
+                        var projection = Vector2.Dot(lineNormal, vertex.Center.NumericValue).U();
 
                         if (projection < lineDistance)
                             continue;
@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         var forceMagnitude =
                             (lineDistance.NumericValue.Squared() - projection.NumericValue.Squared()).U() * 0.01f;
 
-                        vertex.Position += lineNormal * forceMagnitude;
+                        vertex.Center += lineNormal * forceMagnitude;
                     }
                 }
             }

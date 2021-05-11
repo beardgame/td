@@ -65,13 +65,13 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     case IFeatureWithCircles featureWithCircles:
                         foreach (var circle in featureWithCircles.Circles)
                         {
-                            metadata.Add(new Circle(circle.Position, circle.Radius, 0.3.U(), Color.Cyan * 0.5f));
+                            metadata.Add(new LevelDebugMetadata.Circle(circle.Center, circle.Radius, 0.3.U(), Color.Cyan * 0.5f));
                         }
                         if (feature is PhysicalFeature.Node node)
                         {
                             const float lineHeight = 0.5f;
                             var center = Position2.Zero + featureWithCircles.Circles
-                                    .Aggregate(Difference2.Zero, (p, c) => p + (c.Position - Position2.Zero))
+                                    .Aggregate(Difference2.Zero, (p, c) => p + (c.Center - Position2.Zero))
                                 / featureWithCircles.Circles.Length;
 
                             foreach (var (behavior, i) in node.Blueprint.Behaviors.Indexed())
@@ -86,8 +86,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         break;
                     case PhysicalFeature.Connection(var from, var to):
                         metadata.Add(new LineSegment(
-                            from.Circle.Position,
-                            to.Circle.Position,
+                            from.Circle.Center,
+                            to.Circle.Center,
                             Color.Azure * 0.5f
                         ));
                         break;

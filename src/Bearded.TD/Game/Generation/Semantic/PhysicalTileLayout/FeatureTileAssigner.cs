@@ -60,9 +60,9 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 var tilePosition = Level.GetPosition(tile);
 
                 var (circle, feature) = allCircles.MinBy(
-                    c => ((tilePosition - c.Circle.Position).Length - c.Circle.Radius).NumericValue);
+                    c => ((tilePosition - c.Circle.Center).Length - c.Circle.Radius).NumericValue);
 
-                var distanceToNodeSquared = (tilePosition - circle.Position).LengthSquared;
+                var distanceToNodeSquared = (tilePosition - circle.Center).LengthSquared;
 
                 if (distanceToNodeSquared > circle.Radius.Squared)
                     continue;
@@ -84,7 +84,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 var (from, to) = feature;
 
                 var rayCaster = new LevelRayCaster();
-                rayCaster.StartEnumeratingTiles(new Ray(from.Circle.Position, to.Circle.Position));
+                rayCaster.StartEnumeratingTiles(new Ray(from.Circle.Center, to.Circle.Center));
 
                 var featureArea = new List<Tile>();
                 var adding = false;

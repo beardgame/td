@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         Pull,
     }
 
-    record Spring(RelaxationCircle Circle1, RelaxationCircle Circle2, SpringBehavior Behavior,
+    record Spring(Circle Circle1, Circle Circle2, SpringBehavior Behavior,
         float ForceMultiplier = 1, Unit Overlap = default)
     {
         public Unit TargetDistance => Circle1.Radius + Circle2.Radius - Overlap;

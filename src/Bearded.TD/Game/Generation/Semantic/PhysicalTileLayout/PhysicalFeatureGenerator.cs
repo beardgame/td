@@ -51,7 +51,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 // so that they won't overlap and intersect funny with other nodes for relaxation
                 // (we can probably just scale the node feature graph by its max radius
 
-                var circle = new RelaxationCircle(center, nodeRadius * random.NextFloat(0.75f, 1.2f));
+                var circle = new Circle(center, nodeRadius * random.NextFloat(0.75f, 1.2f));
 
                 var n = new PhysicalFeature.Node(node.Blueprint, ImmutableArray.Create(circle));
 
@@ -125,7 +125,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     {
                         var p = p1 + p1To2 * (i / (float) (count - 1));
                         // TODO: make this radius depend on scripts
-                        return new RelaxationCircle(p, 1.5.U());
+                        return new Circle(p, 1.5.U());
                     });
 
                     var creviceFeature = new PhysicalFeature.Crevice(ImmutableArray.CreateRange(circles));

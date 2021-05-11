@@ -2,14 +2,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
-    sealed class RelaxationCircle
+    sealed class Circle
     {
-        public Position2 Position { get; set; }
+        public Position2 Center { get; set; }
         public Unit Radius { get; }
 
-        public RelaxationCircle(Position2 position, Unit radius)
+        public Circle(Position2 center, Unit radius)
         {
-            Position = position;
+            Center = center;
             Radius = radius;
         }
     }

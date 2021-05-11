@@ -53,8 +53,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         }
 
         private IEnumerable<Spring> pushAll(
-            ImmutableArray<RelaxationCircle> circles1,
-            ImmutableArray<RelaxationCircle> circles2,
+            ImmutableArray<Circle> circles1,
+            ImmutableArray<Circle> circles2,
             Unit overlap = default)
         {
             return
@@ -63,7 +63,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 select new Spring(c1, c2, SpringBehavior.Push, Overlap: overlap);
         }
 
-        private IEnumerable<RelaxationCircle> getAllCircles(IEnumerable<PhysicalFeature> features)
+        private IEnumerable<Circle> getAllCircles(IEnumerable<PhysicalFeature> features)
         {
             return features.OfType<IFeatureWithCircles>().SelectMany(f => f.Circles);
         }
