@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Events;
 
@@ -30,6 +31,11 @@ namespace Bearded.TD.Game.Generation
 
             public NodeGroup ToNodes()
             {
+                if (nodeGroups.Count == 0)
+                {
+                    throw new InvalidDataException("No nodes were contributed in the game rules.");
+                }
+
                 return new NodeGroup.Composite(
                     nodeGroups.ToImmutableArray(), new NodeGroup.RandomizedNumber(1, null, null));
             }
