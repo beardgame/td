@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Buildings
     {
         public PlaceBuildingRule(RuleParameters parameters) : base(parameters) {}
 
-        public override void Initialize(GameRuleContext context)
+        public override void Execute(GameRuleContext context)
         {
             context.Dispatcher.RunOnlyOnServer(() => PlopBuilding.Command(
                 context.GameState,

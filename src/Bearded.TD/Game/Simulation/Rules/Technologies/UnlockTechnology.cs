@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
     {
         public UnlockTechnology(RuleParameters parameters) : base(parameters) {}
 
-        public override void Initialize(GameRuleContext context)
+        public override void Execute(GameRuleContext context)
         {
             var faction = context.RootFaction;
             foreach (var unlock in Parameters.Unlocks)

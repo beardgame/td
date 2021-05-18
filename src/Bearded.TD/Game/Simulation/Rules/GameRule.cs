@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Rules
             Parameters = parameters;
         }
 
-        public abstract void Initialize(GameRuleContext context);
+        public abstract void Execute(GameRuleContext context);
     }
 
     abstract class GameRule : GameRule<VoidParameters>

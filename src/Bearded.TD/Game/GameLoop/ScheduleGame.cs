@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.GameLoop
     {
         public ScheduleGame(RuleParameters parameters) : base(parameters) {}
 
-        public override void Initialize(GameRuleContext context)
+        public override void Execute(GameRuleContext context)
         {
             context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
             {

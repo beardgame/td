@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
         private WorkerDistributionMethod distributionMethod = WorkerDistributionMethod.Neutral;
         private readonly Dictionary<Faction, Queue<Faction>> childFactions = new();
 
-        public override void Initialize(GameRuleContext context)
+        public override void Execute(GameRuleContext context)
         {
             // TODO: this should use its own internal setting, rather than having a global game settings file
             distributionMethod = context.GameSettings.WorkerDistributionMethod;
