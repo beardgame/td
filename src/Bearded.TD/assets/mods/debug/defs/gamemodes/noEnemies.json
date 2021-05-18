@@ -7,8 +7,10 @@
             "id" : "contributeNodes",
             "parameters" : {
                 "nodes" : [
-                    { "id" : "default.base", "fixedNumber" : 1 },
-                    { "id" : "default.empty", "weight" : 1 },
+                    { "nodes" : [
+                        { "id" : "default.empty", "weight" : 10 },
+                        { "id" : "default.ring", "weight" : 1, "minNumber" : 1 }
+                    ], "weight" : 1 },
                     { "id" : "default.spawner", "weight" : 1 }
                 ]
             }
