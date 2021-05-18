@@ -2,21 +2,16 @@
     "id" : "noEnemies",
     "name" : "No enemies, for all your level generation needs",
     "rules" : [
+        { "id" : "assignWorkers" },
         {
-            "id" : "placeBuilding",
+            "id" : "contributeNodes",
             "parameters" : {
-                "building" : "default.base",
-                "footprint" : {
-                    "group" : "default.seven",
-                    "rootTile" : [0, 0]
-                }
+                "nodes" : [
+                    { "id" : "default.base", "fixedNumber" : 1 },
+                    { "id" : "default.empty", "weight" : 1 },
+                    { "id" : "default.spawner", "weight" : 1 }
+                ]
             }
-        },
-        { "id" : "assignWorkers" }
-    ],
-    "levelNodes" : [
-        { "id" : "default.base", "fixedNumber" : 1 },
-        { "id" : "default.empty", "weight" : 1 },
-        { "id" : "default.spawner", "weight" : 1 }
+        }
     ]
 }
