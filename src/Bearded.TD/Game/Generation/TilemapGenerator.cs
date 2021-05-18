@@ -6,14 +6,14 @@ namespace Bearded.TD.Game.Generation
 {
     static class TilemapGenerator
     {
-        public static ITilemapGenerator From(LevelGenerationMethod method, Logger logger, LevelDebugMetadata metadata)
+        public static ILevelGenerator From(LevelGenerationMethod method, Logger logger, LevelDebugMetadata metadata)
         {
             return method switch
             {
-                LevelGenerationMethod.Legacy => new DefaultTilemapGenerator(logger, metadata),
-                LevelGenerationMethod.Perlin => new PerlinTilemapGenerator(logger, metadata),
-                LevelGenerationMethod.Empty => new EmptyTilemapGenerator(),
-                LevelGenerationMethod.Semantic => new SemanticTilemapGenerator(logger, metadata),
+                LevelGenerationMethod.Legacy => new DefaultLevelGenerator(logger, metadata),
+                LevelGenerationMethod.Perlin => new PerlinLevelGenerator(logger, metadata),
+                LevelGenerationMethod.Empty => new EmptyLevelGenerator(),
+                LevelGenerationMethod.Semantic => new SemanticLevelGenerator(logger, metadata),
                 _ => throw new ArgumentOutOfRangeException(nameof(method), "Unsupported method")
             };
         }

@@ -22,13 +22,13 @@ namespace Bearded.TD.Game
     {
         private readonly GameInstance game;
         private readonly GameSettings gameSettings;
-        private readonly ITilemapGenerator tilemapGenerator;
+        private readonly ILevelGenerator levelGenerator;
 
-        public GameStateBuilder(GameInstance game, ITilemapGenerator tilemapGenerator)
+        public GameStateBuilder(GameInstance game, ILevelGenerator levelGenerator)
         {
             this.game = game;
             gameSettings = game.GameSettings;
-            this.tilemapGenerator = tilemapGenerator;
+            this.levelGenerator = levelGenerator;
         }
 
         public IEnumerable<ISerializableCommand<GameInstance>> Generate()
@@ -49,12 +49,14 @@ namespace Bearded.TD.Game
             var gameMode = game.Blueprints.GameModes[gameSettings.GameMode ?? ModAwareId.ForDefaultMod("default")];
             yield return ApplyGameRules.Command(game, gameMode);
 
-            var tilemapTypes = tilemapGenerator.Generate(
+            var levelGenerationCommands = levelGenerator.Generate(
                 new LevelGenerationParameters(gameSettings.LevelSize, gameMode.Nodes), gameSettings.Seed);
 
-            var tilemapDrawInfos = DrawInfosFromTypes(tilemapTypes);
+            foreach (var commandFactory in levelGenerationCommands)
+            {
+                yield return commandFactory(game);
+            }
 
-            yield return FillTilemap.Command(game, tilemapTypes, tilemapDrawInfos);
             yield return BlockTilesForBuilding.Command(
                     game,
                     Tilemap.GetSpiralCenteredAt(Tile.Origin, 3).ToList());
@@ -200,18 +202,6 @@ namespace Bearded.TD.Game
                 yield return AddFaction.Command(game, playerFaction);
                 yield return SetPlayerFaction.Command(p, playerFaction);
             }
-        }
-
-        public static Tilemap<TileDrawInfo> DrawInfosFromTypes(Tilemap<TileGeometry> tileGeometries)
-        {
-            var drawInfos = new Tilemap<TileDrawInfo>(tileGeometries.Radius);
-
-            foreach (var tile in tileGeometries)
-            {
-                drawInfos[tile] = TileDrawInfo.For(tileGeometries[tile]);
-            }
-
-            return drawInfos;
         }
     }
 }

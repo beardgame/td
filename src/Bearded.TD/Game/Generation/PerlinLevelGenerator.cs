@@ -4,7 +4,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -21,20 +23,20 @@ using Tile = Bearded.TD.Tiles.Tile;
 
 namespace Bearded.TD.Game.Generation
 {
-    sealed class PerlinTilemapGenerator : ITilemapGenerator
+    sealed class PerlinLevelGenerator : ILevelGenerator
     {
         private const int hardnessRampDistance = 5;
 
         private readonly Logger logger;
         private readonly LevelDebugMetadata debugMetadata;
 
-        public PerlinTilemapGenerator(Logger logger, LevelDebugMetadata debugMetadata)
+        public PerlinLevelGenerator(Logger logger, LevelDebugMetadata debugMetadata)
         {
             this.logger = logger;
             this.debugMetadata = debugMetadata;
         }
 
-        public Tilemap<TileGeometry> Generate(LevelGenerationParameters parameters, int seed)
+        public IEnumerable<CommandFactory> Generate(LevelGenerationParameters parameters, int seed)
         {
             var radius = parameters.Radius;
 
@@ -58,7 +60,9 @@ namespace Bearded.TD.Game.Generation
 
             logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
 
-            return tilemap;
+            var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
+
+            yield return game => FillTilemap.Command(game, tilemap, drawInfos);
         }
 
         private class Generator
