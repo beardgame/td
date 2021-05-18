@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -18,17 +19,20 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         private readonly Tilemap<TileGeometry> tilemap;
 
         public ImmutableHashSet<Tile> Tiles { get; }
+        public ImmutableArray<Circle> Circles { get; }
 
         public Random Random { get; }
 
         // info about connections, etc.
 
         public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles,
+            ImmutableArray<Circle> circles,
             LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {
             this.tilemap = tilemap;
             Tiles = tiles.ToImmutableHashSet();
             this.commandAccumulator = commandAccumulator;
+            Circles = circles;
             Random = random;
         }
 

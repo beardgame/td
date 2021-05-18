@@ -36,7 +36,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                         break;
                     case PhysicalFeature.Node node:
-                        var context = new NodeGenerationContext(tilemap, tiles, commandAccumulator, random);
+                        var context = new NodeGenerationContext(tilemap, tiles, node.Circles, commandAccumulator, random);
                         foreach (var behavior in node.Blueprint.Behaviors)
                         {
                             behavior.Generate(context);
