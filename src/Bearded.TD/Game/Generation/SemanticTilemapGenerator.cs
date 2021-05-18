@@ -1,25 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.Generation.Semantic;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
-using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
-using static Bearded.TD.Constants.Game.World;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
-using Tile = Bearded.TD.Tiles.Tile;
 
 /*
  - get spawners and base from mod files somehow
@@ -63,6 +53,18 @@ namespace Bearded.TD.Game.Generation
             var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(parameters, random);
 
             // todo: adopt this into LogicalTilemapGenerator?
+            drawLogicalNodes(logicalTilemap, nodeRadius);
+
+            var (physicalTilemap, commands)= new PhysicalTilemapGenerator(metadata, nodeRadius)
+                .Generate(logicalTilemap, random, radius);
+
+            logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
+
+            return physicalTilemap;
+        }
+
+        private void drawLogicalNodes(LogicalTilemap logicalTilemap, Unit nodeRadius)
+        {
             foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
             {
                 var node = logicalTilemap[tile];
@@ -90,13 +92,6 @@ namespace Bearded.TD.Game.Generation
                         Color.Lime * 0.1f));
                 }
             }
-
-            var physicalTilemap = new PhysicalTilemapGenerator(metadata, nodeRadius)
-                .Generate(logicalTilemap, random, radius);
-
-            logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");
-
-            return physicalTilemap;
         }
     }
 }

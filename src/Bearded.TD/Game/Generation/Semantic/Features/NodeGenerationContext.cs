@@ -23,14 +23,13 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
 
         // info about connections, etc.
 
-        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles)
+        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles,
+            LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {
-            // TODO: this should be initialized from the constructor, but this is done in code currently being refactored
-            commandAccumulator = new LevelGenerationCommandAccumulator();
             this.tilemap = tilemap;
             Tiles = tiles.ToImmutableHashSet();
-            // TODO: likewise: this should be set from the constructor parameters
-            Random = new Random();
+            this.commandAccumulator = commandAccumulator;
+            Random = random;
         }
 
         public TileGeometry Get(Tile tile)
