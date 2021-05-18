@@ -71,6 +71,9 @@ namespace Bearded.TD.Game.Generation
             var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
 
             yield return game => FillTilemap.Command(game, tilemap, drawInfos);
+
+            foreach (var cmd in LegacySpawnLocationPlacer.SpawnLocations(parameters.Radius))
+                yield return cmd;
         }
 
         private sealed class Generator
