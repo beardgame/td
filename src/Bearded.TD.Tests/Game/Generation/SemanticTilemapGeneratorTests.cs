@@ -6,11 +6,11 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public sealed class SemanticTilemapGeneratorTests : TilemapGeneratorTests
     {
-        internal override ITilemapGenerator Generator { get; }
+        internal override ILevelGenerator Generator { get; }
 
         public SemanticTilemapGeneratorTests()
         {
-            Generator = new SemanticTilemapGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
+            Generator = new SemanticLevelGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
         }
     }
 }

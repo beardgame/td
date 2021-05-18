@@ -6,11 +6,11 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public sealed class PerlinTilemapGeneratorTests : TilemapGeneratorTests
     {
-        internal override ITilemapGenerator Generator { get; }
+        internal override ILevelGenerator Generator { get; }
 
         public PerlinTilemapGeneratorTests()
         {
-            Generator = new PerlinTilemapGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
+            Generator = new PerlinLevelGenerator(new Logger {MirrorToConsole = false}, new LevelDebugMetadata());
         }
     }
 }

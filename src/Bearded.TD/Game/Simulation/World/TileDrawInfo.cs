@@ -1,9 +1,10 @@
 using System;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World
 {
-    struct TileDrawInfo
+    readonly struct TileDrawInfo
     {
         public Unit Height { get; }
         public float HexScale { get; }
@@ -14,28 +15,23 @@ namespace Bearded.TD.Game.Simulation.World
             HexScale = hexScale;
         }
 
-        public static TileDrawInfo For(TileGeometry geometry)
+        public static Tilemap<TileDrawInfo> DrawInfosFromTypes(Tilemap<TileGeometry> tileGeometries)
         {
-            var (height, hexScale) = defaultParametersFor(geometry);
-
-            return new TileDrawInfo(height, hexScale);
+            return new(tileGeometries.Radius, t => fromType(tileGeometries[t]));
         }
 
-        private static (Unit height, float hexScale) defaultParametersFor(TileGeometry geometry)
+        private static TileDrawInfo fromType(TileGeometry geometry)
         {
-            switch (geometry.Type)
+            var (height, hexScale) = geometry.Type switch
             {
-                case TileType.Unknown:
-                    return (Unit.Zero, 0);
-                case TileType.Floor:
-                    return (geometry.FloorHeight, 0.8f);
-                case TileType.Wall:
-                    return (geometry.FloorHeight + 1.U(), 0.2f);
-                case TileType.Crevice:
-                    return (geometry.FloorHeight - 3.U(), 1);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(geometry.Type), geometry.Type, null);
-            }
+                TileType.Unknown => (Unit.Zero, 0),
+                TileType.Floor => (geometry.FloorHeight, 0.8f),
+                TileType.Wall => (geometry.FloorHeight + 1.U(), 0.2f),
+                TileType.Crevice => (geometry.FloorHeight - 3.U(), 1),
+                _ => throw new NotSupportedException($"Tile type {nameof(geometry.Type)} is not supported.")
+            };
+
+            return new TileDrawInfo(height, hexScale);
         }
     }
 }

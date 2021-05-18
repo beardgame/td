@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
@@ -25,7 +24,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             this.nodeRadius = nodeRadius;
         }
 
-        public (Tilemap<TileGeometry> Tilemap, ImmutableArray<CommandFactory> Commands) Generate(
+        public IEnumerable<CommandFactory> Generate(
             LogicalTilemap logicalTilemap, Random random, int radius)
         {
             var featuresWithAreas = new PhysicalFeatureGenerator(nodeRadius)
@@ -35,12 +34,16 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
             var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
-            var output = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
+            var (tilemap, commands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
 
             addFeatureAreaMetadata(arrangedFeaturesWithAreas);
             addFeatureTileMetadata(featuresWithTiles);
 
-            return output;
+
+            // TODO: these will be generated (and possibly entirely replaced) somewhere above later
+            var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
+
+            return commands.Prepend(game => FillTilemap.Command(game, tilemap, drawInfos));
         }
 
         private void addFeatureTileMetadata(IEnumerable<TiledFeature> features)

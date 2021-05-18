@@ -51,7 +51,7 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        private ITilemapGenerator getTilemapGenerator()
+        private ILevelGenerator getTilemapGenerator()
         {
             return TilemapGenerator.From(Game.GameSettings.LevelGenerationMethod, Logger, Game.LevelDebugMetadata);
         }
