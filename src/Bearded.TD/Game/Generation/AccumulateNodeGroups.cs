@@ -23,8 +23,6 @@ namespace Bearded.TD.Game.Generation
         {
             private readonly List<NodeGroup> nodeGroups = new();
 
-            public Accumulator() {}
-
             public void AddNodeGroup(NodeGroup nodeGroup)
             {
                 nodeGroups.Add(nodeGroup);
