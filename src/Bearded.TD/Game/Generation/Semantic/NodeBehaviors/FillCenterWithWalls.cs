@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            var tiles = new Tiles.Tiles(context.Tiles);
+            var tiles = context.Tiles;
             foreach (var _ in Enumerable.Range(0, Parameters.TilesFromEdge))
             {
                 tiles = tiles.Erode();

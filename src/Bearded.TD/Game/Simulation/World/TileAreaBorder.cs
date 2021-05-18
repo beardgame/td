@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.World
 {
-    class TileAreaBorder
+    sealed class TileAreaBorder
     {
         public readonly struct Part
         {
@@ -46,10 +47,13 @@ namespace Bearded.TD.Game.Simulation.World
         public static TileAreaBorder From(IEnumerable<Tile> area, Func<Tile, bool> predicate)
             => From(area.Where(predicate));
 
-        public static TileAreaBorder From(IEnumerable<Tile> area)
-            => From(new HashSet<Tile>(area));
+        public static TileAreaBorder From(Area area)
+            => From(area.ToImmutableHashSet());
 
-        public static TileAreaBorder From(HashSet<Tile> area)
+        public static TileAreaBorder From(IEnumerable<Tile> area)
+            => From(area.ToImmutableHashSet());
+
+        public static TileAreaBorder From(ImmutableHashSet<Tile> area)
         {
             var edges = area.SelectMany(
                     tile => Extensions.Directions
