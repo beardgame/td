@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -23,21 +25,22 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             this.nodeRadius = nodeRadius;
         }
 
-        public Tilemap<TileGeometry> Generate(LogicalTilemap logicalTilemap, Random random, int radius)
+        public (Tilemap<TileGeometry> Tilemap, ImmutableArray<CommandFactory> Commands) Generate(
+            LogicalTilemap logicalTilemap, Random random, int radius)
         {
             var featuresWithAreas = new PhysicalFeatureGenerator(nodeRadius)
                 .GenerateFeaturesWithAreasInInitialLocation(logicalTilemap, random);
 
-            new FeatureArranger(radius).ArrangeFeatures(featuresWithAreas);
+            var arrangedFeaturesWithAreas = new FeatureArranger(radius).ArrangeFeatures(featuresWithAreas);
 
-            var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(featuresWithAreas);
+            var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
-            var finalTilemap = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles);
+            var output = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
 
-            addFeatureAreaMetadata(featuresWithAreas);
+            addFeatureAreaMetadata(arrangedFeaturesWithAreas);
             addFeatureTileMetadata(featuresWithTiles);
 
-            return finalTilemap;
+            return output;
         }
 
         private void addFeatureTileMetadata(IEnumerable<TiledFeature> features)
@@ -62,16 +65,16 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             {
                 switch (feature)
                 {
-                    case IFeatureWithCircles featureWithCircles:
+                    case PhysicalFeature.WithCircles featureWithCircles:
                         foreach (var circle in featureWithCircles.Circles)
                         {
-                            metadata.Add(new Circle(circle.Position, circle.Radius, 0.3.U(), Color.Cyan * 0.5f));
+                            metadata.Add(new Circle(circle.Center, circle.Radius, 0.3.U(), Color.Cyan * 0.5f));
                         }
                         if (feature is PhysicalFeature.Node node)
                         {
                             const float lineHeight = 0.5f;
                             var center = Position2.Zero + featureWithCircles.Circles
-                                    .Aggregate(Difference2.Zero, (p, c) => p + (c.Position - Position2.Zero))
+                                    .Aggregate(Difference2.Zero, (p, c) => p + (c.Center - Position2.Zero))
                                 / featureWithCircles.Circles.Length;
 
                             foreach (var (behavior, i) in node.Blueprint.Behaviors.Indexed())
@@ -86,8 +89,8 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         break;
                     case PhysicalFeature.Connection(var from, var to):
                         metadata.Add(new LineSegment(
-                            from.Circle.Position,
-                            to.Circle.Position,
+                            from.Circle.Center,
+                            to.Circle.Center,
                             Color.Azure * 0.5f
                         ));
                         break;

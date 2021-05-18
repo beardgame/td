@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -9,9 +11,11 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
     sealed class TilemapGenerator
     {
-        public Tilemap<TileGeometry> GenerateTilemap(int radius, IEnumerable<TiledFeature> features)
+        public (Tilemap<TileGeometry> Tilemap, ImmutableArray<CommandFactory> Commands) GenerateTilemap(
+            int radius, IEnumerable<TiledFeature> features, Random random)
         {
             var tilemap = new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
+            var commandAccumulator = new LevelGenerationCommandAccumulator();
 
             foreach (var (feature, tiles) in features)
             {
@@ -32,7 +36,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                         break;
                     case PhysicalFeature.Node node:
-                        var context = new NodeGenerationContext(tilemap, tiles);
+                        var context = new NodeGenerationContext(tilemap, tiles, commandAccumulator, random);
                         foreach (var behavior in node.Blueprint.Behaviors)
                         {
                             behavior.Generate(context);
@@ -44,7 +48,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 }
             }
 
-            return tilemap;
+            return (tilemap, commandAccumulator.ToCommandFactories());
         }
     }
 }
