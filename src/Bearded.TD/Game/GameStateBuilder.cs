@@ -49,8 +49,11 @@ namespace Bearded.TD.Game
             var gameMode = game.Blueprints.GameModes[gameSettings.GameMode ?? ModAwareId.ForDefaultMod("default")];
             yield return ApplyGameRules.Command(game, gameMode);
 
+            var nodeAccumulator = new AccumulateNodeGroups.Accumulator();
+            game.Meta.Events.Send(new AccumulateNodeGroups(nodeAccumulator));
+
             var levelGenerationCommands = levelGenerator.Generate(
-                new LevelGenerationParameters(gameSettings.LevelSize, gameMode.Nodes), gameSettings.Seed);
+                new LevelGenerationParameters(gameSettings.LevelSize, nodeAccumulator.ToNodes()), gameSettings.Seed);
 
             foreach (var commandFactory in levelGenerationCommands)
             {

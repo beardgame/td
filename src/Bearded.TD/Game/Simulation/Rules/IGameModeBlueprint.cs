@@ -7,6 +7,5 @@ namespace Bearded.TD.Game.Simulation.Rules
     {
         string Name { get; }
         ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
-        NodeGroup Nodes { get; }
     }
 }

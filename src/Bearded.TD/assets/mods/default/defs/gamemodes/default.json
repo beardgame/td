@@ -3,16 +3,6 @@
     "name" : "Classic TD experience",
     "rules" : [
         {
-            "id" : "placeBuilding",
-            "parameters" : {
-                "building" : "base",
-                "footprint" : {
-                    "group" : "seven",
-                    "rootTile" : [0, 0]
-                }
-            }
-        },
-        {
             "id" : "unlockTechnology",
             "parameters" : {
                 "unlocks" : [
@@ -35,11 +25,16 @@
                 "chaptersPerGame" : 5,
                 "wavesPerChapter" : 5
             }
+        },
+        {
+            "id" : "contributeNodes",
+            "parameters" : {
+                "nodes" : [
+                    { "id" : "base", "fixedNumber" : 1 },
+                    { "id" : "empty", "weight" : 1 },
+                    { "id" : "spawner", "weight" : 1 }
+                ]
+            }
         }
-    ],
-    "levelNodes" : [
-        { "id" : "base", "fixedNumber" : 1 },
-        { "id" : "empty", "weight" : 1 },
-        { "id" : "spawner", "weight" : 1 }
     ]
 }

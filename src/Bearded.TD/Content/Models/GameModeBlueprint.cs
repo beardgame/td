@@ -11,15 +11,12 @@ namespace Bearded.TD.Content.Models
         public ModAwareId Id { get; }
         public string Name { get; }
         public ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
-        public NodeGroup Nodes { get; }
 
-        public GameModeBlueprint(
-            ModAwareId id, string name, IEnumerable<IGameRuleFactory<GameState>> rules, NodeGroup nodes)
+        public GameModeBlueprint(ModAwareId id, string name, IEnumerable<IGameRuleFactory<GameState>> rules)
         {
             Id = id;
             Name = name;
             Rules = rules.ToImmutableArray();
-            Nodes = nodes;
         }
     }
 }
