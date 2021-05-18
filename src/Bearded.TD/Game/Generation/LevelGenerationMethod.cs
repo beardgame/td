@@ -8,6 +8,6 @@ namespace Bearded.TD.Game.Generation
         Empty,
         Semantic,
 
-        Default = Legacy
+        Default = Semantic
     }
 }

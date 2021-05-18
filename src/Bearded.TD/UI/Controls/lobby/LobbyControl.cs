@@ -216,8 +216,7 @@ namespace Bearded.TD.UI.Controls
                             "Level generation method",
                             new[]
                             {
-                                LevelGenerationMethod.Perlin,
-                                LevelGenerationMethod.Legacy,
+                                LevelGenerationMethod.Semantic,
                                 LevelGenerationMethod.Empty
                             },
                             e => e.ToString(),

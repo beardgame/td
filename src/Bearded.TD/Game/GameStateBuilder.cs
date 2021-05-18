@@ -7,7 +7,6 @@ using Bearded.TD.Game.Commands.General;
 using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -63,19 +62,8 @@ namespace Bearded.TD.Game
             yield return TurnCrevicesIntoFluidSinks.Command(game);
             yield return TurnEdgesIntoFluidSinks.Command(game);
 
-            foreach (var command in spawnLocations(gameSettings.LevelSize))
-                yield return command;
-            foreach (var command in spawnCrystals())
-                yield return command;
-        }
-
-        private IEnumerable<ISerializableCommand<GameInstance>> spawnLocations(int radius)
-        {
-            return
-                from dir in Directions.All.Enumerate()
-                where dir != Direction.Unknown
-                select Tile.Origin.Offset(dir.Step() * radius) into tile
-                select CreateSpawnLocation.Command(game, game.Ids.GetNext<SpawnLocation>(), tile);
+            // foreach (var command in spawnCrystals())
+            //     yield return command;
         }
 
         private IEnumerable<ISerializableCommand<GameInstance>> spawnCrystals()

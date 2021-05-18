@@ -52,6 +52,16 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             tilemap[tile] = geometry;
         }
 
+        public void PlaceSpawnLocation(Tile tile)
+        {
+            if (!Tiles.Contains(tile))
+            {
+                throw new ArgumentException("May not write to position outside node.", nameof(tile));
+            }
+
+            commandAccumulator.PlaceSpawnLocation(tile);
+        }
+
         public void PlaceBuilding(IBuildingBlueprint blueprint, Tile rootTile)
         {
             // TODO: we currently hardcode the 0 variant of the footprint group. Pending a footprint rework.
