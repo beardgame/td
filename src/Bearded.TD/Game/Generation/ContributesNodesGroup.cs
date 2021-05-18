@@ -6,9 +6,9 @@ using Bearded.TD.Game.Simulation.Rules;
 namespace Bearded.TD.Game.Generation
 {
     [GameRule("contributeNodes")]
-    sealed class ContributesNodeGroup : GameRule<ContributesNodeGroup.RuleParameters>, IListener<AccumulateNodeGroups>
+    sealed class ContributesNodesGroup : GameRule<ContributesNodesGroup.RuleParameters>, IListener<AccumulateNodeGroups>
     {
-        public ContributesNodeGroup(RuleParameters parameters) : base(parameters) { }
+        public ContributesNodesGroup(RuleParameters parameters) : base(parameters) { }
 
         public override void Execute(GameRuleContext context)
         {
