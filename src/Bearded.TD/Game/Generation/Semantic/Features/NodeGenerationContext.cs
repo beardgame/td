@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
@@ -18,19 +17,19 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         private readonly LevelGenerationCommandAccumulator commandAccumulator;
         private readonly Tilemap<TileGeometry> tilemap;
 
-        public ImmutableHashSet<Tile> Tiles { get; }
+        public Area Tiles { get; }
         public ImmutableArray<Circle> Circles { get; }
 
         public Random Random { get; }
 
         // info about connections, etc.
 
-        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IEnumerable<Tile> tiles,
+        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, Area tiles,
             ImmutableArray<Circle> circles,
             LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {
             this.tilemap = tilemap;
-            Tiles = tiles.ToImmutableHashSet();
+            Tiles = tiles;
             this.commandAccumulator = commandAccumulator;
             Circles = circles;
             Random = random;
