@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Commands.Debug;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
@@ -47,6 +50,17 @@ namespace Bearded.TD.Game.Debug
             logger.Debug?.Log($"Generating new tilemap with method {method} and seed {seed}.");
 
             gameInstance.LevelDebugMetadata.Clear();
+
+            // TODO: this is a bit of a hacky solution. The better way would be to regenerate the entire game state.
+            //       However, that would benefit from having game state/game instance refactored, so that this leads to
+            //       less pollution of objects escaping their respective abstraction layer.
+            foreach (var gameObj in gameInstance.State.GameObjects)
+            {
+                if (gameObj is IPlacedBuilding || gameObj is SpawnLocation || gameObj is ComponentGameObject)
+                {
+                    gameObj.Delete();
+                }
+            }
 
             var generator = TilemapGenerator.From(method, logger, gameInstance.LevelDebugMetadata);
 
