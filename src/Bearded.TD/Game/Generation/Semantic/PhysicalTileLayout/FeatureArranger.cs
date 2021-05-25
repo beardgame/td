@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                         allNodes
                             .TakeWhile(n => n != f)
                             .SelectMany(n => pushAll(node.FeatureCircles, n.FeatureCircles)),
-                    _ => throw new NotImplementedException()
+                    _ => throw new InvalidOperationException()
                 });
         }
 
@@ -87,7 +87,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             {
                 WithCircles circleFeature => newCircleFeatures[circleFeature],
                 Connection connection => newConnection(connection),
-                _ => throw new NotImplementedException()
+                _ => throw new InvalidOperationException()
             });
 
             PhysicalFeature newConnection(Connection old)
