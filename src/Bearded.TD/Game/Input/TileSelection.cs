@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
@@ -9,13 +8,13 @@ namespace Bearded.TD.Game.Input
     abstract class TileSelection
     {
         public static TileSelection FromFootprints(FootprintGroup footprints)
-            => footprints.Footprints.Count == 1
+            => footprints.Footprints.Length == 1
                 ? new SingleSelection(footprints)
-                : (TileSelection)new GroupSelection(footprints);
+                : new GroupSelection(footprints);
 
         public static TileSelection Single { get; } = new SingleSelection(FootprintGroup.Single);
 
-        public abstract PositionedFootprint GetPositionedFootprint(Level level, Position2 position);
+        public abstract PositionedFootprint GetPositionedFootprint(Position2 position);
 
         private sealed class SingleSelection : TileSelection
         {
@@ -26,7 +25,7 @@ namespace Bearded.TD.Game.Input
                 this.footprintGroup = footprintGroup;
             }
 
-            public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
+            public override PositionedFootprint GetPositionedFootprint(Position2 position)
             {
                 var footprint = footprintGroup.Footprints[0];
 
@@ -43,7 +42,7 @@ namespace Bearded.TD.Game.Input
                 this.footprints = footprints;
             }
 
-            public override PositionedFootprint GetPositionedFootprint(Level level, Position2 position)
+            public override PositionedFootprint GetPositionedFootprint(Position2 position)
             {
                 var (root, _, index) = footprints.Footprints.Select((f, i) =>
                     {

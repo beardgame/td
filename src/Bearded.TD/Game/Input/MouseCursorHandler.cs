@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
@@ -10,7 +9,6 @@ namespace Bearded.TD.Game.Input
     {
         private readonly GameCamera camera;
         private readonly MouseCameraController cameraController;
-        private readonly Level level;
         private TileSelection tileSelection;
 
         public ActionState Click { get; private set; }
@@ -19,11 +17,10 @@ namespace Bearded.TD.Game.Input
 
         public PositionedFootprint CurrentFootprint { get; private set; }
 
-        public MouseCursorHandler(GameCamera camera, GameCameraController cameraController, Level level)
+        public MouseCursorHandler(GameCamera camera, GameCameraController cameraController)
         {
             this.camera = camera;
             this.cameraController = new MouseCameraController(cameraController);
-            this.level = level;
             tileSelection = TileSelection.FromFootprints(FootprintGroup.Single);
         }
 
@@ -44,7 +41,7 @@ namespace Bearded.TD.Game.Input
 
         private void updateFootprint()
         {
-            CurrentFootprint = tileSelection.GetPositionedFootprint(level, CursorPosition);
+            CurrentFootprint = tileSelection.GetPositionedFootprint(CursorPosition);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Meta
         private static readonly TimeSpan timeBetweenSyncs = .1.S();
 
         private readonly GameInstance game;
-        private readonly Dictionary<Player, Tile> latestKnownCursorPosition = new Dictionary<Player, Tile>();
+        private readonly Dictionary<Player, Tile> latestKnownCursorPosition = new();
         private Instant nextUpdate;
 
         public PlayerCursors(GameInstance game)

@@ -26,7 +26,6 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         public static INodeBehaviorFactory<TOwner> CreateNodeBehaviorFactory<TOwner>(Template template) =>
             (factories.CreateBehaviorFactory<Node>(template) as INodeBehaviorFactory<TOwner>)!;
 
-        // ReSharper disable once UnusedTypeParameter
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
             Func<TParameters, INodeBehavior<TOwner>> constructor)
         {
