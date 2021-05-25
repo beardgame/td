@@ -12,7 +12,6 @@ namespace Bearded.TD.Content.Models
         [Modifiable(6.6, Type = AttributeType.FireRate)]
         Frequency FireRate { get; }
 
-        // TODO: This should be muzzleSPEED
         [Modifiable(10.0)]
         Speed MuzzleSpeed { get; }
 
