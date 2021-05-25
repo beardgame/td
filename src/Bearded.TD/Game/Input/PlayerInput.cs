@@ -8,46 +8,53 @@ namespace Bearded.TD.Game.Input
     {
         private readonly InteractionHandler defaultInteractionHandler;
         private readonly ICursorHandler cursor;
-        private InteractionHandler interactionHandler;
 
-        public bool IsMouseFocused { get; private set; }
+        private bool isMouseFocused;
+        private InteractionHandler? interactionHandler;
+
         public Position2 CursorPosition => cursor.CursorPosition;
 
         public PlayerInput(GameInstance game)
         {
-            cursor = new MouseCursorHandler(game.Camera, game.CameraController, game.State.Level);
+            cursor = new MouseCursorHandler(game.Camera, game.CameraController);
             defaultInteractionHandler = new DefaultInteractionHandler(game);
             ResetInteractionHandler();
         }
 
         public void Focus()
         {
-            DebugAssert.State.Satisfies(!IsMouseFocused);
-            IsMouseFocused = true;
+            DebugAssert.State.Satisfies(!isMouseFocused);
+            isMouseFocused = true;
             interactionHandler?.Start(cursor);
         }
 
         public void UnFocus()
         {
-            DebugAssert.State.Satisfies(IsMouseFocused);
-            IsMouseFocused = false;
+            DebugAssert.State.Satisfies(isMouseFocused);
+            isMouseFocused = false;
             interactionHandler?.End(cursor);
         }
 
         public void HandleInput(InputState input)
         {
-            if (IsMouseFocused)
+            if (isMouseFocused)
             {
                 cursor.HandleInput(input);
-                interactionHandler.Update(cursor);
+                interactionHandler!.Update(cursor);
             }
         }
 
         public void SetInteractionHandler(InteractionHandler interactionHandler)
         {
-            if (IsMouseFocused) this.interactionHandler?.End(cursor);
+            if (isMouseFocused)
+            {
+                this.interactionHandler?.End(cursor);
+            }
             this.interactionHandler = interactionHandler;
-            if (IsMouseFocused) this.interactionHandler.Start(cursor);
+            if (isMouseFocused)
+            {
+                this.interactionHandler.Start(cursor);
+            }
         }
 
         public void ResetInteractionHandler() => SetInteractionHandler(defaultInteractionHandler);
