@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.Utilities.IO;
 
@@ -39,6 +40,7 @@ namespace Bearded.TD
 
                 logger.Debug?.Log("Creating behavior factories");
                 ComponentFactories.Initialize();
+                FactionBehaviorFactories.Initialize();
                 GameRuleFactories.Initialize();
                 NodeBehaviorFactories.Initialize();
 

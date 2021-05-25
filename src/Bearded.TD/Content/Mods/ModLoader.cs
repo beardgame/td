@@ -112,6 +112,7 @@ namespace Bearded.TD.Content.Mods
                     new ColorConverter(),
                     BehaviorConverterFactory.ForBuildingComponents(),
                     BehaviorConverterFactory.ForBaseComponents(),
+                    BehaviorConverterFactory.ForFactionBehaviors(),
                     BehaviorConverterFactory.ForGameRules(),
                     BehaviorConverterFactory.ForNodeBehaviors(),
                     new NodeTagConverter(),

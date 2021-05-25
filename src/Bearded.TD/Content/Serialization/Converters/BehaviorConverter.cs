@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,6 +20,10 @@ namespace Bearded.TD.Content.Serialization.Converters
         public static BehaviorConverter<IComponent> ForBaseComponents()
             => new(ComponentFactories.ParameterTypesForComponentsById
                 .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));
+
+        public static BehaviorConverter<IFactionBehavior> ForFactionBehaviors()
+            => new(FactionBehaviorFactories.ParameterTypesForComponentsById
+                .ToDictionary(t => t.Key, t => typeof(FactionBehavior<>).MakeGenericType(t.Value)));
 
         public static BehaviorConverter<IGameRule> ForGameRules()
             => new(GameRuleFactories.ParameterTypesForComponentsById
