@@ -8,20 +8,20 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     abstract class WorkerState
     {
-        public static WorkerState Idle(WorkerManager manager, IWorkerComponent worker) =>
-            new IdleWorkerState(manager, worker);
-        public static WorkerState ExecuteTask(WorkerManager manager, IWorkerComponent worker, IWorkerTask task) =>
-            new ExecutingWorkerState(manager, worker, task);
+        public static WorkerState Idle(WorkerTaskManager taskManager, IWorkerComponent worker) =>
+            new IdleWorkerState(taskManager, worker);
+        public static WorkerState ExecuteTask(WorkerTaskManager taskManager, IWorkerComponent worker, IWorkerTask task) =>
+            new ExecutingWorkerState(taskManager, worker, task);
 
         public event GenericEventHandler<WorkerState>? StateChanged;
         public event GenericEventHandler<IEnumerable<Tile>>? TaskTilesChanged;
 
-        private WorkerManager manager { get; }
+        private WorkerTaskManager taskManager { get; }
         private IWorkerComponent worker { get; }
 
-        private WorkerState(WorkerManager manager, IWorkerComponent worker)
+        private WorkerState(WorkerTaskManager taskManager, IWorkerComponent worker)
         {
-            this.manager = manager;
+            this.taskManager = taskManager;
             this.worker = worker;
         }
 
@@ -35,13 +35,13 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private sealed class IdleWorkerState : WorkerState
         {
-            public IdleWorkerState(WorkerManager manager, IWorkerComponent worker) : base(manager, worker) { }
+            public IdleWorkerState(WorkerTaskManager taskManager, IWorkerComponent worker) : base(taskManager, worker) { }
 
             public override void Update(TimeSpan elapsedTime) { }
 
             public override void Start()
             {
-                manager.RequestTask(worker);
+                taskManager.RequestTask(worker);
                 setTaskTiles(worker.CurrentTile.Yield());
             }
 
@@ -52,8 +52,8 @@ namespace Bearded.TD.Game.Simulation.Workers
         {
             private readonly IWorkerTask task;
 
-            public ExecutingWorkerState(WorkerManager manager, IWorkerComponent worker, IWorkerTask task)
-                : base(manager, worker)
+            public ExecutingWorkerState(WorkerTaskManager taskManager, IWorkerComponent worker, IWorkerTask task)
+                : base(taskManager, worker)
             {
                 this.task = task;
             }
@@ -66,8 +66,8 @@ namespace Bearded.TD.Game.Simulation.Workers
                 }
                 if (task.Finished)
                 {
-                    manager.FinishTask(task);
-                    moveToState(Idle(manager, worker));
+                    taskManager.FinishTask(task);
+                    moveToState(Idle(taskManager, worker));
                 }
             }
 
@@ -80,7 +80,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 if (!task.Finished)
                 {
-                    manager.ReturnTask(task);
+                    taskManager.ReturnTask(task);
                 }
             }
         }

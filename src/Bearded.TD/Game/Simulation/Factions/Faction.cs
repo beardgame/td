@@ -31,8 +31,8 @@ namespace Bearded.TD.Game.Simulation.Factions
             TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork =>
             TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) ? network : null;
-        public WorkerManager? Workers =>
-            TryGetBehaviorIncludingAncestors<WorkerManager>(out var workers) ? workers : null;
+        public WorkerTaskManager? Workers =>
+            TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers) ? workers : null;
 
         // TODO: do we need an external ID so mod files can refer to other factions?
         public static Faction FromBlueprint(
@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Simulation.Factions
             }
             if (hasWorkers)
             {
-                addBehavior(new WorkerManager(), gameState.Meta.Events);
+                addBehavior(new WorkerTaskManager(), gameState.Meta.Events);
             }
         }
 
