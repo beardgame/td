@@ -6,7 +6,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 namespace Bearded.TD.Game.Simulation.Resources
 {
     [FactionBehavior("resources")]
-    sealed class ResourceManager : FactionBehavior<Faction>
+    sealed class FactionResources : FactionBehavior<Faction>
     {
         private readonly HashSet<ResourceReservation> outstandingReservations = new();
         private readonly List<ResourceReservation> reservationQueue = new();
@@ -121,16 +121,16 @@ namespace Bearded.TD.Game.Simulation.Resources
 
         private sealed class ResourceReservation : IResourceReservation
         {
-            private readonly ResourceManager resourceManager;
+            private readonly FactionResources factionResources;
 
             private bool isCancelled;
             public bool IsReadyToReceive { get; private set; }
             public bool IsCommitted { get; private set; }
             public ResourceAmount ResourcesLeftToClaim { get; private set; }
 
-            public ResourceReservation(ResourceManager resourceManager, ResourceAmount requestedAmount)
+            public ResourceReservation(FactionResources factionResources, ResourceAmount requestedAmount)
             {
-                this.resourceManager = resourceManager;
+                this.factionResources = factionResources;
                 ResourcesLeftToClaim = requestedAmount;
             }
 
@@ -147,7 +147,7 @@ namespace Bearded.TD.Game.Simulation.Resources
                 State.Satisfies(!IsReadyToReceive);
                 State.Satisfies(!isCancelled);
                 IsReadyToReceive = true;
-                resourceManager.requestResources(this);
+                factionResources.requestResources(this);
             }
 
             public void ClaimResources(ResourceAmount amount)
@@ -156,12 +156,12 @@ namespace Bearded.TD.Game.Simulation.Resources
                 State.Satisfies(IsCommitted);
                 State.Satisfies(!isCancelled);
                 Argument.Satisfies(amount <= ResourcesLeftToClaim);
-                resourceManager.consumeResources(amount);
+                factionResources.consumeResources(amount);
                 ResourcesLeftToClaim -= amount;
 
                 if (ResourcesLeftToClaim == ResourceAmount.Zero)
                 {
-                    resourceManager.onReservationCompleted(this);
+                    factionResources.onReservationCompleted(this);
                 }
             }
 
@@ -171,7 +171,7 @@ namespace Bearded.TD.Game.Simulation.Resources
                 {
                     return;
                 }
-                resourceManager.cancelReservation(this);
+                factionResources.cancelReservation(this);
                 isCancelled = true;
             }
         }

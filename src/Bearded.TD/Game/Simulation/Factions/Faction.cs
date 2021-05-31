@@ -28,8 +28,8 @@ namespace Bearded.TD.Game.Simulation.Factions
         public bool HasWorkers { get; }
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
-        public ResourceManager? Resources =>
-            TryGetBehaviorIncludingAncestors<ResourceManager>(out var resources) ? resources : null;
+        public FactionResources? Resources =>
+            TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
         public FactionTechnology? Technology =>
             TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
@@ -75,7 +75,7 @@ namespace Bearded.TD.Game.Simulation.Factions
 
             if (hasResources)
             {
-                var resources = new ResourceManager();
+                var resources = new FactionResources();
                 behaviors.Add(resources);
                 resources.OnAdded(this, gameState.Meta.Events);
 

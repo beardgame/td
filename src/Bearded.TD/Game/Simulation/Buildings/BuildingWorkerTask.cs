@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public BuildingWorkerTask(
             Id<IWorkerTask> taskId,
             BuildingPlaceholder placeholder,
-            ResourceManager.IResourceReservation resourceReservation)
+            FactionResources.IResourceReservation resourceReservation)
         {
             Id = taskId;
             this.placeholder = placeholder;
