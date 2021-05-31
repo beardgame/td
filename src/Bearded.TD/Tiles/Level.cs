@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
 using static Bearded.TD.Constants.Game.World;
@@ -79,7 +80,8 @@ namespace Bearded.TD.Tiles
         public static IEnumerable<Tile> TilesWithCenterInCircle(Position2 center, Unit radius)
         {
             var rSquared = radius.Squared;
-            return Tilemap.GetSpiralCenteredAt(GetTile(center), (int) Ceiling(radius.NumericValue / HexagonWidth))
+            return Tilemap
+                .GetSpiralCenteredAt(GetTile(center), MoreMath.CeilToInt(radius.NumericValue / HexagonWidth) + 1)
                 .Where(t => (GetPosition(t) - center).LengthSquared < rSquared);
         }
     }
