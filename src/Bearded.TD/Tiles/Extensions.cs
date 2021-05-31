@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Utilities.Geometry;
@@ -64,8 +65,8 @@ namespace Bearded.TD.Tiles
                 .Select(a => new Vector2((float)Math.Round(Math.Cos(a), 7), (float)Math.Round(Math.Sin(a), 7)))
                 .ToArray();
 
-        public static ReadOnlyCollection<Direction> Directions { get; }
-            = directions.ToList().AsReadOnly();
+        public static ImmutableArray<Direction> Directions { get; }
+            = directions.ToImmutableArray();
 
         #endregion
 

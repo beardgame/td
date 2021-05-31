@@ -30,11 +30,15 @@ namespace Bearded.TD.Tiles
             var diffHorizontal = other.X - X; // -
             var diffVertical = other.Y - Y; // \
 
+            var diffHorizontalAbs = Math.Abs(diffHorizontal);
+            var diffVerticalAbs = Math.Abs(diffVertical);
+
             // Combination of \ and - can be combined into /
             var reduction = 0;
-            if (Math.Sign(diffHorizontal) != Math.Sign(diffVertical))
-                reduction = Math.Min(Math.Abs(diffHorizontal), Math.Abs(diffVertical));
-            return Math.Abs(diffHorizontal) + Math.Abs(diffVertical) - reduction;
+            // faster than two calls to Math.Sign
+            if (diffHorizontal * (long)diffVertical < 0)
+                reduction = Math.Min(diffHorizontalAbs, diffVerticalAbs);
+            return diffHorizontalAbs + diffVerticalAbs - reduction;
         }
 
         public override bool Equals(object obj)

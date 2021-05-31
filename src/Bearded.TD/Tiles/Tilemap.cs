@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -8,8 +9,7 @@ namespace Bearded.TD.Tiles
 {
     static class Tilemap
     {
-        public static ReadOnlyCollection<Direction> Directions { get; }
-            = Extensions.Directions;
+        public static ImmutableArray<Direction> Directions => Extensions.Directions;
 
         public static int TileCountForRadius(int radius) => 3 * radius * (radius + 1) + 1;
 
