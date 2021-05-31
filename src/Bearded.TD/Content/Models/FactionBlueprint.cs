@@ -11,7 +11,7 @@ namespace Bearded.TD.Content.Models
         public ModAwareId Id { get; }
         private readonly ImmutableArray<IFactionBehaviorFactory<Faction>> behaviorParameters;
 
-        public IEnumerable<IFactionBehavior<Faction>> GetBehaviors() => behaviorParameters.Select(f => f.Create());
+        public IEnumerable<FactionBehavior<Faction>> GetBehaviors() => behaviorParameters.Select(f => f.Create());
 
         public FactionBlueprint(ModAwareId id, IEnumerable<IFactionBehaviorFactory<Faction>> behaviorParameters)
         {

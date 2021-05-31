@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Simulation.Factions
 {
     [AttributeUsage(AttributeTargets.Class)]
-    [BaseTypeRequired(typeof(IFactionBehavior<>))]
+    [BaseTypeRequired(typeof(FactionBehavior<>))]
     [MeansImplicitUse]
     sealed class FactionBehaviorAttribute : Attribute, IBehaviorAttribute
     {

@@ -1,5 +1,6 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.Utilities;
 
@@ -8,8 +9,8 @@ namespace Bearded.TD.UI.Controls
     sealed class TechnologyUI
         : IListener<TechnologyDequeued>, IListener<TechnologyQueued>, IListener<TechnologyUnlocked>
     {
-        public GameInstance Game { get; private set; }
-        public TechnologyUIModel Model { get; private set; }
+        public GameInstance Game { get; private set; } = null!;
+        public TechnologyUIModel Model { get; private set; } = null!;
 
         public event VoidEventHandler? TechnologiesUpdated;
 
@@ -36,18 +37,30 @@ namespace Bearded.TD.UI.Controls
 
         public void HandleEvent(TechnologyDequeued @event)
         {
+            if (!Game.Me.Faction.SharesTechnologyWith(@event.Faction))
+            {
+                return;
+            }
             Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }
 
         public void HandleEvent(TechnologyQueued @event)
         {
+            if (!Game.Me.Faction.SharesTechnologyWith(@event.Faction))
+            {
+                return;
+            }
             Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }
 
         public void HandleEvent(TechnologyUnlocked @event)
         {
+            if (!Game.Me.Faction.SharesTechnologyWith(@event.Faction))
+            {
+                return;
+            }
             Model.UpdateTechnology(@event.Technology);
             TechnologiesUpdated?.Invoke();
         }

@@ -122,6 +122,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             public void HandleEvent(UpgradeTechnologyUnlocked @event)
             {
+                if (!playerFaction.SharesTechnologyWith(@event.Faction))
+                {
+                    return;
+                }
+
                 updateAvailableUpgrades();
                 AvailableUpgradesUpdated?.Invoke();
             }

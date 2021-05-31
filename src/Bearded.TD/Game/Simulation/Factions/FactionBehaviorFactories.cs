@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Factions
         private static readonly
             BehaviorFactories<Template, FactionBehaviorAttribute, FactionBehaviorOwnerAttribute, VoidParameters>
             factories =
-                new(typeof(IFactionBehavior<>), makeFactoryFactoryMethodInfo);
+                new(typeof(FactionBehavior<>), makeFactoryFactoryMethodInfo);
 
         public static void Initialize() => factories.Initialize();
 
@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.Factions
             (factories.CreateBehaviorFactory<TOwner>(template) as IFactionBehaviorFactory<TOwner>)!;
 
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
-            Func<TParameters, IFactionBehavior<TOwner>> constructor)
+            Func<TParameters, FactionBehavior<TOwner>> constructor)
         {
             return (Func<TParameters, object>) (p => new FactionBehaviorFactory<TOwner, TParameters>(p, constructor));
         }

@@ -4,20 +4,20 @@ namespace Bearded.TD.Game.Simulation.Factions
 {
     interface IFactionBehaviorFactory<TOwner>
     {
-        IFactionBehavior<TOwner> Create();
+        FactionBehavior<TOwner> Create();
     }
 
     sealed class FactionBehaviorFactory<TOwner, TParameters> : IFactionBehaviorFactory<TOwner>
     {
         private readonly TParameters parameters;
-        private readonly Func<TParameters, IFactionBehavior<TOwner>> factory;
+        private readonly Func<TParameters, FactionBehavior<TOwner>> factory;
 
-        public FactionBehaviorFactory(TParameters parameters, Func<TParameters, IFactionBehavior<TOwner>> factory)
+        public FactionBehaviorFactory(TParameters parameters, Func<TParameters, FactionBehavior<TOwner>> factory)
         {
             this.parameters = parameters;
             this.factory = factory;
         }
 
-        public IFactionBehavior<TOwner> Create() => factory(parameters);
+        public FactionBehavior<TOwner> Create() => factory(parameters);
     }
 }

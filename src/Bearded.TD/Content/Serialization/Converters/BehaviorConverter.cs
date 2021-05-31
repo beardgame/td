@@ -23,7 +23,7 @@ namespace Bearded.TD.Content.Serialization.Converters
 
         public static BehaviorConverter<IFactionBehavior> ForFactionBehaviors()
             => new(FactionBehaviorFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(FactionBehavior<>).MakeGenericType(t.Value)));
+                .ToDictionary(t => t.Key, t => typeof(Models.FactionBehavior<>).MakeGenericType(t.Value)));
 
         public static BehaviorConverter<IGameRule> ForGameRules()
             => new(GameRuleFactories.ParameterTypesForComponentsById

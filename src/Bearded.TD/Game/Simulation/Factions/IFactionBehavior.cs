@@ -1,8 +1,19 @@
+using Bearded.TD.Game.Simulation.Events;
+
 namespace Bearded.TD.Game.Simulation.Factions
 {
-    // ReSharper disable once UnusedTypeParameter
-    interface IFactionBehavior<TOwner>
+    abstract class FactionBehavior<TOwner>
     {
-        // TODO: add methods
+        protected TOwner Owner { get; private set; }
+        protected GlobalGameEvents Events { get; private set; } = null!;
+
+        public void OnAdded(TOwner owner, GlobalGameEvents events)
+        {
+            Owner = owner;
+            Events = events;
+            Execute();
+        }
+
+        protected abstract void Execute();
     }
 }
