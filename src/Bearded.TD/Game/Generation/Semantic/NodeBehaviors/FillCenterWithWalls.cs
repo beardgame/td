@@ -1,6 +1,7 @@
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
