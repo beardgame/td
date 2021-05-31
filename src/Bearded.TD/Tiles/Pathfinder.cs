@@ -48,6 +48,8 @@ namespace Bearded.TD.Tiles
         private static StepCostFunction constrainArea(StepCostFunction function, Area area)
             => (tile, direction) => area.Contains(tile.Neighbour(direction)) ? function(tile, direction) : null;
 
+
+
         private sealed class AStarPathfinder : Pathfinder
         {
             internal readonly StepCostFunction CostOfStep;
@@ -69,8 +71,9 @@ namespace Bearded.TD.Tiles
                     {
                         [origin] = (0, 0, Direction.Unknown)
                     };
-                var queue =
-                    new PriorityQueue<double, Tile>(); // key is tentative total cost through tile, implementing A*
+
+                // key is tentative total cost through tile, implementing A*
+                var queue = new PriorityQueue<double, Tile>();
                 queue.Enqueue(0, origin);
 
                 while (true)
@@ -83,11 +86,11 @@ namespace Bearded.TD.Tiles
 
                     foreach (var direction in Tilemap.Directions)
                     {
-                        var neighborTile = currentTile.Neighbour(direction);
-
                         var stepCost = CostOfStep(currentTile, direction);
                         if (!stepCost.HasValue)
                             break;
+
+                        var neighborTile = currentTile.Neighbour(direction);
                         var costToHere = currentCost + stepCost.Value;
                         var minimumCostFromHereToTarget = neighborTile.DistanceTo(target) * MinimumCost;
                         var tentativeTotalCostThroughCurrent = costToHere + minimumCostFromHereToTarget;
