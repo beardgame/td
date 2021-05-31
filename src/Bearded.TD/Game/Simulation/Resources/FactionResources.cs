@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameLoop;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
-    sealed class FactionResources : FactionBehavior<Faction>
+    sealed class FactionResources : FactionBehavior<Faction>, IListener<FrameUpdateStarting>
     {
         private readonly HashSet<ResourceReservation> outstandingReservations = new();
         private readonly List<ResourceReservation> reservationQueue = new();
@@ -33,7 +35,12 @@ namespace Bearded.TD.Game.Simulation.Resources
             return reservation;
         }
 
-        public void DistributeResources()
+        public void HandleEvent(FrameUpdateStarting @event)
+        {
+            distributeResources();
+        }
+
+        private void distributeResources()
         {
             while (reservationQueue.Count > 0
                 && reservationQueue[0].ResourcesLeftToClaim <= AvailableResources)
