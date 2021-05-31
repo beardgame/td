@@ -89,7 +89,7 @@ namespace Bearded.TD.Tiles
                         if (!stepCost.HasValue)
                             break;
                         var costToHere = currentCost + stepCost.Value;
-                        var minimumCostFromHereToTarget = currentTile.DistanceTo(target) * MinimumCost;
+                        var minimumCostFromHereToTarget = neighborTile.DistanceTo(target) * MinimumCost;
                         var tentativeTotalCostThroughCurrent = costToHere + minimumCostFromHereToTarget;
 
                         if (seenTiles.TryGetValue(neighborTile, out var value))
