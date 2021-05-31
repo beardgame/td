@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             }
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game) =>
-                new Implementation(game.State.FactionFor(faction), game.Blueprints.Technologies[technology]);
+                new Implementation(game.State.Factions.Resolve(faction), game.Blueprints.Technologies[technology]);
 
             public override void Serialize(INetBufferStream stream)
             {

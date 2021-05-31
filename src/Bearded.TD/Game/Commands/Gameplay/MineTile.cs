@@ -67,7 +67,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
-                return new Implementation(game, game.State.FactionFor(faction), new Tile(tileX, tileY), taskId);
+                return new Implementation(game, game.State.Factions.Resolve(faction), new Tile(tileX, tileY), taskId);
             }
 
             public override void Serialize(INetBufferStream stream)

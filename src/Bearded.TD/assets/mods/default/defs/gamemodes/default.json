@@ -3,21 +3,47 @@
     "name" : "Classic TD experience",
     "rules" : [
         {
+            "id" : "addFaction",
+            "parameters" : {
+                "blueprint": {
+                    "id": "root",
+                    "behaviors": [
+                        { "id": "resources" },
+                        { "id": "technology" },
+                        { "id": "workerNetwork" }
+                    ]
+                }
+            }
+        },
+        {
+            "id" : "addPlayerFactions",
+            "parameters" : {
+                "parent" : "root",
+                "blueprint" : {
+                    "behaviors" : [
+                        { "id" : "workers" }
+                    ]
+                }
+            }
+        },
+        { "id" : "assignWorkers" },
+        {
+            "id" : "grantResourcesOnStart",
+            "parameters" : {
+                "faction" : "root",
+                "amount" : 240
+            }
+        },
+        {
             "id" : "unlockTechnology",
             "parameters" : {
+                "faction" : "root",
                 "unlocks" : [
                     { "type" : "building", "blueprint" : "wall" },
                     { "type" : "building", "blueprint" : "triangleTurret" }
                 ]
             }
         },
-        {
-            "id" : "grantResourcesOnStart",
-            "parameters" : {
-                "amount" : 240
-            }
-        },
-        { "id" : "assignWorkers" },
         { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
         {
             "id" : "scheduleGame",

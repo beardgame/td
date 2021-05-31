@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Commands.Debug
             }
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-                => new Implementation(game.State.FactionFor(faction), number);
+                => new Implementation(game.State.Factions.Resolve(faction), number);
 
             public override void Serialize(INetBufferStream stream)
             {

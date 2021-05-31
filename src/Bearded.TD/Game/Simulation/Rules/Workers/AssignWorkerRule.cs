@@ -19,8 +19,8 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
             distributionMethod = context.GameSettings.WorkerDistributionMethod;
             context.Events.Subscribe(this);
 
-            var factionsByParent = context.Factions.ToLookup(f => f.Parent);
-            foreach (var faction in context.Factions.Where(f => f.HasWorkerNetwork))
+            var factionsByParent = context.Factions.All.ToLookup(f => f.Parent);
+            foreach (var faction in context.Factions.All.Where(f => f.HasWorkerNetwork))
             {
                 childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
             }

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -14,18 +15,20 @@ namespace Bearded.TD.Game.Simulation.Factions
     [FactionBehaviorOwner]
     sealed class Faction : IIdable<Faction>
     {
-        private readonly Color? color;
-
         private readonly IFactionBlueprint blueprint;
         private readonly List<IFactionBehavior<Faction>> behaviors = new();
 
         public Id<Faction> Id { get; }
+        public ExternalId<Faction> ExternalId => blueprint.Id;
         public Faction? Parent { get; }
-        public bool HasResources { get; }
-        public bool HasWorkerNetwork { get; }
-        public bool HasWorkers { get; }
-        public string Name { get; }
-        public Color Color => color ?? Parent?.Color ?? Color.Black;
+
+        public string Name => blueprint.Name ?? "";
+        public Color Color => blueprint.Color ?? Color.Black;
+
+        // Obsolete
+        public bool HasResources => TryGetBehavior<FactionResources>(out _);
+        public bool HasWorkerNetwork => TryGetBehavior<WorkerNetwork>(out _);
+
         public FactionResources? Resources =>
             TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
         public FactionTechnology? Technology =>
@@ -37,60 +40,21 @@ namespace Bearded.TD.Game.Simulation.Factions
 
         // TODO: do we need an external ID so mod files can refer to other factions?
         public static Faction FromBlueprint(
-            Id<Faction> id, string name, IFactionBlueprint blueprint, GlobalGameEvents events)
+            Id<Faction> id, Faction? parent, IFactionBlueprint blueprint, GlobalGameEvents events)
         {
-            var faction = new Faction(id, name, blueprint);
+            var faction = new Faction(id, parent, blueprint);
             faction.addBehaviorRange(blueprint.GetBehaviors(), events);
             return faction;
         }
 
         private Faction(
             Id<Faction> id,
-            string name,
+            Faction? parent,
             IFactionBlueprint blueprint)
         {
             Id = id;
-            Name = name;
-            this.blueprint = blueprint;
-        }
-
-        public Faction(
-            Id<Faction> id,
-            GameState gameState,
-            Faction? parent,
-            bool hasResources,
-            bool hasWorkerNetwork,
-            bool hasWorkers,
-            string? name = null,
-            Color? color = null)
-        {
-            Id = id;
             Parent = parent;
-            HasResources = hasResources;
-            HasWorkerNetwork = hasWorkerNetwork;
-            HasWorkers = hasWorkers;
-            Name = name ?? "";
-            this.color = color;
-
-            if (hasResources)
-            {
-                addBehavior(new FactionResources(), gameState.Meta.Events);
-                addBehavior(new FactionTechnology(), gameState.Meta.Events);
-            }
-            if (hasWorkerNetwork)
-            {
-                addBehavior(new WorkerNetwork(), gameState.Meta.Events);
-            }
-            if (hasWorkers)
-            {
-                addBehavior(new WorkerTaskManager(), gameState.Meta.Events);
-            }
-        }
-
-        private void addBehavior(IFactionBehavior<Faction> behavior, GlobalGameEvents events)
-        {
-            behaviors.Add(behavior);
-            behavior.OnAdded(this, events);
+            this.blueprint = blueprint;
         }
 
         private void addBehaviorRange(IEnumerable<IFactionBehavior<Faction>> behaviorsToAdd, GlobalGameEvents events)

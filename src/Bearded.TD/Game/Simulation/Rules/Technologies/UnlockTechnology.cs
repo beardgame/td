@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Simulation.Rules.Technologies
 {
@@ -11,22 +12,13 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
 
         public override void Execute(GameRuleContext context)
         {
-            var faction = context.RootFaction;
+            var faction = context.Factions.Find(Parameters.Faction);
             foreach (var unlock in Parameters.Unlocks)
             {
                 unlock.Apply(faction.Technology!);
             }
         }
 
-        public readonly struct RuleParameters
-        {
-            public IEnumerable<ITechnologyUnlock> Unlocks { get; }
-
-            [JsonConstructor]
-            public RuleParameters(IEnumerable<ITechnologyUnlock> unlocks)
-            {
-                Unlocks = unlocks;
-            }
-        }
+        public sealed record RuleParameters(ExternalId<Faction> Faction, IEnumerable<ITechnologyUnlock> Unlocks);
     }
 }

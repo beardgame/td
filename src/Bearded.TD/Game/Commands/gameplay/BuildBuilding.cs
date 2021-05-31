@@ -104,7 +104,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             {
                 return new Implementation(
                     game,
-                    game.State.FactionFor(faction),
+                    game.State.Factions.Resolve(faction),
                     id,
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(

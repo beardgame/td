@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Commands.Loading
             {
                 return new Implementation(
                     game.State,
-                    game.State.FactionFor(faction),
+                    game.State.Factions.Resolve(faction),
                     id,
                     game.Blueprints.Buildings[blueprint],
                     new PositionedFootprint(
