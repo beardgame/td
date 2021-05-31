@@ -5,7 +5,6 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
-    [FactionBehavior("resources")]
     sealed class FactionResources : FactionBehavior<Faction>
     {
         private readonly HashSet<ResourceReservation> outstandingReservations = new();
