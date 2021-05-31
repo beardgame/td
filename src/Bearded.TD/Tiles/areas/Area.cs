@@ -6,6 +6,8 @@ namespace Bearded.TD.Tiles
 {
     static partial class Area
     {
+        public static IArea Empty() => From(ImmutableHashSet<Tile>.Empty);
+
         public static IArea From(IEnumerable<Tile> tiles)
         {
             return tiles switch

@@ -1,52 +1,45 @@
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    sealed class WorkerNetwork
+    sealed class WorkerNetwork : FactionBehavior<Faction>
     {
-        private Tilemap<bool> antennaCoverage;
-        private readonly List<IWorkerAntenna> antennae = new List<IWorkerAntenna>();
+        private IArea coverage = Area.Empty();
+        private readonly List<IWorkerAntenna> antennae = new();
 
         public event VoidEventHandler? NetworkChanged;
 
-        public void RegisterAntenna(GameState gameState, IWorkerAntenna antenna)
+        protected override void Execute() {}
+
+        public void RegisterAntenna(IWorkerAntenna antenna)
         {
             antennae.Add(antenna);
-            buildAntennaCoverage(gameState.Level);
+            buildAntennaCoverage();
         }
 
-        public void OnAntennaRangeUpdated(GameState gameState)
+        public void OnAntennaRangeUpdated()
         {
-            buildAntennaCoverage(gameState.Level);
+            buildAntennaCoverage();
         }
 
-        public void UnregisterAntenna(GameState gameState, IWorkerAntenna antenna)
+        public void UnregisterAntenna(IWorkerAntenna antenna)
         {
             var deleted = antennae.Remove(antenna);
-            DebugAssert.Argument.Satisfies(deleted);
-            buildAntennaCoverage(gameState.Level);
+            Argument.Satisfies(deleted);
+            buildAntennaCoverage();
         }
 
-        private void buildAntennaCoverage(Level level)
+        private void buildAntennaCoverage()
         {
-            DebugAssert.State.Satisfies(antennaCoverage == null || antennaCoverage.Radius == level.Radius);
-            antennaCoverage = new Tilemap<bool>(level.Radius);
-            foreach (var t in antennaCoverage)
-            {
-                var pos = Level.GetPosition(t);
-                antennaCoverage[t] = antennae.Any(a => IsTileInAntennaRange(a, pos));
-            }
+            coverage = Area.Union(antennae.Select(a => a.Coverage));
             NetworkChanged?.Invoke();
         }
 
-        public static bool IsTileInAntennaRange(IWorkerAntenna antenna, Position2 point)
-            => (antenna.Position - point).LengthSquared < antenna.WorkerRange.Squared;
-
-        public bool IsInRange(Tile tile) => antennaCoverage?[tile] ?? false;
+        public bool IsInRange(Tile tile) => coverage.Contains(tile);
     }
 }
