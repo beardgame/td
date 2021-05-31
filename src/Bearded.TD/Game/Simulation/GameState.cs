@@ -56,7 +56,8 @@ namespace Bearded.TD.Game.Simulation
 
         private bool finishedLoading;
 
-        public GameFactions Factions { get; }
+        private readonly GameFactions factions = new();
+        public IGameFactions Factions { get; }
 
         private Faction? rootFaction;
         // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
@@ -79,7 +80,7 @@ namespace Bearded.TD.Game.Simulation
             SelectionLayer = new SelectionLayer(BuildingLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
-            Factions = new GameFactions();
+            Factions = factions.AsReadOnly();
 
             WaveDirector = new WaveDirector(this);
         }
@@ -212,7 +213,7 @@ namespace Bearded.TD.Game.Simulation
                 rootFaction = faction;
             }
 
-            Factions.Add(faction);
+            factions.Add(faction);
         }
 
         public void Advance(TimeSpan elapsedTime)

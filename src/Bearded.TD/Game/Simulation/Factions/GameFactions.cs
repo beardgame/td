@@ -6,7 +6,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
-    sealed class GameFactions
+    sealed class GameFactions : IGameFactions
     {
         private readonly IdCollection<Faction> factions = new();
         private readonly Dictionary<ExternalId<Faction>, Faction> factionsByExternalId = new();
@@ -30,5 +30,23 @@ namespace Bearded.TD.Game.Simulation.Factions
         public Faction Resolve(Id<Faction> id) => factions[id];
 
         public Faction Find(ExternalId<Faction> externalId) => factionsByExternalId[externalId];
+
+        public IGameFactions AsReadOnly() => new GameFactionsProxy(this);
+
+        private sealed class GameFactionsProxy : IGameFactions
+        {
+            private readonly GameFactions inner;
+
+            public GameFactionsProxy(GameFactions inner)
+            {
+                this.inner = inner;
+            }
+
+            public ReadOnlyCollection<Faction> All => inner.All;
+
+            public Faction Resolve(Id<Faction> id) => inner.Resolve(id);
+
+            public Faction Find(ExternalId<Faction> externalId) => inner.Find(externalId);
+        }
     }
 }

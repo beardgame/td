@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Rules
         public GlobalGameEvents Events { get; }
         public ReadOnlyCollection<Player> Players { get; }
         public GameSettings GameSettings => GameState.GameSettings;
-        public GameFactions Factions => GameState.Factions;
+        public IGameFactions Factions => GameState.Factions;
         public IDispatcher<GameInstance> Dispatcher => GameState.Meta.Dispatcher;
         public IdManager Ids => GameState.Meta.Ids;
 
