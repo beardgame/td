@@ -38,7 +38,10 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             var distanceSquared = Parameters.Range.Squared;
 
             var enemies = Owner.Game.UnitLayer;
-            var tiles = Level.TilesInHexagon(center.XY(), Parameters.Range);
+            // Returns only tiles with their centre in the circle with the given range.
+            // This means it may miss enemies that are strictly speaking in range, but are on a tile that itself is out
+            // of range.
+            var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
