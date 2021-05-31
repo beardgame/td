@@ -82,7 +82,11 @@ namespace Bearded.TD.Game
 
         private readonly PlayerManager? playerManager;
 
-        public GameInstance(IGameContext context, ContentManager contentManager, Player me, IdManager ids,
+        public GameInstance(
+            IGameContext context,
+            ContentManager contentManager,
+            Player me,
+            IdManager ids,
             RenderContext renderContext)
         {
             RequestDispatcher = context.RequestDispatcher;
@@ -99,8 +103,6 @@ namespace Bearded.TD.Game
             Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids,
                 // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
                 new SpriteRenderers(renderContext), me);
-
-
         }
 
         public void SetGameSettings(GameSettings gameSettings)
