@@ -6,6 +6,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
+    [FactionBehavior("workerNetwork")]
     sealed class WorkerNetwork : FactionBehavior<Faction>
     {
         private IArea coverage = Area.Empty();

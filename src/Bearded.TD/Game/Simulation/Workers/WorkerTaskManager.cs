@@ -10,6 +10,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
+    [FactionBehavior("workers")]
     sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetworkChanged>
     {
         private readonly List<IWorkerComponent> allWorkers = new();

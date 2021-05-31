@@ -11,6 +11,7 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
+    [FactionBehaviorOwner]
     sealed class Faction : IIdable<Faction>
     {
         private readonly Color? color;
