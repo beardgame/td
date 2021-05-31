@@ -4,6 +4,6 @@ namespace Bearded.TD.Game.Simulation.Technologies
     {
         string Description { get; }
 
-        void Apply(TechnologyManager technologyManager);
+        void Apply(FactionTechnology factionTechnology);
     }
 }

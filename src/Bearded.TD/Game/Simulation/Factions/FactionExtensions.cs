@@ -11,8 +11,8 @@ namespace Bearded.TD.Game.Simulation.Factions
             return false;
         }
 
-        public static bool IsDescendantOf(this Faction toCheck, Faction potentialDescendant) =>
-            IsAncestorOf(potentialDescendant, toCheck);
+        public static bool IsDescendantOf(this Faction toCheck, Faction potentialAncestor) =>
+            IsAncestorOf(potentialAncestor, toCheck);
 
         public static bool SharesResourcesWith(this Faction thisFaction, Faction thatFaction) =>
             thisFaction.Resources != null && thisFaction.Resources == thatFaction.Resources;

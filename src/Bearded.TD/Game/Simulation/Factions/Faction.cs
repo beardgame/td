@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
@@ -14,8 +15,6 @@ namespace Bearded.TD.Game.Simulation.Factions
     sealed class Faction : IIdable<Faction>
     {
         private readonly Color? color;
-        private readonly ResourceManager? resources;
-        private readonly TechnologyManager? technology;
         private readonly WorkerNetwork? workerNetwork;
         private readonly WorkerManager? workers;
 
@@ -29,17 +28,20 @@ namespace Bearded.TD.Game.Simulation.Factions
         public bool HasWorkers { get; }
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
-        public ResourceManager? Resources => resources ?? Parent?.Resources;
-        public TechnologyManager? Technology => technology ?? Parent?.Technology;
+        public FactionResources? Resources =>
+            TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
+        public FactionTechnology? Technology =>
+            TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
         public WorkerManager? Workers => workers ?? Parent?.Workers;
 
         // TODO: do we need an external ID so mod files can refer to other factions?
-        public static Faction FromBlueprint(Id<Faction> id, string name, IFactionBlueprint blueprint)
+        public static Faction FromBlueprint(
+            Id<Faction> id, string name, IFactionBlueprint blueprint, GlobalGameEvents events)
         {
             var faction = new Faction(id, name, blueprint);
             faction.behaviors.AddRange(blueprint.GetBehaviors());
-            // TODO: initialize behaviors
+            faction.behaviors.ForEach(b => b.OnAdded(faction, events));
             return faction;
         }
 
@@ -73,8 +75,13 @@ namespace Bearded.TD.Game.Simulation.Factions
 
             if (hasResources)
             {
-                resources = new ResourceManager(gameState.Meta.Logger);
-                technology = new TechnologyManager(gameState.Meta.Events);
+                var resources = new FactionResources();
+                behaviors.Add(resources);
+                resources.OnAdded(this, gameState.Meta.Events);
+
+                var technology = new FactionTechnology();
+                behaviors.Add(technology);
+                technology.OnAdded(this, gameState.Meta.Events);
             }
             if (hasWorkerNetwork)
             {
@@ -87,16 +94,6 @@ namespace Bearded.TD.Game.Simulation.Factions
             }
         }
 
-        // TODO: instead of always just looking up the ancestors for a faction, should we instead make inheritance
-        //       explicit? For example: instead of having a single "WorkerNetwork" behavior, we could have an interface
-        //       for getting the worker network on a faction, and have an actual implementation, as well as one that
-        //       proxies to the parent worker network (if it exists).
-        //       Pros: supports caching the found parent network, makes things more explicit, allows factions to have
-        //             multiple parents, can have a faction between the ancestor and child that doesn't have access to
-        //             the relevant inherited thing
-        //       Cons: maybe makes no sense to have a faction between two other factions without access to the same
-        //             things, mod files always need to specify when something is inherited
-        //       Which approach makes it easier to vary the existence of these behaviors based on the game rules?
         public bool TryGetBehaviorIncludingAncestors<T>([NotNullWhen(true)] out T? result)
         {
             if (TryGetBehavior(out result))

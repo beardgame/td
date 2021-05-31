@@ -17,14 +17,14 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         private readonly LevelGenerationCommandAccumulator commandAccumulator;
         private readonly Tilemap<TileGeometry> tilemap;
 
-        public Area Tiles { get; }
+        public IArea Tiles { get; }
         public ImmutableArray<Circle> Circles { get; }
 
         public Random Random { get; }
 
         // info about connections, etc.
 
-        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, Area tiles,
+        public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IArea tiles,
             ImmutableArray<Circle> circles,
             LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {

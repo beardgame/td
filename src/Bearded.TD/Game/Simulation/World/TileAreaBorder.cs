@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.Simulation.World
         public static TileAreaBorder From(IEnumerable<Tile> area, Func<Tile, bool> predicate)
             => From(area.Where(predicate));
 
-        public static TileAreaBorder From(Area area)
+        public static TileAreaBorder From(IArea area)
             => From(area.ToImmutableHashSet());
 
         public static TileAreaBorder From(IEnumerable<Tile> area)

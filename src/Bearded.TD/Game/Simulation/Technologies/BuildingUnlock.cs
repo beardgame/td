@@ -13,9 +13,9 @@ namespace Bearded.TD.Game.Simulation.Technologies
             this.buildingBlueprint = buildingBlueprint;
         }
 
-        public void Apply(TechnologyManager technologyManager)
+        public void Apply(FactionTechnology factionTechnology)
         {
-            technologyManager.UnlockBuilding(buildingBlueprint);
+            factionTechnology.UnlockBuilding(buildingBlueprint);
         }
     }
 }

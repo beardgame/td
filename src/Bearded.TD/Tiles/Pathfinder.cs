@@ -36,7 +36,7 @@ namespace Bearded.TD.Tiles
 
         public abstract Result? FindPath(Tile origin, Tile target);
 
-        public Pathfinder InArea(Area area)
+        public Pathfinder InArea(IArea area)
         {
             return this switch
             {
@@ -45,7 +45,7 @@ namespace Bearded.TD.Tiles
             };
         }
 
-        private static StepCostFunction constrainArea(StepCostFunction function, Area area)
+        private static StepCostFunction constrainArea(StepCostFunction function, IArea area)
             => (tile, direction) => area.Contains(tile.Neighbour(direction)) ? function(tile, direction) : null;
 
 

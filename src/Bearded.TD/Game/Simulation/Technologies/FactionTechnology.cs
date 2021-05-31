@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Constants.Game.Technology;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    sealed class TechnologyManager
+    [FactionBehavior("technology")]
+    sealed class FactionTechnology : FactionBehavior<Faction>
     {
-        private readonly GlobalGameEvents events;
-
         private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies = new();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new();
         private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new();
@@ -25,16 +24,13 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
-        public TechnologyManager(GlobalGameEvents events)
-        {
-            this.events = events;
-        }
+        protected override void Execute() {}
 
         public bool IsTechnologyQueued(ITechnologyBlueprint technology) => queuedTechnologies.Contains(technology);
 
         public int QueuePositionFor(ITechnologyBlueprint technologyBlueprint)
         {
-            DebugAssert.Argument.Satisfies(() => IsTechnologyQueued(technologyBlueprint));
+            Argument.Satisfies(() => IsTechnologyQueued(technologyBlueprint));
             return queuedTechnologies.FindIndex(t => t == technologyBlueprint) + 1;
         }
 
@@ -42,15 +38,15 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         public void ReplaceTechnologyQueue(ITechnologyBlueprint technology)
         {
-            DebugAssert.Argument.Satisfies(() => IsTechnologyLocked(technology));
+            Argument.Satisfies(() => IsTechnologyLocked(technology));
             ClearTechnologyQueue();
             queueTechnologyAndMissingDependencies(technology);
         }
 
         public void AddToTechnologyQueue(ITechnologyBlueprint technology)
         {
-            DebugAssert.Argument.Satisfies(() => IsTechnologyLocked(technology));
-            DebugAssert.Argument.Satisfies(() => !IsTechnologyQueued(technology));
+            Argument.Satisfies(() => IsTechnologyLocked(technology));
+            Argument.Satisfies(() => !IsTechnologyQueued(technology));
             queueTechnologyAndMissingDependencies(technology);
         }
 
@@ -78,10 +74,10 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         private void queueTechnology(ITechnologyBlueprint technology)
         {
-            DebugAssert.Argument.Satisfies(() => CanQueueTechnology(technology));
+            Argument.Satisfies(() => CanQueueTechnology(technology));
 
             queuedTechnologies.Add(technology);
-            events.Send(new TechnologyQueued(technology));
+            Events.Send(new TechnologyQueued(Owner, technology));
         }
 
         public void ClearTechnologyQueue()
@@ -89,7 +85,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
             while (queuedTechnologies.Count > 0)
             {
                 var i = queuedTechnologies.Count - 1;
-                events.Send(new TechnologyDequeued(queuedTechnologies[i]));
+                Events.Send(new TechnologyDequeued(Owner, queuedTechnologies[i]));
                 queuedTechnologies.RemoveAt(i);
             }
         }
@@ -165,7 +161,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             var technology = queuedTechnologies[0];
 
-            DebugAssert.Argument.Satisfies(() => CanUnlockTechnology(technology));
+            Argument.Satisfies(() => CanUnlockTechnology(technology));
 
             queuedTechnologies.RemoveAt(0);
             unlockTechnology(technology);
@@ -173,14 +169,14 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         private void unlockTechnology(ITechnologyBlueprint technology)
         {
-            DebugAssert.Argument.Satisfies(() => !IsTechnologyQueued(technology));
+            Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
             var cost = costIfUnlockedNow(technology);
             TechPoints -= cost;
             techCostMultiplier *= TechCostMultiplicationFactor;
             unlockedTechnologies.Add(technology, cost);
             technology.Unlocks.ForEach(unlock => unlock.Apply(this));
-            events.Send(new TechnologyUnlocked(technology));
+            Events.Send(new TechnologyUnlocked(Owner, technology));
         }
 
         public bool IsBuildingUnlocked(IBuildingBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
@@ -189,7 +185,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             if (unlockedBuildings.Add(blueprint))
             {
-                events.Send(new BuildingTechnologyUnlocked(this, blueprint));
+                Events.Send(new BuildingTechnologyUnlocked(Owner, blueprint));
             }
         }
 
@@ -202,7 +198,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             if (unlockedUpgrades.Add(blueprint))
             {
-                events.Send(new UpgradeTechnologyUnlocked(this, blueprint));
+                Events.Send(new UpgradeTechnologyUnlocked(Owner, blueprint));
             }
         }
 

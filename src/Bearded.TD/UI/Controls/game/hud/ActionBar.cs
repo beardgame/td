@@ -3,6 +3,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.Utilities;
 
@@ -51,7 +52,10 @@ namespace Bearded.TD.UI.Controls
 
         public void HandleEvent(BuildingTechnologyUnlocked @event)
         {
-            if (@event.TechnologyManager != game.Me.Faction.Technology) return;
+            if (!game.Me.Faction.SharesTechnologyWith(@event.Faction))
+            {
+                return;
+            }
 
             addBuilding(@event.Blueprint);
             ActionsChanged?.Invoke();

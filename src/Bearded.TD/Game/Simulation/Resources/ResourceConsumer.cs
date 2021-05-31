@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Resources
     sealed class ResourceConsumer
     {
         private readonly Func<Instant> currentTimeProvider;
-        private readonly ResourceManager.IResourceReservation reservation;
+        private readonly FactionResources.IResourceReservation reservation;
         private readonly ResourceAmount resourcesRequested;
 
         public ResourceRate ConsumptionRate { get; private set; }
@@ -20,11 +20,11 @@ namespace Bearded.TD.Game.Simulation.Resources
         public double PercentageDone => (resourcesRequested - reservation.ResourcesLeftToClaim) / resourcesRequested;
         public bool IsDone => reservation.ResourcesLeftToClaim == ResourceAmount.Zero;
 
-        public ResourceConsumer(GameState game, ResourceManager.IResourceReservation reservation, ResourceRate consumptionRate)
+        public ResourceConsumer(GameState game, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
             : this(() => game.Time, reservation, consumptionRate) { }
 
         public ResourceConsumer(
-            Func<Instant> currentTimeProvider, ResourceManager.IResourceReservation reservation, ResourceRate consumptionRate)
+            Func<Instant> currentTimeProvider, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
         {
             this.currentTimeProvider = currentTimeProvider;
             this.reservation = reservation;
