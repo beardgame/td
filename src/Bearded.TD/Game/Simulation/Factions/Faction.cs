@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Factions
         private readonly WorkerManager? workers;
 
         private readonly IFactionBlueprint blueprint;
-        private readonly List<FactionBehavior<Faction>> behaviors = new();
+        private readonly List<IFactionBehavior<Faction>> behaviors = new();
 
         public Id<Faction> Id { get; }
         public Faction? Parent { get; }

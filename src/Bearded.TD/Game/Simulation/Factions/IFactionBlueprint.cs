@@ -4,6 +4,6 @@ namespace Bearded.TD.Game.Simulation.Factions
 {
     interface IFactionBlueprint : IBlueprint
     {
-        IEnumerable<FactionBehavior<Faction>> GetBehaviors();
+        IEnumerable<IFactionBehavior<Faction>> GetBehaviors();
     }
 }
