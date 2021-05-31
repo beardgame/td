@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -8,9 +10,8 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    sealed class WorkerManager
+    sealed class WorkerManager : FactionBehavior<Faction>, IListener<WorkerNetworkChanged>
     {
-        private readonly WorkerNetwork network;
         private readonly List<IWorkerComponent> allWorkers = new();
         private readonly Queue<IWorkerComponent> idleWorkers = new();
         private readonly List<IWorkerTask> tasks = new();
@@ -19,21 +20,39 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private int numWorkers => allWorkers.Count;
 
-        public WorkerManager(WorkerNetwork network)
+        protected override void Execute()
         {
-            this.network = network;
-            network.NetworkChanged += onNetworkChanged;
-            tasks.AsReadOnly();
+            Events.Subscribe(this);
+        }
+
+        public void HandleEvent(WorkerNetworkChanged @event)
+        {
+            if (Owner.SharesWorkerNetworkWith(@event.Faction))
+            {
+                onNetworkChanged();
+            }
         }
 
         public IWorkerTask TaskFor(Id<IWorkerTask> id) => tasksById[id];
 
         private void onNetworkChanged()
         {
-            var tasksOutOfRange = workerAssignments.Keys.Where(task => !task.Tiles.Any(network.IsInRange)).ToList();
-            foreach (var task in tasksOutOfRange) AbortTask(task);
+            var foundNetwork = Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network);
+            State.Satisfies(foundNetwork);
+            if (!foundNetwork)
+            {
+                return;
+            }
 
-            if (idleWorkers.Count == 0) return;
+            var tasksOutOfRange = workerAssignments.Keys.Where(task => !task.Tiles.Any(network.IsInRange)).ToList();
+            foreach (var task in tasksOutOfRange)
+            {
+                AbortTask(task);
+            }
+            if (idleWorkers.Count == 0)
+            {
+                return;
+            }
             foreach (var task in tasks.Where(isUnassignedTaskInAntennaRange).Take(idleWorkers.Count))
             {
                 assignTask(idleWorkers.Dequeue(), task);
@@ -148,6 +167,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         private bool isUnassignedTaskInAntennaRange(IWorkerTask task) =>
             !workerAssignments.ContainsKey(task) && isTaskInAntennaRange(task);
 
-        private bool isTaskInAntennaRange(IWorkerTask task) => task.Tiles.Any(network.IsInRange);
+        private bool isTaskInAntennaRange(IWorkerTask task) =>
+            Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) && task.Tiles.Any(network.IsInRange);
     }
 }

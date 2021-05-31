@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Tiles;
-using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
@@ -11,8 +10,6 @@ namespace Bearded.TD.Game.Simulation.Workers
     {
         private IArea coverage = Area.Empty();
         private readonly List<IWorkerAntenna> antennae = new();
-
-        public event VoidEventHandler? NetworkChanged;
 
         protected override void Execute() {}
 
@@ -37,7 +34,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         private void buildAntennaCoverage()
         {
             coverage = Area.Union(antennae.Select(a => a.Coverage));
-            NetworkChanged?.Invoke();
+            Events.Send(new WorkerNetworkChanged(Owner));
         }
 
         public bool IsInRange(Tile tile) => coverage.Contains(tile);
