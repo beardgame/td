@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
             public void Execute()
             {
-                var context = new GameRuleContext(game.State, game.Meta.Events, game.Players);
+                var context = new GameRuleContext(game.State, game.Meta.Events, game.SortedPlayers);
                 foreach (var ruleFactory in gameMode.Rules)
                 {
                     ruleFactory.Create().Execute(context);
