@@ -15,7 +15,6 @@ namespace Bearded.TD.Game.Simulation.Factions
     sealed class Faction : IIdable<Faction>
     {
         private readonly Color? color;
-        private readonly ResourceManager? resources;
         private readonly WorkerNetwork? workerNetwork;
         private readonly WorkerManager? workers;
 
@@ -29,7 +28,8 @@ namespace Bearded.TD.Game.Simulation.Factions
         public bool HasWorkers { get; }
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
-        public ResourceManager? Resources => resources ?? Parent?.Resources;
+        public ResourceManager? Resources =>
+            TryGetBehaviorIncludingAncestors<ResourceManager>(out var resources) ? resources : null;
         public FactionTechnology? Technology =>
             TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
@@ -75,7 +75,9 @@ namespace Bearded.TD.Game.Simulation.Factions
 
             if (hasResources)
             {
-                resources = new ResourceManager(gameState.Meta.Logger);
+                var resources = new ResourceManager();
+                behaviors.Add(resources);
+                resources.OnAdded(this, gameState.Meta.Events);
 
                 var technology = new FactionTechnology();
                 behaviors.Add(technology);

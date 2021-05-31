@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bearded.Utilities.IO;
+using Bearded.TD.Game.Simulation.Factions;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
 {
-    sealed class ResourceManager
+    [FactionBehavior("resources")]
+    sealed class ResourceManager : FactionBehavior<Faction>
     {
-        private readonly Logger logger;
         private readonly HashSet<ResourceReservation> outstandingReservations = new();
         private readonly List<ResourceReservation> reservationQueue = new();
         private readonly HashSet<ResourceReservation> committedReservations = new();
@@ -19,10 +19,7 @@ namespace Bearded.TD.Game.Simulation.Resources
         public ResourceAmount AvailableResources => CurrentResources - committedResources;
         public ResourceAmount ResourcesAfterQueue => AvailableResources - reservedResources;
 
-        public ResourceManager(Logger logger)
-        {
-            this.logger = logger;
-        }
+        protected override void Execute() {}
 
         public void ProvideResources(ResourceAmount amount)
         {
@@ -31,7 +28,6 @@ namespace Bearded.TD.Game.Simulation.Resources
 
         public IResourceReservation ReserveResources(ResourceRequest request)
         {
-            logger.Trace?.Log($"Received resource request for {request.AmountRequested} resources");
             var reservation = new ResourceReservation(this, request.AmountRequested);
             reservedResources += request.AmountRequested;
             outstandingReservations.Add(reservation);
@@ -55,7 +51,6 @@ namespace Bearded.TD.Game.Simulation.Resources
             reservation.CommitResources();
             reservedResources -= reservation.ResourcesLeftToClaim;
             committedResources += reservation.ResourcesLeftToClaim;
-            logger.Trace?.Log($"Committed {reservation.ResourcesLeftToClaim} resources");
         }
 
         private void requestResources(ResourceReservation reservation)
@@ -103,7 +98,7 @@ namespace Bearded.TD.Game.Simulation.Resources
             throw new InvalidOperationException("Reservation wasn't found.");
         }
 
-        public sealed record ResourceRequest
+        public readonly struct ResourceRequest
         {
             public ResourceAmount AmountRequested { get; }
 
