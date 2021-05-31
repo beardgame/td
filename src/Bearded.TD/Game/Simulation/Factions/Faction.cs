@@ -30,8 +30,8 @@ namespace Bearded.TD.Game.Simulation.Factions
         public string Name { get; }
         public Color Color => color ?? Parent?.Color ?? Color.Black;
         public ResourceManager? Resources => resources ?? Parent?.Resources;
-        public TechnologyManager? Technology =>
-            TryGetBehaviorIncludingAncestors<TechnologyManager>(out var technology) ? technology : null;
+        public FactionTechnology? Technology =>
+            TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
         public WorkerManager? Workers => workers ?? Parent?.Workers;
 
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Simulation.Factions
             {
                 resources = new ResourceManager(gameState.Meta.Logger);
 
-                var technology = new TechnologyManager();
+                var technology = new FactionTechnology();
                 behaviors.Add(technology);
                 technology.OnAdded(this, gameState.Meta.Events);
             }

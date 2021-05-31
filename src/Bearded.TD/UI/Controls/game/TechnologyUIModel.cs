@@ -22,7 +22,7 @@ namespace Bearded.TD.UI.Controls
 
         private readonly GameInstance game;
         private readonly Faction faction;
-        private readonly TechnologyManager technologyManager;
+        private readonly FactionTechnology factionTechnology;
 
         private readonly IDictionary<ITechnologyBlueprint, TechnologyStatus> technologyStatuses;
         private readonly ImmutableDictionary<ITechnologyBlueprint, IList<ITechnologyBlueprint>> technologyDependents;
@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Controls
             this.game = game;
             Technologies = game.Blueprints.Technologies.All.ToImmutableArray();
             faction = game.Me.Faction;
-            technologyManager = faction.Technology;
+            factionTechnology = faction.Technology;
 
             technologyStatuses = Technologies.ToDictionary(t => t, evaluateStatusForTech);
             technologyDependents = buildTechnologyDependents();
@@ -48,7 +48,7 @@ namespace Bearded.TD.UI.Controls
             }
         }
 
-        public long CostFor(ITechnologyBlueprint tech) => technologyManager.ExpectedCost(tech);
+        public long CostFor(ITechnologyBlueprint tech) => factionTechnology.ExpectedCost(tech);
 
         public void UpdateTechnology(ITechnologyBlueprint tech)
         {
@@ -72,29 +72,29 @@ namespace Bearded.TD.UI.Controls
 
         public TechnologyStatus StatusFor(ITechnologyBlueprint tech) => technologyStatuses[tech];
 
-        public int QueuePositionFor(ITechnologyBlueprint tech) => technologyManager.QueuePositionFor(tech);
+        public int QueuePositionFor(ITechnologyBlueprint tech) => factionTechnology.QueuePositionFor(tech);
 
         public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) =>
             technologyDependents.GetValueOrDefault(tech, ImmutableArray<ITechnologyBlueprint>.Empty);
 
         private TechnologyStatus evaluateStatusForTech(ITechnologyBlueprint tech)
         {
-            if (!technologyManager.IsTechnologyLocked(tech))
+            if (!factionTechnology.IsTechnologyLocked(tech))
             {
                 return TechnologyStatus.Unlocked;
             }
 
-            if (technologyManager.CanUnlockTechnology(tech))
+            if (factionTechnology.CanUnlockTechnology(tech))
             {
                 return TechnologyStatus.CanBeUnlocked;
             }
 
-            if (technologyManager.IsTechnologyQueued(tech))
+            if (factionTechnology.IsTechnologyQueued(tech))
             {
                 return TechnologyStatus.Queued;
             }
 
-            return technologyManager.HasAllRequiredTechs(tech)
+            return factionTechnology.HasAllRequiredTechs(tech)
                 ? TechnologyStatus.MissingResources
                 : TechnologyStatus.MissingDependencies;
         }

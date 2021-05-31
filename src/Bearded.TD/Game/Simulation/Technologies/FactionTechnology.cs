@@ -10,7 +10,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
-    sealed class TechnologyManager : FactionBehavior<Faction>
+    sealed class FactionTechnology : FactionBehavior<Faction>
     {
         private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies = new();
         private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new();

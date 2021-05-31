@@ -13,9 +13,9 @@ namespace Bearded.TD.Game.Simulation.Technologies
             this.upgradeBlueprint = upgradeBlueprint;
         }
 
-        public void Apply(TechnologyManager technologyManager)
+        public void Apply(FactionTechnology factionTechnology)
         {
-            technologyManager.UnlockUpgrade(upgradeBlueprint);
+            factionTechnology.UnlockUpgrade(upgradeBlueprint);
         }
     }
 }
