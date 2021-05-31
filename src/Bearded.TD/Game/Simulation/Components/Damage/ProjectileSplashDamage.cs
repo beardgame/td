@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
             var distanceSquared = Parameters.Range.Squared;
 
             var enemies = Owner.Game.UnitLayer;
-            var tiles = Level.TilesInCircle(center.XY(), Parameters.Range);
+            var tiles = Level.TilesInHexagon(center.XY(), Parameters.Range);
 
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
