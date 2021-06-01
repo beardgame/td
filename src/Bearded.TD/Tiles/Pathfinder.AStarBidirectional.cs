@@ -50,6 +50,8 @@ namespace Bearded.TD.Tiles
                     return AStar.TryExpandLowestCostOpenNode(state);
                 }
 
+                // TODO: there is a bug where we don't get optimal paths. We're not considering something correctly here
+
                 pathFound = expandingTile;
                 return false;
             }
