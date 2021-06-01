@@ -1,6 +1,8 @@
+using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
@@ -23,9 +25,19 @@ namespace Bearded.TD.Game.Commands.Debug
                 this.number = number;
             }
 
-            protected override bool CheckPreconditionsDebug(Player _) => faction.HasResources;
+            protected override bool CheckPreconditionsDebug(Player player) =>
+                faction.TryGetBehavior<FactionTechnology>(out _);
 
-            public override void Execute() => faction.Technology.AddTechPoints(number);
+            public override void Execute()
+            {
+                if (!faction.TryGetBehavior<FactionTechnology>(out var technology))
+                {
+                    throw new InvalidOperationException(
+                        "Cannot add tech points without technology for the faction. Precondition should have failed.");
+                }
+
+                technology.AddTechPoints(number);
+            }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, number);
         }

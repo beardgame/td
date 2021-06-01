@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Factions;
@@ -24,9 +25,19 @@ namespace Bearded.TD.Game.Commands.Debug
                 this.amount = amount;
             }
 
-            protected override bool CheckPreconditionsDebug(Player _) => faction.HasResources;
+            protected override bool CheckPreconditionsDebug(Player player) =>
+                faction.TryGetBehavior<FactionResources>(out _);
 
-            public override void Execute() => faction.Resources.ProvideResources(amount);
+            public override void Execute()
+            {
+                if (!faction.TryGetBehavior<FactionResources>(out var resources))
+                {
+                    throw new InvalidOperationException(
+                        "Cannot add tech points without technology for the faction. Precondition should have failed.");
+                }
+
+                resources.ProvideResources(amount);
+            }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, amount);
         }

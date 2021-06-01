@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -113,7 +114,7 @@ namespace Bearded.TD.Game.Debug
             }
 
             var faction = gameInstance.Me.Faction;
-            while (faction != null && !faction.HasResources)
+            while (faction != null && !faction.TryGetBehavior<FactionResources>(out _))
             {
                 faction = faction.Parent;
             }
@@ -121,6 +122,7 @@ namespace Bearded.TD.Game.Debug
             if (faction == null)
             {
                 logger.Warning?.Log($"Cannot add resources: player is not part of a faction with resource management.");
+                return;
             }
 
             gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Resources()));
@@ -142,7 +144,7 @@ namespace Bearded.TD.Game.Debug
             }
 
             var faction = gameInstance.Me.Faction;
-            while (faction != null && !faction.HasResources)
+            while (faction != null && !faction.TryGetBehavior<FactionTechnology>(out _))
             {
                 faction = faction.Parent;
             }
@@ -151,6 +153,7 @@ namespace Bearded.TD.Game.Debug
             {
                 logger.Warning?.Log(
                     "Cannot add tech points: player is not part of a faction with technology management.");
+                return;
             }
 
             gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechPoints.Request(faction, number));

@@ -25,10 +25,6 @@ namespace Bearded.TD.Game.Simulation.Factions
         public string Name => blueprint.Name ?? "";
         public Color Color => blueprint.Color ?? Color.Black;
 
-        // Obsolete
-        public bool HasResources => TryGetBehavior<FactionResources>(out _);
-        public bool HasWorkerNetwork => TryGetBehavior<WorkerNetwork>(out _);
-
         public FactionResources? Resources =>
             TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
         public FactionTechnology? Technology =>
