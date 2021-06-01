@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
             context.Events.Subscribe(this);
 
             var factionsByParent = context.Factions.All.ToLookup(f => f.Parent);
-            foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<WorkerNetwork>(out _)))
+            foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<WorkerTaskManager>(out _)))
             {
                 childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
             }
@@ -36,21 +36,30 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
                     var queue = childFactions[hubFaction];
                     if (queue.Count == 0)
                     {
-                        @event.Worker.AssignToFaction(hubFaction);
+                        assignToFaction(@event.Worker, hubFaction);
                         break;
                     }
 
                     var nextFaction = queue.Dequeue();
-                    @event.Worker.AssignToFaction(nextFaction);
+                    assignToFaction(@event.Worker, nextFaction);
                     queue.Enqueue(nextFaction);
 
                     break;
                 case WorkerDistributionMethod.Neutral:
-                    @event.Worker.AssignToFaction(hubFaction);
+                    assignToFaction(@event.Worker, hubFaction);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new IndexOutOfRangeException();
             }
+        }
+
+        private void assignToFaction(IWorkerComponent worker, Faction faction)
+        {
+            if (!faction.TryGetBehavior<WorkerTaskManager>(out var taskManager))
+            {
+                throw new NotSupportedException("Unexpected lack of worker task manager when assigning workers.");
+            }
+            worker.AssignToTaskManager(taskManager);
         }
     }
 }

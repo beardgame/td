@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Commands.Debug
                 if (!faction.TryGetBehavior<FactionResources>(out var resources))
                 {
                     throw new InvalidOperationException(
-                        "Cannot add tech points without technology for the faction. Precondition should have failed.");
+                        "Cannot add resources without resources for the faction. Precondition should have failed.");
                 }
 
                 resources.ProvideResources(amount);

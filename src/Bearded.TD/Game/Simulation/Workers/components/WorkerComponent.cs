@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Workers
     // TODO: make generic
     sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent
     {
-        private Faction? faction;
+        private WorkerTaskManager? workerTaskManager;
         private WorkerState? currentState;
         private IEnumerable<Tile> taskTiles = Enumerable.Empty<Tile>();
 
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private void onDelete()
         {
-            faction?.Workers?.UnregisterWorker(this);
+            workerTaskManager?.UnregisterWorker(this);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -65,44 +65,39 @@ namespace Bearded.TD.Game.Simulation.Workers
             var sprite =
                 sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
 
-            sprite.Draw(Owner.Position.NumericValue, 0.5f, faction?.Color ?? Color.White);
+            sprite.Draw(Owner.Position.NumericValue, 0.5f, workerTaskManager?.WorkerColor ?? Color.White);
         }
 
-        public void AssignToFaction(Faction faction)
+        public void AssignToTaskManager(WorkerTaskManager workerTaskManager)
         {
-            if (faction.Workers == null)
+            if (this.workerTaskManager != null)
             {
-                throw new InvalidOperationException("Cannot assign worker to a faction without worker manager");
+                this.workerTaskManager.UnregisterWorker(this);
+                this.workerTaskManager = null;
             }
 
-            if (this.faction != null)
-            {
-                this.faction.Workers!.UnregisterWorker(this);
-                this.faction = null;
-            }
+            this.workerTaskManager = workerTaskManager;
+            workerTaskManager.RegisterWorker(this);
 
-            this.faction = faction;
-            this.faction.Workers!.RegisterWorker(this);
-
-            setState(WorkerState.Idle(this.faction.Workers, this));
+            setState(WorkerState.Idle(workerTaskManager, this));
         }
 
         public void AssignTask(IWorkerTask task)
         {
-            if (faction == null)
+            if (workerTaskManager == null)
             {
-                throw new InvalidOperationException("Cannot assign tasks to a worker not assigned to a faction");
+                throw new InvalidOperationException("Cannot assign tasks to a worker not assigned to a task manager");
             }
-            setState(WorkerState.ExecuteTask(faction.Workers!, this, task));
+            setState(WorkerState.ExecuteTask(workerTaskManager, this, task));
         }
 
         public void SuspendCurrentTask()
         {
-            if (faction == null)
+            if (workerTaskManager == null)
             {
-                throw new InvalidOperationException("Cannot suspend tasks for a worker not assigned to a faction");
+                throw new InvalidOperationException("Cannot suspend tasks for a worker not assigned to a task manager");
             }
-            setState(WorkerState.Idle(faction.Workers!, this));
+            setState(WorkerState.Idle(workerTaskManager, this));
         }
 
         private void setState(WorkerState newState)
@@ -144,7 +139,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         Tile CurrentTile { get; }
         IFactioned HubOwner { get; }
         IWorkerParameters Parameters { get; }
-        void AssignToFaction(Faction faction);
+        void AssignToTaskManager(WorkerTaskManager faction);
         void AssignTask(IWorkerTask task);
         void SuspendCurrentTask();
     }

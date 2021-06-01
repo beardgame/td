@@ -29,9 +29,15 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.taskId = taskId;
             }
 
-            public override bool CheckPreconditions(Player actor) =>
-                game.State.MiningLayer.CanTileBeMined(tile)
-                && faction.SharesWorkersWith(actor.Faction);
+            public override bool CheckPreconditions(Player actor)
+            {
+                if (!faction.TryGetBehavior<WorkerTaskManager>(out var factionTaskManager))
+                {
+                    return false;
+                }
+                actor.Faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var actorTaskManager);
+                return factionTaskManager == actorTaskManager && game.State.MiningLayer.CanTileBeMined(tile);
+            }
 
             public override ISerializableCommand<GameInstance> ToCommand() =>
                 new Implementation(game, faction, tile, game.Meta.Ids.GetNext<IWorkerTask>());

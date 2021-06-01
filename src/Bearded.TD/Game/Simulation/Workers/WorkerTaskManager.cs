@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Utilities;
@@ -20,6 +21,8 @@ namespace Bearded.TD.Game.Simulation.Workers
         private readonly Dictionary<IWorkerTask, IWorkerComponent> workerAssignments = new();
 
         private int numWorkers => allWorkers.Count;
+
+        public Color WorkerColor => Owner.Color;
 
         protected override void Execute()
         {

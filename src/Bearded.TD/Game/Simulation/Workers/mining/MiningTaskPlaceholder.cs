@@ -1,11 +1,12 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
@@ -14,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         private readonly Faction faction;
         private readonly Tile tile;
         private readonly Id<IWorkerTask> taskId;
-        private MiningTask task;
+        private MiningTask task = null!;
 
         public SelectionState SelectionState { get; private set; }
 
@@ -31,7 +32,11 @@ namespace Bearded.TD.Game.Simulation.Workers
             base.OnAdded();
 
             task = new MiningTask(taskId, this, tile, Game.GeometryLayer);
-            faction.Workers.RegisterTask(task);
+            if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
+            {
+                throw new NotSupportedException("Cannot mine tile without workers.");
+            }
+            workers.RegisterTask(task);
             Game.MiningLayer.MarkTileForMining(tile);
         }
 

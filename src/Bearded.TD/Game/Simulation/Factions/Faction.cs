@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
@@ -22,9 +21,6 @@ namespace Bearded.TD.Game.Simulation.Factions
 
         public string Name => blueprint.Name ?? "";
         public Color Color => blueprint.Color ?? Color.Black;
-
-        public WorkerTaskManager? Workers =>
-            TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers) ? workers : null;
 
         public static Faction FromBlueprint(
             Id<Faction> id, Faction? parent, IFactionBlueprint blueprint, GlobalGameEvents events)

@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Factions;
@@ -24,11 +25,25 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.workerTask = workerTask;
             }
 
-            public override bool CheckPreconditions(Player actor) => faction.SharesWorkersWith(actor.Faction);
+            public override bool CheckPreconditions(Player actor)
+            {
+                if (!faction.TryGetBehavior<WorkerTaskManager>(out var factionTaskManager))
+                {
+                    return false;
+                }
+                actor.Faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var actorTaskManager);
+                return factionTaskManager == actorTaskManager;
+            }
 
             public override void Execute()
             {
-                faction.Workers.BumpTaskToTop(workerTask);
+                if (!faction.TryGetBehavior<WorkerTaskManager>(out var taskManager))
+                {
+                    throw new InvalidOperationException(
+                        "Cannot prioritize task without worker task manager for the faction. " +
+                        "Precondition should have failed.");
+                }
+                taskManager.BumpTaskToTop(workerTask);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, workerTask);
@@ -51,7 +66,10 @@ namespace Bearded.TD.Game.Commands.Gameplay
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
                 var foundFaction = game.State.Factions.Resolve(faction);
-                return new Implementation(foundFaction, foundFaction.Workers.TaskFor(workerTask));
+                foundFaction.TryGetBehavior<WorkerTaskManager>(out var taskManager);
+                // Can safely bypass the null check for the task argument, since preconditions will catch this problem
+                // before trying to access the task.
+                return new Implementation(foundFaction, taskManager?.TaskFor(workerTask)!);
             }
 
             public override void Serialize(INetBufferStream stream)
