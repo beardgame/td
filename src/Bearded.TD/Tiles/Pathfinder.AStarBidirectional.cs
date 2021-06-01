@@ -52,7 +52,6 @@ namespace Bearded.TD.Tiles
 
                 pathFound = expandingTile;
                 return false;
-
             }
 
             public static Result? GetResult(
