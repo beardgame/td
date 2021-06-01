@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {

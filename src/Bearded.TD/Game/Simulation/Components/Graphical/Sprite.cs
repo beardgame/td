@@ -2,7 +2,6 @@ using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;

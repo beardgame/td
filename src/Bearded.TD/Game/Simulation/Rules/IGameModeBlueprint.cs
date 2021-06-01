@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Game.Simulation.Rules
 {

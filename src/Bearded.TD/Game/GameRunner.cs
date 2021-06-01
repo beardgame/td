@@ -1,6 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;

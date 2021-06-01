@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.UI.Factories;

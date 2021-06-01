@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
+﻿using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
