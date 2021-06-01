@@ -24,8 +24,6 @@ namespace Bearded.TD.Game.Simulation.Factions
         public string Name => blueprint.Name ?? "";
         public Color Color => blueprint.Color ?? Color.Black;
 
-        public FactionResources? Resources =>
-            TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
         public WorkerNetwork? WorkerNetwork =>
             TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) ? network : null;
         public WorkerTaskManager? Workers =>

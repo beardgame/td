@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -5,7 +6,7 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Upgrades
 {
@@ -29,9 +30,13 @@ namespace Bearded.TD.Game.Simulation.Upgrades
         protected override void OnAdded()
         {
             Game.IdAs(this);
+            if (!Building.Faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+            {
+                throw new NotSupportedException("Cannot build building without resources.");
+            }
             resourceConsumer = new ResourceConsumer(
                 Game,
-                Building.Faction.Resources.ReserveResources(new FactionResources.ResourceRequest(Upgrade.Cost)),
+                resources.ReserveResources(new FactionResources.ResourceRequest(Upgrade.Cost)),
                 Constants.Game.Worker.UpgradeSpeed);
             Building.RegisterBuildingUpgradeTask(this);
             Game.Meta.Events.Send(new BuildingUpgradeQueued(Building, this));
