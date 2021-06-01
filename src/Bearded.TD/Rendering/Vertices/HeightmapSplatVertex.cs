@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering.Loading;

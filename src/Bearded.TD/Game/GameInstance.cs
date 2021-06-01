@@ -6,7 +6,6 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Debug;
-using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;

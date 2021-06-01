@@ -9,7 +9,6 @@ using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using Environment = System.Environment;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls

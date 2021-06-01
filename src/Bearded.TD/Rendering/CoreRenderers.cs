@@ -3,7 +3,6 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Text;
-using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 using Font = Bearded.Graphics.Text.Font;

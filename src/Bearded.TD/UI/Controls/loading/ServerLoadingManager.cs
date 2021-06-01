@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;

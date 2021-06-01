@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.UpdateLoop;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources
