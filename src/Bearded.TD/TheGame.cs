@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game;
@@ -12,6 +13,7 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
@@ -20,6 +22,7 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -77,9 +80,12 @@ namespace Bearded.TD
             rendererRouter = new CachedRendererRouter(
                 new (Type, object)[]
                 {
-                    (typeof(UIDebugOverlayControl.Highlight), new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
-                    (typeof(RenderLayerCompositeControl), new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                    (typeof(AutoCompletingTextInput), new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
+                    (typeof(UIDebugOverlayControl.Highlight),
+                        new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
+                    (typeof(RenderLayerCompositeControl),
+                        new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
+                    (typeof(AutoCompletingTextInput),
+                        new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
                     (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
                     (typeof(Label), new LabelRenderer(drawers.UIFont)),
                     (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
@@ -110,7 +116,8 @@ namespace Bearded.TD
                 new NavigationController(rootControl, dependencyResolver, models, views);
             navigationController.Push<MainMenu>();
             var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
-            navigationController.Push<VersionOverlay>(a => a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));
+            navigationController.Push<VersionOverlay>(a =>
+                a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));
             navigationController.Exited += Close;
 
             shortcuts.RegisterShortcut(Keys.GraveAccent, debugConsole.Toggle);
@@ -152,7 +159,15 @@ namespace Bearded.TD
             renderContext.Compositor.FinalizeFrame();
 
             SwapBuffers();
+
+#if DEBUG
+            if (inputManager.IsKeyHit(Keys.F11))
+            {
+                trySendScreenshotToDiscord();
+            }
+#endif
         }
+
 
         private void tryRunQueuedGlActionsFor(TimeSpan timeLimit)
         {
@@ -174,6 +189,57 @@ namespace Bearded.TD
         private static void openUIDebugOverlay(Logger logger, CommandParameters p)
         {
             instance!.navigationController.Push<UIDebugOverlay>();
+        }
+
+
+        private void trySendScreenshotToDiscord()
+        {
+            logger.Debug?.Log("Trying to send screenshot to Discord");
+
+            var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
+            if (webhookToken.IsNullOrEmpty())
+            {
+                logger.Debug?.Log("Set webhook token to send screenshot to discord");
+                return;
+            }
+
+            var bitmap = makeScreenshot();
+
+            var webhook = new DiscordWebhook(webhookToken, logger);
+
+            webhook.SendImageInBackground(bitmap);
+        }
+
+        private Bitmap makeScreenshot()
+        {
+            var width = NativeWindow.ClientSize.X;
+            var height = NativeWindow.ClientSize.Y;
+
+            var ratio = (float) width / height;
+
+            int x = 0, y = 0, w = width, h = height;
+
+            if (ratio >= 16.0 / 9.0)
+            {
+                w = (int) (height * 16.0 / 9.0);
+                x = (width - w) / 2;
+            }
+            else
+            {
+                h = (int) (width * 9.0 / 16.0);
+                y = (height - h) / 2;
+            }
+
+            var bmp = new Bitmap(w, h);
+            var data = bmp.LockBits(
+                new Rectangle(0, 0, w, h),
+                System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.ReadPixels(x, y, w, h, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            bmp.UnlockBits(data);
+
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            return bmp;
         }
     }
 }

@@ -24,11 +24,11 @@ namespace Bearded.TD.Meta
         // ReSharper disable once MemberCanBePrivate.Global
         public UserSettings Dump;
 
-        public MiscSettings Misc = new MiscSettings();
-        public UISettings UI = new UISettings();
-        public GraphicsSettings Graphics = new GraphicsSettings();
-        public DebugSettings Debug = new DebugSettings();
-        public GameSettings.Builder LastGameSettings = new GameSettings.Builder();
+        public MiscSettings Misc = new();
+        public UISettings UI = new();
+        public GraphicsSettings Graphics = new();
+        public DebugSettings Debug = new();
+        public GameSettings.Builder LastGameSettings = new();
 
         public class MiscSettings
         {
@@ -82,6 +82,9 @@ namespace Bearded.TD.Meta
             public bool WireframeLevel = false;
             [SettingOptions(0.5, 1, 2, 10)]
             public float TerrainDetail = 1;
+
+            // these don't show up in the game debug ui
+            public string DiscordScreenshotWebhookToken = "";
         }
     }
 }
