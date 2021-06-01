@@ -17,6 +17,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
         where T : GameObject, IFactioned, IPositionable
     {
         private Building? ownerAsBuilding;
+        private WorkerNetwork? workerNetwork;
         private bool isInitialized;
 
         public Position2 Position => Owner.Position.XY();
@@ -28,6 +29,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
         protected override void Initialize()
         {
             ownerAsBuilding = Owner as Building;
+            Owner.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             initializeIfOwnerIsCompletedBuilding();
         }
 
@@ -39,9 +41,15 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         private void initializeInternal()
         {
+            if (workerNetwork == null)
+            {
+                Owner.Game.Meta.Logger.Debug?.Log(
+                    "Initializing worker antenna for building without faction is a no-op.");
+            }
+
             WorkerRange = Parameters.WorkerRange;
-            Owner.Faction.WorkerNetwork?.RegisterAntenna(this);
-            Owner.Deleting += () => Owner.Faction.WorkerNetwork?.UnregisterAntenna(this);
+            workerNetwork?.RegisterAntenna(this);
+            Owner.Deleting += () => workerNetwork?.UnregisterAntenna(this);
             isInitialized = true;
         }
 
@@ -55,7 +63,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
             if (Parameters.WorkerRange != WorkerRange)
             {
                 WorkerRange = Parameters.WorkerRange;
-                Owner.Faction.WorkerNetwork?.OnAntennaRangeUpdated();
+                workerNetwork?.OnAntennaRangeUpdated();
             }
         }
 
@@ -67,7 +75,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
             var alpha = (selectable.SelectionState == SelectionState.Selected ? 0.5f : 0.25f);
 
             var networkBorder =
-                TileAreaBorder.From(Owner.Game.Level, t => Owner.Faction.WorkerNetwork?.IsInRange(t) ?? false);
+                TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
 
             TileAreaBorderRenderer.Render(networkBorder, Owner.Game, Color.DodgerBlue * alpha);
 

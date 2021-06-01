@@ -6,6 +6,7 @@ using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
@@ -17,7 +18,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
-    class BuildingGhost : BuildingBase<BuildingGhost>
+    sealed class BuildingGhost : BuildingBase<BuildingGhost>
     {
         private const string selectionIsImmutable = "Selection state of building ghost cannot be changed.";
 
@@ -45,12 +46,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var primitiveDrawer = drawers.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
-            var workerNetwork = Faction.WorkerNetwork;
+            Faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var workerNetwork);
             foreach (var tile in Footprint.OccupiedTiles)
             {
                 var baseColor = Color.Green;
 
-                var tileIsOutsideWorkerNetwork = Game.Level.IsValid(tile) && !workerNetwork.IsInRange(tile);
+                var tileIsOutsideWorkerNetwork = Game.Level.IsValid(tile) && !(workerNetwork?.IsInRange(tile) ?? false);
                 anyTileOutsideWorkerNetwork |= tileIsOutsideWorkerNetwork;
 
                 var isTileValidForBuilding = Game.BuildingPlacementLayer.IsTileValidForBuilding(tile);
@@ -106,8 +107,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var maxDistanceSquared = maxDistance.Squared;
 
-            var workerNetwork = Faction.WorkerNetwork;
-            var networkBorder = TileAreaBorder.From(Game.Level, workerNetwork.IsInRange);
+            Faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var workerNetwork);
+            var networkBorder = TileAreaBorder.From(Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
 
             TileAreaBorderRenderer.Render(networkBorder, Game, getLineColor);
 
@@ -115,7 +116,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 var alpha = 1 - (point - Position.XY()).LengthSquared / maxDistanceSquared;
 
-                return alpha < 0 ? (Color?)null : baseColor * alpha;
+                return alpha < 0 ? null : baseColor * alpha;
             }
         }
     }
