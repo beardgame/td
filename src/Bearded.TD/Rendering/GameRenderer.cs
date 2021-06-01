@@ -130,7 +130,7 @@ namespace Bearded.TD.Rendering
                 drawDebugLevelMetadata();
             }
 
-            if (settings.DebugPathfinder)
+            if (settings.DebugPathfinder > 0)
             {
                 debugPathfinder();
             }
@@ -326,8 +326,31 @@ namespace Bearded.TD.Rendering
             var success = false;
             var timer = new Stopwatch();
 
-            var pathfinder = Pathfinder.WithTileCosts(
-                t => game.State.Level.IsValid(t) && game.State.GeometryLayer[t].Type == TileType.Floor ? 1 : null, 1);
+            var gameState = game.State;
+
+            double? costFunction(Tile tile, Direction step)
+            {
+                var neighbour = tile.Neighbour(step);
+                return
+                    gameState.Level.IsValid(tile)
+                    && gameState.GeometryLayer[tile].Type == TileType.Floor
+                    && gameState.Level.IsValid(neighbour)
+                    && gameState.GeometryLayer[neighbour].Type == TileType.Floor
+                        ? 1
+                        : null;
+            }
+
+            var pathfinder = UserSettings.Instance.Debug.DebugPathfinder switch
+            {
+                1 => Pathfinder.CreateAStar(costFunction, 1),
+                2 => Pathfinder.CreateBidirectionalAStar(costFunction, 1),
+                _ => null
+            };
+
+            if (pathfinder == null)
+            {
+                return;
+            }
 
             try
             {
@@ -379,7 +402,7 @@ namespace Bearded.TD.Rendering
                 {
                     debugPathFinder.TryAdvanceStep();
 
-                    nextPathfinderDebugStep += TimeSpan.FromMilliseconds(10);
+                    nextPathfinderDebugStep += TimeSpan.FromMilliseconds(50);
                 }
                 catch
                 {
@@ -388,32 +411,28 @@ namespace Bearded.TD.Rendering
             }
 
             var debugState = debugPathFinder.GetCurrentState();
-            var openTiles = debugState.OpenTiles.ToHashSet();
 
-            foreach (var tile in debugState.SeenTiles.Except(openTiles))
+            foreach (var tile in debugState.SeenTiles.Distinct())
             {
                 drawers.Primitives.FillCircle(
                     Level.GetPosition(tile).NumericValue, HexagonSide, Color.Yellow * 0.25f, 6);
             }
 
-            foreach (var tile in openTiles)
+            foreach (var tile in debugState.OpenTiles.Distinct())
             {
-                if (tile == debugState.NextOpenTile)
-                    continue;
-
                 drawers.Primitives.FillCircle(
                     Level.GetPosition(tile).NumericValue, HexagonSide, Color.Blue * 0.25f, 6);
             }
 
-            if (debugState.NextOpenTile != null)
+            foreach (var tile in debugState.NextOpenTiles)
             {
                 drawers.Primitives.FillCircle(
-                    Level.GetPosition(debugState.NextOpenTile.Value).NumericValue, HexagonSide, Color.Red * 0.5f, 6);
+                    Level.GetPosition(tile).NumericValue, HexagonSide, Color.Red * 0.5f, 6);
             }
 
-            if (result == null)
-                return;
+            var debugLines = new List<string>();
 
+            if (result != null)
             {
                 var tile = Tile.Origin;
 
@@ -424,6 +443,33 @@ namespace Bearded.TD.Rendering
                     tile = tile.Neighbour(direction);
                     drawers.Primitives.FillCircle(
                         Level.GetPosition(tile).NumericValue, HexagonSide, pathColor, 6);
+                }
+
+                debugLines.Add($"path steps: {result.Path.Length}");
+                debugLines.Add($"path cost: {result.Cost}");
+            }
+
+            var finalStateDebugPathfinder = pathfinder.FindPathIteratively(Tile.Origin, cursorTile);
+            while (finalStateDebugPathfinder.TryAdvanceStep())
+            {
+            }
+
+            var finalDebugState = finalStateDebugPathfinder.GetCurrentState();
+
+            debugLines.Add($"nodes considered: {finalDebugState.SeenTiles.Count()}");
+            debugLines.Add($"nodes expanded: {finalDebugState.SeenTiles.Except(finalDebugState.OpenTiles).Count()}");
+
+
+            {
+                var p = cursor.NumericValue.WithZ();
+                p.Y += debugLines.Count * 0.5f;
+                foreach (var line in debugLines)
+                {
+                    drawers.InGameConsoleFont.DrawLine(
+                        Color.Aqua, p, line,
+                        fontHeight: 0.5f, alignVertical: 1
+                    );
+                    p.Y -= 0.5f;
                 }
             }
         }

@@ -71,7 +71,8 @@ namespace Bearded.TD.Meta
             [SettingOptions(0, 1, 2)]
             public int Pathfinding = 0;
             public bool Passability = false;
-            public bool DebugPathfinder = false;
+            [SettingOptions(0, 1, 2)]
+            public int DebugPathfinder = 0;
 
             // simple debug rendering
             public bool Deferred = false;
