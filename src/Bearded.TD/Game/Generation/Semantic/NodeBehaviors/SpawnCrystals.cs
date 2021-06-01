@@ -42,6 +42,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
                     var count = context.Random.Next(3, 7);
                     foreach (var _ in Enumerable.Range(0, count))
                     {
+                        // TODO: this sometimes leads to crystals being placed outside of allowed tiles, uh oh!
                         var direction = Direction2.FromDegrees(context.Random.NextFloat(360));
                         var offset = direction * (context.Random.NextFloat(2f, 5f) * Constants.Rendering.PixelSize).U();
 

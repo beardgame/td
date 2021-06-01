@@ -6,6 +6,9 @@ namespace Bearded.TD.Tiles
 {
     abstract partial class Pathfinder
     {
+        public static Pathfinder CreateAStar(StepCostFunction costFunction, double minimumCost)
+            => new AStarPathfinder(costFunction, minimumCost);
+
         private sealed class AStarPathfinder : Pathfinder
         {
             internal readonly StepCostFunction CostOfStep;

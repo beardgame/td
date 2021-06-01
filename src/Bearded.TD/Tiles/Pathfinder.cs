@@ -24,7 +24,7 @@ namespace Bearded.TD.Tiles
         /// </summary>
         public delegate double? StepCostFunction(Tile tile, Direction direction);
 
-        public static Pathfinder Default { get; } = new AStarPathfinder((_, _) => 1, 1);
+        public static Pathfinder Default { get; } = new AStarBidirectionalPathfinder((_, _) => 1, 1);
 
         public static Pathfinder WithTileCosts(TileCostFunction costFunction, double minimumCost) =>
             WithStepCosts((tile, direction) => costFunction(tile.Neighbour(direction)), minimumCost);
@@ -34,7 +34,7 @@ namespace Bearded.TD.Tiles
             if (minimumCost <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minimumCost), "Minimum cost must be positive.");
 
-            return new AStarPathfinder(costFunction, minimumCost);
+            return new AStarBidirectionalPathfinder(costFunction, minimumCost);
         }
 
         private Pathfinder()
@@ -48,6 +48,8 @@ namespace Bearded.TD.Tiles
             return this switch
             {
                 AStarPathfinder aStar => new AStarPathfinder(constrainArea(aStar.CostOfStep, area), aStar.MinimumCost),
+                AStarBidirectionalPathfinder aStarBi =>
+                    new AStarBidirectionalPathfinder(constrainArea(aStarBi.AStar.CostOfStep, area), aStarBi.AStar.MinimumCost),
                 _ => throw new NotSupportedException()
             };
         }
