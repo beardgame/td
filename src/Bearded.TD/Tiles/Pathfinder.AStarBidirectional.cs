@@ -61,7 +61,7 @@ namespace Bearded.TD.Tiles
                 Tile? possibleConnectingTile)
             {
                 if (possibleConnectingTile is not { } connectingTile)
-                    return Result.Empty;
+                    return null;
 
                 var (forwardPathCost, forwardPathLength, _) = stateForward.Seen[connectingTile];
                 var (backwardPathCost, backwardPathLength, _) = stateBackward.Seen[connectingTile];
