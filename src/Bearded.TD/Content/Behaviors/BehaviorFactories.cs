@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Bearded.TD.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Content.Behaviors
 {
@@ -43,7 +43,7 @@ namespace Bearded.TD.Content.Behaviors
         private bool initialized;
 
         private readonly Dictionary<string /* id */, Type /* parameter */> parametersById
-            = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+            = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly Dictionary<string /* id */, Dictionary<Type /* owner */, object /* factoryFactory */>>
             factoryFactoriesById = new Dictionary<string, Dictionary<Type, object>>(StringComparer.OrdinalIgnoreCase);
@@ -166,7 +166,7 @@ namespace Bearded.TD.Content.Behaviors
             var constructor = constructorOf(behaviorType);
             var constructorParameters = constructor.GetParameters();
 
-            DebugAssert.State.Satisfies(constructorParameters.Length <= 1,
+            State.Satisfies(constructorParameters.Length <= 1,
                 "Behaviour constructor should have exactly zero or one parameter.");
 
             return constructorParameters.Length == 0
@@ -178,7 +178,7 @@ namespace Bearded.TD.Content.Behaviors
         {
             var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
-            DebugAssert.State.Satisfies(constructors.Length == 1,
+            State.Satisfies(constructors.Length == 1,
                 "Behaviours should have exactly one public constructor.");
 
             return constructors[0];
@@ -199,12 +199,14 @@ namespace Bearded.TD.Content.Behaviors
 
             if (parameterType == emptyConstructorParameterType)
             {
-                DebugAssert.State.Satisfies(parameterData == null);
+                State.Satisfies(parameterData == null, $"Expected null, but parameter data was {parameterData}");
                 parameterData = default(TEmptyConstructorParameters);
             }
             else
             {
-                DebugAssert.State.Satisfies(parameterType.IsInstanceOfType(parameterData));
+                State.Satisfies(
+                    parameterType.IsInstanceOfType(parameterData),
+                    $"Expected instance of {parameterData}, but {parameterType} is not.");
             }
 
             var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);

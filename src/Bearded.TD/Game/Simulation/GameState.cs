@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
@@ -57,8 +56,8 @@ namespace Bearded.TD.Game.Simulation
 
         private bool finishedLoading;
 
-        private readonly IdCollection<Faction> factions = new();
-        public ReadOnlyCollection<Faction> Factions { get; }
+        private readonly GameFactions factions = new();
+        public IGameFactions Factions { get; }
 
         private Faction? rootFaction;
         // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
@@ -81,7 +80,7 @@ namespace Bearded.TD.Game.Simulation
             SelectionLayer = new SelectionLayer(BuildingLayer);
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
-            Factions = factions.AsReadOnly;
+            Factions = factions.AsReadOnly();
 
             WaveDirector = new WaveDirector(this);
         }
@@ -201,8 +200,6 @@ namespace Bearded.TD.Game.Simulation
             dictionaries.Add(typeof(T), d);
             return d;
         }
-
-        public Faction FactionFor(Id<Faction> id) => factions[id];
 
         public void AddFaction(Faction faction)
         {

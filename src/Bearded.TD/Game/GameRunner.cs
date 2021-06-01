@@ -1,5 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
@@ -43,9 +44,7 @@ namespace Bearded.TD.Game
 
             if (game.State.Meta.GameOver) return;
 
-            foreach (var f in game.State.Factions)
-                if (f.HasResources)
-                    f.Resources.DistributeResources();
+            game.State.Meta.Events.Send(new FrameUpdateStarting());
             game.State.Navigator.Update();
             game.State.Advance(elapsedTime);
 

@@ -2,96 +2,66 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
+    [FactionBehaviorOwner]
     sealed class Faction : IIdable<Faction>
     {
-        private readonly Color? color;
-        private readonly WorkerNetwork? workerNetwork;
-        private readonly WorkerManager? workers;
-
         private readonly IFactionBlueprint blueprint;
         private readonly List<IFactionBehavior<Faction>> behaviors = new();
 
         public Id<Faction> Id { get; }
+        public ExternalId<Faction> ExternalId => blueprint.Id;
         public Faction? Parent { get; }
-        public bool HasResources { get; }
-        public bool HasWorkerNetwork { get; }
-        public bool HasWorkers { get; }
-        public string Name { get; }
-        public Color Color => color ?? Parent?.Color ?? Color.Black;
+
+        public string Name => blueprint.Name ?? "";
+        public Color Color => blueprint.Color ?? Color.Black;
+
+        // Obsolete
+        public bool HasResources => TryGetBehavior<FactionResources>(out _);
+        public bool HasWorkerNetwork => TryGetBehavior<WorkerNetwork>(out _);
+
         public FactionResources? Resources =>
             TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
         public FactionTechnology? Technology =>
             TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
-        public WorkerNetwork? WorkerNetwork => workerNetwork ?? Parent?.WorkerNetwork;
-        public WorkerManager? Workers => workers ?? Parent?.Workers;
+        public WorkerNetwork? WorkerNetwork =>
+            TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) ? network : null;
+        public WorkerTaskManager? Workers =>
+            TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers) ? workers : null;
 
         // TODO: do we need an external ID so mod files can refer to other factions?
         public static Faction FromBlueprint(
-            Id<Faction> id, string name, IFactionBlueprint blueprint, GlobalGameEvents events)
+            Id<Faction> id, Faction? parent, IFactionBlueprint blueprint, GlobalGameEvents events)
         {
-            var faction = new Faction(id, name, blueprint);
-            faction.behaviors.AddRange(blueprint.GetBehaviors());
-            faction.behaviors.ForEach(b => b.OnAdded(faction, events));
+            var faction = new Faction(id, parent, blueprint);
+            faction.addBehaviorRange(blueprint.GetBehaviors(), events);
             return faction;
         }
 
         private Faction(
             Id<Faction> id,
-            string name,
+            Faction? parent,
             IFactionBlueprint blueprint)
         {
             Id = id;
-            Name = name;
+            Parent = parent;
             this.blueprint = blueprint;
         }
 
-        public Faction(
-            Id<Faction> id,
-            GameState gameState,
-            Faction? parent,
-            bool hasResources,
-            bool hasWorkerNetwork,
-            bool hasWorkers,
-            string? name = null,
-            Color? color = null)
+        private void addBehaviorRange(IEnumerable<IFactionBehavior<Faction>> behaviorsToAdd, GlobalGameEvents events)
         {
-            Id = id;
-            Parent = parent;
-            HasResources = hasResources;
-            HasWorkerNetwork = hasWorkerNetwork;
-            HasWorkers = hasWorkers;
-            Name = name ?? "";
-            this.color = color;
-
-            if (hasResources)
-            {
-                var resources = new FactionResources();
-                behaviors.Add(resources);
-                resources.OnAdded(this, gameState.Meta.Events);
-
-                var technology = new FactionTechnology();
-                behaviors.Add(technology);
-                technology.OnAdded(this, gameState.Meta.Events);
-            }
-            if (hasWorkerNetwork)
-            {
-                workerNetwork = new WorkerNetwork();
-            }
-            if (hasWorkers)
-            {
-                State.Satisfies(WorkerNetwork != null);
-                workers = new WorkerManager(WorkerNetwork!);
-            }
+            var factionBehaviors = behaviorsToAdd.ToList();
+            factionBehaviors.ForEach(behaviors.Add);
+            factionBehaviors.ForEach(b => b.OnAdded(this, events));
         }
 
         public bool TryGetBehaviorIncludingAncestors<T>([NotNullWhen(true)] out T? result)

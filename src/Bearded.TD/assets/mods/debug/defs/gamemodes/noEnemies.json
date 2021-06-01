@@ -2,6 +2,30 @@
     "id" : "noEnemies",
     "name" : "No enemies, for all your level generation needs",
     "rules" : [
+        {
+            "id" : "addFaction",
+            "parameters" : {
+                "blueprint": {
+                    "id": "root",
+                    "behaviors": [
+                        { "id": "resources" },
+                        { "id": "technology" },
+                        { "id": "workerNetwork" }
+                    ]
+                }
+            }
+        },
+        {
+            "id" : "addPlayerFactions",
+            "parameters" : {
+                "parent" : "root",
+                "blueprint" : {
+                    "behaviors" : [
+                        { "id" : "workers" }
+                    ]
+                }
+            }
+        },
         { "id" : "assignWorkers" },
         {
             "id" : "contributeNodes",

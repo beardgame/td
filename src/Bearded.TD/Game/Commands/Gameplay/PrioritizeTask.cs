@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
             {
-                var foundFaction = game.State.FactionFor(faction);
+                var foundFaction = game.State.Factions.Resolve(faction);
                 return new Implementation(foundFaction, foundFaction.Workers.TaskFor(workerTask));
             }
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Meta;
@@ -8,7 +7,6 @@ using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -42,8 +40,8 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
         private void initializeInternal()
         {
             WorkerRange = Parameters.WorkerRange;
-            Owner.Faction.WorkerNetwork?.RegisterAntenna(Owner.Game, this);
-            Owner.Deleting += () => Owner.Faction.WorkerNetwork?.UnregisterAntenna(Owner.Game, this);
+            Owner.Faction.WorkerNetwork?.RegisterAntenna(this);
+            Owner.Deleting += () => Owner.Faction.WorkerNetwork?.UnregisterAntenna(this);
             isInitialized = true;
         }
 
@@ -57,7 +55,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
             if (Parameters.WorkerRange != WorkerRange)
             {
                 WorkerRange = Parameters.WorkerRange;
-                Owner.Faction.WorkerNetwork?.OnAntennaRangeUpdated(Owner.Game);
+                Owner.Faction.WorkerNetwork?.OnAntennaRangeUpdated();
             }
         }
 
@@ -73,13 +71,9 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
             TileAreaBorderRenderer.Render(networkBorder, Owner.Game, Color.DodgerBlue * alpha);
 
-            var localArea = Tilemap
-                .GetSpiralCenteredAt(Level.GetTile(Position), (int) Parameters.WorkerRange.NumericValue + 1)
-                .Where(t => WorkerNetwork.IsTileInAntennaRange(this, Level.GetPosition(t)));
+            var localBorder = TileAreaBorder.From(((IWorkerAntenna) this).Coverage);
 
-            var localBorder = TileAreaBorder.From(localArea);
-
-            TileAreaBorderRenderer.Render(networkBorder, Owner.Game, Color.Orange * alpha);
+            TileAreaBorderRenderer.Render(localBorder, Owner.Game, Color.Orange * alpha);
         }
     }
 }

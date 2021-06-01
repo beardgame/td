@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Commands.General;
 using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.Linq;
@@ -34,16 +30,6 @@ namespace Bearded.TD.Game
         {
             yield return InitializeTypes.Command();
             yield return CreateGameState.Command(game, gameSettings);
-            yield return AddFaction.Command(game, new Faction(
-                game.Ids.GetNext<Faction>(),
-                game.State,
-                name: "All players",
-                parent: null,
-                hasResources: true,
-                hasWorkerNetwork: true,
-                hasWorkers: true));
-            foreach (var command in setupFactions())
-                yield return command;
 
             var gameMode = game.Blueprints.GameModes[gameSettings.GameMode ?? ModAwareId.ForDefaultMod("default")];
             yield return ApplyGameRules.Command(game, gameMode);
@@ -170,25 +156,6 @@ namespace Bearded.TD.Game
                             );
                     }
                 }
-            }
-        }
-
-        private IEnumerable<ISerializableCommand<GameInstance>> setupFactions()
-        {
-            foreach (var (p, i) in game.Players.Indexed())
-            {
-                var factionColor = Color.FromHSVA(i * MathConstants.TwoPi / 6, 1, 1f);
-                var playerFaction = new Faction(
-                    game.Ids.GetNext<Faction>(),
-                    game.State,
-                    parent: game.State.RootFaction,
-                    hasResources: false,
-                    hasWorkerNetwork: false,
-                    hasWorkers: gameSettings.WorkerDistributionMethod != WorkerDistributionMethod.Neutral,
-                    name: p.Name,
-                    color: factionColor);
-                yield return AddFaction.Command(game, playerFaction);
-                yield return SetPlayerFaction.Command(p, playerFaction);
             }
         }
     }

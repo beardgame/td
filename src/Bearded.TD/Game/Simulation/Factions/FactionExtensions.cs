@@ -22,5 +22,8 @@ namespace Bearded.TD.Game.Simulation.Factions
 
         public static bool SharesWorkersWith(this Faction thisFaction, Faction thatFaction) =>
             thisFaction.Workers != null && thisFaction.Workers == thatFaction.Workers;
+
+        public static bool SharesWorkerNetworkWith(this Faction thisFaction, Faction thatFaction) =>
+            thisFaction.WorkerNetwork != null && thisFaction.WorkerNetwork == thatFaction.WorkerNetwork;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.Utilities;
@@ -11,12 +12,16 @@ namespace Bearded.TD.Content.Serialization.Models
     sealed class FactionBlueprint : IConvertsTo<IFactionBlueprint, Void>
     {
         public string Id { get; set; }
+        public string? Name { get; set; }
+        public Color? Color { get; set; }
         public List<IFactionBehavior> Behaviors { get; set; } = new();
 
         public IFactionBlueprint ToGameModel(ModMetadata modMetadata, Void resolvers)
         {
             return new Content.Models.FactionBlueprint(
-                ModAwareId.FromNameInMod(Id, modMetadata),
+                ExternalId<Faction>.FromLiteral(Id),
+                Name,
+                Color,
                 Behaviors.Select(FactionBehaviorFactories.CreateFactionBehaviorFactory));
         }
     }

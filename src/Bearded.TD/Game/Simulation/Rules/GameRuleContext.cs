@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
-using System.Linq;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.Utilities;
@@ -11,17 +11,17 @@ namespace Bearded.TD.Game.Simulation.Rules
     {
         public GameState GameState { get; }
         public GlobalGameEvents Events { get; }
+        public ReadOnlyCollection<Player> Players { get; }
         public GameSettings GameSettings => GameState.GameSettings;
-        public ReadOnlyCollection<Faction> Factions => GameState.Factions;
+        public IGameFactions Factions => GameState.Factions;
         public IDispatcher<GameInstance> Dispatcher => GameState.Meta.Dispatcher;
         public IdManager Ids => GameState.Meta.Ids;
 
-        public Faction RootFaction => Factions.First(f => f.Parent == null);
-
-        public GameRuleContext(GameState gameState, GlobalGameEvents events)
+        public GameRuleContext(GameState gameState, GlobalGameEvents events, ReadOnlyCollection<Player> players)
         {
-            Events = events;
             GameState = gameState;
+            Events = events;
+            Players = players;
         }
     }
 }

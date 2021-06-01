@@ -1,10 +1,8 @@
-using System.Collections.ObjectModel;
-using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
-using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Simulation.Rules.Resources
 {
@@ -15,38 +13,26 @@ namespace Bearded.TD.Game.Simulation.Rules.Resources
 
         public override void Execute(GameRuleContext context)
         {
-            context.Events.Subscribe(new Listener(context.Factions, Parameters.Amount));
+            context.Events.Subscribe(new Listener(context.Factions.Find(Parameters.Faction), Parameters.Amount));
         }
 
         private sealed class Listener : IListener<GameStarted>
         {
-            private readonly ReadOnlyCollection<Faction> factions;
+            private readonly Faction faction;
             private readonly ResourceAmount amount;
 
-            public Listener(ReadOnlyCollection<Faction> factions, ResourceAmount amount)
+            public Listener(Faction faction, ResourceAmount amount)
             {
-                this.factions = factions;
+                this.faction = faction;
                 this.amount = amount;
             }
 
             public void HandleEvent(GameStarted @event)
             {
-                foreach (var faction in factions.Where(f => f.HasResources))
-                {
-                    faction.Resources!.ProvideResources(amount);
-                }
+                faction.Resources!.ProvideResources(amount);
             }
         }
 
-        public readonly struct RuleParameters
-        {
-            public ResourceAmount Amount { get; }
-
-            [JsonConstructor]
-            public RuleParameters(ResourceAmount amount)
-            {
-                Amount = amount;
-            }
-        }
+        public sealed record RuleParameters(ExternalId<Faction> Faction, ResourceAmount Amount);
     }
 }

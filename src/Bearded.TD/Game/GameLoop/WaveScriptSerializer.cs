@@ -47,7 +47,7 @@ namespace Bearded.TD.Game.GameLoop
             return new(
                 id,
                 displayName,
-                game.State.FactionFor(targetFaction),
+                game.State.Factions.Resolve(targetFaction),
                 new Instant(spawnStart),
                 new TimeSpan(spawnDuration),
                 new ResourceAmount(resourcesAwardedBySpawnPhase),
