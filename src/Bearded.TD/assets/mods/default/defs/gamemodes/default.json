@@ -8,9 +8,9 @@
                 "blueprint": {
                     "id": "root",
                     "behaviors": [
-                        { "id": "resources" },
-                        { "id": "technology" },
-                        { "id": "workerNetwork" }
+                        { "id" : "resources" },
+                        { "id" : "technology" },
+                        { "id" : "workerNetwork" }
                     ]
                 }
             }

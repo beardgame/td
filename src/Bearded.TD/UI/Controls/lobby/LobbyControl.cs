@@ -208,11 +208,6 @@ namespace Bearded.TD.UI.Controls
                     .AddForm(builder => builder
                         .AddNumberSelectRow("Level size", 10, 100, levelSize)
                         .AddDropdownSelectRow(
-                            "Worker distribution method",
-                            new[] {WorkerDistributionMethod.Neutral, WorkerDistributionMethod.RoundRobin},
-                            e => e.ToString(),
-                            workerDistributionMethod)
-                        .AddDropdownSelectRow(
                             "Level generation method",
                             new[]
                             {

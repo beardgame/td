@@ -45,7 +45,7 @@ namespace Bearded.TD.Game
                 Seed = StaticRandom.Int();
                 GameMode = null;
                 LevelSize = 32;
-                WorkerDistributionMethod = WorkerDistributionMethod.Neutral;
+                WorkerDistributionMethod = WorkerDistributionMethod.RoundRobin;
                 LevelGenerationMethod = LevelGenerationMethod.Default;
             }
 
