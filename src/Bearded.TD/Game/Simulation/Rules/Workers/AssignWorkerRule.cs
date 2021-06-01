@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
             context.Events.Subscribe(this);
 
             var factionsByParent = context.Factions.All.ToLookup(f => f.Parent);
-            foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<WorkerTaskManager>(out _)))
+            foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<WorkerNetwork>(out _)))
             {
                 childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
             }
