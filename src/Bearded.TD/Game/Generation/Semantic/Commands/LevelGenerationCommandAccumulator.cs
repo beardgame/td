@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -21,11 +23,12 @@ namespace Bearded.TD.Game.Generation.Semantic.Commands
                 gameInstance, gameInstance.Ids.GetNext<SpawnLocation>(), tile));
         }
 
-        public void PlaceBuilding(IBuildingBlueprint blueprint, PositionedFootprint footprint)
+        public void PlaceBuilding(
+            IBuildingBlueprint blueprint, PositionedFootprint footprint, ExternalId<Faction> externalId)
         {
             commands.Add(gameInstance => PlopBuilding.Command(
                 gameInstance.State,
-                gameInstance.State.RootFaction,
+                gameInstance.State.Factions.Find(externalId),
                 gameInstance.Ids.GetNext<Building>(),
                 blueprint,
                 footprint));

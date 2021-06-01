@@ -59,11 +59,6 @@ namespace Bearded.TD.Game.Simulation
         private readonly GameFactions factions = new();
         public IGameFactions Factions { get; }
 
-        private Faction? rootFaction;
-        // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
-        // Separate nullable field for lazy initialisation in AddFaction. Needs to be set during loading.
-        public Faction RootFaction => rootFaction!;
-
         public GameState(GameMeta meta, GameSettings gameSettings)
         {
             Meta = meta;
@@ -98,11 +93,6 @@ namespace Bearded.TD.Game.Simulation
             if (finishedLoading)
             {
                 throw new Exception("Can only finish loading game state once.");
-            }
-
-            if (rootFaction == null)
-            {
-                throw new InvalidOperationException("Root faction must be set during game loading.");
             }
         }
 
@@ -203,16 +193,6 @@ namespace Bearded.TD.Game.Simulation
 
         public void AddFaction(Faction faction)
         {
-            if (faction.Parent == null)
-            {
-                if (rootFaction != null)
-                {
-                    throw new Exception("Can only have one root faction. All other factions need parents.");
-                }
-
-                rootFaction = faction;
-            }
-
             factions.Add(faction);
         }
 

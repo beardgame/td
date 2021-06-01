@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
@@ -61,7 +63,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             commandAccumulator.PlaceSpawnLocation(tile);
         }
 
-        public void PlaceBuilding(IBuildingBlueprint blueprint, Tile rootTile)
+        public void PlaceBuilding(IBuildingBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
         {
             // TODO: we currently hardcode the 0 variant of the footprint group. Pending a footprint rework.
             var positionedFootprint = blueprint.FootprintGroup.Positioned(0, rootTile);
@@ -70,7 +72,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
                 throw new ArgumentException("May not place buildings outside node.", nameof(rootTile));
             }
 
-            commandAccumulator.PlaceBuilding(blueprint, positionedFootprint);
+            commandAccumulator.PlaceBuilding(blueprint, positionedFootprint, faction);
         }
 
         public void PlaceGameObject(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
