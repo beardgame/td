@@ -2,7 +2,7 @@ using System;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
-    interface IFactionBehaviorFactory<TOwner>
+    interface IFactionBehaviorFactory<in TOwner>
     {
         IFactionBehavior<TOwner> Create();
     }
