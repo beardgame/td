@@ -1,3 +1,7 @@
+using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.Game.Simulation.Workers;
+
 namespace Bearded.TD.Game.Simulation.Factions
 {
     static class FactionExtensions
@@ -15,15 +19,25 @@ namespace Bearded.TD.Game.Simulation.Factions
             IsAncestorOf(potentialAncestor, toCheck);
 
         public static bool SharesResourcesWith(this Faction thisFaction, Faction thatFaction) =>
-            thisFaction.Resources != null && thisFaction.Resources == thatFaction.Resources;
+            thisFaction.SharesBehaviorWith<FactionResources>(thatFaction);
 
         public static bool SharesTechnologyWith(this Faction thisFaction, Faction thatFaction) =>
-            thisFaction.Technology != null && thisFaction.Technology == thatFaction.Technology;
+            thisFaction.SharesBehaviorWith<FactionTechnology>(thatFaction);
 
         public static bool SharesWorkersWith(this Faction thisFaction, Faction thatFaction) =>
-            thisFaction.Workers != null && thisFaction.Workers == thatFaction.Workers;
+            thisFaction.SharesBehaviorWith<WorkerTaskManager>(thatFaction);
 
         public static bool SharesWorkerNetworkWith(this Faction thisFaction, Faction thatFaction) =>
-            thisFaction.WorkerNetwork != null && thisFaction.WorkerNetwork == thatFaction.WorkerNetwork;
+            thisFaction.SharesBehaviorWith<WorkerNetwork>(thatFaction);
+
+        public static bool SharesBehaviorWith<TBehavior>(this Faction thisFaction, Faction thatFaction)
+        {
+            if (!thisFaction.TryGetBehaviorIncludingAncestors<TBehavior>(out var thisBehavior))
+            {
+                return false;
+            }
+            thatFaction.TryGetBehaviorIncludingAncestors<TBehavior>(out var thatBehavior);
+            return Equals(thisBehavior, thatBehavior);
+        }
     }
 }

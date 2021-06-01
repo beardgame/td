@@ -25,9 +25,9 @@ namespace Bearded.TD.UI.Controls
             handlers[Constants.Game.GameUI.ActionBarSize - 1] = new MiningInteractionHandler(game, game.Me.Faction);
             labels[Constants.Game.GameUI.ActionBarSize - 1] = ("Mine tile", null);
 
-            if (game.Me.Faction.Technology != null)
+            if (game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
             {
-                foreach (var b in game.Me.Faction.Technology.UnlockedBuildings)
+                foreach (var b in technology.UnlockedBuildings)
                 {
                     addBuilding(b);
                 }

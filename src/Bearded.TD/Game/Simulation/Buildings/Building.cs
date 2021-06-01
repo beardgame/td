@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
@@ -169,7 +170,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
-            Faction.Technology?.GetApplicableUpgradesFor(this) ?? Enumerable.Empty<IUpgradeBlueprint>();
+            Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                ? technology.GetApplicableUpgradesFor(this)
+                : Enumerable.Empty<IUpgradeBlueprint>();
 
         public IStateToSync GetCurrentStateToSync() =>
             new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));

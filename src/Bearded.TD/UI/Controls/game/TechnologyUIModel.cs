@@ -34,7 +34,7 @@ namespace Bearded.TD.UI.Controls
             this.game = game;
             Technologies = game.Blueprints.Technologies.All.ToImmutableArray();
             faction = game.Me.Faction;
-            factionTechnology = faction.Technology;
+            faction.TryGetBehaviorIncludingAncestors(out factionTechnology);
 
             technologyStatuses = Technologies.ToDictionary(t => t, evaluateStatusForTech);
             technologyDependents = buildTechnologyDependents();

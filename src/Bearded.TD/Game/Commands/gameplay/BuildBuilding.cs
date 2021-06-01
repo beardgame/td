@@ -4,6 +4,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
@@ -45,11 +46,17 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.taskId = taskId;
             }
 
-            public override bool CheckPreconditions(Player actor) =>
-                blueprint.FootprintGroup == footprint.Footprint
-                && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
-                && faction.Technology.IsBuildingUnlocked(blueprint)
-                && faction.SharesWorkersWith(actor.Faction);
+            public override bool CheckPreconditions(Player actor)
+            {
+                if (!faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var factionTechnology))
+                {
+                    return false;
+                }
+                return blueprint.FootprintGroup == footprint.Footprint
+                    && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
+                    && factionTechnology.IsBuildingUnlocked(blueprint)
+                    && faction.SharesBehaviorWith<WorkerNetwork>(actor.Faction);
+            }
 
             public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
                 game,

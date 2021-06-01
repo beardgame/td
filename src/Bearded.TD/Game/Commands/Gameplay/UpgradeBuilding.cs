@@ -2,6 +2,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -31,10 +32,16 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.upgrade = upgrade;
             }
 
-            public override bool CheckPreconditions(Player actor) =>
-                (actor.Faction.Technology?.IsUpgradeUnlocked(upgrade) ?? false)
-                && building.CanApplyUpgrade(upgrade)
-                && building.CanBeUpgradedBy(actor.Faction);
+            public override bool CheckPreconditions(Player actor)
+            {
+                if (!actor.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
+                {
+                    return false;
+                }
+                return technology.IsUpgradeUnlocked(upgrade)
+                    && building.CanApplyUpgrade(upgrade)
+                    && building.CanBeUpgradedBy(actor.Faction);
+            }
 
             public override void Execute()
             {

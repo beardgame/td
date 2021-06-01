@@ -5,7 +5,6 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -27,8 +26,6 @@ namespace Bearded.TD.Game.Simulation.Factions
 
         public FactionResources? Resources =>
             TryGetBehaviorIncludingAncestors<FactionResources>(out var resources) ? resources : null;
-        public FactionTechnology? Technology =>
-            TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ? technology : null;
         public WorkerNetwork? WorkerNetwork =>
             TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) ? network : null;
         public WorkerTaskManager? Workers =>

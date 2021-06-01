@@ -1,5 +1,7 @@
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.Utilities.IO;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Game.Simulation.Rules.Technologies
@@ -11,21 +13,32 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
 
         public override void Execute(GameRuleContext context)
         {
-            context.Events.Subscribe(new Listener(Parameters.Amount));
+            context.Events.Subscribe(new Listener(context.Logger, Parameters.Amount));
         }
 
         private sealed class Listener : IListener<WaveEnded>
         {
+            private readonly Logger logger;
             private readonly int amount;
 
-            public Listener(int amount)
+            public Listener(Logger logger, int amount)
             {
+                this.logger = logger;
                 this.amount = amount;
             }
 
             public void HandleEvent(WaveEnded @event)
             {
-                @event.TargetFaction.Technology?.AddTechPoints(amount);
+                if (@event.TargetFaction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
+                {
+                    technology.AddTechPoints(amount);
+                }
+                else
+                {
+                    logger.Debug?.Log(
+                        $"Tried awarding tech points after wave end to {@event.TargetFaction.ExternalId}, " +
+                        "but it doesn't have technology.");
+                }
             }
         }
 

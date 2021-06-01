@@ -3,6 +3,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -24,7 +25,10 @@ namespace Bearded.TD.UI.Controls
         public Color FactionColor => game.Me.Faction.Color;
         public ResourceAmount FactionResources => game.Me.Faction.Resources.CurrentResources;
         public ResourceAmount FactionResourcesAfterReservation => game.Me.Faction.Resources.ResourcesAfterQueue;
-        public long FactionTechPoints => game.Me.Faction.Technology?.TechPoints ?? 0;
+        public long FactionTechPoints =>
+            game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                ? technology.TechPoints
+                : 0;
         public TimeSpan? TimeUntilWaveSpawn =>
             waveSpawnStart == null || game.State.Time >= waveSpawnStart
                 ? null

@@ -13,9 +13,15 @@ namespace Bearded.TD.Game.Simulation.Rules.Technologies
         public override void Execute(GameRuleContext context)
         {
             var faction = context.Factions.Find(Parameters.Faction);
+            if (!faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
+            {
+                context.Logger.Warning?.Log(
+                    $"Attempted to unlock technologies for {Parameters.Faction}, but it does not support technology.");
+                return;
+            }
             foreach (var unlock in Parameters.Unlocks)
             {
-                unlock.Apply(faction.Technology!);
+                unlock.Apply(technology);
             }
         }
 

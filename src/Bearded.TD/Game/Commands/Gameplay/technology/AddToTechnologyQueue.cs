@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
@@ -25,14 +26,26 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 this.faction = faction;
             }
 
-            public override bool CheckPreconditions(Player actor) =>
-                faction.SharesTechnologyWith(actor.Faction)
-                && faction.Technology.CanQueueTechnology(technology)
-                && !faction.Technology.IsTechnologyQueued(technology);
+            public override bool CheckPreconditions(Player actor)
+            {
+                if (!faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var factionTechnology))
+                {
+                    return false;
+                }
+                actor.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var actorTechnology);
+                return factionTechnology == actorTechnology
+                    && factionTechnology.CanQueueTechnology(technology)
+                    && !factionTechnology.IsTechnologyQueued(technology);
+            }
 
             public override void Execute()
             {
-                faction.Technology.AddToTechnologyQueue(technology);
+                if (!faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var factionTechnology))
+                {
+                    throw new InvalidOperationException(
+                        "Cannot queue technology without technology for the faction. Precondition should have failed.");
+                }
+                factionTechnology.AddToTechnologyQueue(technology);
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, technology);

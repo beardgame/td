@@ -4,11 +4,13 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.Utilities;
+using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Game.Simulation.Rules
 {
     sealed class GameRuleContext
     {
+        public Logger Logger { get; }
         public GameState GameState { get; }
         public GlobalGameEvents Events { get; }
         public ReadOnlyCollection<Player> Players { get; }
@@ -19,6 +21,7 @@ namespace Bearded.TD.Game.Simulation.Rules
 
         public GameRuleContext(GameState gameState, GlobalGameEvents events, ReadOnlyCollection<Player> players)
         {
+            Logger = gameState.Meta.Logger;
             GameState = gameState;
             Events = events;
             Players = players;
