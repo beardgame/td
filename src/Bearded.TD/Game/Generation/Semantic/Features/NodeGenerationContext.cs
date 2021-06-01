@@ -39,7 +39,6 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
 
         public TileGeometry Get(Tile tile)
         {
-            // TODO: is there a reason why you couldn't read outside of your node?
             return tilemap[tile];
         }
 

@@ -38,7 +38,6 @@ namespace Bearded.TD.Game.Simulation.Factions
         public WorkerTaskManager? Workers =>
             TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers) ? workers : null;
 
-        // TODO: do we need an external ID so mod files can refer to other factions?
         public static Faction FromBlueprint(
             Id<Faction> id, Faction? parent, IFactionBlueprint blueprint, GlobalGameEvents events)
         {
