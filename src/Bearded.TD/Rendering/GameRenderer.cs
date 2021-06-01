@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
@@ -6,6 +10,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Deferred.Level;
@@ -17,6 +22,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = System.TimeSpan;
 
 namespace Bearded.TD.Rendering
 {
@@ -30,6 +36,10 @@ namespace Bearded.TD.Rendering
         private readonly IShapeDrawer2<Color> shapeDrawer;
         private readonly TextDrawerWithDefaults<Color> debugGeometryTextDrawer;
         private readonly TextDrawerWithDefaults<Color> debugCoordinateTextDrawer;
+
+        private Tile pathfinderDebugTarget;
+        private IIterativePathfinder? debugPathFinder;
+        private DateTime nextPathfinderDebugStep;
 
         public ContentRenderers ContentRenderers { get; }
 
@@ -120,6 +130,11 @@ namespace Bearded.TD.Rendering
             if (settings.LevelMetadata)
             {
                 drawDebugLevelMetadata();
+            }
+
+            if (settings.DebugPathfinder)
+            {
+                debugPathfinder();
             }
         }
 
@@ -300,6 +315,117 @@ namespace Bearded.TD.Rendering
                 {
                     debugCoordinateTextDrawer.DrawLine(
                         Level.GetPosition(tile).NumericValue.WithZ(), $"{tile.X}, {tile.Y}");
+                }
+            }
+        }
+
+
+        private void debugPathfinder()
+        {
+            var cursor = game.PlayerInput.CursorPosition;
+            var cursorTile = Level.GetTile(cursor);
+            Pathfinder.Result? result = null;
+            var success = false;
+            var timer = new Stopwatch();
+
+            var pathfinder = Pathfinder.WithTileCosts(
+                t => game.State.Level.IsValid(t) && game.State.GeometryLayer[t].Type == TileType.Floor ? 1 : null, 1);
+
+            try
+            {
+                timer.Start();
+
+                result = pathfinder.FindPath(Tile.Origin, cursorTile);
+
+                timer.Stop();
+
+                success = true;
+            }
+            catch (Exception e)
+            {
+                var lines = e.ToString().Split('\n', '\r', StringSplitOptions.RemoveEmptyEntries);
+                var p = cursor.NumericValue.WithZ();
+                foreach (var line in lines)
+                {
+                    drawers.InGameConsoleFont.DrawLine(
+                        Color.Red, p, line,
+                        fontHeight: 0.5f
+                    );
+                    p.Y -= 0.5f;
+                }
+            }
+
+            var (argb, text) =
+                success
+                    ? result == null
+                        ? (Color.Yellow, $"no path found in {timer.Elapsed.TotalMilliseconds:0.00}ms")
+                        : (Color.Lime, $"path found in {timer.Elapsed.TotalMilliseconds:0.00}ms")
+                    : (Color.Red, $"pathfinder crashed after {timer.Elapsed.TotalMilliseconds:0.00}ms");
+
+            drawers.InGameConsoleFont.DrawLine(
+                argb, cursor.NumericValue.WithZ(), text,
+                fontHeight: 0.5f,
+                alignVertical: 1f
+            );
+
+            if (pathfinderDebugTarget != cursorTile || debugPathFinder == null)
+            {
+                pathfinderDebugTarget = cursorTile;
+                debugPathFinder = pathfinder.FindPathIteratively(Tile.Origin, cursorTile);
+                nextPathfinderDebugStep = DateTime.Now;
+            }
+
+            if (nextPathfinderDebugStep <= DateTime.Now)
+            {
+                try
+                {
+                    debugPathFinder.TryAdvanceStep();
+
+                    nextPathfinderDebugStep += TimeSpan.FromMilliseconds(10);
+                }
+                catch
+                {
+                    nextPathfinderDebugStep = DateTime.MaxValue;
+                }
+            }
+
+            var debugState = debugPathFinder.GetCurrentState();
+            var openTiles = debugState.OpenTiles.ToHashSet();
+
+            foreach (var tile in debugState.SeenTiles.Except(openTiles))
+            {
+                drawers.Primitives.FillCircle(
+                    Level.GetPosition(tile).NumericValue, HexagonSide, Color.Yellow * 0.25f, 6);
+            }
+
+            foreach (var tile in openTiles)
+            {
+                if (tile == debugState.NextOpenTile)
+                    continue;
+
+                drawers.Primitives.FillCircle(
+                    Level.GetPosition(tile).NumericValue, HexagonSide, Color.Blue * 0.25f, 6);
+            }
+
+            if (debugState.NextOpenTile != null)
+            {
+                drawers.Primitives.FillCircle(
+                    Level.GetPosition(debugState.NextOpenTile.Value).NumericValue, HexagonSide, Color.Red * 0.5f, 6);
+            }
+
+            if (result == null)
+                return;
+
+            {
+                var tile = Tile.Origin;
+
+                var pathColor = Color.Lime * 0.5f;
+
+                foreach (var direction in result.Path)
+                {
+                    tile = tile.Neighbour(direction);
+                    drawers.Primitives.FillCircle(
+                        Level.GetPosition(tile).NumericValue, HexagonSide, pathColor, 6);
                 }
             }
         }
