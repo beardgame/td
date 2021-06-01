@@ -6,12 +6,12 @@ namespace Bearded.TD.Game.Simulation.Technologies
 {
     readonly struct BuildingTechnologyUnlocked : IGlobalEvent
     {
-        public Faction Faction { get; }
+        public FactionTechnology FactionTechnology { get; }
         public IBuildingBlueprint Blueprint { get; }
 
-        public BuildingTechnologyUnlocked(Faction faction, IBuildingBlueprint blueprint)
+        public BuildingTechnologyUnlocked(FactionTechnology factionTechnology, IBuildingBlueprint blueprint)
         {
-            Faction = faction;
+            FactionTechnology = factionTechnology;
             Blueprint = blueprint;
         }
     }

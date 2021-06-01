@@ -3,13 +3,13 @@ using Bearded.TD.Game.Simulation.Factions;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    struct WorkerNetworkChanged : IGlobalEvent
+    readonly struct WorkerNetworkChanged : IGlobalEvent
     {
-        public Faction Faction { get; }
+        public WorkerNetwork Network { get; }
 
-        public WorkerNetworkChanged(Faction faction)
+        public WorkerNetworkChanged(WorkerNetwork network)
         {
-            Faction = faction;
+            Network = network;
         }
     }
 }

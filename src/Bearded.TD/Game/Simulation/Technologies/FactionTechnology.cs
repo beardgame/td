@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
             Argument.Satisfies(() => CanQueueTechnology(technology));
 
             queuedTechnologies.Add(technology);
-            Events.Send(new TechnologyQueued(Owner, technology));
+            Events.Send(new TechnologyQueued(this, technology));
         }
 
         public void ClearTechnologyQueue()
@@ -85,7 +85,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
             while (queuedTechnologies.Count > 0)
             {
                 var i = queuedTechnologies.Count - 1;
-                Events.Send(new TechnologyDequeued(Owner, queuedTechnologies[i]));
+                Events.Send(new TechnologyDequeued(this, queuedTechnologies[i]));
                 queuedTechnologies.RemoveAt(i);
             }
         }
@@ -176,7 +176,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
             techCostMultiplier *= TechCostMultiplicationFactor;
             unlockedTechnologies.Add(technology, cost);
             technology.Unlocks.ForEach(unlock => unlock.Apply(this));
-            Events.Send(new TechnologyUnlocked(Owner, technology));
+            Events.Send(new TechnologyUnlocked(this, technology));
         }
 
         public bool IsBuildingUnlocked(IBuildingBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
@@ -185,7 +185,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             if (unlockedBuildings.Add(blueprint))
             {
-                Events.Send(new BuildingTechnologyUnlocked(Owner, blueprint));
+                Events.Send(new BuildingTechnologyUnlocked(this, blueprint));
             }
         }
 
@@ -198,7 +198,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
         {
             if (unlockedUpgrades.Add(blueprint))
             {
-                Events.Send(new UpgradeTechnologyUnlocked(Owner, blueprint));
+                Events.Send(new UpgradeTechnologyUnlocked(this, blueprint));
             }
         }
 

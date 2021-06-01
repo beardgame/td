@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         private void buildAntennaCoverage()
         {
             coverage = Area.Union(antennae.Select(a => a.Coverage));
-            Events.Send(new WorkerNetworkChanged(Owner));
+            Events.Send(new WorkerNetworkChanged(this));
         }
 
         public bool IsInRange(Tile tile) => coverage.Contains(tile);

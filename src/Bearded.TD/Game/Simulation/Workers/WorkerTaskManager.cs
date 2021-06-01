@@ -31,23 +31,16 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public void HandleEvent(WorkerNetworkChanged @event)
         {
-            if (Owner.SharesWorkerNetworkWith(@event.Faction))
+            if (Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) && network == @event.Network)
             {
-                onNetworkChanged();
+                onNetworkChanged(network);
             }
         }
 
         public IWorkerTask TaskFor(Id<IWorkerTask> id) => tasksById[id];
 
-        private void onNetworkChanged()
+        private void onNetworkChanged(WorkerNetwork network)
         {
-            var foundNetwork = Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network);
-            State.Satisfies(foundNetwork);
-            if (!foundNetwork)
-            {
-                return;
-            }
-
             var tasksOutOfRange = workerAssignments.Keys.Where(task => !task.Tiles.Any(network.IsInRange)).ToList();
             foreach (var task in tasksOutOfRange)
             {

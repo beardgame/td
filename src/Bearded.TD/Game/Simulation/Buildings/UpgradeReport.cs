@@ -122,7 +122,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             public void HandleEvent(UpgradeTechnologyUnlocked @event)
             {
-                if (!playerFaction.SharesTechnologyWith(@event.Faction))
+                if (!playerFaction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var playerTechnology)
+                    || playerTechnology != @event.FactionTechnology)
                 {
                     return;
                 }

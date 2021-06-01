@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
@@ -118,7 +119,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Game.Meta.Events.Send(new BuildingConstructionFinished(this));
         }
 
-        public bool CanBeUpgradedBy(Faction faction) => faction.SharesResourcesWith(Faction);
+        public bool CanBeUpgradedBy(Faction faction) => faction.SharesBehaviorWith<FactionResources>(Faction);
 
         public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {

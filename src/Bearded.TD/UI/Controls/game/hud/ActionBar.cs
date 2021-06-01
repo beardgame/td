@@ -3,7 +3,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.Utilities;
 
@@ -52,7 +51,8 @@ namespace Bearded.TD.UI.Controls
 
         public void HandleEvent(BuildingTechnologyUnlocked @event)
         {
-            if (!game.Me.Faction.SharesTechnologyWith(@event.Faction))
+            if (!game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var myTechnology)
+                || myTechnology != @event.FactionTechnology)
             {
                 return;
             }
