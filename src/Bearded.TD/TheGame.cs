@@ -48,6 +48,8 @@ namespace Bearded.TD
         private CachedRendererRouter rendererRouter;
         private NavigationController navigationController;
 
+        private ViewportSize viewportSize;
+
         public TheGame(Logger logger)
         {
             this.logger = logger;
@@ -127,7 +129,7 @@ namespace Bearded.TD
 
         protected override void OnResize(ResizeEventArgs e)
         {
-            var viewportSize = new ViewportSize(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
+            viewportSize = new ViewportSize(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
             renderContext.OnResize(viewportSize);
             rootControl.SetViewport(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
         }
@@ -199,7 +201,7 @@ namespace Bearded.TD
             var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
             if (webhookToken.IsNullOrEmpty())
             {
-                logger.Debug?.Log("Set webhook token to send screenshot to discord");
+                logger.Warning?.Log("Set webhook token to send screenshot to discord");
                 return;
             }
 
@@ -212,30 +214,14 @@ namespace Bearded.TD
 
         private Bitmap makeScreenshot()
         {
-            var width = NativeWindow.ClientSize.X;
-            var height = NativeWindow.ClientSize.Y;
+            var (width, height) = (viewportSize.Width, viewportSize.Height);
 
-            var ratio = (float) width / height;
-
-            int x = 0, y = 0, w = width, h = height;
-
-            if (ratio >= 16.0 / 9.0)
-            {
-                w = (int) (height * 16.0 / 9.0);
-                x = (width - w) / 2;
-            }
-            else
-            {
-                h = (int) (width * 9.0 / 16.0);
-                y = (height - h) / 2;
-            }
-
-            var bmp = new Bitmap(w, h);
+            var bmp = new Bitmap(width, height);
             var data = bmp.LockBits(
-                new Rectangle(0, 0, w, h),
+                new Rectangle(0, 0, width, height),
                 System.Drawing.Imaging.ImageLockMode.WriteOnly,
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.ReadPixels(x, y, w, h, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             bmp.UnlockBits(data);
 
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
