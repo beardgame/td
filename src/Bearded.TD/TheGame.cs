@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game;
@@ -13,7 +12,6 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
@@ -22,7 +20,6 @@ using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -37,7 +34,8 @@ namespace Bearded.TD
         private static TheGame? instance;
 
         private readonly Logger logger;
-        private readonly ManualActionQueue glActionQueue = new ManualActionQueue();
+        private readonly ManualActionQueue glActionQueue = new();
+        private readonly ScreenshotSaver screenshots;
 
         private InputManager inputManager;
         private RenderContext renderContext;
@@ -53,6 +51,7 @@ namespace Bearded.TD
         public TheGame(Logger logger)
         {
             this.logger = logger;
+            screenshots = new ScreenshotSaver(logger, glActionQueue);
 
             instance = this;
         }
@@ -165,11 +164,14 @@ namespace Bearded.TD
 #if DEBUG
             if (inputManager.IsKeyHit(Keys.F11))
             {
-                trySendScreenshotToDiscord();
+                screenshots.SendScreenshotToDiscordAsync(viewportSize);
             }
 #endif
+            if (inputManager.IsKeyHit(Keys.F12))
+            {
+                screenshots.SaveScreenShotAsync(viewportSize);
+            }
         }
-
 
         private void tryRunQueuedGlActionsFor(TimeSpan timeLimit)
         {
@@ -191,41 +193,6 @@ namespace Bearded.TD
         private static void openUIDebugOverlay(Logger logger, CommandParameters p)
         {
             instance!.navigationController.Push<UIDebugOverlay>();
-        }
-
-
-        private void trySendScreenshotToDiscord()
-        {
-            logger.Debug?.Log("Trying to send screenshot to Discord");
-
-            var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
-            if (webhookToken.IsNullOrEmpty())
-            {
-                logger.Warning?.Log("Set webhook token to send screenshot to discord");
-                return;
-            }
-
-            var bitmap = makeScreenshot();
-
-            var webhook = new DiscordWebhook(webhookToken, logger);
-
-            webhook.SendImageInBackground(bitmap);
-        }
-
-        private Bitmap makeScreenshot()
-        {
-            var (width, height) = (viewportSize.Width, viewportSize.Height);
-
-            var bmp = new Bitmap(width, height);
-            var data = bmp.LockBits(
-                new Rectangle(0, 0, width, height),
-                System.Drawing.Imaging.ImageLockMode.WriteOnly,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-            bmp.UnlockBits(data);
-
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            return bmp;
         }
     }
 }

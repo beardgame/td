@@ -37,6 +37,8 @@ namespace Bearded.TD.Meta
             public string MasterServerAddress = "localhost";
 
             public bool ShowTraceMessages = true;
+
+            public string? ScreenshotPath = null;
         }
 
         public class UISettings
