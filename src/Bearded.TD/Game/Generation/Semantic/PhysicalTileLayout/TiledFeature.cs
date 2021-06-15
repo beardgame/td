@@ -1,11 +1,12 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 {
-    sealed record TiledFeature(PhysicalFeature Feature, IArea Tiles)
+
+    record TiledFeature(PhysicalFeature Feature, IArea Tiles)
     {
-        public static TiledFeature From(PhysicalFeature feature, IEnumerable<Tile> tiles)
-            => new(feature, Area.From(tiles));
+        public sealed record Node(PhysicalFeature.Node NodeFeature, IArea Tiles, ImmutableArray<Tile> Connections)
+            : TiledFeature(NodeFeature, Tiles);
     }
 }
