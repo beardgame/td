@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using static Bearded.TD.Generators.DiagnosticFactory;
 
 namespace Bearded.TD.Generators.TechEffects
 {
@@ -72,7 +73,7 @@ namespace Bearded.TD.Generators.TechEffects
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(fakeDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
+                context.ReportDiagnostic(CreateDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
             }
         }
 
@@ -151,14 +152,6 @@ namespace Bearded.TD.Generators.TechEffects
                         break;
                 }
             }
-        }
-
-        private static Diagnostic fakeDebugDiagnostic(
-            string text, DiagnosticSeverity severity = DiagnosticSeverity.Warning)
-        {
-            return Diagnostic.Create(
-                new DiagnosticDescriptor("TD1", "Debug message", text, "Debug", severity, true),
-                null);
         }
     }
 }
