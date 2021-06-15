@@ -1,12 +1,10 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -16,9 +14,11 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
     sealed class WorkerAntenna<T> : Component<T, IWorkerAntennaParameters>, IWorkerAntenna
         where T : GameObject, IFactioned, IPositionable
     {
-        private Building? ownerAsBuilding;
+        private IBuilding? ownerAsBuilding;
         private WorkerNetwork? workerNetwork;
         private bool isInitialized;
+        private TileRangeDrawer? fullNetworkDrawer;
+        private TileRangeDrawer? localNetworkDrawer;
 
         public Position2 Position => Owner.Position.XY();
 
@@ -28,14 +28,29 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         protected override void Initialize()
         {
-            ownerAsBuilding = Owner as Building;
+            ownerAsBuilding = Owner as IBuilding;
             Owner.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             initializeIfOwnerIsCompletedBuilding();
+
+            if (ownerAsBuilding != null)
+            {
+                fullNetworkDrawer = new TileRangeDrawer(
+                    Owner.Game,
+                    () => ownerAsBuilding!.State.RangeDrawing,
+                    () => TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false),
+                    Color.DodgerBlue);
+
+                localNetworkDrawer = new TileRangeDrawer(
+                    Owner.Game,
+                    () => ownerAsBuilding!.State.RangeDrawing,
+                    () => TileAreaBorder.From(((IWorkerAntenna) this).Coverage),
+                    Color.Orange);
+            }
         }
 
         private void initializeIfOwnerIsCompletedBuilding()
         {
-            if (ownerAsBuilding?.IsCompleted ?? false)
+            if (ownerAsBuilding?.State.IsFunctional ?? false)
                 initializeInternal();
         }
 
@@ -55,6 +70,7 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         public override void Update(TimeSpan elapsedTime)
         {
+            // TODO: this can probably be done event based
             if (!isInitialized)
             {
                 initializeIfOwnerIsCompletedBuilding();
@@ -69,19 +85,8 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         public override void Draw(CoreDrawers drawers)
         {
-            if (!(Owner is ISelectable selectable && selectable.SelectionState != SelectionState.Default))
-                return;
-
-            var alpha = (selectable.SelectionState == SelectionState.Selected ? 0.5f : 0.25f);
-
-            var networkBorder =
-                TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
-
-            TileAreaBorderRenderer.Render(networkBorder, Owner.Game, Color.DodgerBlue * alpha);
-
-            var localBorder = TileAreaBorder.From(((IWorkerAntenna) this).Coverage);
-
-            TileAreaBorderRenderer.Render(localBorder, Owner.Game, Color.Orange * alpha);
+            fullNetworkDrawer?.Draw();
+            localNetworkDrawer?.Draw();
         }
     }
 }

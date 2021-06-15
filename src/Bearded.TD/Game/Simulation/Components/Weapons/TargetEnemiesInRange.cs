@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -12,16 +14,15 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.Utilities.Maybe;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components.Weapons
 {
     [Component("targetEnemiesInRange")]
-    class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer, IEnemyUnitTargeter
+    sealed class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer, IEnemyUnitTargeter
     {
-        private PassabilityLayer passabilityLayer;
-        private TileRangeDrawer tileRangeDrawer;
+        private PassabilityLayer passabilityLayer = null!;
+        private TileRangeDrawer? tileRangeDrawer;
 
         // mutable state
         private Instant endOfIdleTime;
@@ -29,9 +30,9 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
         private Maybe<Angle> currentMaxTurningAngle;
         private Unit currentRange;
-        private List<Tile> tilesInRange;
+        private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-        public EnemyUnit Target { get; private set; }
+        public EnemyUnit? Target { get; private set; }
 
         private bool dontDrawThisFrame;
 
@@ -45,9 +46,10 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
         protected override void Initialize()
         {
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
-            if (Owner.Owner is ISelectable owner)
+            if (Owner.Owner is IBuilding building)
             {
-                tileRangeDrawer = new TileRangeDrawer(game, owner, () => getTilesToDraw());
+                tileRangeDrawer = new TileRangeDrawer(
+                    game, () => building.State.RangeDrawing, getTilesToDraw, Color.Green);
             }
         }
 
@@ -112,7 +114,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                             (Level.GetPosition(t.tile) - position.XY()).LengthSquared < rangeSquared)
                 .Select(t => t.tile)
                 .OrderBy(navigator.GetDistanceToClosestSink)
-                .ToList();
+                .ToImmutableArray();
 
             nextTileInRangeRecalculationTime = game.Time + Parameters.ReCalculateTilesInRangeInterval;
         }
@@ -143,27 +145,26 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             tileRangeDrawer?.Draw();
         }
 
-        private Maybe<HashSet<Tile>> getTilesToDraw()
+        private IEnumerable<Tile> getTilesToDraw()
         {
             if (dontDrawThisFrame)
             {
                 dontDrawThisFrame = false;
-                return Nothing;
+                return ImmutableHashSet<Tile>.Empty;
             }
-
 
             if (Owner.Owner is IComponentOwner componentOwner)
             {
-                var allTiles = Just(new HashSet<Tile>(componentOwner.GetComponents<ITurret>()
+                var allTiles = ImmutableHashSet.CreateRange(componentOwner.GetComponents<ITurret>()
                     .Select(t => (IComponentOwner) t.Weapon)
                     .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
-                    .SelectMany(ranger => ranger.TakeOverDrawingThisFrame())));
+                    .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
                 dontDrawThisFrame = false;
                 return allTiles;
             }
 
             recalculateTilesInRange();
-            return Just(new HashSet<Tile>(tilesInRange));
+            return ImmutableHashSet.CreateRange(tilesInRange);
         }
 
         IEnumerable<Tile> IWeaponRangeDrawer.TakeOverDrawingThisFrame()

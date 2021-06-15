@@ -1,45 +1,56 @@
 using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
-using Bearded.Utilities;
-using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Simulation.Components
 {
     sealed class TileRangeDrawer
     {
         private readonly GameState game;
-        private readonly ISelectable owner;
-        private readonly Func<Maybe<HashSet<Tile>>> getTilesInRange;
+        private readonly Func<RangeDrawStyle> getDrawStyle;
+        private readonly Func<TileAreaBorder> getTilesInRange;
+        private readonly Color color;
 
-        public TileRangeDrawer(GameState game, ISelectable owner, Func<IEnumerable<Tile>> getTilesInRange)
-            : this(game, owner, () => Just(new HashSet<Tile>(getTilesInRange())))
+        public TileRangeDrawer(
+            GameState game, Func<RangeDrawStyle> getDrawStyle, Func<IEnumerable<Tile>> getTilesInRange, Color color)
+            : this(game, getDrawStyle, () => TileAreaBorder.From(new HashSet<Tile>(getTilesInRange())), color)
         {
         }
 
-        public TileRangeDrawer(GameState game, ISelectable owner, Func<Maybe<HashSet<Tile>>> getTilesInRange)
+        public TileRangeDrawer(
+            GameState game, Func<RangeDrawStyle> getDrawStyle, Func<TileAreaBorder> getTilesInRange, Color color)
         {
             this.game = game;
-            this.owner = owner;
+            this.getDrawStyle = getDrawStyle;
             this.getTilesInRange = getTilesInRange;
+            this.color = color;
         }
 
         public void Draw()
         {
-            if (owner.SelectionState == SelectionState.Default) return;
-
-            getTilesInRange().Match(tiles =>
+            var drawStyle = getDrawStyle();
+            if (drawStyle == RangeDrawStyle.DoNotDraw)
             {
-                var border = TileAreaBorder.From(tiles);
+                return;
+            }
 
-                TileAreaBorderRenderer.Render(border, game,
-                    Color.Green * (owner.SelectionState == SelectionState.Selected ? 0.5f : 0.25f)
-                );
-            });
+            var border = getTilesInRange();
+            if (border.IsEmpty)
+            {
+                return;
+            }
+
+            TileAreaBorderRenderer.Render(border, game, color * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f));
+        }
+
+        public enum RangeDrawStyle
+        {
+            DoNotDraw,
+            DrawMinimally,
+            DrawFull
         }
     }
 }

@@ -8,6 +8,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 {
     interface IPlacedBuilding : ISelectable
     {
+        IBuildingState State { get; }
+
         IBuildingBlueprint Blueprint { get; }
         Faction Faction { get; }
         IEnumerable<Tile> OccupiedTiles { get; }

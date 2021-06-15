@@ -13,13 +13,13 @@ namespace Bearded.TD.Rendering.InGameUI
 {
     static class TileAreaBorderRenderer
     {
-        public static void Render( TileAreaBorder border, GameState game,
+        public static void Render(TileAreaBorder border, GameState game,
             Color color, float lineWidth = 0.3f)
         {
             Render(border, game, _ => color, lineWidth);
         }
 
-        public static void Render( TileAreaBorder border, GameState game,
+        public static void Render(TileAreaBorder border, GameState game,
             Func<Position2, Color?> getLineColor, float lineWidth = 0.3f)
         {
             // TODO: This should not be hard coded

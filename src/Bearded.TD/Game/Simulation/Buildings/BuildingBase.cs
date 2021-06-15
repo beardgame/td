@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Factions;
@@ -17,7 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IComponentOwner<T>, IFactioned, IPositionable, ISelectable
+    abstract class BuildingBase<T> : GameObject, IBuilding, IComponentOwner<T>, IFactioned, IPositionable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
@@ -26,8 +25,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected ComponentEvents Events { get; } = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
-
-        public abstract SelectionState SelectionState { get; }
+        public abstract IBuildingState State { get; }
 
         public IBuildingBlueprint Blueprint { get; }
 
@@ -65,10 +63,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             LocalCoordinateTransform = footprint.Orientation.Transformation;
         }
-
-        public abstract void ResetSelection();
-        public abstract void Focus();
-        public abstract void Select();
 
         protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
         {

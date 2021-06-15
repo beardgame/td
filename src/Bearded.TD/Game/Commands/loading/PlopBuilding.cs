@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 gameState.Add(building);
                 building.GetComponents<Health<Building>>()
                     .MaybeSingle()
-                    .Match(health => building.SetBuildProgress(1, health.MaxHealth - new HitPoints(1)));
+                    .Match(health => building.SetBuildProgress(health.MaxHealth - new HitPoints(1)));
                 building.SetBuildCompleted();
             }
 

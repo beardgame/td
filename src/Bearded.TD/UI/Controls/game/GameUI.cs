@@ -15,8 +15,10 @@ using Bearded.Utilities.Input;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class GameUI : UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
-        IListener<GameOverTriggered>, IListener<GameVictoryTriggered>, IListener<BuildingConstructionStarted>
+    sealed class GameUI :
+        UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+        IListener<GameOverTriggered>,
+        IListener<GameVictoryTriggered>
     {
         private readonly UIUpdater uiUpdater = new();
 
@@ -71,7 +73,6 @@ namespace Bearded.TD.UI.Controls
             Game.SelectionManager.ObjectSelected += onObjectSelected;
             Game.SelectionManager.ObjectDeselected += onObjectDeselected;
             Game.Meta.Events.Subscribe<GameOverTriggered>(this);
-            Game.Meta.Events.Subscribe<BuildingConstructionStarted>(this);
 
             FocusReset?.Invoke();
         }
@@ -179,20 +180,6 @@ namespace Bearded.TD.UI.Controls
         public void HandleEvent(GameVictoryTriggered @event)
         {
             GameVictoryTriggered?.Invoke();
-        }
-
-        public void HandleEvent(BuildingConstructionStarted @event)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (@event.Placeholder.SelectionState)
-            {
-                case SelectionState.Focused:
-                    Game.SelectionManager.FocusObject(@event.Building);
-                    break;
-                case SelectionState.Selected:
-                    Game.SelectionManager.SelectObject(@event.Building);
-                    break;
-            }
         }
 
         public void OnReturnToMainMenuButtonClicked()

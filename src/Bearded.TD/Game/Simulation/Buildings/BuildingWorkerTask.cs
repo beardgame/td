@@ -67,7 +67,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             resourceConsumer.CompleteIfNeeded();
             var healthRemaining = maxHealth - healthGiven;
-            building!.SetBuildProgress(1, healthRemaining);
+            building!.SetBuildProgress(healthRemaining);
             building.Completing -= onBuildingCompleting;
             Finished = true;
         }
@@ -118,7 +118,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             // Building was set to completed, probably because of command from server.
             // We want to keep consuming resources though to make sure the resources stay in sync.
-            if (building!.IsCompleted) return;
+            if (building!.IsBuildCompleted) return;
 
             var buildProgress = resourceConsumer.PercentageDone;
             DebugAssert.State.Satisfies(buildProgress <= 1);
@@ -128,7 +128,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 return;
             }
             var newHealthGiven = expectedHealthGiven - healthGiven;
-            building.SetBuildProgress(buildProgress, newHealthGiven);
+            building.SetBuildProgress(newHealthGiven);
             healthGiven = expectedHealthGiven;
         }
     }
