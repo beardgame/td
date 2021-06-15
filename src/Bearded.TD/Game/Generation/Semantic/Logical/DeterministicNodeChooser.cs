@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                     return Enumerable.Range(0, nodeCount).Select(_ => Node.FromBlueprint(leaf.Blueprint));
                 case NodeGroup.Composite composite:
                     var nodeCounts = distributeNodeCount(composite, nodeCount);
-                    return nodeCounts.SelectMany(pair => ChooseNodes(pair.Key, pair.Value));
+                    return composite.Children.SelectMany(node => ChooseNodes(node, nodeCounts[node]));
                 default:
                     throw new ArgumentException("Nodes must be either leaf or composite.", nameof(nodes));
             }
