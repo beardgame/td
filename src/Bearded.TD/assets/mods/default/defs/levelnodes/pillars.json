@@ -1,0 +1,7 @@
+{
+    "id" : "pillars",
+    "behaviors" : [
+        { "id" : "makeAllTilesFloor" },
+        { "id" : "setRandomTiles", "parameters" : { "percentage" : 0.2, "type" : "wall" } }
+    ]
+}
