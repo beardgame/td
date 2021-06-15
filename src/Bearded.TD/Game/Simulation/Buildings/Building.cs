@@ -31,7 +31,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         IListener<ReportAdded>,
         IMortal,
         IReportSubject,
-        ISyncable
+        ISyncable,
+        IUpgradable
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
