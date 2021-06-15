@@ -159,7 +159,7 @@ namespace Bearded.TD.UI.Controls
             if (gameStatus != GameStatus.Loading) throw new Exception("Unexpected game status change.");
             if (CanChangeGameSettings)
             {
-                UserSettings.Instance.LastGameSettings = new GameSettings.Builder(gameSettings) {Seed = 0};
+                UserSettings.Instance.LastGameSettings = new GameSettings.Builder(gameSettings);
                 UserSettings.RaiseSettingsChanged();
                 UserSettings.Save(logger);
             }
@@ -178,7 +178,7 @@ namespace Bearded.TD.UI.Controls
 
         private void onGameSettingsChanged(IGameSettings newGameSettings)
         {
-            gameSettings = new GameSettings.Builder(newGameSettings, includeRandomAttributes: true);
+            gameSettings = new GameSettings.Builder(newGameSettings);
             GameSettingsChanged?.Invoke();
         }
     }

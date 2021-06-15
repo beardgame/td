@@ -5,6 +5,8 @@ namespace Bearded.TD.Tiles
 {
     interface IArea
     {
+        int Count { get; }
+
         bool Contains(Tile tile);
 
         IEnumerable<Tile> Enumerated { get; }

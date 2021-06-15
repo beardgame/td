@@ -13,14 +13,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         {
         }
 
-        public TiledFeature WithTiles(IEnumerable<Tile> tiles)
-            => this switch
-            {
-                Connection c => TiledFeature.From(c, tiles),
-                Crevice c => TiledFeature.From(c, tiles),
-                Node n => TiledFeature.From(n, tiles),
-                _ => throw new NotSupportedException()
-            };
+        public TiledFeature WithTiles(IEnumerable<Tile> tiles) => new(this, Area.From(tiles));
 
         public abstract record WithCircles(ImmutableArray<Circle> Circles)
             : PhysicalFeature

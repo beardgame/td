@@ -48,6 +48,10 @@ namespace Bearded.TD.Game.Debug
                 ? gameInstance.GameSettings.Seed
                 : int.TryParse(p.Args[1], out var s) ? s : StaticRandom.Int();
 
+            // TODO: seeds are broken, see GameStateBuilder too
+            if (seed == 0)
+                seed = StaticRandom.Int();
+
             logger.Debug?.Log($"Generating new tilemap with method {method} and seed {seed}.");
 
             gameInstance.LevelDebugMetadata.Clear();

@@ -48,9 +48,9 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
         private void addFeatureTileMetadata(IEnumerable<TiledFeature> features)
         {
-            foreach (var (feature, tiles) in features)
+            foreach (var feature in features)
             {
-                var color = feature switch
+                var color = feature.Feature switch
                 {
                     PhysicalFeature.Connection => Color.Beige,
                     PhysicalFeature.Crevice => Color.Brown,
@@ -58,7 +58,12 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     _ => throw new NotSupportedException()
                 };
 
-                metadata.Add(new AreaBorder(TileAreaBorder.From(tiles), color * 0.5f));
+                metadata.Add(new AreaBorder(TileAreaBorder.From(feature.Tiles), color * 0.5f));
+
+                if (feature is TiledFeature.Node node)
+                {
+                    metadata.Add(new AreaBorder(TileAreaBorder.From(node.Connections), Color.Beige * 0.25f));
+                }
             }
         }
 

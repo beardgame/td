@@ -29,9 +29,13 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             var nodesWithAreasAfterErosion = erode(nodesWithAreas).ToList();
             var nodeTiles = nodesWithAreasAfterErosion.SelectMany(f => f.Tiles.Enumerated).ToImmutableHashSet();
             var crevicesWithAreas = assignTilesToClosestContainingCircleArea(crevices, nodeTiles);
-            var connectionsWithAreas = assignTilesAlongLingSegments(connections, nodeTiles);
+            var (connectionsWithAreas, connectionBoundaryTiles) = assignTilesAlongConnection(connections, nodeTiles);
 
-            return nodesWithAreasAfterErosion
+            var nodesWithAreasAndConnectionTiles = nodesWithAreasAfterErosion
+                .Select(n => new TiledFeature.Node((Node) n.Feature, n.Tiles,
+                    connectionBoundaryTiles.Where(n.Tiles.Contains).ToImmutableArray()));
+
+            return nodesWithAreasAndConnectionTiles
                 .Concat(crevicesWithAreas)
                 .Concat(connectionsWithAreas)
                 .ToList();
@@ -73,11 +77,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             return features.Select(f => f.WithTiles(featureAreas[f]));
         }
 
-        private IEnumerable<TiledFeature> assignTilesAlongLingSegments(
+        private (List<TiledFeature> ConnectionFeatures, List<Tile> ConnectionBoundaryTiles)
+            assignTilesAlongConnection(
             IEnumerable<Connection> features, IEnumerable<Tile>? tilesToAvoid = null)
         {
             var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ??
                 ImmutableHashSet.CreateRange(tilesToAvoid ?? ImmutableHashSet<Tile>.Empty);
+
+            var featuresWithTiles = new List<TiledFeature>();
+            var boundaryTiles = new List<Tile>();
 
             foreach (var feature in features)
             {
@@ -88,6 +96,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                 var featureArea = new List<Tile>();
                 var adding = false;
+                Tile? previousTile = null;
 
                 foreach (var tile in rayCaster)
                 {
@@ -97,8 +106,14 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     {
                         // abort when we reach target
                         if (adding)
+                        {
+                            if (previousTile.HasValue)
+                                boundaryTiles.Add(previousTile.Value);
+                            boundaryTiles.Add(tile);
                             break;
+                        }
                         // skip until the first tile we can take
+                        previousTile = tile;
                         continue;
                     }
 
@@ -106,9 +121,10 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                     featureArea.Add(tile);
                 }
-
-                yield return feature.WithTiles(featureArea);
+                featuresWithTiles.Add(feature.WithTiles(featureArea));
             }
+
+            return (featuresWithTiles, boundaryTiles);
         }
 
         private IEnumerable<TiledFeature> erode(IEnumerable<TiledFeature> features)

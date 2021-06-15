@@ -14,6 +14,7 @@ namespace Bearded.TD.Tiles
                 this.tiles = tiles;
             }
 
+            public int Count => tiles.Count;
             public bool Contains(Tile tile) => tiles.Contains(tile);
 
             public IEnumerable<Tile> Enumerated => tiles;

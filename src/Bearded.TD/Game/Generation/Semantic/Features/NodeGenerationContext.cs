@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Commands;
+using Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
@@ -21,19 +22,21 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
 
         public IArea Tiles { get; }
         public ImmutableArray<Circle> Circles { get; }
+        public ImmutableArray<Tile> Connections { get; }
 
         public Random Random { get; }
 
         // info about connections, etc.
 
         public NodeGenerationContext(Tilemap<TileGeometry> tilemap, IArea tiles,
-            ImmutableArray<Circle> circles,
+            ImmutableArray<Circle> circles, ImmutableArray<Tile> connections,
             LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {
             this.tilemap = tilemap;
             Tiles = tiles;
-            this.commandAccumulator = commandAccumulator;
             Circles = circles;
+            Connections = connections;
+            this.commandAccumulator = commandAccumulator;
             Random = random;
         }
 

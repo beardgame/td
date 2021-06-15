@@ -35,24 +35,20 @@ namespace Bearded.TD.Game
         {
             public int Seed { get; set; }
             public ModAwareId? GameMode { get; set; }
-            public int LevelSize { get; set; }
-            public WorkerDistributionMethod WorkerDistributionMethod { get; set; }
+            public int LevelSize { get; set; } = 32;
+
+            public WorkerDistributionMethod WorkerDistributionMethod { get; set; } =
+                WorkerDistributionMethod.RoundRobin;
+
             public LevelGenerationMethod LevelGenerationMethod { get; set; }
+                = LevelGenerationMethod.Default;
 
-            public Builder()
-            {
-                // Initialize default values
-                Seed = StaticRandom.Int();
-                GameMode = null;
-                LevelSize = 32;
-                WorkerDistributionMethod = WorkerDistributionMethod.RoundRobin;
-                LevelGenerationMethod = LevelGenerationMethod.Default;
-            }
+            public Builder() { }
 
-            public Builder(IGameSettings template, bool includeRandomAttributes = false)
+            public Builder(IGameSettings template)
             {
                 // Copy values
-                Seed = includeRandomAttributes ? template.Seed : StaticRandom.Int();
+                Seed = template.Seed;
                 GameMode = template.GameMode;
                 LevelSize = template.LevelSize;
                 WorkerDistributionMethod = template.WorkerDistributionMethod;
