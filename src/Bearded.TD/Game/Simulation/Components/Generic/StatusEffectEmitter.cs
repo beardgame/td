@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -27,15 +27,15 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         where T : GameObject, IPositionable
     {
         // TODO: allow this to affect other things than enemies as well
-        private readonly HashSet<EnemyUnit> affectedUnits = new HashSet<EnemyUnit>();
+        private readonly HashSet<EnemyUnit> affectedUnits = new();
 
-        private TileRangeDrawer tileRangeDrawer;
+        private TileRangeDrawer? tileRangeDrawer;
 
         private Id<Modification> modificationId;
-        private UnitLayer unitLayer;
+        private UnitLayer unitLayer = null!;
         private Tile ownerTile;
         private Unit range;
-        private Building ownerAsBuilding;
+        private IBuilding? ownerAsBuilding;
         private ImmutableArray<Tile> tilesInRange;
 
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
@@ -46,12 +46,13 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
             unitLayer = Owner.Game.UnitLayer;
             ownerTile = Level.GetTile(Owner.Position.XY());
             range = Parameters.Range;
-            ownerAsBuilding = Owner as Building;
+            ownerAsBuilding = Owner as IBuilding;
             recalculateTilesInRange();
 
-            if (Owner is ISelectable selectable)
+            if (ownerAsBuilding != null)
             {
-                tileRangeDrawer = new TileRangeDrawer(Owner.Game, selectable, () => tilesInRange);
+                tileRangeDrawer = new TileRangeDrawer(
+                    Owner.Game, () => ownerAsBuilding.State.RangeDrawing, () => tilesInRange, Color.Green);
             }
         }
 
@@ -61,7 +62,10 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 
             // Don't apply status effects for uncompleted buildings
             // We probably should have a better pattern for this...
-            if (!(ownerAsBuilding?.IsCompleted ?? true)) return;
+            if (!ownerAsBuilding?.State.IsFunctional ?? false)
+            {
+                return;
+            }
 
             removeModificationsFromUnitsOutOfRange();
             addModificationsToNewUnitsInRange();
@@ -110,7 +114,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 
         public override void Draw(CoreDrawers drawers)
         {
-            tileRangeDrawer.Draw();
+            tileRangeDrawer?.Draw();
         }
 
         private void recalculateTilesInRange()

@@ -82,7 +82,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (ownerAsBuilding == null || !ownerAsBuilding.IsCompleted)
+            if (ownerAsBuilding == null || !ownerAsBuilding.State.IsFunctional)
             {
                 return;
             }

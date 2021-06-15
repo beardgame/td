@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.World
 {
@@ -34,9 +35,11 @@ namespace Bearded.TD.Game.Simulation.World
             }
         }
 
-        private readonly List<Part> edges;
+        private readonly ImmutableArray<Part> edges;
 
-        private TileAreaBorder(List<Part> edges)
+        public bool IsEmpty => edges.Length == 0;
+
+        private TileAreaBorder(ImmutableArray<Part> edges)
         {
             this.edges = edges;
         }
@@ -64,7 +67,7 @@ namespace Bearded.TD.Game.Simulation.World
                             !area.Contains(tile.Neighbour(direction.Next()))
                             ))
                 )
-                .ToList();
+                .ToImmutableArray();
 
             return new TileAreaBorder(edges);
         }

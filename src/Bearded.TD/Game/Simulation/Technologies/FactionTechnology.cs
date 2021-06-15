@@ -191,8 +191,8 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         public bool IsUpgradeUnlocked(IUpgradeBlueprint blueprint) => unlockedUpgrades.Contains(blueprint);
 
-        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgradesFor(Building building) =>
-            unlockedUpgrades.Where(building.CanApplyUpgrade);
+        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgradesFor(IUpgradable obj) =>
+            unlockedUpgrades.Where(obj.CanApplyUpgrade);
 
         public void UnlockUpgrade(IUpgradeBlueprint blueprint)
         {

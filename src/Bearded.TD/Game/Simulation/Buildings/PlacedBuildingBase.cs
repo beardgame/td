@@ -9,31 +9,35 @@ namespace Bearded.TD.Game.Simulation.Buildings
     abstract class PlacedBuildingBase<T> : BuildingBase<T>, IPlacedBuilding
         where T : PlacedBuildingBase<T>
     {
-        private SelectionState selectionState;
-        public override SelectionState SelectionState => selectionState;
+        protected BuildingState MutableState { get; }
+        public override IBuildingState State { get; }
 
         protected PlacedBuildingBase(
             IBuildingBlueprint blueprint,
             Faction faction,
             PositionedFootprint footprint)
-            : base(blueprint, faction, footprint) {}
+            : base(blueprint, faction, footprint)
+        {
+            MutableState = new BuildingState();
+            State = MutableState.CreateProxy();
+        }
 
         protected override void ChangeFootprint(PositionedFootprint footprint)
             => throw new InvalidOperationException("Cannot change footprint of placed building.");
 
-        public override void ResetSelection()
+        public void ResetSelection()
         {
-            selectionState = SelectionState.Default;
+            MutableState.SelectionState = SelectionState.Default;
         }
 
-        public override void Focus()
+        public void Focus()
         {
-            selectionState = SelectionState.Focused;
+            MutableState.SelectionState = SelectionState.Focused;
         }
 
-        public override void Select()
+        public void Select()
         {
-            selectionState = SelectionState.Selected;
+            MutableState.SelectionState = SelectionState.Selected;
         }
 
         protected override void OnAdded()

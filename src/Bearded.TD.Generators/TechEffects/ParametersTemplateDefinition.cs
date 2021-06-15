@@ -47,9 +47,8 @@ namespace Bearded.TD.Generators.TechEffects
 
         private static string getInterfaceBaseName(string interfaceName)
         {
-            if (interfaceName[0] == 'I') interfaceName = interfaceName.Substring(1);
             if (interfaceName.EndsWith("Template")) interfaceName = interfaceName.Replace("Template", "");
-            return interfaceName;
+            return NameFactory.FromInterfaceName(interfaceName).ClassName();
         }
 
         private static IEnumerable<ParametersPropertyDefinition> extractProperties(

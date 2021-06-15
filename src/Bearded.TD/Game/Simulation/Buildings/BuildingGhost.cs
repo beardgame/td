@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Workers;
@@ -20,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
     [ComponentOwner]
     sealed class BuildingGhost : BuildingBase<BuildingGhost>
     {
-        private const string selectionIsImmutable = "Selection state of building ghost cannot be changed.";
+        public override IBuildingState State { get; } = new GhostBuildingState();
 
         public BuildingGhost(IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
             : base(blueprint, faction, footprint)
@@ -28,15 +26,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
-
-        public override SelectionState SelectionState => SelectionState.Selected;
-
-        public override void ResetSelection()
-            => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Focus()
-            => throw new InvalidOperationException(selectionIsImmutable);
-        public override void Select()
-            => throw new InvalidOperationException(selectionIsImmutable);
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
             => Blueprint.GetComponentsForGhost();

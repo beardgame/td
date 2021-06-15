@@ -31,7 +31,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         IListener<ReportAdded>,
         IMortal,
         IReportSubject,
-        ISyncable
+        ISyncable,
+        IUpgradable
     {
         private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
         public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
@@ -45,9 +46,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private ImmutableArray<ISyncable> syncables;
 
         public IReadOnlyCollection<IReport> Reports { get; }
-
-        public bool IsCompleted { get; private set; }
         private bool isDead;
+
+        // TODO: ideally this is not exposed to components, but it's needed by worker tasks...
+        public bool IsBuildCompleted => MutableState.IsCompleted;
 
         public event VoidEventHandler? Completing;
 
@@ -105,17 +107,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
             syncables = Components.Get<ISyncable>().ToImmutableArray();
         }
 
-        public void SetBuildProgress(double newBuildProgress, HitPoints healthAdded)
+        public void SetBuildProgress(HitPoints healthAdded)
         {
-            DebugAssert.State.Satisfies(!IsCompleted, "Cannot update build progress after building is completed.");
+            DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot update build progress after building is completed.");
             Events.Send(new HealDamage(healthAdded));
         }
 
         public void SetBuildCompleted()
         {
-            DebugAssert.State.Satisfies(!IsCompleted, "Cannot complete building more than once.");
+            DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot complete building more than once.");
             Completing?.Invoke();
-            IsCompleted = true;
+            MutableState.IsCompleted = true;
             Game.Meta.Events.Send(new BuildingConstructionFinished(this));
         }
 

@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (!Building.IsCompleted)
+            if (!Building.IsBuildCompleted)
             {
                 return;
             }
