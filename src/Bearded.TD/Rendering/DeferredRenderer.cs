@@ -19,8 +19,8 @@ using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
 namespace Bearded.TD.Rendering
 {
-    using static Bearded.Graphics.Pipelines.Context.BlendMode;
-    using static Bearded.Graphics.Pipelines.Context.DepthMode;
+    using static Graphics.Pipelines.Context.BlendMode;
+    using static Graphics.Pipelines.Context.DepthMode;
     using static Pipeline;
     using static Pipeline<DeferredRenderer.RenderState>;
 
@@ -161,7 +161,9 @@ namespace Bearded.TD.Rendering
                         PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
                             // TODO: it should be much easier to quickly pass in a couple of textures
                             new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
-                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture)
+                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
+                            new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
+                            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition
                         ),
                         WithContext(
                             c => c.SetDepthMode(TestOnly(DepthFunction.Less))

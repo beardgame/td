@@ -81,11 +81,6 @@ namespace Bearded.TD.Rendering
         private void drawAmbientLight()
         {
             var radius = game.State.Level.Radius;
-
-            drawers.PointLight.Draw(
-                new Vector3(-radius * 2, radius * 2, radius),
-                radius * 10, Color.White * 0.2f
-            );
         }
 
         private void drawGameObjects()
