@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -20,17 +21,21 @@ namespace Bearded.TD.Content.Models
         public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
-        public BuildingBlueprint(ModAwareId id, string name, FootprintGroup footprintGroup,
-            ResourceAmount resourceCost, IEnumerable<UpgradeTag> tags, IEnumerable<BuildingComponentFactory> componentFactories)
+        public BuildingBlueprint(
+            ModAwareId id,
+            string name,
+            FootprintGroup footprintGroup,
+            ResourceAmount resourceCost,
+            IEnumerable<UpgradeTag> tags,
+            IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;
             FootprintGroup = footprintGroup;
             ResourceCost = resourceCost;
 
-            Tags = (tags?.ToList() ?? new List<UpgradeTag>()).AsReadOnly();
-            this.componentFactories = (componentFactories?.ToList() ?? new List<BuildingComponentFactory>())
-                .AsReadOnly();
+            Tags = tags.ToImmutableArray();
+            this.componentFactories = componentFactories.ToImmutableArray();
         }
 
         public IEnumerable<IComponent<Building>> GetComponentsForBuilding()
@@ -38,8 +43,5 @@ namespace Bearded.TD.Content.Models
 
         public IEnumerable<IComponent<BuildingGhost>> GetComponentsForGhost()
             => componentFactories.Select(f => f.TryCreateForGhost()).NotNull();
-
-        public IEnumerable<IComponent<BuildingPlaceholder>> GetComponentsForPlaceholder()
-            => componentFactories.Select(f => f.TryCreateForPlaceholder()).NotNull();
     }
 }

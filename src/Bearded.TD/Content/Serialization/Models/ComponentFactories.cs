@@ -14,8 +14,7 @@ namespace Bearded.TD.Content.Serialization.Models
             .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static);
 
         private static readonly BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute, VoidParameters> factories =
-            new BehaviorFactories<IComponent, ComponentAttribute, ComponentOwnerAttribute, VoidParameters>(typeof(IComponent<>),
-                makeFactoryFactoryMethodInfo);
+            new(typeof(IComponent<>), makeFactoryFactoryMethodInfo);
 
         public static void Initialize() => factories.Initialize();
 
@@ -28,11 +27,9 @@ namespace Bearded.TD.Content.Serialization.Models
         {
             var forBuilding = factories.CreateBehaviorFactory<Building>(parameters);
             var forGhost = factories.CreateBehaviorFactory<BuildingGhost>(parameters);
-            var forPlaceholder = factories.CreateBehaviorFactory<BuildingPlaceholder>(parameters);
 
             return new BuildingComponentFactory(
-                parameters, forBuilding as IComponentFactory<Building>, forGhost as IComponentFactory<BuildingGhost>,
-                forPlaceholder as IComponentFactory<BuildingPlaceholder>);
+                parameters, forBuilding as IComponentFactory<Building>, forGhost as IComponentFactory<BuildingGhost>);
         }
 
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(

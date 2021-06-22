@@ -15,6 +15,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         IEnumerable<IComponent<Building>> GetComponentsForBuilding();
         IEnumerable<IComponent<BuildingGhost>> GetComponentsForGhost();
-        IEnumerable<IComponent<BuildingPlaceholder>> GetComponentsForPlaceholder();
     }
 }
