@@ -16,17 +16,19 @@ namespace Bearded.TD.Rendering.Deferred.Level
 {
     sealed class HeightmapToLevelRenderer
     {
-        //TODO: organise fields
         private readonly int tileMapWidth;
-        private float gridVerticesPerTile;
-        private readonly Material material;
         private readonly float fallOffDistance;
+
+        private int gridRadius;
+        private float gridVerticesPerTile;
+        private float gridToWorld;
+
+        private readonly Material material;
         private readonly FloatUniform heightScaleUniform = new("heightScale");
         private readonly FloatUniform heightOffsetUniform = new("heightOffset");
+
         private readonly ExpandingIndexedTrianglesMeshBuilder<LevelVertex> gridMeshBuilder;
         private readonly IRenderer gridRenderer;
-        private float gridToWorld;
-        private int gridRadius;
 
         public HeightmapToLevelRenderer(
             GameInstance game, RenderContext context, Material material,
