@@ -15,11 +15,13 @@ using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -64,6 +66,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             reports.Add(new UpgradeReport(this));
         }
 
+        public void AddComponent(IComponent<Building> component)
+        {
+            Components.Add(component);
+        }
+
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding().Append(new StatisticCollector<Building>());
 
@@ -96,25 +103,29 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             Game.IdAs(this);
-            Game.Meta.Synchronizer.RegisterSyncable(this);
-
-            OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
-
             Events.Subscribe(this);
-
             base.OnAdded();
+        }
 
+        public void Materialize()
+        {
+            MutableState.HasStartedBuilding = true;
+
+            Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();
+            OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
         }
 
         public void SetBuildProgress(HitPoints healthAdded)
         {
+            DebugAssert.State.Satisfies(MutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
             DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot update build progress after building is completed.");
             Events.Send(new HealDamage(healthAdded));
         }
 
         public void SetBuildCompleted()
         {
+            DebugAssert.State.Satisfies(MutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
             DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot complete building more than once.");
             Completing?.Invoke();
             MutableState.IsCompleted = true;
@@ -138,8 +149,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
         {
-            DebugAssert.Argument.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
-            DebugAssert.Argument.Satisfies(
+            Argument.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
+            Argument.Satisfies(
                 upgradesInProgress.All(t => t.Upgrade != task.Upgrade),
                 "Cannot queue an upgrade task for the same upgrade twice.");
             upgradesInProgress.Add(task);
@@ -149,7 +160,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var wasRemoved = upgradesInProgress.Remove(task);
 
-            DebugAssert.Argument.Satisfies(wasRemoved, "Can only remove task that was added previously.");
+            Argument.Satisfies(wasRemoved, "Can only remove task that was added previously.");
         }
 
         protected override void OnDelete()
@@ -170,6 +181,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 this.Sync(KillBuilding.Command);
             }
+        }
+
+        public override void Draw(CoreDrawers drawers)
+        {
+            if (!MutableState.IsMaterialized)
+            {
+                return;
+            }
+
+            base.Draw(drawers);
         }
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>

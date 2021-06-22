@@ -8,10 +8,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         // Derived properties (IBuildingState implementation)
         public TileRangeDrawer.RangeDrawStyle RangeDrawing => toRangeDrawType(SelectionState);
+        public bool IsMaterialized => HasStartedBuilding;
         public bool IsFunctional => IsCompleted;
 
         // Mutable state
         public SelectionState SelectionState { get; set; }
+        public bool HasStartedBuilding { get; set; }
         public bool IsCompleted { get; set; }
 
         public IBuildingState CreateProxy() => new BuildingStateProxy(this);

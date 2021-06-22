@@ -6,27 +6,22 @@ using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Components
 {
-    class BuildingComponentFactory
+    sealed class BuildingComponentFactory
     {
-        private readonly IComponentFactory<Building> buildingFactory;
-        private readonly IComponentFactory<BuildingGhost> ghostFactory;
-        private readonly IComponentFactory<BuildingPlaceholder> placeholderFactory;
+        private readonly IComponentFactory<Building>? buildingFactory;
+        private readonly IComponentFactory<BuildingGhost>? ghostFactory;
 
         public BuildingComponentFactory(IBuildingComponent parameters,
             IComponentFactory<Building> buildingFactory,
-            IComponentFactory<BuildingGhost> ghostFactory,
-            IComponentFactory<BuildingPlaceholder> placeholderFactory)
+            IComponentFactory<BuildingGhost> ghostFactory)
         {
             this.buildingFactory = parameters.OnBuilding ? buildingFactory : null;
             this.ghostFactory = parameters.OnGhost ? ghostFactory : null;
-            this.placeholderFactory = parameters.OnPlaceholder ? placeholderFactory : null;
         }
 
-        public IComponent<Building> TryCreateForBuilding() => buildingFactory?.Create();
+        public IComponent<Building>? TryCreateForBuilding() => buildingFactory?.Create();
 
-        public IComponent<BuildingGhost> TryCreateForGhost() => ghostFactory?.Create();
-
-        public IComponent<BuildingPlaceholder> TryCreateForPlaceholder() => placeholderFactory?.Create();
+        public IComponent<BuildingGhost>? TryCreateForGhost() => ghostFactory?.Create();
     }
 
     sealed class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Tiles;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         private readonly GlobalGameEvents events;
-        private readonly Dictionary<Tile, IPlacedBuilding> buildingLookup = new Dictionary<Tile, IPlacedBuilding>();
+        private readonly Dictionary<Tile, IPlacedBuilding> buildingLookup = new();
 
         public BuildingLayer(GlobalGameEvents events)
         {
@@ -58,25 +57,21 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return building;
         }
 
-        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out Building? building)
+        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IPlacedBuilding? building)
         {
-            building = GetBuildingFor(tile) as Building;
-            return building != null;
+            building = GetBuildingFor(tile);
+            return building?.State.IsMaterialized ?? false;
         }
 
         public Occupation GetOccupationFor(Tile tile)
         {
             var building = GetBuildingFor(tile);
-            switch (building)
+            return building switch
             {
-                case null:
-                    return Occupation.None;
-                case Building _:
-                    return Occupation.FinishedBuilding;
-                case BuildingPlaceholder _:
-                    return Occupation.ReservedForBuilding;
-            }
-            throw new InvalidOperationException();
+                null => Occupation.None,
+                {State: {IsMaterialized: true}} => Occupation.FinishedBuilding,
+                _ => Occupation.ReservedForBuilding
+            };
         }
 
         public IPlacedBuilding? this[Tile tile] => GetBuildingFor(tile);

@@ -8,7 +8,6 @@
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
     {
       "id" : "workerAntenna",
-      "onPlaceholder" :  true,
       "onGhost": true,
       "parameters" : { "workerRange" : 8 }
     }

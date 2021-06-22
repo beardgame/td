@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 var color = baseColor * 0.5f;
-                DrawTile(drawers, color, tile);
+                drawTile(drawers, color, tile);
 
                 if (!isTileValidForBuilding)
                     continue;
@@ -90,6 +90,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
 
             base.Draw(drawers);
+        }
+
+        private void drawTile(CoreDrawers drawers, Color color, Tile tile)
+        {
+            drawers.Primitives.FillCircle(
+                Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
 
         private void renderWorkerNetworkBorderCloseBy(Unit maxDistance, Color baseColor)

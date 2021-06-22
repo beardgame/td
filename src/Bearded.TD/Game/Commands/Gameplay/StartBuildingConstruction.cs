@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Commands;
+﻿using System;
+using System.Linq;
+using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Networking.Serialization;
@@ -9,52 +11,46 @@ namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class StartBuildingConstruction
     {
-        public static ISerializableCommand<GameInstance> Command(BuildingPlaceholder placeholder)
-            => new CommandImplementation(
-                placeholder.Game.Meta.Ids.GetNext<Building>(), placeholder);
+        public static ISerializableCommand<GameInstance> Command(Building building)
+            => new CommandImplementation(building);
 
         private sealed class CommandImplementation : ISerializableCommand<GameInstance>
         {
-            private readonly Id<Building> buildingId;
-            private readonly BuildingPlaceholder placeholder;
+            private readonly Building building;
 
-            public CommandImplementation(
-                Id<Building> buildingId,
-                BuildingPlaceholder placeholder)
+            public CommandImplementation(Building building)
             {
-                this.buildingId = buildingId;
-                this.placeholder = placeholder;
+                this.building = building;
             }
 
             public void Execute()
             {
-                placeholder.StartBuild(buildingId);
+                building.Materialize();
+                (building.GetComponents<BuildingConstructionWork>().FirstOrDefault() ??
+                    throw new NotSupportedException()).StartWork();
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new CommandSerializer(buildingId, placeholder);
+            public ICommandSerializer<GameInstance> Serializer => new CommandSerializer(building);
         }
 
         private sealed class CommandSerializer : ICommandSerializer<GameInstance>
         {
             private Id<Building> buildingId;
-            private Id<BuildingPlaceholder> placeholder;
 
-            public CommandSerializer(Id<Building> buildingId, BuildingPlaceholder placeholder)
+            public CommandSerializer(Building building)
             {
-                this.buildingId = buildingId;
-                this.placeholder = placeholder.Id;
+                buildingId = building.Id;
             }
 
             [UsedImplicitly]
             public CommandSerializer() { }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new CommandImplementation(buildingId, game.State.Find(placeholder));
+                => new CommandImplementation(game.State.Find(buildingId));
 
             public void Serialize(INetBufferStream stream)
             {
                 stream.Serialize(ref buildingId);
-                stream.Serialize(ref placeholder);
             }
         }
     }

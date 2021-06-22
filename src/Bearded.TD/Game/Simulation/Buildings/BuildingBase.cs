@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Factions;
@@ -110,12 +108,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public override void Draw(CoreDrawers drawers)
         {
             Components.Draw(drawers);
-        }
-
-        protected void DrawTile(CoreDrawers drawers, Color color, Tile tile)
-        {
-            drawers.Primitives.FillCircle(
-                Level.GetPosition(tile).WithZ(Position.Z).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
     }
 }
