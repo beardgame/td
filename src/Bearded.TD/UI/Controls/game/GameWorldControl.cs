@@ -21,6 +21,9 @@ namespace Bearded.TD.UI.Controls
         public float FarPlaneDistance => game.Camera.FarPlaneDistance;
 
         public float Time => (float)game.State.Time.NumericValue;
+
+        public float HexagonalFallOffDistance => (game.State.Level.Radius - 0.25f) * Constants.Game.World.HexagonWidth;
+
         public ContentRenderers ContentRenderers => renderer.ContentRenderers;
 
         public GameWorldControl(GameInstance game, RenderContext renderContext)

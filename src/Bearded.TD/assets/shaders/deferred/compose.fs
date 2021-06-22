@@ -9,6 +9,8 @@ uniform vec3 farPlaneUnitX;
 uniform vec3 farPlaneUnitY;
 uniform vec3 cameraPosition;
 
+uniform float hexagonalFallOffDistance;
+
 in vec2 fragmentUV;
 
 out vec4 outColor;
@@ -27,6 +29,16 @@ vec3 getFragmentPositionFromDepth(vec2 uv)
     return fragmentPosition;
 }
 
+float hexDistanceToOrigin(vec2 xy)
+{
+    float yf = xy.y / (1.5 / 1.73205080757);
+    float xf = xy.x - yf * 0.5;
+    float x = abs(xf);
+    float y = abs(yf);
+    float reduction = xf * yf < 0 ? min(x, y) : 0;
+    return x + y - reduction;
+}
+
 void main()
 {
 
@@ -40,6 +52,12 @@ void main()
     vec3 light = lightTexture + vec3(0.18) * floorAmbient;
 
     vec3 rgb = albedo.rgb * light;
+
+    float hexagonalDistanceToOrigin = hexDistanceToOrigin(fragmentPosition.xy);
+    float falloff = clamp((hexagonalFallOffDistance - hexagonalDistanceToOrigin) * 0.3f, 0, 1);
+    falloff *= falloff;
+
+    rgb *= falloff;
 
     outColor = vec4(rgb, albedo.a);
 }

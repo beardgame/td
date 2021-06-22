@@ -52,6 +52,7 @@ namespace Bearded.TD.Rendering
         private readonly CoreRenderSettings settings;
         private readonly Vector2Uniform levelUpSampleUVOffset = new("uvOffset");
         private readonly Vector2Uniform gBufferResolution = new("resolution");
+        private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
         private readonly IPipeline<RenderState> pipeline;
 
         private ViewportSize viewport;
@@ -163,7 +164,8 @@ namespace Bearded.TD.Rendering
                             new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
                             new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
                             new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
-                            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition
+                            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
+                            hexagonalFallOffDistance
                         ),
                         WithContext(
                             c => c.SetDepthMode(TestOnly(DepthFunction.Less))
@@ -220,6 +222,7 @@ namespace Bearded.TD.Rendering
         {
             var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
             gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
+            hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
 
             deferredLayer.ContentRenderers.LevelRenderer.PrepareForRender();
 
