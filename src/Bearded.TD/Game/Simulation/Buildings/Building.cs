@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Statistics;
 using Bearded.TD.Game.Simulation.Damage;
@@ -20,18 +22,19 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [ComponentOwner]
     sealed class Building :
-        PlacedBuildingBase<Building>,
+        BuildingBase<Building>,
         IIdable<Building>,
         IDamageSource,
         IListener<ReportAdded>,
         IMortal,
+        IPlacedBuilding,
         IReportSubject,
         ISyncable,
         IUpgradable
@@ -43,6 +46,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public Id<Building> Id { get; }
 
+        private readonly BuildingState mutableState;
         private readonly DamageExecutor damageExecutor;
         private readonly List<IReport> reports = new();
         private ImmutableArray<ISyncable> syncables;
@@ -51,7 +55,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private bool isDead;
 
         // TODO: ideally this is not exposed to components, but it's needed by worker tasks...
-        public bool IsBuildCompleted => MutableState.IsCompleted;
+        public bool IsBuildCompleted => mutableState.IsCompleted;
+        public override IBuildingState State { get; }
 
         public event VoidEventHandler? Completing;
 
@@ -61,7 +66,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id = id;
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
+
+            mutableState = new BuildingState();
+            State = mutableState.CreateProxy();
+
             damageExecutor = new DamageExecutor(Events);
+
             Reports = reports.AsReadOnly();
             reports.Add(new UpgradeReport(this));
         }
@@ -95,21 +105,34 @@ namespace Bearded.TD.Game.Simulation.Buildings
             reports.Insert(reports.Count - 1, @event.Report);
         }
 
+        protected override void OnAdded()
+        {
+            DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
+
+            Game.IdAs(this);
+            Events.Subscribe(this);
+            Game.BuildingLayer.AddBuilding(this);
+            base.OnAdded();
+        }
+
         public void OnDeath()
         {
             isDead = true;
         }
 
-        protected override void OnAdded()
+        protected override void OnDelete()
         {
-            Game.IdAs(this);
-            Events.Subscribe(this);
-            base.OnAdded();
+            Game.BuildingLayer.RemoveBuilding(this);
+            if (State.IsMaterialized)
+            {
+                OccupiedTiles.ForEach(tile => { Game.Navigator.RemoveSink(tile); });
+            }
+            base.OnDelete();
         }
 
         public void Materialize()
         {
-            MutableState.IsMaterialized = true;
+            mutableState.IsMaterialized = true;
 
             Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();
@@ -118,19 +141,24 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void SetBuildProgress(HitPoints healthAdded)
         {
-            DebugAssert.State.Satisfies(MutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
-            DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot update build progress after building is completed.");
+            DebugAssert.State.Satisfies(mutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
+            DebugAssert.State.Satisfies(!mutableState.IsCompleted, "Cannot update build progress after building is completed.");
             Events.Send(new HealDamage(healthAdded));
         }
 
         public void SetBuildCompleted()
         {
-            DebugAssert.State.Satisfies(MutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
-            DebugAssert.State.Satisfies(!MutableState.IsCompleted, "Cannot complete building more than once.");
+            DebugAssert.State.Satisfies(mutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
+            DebugAssert.State.Satisfies(!mutableState.IsCompleted, "Cannot complete building more than once.");
             Completing?.Invoke();
-            MutableState.IsCompleted = true;
+            mutableState.IsCompleted = true;
             Game.Meta.Events.Send(new BuildingConstructionFinished(this));
         }
+
+        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
+            Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                ? technology.GetApplicableUpgradesFor(this)
+                : Enumerable.Empty<IUpgradeBlueprint>();
 
         public bool CanBeUpgradedBy(Faction faction) => faction.SharesBehaviorWith<FactionResources>(Faction);
 
@@ -163,16 +191,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Argument.Satisfies(wasRemoved, "Can only remove task that was added previously.");
         }
 
-        protected override void OnDelete()
-        {
-            OccupiedTiles.ForEach(tile =>
-            {
-                Game.Navigator.RemoveSink(tile);
-            });
-
-            base.OnDelete();
-        }
-
         public override void Update(TimeSpan elapsedTime)
         {
             base.Update(elapsedTime);
@@ -185,7 +203,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Draw(CoreDrawers drawers)
         {
-            if (!MutableState.IsMaterialized)
+            if (!mutableState.IsMaterialized)
             {
                 return;
             }
@@ -193,12 +211,25 @@ namespace Bearded.TD.Game.Simulation.Buildings
             base.Draw(drawers);
         }
 
-        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
-            Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
-                ? technology.GetApplicableUpgradesFor(this)
-                : Enumerable.Empty<IUpgradeBlueprint>();
-
         public IStateToSync GetCurrentStateToSync() =>
             new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
+
+        protected override void ChangeFootprint(PositionedFootprint footprint)
+            => throw new InvalidOperationException("Cannot change footprint of placed building.");
+
+        public void ResetSelection()
+        {
+            mutableState.SelectionState = SelectionState.Default;
+        }
+
+        public void Focus()
+        {
+            mutableState.SelectionState = SelectionState.Focused;
+        }
+
+        public void Select()
+        {
+            mutableState.SelectionState = SelectionState.Selected;
+        }
     }
 }
