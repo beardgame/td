@@ -9,7 +9,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Components.Generic
 {
     [Component("sink")]
-    class EnemySink : Component<Building>
+    sealed class EnemySink<T> : Component<T>
+        where T : IBuilding, IGameObject, IPlacedBuilding, IPositionable
     {
         private Maybe<Health<Building>> healthComponent;
 
