@@ -8,7 +8,6 @@ uniform vec2 resolution;
 uniform vec3 farPlaneBaseCorner;
 uniform vec3 farPlaneUnitX;
 uniform vec3 farPlaneUnitY;
-
 uniform vec3 cameraPosition;
 
 in vec2 fragmentXY;
@@ -39,21 +38,28 @@ float diffuseLightAmount(vec3 surfaceNormal, vec3 vectorToLight)
     return f * w;
 }
 
-void main()
+vec3 getFragmentPositionFromDepth(vec2 uv)
 {
-    vec2 uv = gl_FragCoord.xy / resolution;
+    float depth = texture(depthBuffer, uv).x;
 
     vec3 pointOnFarPlane = farPlaneBaseCorner
         + farPlaneUnitX * uv.x
         + farPlaneUnitY * uv.y;
 
+    vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
+    vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;
+
+    return fragmentPosition;
+}
+
+void main()
+{
+    vec2 uv = gl_FragCoord.xy / resolution;
+
     vec3 normal = texture(normalBuffer, uv).xyz;
     normal = normal * 2 - 1;
 
-    float depth = texture(depthBuffer, uv).x;
-
-    vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
-    vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;
+    vec3 fragmentPosition = getFragmentPositionFromDepth(uv);
 
     vec3 vectorToLight = lightPosition - fragmentPosition;
     float distanceToLightSquared = dot(vectorToLight, vectorToLight);
@@ -65,7 +71,7 @@ void main()
         discard;
 
     vec3 color = lightColor.rgb * lightColor.a * a;
-    
+
     float diffuse = diffuseLightAmount(normal, vectorToLight);
 
     if (diffuse == 0)
