@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             resourceConsumer = new ResourceConsumer(building.Game, resourceReservation, 0.ResourcesPerSecond());
 
             building.Completing += onBuildingCompleting;
-            building.GetComponents<Health<Building>>()
+            building.GetComponents<IHealth>()
                 .MaybeSingle()
                 .Match(health => maxHealth = health.MaxHealth);
         }

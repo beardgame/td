@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var building in Game.State.GameObjects.OfType<Building>())
                 {
-                    building.GetComponents<Health<Building>>()
+                    building.GetComponents<IHealth>()
                         .MaybeSingle()
                         .Match(health => building.Damage(
                             new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention, null)));
