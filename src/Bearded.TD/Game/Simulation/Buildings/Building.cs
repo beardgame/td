@@ -109,7 +109,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void Materialize()
         {
-            MutableState.HasStartedBuilding = true;
+            MutableState.IsMaterialized = true;
 
             Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();

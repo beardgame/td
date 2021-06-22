@@ -21,7 +21,10 @@ namespace Bearded.TD.Game.Simulation.Resources
         public ResourceAmount AvailableResources => CurrentResources - committedResources;
         public ResourceAmount ResourcesAfterQueue => AvailableResources - reservedResources;
 
-        protected override void Execute() {}
+        protected override void Execute()
+        {
+            Events.Subscribe(this);
+        }
 
         public void ProvideResources(ResourceAmount amount)
         {
