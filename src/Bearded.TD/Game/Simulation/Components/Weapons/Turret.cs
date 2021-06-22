@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -14,17 +13,17 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
     interface ITurret : IPositionable
     {
         Weapon Weapon { get; }
-        GameObject Owner { get; }
+        IGameObject Owner { get; }
         Faction OwnerFaction { get; }
         Direction2 NeutralDirection { get; }
         Maybe<Angle> MaximumTurningAngle { get; }
     }
 
     [Component("turret")]
-    class Turret<T> : Component<T, ITurretParameters>, ITurret
-        where T : BuildingBase<T>, IComponentOwner
+    sealed class Turret<T> : Component<T, ITurretParameters>, ITurret
+        where T : IFactioned, IGameObject, IPositionable, ITransformable
     {
-        private Weapon weapon;
+        private Weapon weapon = null!;
 
         public Position3 Position =>
             (Owner.Position.XY() + Owner.LocalCoordinateTransform.Transform(Parameters.Offset))
@@ -47,17 +46,11 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
         public override void Draw(CoreDrawers drawers)
         {
-            const float lineWidth = .2f;
-
-            var v = (NeutralDirection.Vector * lineWidth).WithZ();
-            // geometries.Primitives.DrawLine(
-            //     Position.NumericValue - v, Position.NumericValue + v, lineWidth, Color.Green);
-
             weapon.Draw(drawers);
         }
 
         Weapon ITurret.Weapon => weapon;
-        GameObject ITurret.Owner => Owner;
+        IGameObject ITurret.Owner => Owner;
         Faction ITurret.OwnerFaction => Owner.Faction;
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
