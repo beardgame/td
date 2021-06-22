@@ -81,8 +81,7 @@ namespace Bearded.TD.Rendering.Loading
                 (string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler) sprite,
                 Dictionary<string, Bitmap> bitmapsBySampler, (int width, int height) size)
             {
-                return new BinPacking.Rectangle<(string, Dictionary<string, Bitmap>)>(
-                    (sprite.Sprite, bitmapsBySampler), size.width, size.height);
+                return new ((sprite.Sprite, bitmapsBySampler), size.width, size.height);
             }
 
             static Maybe<(int width, int height)> allImagesHaveSameSize(ICollection<Bitmap> bitmaps)
@@ -111,7 +110,7 @@ namespace Bearded.TD.Rendering.Loading
                 throw new InvalidDataException($"Different shader program with name {shaderProgramName} already exists.");
             }
 
-            return glActions.RunAndReturn(glOperations);
+            return glActions.Run(glOperations).Result;
 
             IRendererShader glOperations()
             {
@@ -136,7 +135,7 @@ namespace Bearded.TD.Rendering.Loading
 
         public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
         {
-            return glActions.RunAndReturn(() => ArrayTextureData.From(layers).ToTexture(t => t.GenerateMipmap()));
+            return glActions.Run(() => ArrayTextureData.From(layers).ToTexture(t => t.GenerateMipmap())).Result;
         }
 
     }

@@ -22,11 +22,11 @@ namespace Bearded.TD.Utilities
             this.glActions = glActions;
         }
 
-        public void SendScreenshotToDiscordAsync(ViewportSize viewport)
+        public Task SendScreenshotToDiscordAsync(ViewportSize viewport)
         {
             logger.Info?.Log($"Trying to send screenshot ({viewport.Width}x{viewport.Height}) to Discord...");
 
-            tryTaskRun("Sending screenshot to Discord", async () =>
+            return tryTaskRun("Sending screenshot to Discord", async () =>
             {
                 var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
                 if (string.IsNullOrEmpty(webhookToken))
@@ -51,11 +51,11 @@ namespace Bearded.TD.Utilities
             });
         }
 
-        public void SaveScreenShotAsync(ViewportSize viewport)
+        public Task SaveScreenShotAsync(ViewportSize viewport)
         {
             logger.Info?.Log($"Trying to save screenshot ({viewport.Width}x{viewport.Height}) to disk...");
 
-            tryTaskRun("Saving screenshot", async () =>
+            return tryTaskRun("Saving screenshot", async () =>
             {
                 var bitmap = await makeScreenshotAsync(viewport);
 
@@ -81,21 +81,18 @@ namespace Bearded.TD.Utilities
         {
             var (width, height) = (viewport.Width, viewport.Height);
 
-            return Task.Run(() =>
+            return glActions.Run(() =>
             {
-                return glActions.RunAndReturn(() =>
-                {
-                    var bmp = new Bitmap(width, height);
-                    var data = bmp.LockBits(
-                        new Rectangle(0, 0, width, height),
-                        ImageLockMode.WriteOnly,
-                        System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                    GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                    bmp.UnlockBits(data);
+                var bmp = new Bitmap(width, height);
+                var data = bmp.LockBits(
+                    new Rectangle(0, 0, width, height),
+                    ImageLockMode.WriteOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                bmp.UnlockBits(data);
 
-                    bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    return bmp;
-                });
+                bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                return bmp;
             });
         }
 
@@ -104,9 +101,9 @@ namespace Bearded.TD.Utilities
             return $"screenshot-{DateTime.Now:yyyy-MM-ddTHHmmss.FFFF}.png";
         }
 
-        private void tryTaskRun(string actionDescription, Action action)
+        private Task tryTaskRun(string actionDescription, Action action)
         {
-            Task.Run(() =>
+            return Task.Run(() =>
             {
                 try
                 {

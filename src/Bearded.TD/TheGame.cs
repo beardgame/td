@@ -164,12 +164,12 @@ namespace Bearded.TD
 #if DEBUG
             if (inputManager.IsKeyHit(Keys.F11))
             {
-                screenshots.SendScreenshotToDiscordAsync(viewportSize);
+                _ = screenshots.SendScreenshotToDiscordAsync(viewportSize);
             }
 #endif
             if (inputManager.IsKeyHit(Keys.F12))
             {
-                screenshots.SaveScreenShotAsync(viewportSize);
+                _ = screenshots.SaveScreenShotAsync(viewportSize);
             }
         }
 

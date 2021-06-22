@@ -72,7 +72,7 @@ namespace Bearded.TD.Rendering.Loading
                 premultiply.Transform(ref bytes, ref w, ref h);
             });
 
-            var textureUniforms = glActions.RunAndReturn(() => createGlEntities(pixelate));
+            var textureUniforms = glActions.Run(() => createGlEntities(pixelate)).Result;
             var sprites = createSprites();
 
             return new PackedSpriteSet(
