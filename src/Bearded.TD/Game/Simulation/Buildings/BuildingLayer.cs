@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             None,
             ReservedForBuilding, // a building is scheduled to be built in this tile, but hasn't yet
-            FinishedBuilding
+            MaterializedBuilding
         }
 
         private readonly GlobalGameEvents events;
@@ -29,11 +29,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 DebugAssert.State.Satisfies(!buildingLookup.ContainsKey(tile));
                 buildingLookup.Add(tile, building);
-            }
-
-            if (building is Building finishedBuilding)
-            {
-                events.Send(new BuildingCreated(finishedBuilding));
             }
         }
 
@@ -69,7 +64,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return building switch
             {
                 null => Occupation.None,
-                {State: {IsMaterialized: true}} => Occupation.FinishedBuilding,
+                {State: {IsMaterialized: true}} => Occupation.MaterializedBuilding,
                 _ => Occupation.ReservedForBuilding
             };
         }

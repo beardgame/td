@@ -71,9 +71,6 @@ namespace Bearded.TD.Game.Simulation.Navigation
         {
             var tile = @event.Tile;
 
-            if (graph[tile].IsSink)
-                return;
-
             invalidateTile(tile);
         }
 

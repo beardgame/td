@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
         : IListener<TileTypeChanged>, IListener<BuildingConstructionStarted>, IListener<BuildingDestroyed>
     {
         private static readonly Dictionary<TileType, Passabilities>
-            passabilityByTileType = new Dictionary<TileType, Passabilities>
+            passabilityByTileType = new()
             {
                 { TileType.Unknown, Passabilities.All },
                 { TileType.Floor, Passabilities.All },
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
         private void updatePassabilityForTile(Tile tile)
         {
             var type = geometryLayer[tile].Type;
-            var hasBuilding = buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.FinishedBuilding;
+            var hasBuilding = buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.MaterializedBuilding;
 
             var hasChangedPassability = false;
 
