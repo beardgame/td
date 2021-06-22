@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
     [Component("foundation")]
     sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation
-        where T : IBuilding, IGameObject, IPlacedBuilding, IPositionable
+        where T : IGameObject, IPlacedBuilding, IPositionable
     {
         private Sprite spriteSide = null!;
         private Sprite spriteTop = null!;

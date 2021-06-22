@@ -6,10 +6,8 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    interface IPlacedBuilding : ISelectable
+    interface IPlacedBuilding : IBuilding, ISelectable
     {
-        IBuildingState State { get; }
-
         IBuildingBlueprint Blueprint { get; }
         Faction Faction { get; }
         IEnumerable<Tile> OccupiedTiles { get; }
