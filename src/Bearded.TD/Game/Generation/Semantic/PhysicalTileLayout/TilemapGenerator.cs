@@ -78,7 +78,6 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     throw new InvalidOperationException();
 
                 var currentTile = tile;
-                setFloor(currentTile);
 
                 if (result.Cost < expensivePathMinimum)
                     continue;
@@ -88,6 +87,11 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                     currentTile = currentTile.Neighbour(step);
                     setFloor(currentTile);
                 }
+            }
+
+            foreach (var tile in connections)
+            {
+                setFloor(tile);
             }
 
             void setFloor(Tile tile) => context.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));
