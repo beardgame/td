@@ -19,8 +19,15 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 {
     using Sprite = IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)>;
 
+    interface IFoundation
+    {
+        Unit BaseHeight { get; }
+        Unit TopHeight { get; }
+    }
+
     [Component("foundation")]
-    sealed class Foundation : Component<Building, IFoundationParameters>
+    sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation
+        where T : IBuilding, IGameObject, IPlacedBuilding, IPositionable
     {
         private Sprite spriteSide = null!;
         private Sprite spriteTop = null!;
@@ -97,12 +104,12 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
             var neighborBuilding = Owner.Game.BuildingLayer[neighbor];
 
-            neighborBuilding?.GetComponents<Foundation>().MaybeFirst().Match(
+            neighborBuilding?.GetComponents<IFoundation>().MaybeFirst().Match(
                 neighborFoundation => drawConnection(i, center, neighbor, neighborFoundation)
             );
         }
 
-        private void drawConnection(int i, Vector2 center, Tile neighbor, Foundation neighborFoundation)
+        private void drawConnection(int i, Vector2 center, Tile neighbor, IFoundation neighborFoundation)
         {
             var z0 = Math.Min(BaseHeight.NumericValue, neighborFoundation.BaseHeight.NumericValue);
             var z1 = Math.Min(TopHeight.NumericValue, neighborFoundation.TopHeight.NumericValue);

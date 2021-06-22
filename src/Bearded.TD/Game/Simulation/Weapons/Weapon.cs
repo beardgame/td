@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
 
         public Maybe<IComponentOwner> Parent => Just((IComponentOwner)turret.Owner);
-        public GameObject Owner => turret.Owner;
+        public IGameObject Owner => turret.Owner;
         public Position3 Position => turret.Position;
         public Faction Faction => turret.OwnerFaction;
 

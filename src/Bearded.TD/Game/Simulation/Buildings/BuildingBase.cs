@@ -16,7 +16,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    abstract class BuildingBase<T> : GameObject, IBuilding, IComponentOwner<T>, IFactioned, IPositionable
+    abstract class BuildingBase<T>
+        : GameObject,
+            IBuilding,
+            IComponentOwner<T>,
+            IFactioned,
+            IPositionable,
+            ITransformable
         where T : BuildingBase<T>
     {
         private PositionedFootprint footprint;
@@ -56,7 +62,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Blueprint = blueprint;
             Faction = faction;
             Footprint = footprint;
-            Components = new ComponentCollection<T>((T)this, Events);
+            Components = new ComponentCollection<T>((T) this, Events);
         }
 
         private void recalculateLocalTransform()
