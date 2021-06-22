@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
@@ -18,6 +19,11 @@ namespace Bearded.TD.Game.Simulation.Components.Workers
 
         public override void Update(TimeSpan elapsedTime)
         {
+            if (Owner is IBuilding building && !building.State.IsFunctional)
+            {
+                return;
+            }
+
             while (numWorkersActive < Parameters.NumWorkers)
             {
                 addNewWorker();

@@ -45,7 +45,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         private readonly ComponentCollection<EnemyUnit> components;
         private ImmutableArray<ISyncable> syncables;
-        private Health<EnemyUnit> health = null!;
+        private IHealth health = null!;
         private bool isDead;
 
         public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
-            health = components.Get<Health<EnemyUnit>>().SingleOrDefault()
+            health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");

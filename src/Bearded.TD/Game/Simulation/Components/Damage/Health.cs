@@ -13,9 +13,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components.Damage
 {
+    interface IHealth
+    {
+        HitPoints CurrentHealth { get; }
+        HitPoints MaxHealth { get; }
+        double HealthPercentage => CurrentHealth / MaxHealth;
+    }
+
     [Component("health")]
     sealed class Health<T> :
         Component<T, IHealthComponentParameter>,
+        IHealth,
         ISyncable,
         IListener<HealDamage>,
         IPreviewListener<TakeDamage>
@@ -23,7 +31,6 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
     {
         public HitPoints CurrentHealth { get; private set; }
         public HitPoints MaxHealth { get; private set; }
-        public double HealthPercentage => CurrentHealth / MaxHealth;
 
         public Health(IHealthComponentParameter parameters) : base(parameters)
         {

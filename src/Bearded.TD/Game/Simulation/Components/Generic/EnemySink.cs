@@ -10,16 +10,18 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 {
     [Component("sink")]
     sealed class EnemySink<T> : Component<T>
-        where T : IBuilding, IGameObject, IPlacedBuilding, IPositionable
+        where T : IGameObject, IPlacedBuilding, IPositionable
     {
-        private Maybe<Health<Building>> healthComponent;
+        private Maybe<IHealth> healthComponent;
 
         protected override void Initialize()
         {
             foreach (var tile in Owner.OccupiedTiles)
+            {
                 Owner.Game.Navigator.AddSink(tile);
+            }
 
-            healthComponent = Owner.GetComponents<Health<Building>>().MaybeSingle();
+            healthComponent = Owner.GetComponents<IHealth>().MaybeSingle();
         }
 
         public override void Update(TimeSpan elapsedTime) { }

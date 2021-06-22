@@ -29,8 +29,6 @@ namespace Bearded.TD.UI.Controls
                     .WithCloseAction(model.Close));
 
             onBuildingSet();
-
-            model.BuildingSet += onBuildingSet;
         }
 
         private void onBuildingSet()

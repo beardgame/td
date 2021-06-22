@@ -19,9 +19,6 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game => game!;
         public IPulse Pulse => pulse;
 
-        // TODO: invoke this event when the placeholder is replaced by the building instead of closing overlay
-        public event VoidEventHandler? BuildingSet;
-
         protected override void Initialize(DependencyResolver dependencies, IPlacedBuilding building)
         {
             base.Initialize(dependencies, building);
