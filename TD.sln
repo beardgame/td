@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lidgren.Network.MultiTarget
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Generators", "src\Bearded.TD.Generators\Bearded.TD.Generators.csproj", "{3748D74F-E0F9-42E9-8D85-076059761BC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.FluentSourceGen", "src\Bearded.FluentSourceGen\Bearded.FluentSourceGen.csproj", "{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.FluentSourceGen.Tests", "src\Bearded.FluentSourceGen.Tests\Bearded.FluentSourceGen.Tests.csproj", "{7638DE86-E705-484B-89F9-87843173D90F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,22 @@ Global
 		{3748D74F-E0F9-42E9-8D85-076059761BC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3748D74F-E0F9-42E9-8D85-076059761BC3}.Release|x86.ActiveCfg = Release|Any CPU
 		{3748D74F-E0F9-42E9-8D85-076059761BC3}.Release|x86.Build.0 = Release|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D3E3C62-A144-4094-BC17-A32DDB3B0BC7}.Release|x86.Build.0 = Release|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Debug|x86.Build.0 = Debug|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Release|x86.ActiveCfg = Release|Any CPU
+		{7638DE86-E705-484B-89F9-87843173D90F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
