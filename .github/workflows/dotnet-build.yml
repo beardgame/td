@@ -33,3 +33,10 @@ jobs:
           name: verify-test-results
           path: |
             **/*.received.*
+      - name: Send failure webhook
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          color: "#fc2929"
+          message: "TD Build failed"
