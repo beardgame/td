@@ -34,6 +34,7 @@ jobs:
           path: |
             **/*.received.*
       - name: Send failure webhook
+        if: failure()
         uses: appleboy/discord-action@master
         with:
           webhook_id: ${{ secrets.WEBHOOK_ID }}
