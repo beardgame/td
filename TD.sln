@@ -10,9 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.MasterServer", "src\Bearded.TD.MasterServer\Bearded.TD.MasterServer.csproj", "{56474285-E3DB-433D-8A04-8CF7DE00AF54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD", "src\Bearded.TD\Bearded.TD.csproj", "{9F5D46C0-7C87-40F3-9983-2193BB49944F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D0247253-A9AB-4239-8166-8BEB893C2351} = {D0247253-A9AB-4239-8166-8BEB893C2351}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Shared", "src\Bearded.TD.Shared\Bearded.TD.Shared.csproj", "{8B1B362B-7883-489D-AD98-2060FB174B20}"
 EndProject
