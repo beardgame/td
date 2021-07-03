@@ -23,8 +23,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Bearded.TD.Generators\Bearded.TD.Generators.csproj" />
-      <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
+        <ProjectReference Include="..\Bearded.TD.Generators\Bearded.TD.Generators.csproj" />
+        <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="**\*.verified.cs" />
+        <None Include="**\*.verified.cs" />
     </ItemGroup>
 
 </Project>
