@@ -12,7 +12,7 @@ namespace Bearded.TD.Generators.Proxies
 {
     [Generator]
     [UsedImplicitly]
-    sealed class ProxyGenerator : ISourceGenerator
+    public sealed class ProxyGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
