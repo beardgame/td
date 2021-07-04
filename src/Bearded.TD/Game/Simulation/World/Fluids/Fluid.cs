@@ -25,7 +25,9 @@ namespace Bearded.TD.Game.Simulation.World.Fluids
         private Tilemap<Flow> currentFlow;
         private Tilemap<Flow> nextFlow;
 
-        private readonly List<Tile> sinks = new List<Tile>();
+        private readonly List<Tile> sinks = new ();
+
+        public bool IsEmpty { get; private set; } = true;
 
         public Fluid(GeometryLayer geometryLayer, int radius, int updatesPerSecond)
         {
@@ -46,6 +48,7 @@ namespace Bearded.TD.Game.Simulation.World.Fluids
         {
             DebugAssert.Argument.Satisfies(volume.NumericValue >= 0, "cannot add negative volume");
             amount[tile] += (float) volume.NumericValue;
+            IsEmpty = false;
         }
 
         public void AddSink(Tile tile)
@@ -65,6 +68,9 @@ namespace Bearded.TD.Game.Simulation.World.Fluids
 
         private void update()
         {
+            if (IsEmpty)
+                return;
+
             updateFlow();
             clampFlow();
 
@@ -178,7 +184,7 @@ namespace Bearded.TD.Game.Simulation.World.Fluids
                 .DrawInfo.Height.NumericValue;
         }
 
-        struct Flow
+        readonly struct Flow
         {
             public float FlowRight { get; }
             public float FlowUpRight { get; }

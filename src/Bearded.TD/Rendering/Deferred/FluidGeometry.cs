@@ -63,6 +63,9 @@ namespace Bearded.TD.Rendering.Deferred
 
         public void Render()
         {
+            if (fluid.IsEmpty)
+                return;
+
             resetFlow();
             prepareHeightAndFlow();
             createGeometry();
