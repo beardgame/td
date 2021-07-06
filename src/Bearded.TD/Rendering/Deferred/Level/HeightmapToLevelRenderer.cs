@@ -85,14 +85,17 @@ namespace Bearded.TD.Rendering.Deferred.Level
             var cellWidth = scale * gridMeshWidth;
             var cellHeight = scale * gridMeshHeight;
 
-            var cellRowsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
-            var cellColumnsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
+            var cellColumnsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
+            var cellRowsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
 
             gridScaleUniform.Value = new Vector2(scale);
 
-            for (var x = -cellRowsHalf; x < cellRowsHalf; x++)
+            for (var y = -cellRowsHalf; y < cellRowsHalf; y++)
             {
-                for (var y = -cellColumnsHalf; y < cellColumnsHalf; y++)
+                var xMin = Max(-cellColumnsHalf, -cellColumnsHalf - y - 1);
+                var xMax = Min(cellColumnsHalf, cellColumnsHalf - y);
+
+                for (var x = xMin; x < xMax; x++)
                 {
                     gridOffsetUniform.Value = (x * gridMeshBuilder.TilingX + y * gridMeshBuilder.TilingY) * scale;
                     renderSingleGridCell();
