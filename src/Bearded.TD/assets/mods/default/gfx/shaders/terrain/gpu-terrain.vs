@@ -12,6 +12,9 @@ uniform float heightmapPixelSizeUV;
 uniform float heightScale;
 uniform float heightOffset;
 
+uniform vec2 gridOffset;
+uniform vec2 gridScale;
+
 in vec3 vertexPosition;
 in vec3 vertexNormal; // not used
 in vec2 vertexUV; // not used
@@ -25,6 +28,8 @@ out vec4 fragmentColor;
 void main()
 {
     vec3 p = vertexPosition;
+
+    p.xy = p.xy * gridScale + gridOffset;
 
     vec2 heightMapUV =
         p.xy / heightmapRadius // -1..1

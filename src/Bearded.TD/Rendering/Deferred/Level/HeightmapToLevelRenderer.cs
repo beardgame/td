@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
@@ -7,9 +9,11 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static System.Math;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
@@ -17,15 +21,15 @@ namespace Bearded.TD.Rendering.Deferred.Level
     {
         private readonly int tileMapWidth;
 
-        private int gridRadius;
-        private float gridVerticesPerTile;
-        private float gridToWorld;
+        private float gridScaleSetting;
 
         private readonly Material material;
         private readonly FloatUniform heightScaleUniform = new("heightScale");
         private readonly FloatUniform heightOffsetUniform = new("heightOffset");
+        private readonly Vector2Uniform gridOffsetUniform = new("gridOffset");
+        private readonly Vector2Uniform gridScaleUniform = new("gridScale");
 
-        private readonly ExpandingIndexedTrianglesMeshBuilder<LevelVertex> gridMeshBuilder;
+        private readonly RhombusGridMesh gridMeshBuilder;
         private readonly IRenderer gridRenderer;
 
         public HeightmapToLevelRenderer(
@@ -45,6 +49,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
             gridRenderer.Dispose();
         }
 
+        public void Resize(float scale)
+        {
+            gridScaleSetting = scale;
+        }
+
         public void RenderAll()
         {
             if (UserSettings.Instance.Debug.WireframeLevel)
@@ -59,92 +68,39 @@ namespace Bearded.TD.Rendering.Deferred.Level
             }
         }
 
-        public void Resize(float scale)
-        {
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (gridVerticesPerTile == scale)
-            {
-                return;
-            }
-
-            gridVerticesPerTile = scale;
-
-            var gridWidth = tileMapWidth * scale;
-            gridRadius = (int) (gridWidth - 1) / 2;
-            gridToWorld = 1 / scale;
-
-            rebuildMesh();
-        }
-
-
-        private void rebuildMesh()
-        {
-            /* Vertex layout
-             * -- v3
-             *   /  \
-             * v0 -- v2
-             *   \  /
-             * -- v1
-             */
-
-            gridMeshBuilder.Clear();
-
-            var v1Offset = Direction.DownRight.Vector() * gridToWorld;
-            var v2Offset = Direction.Right.Vector() * gridToWorld;
-            var v3Offset = Direction.UpRight.Vector() * gridToWorld;
-
-            foreach (var t0 in Tilemap.EnumerateTilemapWith(gridRadius - 1))
-            {
-                var v0 = Tiles.Level.GetPosition(t0).NumericValue * gridToWorld;
-                var v1 = v0 + v1Offset;
-                var v2 = v0 + v2Offset;
-                var v3 = v0 + v3Offset;
-
-                gridMeshBuilder.AddTriangle(
-                    vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                    vertex(v1.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                    vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
-                );
-
-                gridMeshBuilder.AddTriangle(
-                    vertex(v0.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                    vertex(v2.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White),
-                    vertex(v3.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White)
-                );
-            }
-
-            static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
-            {
-                return new(v, n, uv, c);
-            }
-        }
-
-        private (ExpandingIndexedTrianglesMeshBuilder<LevelVertex>, IRenderer) setupGridRenderer(
-            RenderContext context, HeightmapRenderer heightmapRenderer)
-        {
-            var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<LevelVertex>();
-
-            var renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
-                new IRenderSetting[]
-                {
-                    context.Settings.ViewMatrixLevel,
-                    context.Settings.ProjectionMatrix,
-                    context.Settings.FarPlaneDistance,
-                    heightmapRenderer.HeightmapRadiusUniform,
-                    heightmapRenderer.HeightmapPixelSizeUVUniform,
-                    heightmapRenderer.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
-                    context.Settings.CameraPosition,
-                    heightScaleUniform,
-                    heightOffsetUniform
-                }.Concat(material.ArrayTextures.Select((t, i) =>
-                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
-
-            material.Shader.RendererShader.UseOnRenderer(renderer);
-
-            return (meshBuilder, renderer);
-        }
-
         private void render()
+        {
+            var widthToCover = tileMapWidth * 0.5f * Constants.Game.World.HexagonDistanceX;
+            var heightToCover = tileMapWidth * 0.5f * Constants.Game.World.HexagonDistanceY;
+
+            var gridMeshWidth = gridMeshBuilder.TilingX.X;
+            var gridMeshHeight = gridMeshBuilder.TilingY.Y;
+
+            // TODO: base scale should be revisited once/if we add tesselation
+            // other ideas: scale it so that the lowest res grid always 'just' encapsulates the level,
+            // instead of having large empty edges around it
+            const float baseScale = 1f;
+            var scale = baseScale / gridScaleSetting;
+
+            var cellWidth = scale * gridMeshWidth;
+            var cellHeight = scale * gridMeshHeight;
+
+            var cellRowsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
+            var cellColumnsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
+
+            gridScaleUniform.Value = new Vector2(scale);
+
+            for (var x = -cellRowsHalf; x < cellRowsHalf; x++)
+            {
+                for (var y = -cellColumnsHalf; y < cellColumnsHalf; y++)
+                {
+                    gridOffsetUniform.Value = (x * gridMeshBuilder.TilingX + y * gridMeshBuilder.TilingY) * scale;
+                    renderSingleGridCell();
+                }
+            }
+        }
+
+        private void renderSingleGridCell()
         {
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Back);
@@ -161,5 +117,145 @@ namespace Bearded.TD.Rendering.Deferred.Level
             GL.FrontFace(FrontFaceDirection.Ccw);
         }
 
+        private (RhombusGridMesh, IRenderer) setupGridRenderer(RenderContext context, HeightmapRenderer heightmapRenderer)
+        {
+            var mesh = RhombusGridMesh.CreateDefault();
+
+            var renderer = Renderer.From(mesh.ToRenderable(),
+                new IRenderSetting[]
+                {
+                    context.Settings.ViewMatrixLevel,
+                    context.Settings.ProjectionMatrix,
+                    context.Settings.FarPlaneDistance,
+                    heightmapRenderer.HeightmapRadiusUniform,
+                    heightmapRenderer.HeightmapPixelSizeUVUniform,
+                    heightmapRenderer.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
+                    context.Settings.CameraPosition,
+                    heightScaleUniform,
+                    heightOffsetUniform,
+                    gridOffsetUniform,
+                    gridScaleUniform
+                }.Concat(material.ArrayTextures.Select((t, i) =>
+                    new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
+
+            material.Shader.RendererShader.UseOnRenderer(renderer);
+
+            return (mesh, renderer);
+        }
+
+
+    }
+
+    sealed class RhombusGridMesh : IDisposable
+    {
+        private readonly IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder;
+
+        public Vector2 TilingX { get; }
+        public Vector2 TilingY { get; }
+
+        public static RhombusGridMesh CreateDefault()
+        {
+            var (meshBuilder, tilingX, tilingY) = buildRhombusMesh();
+
+            return new RhombusGridMesh(meshBuilder, tilingX, tilingY);
+        }
+
+        private RhombusGridMesh(
+            IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+        {
+            this.meshBuilder = meshBuilder;
+            TilingX = tilingX;
+            TilingY = tilingY;
+        }
+
+        public IRenderable ToRenderable() => meshBuilder.ToRenderable();
+
+        public void Dispose() => meshBuilder.Dispose();
+
+        private static (IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+            buildRhombusMesh()
+        {
+            /* Rhombus section (2x2 example)
+             *     y
+             *    ^ 0,h--*--w,h
+             *   /  / \ / \ /
+             *  /  *---*---*
+             *    / \ / \ /
+             *  0,0--*--w,0
+             *      ------->x
+             * we address vertices with [x * h + y]
+             */
+
+            // vertices of n*n rhombus: v = (n + 1)^2
+            // inverted: n = sqrt(v) - 1
+            var maxVertexCount = ushort.MaxValue / 16;
+            var rhombusSideLength = (int)(0.5 * Sqrt(4 * maxVertexCount + 9) - 3);
+
+            var vertexArrayWidth = rhombusSideLength + 1;
+            var vertexArrayHeight = rhombusSideLength + 2;
+
+            var vertexCount = vertexArrayWidth * vertexArrayHeight;
+            var triangleCount = rhombusSideLength * rhombusSideLength * 2;
+            var indexCount = triangleCount * 3;
+
+            var meshBuilder = new IndexedTrianglesMeshBuilder<LevelVertex>();
+            meshBuilder.Add(vertexCount, indexCount, out var vertices, out var indices, out var indexOffset);
+
+            DebugAssert.State.Satisfies(indexOffset == 0);
+
+            var stepX = Direction.Right.Vector();
+            var stepY = Direction.UpRight.Vector();
+
+            var tilingX = stepX * rhombusSideLength;
+            var tilingY = stepY * rhombusSideLength;
+
+            for (var x = 0; x < rhombusSideLength + 1; x++)
+            {
+                for (var y = 0; y < rhombusSideLength + 1; y++)
+                {
+                    var p = x * stepX + y * stepY;
+                    vertices[vertexIndex(x, y)] = vertex(p.WithZ(), Vector3.UnitZ, Vector2.Zero, Color.White);
+                }
+            }
+
+            /* Vertex layout
+             *    v2 -- v3
+             *   /  \  /
+             * v0 -- v1
+             */
+
+            var i = 0;
+            for (var x = 0; x < rhombusSideLength; x++)
+            {
+                for (var y = 0; y < rhombusSideLength; y++)
+                {
+                    // TODO: could use triangle strips here to cut index count in by 2/3
+                    var v0 = vertexIndex(x, y);
+                    var v1 = vertexIndex(x + 1, y);
+                    var v2 = vertexIndex(x, y + 1);
+                    var v3 = vertexIndex(x + 1, y + 1);
+
+                    indices[i++] = v0;
+                    indices[i++] = v1;
+                    indices[i++] = v2;
+
+                    indices[i++] = v1;
+                    indices[i++] = v3;
+                    indices[i++] = v2;
+                }
+            }
+
+            return (meshBuilder, tilingX, tilingY);
+
+            ushort vertexIndex(int x, int y)
+            {
+                return (ushort)(x * vertexArrayHeight + y);
+            }
+
+            static LevelVertex vertex(Vector3 v, Vector3 n, Vector2 uv, Color c)
+            {
+                return new(v, n, uv, c);
+            }
+        }
     }
 }
