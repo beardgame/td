@@ -113,7 +113,6 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 {
                     var offset = x * tilingX + y * tilingY;
 
-                    // TODO: could replace this check by actual calculation outside this loop
                     if (offset.X > visibleArea.Right || offset.X + cellVisibleWidth < visibleArea.Left)
                         continue;
 
