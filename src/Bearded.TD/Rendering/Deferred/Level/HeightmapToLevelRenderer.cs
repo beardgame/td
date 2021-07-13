@@ -89,17 +89,37 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
             gridScaleUniform.Value = new Vector2(scale);
 
+            var cellsDrawn = 0;
+
+            var tilingX = gridMeshBuilder.TilingX * scale;
+            var tilingY = gridMeshBuilder.TilingY * scale;
+            var cellVisibleWidth = tilingX.X + tilingY.X;
+
             for (var y = -cellRowsHalf; y < cellRowsHalf; y++)
             {
+                var rowMin = y * tilingY.Y;
+                var rowMax = rowMin + tilingY.Y;
+
+                if (rowMin > cameraFrustumBounds.Bottom || rowMax < cameraFrustumBounds.Top)
+                    continue;
+
                 var xMin = Max(-cellColumnsHalf, -cellColumnsHalf - y - 1);
                 var xMax = Min(cellColumnsHalf, cellColumnsHalf - y);
 
                 for (var x = xMin; x < xMax; x++)
                 {
-                    gridOffsetUniform.Value = (x * gridMeshBuilder.TilingX + y * gridMeshBuilder.TilingY) * scale;
+                    var offset = x * tilingX + y * tilingY;
+
+                    if (offset.X > cameraFrustumBounds.Right || offset.X + cellVisibleWidth < cameraFrustumBounds.Left)
+                        continue;
+
+                    gridOffsetUniform.Value = offset;
                     renderSingleGridCell();
+                    cellsDrawn++;
                 }
             }
+
+            Console.WriteLine(cellsDrawn);
         }
 
         private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
@@ -143,7 +163,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         private Rectangle getCameraFrustumBounds()
         {
-            var cameraPosition = renderSettings.CameraPosition.Value;
+            var cameraPosition = -renderSettings.CameraPosition.Value;
             var farPlaneBaseCorner = renderSettings.FarPlaneBaseCorner.Value;
             var farPlaneUnitX = renderSettings.FarPlaneUnitX.Value * 2;
             var farPlaneUnitY = renderSettings.FarPlaneUnitY.Value * 2;
