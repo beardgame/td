@@ -8,7 +8,6 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Generic;
-using Bearded.TD.Game.Simulation.Components.Statistics;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
@@ -83,13 +82,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void AddComponent(IComponent<Building> component)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
             Components.Add(component);
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
-            => Blueprint.GetComponentsForBuilding()
-                .Append(new StatisticCollector<Building>())
-                .Append(new Selectable<Building>());
+            => Blueprint.GetComponentsForBuilding();
 
         public void AttributeDamage(IMortal target, DamageResult damageResult)
         {

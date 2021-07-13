@@ -44,8 +44,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
             public void Execute()
             {
-                var building = new Building(id, blueprint, faction, footprint);
-                gameState.Add(building);
+                var building = new BuildingFactory(gameState).Create(id, blueprint, faction, footprint);
                 building.Materialize();
                 building.GetComponents<IHealth>()
                     .MaybeSingle()
