@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
@@ -11,19 +10,21 @@ using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static System.Math;
+using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
     sealed class HeightmapToLevelRenderer
     {
+
+        private readonly CoreRenderSettings renderSettings;
+        private readonly Material material;
         private readonly int tileMapWidth;
 
-        private float gridScaleSetting;
-
-        private readonly Material material;
         private readonly FloatUniform heightScaleUniform = new("heightScale");
         private readonly FloatUniform heightOffsetUniform = new("heightOffset");
         private readonly Vector2Uniform gridOffsetUniform = new("gridOffset");
@@ -32,13 +33,16 @@ namespace Bearded.TD.Rendering.Deferred.Level
         private readonly RhombusGridMesh gridMeshBuilder;
         private readonly IRenderer gridRenderer;
 
+        private float gridScaleSetting;
+
         public HeightmapToLevelRenderer(
             GameInstance game, RenderContext context, Material material,
             HeightmapRenderer heightmapRenderer)
         {
+            renderSettings = context.Settings;
+            this.material = material;
             var level = game.State.Level;
             tileMapWidth = level.Radius * 2 + 1;
-            this.material = material;
 
             (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmapRenderer);
         }
@@ -70,23 +74,18 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         private void render()
         {
-            var widthToCover = tileMapWidth * 0.5f * Constants.Game.World.HexagonDistanceX;
-            var heightToCover = tileMapWidth * 0.5f * Constants.Game.World.HexagonDistanceY;
+            var cameraFrustumBounds = getCameraFrustumBounds();
 
-            var gridMeshWidth = gridMeshBuilder.TilingX.X;
-            var gridMeshHeight = gridMeshBuilder.TilingY.Y;
+            // ensure minimum level of detail based on graphics settings
+            var (cellColumnsHalf, cellRowsHalf) = getMinimumGridDimensions();
 
-            // TODO: base scale should be revisited once/if we add tesselation
-            // other ideas: scale it so that the lowest res grid always 'just' encapsulates the level,
-            // instead of having large empty edges around it
-            const float baseScale = 1f;
-            var scale = baseScale / gridScaleSetting;
+            var scale = (tileMapWidth * 0.5f * HexagonDistanceX) / cellColumnsHalf / gridMeshBuilder.TilingX.X;
 
-            var cellWidth = scale * gridMeshWidth;
-            var cellHeight = scale * gridMeshHeight;
+            var gridSubdivision = getGridSubdivision(cameraFrustumBounds, scale);
 
-            var cellColumnsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
-            var cellRowsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
+            scale /= gridSubdivision;
+            cellColumnsHalf *= gridSubdivision;
+            cellRowsHalf *= gridSubdivision;
 
             gridScaleUniform.Value = new Vector2(scale);
 
@@ -101,6 +100,68 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     renderSingleGridCell();
                 }
             }
+        }
+
+        private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
+        {
+            var gridCellArea = gridMeshBuilder.TilingX.X * gridMeshBuilder.TilingY.Y * baseScale.Squared();
+
+            var baseGridCellsInCameraFrustum = cameraFrustumBounds.Area / gridCellArea;
+
+            // TODO: this should depend on resolution and on a setting
+            var desiredNumberOfGridCellsOnScreen = 160;
+
+            var idealSubCellsPerCell = desiredNumberOfGridCellsOnScreen / baseGridCellsInCameraFrustum;
+            var idealSubdivisionsPerCell = idealSubCellsPerCell.Sqrted();
+
+            var gridSubdivisionAsPowerOf2 = (int)Pow(2, (int) Log2(idealSubdivisionsPerCell));
+            gridSubdivisionAsPowerOf2 = Max(1, gridSubdivisionAsPowerOf2);
+
+            return gridSubdivisionAsPowerOf2;
+        }
+
+        private (int CellColumnsHalf, int CellRowsHalf) getMinimumGridDimensions()
+        {
+            var widthToCover = tileMapWidth * 0.5f * HexagonDistanceX;
+            var heightToCover = tileMapWidth * 0.5f * HexagonDistanceY;
+
+            var gridMeshWidth = gridMeshBuilder.TilingX.X;
+            var gridMeshHeight = gridMeshBuilder.TilingY.Y;
+
+            // TODO: base scale should be revisited once/if we add tesselation
+            const float baseScale = 1f;
+            var scale = baseScale / gridScaleSetting;
+
+            var cellWidth = scale * gridMeshWidth;
+            var cellHeight = scale * gridMeshHeight;
+
+            var cellColumnsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
+            var cellRowsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
+
+            return (cellColumnsHalf, cellRowsHalf);
+        }
+
+        private Rectangle getCameraFrustumBounds()
+        {
+            var cameraPosition = renderSettings.CameraPosition.Value;
+            var farPlaneBaseCorner = renderSettings.FarPlaneBaseCorner.Value;
+            var farPlaneUnitX = renderSettings.FarPlaneUnitX.Value * 2;
+            var farPlaneUnitY = renderSettings.FarPlaneUnitY.Value * 2;
+
+            var corner00 = farPlaneBaseCorner.Xy + cameraPosition.Xy;
+            var corner10 = corner00 + farPlaneUnitX.Xy;
+            var corner01 = corner00 + farPlaneUnitY.Xy;
+            var corner11 = corner10 + farPlaneUnitY.Xy;
+
+            var minX = Min(Min(corner00.X, corner10.X), Min(corner01.X, corner11.X));
+            var minY = Min(Min(corner00.Y, corner10.Y), Min(corner01.Y, corner11.Y));
+            var maxX = Max(Max(corner00.X, corner10.X), Max(corner01.X, corner11.X));
+            var maxY = Max(Max(corner00.Y, corner10.Y), Max(corner01.Y, corner11.Y));
+
+            var width = maxX - minX;
+            var height = maxY - minY;
+
+            return new Rectangle(minX, minY, width, height);
         }
 
         private void renderSingleGridCell()
