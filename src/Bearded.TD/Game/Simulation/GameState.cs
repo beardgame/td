@@ -72,7 +72,7 @@ namespace Bearded.TD.Game.Simulation
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
                 new Lazy<PassabilityLayer>(() => PassabilityManager.GetLayer(Passability.WalkingUnit)));
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
-            SelectionLayer = new SelectionLayer(BuildingLayer);
+            SelectionLayer = new SelectionLayer();
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
             Factions = factions.AsReadOnly();

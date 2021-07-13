@@ -68,8 +68,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public override void Execute()
             {
-                var building = new Building(id, blueprint, faction, footprint);
-                game.State.Add(building);
+                var building = new BuildingFactory(game.State).Create(id, blueprint, faction, footprint);
                 building.AddComponent(new BuildingConstructionWork(taskId));
             }
 

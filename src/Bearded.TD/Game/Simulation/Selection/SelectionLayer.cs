@@ -1,28 +1,19 @@
+using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Selection
 {
     sealed class SelectionLayer
     {
-        private readonly BuildingLayer buildingLayer;
+        private readonly MultiDictionary<Tile, ISelectable> selectablesByTile = new();
 
-        public SelectionLayer(BuildingLayer buildingLayer)
-        {
-            this.buildingLayer = buildingLayer;
-        }
+        public IEnumerable<ISelectable> SelectablesForTile(Tile tile) => selectablesByTile[tile];
 
-        public ISelectable? SelectableForTile(Tile tile)
-        {
-            var building = buildingLayer.GetBuildingFor(tile);
-            if (building != null)
-            {
-                return building;
-            }
+        public void RegisterSelectable(Tile tile, ISelectable selectable) => selectablesByTile.Add(tile, selectable);
 
-            // TODO: add workers and enemies
-            return null;
-        }
+        public void UnregisterSelectable(Tile tile, ISelectable selectable) =>
+            selectablesByTile.Remove(tile, selectable);
     }
 }
