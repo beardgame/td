@@ -74,8 +74,57 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         private void render()
         {
-            var cameraFrustumBounds = getCameraFrustumBounds();
+            var visibleArea = getCameraFrustumBounds();
 
+            var gridDimensions = getGridDimensionsAndScaleFor(visibleArea);
+
+            renderLevelGrid(visibleArea, gridDimensions);
+        }
+
+        private struct GridDimensions
+        {
+            public float Scale { get; init; }
+            public float CellColumnsHalf { get; init; }
+            public float CellRowsHalf { get; init; }
+        }
+
+        private void renderLevelGrid(Rectangle visibleArea, GridDimensions gridDimensions)
+        {
+            var (cellColumnsHalf, cellRowsHalf) = (gridDimensions.CellColumnsHalf, gridDimensions.CellRowsHalf);
+
+            gridScaleUniform.Value = new Vector2(gridDimensions.Scale);
+
+            var tilingX = gridMeshBuilder.TilingX * gridDimensions.Scale;
+            var tilingY = gridMeshBuilder.TilingY * gridDimensions.Scale;
+            var cellVisibleWidth = tilingX.X + tilingY.X;
+
+            for (var y = -cellRowsHalf; y < cellRowsHalf; y++)
+            {
+                var rowMin = y * tilingY.Y;
+                var rowMax = rowMin + tilingY.Y;
+
+                if (rowMin > visibleArea.Bottom || rowMax < visibleArea.Top)
+                    continue;
+
+                var xMin = Max(-cellColumnsHalf, -cellColumnsHalf - y - 1);
+                var xMax = Min(cellColumnsHalf, cellColumnsHalf - y);
+
+                for (var x = xMin; x < xMax; x++)
+                {
+                    var offset = x * tilingX + y * tilingY;
+
+                    // TODO: could replace this check by actual calculation outside this loop
+                    if (offset.X > visibleArea.Right || offset.X + cellVisibleWidth < visibleArea.Left)
+                        continue;
+
+                    gridOffsetUniform.Value = offset;
+                    renderSingleGridCell();
+                }
+            }
+        }
+
+        private GridDimensions getGridDimensionsAndScaleFor(Rectangle cameraFrustumBounds)
+        {
             // ensure minimum level of detail based on graphics settings
             var (cellColumnsHalf, cellRowsHalf) = getMinimumGridDimensions();
 
@@ -87,34 +136,12 @@ namespace Bearded.TD.Rendering.Deferred.Level
             cellColumnsHalf *= gridSubdivision;
             cellRowsHalf *= gridSubdivision;
 
-            gridScaleUniform.Value = new Vector2(scale);
-
-            var tilingX = gridMeshBuilder.TilingX * scale;
-            var tilingY = gridMeshBuilder.TilingY * scale;
-            var cellVisibleWidth = tilingX.X + tilingY.X;
-
-            for (var y = -cellRowsHalf; y < cellRowsHalf; y++)
+            return new GridDimensions
             {
-                var rowMin = y * tilingY.Y;
-                var rowMax = rowMin + tilingY.Y;
-
-                if (rowMin > cameraFrustumBounds.Bottom || rowMax < cameraFrustumBounds.Top)
-                    continue;
-
-                var xMin = Max(-cellColumnsHalf, -cellColumnsHalf - y - 1);
-                var xMax = Min(cellColumnsHalf, cellColumnsHalf - y);
-
-                for (var x = xMin; x < xMax; x++)
-                {
-                    var offset = x * tilingX + y * tilingY;
-
-                    if (offset.X > cameraFrustumBounds.Right || offset.X + cellVisibleWidth < cameraFrustumBounds.Left)
-                        continue;
-
-                    gridOffsetUniform.Value = offset;
-                    renderSingleGridCell();
-                }
-            }
+                CellColumnsHalf = cellColumnsHalf,
+                CellRowsHalf = cellRowsHalf,
+                Scale = scale,
+            };
         }
 
         private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
