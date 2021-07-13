@@ -6,16 +6,16 @@ using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class BuildingStatusOverlayControl : CompositeControl
+    sealed class ReportSubjectOverlayControl : CompositeControl
     {
-        private readonly BuildingStatusOverlay model;
+        private readonly ReportSubjectOverlay model;
 
         private readonly Binding<string> name = new();
         private readonly Binding<string> ownerName = new();
         private readonly Binding<Color> ownerColor = new();
         private readonly Binding<IReportSubject> reports = new();
 
-        public BuildingStatusOverlayControl(BuildingStatusOverlay model)
+        public ReportSubjectOverlayControl(ReportSubjectOverlay model)
         {
             IsClickThrough = true;
 
@@ -28,20 +28,20 @@ namespace Bearded.TD.UI.Controls
                     .WithReports(reports, new ReportControlFactory(model.Game, model.Pulse))
                     .WithCloseAction(model.Close));
 
-            onBuildingSet();
+            onReportSubjectSet();
         }
 
-        private void onBuildingSet()
+        private void onReportSubjectSet()
         {
-            updateBuildingAttributes();
-            reports.SetFromSource(model.Building as IReportSubject ?? new EmptyReportSubject());
+            updateAttributes();
+            reports.SetFromSource(model.Subject);
         }
 
-        private void updateBuildingAttributes()
+        private void updateAttributes()
         {
-            name.SetFromSource(model.Building.Blueprint.Name);
-            ownerName.SetFromSource(model.Building.Faction.Name);
-            ownerColor.SetFromSource(model.Building.Faction.Color);
+            name.SetFromSource(model.Subject.Name);
+            ownerName.SetFromSource(model.Subject.Faction?.Name ?? "");
+            ownerColor.SetFromSource(model.Subject.Faction?.Color ?? Color.Black);
         }
     }
 }

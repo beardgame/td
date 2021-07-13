@@ -7,10 +7,12 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Components.Statistics;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Footprints.events;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -32,6 +34,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         BuildingBase<Building>,
         IIdable<Building>,
         IDamageSource,
+        IListener<AccumulateOccupiedTiles>, // TODO: move to footprint
         IListener<ReportAdded>,
         IMortal,
         IPlacedBuilding,
@@ -45,6 +48,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
         public Id<Building> Id { get; }
+        public string Name { get; }
 
         private readonly BuildingState mutableState;
         private readonly DamageExecutor damageExecutor;
@@ -64,6 +68,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             : base(blueprint, faction, footprint)
         {
             Id = id;
+            Name = blueprint.Name;
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
             UpgradesInProgress = upgradesInProgress.AsReadOnly();
 
@@ -82,7 +87,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
-            => Blueprint.GetComponentsForBuilding().Append(new StatisticCollector<Building>());
+            => Blueprint.GetComponentsForBuilding()
+                .Append(new StatisticCollector<Building>())
+                .Append(new Selectable<Building>());
 
         public void AttributeDamage(IMortal target, DamageResult damageResult)
         {
@@ -99,6 +106,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
+        public void HandleEvent(AccumulateOccupiedTiles @event)
+        {
+            @event.AddTiles(OccupiedTiles);
+        }
+
         public void HandleEvent(ReportAdded @event)
         {
             // Use an Insert to ensure that the upgrades report is always last.
@@ -110,7 +122,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
             DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
 
             Game.IdAs(this);
-            Events.Subscribe(this);
+            Events.Subscribe<AccumulateOccupiedTiles>(this);
+            Events.Subscribe<ReportAdded>(this);
+            SelectionListener.Create(
+                    onFocus: () => mutableState.SelectionState = SelectionState.Focused,
+                    onFocusReset: () => mutableState.SelectionState = SelectionState.Default,
+                    onSelect: () => mutableState.SelectionState = SelectionState.Selected,
+                    onSelectionReset: () => mutableState.SelectionState = SelectionState.Default)
+                .Subscribe(Events);
             Game.BuildingLayer.AddBuilding(this);
             base.OnAdded();
         }
@@ -216,20 +235,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void ChangeFootprint(PositionedFootprint footprint)
             => throw new InvalidOperationException("Cannot change footprint of placed building.");
-
-        public void ResetSelection()
-        {
-            mutableState.SelectionState = SelectionState.Default;
-        }
-
-        public void Focus()
-        {
-            mutableState.SelectionState = SelectionState.Focused;
-        }
-
-        public void Select()
-        {
-            mutableState.SelectionState = SelectionState.Selected;
-        }
     }
 }

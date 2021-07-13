@@ -7,25 +7,31 @@ namespace Bearded.TD.Game.Meta
         public event GenericEventHandler<ISelectable>? ObjectSelected;
         public event GenericEventHandler<ISelectable>? ObjectDeselected;
 
-        public ISelectable? FocusedObject { get; private set; }
-        public ISelectable? SelectedObject { get; private set; }
+        private ISelectable? focusedObject;
+        private ISelectable? selectedObject;
 
         public void SelectObject(ISelectable obj)
         {
-            if (obj == SelectedObject)
+            if (obj == selectedObject)
+            {
                 return;
+            }
+
             ResetSelection();
-            SelectedObject = obj;
+            selectedObject = obj;
             obj?.Select();
             ObjectSelected?.Invoke(obj);
         }
 
         public void FocusObject(ISelectable obj)
         {
-            if (obj == SelectedObject || obj == FocusedObject)
+            if (obj == selectedObject || obj == focusedObject)
+            {
                 return;
+            }
+
             ResetFocus();
-            FocusedObject = obj;
+            focusedObject = obj;
             obj?.Focus();
         }
 
@@ -33,19 +39,19 @@ namespace Bearded.TD.Game.Meta
         {
             ResetFocus();
 
-            if (SelectedObject != null)
+            if (selectedObject != null)
             {
-                SelectedObject.ResetSelection();
-                ObjectDeselected?.Invoke(SelectedObject);
+                selectedObject.ResetSelection();
+                ObjectDeselected?.Invoke(selectedObject);
             }
 
-            SelectedObject = null;
+            selectedObject = null;
         }
 
         public void ResetFocus()
         {
-            FocusedObject?.ResetSelection();
-            FocusedObject = null;
+            focusedObject?.ResetSelection();
+            focusedObject = null;
         }
     }
 }

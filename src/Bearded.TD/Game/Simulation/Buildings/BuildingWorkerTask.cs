@@ -27,7 +27,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {building.Blueprint.Name}";
         public IEnumerable<Tile> Tiles => building.OccupiedTiles;
-        public Maybe<ISelectable> Selectable => Maybe.Just<ISelectable>(building);
         public double PercentCompleted => !started ? 0 : healthGiven / maxHealth;
         public bool CanAbort => !started;
         public bool Finished { get; private set; }

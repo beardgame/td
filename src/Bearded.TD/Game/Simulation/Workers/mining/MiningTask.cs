@@ -16,7 +16,6 @@ namespace Bearded.TD.Game.Simulation.Workers
         public Id<IWorkerTask> Id { get; }
         public string Name => "Mine a tile";
         public IEnumerable<Tile> Tiles => tile.Yield();
-        public Maybe<ISelectable> Selectable => Maybe.Just<ISelectable>(miningTaskPlaceholder);
         public bool CanAbort => miningProgress == TimeSpan.Zero;
         public bool Finished => miningProgress >= Constants.Game.Worker.MiningDuration;
 

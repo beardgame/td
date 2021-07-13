@@ -1,4 +1,6 @@
-﻿namespace Bearded.TD.Game.Input
+﻿using System.Linq;
+
+namespace Bearded.TD.Game.Input
 {
     sealed class DefaultInteractionHandler : InteractionHandler
     {
@@ -12,7 +14,8 @@
                 return;
             }
 
-            var selectable = Game.State.SelectionLayer.SelectableForTile(currentFootprint.RootTile);
+            // TODO: make this work for multiple selectables
+            var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile).FirstOrDefault();
             var clicked = cursor.Click.Hit;
 
             if (selectable != null)

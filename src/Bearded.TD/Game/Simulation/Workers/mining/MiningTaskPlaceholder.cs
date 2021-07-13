@@ -1,7 +1,6 @@
 ﻿using System;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -10,14 +9,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
-    sealed class MiningTaskPlaceholder : GameObject, ISelectable
+    sealed class MiningTaskPlaceholder : GameObject
     {
         private readonly Faction faction;
         private readonly Tile tile;
         private readonly Id<IWorkerTask> taskId;
         private MiningTask task = null!;
-
-        public SelectionState SelectionState { get; private set; }
 
         public MiningTaskPlaceholder(Faction faction, Tile tile, Id<IWorkerTask> taskId)
         {
@@ -57,21 +54,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public override void Draw(CoreDrawers drawers)
         {
-            var color = .5f * (SelectionState == SelectionState.Focused ? Color.DarkViolet : Color.MediumVioletRed);
+            var color = .5f * Color.MediumVioletRed;
             drawers.ConsoleBackground.FillCircle(
                 Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, color, 6);
         }
-
-        public void ResetSelection()
-        {
-            SelectionState = SelectionState.Default;
-        }
-
-        public void Focus()
-        {
-            SelectionState = SelectionState.Focused;
-        }
-
-        public void Select() {}
     }
 }

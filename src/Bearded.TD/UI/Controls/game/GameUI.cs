@@ -5,6 +5,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
@@ -34,7 +35,7 @@ namespace Bearded.TD.UI.Controls
         public TechnologyUI TechnologyUI { get; }
 
         public event VoidEventHandler? FocusReset;
-        public event GenericEventHandler<ISelectable>? EntityStatusOpened;
+        public event GenericEventHandler<IReportSubject>? EntityStatusOpened;
         public event VoidEventHandler? EntityStatusClosed;
         public event VoidEventHandler? GameVictoryTriggered;
         public event VoidEventHandler? GameOverTriggered;
@@ -140,7 +141,7 @@ namespace Bearded.TD.UI.Controls
             dependencies.Add(uiUpdater);
 
             var (models, views) = NavigationFactories.ForBoth()
-                .Add<BuildingStatusOverlay, IPlacedBuilding>(m => new BuildingStatusOverlayControl(m))
+                .Add<ReportSubjectOverlay, IReportSubject>(m => new ReportSubjectOverlayControl(m))
                 .ToDictionaries();
 
             entityStatusNavigation = new NavigationController(
@@ -153,17 +154,9 @@ namespace Bearded.TD.UI.Controls
 
         private void onObjectSelected(ISelectable selectedObject)
         {
-            switch (selectedObject)
-            {
-                case IPlacedBuilding building:
-                    entityStatusNavigation!.ReplaceAll<BuildingStatusOverlay, IPlacedBuilding>(building);
-                    break;
-                // TODO: add a worker status screen
-                default:
-                    return;
-            }
-
-            EntityStatusOpened?.Invoke(selectedObject);
+            var subject = selectedObject.Subject;
+            entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
+            EntityStatusOpened?.Invoke(subject);
         }
 
         private void onObjectDeselected(ISelectable t)
