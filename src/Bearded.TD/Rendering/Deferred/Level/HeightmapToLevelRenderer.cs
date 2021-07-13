@@ -76,12 +76,12 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             var visibleArea = getCameraFrustumBounds();
 
-            var gridDimensions = getGridDimensionsAndScaleFor(visibleArea);
+            var gridDimensions = getGridDimensionsFor(visibleArea);
 
             renderLevelGrid(visibleArea, gridDimensions);
         }
 
-        private struct GridDimensions
+        private readonly struct GridDimensions
         {
             public float Scale { get; init; }
             public float CellColumnsHalf { get; init; }
@@ -122,7 +122,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
             }
         }
 
-        private GridDimensions getGridDimensionsAndScaleFor(Rectangle cameraFrustumBounds)
+        private GridDimensions getGridDimensionsFor(Rectangle cameraFrustumBounds)
         {
             // ensure minimum level of detail based on graphics settings
             var (cellColumnsHalf, cellRowsHalf) = getMinimumGridDimensions();
