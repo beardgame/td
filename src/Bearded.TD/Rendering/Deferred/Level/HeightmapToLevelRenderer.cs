@@ -89,8 +89,6 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
             gridScaleUniform.Value = new Vector2(scale);
 
-            var cellsDrawn = 0;
-
             var tilingX = gridMeshBuilder.TilingX * scale;
             var tilingY = gridMeshBuilder.TilingY * scale;
             var cellVisibleWidth = tilingX.X + tilingY.X;
@@ -115,11 +113,8 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
                     gridOffsetUniform.Value = offset;
                     renderSingleGridCell();
-                    cellsDrawn++;
                 }
             }
-
-            Console.WriteLine(cellsDrawn);
         }
 
         private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
