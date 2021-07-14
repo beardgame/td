@@ -34,6 +34,12 @@ namespace Bearded.TD.Game.Simulation.Components
             components.Add(blueprint.GetComponents<ComponentGameObject>());
         }
 
+        protected override void OnDelete()
+        {
+            events.Send(new ObjectDeleting());
+            base.OnDelete();
+        }
+
         public override void Update(TimeSpan elapsedTime)
         {
             components.Update(elapsedTime);

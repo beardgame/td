@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Meta
         IReportSubject Subject { get; }
 
         void ResetSelection();
-        void Focus();
-        void Select();
+        void Focus(SelectionManager.UndoDelegate undoFocus);
+        void Select(SelectionManager.UndoDelegate undoSelection);
     }
 }

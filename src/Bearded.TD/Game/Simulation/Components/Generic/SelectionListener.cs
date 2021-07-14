@@ -1,6 +1,6 @@
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Selection.events;
+using Bearded.TD.Game.Simulation.Selection;
 
 namespace Bearded.TD.Game.Simulation.Components.Generic
 {

@@ -93,6 +93,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Position = Position.XY().WithZ(z);
         }
 
+        protected override void OnDelete()
+        {
+            Events.Send(new ObjectDeleting());
+            base.OnDelete();
+        }
+
         protected abstract IEnumerable<IComponent<T>> InitializeComponents();
         public IEnumerable<TComponent> GetComponents<TComponent>() => Components.Get<TComponent>();
 
