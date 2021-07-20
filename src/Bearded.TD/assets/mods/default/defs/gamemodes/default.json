@@ -16,6 +16,16 @@
             }
         },
         {
+            "id" : "addFaction",
+            "parameters" : {
+                "blueprint": {
+                    "id": "neutral",
+                    "behaviors": [],
+                    "color": "gray"
+                }
+            }
+        },
+        {
             "id" : "addPlayerFactions",
             "parameters" : {
                 "parent" : "players",
