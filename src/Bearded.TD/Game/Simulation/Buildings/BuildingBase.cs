@@ -8,9 +8,7 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
@@ -21,8 +19,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IComponentOwner<T>,
             IFactioned,
             IListener<FootprintChanged>,
-            IPositionable,
-            ITransformable
+            IPositionable
         where T : BuildingBase<T>
     {
         protected ComponentCollection<T> Components { get; }
@@ -35,9 +32,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public Faction Faction { get; }
         public Position3 Position { get; private set; }
-
-        public Matrix2 LocalCoordinateTransform { get; private set; }
-        public Angle LocalOrientationTransform { get; private set; }
 
         protected BuildingBase(
             IBuildingBlueprint blueprint,
@@ -58,7 +52,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void HandleEvent(FootprintChanged @event)
         {
             calculatePosition(@event.NewFootprint);
-            recalculateLocalTransform(@event.NewFootprint);
         }
 
         private void calculatePosition(PositionedFootprint footprint)
@@ -67,12 +60,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 ? Game.GeometryLayer[footprint.RootTile].DrawInfo.Height
                 : Unit.Zero;
             Position = footprint.CenterPosition.WithZ(z);
-        }
-
-        private void recalculateLocalTransform(PositionedFootprint footprint)
-        {
-            LocalCoordinateTransform = footprint.Orientation.Transformation;
-            LocalOrientationTransform = footprint.Orientation;
         }
 
         protected override void OnDelete()
