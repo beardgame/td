@@ -7,8 +7,8 @@ namespace Bearded.TD.Game.Simulation.Components
     {
         public static Maybe<T> FindInComponentOwnerTree<T>(this IComponentOwner componentOwner)
         {
-            if (componentOwner is T damageOwner)
-                return Just(damageOwner);
+            if (componentOwner is T typeToFind)
+                return Just(typeToFind);
 
             return componentOwner.Parent.SelectMany(FindInComponentOwnerTree<T>);
         }

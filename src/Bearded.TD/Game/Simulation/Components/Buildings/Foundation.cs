@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
     [Component("foundation")]
     sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation
-        where T : IGameObject, IPositionable
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
             spriteSide = sprites.GetSprite("side");
             spriteTop = sprites.GetSprite("top");
 
-            occupiedTilesTracker.Initialize(Events);
+            occupiedTilesTracker.Initialize(Owner, Events);
         }
 
         public override void Update(TimeSpan elapsedTime)

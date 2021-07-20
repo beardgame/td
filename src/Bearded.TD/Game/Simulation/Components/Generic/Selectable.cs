@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         Component<T>,
         ISelectable,
         IListener<ObjectDeleting>
-        where T : IGameObject, IReportSubject
+        where T : IComponentOwner, IGameObject, IReportSubject
     {
         private SelectionLayer? selectionLayer;
         private SelectionState selectionState;
@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         protected override void Initialize()
         {
             selectionLayer = Owner.Game.SelectionLayer;
-            occupiedTilesTracker.Initialize(Events);
+            occupiedTilesTracker.Initialize(Owner, Events);
             occupiedTilesTracker.OccupiedTiles.ForEach(registerTile);
             occupiedTilesTracker.TileAdded += registerTile;
             occupiedTilesTracker.TileRemoved += unregisterTile;

@@ -10,6 +10,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private readonly PositionedFootprint footprint;
 
+        public override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
+
         public StaticBuildingFootprint(PositionedFootprint footprint)
         {
             this.footprint = footprint;
