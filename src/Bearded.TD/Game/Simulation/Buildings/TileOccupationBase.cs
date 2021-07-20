@@ -5,7 +5,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    abstract class BuildingFootprintBase<T> : Component<T>, IBuildingFootprint
+    abstract class TileOccupationBase<T> : Component<T>, ITileOccupation
     {
         public abstract IEnumerable<Tile> OccupiedTiles { get; }
 
