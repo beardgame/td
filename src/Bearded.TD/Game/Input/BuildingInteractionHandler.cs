@@ -10,7 +10,8 @@ namespace Bearded.TD.Game.Input
         private readonly Faction faction;
         private readonly IBuildingBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
-        private BuildingGhost ghost;
+        private BuildingGhost? ghost;
+        private MovableBuildingFootprint<BuildingGhost>? ghostFootprint;
 
         public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
         {
@@ -21,23 +22,31 @@ namespace Bearded.TD.Game.Input
 
         protected override void OnStart(ICursorHandler cursor)
         {
-            ghost = new BuildingGhost(blueprint, faction, cursor.CurrentFootprint);
+            ghost = new BuildingGhost(blueprint, faction);
             Game.State.Add(ghost);
+            ghostFootprint = new MovableBuildingFootprint<BuildingGhost>();
+            ghost.AddComponent(ghostFootprint);
         }
 
         public override void Update(ICursorHandler cursor)
         {
             var footprint = cursor.CurrentFootprint;
-            ghost.SetFootprint(footprint);
+            ghostFootprint?.SetFootprint(footprint);
             if (cursor.Click.Hit)
+            {
                 Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
+            }
             else if (cursor.Cancel.Hit)
+            {
                 Game.PlayerInput.ResetInteractionHandler();
+            }
         }
 
         protected override void OnEnd(ICursorHandler cursor)
         {
-            ghost.Delete();
+            ghost?.Delete();
+            ghost = null;
+            ghostFootprint = null;
         }
     }
 }

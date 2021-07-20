@@ -99,6 +99,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             base.OnDelete();
         }
 
+        public void AddComponent(IComponent<T> component)
+        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
+            Components.Add(component);
+        }
+
         protected abstract IEnumerable<IComponent<T>> InitializeComponents();
         public IEnumerable<TComponent> GetComponents<TComponent>() => Components.Get<TComponent>();
 

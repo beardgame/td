@@ -79,13 +79,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             reports.Add(new UpgradeReport(this));
         }
 
-        public void AddComponent(IComponent<Building> component)
-        {
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
-            Components.Add(component);
-        }
-
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
