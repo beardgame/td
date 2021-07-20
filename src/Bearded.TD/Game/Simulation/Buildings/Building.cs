@@ -33,7 +33,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         BuildingBase<Building>,
         IIdable<Building>,
         IDamageSource,
-        IListener<AccumulateOccupiedTiles>, // TODO: move to footprint
         IListener<ReportAdded>,
         IMortal,
         IPlacedBuilding,
@@ -121,8 +120,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
 
             Game.IdAs(this);
-            Events.Subscribe<AccumulateOccupiedTiles>(this);
-            Events.Subscribe<ReportAdded>(this);
+            Events.Subscribe(this);
             SelectionListener.Create(
                     onFocus: () => mutableState.SelectionState = SelectionState.Focused,
                     onFocusReset: () => mutableState.SelectionState = SelectionState.Default,
