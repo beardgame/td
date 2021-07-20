@@ -6,7 +6,7 @@
             "id" : "addFaction",
             "parameters" : {
                 "blueprint": {
-                    "id": "root",
+                    "id": "players",
                     "behaviors": [
                         { "id": "resources" },
                         { "id": "technology" },
@@ -18,7 +18,7 @@
         {
             "id" : "addPlayerFactions",
             "parameters" : {
-                "parent" : "root",
+                "parent" : "players",
                 "blueprint" : {
                     "behaviors" : [
                         { "id" : "workers" }
