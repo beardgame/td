@@ -7,13 +7,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class StaticBuildingFootprint<T> : BuildingFootprintBase<T>
+    sealed class StaticTileOccupation<T> : TileOccupationBase<T>
     {
         private readonly PositionedFootprint footprint;
 
         public override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
 
-        public StaticBuildingFootprint(PositionedFootprint footprint)
+        public StaticTileOccupation(PositionedFootprint footprint)
         {
             this.footprint = footprint;
         }

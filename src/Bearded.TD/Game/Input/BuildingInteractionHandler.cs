@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Input
         private readonly IBuildingBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
         private BuildingGhost? ghost;
-        private MovableBuildingFootprint<BuildingGhost>? ghostFootprint;
+        private MovableTileOccupation<BuildingGhost>? ghostTileOccupation;
 
         public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
         {
@@ -24,14 +24,14 @@ namespace Bearded.TD.Game.Input
         {
             ghost = new BuildingGhost(blueprint, faction);
             Game.State.Add(ghost);
-            ghostFootprint = new MovableBuildingFootprint<BuildingGhost>();
-            ghost.AddComponent(ghostFootprint);
+            ghostTileOccupation = new MovableTileOccupation<BuildingGhost>();
+            ghost.AddComponent(ghostTileOccupation);
         }
 
         public override void Update(ICursorHandler cursor)
         {
             var footprint = cursor.CurrentFootprint;
-            ghostFootprint?.SetFootprint(footprint);
+            ghostTileOccupation?.SetFootprint(footprint);
             if (cursor.Click.Hit)
             {
                 Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Input
         {
             ghost?.Delete();
             ghost = null;
-            ghostFootprint = null;
+            ghostTileOccupation = null;
         }
     }
 }

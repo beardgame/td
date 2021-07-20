@@ -10,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class MovableBuildingFootprint<T> : BuildingFootprintBase<T>
+    sealed class MovableTileOccupation<T> : TileOccupationBase<T>
     {
         private PositionedFootprint footprint;
 
