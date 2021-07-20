@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -69,10 +70,10 @@ namespace Bearded.TD.Game.Simulation.Navigation
         public void HandleEvent(TileTypeChanged @event) => updatePassabilityForTile(@event.Tile);
 
         public void HandleEvent(BuildingConstructionStarted @event)
-            => @event.Building.OccupiedTiles.ForEach(updatePassabilityForTile);
+            => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
 
         public void HandleEvent(BuildingDestroyed @event)
-            => @event.Builder.OccupiedTiles.ForEach(updatePassabilityForTile);
+            => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Builder).ForEach(updatePassabilityForTile);
 
         private void updatePassabilityForTile(Tile tile)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 
@@ -25,7 +26,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void AddBuilding(IPlacedBuilding building)
         {
-            foreach (var tile in building.OccupiedTiles)
+            foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
                 DebugAssert.State.Satisfies(!buildingLookup.ContainsKey(tile));
                 buildingLookup.Add(tile, building);
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void RemoveBuilding(IPlacedBuilding building)
         {
-            foreach (var tile in building.OccupiedTiles)
+            foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
                 DebugAssert.State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
                 buildingLookup.Remove(tile);

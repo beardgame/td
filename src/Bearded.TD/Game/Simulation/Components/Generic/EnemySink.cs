@@ -1,6 +1,6 @@
 ﻿using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -10,16 +10,22 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 {
     [Component("sink")]
     sealed class EnemySink<T> : Component<T>
-        where T : IGameObject, IPlacedBuilding, IPositionable
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         private Maybe<IHealth> healthComponent;
+        private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
         protected override void Initialize()
         {
-            foreach (var tile in Owner.OccupiedTiles)
+            occupiedTilesTracker.Initialize(Owner, Events);
+
+            foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
                 Owner.Game.Navigator.AddSink(tile);
             }
+
+            occupiedTilesTracker.TileAdded += Owner.Game.Navigator.AddSink;
+            occupiedTilesTracker.TileRemoved += Owner.Game.Navigator.RemoveSink;
 
             healthComponent = Owner.GetComponents<IHealth>().MaybeSingle();
         }

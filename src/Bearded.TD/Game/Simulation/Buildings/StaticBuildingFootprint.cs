@@ -17,7 +17,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.footprint = footprint;
         }
 
-        protected override IEnumerable<Tile> GetOccupiedTiles() => footprint.OccupiedTiles;
 
         public override void Update(TimeSpan elapsedTime) {}
 

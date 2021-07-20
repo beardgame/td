@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -15,7 +16,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
 {
     sealed class BuildingGhostDrawing : Component<BuildingGhost>
     {
-        protected override void Initialize() {}
+        private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+
+        protected override void Initialize()
+        {
+            occupiedTilesTracker.Initialize(Owner, Events);
+        }
+
         public override void Update(TimeSpan elapsedTime) {}
 
         public override void Draw(CoreDrawers drawers)
@@ -24,7 +31,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var anyTileOutsideWorkerNetwork = false;
 
             Owner.Faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var workerNetwork);
-            foreach (var tile in Owner.OccupiedTiles)
+            foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
                 var baseColor = Color.Green;
 
@@ -52,7 +59,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 {
                     var neighbor = tile.Neighbour(direction);
 
-                    if (!Owner.OccupiedTiles.Contains(neighbor))
+                    if (!occupiedTilesTracker.OccupiedTiles.Contains(neighbor))
                         continue;
 
                     if (!Owner.Game.BuildingPlacementLayer.IsTileValidForBuilding(neighbor))

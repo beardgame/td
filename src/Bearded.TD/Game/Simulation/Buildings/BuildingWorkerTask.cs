@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Tiles;
@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {building.Blueprint.Name}";
-        public IEnumerable<Tile> Tiles => building.OccupiedTiles;
+        public IEnumerable<Tile> Tiles { get; }
         public double PercentCompleted => !started ? 0 : healthGiven / maxHealth;
         public bool CanAbort => !started;
         public bool Finished { get; private set; }
@@ -40,6 +40,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.building = building;
             resourceConsumer = new ResourceConsumer(building.Game, resourceReservation, 0.ResourcesPerSecond());
 
+            Tiles = OccupiedTileAccumulator.AccumulateOccupiedTiles(building);
             building.Completing += onBuildingCompleting;
             building.GetComponents<IHealth>()
                 .MaybeSingle()

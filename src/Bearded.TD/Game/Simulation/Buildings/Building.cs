@@ -97,11 +97,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
-        public void HandleEvent(AccumulateOccupiedTiles @event)
-        {
-            @event.AddTiles(OccupiedTiles);
-        }
-
         public void HandleEvent(ReportAdded @event)
         {
             // Use an Insert to ensure that the upgrades report is always last.
@@ -113,7 +108,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
 
             Game.IdAs(this);
-            Events.Subscribe(this);
             SelectionListener.Create(
                     onFocus: () => mutableState.SelectionState = SelectionState.Focused,
                     onFocusReset: () => mutableState.SelectionState = SelectionState.Default,
@@ -134,7 +128,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Game.BuildingLayer.RemoveBuilding(this);
             if (State.IsMaterialized)
             {
-                OccupiedTiles.ForEach(tile => { Game.Navigator.RemoveSink(tile); });
+                OccupiedTileAccumulator.AccumulateOccupiedTiles(this)
+                    .ForEach(tile => { Game.Navigator.RemoveSink(tile); });
             }
             base.OnDelete();
         }
@@ -145,7 +140,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();
-            OccupiedTiles.ForEach(tile => Game.Navigator.AddBackupSink(tile));
+            OccupiedTileAccumulator.AccumulateOccupiedTiles(this).ForEach(tile => Game.Navigator.AddBackupSink(tile));
         }
 
         public void SetBuildProgress(HitPoints healthAdded)
