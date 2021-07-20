@@ -5,6 +5,7 @@
   "cost" : 75,
   "components" : [
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
+    { "id" :  "footprintTransformation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     {
       "id" : "turret",

@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Content.Models;
+﻿using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -21,15 +22,16 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
 
     [Component("turret")]
     sealed class Turret<T> : Component<T, ITurretParameters>, ITurret
-        where T : IFactioned, IGameObject, IPositionable, ITransformable
+        where T : IComponentOwner, IFactioned, IGameObject, IPositionable
     {
         private Weapon weapon = null!;
+        private ITransformable transform = null!;
 
         public Position3 Position =>
-            (Owner.Position.XY() + Owner.LocalCoordinateTransform.Transform(Parameters.Offset))
+            (Owner.Position.XY() + transform.LocalCoordinateTransform.Transform(Parameters.Offset))
             .WithZ(Owner.Position.Z + Parameters.Height);
 
-        public Direction2 NeutralDirection => Parameters.NeutralDirection + Owner.LocalOrientationTransform;
+        public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
         public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
@@ -37,6 +39,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
         protected override void Initialize()
         {
             weapon = new Weapon(Parameters.Weapon, this);
+            transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         }
 
         public override void Update(TimeSpan elapsedTime)
