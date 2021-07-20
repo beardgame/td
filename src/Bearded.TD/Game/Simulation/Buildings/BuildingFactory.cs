@@ -24,6 +24,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new StaticTileOccupation<Building>(footprint));
             building.AddComponent(new StatisticCollector<Building>());
             building.AddComponent(new Selectable<Building>());
+            gameState.BuildingLayer.AddBuilding(building);
             return building;
         }
     }

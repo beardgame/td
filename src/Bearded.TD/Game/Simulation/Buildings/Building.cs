@@ -110,7 +110,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
                     onSelect: () => mutableState.SelectionState = SelectionState.Selected,
                     onSelectionReset: () => mutableState.SelectionState = SelectionState.Default)
                 .Subscribe(Events);
-            Game.BuildingLayer.AddBuilding(this);
             base.OnAdded();
         }
 
