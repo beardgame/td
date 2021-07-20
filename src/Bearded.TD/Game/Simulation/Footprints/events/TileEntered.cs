@@ -1,7 +1,7 @@
 using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Simulation.Footprints.events
+namespace Bearded.TD.Game.Simulation.Footprints
 {
     readonly struct TileEntered : IComponentEvent
     {

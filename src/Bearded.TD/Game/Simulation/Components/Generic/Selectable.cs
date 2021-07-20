@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Footprints.events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Rendering;

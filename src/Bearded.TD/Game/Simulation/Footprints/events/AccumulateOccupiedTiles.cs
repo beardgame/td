@@ -4,7 +4,7 @@ using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 
-namespace Bearded.TD.Game.Simulation.Footprints.events
+namespace Bearded.TD.Game.Simulation.Footprints
 {
     readonly struct AccumulateOccupiedTiles : IComponentEvent
     {

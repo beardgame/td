@@ -11,7 +11,7 @@ using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.Footprints.events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
