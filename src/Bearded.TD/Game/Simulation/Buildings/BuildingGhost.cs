@@ -2,7 +2,6 @@
 using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Simulation.Buildings
@@ -12,10 +11,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         public override IBuildingState State { get; } = new GhostBuildingState();
 
-        public BuildingGhost(IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
-            : base(blueprint, faction, footprint) {}
-
-        public void SetFootprint(PositionedFootprint footprint) => ChangeFootprint(footprint);
+        public BuildingGhost(IBuildingBlueprint blueprint, Faction faction)
+            : base(blueprint, faction) {}
 
         protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
             => new BuildingGhostDrawing().Yield().Concat(Blueprint.GetComponentsForGhost());

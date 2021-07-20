@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -17,6 +18,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.footprint = footprint;
         }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+            Events.Send(new FootprintChanged(footprint));
+        }
 
         public override void Update(TimeSpan elapsedTime) {}
 

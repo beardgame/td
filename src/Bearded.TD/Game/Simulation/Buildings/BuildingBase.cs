@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -19,12 +20,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IBuilding,
             IComponentOwner<T>,
             IFactioned,
+            IListener<FootprintChanged>,
             IPositionable,
             ITransformable
         where T : BuildingBase<T>
     {
-        private PositionedFootprint footprint;
-
         protected ComponentCollection<T> Components { get; }
         protected ComponentEvents Events { get; } = new();
 
@@ -33,64 +33,46 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public IBuildingBlueprint Blueprint { get; }
 
-        protected PositionedFootprint Footprint
-        {
-            get => footprint;
-            private set
-            {
-                footprint = value;
-                Position = footprint.CenterPosition.WithZ();
-                recalculateLocalTransform();
-            }
-        }
-
         public Faction Faction { get; }
         public Position3 Position { get; private set; }
 
         public Matrix2 LocalCoordinateTransform { get; private set; }
-        public Angle LocalOrientationTransform => Footprint.Orientation;
-
-        public IEnumerable<Tile> OccupiedTiles => Footprint.OccupiedTiles;
+        public Angle LocalOrientationTransform { get; private set; }
 
         protected BuildingBase(
             IBuildingBlueprint blueprint,
-            Faction faction,
-            PositionedFootprint footprint)
+            Faction faction)
         {
             Blueprint = blueprint;
             Faction = faction;
-            Footprint = footprint;
             Components = new ComponentCollection<T>((T) this, Events);
-        }
-
-        private void recalculateLocalTransform()
-        {
-            LocalCoordinateTransform = footprint.Orientation.Transformation;
-        }
-
-        protected virtual void ChangeFootprint(PositionedFootprint newFootprint)
-        {
-            Footprint = newFootprint;
-
-            calculatePositionZ();
         }
 
         protected override void OnAdded()
         {
             base.OnAdded();
-
-            calculatePositionZ();
-
+            Events.Subscribe(this);
             Components.Add(InitializeComponents());
         }
 
-        private void calculatePositionZ()
+        public void HandleEvent(FootprintChanged @event)
+        {
+            calculatePosition(@event.NewFootprint);
+            recalculateLocalTransform(@event.NewFootprint);
+        }
+
+        private void calculatePosition(PositionedFootprint footprint)
         {
             var z = Game.Level.IsValid(footprint.RootTile)
                 ? Game.GeometryLayer[footprint.RootTile].DrawInfo.Height
                 : Unit.Zero;
+            Position = footprint.CenterPosition.WithZ(z);
+        }
 
-            Position = Position.XY().WithZ(z);
+        private void recalculateLocalTransform(PositionedFootprint footprint)
+        {
+            LocalCoordinateTransform = footprint.Orientation.Transformation;
+            LocalOrientationTransform = footprint.Orientation;
         }
 
         protected override void OnDelete()

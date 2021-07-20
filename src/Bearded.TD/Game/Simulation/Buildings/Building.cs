@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +15,6 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -62,8 +60,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public event VoidEventHandler? Completing;
 
-        public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
-            : base(blueprint, faction, footprint)
+        public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction)
+            : base(blueprint, faction)
         {
             Id = id;
             Name = blueprint.Name;
@@ -105,8 +103,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void OnAdded()
         {
-            DebugAssert.State.Satisfies(Footprint.IsValid(Game.Level));
-
             Game.IdAs(this);
             SelectionListener.Create(
                     onFocus: () => mutableState.SelectionState = SelectionState.Focused,
@@ -217,8 +213,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public IStateToSync GetCurrentStateToSync() =>
             new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
-
-        protected override void ChangeFootprint(PositionedFootprint footprint)
-            => throw new InvalidOperationException("Cannot change footprint of placed building.");
     }
 }

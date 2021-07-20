@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public Building Create(
             Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
         {
-            var building = new Building(id, blueprint, faction, footprint);
+            var building = new Building(id, blueprint, faction);
             gameState.Add(building);
             building.AddComponent(new StaticBuildingFootprint<Building>(footprint));
             building.AddComponent(new StatisticCollector<Building>());

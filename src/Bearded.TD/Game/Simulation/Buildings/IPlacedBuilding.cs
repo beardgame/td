@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Tiles;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Buildings
@@ -9,7 +8,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         IBuildingBlueprint Blueprint { get; }
         Faction Faction { get; }
-        IEnumerable<Tile> OccupiedTiles { get; }
 
         event VoidEventHandler? Deleting;
     }
