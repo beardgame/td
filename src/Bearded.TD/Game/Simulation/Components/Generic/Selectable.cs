@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -16,14 +15,12 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
     sealed class Selectable<T> :
         Component<T>,
         ISelectable,
-        IListener<TileEntered>,
-        IListener<TileLeft>,
         IListener<ObjectDeleting>
         where T : IGameObject, IReportSubject
     {
         private SelectionLayer? selectionLayer;
         private SelectionState selectionState;
-        private readonly HashSet<Tile> registeredTiles = new();
+        private readonly OccupiedTilesTracker occupiedTilesTracker = new();
         private SelectionManager.UndoDelegate? resetFunc;
 
         public IReportSubject Subject => Owner;
@@ -31,20 +28,11 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
         protected override void Initialize()
         {
             selectionLayer = Owner.Game.SelectionLayer;
-            registerOccupiedTiles();
-
-            Events.Subscribe<TileEntered>(this);
-            Events.Subscribe<TileLeft>(this);
-            Events.Subscribe<ObjectDeleting>(this);
-        }
-
-        private void registerOccupiedTiles()
-        {
-            registeredTiles.Clear();
-
-            var acc = new AccumulateOccupiedTiles.Accumulator();
-            Events.Send(new AccumulateOccupiedTiles(acc));
-            acc.ToTileSet().ForEach(registerTile);
+            occupiedTilesTracker.Initialize(Events);
+            occupiedTilesTracker.OccupiedTiles.ForEach(registerTile);
+            occupiedTilesTracker.TileAdded += registerTile;
+            occupiedTilesTracker.TileRemoved += unregisterTile;
+            Events.Subscribe(this);
         }
 
         public void ResetSelection()
@@ -82,16 +70,6 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
             Events.Send(new ObjectSelected());
         }
 
-        public void HandleEvent(TileEntered @event)
-        {
-            registerTile(@event.Tile);
-        }
-
-        public void HandleEvent(TileLeft @event)
-        {
-            unregisterTile(@event.Tile);
-        }
-
         public void HandleEvent(ObjectDeleting @event)
         {
             unregisterAllTiles();
@@ -100,28 +78,20 @@ namespace Bearded.TD.Game.Simulation.Components.Generic
 
         private void registerTile(Tile tile)
         {
-            if (registeredTiles.Add(tile))
-            {
-                selectionLayer?.RegisterSelectable(tile, this);
-            }
+            selectionLayer?.RegisterSelectable(tile, this);
         }
 
         private void unregisterTile(Tile tile)
         {
-            if (registeredTiles.Remove(tile))
-            {
-                selectionLayer?.UnregisterSelectable(tile, this);
-            }
+            selectionLayer?.UnregisterSelectable(tile, this);
         }
 
         private void unregisterAllTiles()
         {
-            foreach (var t in registeredTiles)
+            foreach (var t in occupiedTilesTracker.OccupiedTiles)
             {
                 selectionLayer?.UnregisterSelectable(t, this);
             }
-
-            registeredTiles.Clear();
         }
 
         public override void Update(TimeSpan elapsedTime) {}

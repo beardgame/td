@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
@@ -27,8 +27,10 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
     [Component("foundation")]
     sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation
-        where T : IGameObject, IPlacedBuilding, IPositionable
+        where T : IGameObject, IPositionable
     {
+        private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+
         private Sprite spriteSide = null!;
         private Sprite spriteTop = null!;
 
@@ -53,6 +55,8 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
             // later we may want to depend on parameters for tower specific config
             spriteSide = sprites.GetSprite("side");
             spriteTop = sprites.GetSprite("top");
+
+            occupiedTilesTracker.Initialize(Events);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -61,7 +65,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
 
         public override void Draw(CoreDrawers drawers)
         {
-            foreach (var tile in Owner.OccupiedTiles)
+            foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
                 drawTile(tile, BaseHeight, TopHeight);
             }
