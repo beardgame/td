@@ -9,9 +9,7 @@ namespace Bearded.TD.Utilities
         public static void Write<T>(this NetBuffer buffer, T s)
             where T : struct
         {
-            var type = typeof(T);
-            var underlyingType = type.IsEnum ? Enum.GetUnderlyingType(type) : type;
-            var size = Marshal.SizeOf(underlyingType);
+            var size = Marshal.SizeOf(typeof(T));
             var array = new byte[size];
             var ptr = Marshal.AllocHGlobal(size);
             Marshal.StructureToPtr(s, ptr, true);
@@ -23,9 +21,7 @@ namespace Bearded.TD.Utilities
         public static void Read<T>(this NetBuffer buffer, out T s)
             where T : struct
         {
-            var type = typeof(T);
-            var underlyingType = type.IsEnum ? Enum.GetUnderlyingType(type) : type;
-            var size = Marshal.SizeOf(underlyingType);
+            var size = Marshal.SizeOf(typeof(T));
             var array = buffer.ReadBytes(size);
             var ptr = Marshal.AllocHGlobal(size);
             Marshal.Copy(array, 0, ptr, size);
