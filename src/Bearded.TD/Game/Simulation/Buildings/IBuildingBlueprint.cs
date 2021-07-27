@@ -10,15 +10,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
     interface IBuildingBlueprint : IBlueprint
     {
         string Name { get; }
-        ResourceAmount ResourceCost { get; }
         IReadOnlyList<UpgradeTag> Tags { get; }
 
         IEnumerable<IComponent<Building>> GetComponentsForBuilding();
         IEnumerable<IComponent<BuildingGhost>> GetComponentsForGhost();
 
-        // TODO: this is ugly and we should figure out the correct way of doing it
+        // TODO: these are ugly and we should figure out the correct way of doing it
         FootprintGroup GetFootprintGroup() =>
             GetComponentsForBuilding().OfType<IFootprintGroup>().SingleOrDefault()?.FootprintGroup ??
             FootprintGroup.Single;
+
+        ResourceAmount GetResourceCost() =>
+            GetComponentsForBuilding().OfType<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
     }
 }

@@ -1,8 +1,8 @@
 {
   "id" : "workerAntenna",
   "name" : "Worker Antenna",
-  "cost" : 150,
   "components" : [
+    { "id" : "cost", "parameters" : { "resources" : 150 } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },

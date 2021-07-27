@@ -2,8 +2,8 @@
   "id": "wall",
   "name": "Wall",
   "footprint": "single",
-  "cost": 15,
   "components": [
+    { "id" : "cost", "parameters" : { "resources" : 15 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     {

@@ -1,8 +1,8 @@
 {
   "id" : "base",
   "name" : "Main Base",
-  "cost" : 1,
   "components" : [
+    { "id" : "cost", "parameters" : { "resources" : 1 } },
     { "id" : "footprint", "parameters" : { "group" : "seven" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
