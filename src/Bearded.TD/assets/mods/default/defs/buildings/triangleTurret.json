@@ -1,9 +1,9 @@
 {
   "id" : "triangleTurret",
   "name" : "Triangular Turret",
-  "footprint" : "triangle",
   "cost" : 75,
   "components" : [
+    { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" :  "footprintTransformation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },

@@ -15,7 +15,6 @@ namespace Bearded.TD.Content.Models
     {
         public ModAwareId Id { get; }
         public string Name { get; }
-        public FootprintGroup FootprintGroup { get; }
         public ResourceAmount ResourceCost { get; }
 
         public IReadOnlyList<UpgradeTag> Tags { get; }
@@ -24,14 +23,12 @@ namespace Bearded.TD.Content.Models
         public BuildingBlueprint(
             ModAwareId id,
             string name,
-            FootprintGroup footprintGroup,
             ResourceAmount resourceCost,
             IEnumerable<UpgradeTag> tags,
             IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
             Name = name;
-            FootprintGroup = footprintGroup;
             ResourceCost = resourceCost;
 
             Tags = tags.ToImmutableArray();

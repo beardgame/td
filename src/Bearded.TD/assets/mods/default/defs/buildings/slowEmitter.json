@@ -1,9 +1,9 @@
 {
   "id" : "slowEmitter",
   "name" : "Slow field emitter",
-  "footprint" : "triangle",
   "cost" : 150,
   "components" : [
+    { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 250 } },
     {

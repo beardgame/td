@@ -14,7 +14,6 @@ namespace Bearded.TD.Content.Serialization.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public Game.Simulation.World.FootprintGroup Footprint { get; set; }
         public ResourceAmount Cost { get; set; }
         public List<string> Tags { get; set; } = new();
         public List<IBuildingComponent> Components { get; set; } = new();
@@ -24,7 +23,6 @@ namespace Bearded.TD.Content.Serialization.Models
             return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
-                Footprint,
                 Cost,
                 Tags.Select(tags.Resolve),
                 Components.Select(ComponentFactories.CreateBuildingComponentFactory)

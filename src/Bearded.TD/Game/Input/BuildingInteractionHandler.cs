@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Input
         {
             this.faction = faction;
             this.blueprint = blueprint;
-            TileSelection = TileSelection.FromFootprints(blueprint.FootprintGroup);
+            TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup());
         }
 
         protected override void OnStart(ICursorHandler cursor)

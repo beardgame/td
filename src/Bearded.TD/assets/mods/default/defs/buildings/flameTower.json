@@ -1,9 +1,9 @@
 {
   "id" : "flameTower",
   "name" : "Flame Turret",
-  "footprint" : "triangle",
   "cost" : 100,
   "components" : [
+    { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     {

@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 {
                     return false;
                 }
-                return blueprint.FootprintGroup == footprint.Footprint
+                return blueprint.GetFootprintGroup() == footprint.Footprint
                     && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
                     && factionTechnology.IsBuildingUnlocked(blueprint)
                     && faction.SharesBehaviorWith<WorkerNetwork>(actor.Faction);

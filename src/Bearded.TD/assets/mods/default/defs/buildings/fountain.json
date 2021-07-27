@@ -1,9 +1,9 @@
 {
   "id" : "fountain",
   "name" : "Small Fountain",
-  "footprint" : "single",
   "cost" : 5,
   "components" : [
+    { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 200 } },
     {
