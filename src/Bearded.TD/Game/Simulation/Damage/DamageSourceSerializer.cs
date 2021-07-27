@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     sealed class DamageSourceSerializer
     {
-        private enum SupportedImplementation
+        private enum SupportedImplementation : byte
         {
             None,
             Building,
@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Damage
             DivineIntervention,
         }
 
-        private SupportedImplementation type;
+        private byte type;
         private int id;
 
         public void Populate(IDamageSource? damageSource)
@@ -24,18 +24,18 @@ namespace Bearded.TD.Game.Simulation.Damage
             switch (damageSource)
             {
                 case null:
-                    type = SupportedImplementation.None;
+                    type = (byte) SupportedImplementation.None;
                     break;
                 case Building building:
-                    type = SupportedImplementation.Building;
+                    type = (byte) SupportedImplementation.Building;
                     id = building.Id.Value;
                     break;
                 case EnemyUnit enemy:
-                    type = SupportedImplementation.Enemy;
+                    type = (byte) SupportedImplementation.Enemy;
                     id = enemy.Id.Value;
                     break;
                 case DivineIntervention:
-                    type = SupportedImplementation.DivineIntervention;
+                    type = (byte) SupportedImplementation.DivineIntervention;
                     break;
             }
         }
@@ -44,10 +44,10 @@ namespace Bearded.TD.Game.Simulation.Damage
         {
             return type switch
             {
-                SupportedImplementation.None => null,
-                SupportedImplementation.Building => instance.State.Find(new Id<Building>(id)),
-                SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)),
-                SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
+                (byte) SupportedImplementation.None => null,
+                (byte) SupportedImplementation.Building => instance.State.Find(new Id<Building>(id)),
+                (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)),
+                (byte) SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
                 _ => throw new IndexOutOfRangeException()
             };
         }
