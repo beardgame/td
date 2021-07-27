@@ -1,19 +1,25 @@
 using System;
-using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Players;
+using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Components.Damage;
+using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class BuildingConstructionWork : Component<Building>
+    sealed class BuildingConstructionWork<T> : Component<T>
+        where T : IComponentOwner, IDeletable, IFactioned, IGameObject, INamed
     {
         private readonly Id<IWorkerTask> taskId;
+
         private BuildingWorkerTask workerTask = null!;
 
         public BuildingConstructionWork(Id<IWorkerTask> taskId)
@@ -32,25 +38,18 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 throw new NotSupportedException("Cannot build building without workers.");
             }
 
+            var cost = Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
             workerTask = new BuildingWorkerTask(
                 taskId,
-                Owner,
-                resources.ReserveResources(new FactionResources.ResourceRequest(Owner.Blueprint.GetResourceCost())));
+                Owner.Game,
+                Owner.GetComponents<IBuildingConstructor>().Single(),
+                OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner),
+                Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1),
+                resources.ReserveResources(new FactionResources.ResourceRequest(cost)));
             workers.RegisterTask(workerTask);
         }
 
-        public void StartWork()
-        {
-            Owner.Game.Meta.Events.Send(new BuildingConstructionStarted(Owner));
-        }
-
-        public IRequest<Player, GameInstance> CancelRequest()
-        {
-            return AbortTask.Request(Owner.Faction, workerTask);
-        }
-
         public override void Update(TimeSpan elapsedTime) {}
-
         public override void Draw(CoreDrawers drawers) {}
     }
 }

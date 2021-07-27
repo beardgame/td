@@ -4,11 +4,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
 {
     readonly struct BuildingConstructionFinished : IGlobalEvent
     {
-        public Building Building { get; }
+        public string Name { get; }
+        public IGameObject GameObject { get; }
 
-        public BuildingConstructionFinished(Building building)
+        public BuildingConstructionFinished(string name, IGameObject gameObject)
         {
-            Building = building;
+            Name = name;
+            GameObject = gameObject;
         }
     }
 }

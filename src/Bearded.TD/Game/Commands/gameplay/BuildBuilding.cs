@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             public override void Execute()
             {
                 var building = new BuildingFactory(game.State).Create(id, blueprint, faction, footprint);
-                building.AddComponent(new BuildingConstructionWork(taskId));
+                building.AddComponent(new BuildingConstructionWork<Building>(taskId));
             }
 
             protected override UnifiedRequestCommandSerializer GetSerializer() =>

@@ -31,8 +31,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         BuildingBase<Building>,
         IIdable<Building>,
         IDamageSource,
+        IListener<ConstructionFinished>,
+        IListener<ConstructionStarted>,
         IListener<ReportAdded>,
         IMortal,
+        INamed,
         IPlacedBuilding,
         IReportSubject,
         ISyncable,
@@ -54,11 +57,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public IReadOnlyCollection<IReport> Reports { get; }
         private bool isDead;
 
-        // TODO: ideally this is not exposed to components, but it's needed by worker tasks...
-        public bool IsBuildCompleted => mutableState.IsCompleted;
         public override IBuildingState State { get; }
-
-        public event VoidEventHandler? Completing;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction)
             : base(blueprint, faction)
@@ -95,6 +94,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return damageExecutor.Damage(damage);
         }
 
+        public void HandleEvent(ConstructionFinished @event)
+        {
+            mutableState.IsCompleted = true;
+        }
+
+        public void HandleEvent(ConstructionStarted @event)
+        {
+            materialize();
+        }
+
         public void HandleEvent(ReportAdded @event)
         {
             // Use an Insert to ensure that the upgrades report is always last.
@@ -110,6 +119,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
                     onSelect: () => mutableState.SelectionState = SelectionState.Selected,
                     onSelectionReset: () => mutableState.SelectionState = SelectionState.Default)
                 .Subscribe(Events);
+            Events.Subscribe<ConstructionFinished>(this);
+            Events.Subscribe<ConstructionStarted>(this);
+            Events.Subscribe<ReportAdded>(this);
             base.OnAdded();
         }
 
@@ -126,32 +138,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 OccupiedTileAccumulator.AccumulateOccupiedTiles(this)
                     .ForEach(tile => { Game.Navigator.RemoveSink(tile); });
             }
+
             base.OnDelete();
         }
 
-        public void Materialize()
+        private void materialize()
         {
             mutableState.IsMaterialized = true;
 
             Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();
             OccupiedTileAccumulator.AccumulateOccupiedTiles(this).ForEach(tile => Game.Navigator.AddBackupSink(tile));
-        }
-
-        public void SetBuildProgress(HitPoints healthAdded)
-        {
-            DebugAssert.State.Satisfies(mutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
-            DebugAssert.State.Satisfies(!mutableState.IsCompleted, "Cannot update build progress after building is completed.");
-            Events.Send(new HealDamage(healthAdded));
-        }
-
-        public void SetBuildCompleted()
-        {
-            DebugAssert.State.Satisfies(mutableState.IsMaterialized, "Cannot set build progress when building not materialized.");
-            DebugAssert.State.Satisfies(!mutableState.IsCompleted, "Cannot complete building more than once.");
-            Completing?.Invoke();
-            mutableState.IsCompleted = true;
-            Game.Meta.Events.Send(new BuildingConstructionFinished(this));
         }
 
         public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>

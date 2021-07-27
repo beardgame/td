@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Commands;
+﻿using System.Linq;
+using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
@@ -45,11 +46,17 @@ namespace Bearded.TD.Game.Commands.Loading
             public void Execute()
             {
                 var building = new BuildingFactory(gameState).Create(id, blueprint, faction, footprint);
-                building.Materialize();
+                var constructor = building.GetComponents<IBuildingConstructor>().Single();
+
+                constructor.StartBuild();
+
+                var maxHealth = new HitPoints(1);
                 building.GetComponents<IHealth>()
                     .MaybeSingle()
-                    .Match(health => building.SetBuildProgress(health.MaxHealth - new HitPoints(1)));
-                building.SetBuildCompleted();
+                    .Match(health => maxHealth = health.MaxHealth);
+                constructor.ProgressBuild(maxHealth - new HitPoints(1));
+
+                constructor.CompleteBuild();
             }
 
             public ICommandSerializer<GameInstance> Serializer => new Serializer(faction, id, blueprint, footprint);

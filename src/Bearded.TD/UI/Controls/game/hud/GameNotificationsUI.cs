@@ -17,9 +17,9 @@ namespace Bearded.TD.UI.Controls
     sealed class GameNotificationsUI
     {
         private readonly ImmutableArray<INotificationListener> notificationListeners;
-        private readonly List<Notification> notifications = new List<Notification>();
+        private readonly List<Notification> notifications = new();
 
-        public GameInstance Game { get; private set; }
+        public GameInstance Game { get; private set; } = null!;
         public ReadOnlyCollection<Notification> Notifications { get; }
 
         public event VoidEventHandler? NotificationsChanged;
@@ -33,8 +33,8 @@ namespace Bearded.TD.UI.Controls
         private ImmutableArray<INotificationListener> createNotificationListeners() =>
             ImmutableArray.Create<INotificationListener>(
                 textAndGameObjectEventListener<BuildingConstructionFinished>(
-                    @event => $"Constructed {@event.Building.Blueprint.Name}",
-                    @event => @event.Building),
+                    @event => $"Constructed {@event.Name}",
+                    @event => @event.GameObject),
                 textAndGameObjectEventListener<BuildingUpgradeFinished>(
                     @event => $"Upgraded {@event.Building.Blueprint.Name} with {@event.Upgrade.Name}",
                     @event => @event.Building),
@@ -79,7 +79,7 @@ namespace Bearded.TD.UI.Controls
 
         private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
             where T : struct, IGlobalEvent =>
-            new NotificationListener<T>(
+            new(
                 this,
                 @event => new Notification(
                     textExtractor(@event),
@@ -88,9 +88,9 @@ namespace Bearded.TD.UI.Controls
                     isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
 
         private NotificationListener<T> textAndGameObjectEventListener<T>(
-            Func<T, string> textExtractor, Func<T, GameObject> gameObjectExtractor)
+            Func<T, string> textExtractor, Func<T, IGameObject> gameObjectExtractor)
             where T : struct, IGlobalEvent =>
-                new NotificationListener<T>(
+                new(
                     this,
                     @event => new Notification(
                         textExtractor(@event),
@@ -114,21 +114,8 @@ namespace Bearded.TD.UI.Controls
                 ? Constants.Game.GameUI.SevereNotificationDuration
                 : Constants.Game.GameUI.NotificationDuration);
 
-        public class Notification
-        {
-            public string Text { get; }
-            public Maybe<GameObject> Subject { get; }
-            public Instant ExpirationTime { get; }
-            public Maybe<Color> Background { get; }
-
-            public Notification(string text, Maybe<GameObject> subject, Instant expirationTime, Maybe<Color> background)
-            {
-                Text = text;
-                Subject = subject;
-                ExpirationTime = expirationTime;
-                Background = background;
-            }
-        }
+        public sealed record Notification(
+            string Text, Maybe<IGameObject> Subject, Instant ExpirationTime, Maybe<Color> Background);
 
         private interface INotificationListener
         {
@@ -136,7 +123,7 @@ namespace Bearded.TD.UI.Controls
             void Unsubscribe(GlobalGameEvents events);
         }
 
-        private class NotificationListener<T> : IListener<T>, INotificationListener where T : struct, IGlobalEvent
+        private sealed class NotificationListener<T> : IListener<T>, INotificationListener where T : struct, IGlobalEvent
         {
             private readonly GameNotificationsUI parent;
             private readonly Func<T, Notification> eventTransformer;

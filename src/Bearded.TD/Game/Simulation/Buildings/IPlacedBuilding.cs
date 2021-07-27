@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Factions;
+﻿using Bearded.TD.Game.Simulation.Factions;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Buildings

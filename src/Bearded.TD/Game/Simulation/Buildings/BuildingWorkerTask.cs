@@ -1,14 +1,9 @@
 using System.Collections.Generic;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -17,15 +12,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
 {
     sealed class BuildingWorkerTask : IWorkerTask
     {
-        private readonly Building building;
+        // private readonly Building building;
+        private readonly IBuildingConstructor buildingConstructor;
         private readonly ResourceConsumer resourceConsumer;
 
         private bool started;
         private HitPoints healthGiven = new(1);
-        private HitPoints maxHealth = new(1);
+        private readonly HitPoints maxHealth;
 
         public Id<IWorkerTask> Id { get; }
-        public string Name => $"Build {building.Blueprint.Name}";
+        public string Name => $"Build {buildingConstructor.StructureName}";
         public IEnumerable<Tile> Tiles { get; }
         public double PercentCompleted => !started ? 0 : healthGiven / maxHealth;
         public bool CanAbort => !started;
@@ -33,21 +29,21 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public BuildingWorkerTask(
             Id<IWorkerTask> taskId,
-            Building building,
+            GameState gameState,
+            IBuildingConstructor buildingConstructor,
+            IEnumerable<Tile> tiles,
+            HitPoints maxHealth,
             FactionResources.IResourceReservation resourceReservation)
         {
             Id = taskId;
-            this.building = building;
-            resourceConsumer = new ResourceConsumer(building.Game, resourceReservation, 0.ResourcesPerSecond());
-
-            Tiles = OccupiedTileAccumulator.AccumulateOccupiedTiles(building);
-            building.Completing += onBuildingCompleting;
-            building.GetComponents<IHealth>()
-                .MaybeSingle()
-                .Match(health => maxHealth = health.MaxHealth);
+            this.buildingConstructor = buildingConstructor;
+            Tiles = tiles;
+            this.maxHealth = maxHealth;
+            resourceConsumer = new ResourceConsumer(gameState, resourceReservation, 0.ResourcesPerSecond());
+            buildingConstructor.Completing += onConstructionCompleting;
         }
 
-        private void onBuildingCompleting()
+        private void onConstructionCompleting()
         {
             // Building is going to be set to be completed. We may not have finished due to network lag.
             // Make sure to apply remaining progress before it is no longer possible.
@@ -55,8 +51,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             resourceConsumer.CompleteIfNeeded();
             var healthRemaining = maxHealth - healthGiven;
-            building!.SetBuildProgress(healthRemaining);
-            building.Completing -= onBuildingCompleting;
+            buildingConstructor.ProgressBuild(healthRemaining);
+            buildingConstructor.Completing -= onConstructionCompleting;
             Finished = true;
         }
 
@@ -66,9 +62,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 onConstructionStart();
             }
-            if (building.Deleted)
+            if (buildingConstructor.IsCancelled)
             {
-                building.Completing -= onBuildingCompleting;
+                buildingConstructor.Completing -= onConstructionCompleting;
                 Finished = true;
                 return;
             }
@@ -83,27 +79,27 @@ namespace Bearded.TD.Game.Simulation.Buildings
             updateBuildingToMatch();
             if (resourceConsumer.IsDone)
             {
-                building.Sync(FinishBuildingConstruction.Command);
+                buildingConstructor.CompleteBuild();
             }
         }
 
         public void OnAbort()
         {
             resourceConsumer.Abort();
-            building.Delete();
+            buildingConstructor.AbortBuild();
         }
 
         private void onConstructionStart()
         {
             started = true;
-            building.Sync(StartBuildingConstruction.Command);
+            buildingConstructor.StartBuild();
         }
 
         private void updateBuildingToMatch()
         {
             // Building was set to completed, probably because of command from server.
             // We want to keep consuming resources though to make sure the resources stay in sync.
-            if (building!.IsBuildCompleted) return;
+            if (buildingConstructor.IsCompleted) return;
 
             var buildProgress = resourceConsumer.PercentageDone;
             State.Satisfies(buildProgress <= 1);
@@ -113,7 +109,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 return;
             }
             var newHealthGiven = expectedHealthGiven - healthGiven;
-            building.SetBuildProgress(newHealthGiven);
+            buildingConstructor.ProgressBuild(newHealthGiven);
             healthGiven = expectedHealthGiven;
         }
     }

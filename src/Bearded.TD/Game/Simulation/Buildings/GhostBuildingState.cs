@@ -7,5 +7,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public TileRangeDrawer.RangeDrawStyle RangeDrawing => TileRangeDrawer.RangeDrawStyle.DrawFull;
         public bool IsMaterialized => false;
         public bool IsFunctional => false;
+        public bool CanApplyUpgrades => false;
     }
 }

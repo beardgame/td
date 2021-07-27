@@ -9,5 +9,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public TileRangeDrawer.RangeDrawStyle RangeDrawing { get; }
         public bool IsMaterialized { get; }
         public bool IsFunctional { get; }
+        public bool CanApplyUpgrades { get; }
     }
 }

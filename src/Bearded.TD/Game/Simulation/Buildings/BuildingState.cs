@@ -10,6 +10,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public TileRangeDrawer.RangeDrawStyle RangeDrawing => toRangeDrawType(SelectionState);
         public bool IsMaterialized { get; set; }
         public bool IsFunctional => IsCompleted;
+        public bool CanApplyUpgrades => IsCompleted;
 
         // Mutable state
         public SelectionState SelectionState { get; set; }
