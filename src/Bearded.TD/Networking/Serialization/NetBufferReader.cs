@@ -2,6 +2,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using Lidgren.Network;
@@ -58,8 +59,12 @@ namespace Bearded.TD.Networking.Serialization
 
         public void SerializeArrayCount<T>(ref T[] array) => array = new T[buffer.ReadInt32()];
 
-        public void Serialize(ref ModAwareId modAwareId) =>
-            modAwareId = new ModAwareId(buffer.ReadString(), buffer.ReadString());
+        public void Serialize(ref ModAwareId modAwareId)
+        {
+            var modId = buffer.ReadString();
+            var entityId = buffer.ReadString();
+            modAwareId = modId == "" || entityId == "" ? ModAwareId.Invalid : new ModAwareId(modId, entityId);
+        }
 
         public void Serialize(ref Unit unit) => unit = new Unit(buffer.ReadSingle());
     }
