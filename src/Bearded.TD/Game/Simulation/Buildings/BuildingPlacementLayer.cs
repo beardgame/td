@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             if (tileDistance != 1)
                 throw new InvalidOperationException("Tiles must be adjacent.");
 
-            var direction = Directions.All.Enumerate().First(d => t0.Neighbour(d) == t1);
+            var direction = Directions.All.Enumerate().First(d => t0.Neighbor(d) == t1);
 
             return walkablePassability.Value[t0].PassableDirections.Includes(direction)
                 && walkablePassability.Value[t1].PassableDirections.Includes(direction.Opposite());

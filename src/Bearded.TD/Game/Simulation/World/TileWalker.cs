@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.World
                 {
                     setCurrentTile(goalTile);
                 }
-                goalTile = goalTile.Neighbour(owner.GetNextDirection());
+                goalTile = goalTile.Neighbor(owner.GetNextDirection());
 
                 if (goalTile == CurrentTile)
                 {

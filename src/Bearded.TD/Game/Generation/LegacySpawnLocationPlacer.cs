@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Generation
             return
                 from dir in Directions.All.Enumerate()
                 where dir != Direction.Unknown
-                select Tile.Origin.Offset(dir.Step() * radius) into tile
+                select Tile.Origin + dir.Step() * radius into tile
                 select (CommandFactory)
                     (game => CreateSpawnLocation.Command(game, game.Ids.GetNext<SpawnLocation>(), tile));
         }

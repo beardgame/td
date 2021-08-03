@@ -109,7 +109,7 @@ namespace Bearded.TD.Game.Simulation.World
             nextCenterIntersection += centerFullStep;
             nextLeftIntersection += leftHalfStep;
             nextRightIntersection += rightHalfStep;
-            tile = tile.Neighbour(centerDirection);
+            tile = tile.Neighbor(centerDirection);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,7 +119,7 @@ namespace Bearded.TD.Game.Simulation.World
             nextCenterIntersection += centerHalfStep;
             nextLeftIntersection += leftFullStep;
             nextRightIntersection -= rightHalfStep;
-            tile = tile.Neighbour(leftDirection);
+            tile = tile.Neighbor(leftDirection);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,7 +129,7 @@ namespace Bearded.TD.Game.Simulation.World
             nextCenterIntersection += centerHalfStep;
             nextLeftIntersection -= leftHalfStep;
             nextRightIntersection += rightFullStep;
-            tile = tile.Neighbour(rightDirection);
+            tile = tile.Neighbor(rightDirection);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

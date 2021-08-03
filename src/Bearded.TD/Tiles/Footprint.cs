@@ -21,7 +21,7 @@ namespace Bearded.TD.Tiles
                     .Aggregate((diff1, diff2) => diff1 + diff2) / this.tileOffsets.Length;
         }
 
-        public IEnumerable<Tile> OccupiedTiles(Tile rootTile) => tileOffsets.Select(rootTile.Offset);
+        public IEnumerable<Tile> OccupiedTiles(Tile rootTile) => tileOffsets.Select(offset => rootTile + offset);
 
         public Position2 Center(Tile rootTile) => Level.GetPosition(rootTile) - rootTileOffset;
 

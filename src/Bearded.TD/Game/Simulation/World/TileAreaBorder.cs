@@ -60,11 +60,11 @@ namespace Bearded.TD.Game.Simulation.World
         {
             var edges = area.SelectMany(
                     tile => Extensions.Directions
-                        .Where(direction => !area.Contains(tile.Neighbour(direction)))
+                        .Where(direction => !area.Contains(tile.Neighbor(direction)))
                         .Select(direction => new Part(
                             tile, direction,
-                            !area.Contains(tile.Neighbour(direction.Previous())),
-                            !area.Contains(tile.Neighbour(direction.Next()))
+                            !area.Contains(tile.Neighbor(direction.Previous())),
+                            !area.Contains(tile.Neighbor(direction.Next()))
                             ))
                 )
                 .ToImmutableArray();

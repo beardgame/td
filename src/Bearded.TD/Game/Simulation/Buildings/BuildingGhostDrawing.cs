@@ -57,7 +57,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
                 foreach (var direction in Directions.All.Enumerate())
                 {
-                    var neighbor = tile.Neighbour(direction);
+                    var neighbor = tile.Neighbor(direction);
 
                     if (!occupiedTilesTracker.OccupiedTiles.Contains(neighbor))
                         continue;

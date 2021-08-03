@@ -124,10 +124,10 @@ namespace Bearded.TD.Game.Generation
 
                     var directionToStep = currentDirection.Hexagonal();
 
-                    var newTile = tile.Neighbour(directionToStep);
+                    var newTile = tile.Neighbor(directionToStep);
                     if (!isValidTile(newTile))
                     {
-                        newTile = tile.Neighbour(directionToGoal.Hexagonal());
+                        newTile = tile.Neighbor(directionToGoal.Hexagonal());
                         currentDirection = directionToGoal;
                     }
 
@@ -316,7 +316,7 @@ namespace Bearded.TD.Game.Generation
             private IEnumerable<Tile> corners => Tilemap.Directions.Select(corner);
 
             private Tile corner(Direction direction)
-                => center.Offset(direction.Step() * tilemap.Radius);
+                => center + direction.Step() * tilemap.Radius;
 
             private void open(Tile tile) => set(tile, Floor);
             private void close(Tile tile) => set(tile, Wall);

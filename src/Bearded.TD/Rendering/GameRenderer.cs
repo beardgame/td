@@ -221,9 +221,9 @@ namespace Bearded.TD.Rendering
 
                 var tilePos = Level.GetPosition(tile).NumericValue;
 
-                drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.Right)).NumericValue, flow.FlowRight);
-                drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.UpRight)).NumericValue, flow.FlowUpRight);
-                drawFlow(tilePos, Level.GetPosition(tile.Neighbour(Direction.UpLeft)).NumericValue, flow.FlowUpLeft);
+                drawFlow(tilePos, Level.GetPosition(tile.Neighbor(Direction.Right)).NumericValue, flow.FlowRight);
+                drawFlow(tilePos, Level.GetPosition(tile.Neighbor(Direction.UpRight)).NumericValue, flow.FlowUpRight);
+                drawFlow(tilePos, Level.GetPosition(tile.Neighbor(Direction.UpLeft)).NumericValue, flow.FlowUpLeft);
             }
 
             void drawFlow(Vector2 tileP, Vector2 otherP, FlowRate flow)
@@ -326,7 +326,7 @@ namespace Bearded.TD.Rendering
 
             double? costFunction(Tile tile, Direction step)
             {
-                var neighbour = tile.Neighbour(step);
+                var neighbour = tile.Neighbor(step);
                 return
                     gameState.Level.IsValid(tile)
                     && gameState.GeometryLayer[tile].Type == TileType.Floor
@@ -436,7 +436,7 @@ namespace Bearded.TD.Rendering
 
                 foreach (var direction in result.Path)
                 {
-                    tile = tile.Neighbour(direction);
+                    tile = tile.Neighbor(direction);
                     drawers.Primitives.FillCircle(
                         Level.GetPosition(tile).NumericValue, HexagonSide, pathColor, 6);
                 }
