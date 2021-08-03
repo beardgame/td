@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Workers
             Owner.FindInComponentOwnerTree<IFactioned>().Match(
                 onValue: owner => HubOwner = owner,
                 onNothing: () => throw new InvalidDataException());
-            tileWalker = new TileWalker(this, Owner.Game.Level, Tile.Origin);
+            tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
             // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
             Owner.Game.Meta.Events.Send(new WorkerAdded(this));
         }
