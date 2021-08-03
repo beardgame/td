@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
 namespace Bearded.TD.Tiles
 {
-    readonly struct Tile
+    public readonly struct Tile : IEquatable<Tile>
     {
-        public static Tile Origin = new(0, 0);
+        public static Tile Origin => new(0, 0);
 
         public int X { get; }
         public int Y { get; }
@@ -15,63 +15,25 @@ namespace Bearded.TD.Tiles
             Y = y;
         }
 
-        public int Radius => X * Y >= 0
-            ? Math.Abs(X + Y)
-            : Math.Max(Math.Abs(X), Math.Abs(Y));
+        public int Radius => Step.FromOriginTowards(this).Distance;
+        public int DistanceTo(Tile other) => Step.Between(this, other).Distance;
 
-        public TileEdge Edge(Direction direction) => TileEdge.From(this, direction);
-        public Tile Neighbour(Direction direction) => Offset(direction.Step());
-        public Tile Offset(Step step) => new(X + step.X, Y + step.Y);
+        public Tile Neighbour(Direction direction) => this + direction.Step();
 
-        public int DistanceTo(Tile other)
-        {
-            if (Equals(other)) return 0;
+        public bool Equals(Tile other) => X == other.X && Y == other.Y;
 
-            var diffHorizontal = other.X - X; // -
-            var diffVertical = other.Y - Y; // \
+        public override bool Equals(object? obj) => obj is Tile other && Equals(other);
 
-            var diffHorizontalAbs = Math.Abs(diffHorizontal);
-            var diffVerticalAbs = Math.Abs(diffVertical);
+        public override int GetHashCode() => HashCode.Combine(X, Y);
 
-            // Combination of \ and - can be combined into /
-            var reduction = 0;
-            // faster than two calls to Math.Sign
-            if (diffHorizontal * (long)diffVertical < 0)
-                reduction = Math.Min(diffHorizontalAbs, diffVerticalAbs);
-            return diffHorizontalAbs + diffVerticalAbs - reduction;
-        }
+        public static bool operator ==(Tile left, Tile right) => left.Equals(right);
 
-        public override bool Equals(object obj)
-            => obj is Tile tile && Equals(tile);
+        public static bool operator !=(Tile left, Tile right) => !left.Equals(right);
 
-        public bool Equals(Tile other)
-            => X == other.X && Y == other.Y;
-
-        public override int GetHashCode() => (X * 397) ^ Y;
-
-        public static bool operator ==(Tile t1, Tile t2) => t1.Equals(t2);
-        public static bool operator !=(Tile t1, Tile t2) => !(t1 == t2);
-
-        public override string ToString()
-            => $"{X},{Y}";
-
-        /*
-         *    -z
-         * +y    +x
-         * -z    -y
-         *    +z
-         */
-        public (int X, int Y, int Z) ToXYZ()
-        {
-            var yy = -X;
-            var zz = -Y;
-            var xx = -yy - zz;
-
-            return (xx, yy, zz);
-        }
-
-        public static Tile FromXYZ(int _, int y, int z) => new(-y, -z);
+        public static Step operator -(Tile target, Tile origin) => Step.Between(origin, target);
 
         public void Deconstruct(out int x, out int y) => (x, y) = (X, Y);
+
+        public override string ToString() => $"{X},{Y}";
     }
 }
