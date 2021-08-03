@@ -316,7 +316,7 @@ namespace Bearded.TD.Game.Generation
             private IEnumerable<Tile> corners => Tilemap.Directions.Select(corner);
 
             private Tile corner(Direction direction)
-                => center.Offset(direction.Step() * tilemap.Radius);
+                => center + direction.Step() * tilemap.Radius;
 
             private void open(Tile tile) => set(tile, Floor);
             private void close(Tile tile) => set(tile, Wall);

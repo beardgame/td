@@ -6,7 +6,6 @@ namespace Bearded.TD.Tiles
     static class TileExtensions
     {
         public static TileEdge Edge (this Tile tile, Direction direction) => TileEdge.From(tile, direction);
-        public static Tile Offset(this Tile tile, Step offset) => tile + offset;
 
         public static bool OverlapsWithTiles(this IEnumerable<Tile> tiles, IEnumerable<Tile> otherTiles)
             => tiles.Any(otherTiles.Contains);

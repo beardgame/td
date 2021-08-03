@@ -21,7 +21,7 @@ namespace Bearded.TD.Tiles
             Corners = Directions
                 .All
                 .Enumerate()
-                .Select(dir => Tile.Origin.Offset(dir.Step() * Radius))
+                .Select(dir => Tile.Origin + dir.Step() * Radius)
                 .ToList();
         }
 

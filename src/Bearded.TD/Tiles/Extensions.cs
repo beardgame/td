@@ -75,7 +75,7 @@ namespace Bearded.TD.Tiles
         {
             for (var i = 1; i <= 6; i++)
             {
-                yield return tile.Offset(directionDelta[i]);
+                yield return tile + directionDelta[i];
             }
         }
 
