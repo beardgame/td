@@ -124,10 +124,10 @@ namespace Bearded.TD.Game.Generation
 
                     var directionToStep = currentDirection.Hexagonal();
 
-                    var newTile = tile.Neighbour(directionToStep);
+                    var newTile = tile.Neighbor(directionToStep);
                     if (!isValidTile(newTile))
                     {
-                        newTile = tile.Neighbour(directionToGoal.Hexagonal());
+                        newTile = tile.Neighbor(directionToGoal.Hexagonal());
                         currentDirection = directionToGoal;
                     }
 

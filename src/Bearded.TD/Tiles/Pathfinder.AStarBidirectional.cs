@@ -78,14 +78,14 @@ namespace Bearded.TD.Tiles
                 {
                     var stepHere = stateForward.Seen[currentTile].StepHere;
                     pathBuilder[forwardPathLength - i - 1] = stepHere;
-                    currentTile = currentTile.Neighbour(stepHere.Opposite());
+                    currentTile = currentTile.Neighbor(stepHere.Opposite());
                 }
                 currentTile = connectingTile;
                 for (var i = 0; i < backwardPathLength; i++)
                 {
                     var stepHere = stateBackward.Seen[currentTile].StepHere.Opposite();
                     pathBuilder[forwardPathLength + i] = stepHere;
-                    currentTile = currentTile.Neighbour(stepHere);
+                    currentTile = currentTile.Neighbor(stepHere);
                 }
 
                 return new Result(pathBuilder.MoveToImmutable(), pathCost);

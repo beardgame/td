@@ -106,8 +106,8 @@ namespace Bearded.TD.Tests.Tiles
         [Fact]
         public void CanReachTilesWithDifferentSeriesOfSteps()
         {
-            var tile = Tile.Origin.Neighbour(Left).Neighbour(UpLeft);
-            var tile2 = Tile.Origin.Neighbour(DownLeft).Neighbour(Left).Neighbour(UpLeft).Neighbour(UpRight);
+            var tile = Tile.Origin.Neighbor(Left).Neighbor(UpLeft);
+            var tile2 = Tile.Origin.Neighbor(DownLeft).Neighbor(Left).Neighbor(UpLeft).Neighbor(UpRight);
 
             tile2.Should().Be(tile);
         }
@@ -119,7 +119,7 @@ namespace Bearded.TD.Tests.Tiles
             var tile = Tile.Origin;
             foreach (var direction in steps)
             {
-                tile = tile.Neighbour(direction);
+                tile = tile.Neighbor(direction);
             }
 
             tile.Radius.Should().Be(expectedRadius);
@@ -140,7 +140,7 @@ namespace Bearded.TD.Tests.Tiles
             var tile = startingTile;
             foreach (var direction in steps)
             {
-                tile = tile.Neighbour(direction);
+                tile = tile.Neighbor(direction);
             }
 
             tile.DistanceTo(startingTile).Should().Be(expectedDistance);

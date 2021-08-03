@@ -103,7 +103,7 @@ namespace Bearded.TD.Game
 
                 foreach (var direction in Directions.All.Enumerate())
                 {
-                    var neighbour = tile.Neighbour(direction);
+                    var neighbour = tile.Neighbor(direction);
                     var neighbourGeometry = geometry[neighbour];
 
                     switch (centerGeometry.Type, neighbourGeometry.Type)

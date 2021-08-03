@@ -84,7 +84,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
                 foreach (var step in result.Path)
                 {
-                    currentTile = currentTile.Neighbour(step);
+                    currentTile = currentTile.Neighbor(step);
                     setFloor(currentTile);
                 }
             }

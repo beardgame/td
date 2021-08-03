@@ -80,7 +80,7 @@ namespace Bearded.TD.Tiles
                     if (!stepCost.HasValue)
                         continue;
 
-                    var neighborTile = currentTile.Neighbour(direction);
+                    var neighborTile = currentTile.Neighbor(direction);
                     var costToHere = currentCost + stepCost.Value;
                     var minimumCostFromHereToTarget = neighborTile.DistanceTo(state.Target) * MinimumCost;
 
@@ -120,7 +120,7 @@ namespace Bearded.TD.Tiles
                 {
                     var stepHere = state.Seen[currentTile].StepHere;
                     pathBuilder.Add(stepHere);
-                    currentTile = currentTile.Neighbour(stepHere.Opposite());
+                    currentTile = currentTile.Neighbor(stepHere.Opposite());
                 }
                 pathBuilder.Reverse();
 

@@ -94,7 +94,7 @@ namespace Bearded.TD.Game.Simulation.Components.Buildings
         private void drawConnectionIfNeeded(Tile tile, int i, Vector2 center)
         {
             var direction = directions[i];
-            var neighbor = tile.Neighbour(direction);
+            var neighbor = tile.Neighbor(direction);
 
             if (!Owner.Game.Level.IsValid(neighbor))
                 return;

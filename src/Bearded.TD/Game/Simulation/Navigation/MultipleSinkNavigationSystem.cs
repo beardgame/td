@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             var minDistance = int.MaxValue;
             foreach (var direction in level.ValidDirectionsFrom(from))
             {
-                var neighbour = from.Neighbour(direction);
+                var neighbour = from.Neighbor(direction);
                 if (!passability[neighbour].IsPassable)
                     continue;
                 var node = graph[neighbour];
@@ -94,7 +94,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             {
                 foreach (var direction in level.ValidDirectionsFrom(tile))
                 {
-                    var neighbourTile = tile.Neighbour(direction);
+                    var neighbourTile = tile.Neighbor(direction);
                     var neighbourNode = graph[neighbourTile];
                     if (neighbourNode.IsInvalid || neighbourNode.IsSink)
                         continue;
@@ -110,7 +110,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             }
             else
             {
-                if (!node.IsSink && graph[tile.Neighbour(node.Direction)].IsInvalid)
+                if (!node.IsSink && graph[tile.Neighbor(node.Direction)].IsInvalid)
                 {
                     invalidateTile(tile);
                     return;
@@ -122,7 +122,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
 
                 foreach (var direction in passableDirectionsFrom(tile).Enumerate())
                 {
-                    var neighbourTile = tile.Neighbour(direction);
+                    var neighbourTile = tile.Neighbor(direction);
                     var neighbourNode = graph[neighbourTile];
                     if (neighbourNode.Distance > newDistance)
                     {
@@ -152,7 +152,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             updateTile(tile, backupSink);
             foreach (var direction in passableDirectionsFrom(tile).Enumerate())
             {
-                var neighbour = tile.Neighbour(direction);
+                var neighbour = tile.Neighbor(direction);
                 touchTile(neighbour);
             }
         }
@@ -229,7 +229,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
 
                 if (!node.IsSink)
                 {
-                    var pointsToTile = tile.Neighbour(node.Direction);
+                    var pointsToTile = tile.Neighbor(node.Direction);
                     var pointsToNode = graph[pointsToTile];
 
                     if (!pointsToNode.IsInvalid && pointsToNode.Distance >= node.Distance)

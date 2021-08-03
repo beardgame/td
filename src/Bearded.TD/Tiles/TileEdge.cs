@@ -21,7 +21,7 @@ namespace Bearded.TD.Tiles
         {
             if (direction is Left or DownLeft or DownRight)
             {
-                tile = tile.Neighbour(direction);
+                tile = tile.Neighbor(direction);
                 direction = direction.Opposite();
             }
         }
@@ -59,7 +59,7 @@ namespace Bearded.TD.Tiles
 
         public (Tile, Tile) AdjacentTiles =>
             direction is Right or UpRight or UpLeft
-                ? (tile, tile.Neighbour(direction))
+                ? (tile, tile.Neighbor(direction))
                 : throw invalidDirectionException();
 
         private ArgumentOutOfRangeException invalidDirectionException() =>

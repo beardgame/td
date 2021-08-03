@@ -102,9 +102,9 @@ namespace Bearded.TD.Rendering.Deferred
                 var flowUpLeft = (float) fluidFlow.FlowUpLeft.NumericValue * upLeftVector;
 
                 flow[tile] += flowRight + flowUpRight + flowUpLeft;
-                flow[tile.Neighbour(Direction.Right)] += flowRight;
-                flow[tile.Neighbour(Direction.UpRight)] += flowUpRight;
-                flow[tile.Neighbour(Direction.UpLeft)] += flowUpLeft;
+                flow[tile.Neighbor(Direction.Right)] += flowRight;
+                flow[tile.Neighbor(Direction.UpRight)] += flowUpRight;
+                flow[tile.Neighbor(Direction.UpLeft)] += flowUpLeft;
             }
         }
 
@@ -118,9 +118,9 @@ namespace Bearded.TD.Rendering.Deferred
 
         private void createGeometryForTile(Tile tile)
         {
-            var rightTile = tile.Neighbour(Direction.Right);
-            var upRightTile = tile.Neighbour(Direction.UpRight);
-            var upLeftTile = tile.Neighbour(Direction.UpLeft);
+            var rightTile = tile.Neighbor(Direction.Right);
+            var upRightTile = tile.Neighbor(Direction.UpRight);
+            var upLeftTile = tile.Neighbor(Direction.UpLeft);
 
             var current = height[tile];
             var right = height[rightTile];

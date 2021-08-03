@@ -18,7 +18,7 @@ namespace Bearded.TD.Tiles
         public int Radius => Step.FromOriginTowards(this).Distance;
         public int DistanceTo(Tile other) => Step.Between(this, other).Distance;
 
-        public Tile Neighbour(Direction direction) => this + direction.Step();
+        public Tile Neighbor(Direction direction) => this + direction.Step();
 
         public bool Equals(Tile other) => X == other.X && Y == other.Y;
 

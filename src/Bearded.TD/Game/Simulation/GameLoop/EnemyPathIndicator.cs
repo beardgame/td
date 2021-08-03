@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
         public Direction GetNextDirection()
         {
             var desiredDirection = Game.Navigator.GetDirections(currentTile);
-            var isPassable = passabilityLayer[currentTile.Neighbour(desiredDirection)].IsPassable;
+            var isPassable = passabilityLayer[currentTile.Neighbor(desiredDirection)].IsPassable;
 
             if (!isPassable)
                 deleteAfterTimeout();
