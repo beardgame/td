@@ -14,7 +14,7 @@ namespace Bearded.TD.Tests.Tiles
     public sealed class TileTests
     {
         [Property]
-        public void ConstructWithCoordinates(int x, int y)
+        public void ConstructsWithCoordinates(int x, int y)
         {
             var tile = new Tile(x, y);
 
@@ -72,7 +72,7 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Fact]
-        public void OriginIs0_0()
+        public void OriginIsZeroZero()
         {
             var origin = Tile.Origin;
 
@@ -80,7 +80,15 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Fact]
-        public void RadiusAtOriginIs0()
+        public void DefaultValueIsOrigin()
+        {
+            var defaultTile = default(Tile);
+
+            defaultTile.Should().Be(Tile.Origin);
+        }
+
+        [Fact]
+        public void RadiusAtOriginIsZero()
         {
             var tile = Tile.Origin;
 
@@ -88,7 +96,7 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Property]
-        public void RadiusAtX_0isAbsoluteX(int x)
+        public void RadiusAtYEqualsZeroIsAbsoluteX(int x)
         {
             var tile = new Tile(x, 0);
 
@@ -96,7 +104,7 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Property]
-        public void RadiusAt0_YisAbsoluteY(int y)
+        public void RadiusAtXEqualsZeroIsAbsoluteY(int y)
         {
             var tile = new Tile(0, y);
 
@@ -104,7 +112,7 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Fact]
-        public void CanReachTilesWithDifferentSeriesOfSteps()
+        public void CanReachSameTileWithDifferentSeriesOfSteps()
         {
             var tile = Tile.Origin.Neighbor(Left).Neighbor(UpLeft);
             var tile2 = Tile.Origin.Neighbor(DownLeft).Neighbor(Left).Neighbor(UpLeft).Neighbor(UpRight);
@@ -126,7 +134,7 @@ namespace Bearded.TD.Tests.Tiles
         }
 
         [Property]
-        public void DistanceToSelfIs0(int x, int y)
+        public void DistanceToSelfIsZero(int x, int y)
         {
             var tile = new Tile(x, y);
 
