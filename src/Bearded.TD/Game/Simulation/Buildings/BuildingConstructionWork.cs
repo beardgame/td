@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Damage;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
@@ -42,9 +40,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             workerTask = new BuildingWorkerTask(
                 taskId,
                 Owner.Game,
-                Owner.GetComponents<IBuildingConstructor>().Single(),
+                Owner.GetComponents<IIncompleteBuilding>().Single(),
                 OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner),
-                Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1),
                 resources.ReserveResources(new FactionResources.ResourceRequest(cost)));
             workers.RegisterTask(workerTask);
         }
