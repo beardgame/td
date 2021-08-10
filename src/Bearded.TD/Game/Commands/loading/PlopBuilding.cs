@@ -46,18 +46,8 @@ namespace Bearded.TD.Game.Commands.Loading
             public void Execute()
             {
                 var building = new BuildingFactory(gameState).Create(id, blueprint, faction, footprint);
-                // TODO: the constructor shouldn't be needed here
-                var constructor = building.GetComponents<IBuildingConstructor>().Single();
                 var constructionSyncer = building.GetComponents<IBuildingConstructionSyncer>().Single();
-
                 constructionSyncer.SyncStartBuild();
-
-                var maxHealth = new HitPoints(1);
-                building.GetComponents<IHealth>()
-                    .MaybeSingle()
-                    .Match(health => maxHealth = health.MaxHealth);
-                constructor.ProgressBuild(maxHealth - new HitPoints(1));
-
                 constructionSyncer.SyncCompleteBuild();
             }
 
