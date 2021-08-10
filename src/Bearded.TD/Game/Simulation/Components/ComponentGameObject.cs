@@ -50,7 +50,10 @@ namespace Bearded.TD.Game.Simulation.Components
             components.Draw(drawers);
         }
 
-        IEnumerable<TComponent> IComponentOwner<ComponentGameObject>.GetComponents<TComponent>() => components.Get<TComponent>();
+        public void AddComponent(IComponent<ComponentGameObject> component) => components.Add(component);
+
+        IEnumerable<TComponent> IComponentOwner<ComponentGameObject>.GetComponents<TComponent>() =>
+            components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
     }

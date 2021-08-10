@@ -128,6 +128,8 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                 Position.NumericValue - new Vector3(0.1f, 0.1f, 0f), new Vector2(0.2f, 0.2f), Color.Yellow);
         }
 
+        public void AddComponent(IComponent<Projectile> component) => components.Add(component);
+
         IEnumerable<TComponent> IComponentOwner<Projectile>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();

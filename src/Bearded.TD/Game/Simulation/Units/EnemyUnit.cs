@@ -157,6 +157,8 @@ namespace Bearded.TD.Game.Simulation.Units
             events.Send(new CausedKill(target));
         }
 
+        public void AddComponent(IComponent<EnemyUnit> component) => components.Add(component);
+
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();

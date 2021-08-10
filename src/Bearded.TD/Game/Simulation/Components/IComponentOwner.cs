@@ -12,6 +12,7 @@ namespace Bearded.TD.Game.Simulation.Components
 
     interface IComponentOwner<out T> : IComponentOwner where T : IComponentOwner<T>
     {
+        void AddComponent(IComponent<T> component);
         new IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent<T>;
     }
 }
