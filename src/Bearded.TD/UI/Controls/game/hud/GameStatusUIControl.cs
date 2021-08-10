@@ -14,6 +14,7 @@ namespace Bearded.TD.UI.Controls
         private readonly Binding<string> waveNumber = new();
         private readonly Binding<string> timeUntilSpawn = new();
         private readonly Binding<string> waveResources = new();
+        private readonly Binding<bool> canSkipWaveTimer = new();
 
         public event VoidEventHandler? TechnologyButtonClicked;
 
@@ -33,6 +34,11 @@ namespace Bearded.TD.UI.Controls
                 .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
                 .AddValueLabel("Wave:", waveNumber)
                 .AddValueLabel("Next spawn:", timeUntilSpawn)
+                .AddButton(
+                    b => b
+                        .WithLabel("Summon Wave")
+                        .WithOnClick(model.SkipWaveTimer)
+                        .WithEnabled(canSkipWaveTimer))
                 .AddValueLabel(
                     "Resources this wave:",
                     waveResources, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor));
@@ -60,6 +66,7 @@ namespace Bearded.TD.UI.Controls
                 model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
             waveResources.SetFromSource(
                 model.WaveResources == null ? "-" : $"{model.WaveResources.Value.NumericValue}");
+            canSkipWaveTimer.SetFromSource(model.TimeUntilWaveSpawn != null);
         }
 
         protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

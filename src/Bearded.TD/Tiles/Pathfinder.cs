@@ -27,7 +27,7 @@ namespace Bearded.TD.Tiles
         public static Pathfinder Default { get; } = new AStarBidirectionalPathfinder((_, _) => 1, 1);
 
         public static Pathfinder WithTileCosts(TileCostFunction costFunction, double minimumCost) =>
-            WithStepCosts((tile, direction) => costFunction(tile.Neighbour(direction)), minimumCost);
+            WithStepCosts((tile, direction) => costFunction(tile.Neighbor(direction)), minimumCost);
 
         public static Pathfinder WithStepCosts(StepCostFunction costFunction, double minimumCost)
         {
@@ -55,6 +55,6 @@ namespace Bearded.TD.Tiles
         }
 
         private static StepCostFunction constrainArea(StepCostFunction function, IArea area)
-            => (tile, direction) => area.Contains(tile.Neighbour(direction)) ? function(tile, direction) : null;
+            => (tile, direction) => area.Contains(tile.Neighbor(direction)) ? function(tile, direction) : null;
     }
 }

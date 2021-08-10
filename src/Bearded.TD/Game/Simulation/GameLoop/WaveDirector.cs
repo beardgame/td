@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -37,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             }
         }
 
-        private sealed class SingleWaveDirector : IListener<EnemyKilled>, IDeletable
+        private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<SkipWaveTimer>, IDeletable
         {
             private enum Phase
             {
@@ -55,6 +56,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             private Phase phase;
             private ResourceAmount resourcesGiven;
+            private bool forceSkipDowntime;
 
             public bool Deleted => phase == Phase.Completed;
 
@@ -67,7 +69,8 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             public void Start()
             {
                 fillSpawnQueue();
-                game.Meta.Events.Subscribe(this);
+                game.Meta.Events.Subscribe<EnemyKilled>(this);
+                game.Meta.Events.Subscribe<SkipWaveTimer>(this);
                 game.Meta.Events.Send(
                     new WaveScheduled(
                         script.Id, script.DisplayName, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
@@ -108,7 +111,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 switch (phase)
                 {
                     case Phase.Downtime:
-                        if (game.Time >= script.SpawnStart)
+                        if (game.Time >= script.SpawnStart || forceSkipDowntime)
                         {
                             phase = Phase.Spawning;
                             game.Meta.Events.Send(
@@ -120,9 +123,9 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                     case Phase.Spawning:
                         updateResources();
                         updateSpawnQueue();
-                        if (game.Time >= script.SpawnEnd)
+                        if (spawnQueue.Count == 0)
                         {
-                            State.Satisfies(spawnQueue.Count == 0);
+                            State.Satisfies(game.Time >= script.SpawnEnd || forceSkipDowntime);
                             phase = Phase.FinishOff;
                         }
                         break;
@@ -130,7 +133,8 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                         if (spawnedUnits.Count == 0)
                         {
                             game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
-                            game.Meta.Events.Unsubscribe(this);
+                            game.Meta.Events.Unsubscribe<EnemyKilled>(this);
+                            game.Meta.Events.Unsubscribe<SkipWaveTimer>(this);
                             phase = Phase.Completed;
                         }
                         break;
@@ -169,6 +173,33 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             public void HandleEvent(EnemyKilled @event)
             {
                 spawnedUnits.Remove(@event.Unit);
+            }
+
+            public void HandleEvent(SkipWaveTimer @event)
+            {
+                if (phase != Phase.Downtime)
+                    return;
+
+                forceSkipDowntime = true;
+
+                startSpawningEnemiesImmediately();
+            }
+
+            private void startSpawningEnemiesImmediately()
+            {
+                var queueLength = spawnQueue.Count;
+
+                if (queueLength == 0)
+                    return;
+
+                var timeToSkip = spawnQueue.Peek().Time - game.Time;
+
+                for (var i = 0; i < queueLength; i++)
+                {
+                    var oldSpawn = spawnQueue.Dequeue();
+                    var newSpawn = oldSpawn with { Time = oldSpawn.Time - timeToSkip };
+                    spawnQueue.Enqueue(newSpawn);
+                }
             }
         }
 

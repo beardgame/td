@@ -97,7 +97,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                     count += Extensions.Directions.Count(direction
                         => connected.Includes(direction)
                         && connected.Includes(direction.Next())
-                        && tilemap[tile.Neighbour(direction)]!.ConnectedTo.Includes(direction.Next().Next()));
+                        && tilemap[tile.Neighbor(direction)]!.ConnectedTo.Includes(direction.Next().Next()));
                 }
 
                 return count;
@@ -146,7 +146,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                     var node = tilemap[tile];
                     foreach (var direction in node.ConnectedTo.Enumerate())
                     {
-                        fillFrom(tile.Neighbour(direction));
+                        fillFrom(tile.Neighbor(direction));
                     }
                 }
             }
@@ -184,15 +184,15 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
                 foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(virtualRadius))
                 {
-                    if (tile.Neighbour(Direction.UpRight).Radius > virtualRadius)
+                    if (tile.Neighbor(Direction.UpRight).Radius > virtualRadius)
                         continue;
 
-                    if (tile.Neighbour(Direction.Right).Radius <= virtualRadius)
+                    if (tile.Neighbor(Direction.Right).Radius <= virtualRadius)
                     {
                         yield return TileCorner.FromTileAndDirectionBefore(tile, Direction.Right);
                     }
 
-                    if (tile.Neighbour(Direction.UpLeft).Radius <= virtualRadius)
+                    if (tile.Neighbor(Direction.UpLeft).Radius <= virtualRadius)
                     {
                         yield return TileCorner.FromTileAndDirectionBefore(tile, Direction.UpRight);
                     }

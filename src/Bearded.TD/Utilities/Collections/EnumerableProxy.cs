@@ -6,10 +6,10 @@ namespace Bearded.TD.Utilities.Collections
     static class EnumerableProxy
     {
         public static EnumerableProxy<T> AsReadOnlyEnumerable<T>(this IEnumerable<T> enumerable)
-            => new EnumerableProxy<T>(enumerable);
+            => new(enumerable);
     }
 
-    struct EnumerableProxy<T> : IEnumerable<T>
+    readonly struct EnumerableProxy<T> : IEnumerable<T>
     {
         private readonly IEnumerable<T> list;
 

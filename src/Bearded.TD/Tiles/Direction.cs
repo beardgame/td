@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Tiles
 {
-    enum Direction : byte
+    public enum Direction : byte
     {
         Unknown = 0,
         Right = 1,

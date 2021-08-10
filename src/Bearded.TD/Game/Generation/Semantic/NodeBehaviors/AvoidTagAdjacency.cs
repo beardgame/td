@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
             var connectedNodes = Extensions.Directions
                 .Where(d => node!.ConnectedTo.Includes(d))
-                .Select(nodeTile.Neighbour)
+                .Select(nodeTile.Neighbor)
                 .Select(t => context[t]);
 
             return connectedNodes.Count(n => n.Blueprint!.AllTags.Contains(Parameters.TagToAvoid)) * 100;

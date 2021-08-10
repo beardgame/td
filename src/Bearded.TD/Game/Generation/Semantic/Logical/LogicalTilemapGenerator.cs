@@ -157,7 +157,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
 
                 var randomValidDirection = Extensions.Directions.Where(d =>
                 {
-                    var n = tile.Neighbour(d);
+                    var n = tile.Neighbor(d);
                     return logicalTilemap.IsValidTile(n) && logicalTilemap[n].Blueprint != null;
                 }).RandomElement(random);
 

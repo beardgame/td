@@ -35,6 +35,7 @@ namespace Bearded.TD.UI.Factories
             private Func<string>? labelProvider;
             private (int CostAmount, Color Color)? cost;
             private (Binding<double> Progress, Color? Color)? progressBar;
+            private Binding<bool>? isEnabled;
             private VoidEventHandler? onClick;
             private bool isDisabled;
 
@@ -71,6 +72,12 @@ namespace Bearded.TD.UI.Factories
             public Builder WithOnClick(VoidEventHandler onClick)
             {
                 this.onClick = onClick;
+                return this;
+            }
+
+            public Builder WithEnabled(Binding<bool> isEnabled)
+            {
+                this.isEnabled = isEnabled;
                 return this;
             }
 
@@ -114,6 +121,11 @@ namespace Bearded.TD.UI.Factories
                 else
                 {
                     button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
+                }
+
+                if (isEnabled != null)
+                {
+                    isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
                 }
 
                 if (onClick != null)

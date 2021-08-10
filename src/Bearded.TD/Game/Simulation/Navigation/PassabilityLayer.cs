@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
 
             foreach (var dir in level.ValidDirectionsFrom(tile))
             {
-                var neighbour = tile.Neighbour(dir);
+                var neighbour = tile.Neighbor(dir);
                 if (isPassable && extraConditions.All(c => c(tile, neighbour)))
                 {
                     openDirection(neighbour, dir.Opposite());

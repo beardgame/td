@@ -21,7 +21,7 @@ namespace Bearded.TD.Tiles
             Corners = Directions
                 .All
                 .Enumerate()
-                .Select(dir => Tile.Origin.Offset(dir.Step() * Radius))
+                .Select(dir => Tile.Origin + dir.Step() * Radius)
                 .ToList();
         }
 
@@ -36,12 +36,12 @@ namespace Bearded.TD.Tiles
         {
             return tile.Radius < Radius
                 ? Tilemap.Directions
-                : Tilemap.Directions.Where(d => tile.Neighbour(d).Radius <= Radius);
+                : Tilemap.Directions.Where(d => tile.Neighbor(d).Radius <= Radius);
         }
 
         public IEnumerable<Tile> ValidNeighboursOf(Tile tile)
         {
-            return ValidDirectionsFrom(tile).Select(tile.Neighbour);
+            return ValidDirectionsFrom(tile).Select(tile.Neighbor);
         }
 
         public static Tile GetTile(Position3 position)

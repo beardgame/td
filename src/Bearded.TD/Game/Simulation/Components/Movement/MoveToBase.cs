@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Simulation.Components.Movement
                 desiredDirection = tryToGetUnstuck();
             }
 
-            var isPassable = passabilityLayer[CurrentTile.Neighbour(desiredDirection)].IsPassable;
+            var isPassable = passabilityLayer[CurrentTile.Neighbor(desiredDirection)].IsPassable;
             return !isPassable
                 ? Direction.Unknown
                 : desiredDirection;

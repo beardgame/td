@@ -1,5 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -10,7 +11,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Controls
 {
-    sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveEnded>
+    sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IListener<WaveEnded>
     {
         public event VoidEventHandler? StatusChanged;
 
@@ -31,7 +32,7 @@ namespace Bearded.TD.UI.Controls
         public ResourceAmount FactionResourcesAfterReservation => resources?.ResourcesAfterQueue ?? ResourceAmount.Zero;
         public long FactionTechPoints => technology?.TechPoints ?? 0;
         public TimeSpan? TimeUntilWaveSpawn =>
-            waveSpawnStart == null || game.State.Time >= waveSpawnStart
+            waveSpawnStart == null
                 ? null
                 : waveSpawnStart - game.State.Time;
 
@@ -44,6 +45,7 @@ namespace Bearded.TD.UI.Controls
             faction.TryGetBehaviorIncludingAncestors(out technology);
 
             game.Meta.Events.Subscribe<WaveScheduled>(this);
+            game.Meta.Events.Subscribe<WaveStarted>(this);
             game.Meta.Events.Subscribe<WaveEnded>(this);
         }
 
@@ -60,6 +62,16 @@ namespace Bearded.TD.UI.Controls
             WaveResources = @event.ResourceAmount;
         }
 
+        public void HandleEvent(WaveStarted @event)
+        {
+            if (@event.WaveId != currentWave)
+            {
+                return;
+            }
+
+            waveSpawnStart = null;
+        }
+
         public void HandleEvent(WaveEnded @event)
         {
             if (@event.WaveId != currentWave)
@@ -71,6 +83,11 @@ namespace Bearded.TD.UI.Controls
             WaveName = null;
             waveSpawnStart = null;
             WaveResources = null;
+        }
+
+        public void SkipWaveTimer()
+        {
+            game.Request(Game.Commands.Gameplay.SkipWaveTimer.Request);
         }
     }
 }

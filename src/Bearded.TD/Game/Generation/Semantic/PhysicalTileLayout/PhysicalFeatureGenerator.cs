@@ -85,7 +85,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 if (!node.ConnectedTo.Includes(dir))
                     return;
 
-                var neighborTile = tile.Neighbour(dir);
+                var neighborTile = tile.Neighbor(dir);
 
                 // TODO: look for closest connectable circle once we use multiple circles per node
                 var from = new FeatureCircle(nodes[tile], 0);

@@ -225,7 +225,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 {
                     var random = new Random((tile.X + tile.Y * level.Radius * 3) * 3 + (int)direction + splatSeedOffset);
 
-                    var neighbour = tile.Neighbour(direction);
+                    var neighbour = tile.Neighbor(direction);
 
                     if (!level.IsValid(neighbour))
                         continue;

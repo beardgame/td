@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
                 foreach (var direction in Directions.All.Enumerate())
                 {
-                    var neighbor = tile.Neighbour(direction);
+                    var neighbor = tile.Neighbor(direction);
                     var neighborGeometry = context.Get(neighbor);
 
                     switch (centerGeometry.Type, neighborGeometry.Type)

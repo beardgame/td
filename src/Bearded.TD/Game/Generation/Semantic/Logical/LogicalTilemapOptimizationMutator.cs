@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             }
 
             var randomDirection = Extensions.Directions.RandomElement(random);
-            var neighborTile = randomTile.Neighbour(randomDirection);
+            var neighborTile = randomTile.Neighbor(randomDirection);
             if (!tilemap.IsValidTile(neighborTile) || tilemap[neighborTile].Blueprint == null)
             {
                 return false;
