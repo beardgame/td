@@ -48,6 +48,18 @@ namespace Bearded.TD.Utilities
         public static class State
         {
             [Conditional("DEBUG")]
+            public static void IsInvalid()
+            {
+                throw new InvalidOperationException();
+            }
+
+            [Conditional("DEBUG")]
+            public static void IsInvalid(string message)
+            {
+                throw new InvalidOperationException(message);
+            }
+
+            [Conditional("DEBUG")]
             public static void Satisfies(bool condition)
             {
                 if (!condition)
