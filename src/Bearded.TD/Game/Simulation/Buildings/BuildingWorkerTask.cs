@@ -13,13 +13,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly IIncompleteBuilding incompleteBuilding;
         private readonly ResourceConsumer resourceConsumer;
 
-        private bool started;
+        private bool buildStarted;
 
         public Id<IWorkerTask> Id { get; }
         public string Name => $"Build {incompleteBuilding.StructureName}";
         public IEnumerable<Tile> Tiles { get; }
         public double PercentCompleted => incompleteBuilding.PercentageComplete;
-        public bool CanAbort => !started;
+        public bool CanAbort => !buildStarted;
         public bool Finished { get; private set; }
 
         public BuildingWorkerTask(
@@ -59,9 +59,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 return;
             }
 
-            if (!started)
+            if (!buildStarted)
             {
-                onConstructionStart();
+                buildStarted = true;
+                incompleteBuilding.StartBuild();
             }
 
             resourceConsumer.Update();
@@ -76,12 +77,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             resourceConsumer.Abort();
             incompleteBuilding.CancelBuild();
-        }
-
-        private void onConstructionStart()
-        {
-            started = true;
-            incompleteBuilding.StartBuild();
         }
 
         private void updateBuildingToMatch()

@@ -1,3 +1,4 @@
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
@@ -13,21 +14,18 @@ namespace Bearded.TD.Game.Commands.Gameplay
     static class UpgradeBuilding
     {
         public static IRequest<Player, GameInstance> Request(
-                GameInstance game, Building building, IUpgradeBlueprint upgrade)
-            => new Implementation(game, Id<BuildingUpgradeTask>.Invalid, building, upgrade);
+            GameInstance game, Building building, IUpgradeBlueprint upgrade)
+            => new Implementation(game, building, upgrade);
 
         private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
-            private readonly Id<BuildingUpgradeTask> id;
             private readonly Building building;
             private readonly IUpgradeBlueprint upgrade;
 
-            public Implementation(
-                GameInstance game, Id<BuildingUpgradeTask> id, Building building, IUpgradeBlueprint upgrade)
+            public Implementation(GameInstance game, Building building, IUpgradeBlueprint upgrade)
             {
                 this.game = game;
-                this.id = id;
                 this.building = building;
                 this.upgrade = upgrade;
             }
@@ -38,45 +36,47 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 {
                     return false;
                 }
+                if (building.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is not { } upgradeManager)
+                {
+                    return false;
+                }
                 return technology.IsUpgradeUnlocked(upgrade)
-                    && building.CanApplyUpgrade(upgrade)
-                    && building.CanBeUpgradedBy(actor.Faction);
+                    && upgradeManager.CanApplyUpgrade(upgrade)
+                    && upgradeManager.CanBeUpgradedBy(actor.Faction);
             }
 
             public override void Execute()
             {
-                var upgradeTask = new BuildingUpgradeTask(id, building, upgrade);
-                game.State.Add(upgradeTask);
+                var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
+                var incompleteUpgrade = upgradeManager.QueueUpgrade(upgrade);
+                building.AddComponent(new BuildingUpgradeWork<Building>(incompleteUpgrade));
             }
 
             public override ISerializableCommand<GameInstance> ToCommand() =>
-                new Implementation(game, game.Ids.GetNext<BuildingUpgradeTask>(), building, upgrade);
+                new Implementation(game, building, upgrade);
 
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(id, building, upgrade);
+            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(building, upgrade);
         }
 
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
-            private Id<BuildingUpgradeTask> id;
             private Id<Building> building;
             private ModAwareId upgrade;
 
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(Id<BuildingUpgradeTask> id, Building building, IUpgradeBlueprint upgrade)
+            public Serializer(Building building, IUpgradeBlueprint upgrade)
             {
-                this.id = id;
                 this.building = building.Id;
                 this.upgrade = upgrade.Id;
             }
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-                => new Implementation(game, id, game.State.Find(building), game.Blueprints.Upgrades[upgrade]);
+                => new Implementation(game, game.State.Find(building), game.Blueprints.Upgrades[upgrade]);
 
             public override void Serialize(INetBufferStream stream)
             {
-                stream.Serialize(ref id);
                 stream.Serialize(ref building);
                 stream.Serialize(ref upgrade);
             }

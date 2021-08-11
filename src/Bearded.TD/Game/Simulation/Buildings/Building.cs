@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
@@ -12,16 +11,12 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Technologies;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
@@ -38,13 +33,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         INamed,
         IPlacedBuilding,
         IReportSubject,
-        ISyncable,
-        IUpgradable
+        ISyncable
     {
-        private readonly List<BuildingUpgradeTask> upgradesInProgress = new();
-        public ReadOnlyCollection<BuildingUpgradeTask> UpgradesInProgress { get; }
-        private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
-        public ReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
 
         public Id<Building> Id { get; }
         public string Name { get; }
@@ -64,8 +54,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             Id = id;
             Name = blueprint.Name;
-            AppliedUpgrades = appliedUpgrades.AsReadOnly();
-            UpgradesInProgress = upgradesInProgress.AsReadOnly();
 
             mutableState = new BuildingState();
             State = mutableState.CreateProxy();
@@ -73,7 +61,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             damageExecutor = new DamageExecutor(Events);
 
             Reports = reports.AsReadOnly();
-            reports.Add(new UpgradeReport(this));
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
@@ -106,8 +93,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void HandleEvent(ReportAdded @event)
         {
-            // Use an Insert to ensure that the upgrades report is always last.
-            reports.Insert(reports.Count - 1, @event.Report);
+            reports.Add(@event.Report);
         }
 
         protected override void OnAdded()
@@ -149,42 +135,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Game.Meta.Synchronizer.RegisterSyncable(this);
             syncables = Components.Get<ISyncable>().ToImmutableArray();
             OccupiedTileAccumulator.AccumulateOccupiedTiles(this).ForEach(tile => Game.Navigator.AddBackupSink(tile));
-        }
-
-        public IEnumerable<IUpgradeBlueprint> GetApplicableUpgrades() =>
-            Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
-                ? technology.GetApplicableUpgradesFor(this)
-                : Enumerable.Empty<IUpgradeBlueprint>();
-
-        public bool CanBeUpgradedBy(Faction faction) => faction.SharesBehaviorWith<FactionResources>(Faction);
-
-        public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
-        {
-            return !appliedUpgrades.Contains(upgrade) && upgrade.CanApplyTo(Components);
-        }
-
-        public void ApplyUpgrade(IUpgradeBlueprint upgrade)
-        {
-            upgrade.ApplyTo(Components);
-
-            appliedUpgrades.Add(upgrade);
-            Game.Meta.Events.Send(new BuildingUpgradeFinished(this, upgrade));
-        }
-
-        public void RegisterBuildingUpgradeTask(BuildingUpgradeTask task)
-        {
-            Argument.Satisfies(task.Building == this, "Can only add tasks upgrading this building.");
-            Argument.Satisfies(
-                upgradesInProgress.All(t => t.Upgrade != task.Upgrade),
-                "Cannot queue an upgrade task for the same upgrade twice.");
-            upgradesInProgress.Add(task);
-        }
-
-        public void UnregisterBuildingUpgradeTask(BuildingUpgradeTask task)
-        {
-            var wasRemoved = upgradesInProgress.Remove(task);
-
-            Argument.Satisfies(wasRemoved, "Can only remove task that was added previously.");
         }
 
         public override void Update(TimeSpan elapsedTime)

@@ -120,11 +120,11 @@ namespace Bearded.TD.Game.Simulation.Units
             components.Draw(drawers);
         }
 
-        public bool CanApplyEffect(IUpgradeEffect effect) => effect.CanApplyTo(components);
+        public bool CanApplyEffect(IUpgradeEffect effect) => effect.CanApplyTo(this);
 
-        public void ApplyEffect(IUpgradeEffect effect) => effect.ApplyTo(components);
+        public void ApplyEffect(IUpgradeEffect effect) => effect.ApplyTo(this);
 
-        public void RemoveEffect(IUpgradeEffect effect) => effect.RemoveFrom(components);
+        public void RemoveEffect(IUpgradeEffect effect) => effect.RemoveFrom(this);
 
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);

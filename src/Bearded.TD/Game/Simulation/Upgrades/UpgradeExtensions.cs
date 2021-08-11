@@ -7,13 +7,16 @@ namespace Bearded.TD.Game.Simulation.Upgrades
 {
     static class UpgradeExtensions
     {
-        public static bool CanApplyTo<T>(this IUpgradeBlueprint upgradeBlueprint, ComponentCollection<T> components)
-            => components.Components.Count > 0 && upgradeBlueprint.Effects.All(effect => effect.CanApplyTo(components));
+        public static bool CanApplyTo<T>(this IUpgradeBlueprint upgradeBlueprint, T subject)
+            where T : IComponentOwner
+            => subject.GetComponents<IComponent>().Any()
+                && upgradeBlueprint.Effects.All(effect => effect.CanApplyTo(subject));
 
-        public static void ApplyTo<T>(this IUpgradeBlueprint upgradeBlueprint, ComponentCollection<T> components)
+        public static void ApplyTo<T>(this IUpgradeBlueprint upgradeBlueprint, T subject)
+            where T : IComponentOwner<T>
         {
-            DebugAssert.Argument.Satisfies(upgradeBlueprint.CanApplyTo(components));
-            upgradeBlueprint.Effects.ForEach(effect => effect.ApplyTo(components));
+            DebugAssert.Argument.Satisfies(upgradeBlueprint.CanApplyTo(subject));
+            upgradeBlueprint.Effects.ForEach(effect => effect.ApplyTo(subject));
         }
     }
 }

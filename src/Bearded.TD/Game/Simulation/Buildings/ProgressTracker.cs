@@ -1,4 +1,4 @@
-using Bearded.TD.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -38,8 +38,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void Start()
         {
-            DebugAssert.State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
-
             // Avoid duplicate requests.
             if (progressStage > ProgressStage.NotStarted)
             {
@@ -52,7 +50,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void SyncStart()
         {
-            DebugAssert.State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
+            State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
 
             // Catch up the in-memory stage.
             if (progressStage < ProgressStage.InProgress)
@@ -66,17 +64,20 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void SetProgress(double progress)
         {
-            DebugAssert.Argument.Satisfies(progress is >= 0 and <= 1);
+            Argument.Satisfies(progress is >= 0 and <= 1);
+            State.Satisfies(progressStage == ProgressStage.InProgress);
 
-            // TODO: why is this synced and not just the normal stage?
-            DebugAssert.State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
-            subject.OnProgressSet(progress);
+            // Progress is not synced, so we call the callback directly instead of from the sync command.
+            // However, to ensure we don't send progress updates when we haven't called OnStart yet or already called
+            // OnComplete or OnCancel, we ignore progress updates if the synced state is not in progress.
+            if (syncedProgressStage == ProgressStage.InProgress)
+            {
+                subject.OnProgressSet(progress);
+            }
         }
 
         public void Complete()
         {
-            DebugAssert.State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
-
             // Avoid duplicate sync requests.
             if (progressStage > ProgressStage.InProgress)
             {
@@ -89,7 +90,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void SyncComplete()
         {
-            DebugAssert.State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
+            State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
 
             // Catch up the in-memory stage.
             if (progressStage < ProgressStage.Completed)
@@ -105,7 +106,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void Cancel()
         {
-            DebugAssert.State.Satisfies(progressStage == ProgressStage.NotStarted);
+            State.Satisfies(progressStage == ProgressStage.NotStarted);
             subject.OnCancel();
         }
     }

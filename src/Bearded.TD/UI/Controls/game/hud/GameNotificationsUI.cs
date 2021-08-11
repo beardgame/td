@@ -36,8 +36,8 @@ namespace Bearded.TD.UI.Controls
                     @event => $"Constructed {@event.Name}",
                     @event => @event.GameObject),
                 textAndGameObjectEventListener<BuildingUpgradeFinished>(
-                    @event => $"Upgraded {@event.Building.Blueprint.Name} with {@event.Upgrade.Name}",
-                    @event => @event.Building),
+                    @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
+                    @event => @event.GameObject),
                 textOnlyEventListener<TechnologyUnlocked>(
                     @event => $"Unlocked {@event.Technology.Name}"));
 

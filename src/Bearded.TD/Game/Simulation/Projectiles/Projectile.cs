@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -25,13 +26,14 @@ namespace Bearded.TD.Game.Simulation.Projectiles
     [ComponentOwner]
     sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>, IListener<CausedDamage>
     {
-        public Building DamageSource { get; }
-
         private readonly IComponentOwnerBlueprint blueprint;
+        private readonly IBuildingUpgradeManager? upgradeManager;
         private readonly ComponentCollection<Projectile> components;
         private readonly ComponentEvents events = new();
 
-        public Maybe<IComponentOwner> Parent => Maybe.Just<IComponentOwner>(DamageSource);
+        public Building? DamageSource { get; }
+
+        public Maybe<IComponentOwner> Parent => Maybe.FromNullable<IComponentOwner>(DamageSource);
 
         public Position3 Position { get; private set; }
 
@@ -39,12 +41,14 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public Tile CurrentTile { get; private set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
+        public Projectile(
+            IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
         {
             this.blueprint = blueprint;
-            DamageSource = damageSource;
+            upgradeManager = damageSource?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault();
             Position = position;
             Velocity = velocity;
+            DamageSource = damageSource;
 
             components = new ComponentCollection<Projectile>(this, events);
             events.Subscribe(this);
@@ -56,20 +60,20 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
             components.Add(blueprint.GetComponents<Projectile>());
 
-            foreach (var upgrade in DamageSource.AppliedUpgrades)
+            foreach (var upgrade in upgradeManager?.AppliedUpgrades ?? Enumerable.Empty<IUpgradeBlueprint>())
             {
-                if (!upgrade.CanApplyTo(components))
+                if (!upgrade.CanApplyTo(this))
                 {
                     continue;
                 }
 
-                upgrade.ApplyTo(components);
+                upgrade.ApplyTo(this);
             }
         }
 
         public void HandleEvent(CausedDamage @event)
         {
-            DamageSource.AttributeDamage(@event.Target, @event.Result);
+            DamageSource?.AttributeDamage(@event.Target, @event.Result);
         }
 
         public override void Update(TimeSpan elapsedTime)

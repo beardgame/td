@@ -12,23 +12,30 @@ namespace Bearded.TD.Game.Simulation.Components
         private readonly ComponentEvents events;
         private readonly List<IComponent<TOwner>> components = new();
 
-        public IReadOnlyCollection<IComponent<TOwner>> Components { get; }
+        private bool deferComponentCollectionChanges;
+        private readonly Queue<IComponent<TOwner>> componentsToBeAdded = new();
 
         public ComponentCollection(TOwner owner, ComponentEvents events)
         {
             this.owner = owner;
             this.events = events;
-            Components = components.AsReadOnly();
         }
 
         public void Add(IEnumerable<IComponent<TOwner>> newComponents)
         {
             foreach (var component in newComponents)
+            {
                 Add(component);
+            }
         }
 
         public void Add(IComponent<TOwner> component)
         {
+            if (deferComponentCollectionChanges)
+            {
+                componentsToBeAdded.Enqueue(component);
+                return;
+            }
             components.Add(component);
             component.OnAdded(owner, events);
         }
@@ -40,14 +47,24 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public void Update(TimeSpan elapsedTime)
         {
+            deferComponentCollectionChanges = true;
             foreach (var component in components)
+            {
                 component.Update(elapsedTime);
+            }
+            deferComponentCollectionChanges = false;
+            while (componentsToBeAdded.Count > 0)
+            {
+                Add(componentsToBeAdded.Dequeue());
+            }
         }
 
         public void Draw(CoreDrawers drawers)
         {
             foreach (var component in components)
+            {
                 component.Draw(drawers);
+            }
         }
     }
 }

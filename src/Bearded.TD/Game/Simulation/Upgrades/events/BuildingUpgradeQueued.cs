@@ -5,14 +5,16 @@ namespace Bearded.TD.Game.Simulation.Upgrades
 {
     readonly struct BuildingUpgradeQueued : IGlobalEvent
     {
-        public Building Building { get; }
-        public BuildingUpgradeTask Task { get; }
-        public IUpgradeBlueprint Upgrade => Task.Upgrade;
+        public string BuildingName { get; }
+        public IGameObject GameObject { get; }
+        public IIncompleteUpgrade IncompleteUpgrade { get; }
+        public IUpgradeBlueprint Upgrade => IncompleteUpgrade.Upgrade;
 
-        public BuildingUpgradeQueued(Building building, BuildingUpgradeTask task)
+        public BuildingUpgradeQueued(string buildingName, IGameObject gameObject, IIncompleteUpgrade incompleteUpgrade)
         {
-            Building = building;
-            Task = task;
+            BuildingName = buildingName;
+            GameObject = gameObject;
+            IncompleteUpgrade = incompleteUpgrade;
         }
     }
 }
