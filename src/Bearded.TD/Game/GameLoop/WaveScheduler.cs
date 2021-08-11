@@ -125,7 +125,7 @@ namespace Bearded.TD.Game.GameLoop
                 enemiesPerSpawn--;
             }
 
-            var spawnDuration = TimeSpan.Min(PreferredTimeBetweenSpawns * enemiesPerSpawn, MaxSpawnTimeDuration);
+            var spawnDuration = TimeSpan.Min(PreferredTimeBetweenSpawns * (enemiesPerSpawn - 1), MaxSpawnTimeDuration);
 
             return (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
         }
