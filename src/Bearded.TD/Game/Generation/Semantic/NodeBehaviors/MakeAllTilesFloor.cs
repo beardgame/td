@@ -9,9 +9,9 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
     {
         public override void Generate(NodeGenerationContext context)
         {
-            foreach (var t in context.Tiles)
+            foreach (var t in context.Tiles.All)
             {
-                context.Set(t, new TileGeometry(TileType.Floor, 0, 0.U()));
+                context.Tiles.Set(t, new TileGeometry(TileType.Floor, 0, 0.U()));
             }
         }
     }

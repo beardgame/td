@@ -14,12 +14,12 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            foreach (var t in context.Tiles)
+            foreach (var t in context.Tiles.All)
             {
                 if (!context.Random.NextBool(Parameters.Percentage))
                     continue;
 
-                context.Set(t, new TileGeometry(Parameters.Type, 0, 0.U()));
+                context.Tiles.Set(t, new TileGeometry(Parameters.Type, 0, 0.U()));
             }
         }
     }

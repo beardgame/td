@@ -13,7 +13,8 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            context.PlaceBuilding(Parameters.Building, Level.GetTile(context.Circles[0].Center), Parameters.Faction);
+            var tileAtCenterOfNodeCircle = Level.GetTile(context.NodeData.Circles[0].Center);
+            context.Content.PlaceBuilding(Parameters.Building, tileAtCenterOfNodeCircle, Parameters.Faction);
         }
 
         public sealed record BehaviorParameters(IBuildingBlueprint Building, ExternalId<Faction> Faction);

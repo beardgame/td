@@ -8,7 +8,8 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
     {
         public override void Generate(NodeGenerationContext context)
         {
-            context.PlaceSpawnLocation(Level.GetTile(context.Circles[0].Center));
+            var tileAtCenterOfNode = Level.GetTile(context.NodeData.Circles[0].Center);
+            context.Content.PlaceSpawnLocation(tileAtCenterOfNode);
         }
     }
 }

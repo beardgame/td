@@ -42,8 +42,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         private void generateNode(TiledFeature feature, Tilemap<TileGeometry> tilemap, TiledFeature.Node node,
             LevelGenerationCommandAccumulator commandAccumulator, Random random)
         {
-            var context = new NodeGenerationContext(
-                tilemap,
+            var context = NodeGenerationContext.Create(tilemap,
                 feature.Tiles,
                 node.NodeFeature.Circles,
                 node.Connections,
@@ -59,16 +58,16 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
         private void ensureConnectedness(NodeGenerationContext context)
         {
-            var connections = context.Connections;
+            var connections = context.NodeData.Connections;
 
             if (connections.Length < 2)
                 return;
 
-            var expensivePathMinimum = context.Tiles.Count * 2;
+            var expensivePathMinimum = context.Tiles.All.Count * 2;
 
             var pathfinder = Pathfinder
-                .WithTileCosts(t => context.Get(t).Type == TileType.Floor ? 1 : expensivePathMinimum, 1)
-                .InArea(context.Tiles);
+                .WithTileCosts(t => context.Tiles.Get(t).Type == TileType.Floor ? 1 : expensivePathMinimum, 1)
+                .InArea(context.Tiles.All);
 
             foreach (var tile in connections.Skip(1))
             {
@@ -94,7 +93,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 setFloor(tile);
             }
 
-            void setFloor(Tile tile) => context.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));
+            void setFloor(Tile tile) => context.Tiles.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));
         }
 
         private static void generateCrevice(TiledFeature feature, Tilemap<TileGeometry> tilemap)

@@ -20,9 +20,9 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            foreach (var tile in context.Tiles)
+            foreach (var tile in context.Tiles.All)
             {
-                var centerGeometry = context.Get(tile);
+                var centerGeometry = context.Tiles.Get(tile);
 
                 if (centerGeometry.Type == TileType.Wall)
                 {
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
                         var direction = Direction2.FromDegrees(context.Random.NextFloat(360));
                         var offset = direction * (context.Random.NextFloat(2f, 5f) * Constants.Rendering.PixelSize).U();
 
-                        context.PlaceGameObject(
+                        context.Content.PlaceGameObject(
                             Parameters.Blueprints.RandomElement(context.Random),
                             (position + offset).WithZ(z),
                             direction);
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
                 foreach (var direction in Directions.All.Enumerate())
                 {
                     var neighbor = tile.Neighbor(direction);
-                    var neighborGeometry = context.Get(neighbor);
+                    var neighborGeometry = context.Tiles.Get(neighbor);
 
                     switch (centerGeometry.Type, neighborGeometry.Type)
                     {
@@ -100,7 +100,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
                         var z = height + zFactor * (neighborHeight - height);
 
-                        context.PlaceGameObject(
+                        context.Content.PlaceGameObject(
                             Parameters.Blueprints.RandomElement(context.Random),
                             (position + offsetPosition).WithZ(z),
                             dir + offsetAngle);
