@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game.Simulation.World
 {
-    enum TileType : byte
+    public enum TileType : byte
     {
         Unknown = 0,
         Floor = 1,

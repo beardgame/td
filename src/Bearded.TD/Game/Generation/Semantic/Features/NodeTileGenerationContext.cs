@@ -7,12 +7,17 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
     sealed class NodeTileGenerationContext
     {
         private readonly Tilemap<TileGeometry> tilemap;
-        public IArea All { get; }
 
-        public NodeTileGenerationContext(Tilemap<TileGeometry> tilemap, IArea all)
+        public IArea All { get; }
+        public BoundedMutableArea Selection { get; }
+        public AreaTags Tags { get; }
+
+        public NodeTileGenerationContext(Tilemap<TileGeometry> tilemap, IArea tiles)
         {
             this.tilemap = tilemap;
-            All = all;
+            All = tiles;
+            Selection = new BoundedMutableArea(tiles);
+            Tags = new AreaTags(tiles);
         }
 
         public TileGeometry Get(Tile tile)

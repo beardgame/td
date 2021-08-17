@@ -92,7 +92,7 @@ namespace Bearded.TD.Tiles
         }
     }
 
-    class Tilemap<TValue> : IEnumerable<Tile>
+    public class Tilemap<TValue> : IEnumerable<Tile>
     {
         public int Radius { get; }
         private readonly TValue[,] tiles;
