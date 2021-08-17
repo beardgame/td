@@ -10,6 +10,7 @@ using Bearded.Utilities.Collections;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameLoop
 {
@@ -56,7 +57,11 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             private Phase phase;
             private ResourceAmount resourcesGiven;
-            private bool forceSkipDowntime;
+
+            private TimeSpan skippedTime = TimeSpan.Zero;
+
+            private Instant actualSpawnStart => script.SpawnStart - skippedTime;
+            private Instant actualSpawnEnd => script.SpawnEnd - skippedTime;
 
             public bool Deleted => phase == Phase.Completed;
 
@@ -111,7 +116,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 switch (phase)
                 {
                     case Phase.Downtime:
-                        if (game.Time >= script.SpawnStart || forceSkipDowntime)
+                        if (game.Time >= actualSpawnStart)
                         {
                             phase = Phase.Spawning;
                             game.Meta.Events.Send(
@@ -125,7 +130,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                         updateSpawnQueue();
                         if (spawnQueue.Count == 0)
                         {
-                            State.Satisfies(game.Time >= script.SpawnEnd || forceSkipDowntime);
+                            State.Satisfies(game.Time >= actualSpawnEnd);
                             phase = Phase.FinishOff;
                         }
                         break;
@@ -148,7 +153,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             private void updateResources()
             {
-                var spawnTimeElapsed = game.Time - script.SpawnStart;
+                var spawnTimeElapsed = game.Time - actualSpawnStart;
                 var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
                 var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.Percentage(percentageTimeElapsed);
                 State.Satisfies(expectedResourcesGiven >= resourcesGiven);
@@ -156,6 +161,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 {
                     resources.ProvideResources(expectedResourcesGiven - resourcesGiven);
                     resourcesGiven = expectedResourcesGiven;
+                    Console.WriteLine(resourcesGiven);
                 }
             }
 
@@ -180,7 +186,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 if (phase != Phase.Downtime)
                     return;
 
-                forceSkipDowntime = true;
+                skippedTime = script.SpawnStart - game.Time;
 
                 startSpawningEnemiesImmediately();
             }
