@@ -83,6 +83,8 @@ namespace Bearded.TD.Game.Simulation.Components.Statistics
 
         private sealed class StatisticsReport : IStatisticsReport
         {
+            public ReportType Type => ReportType.Effectivity;
+
             public long TotalDamage => source.totalDamage;
             public long TotalKills => source.totalKills;
             public long CurrentWaveDamage => source.currentWaveDamage;

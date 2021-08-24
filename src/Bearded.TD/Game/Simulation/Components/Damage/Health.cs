@@ -138,6 +138,8 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         private sealed class HealthReport : IHealthReport
         {
+            public ReportType Type => ReportType.EntityProperties;
+
             public HitPoints CurrentHealth => source.CurrentHealth;
             public HitPoints MaxHealth => source.MaxHealth;
 

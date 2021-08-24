@@ -41,13 +41,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private readonly BuildingState mutableState;
         private readonly DamageExecutor damageExecutor;
-        private readonly List<IReport> reports = new();
+        private readonly SortedSet<IReport> reports =
+            new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));
         private ImmutableArray<ISyncable> syncables;
 
-        public IReadOnlyCollection<IReport> Reports { get; }
-        private bool isDead;
+        public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
         public override IBuildingState State { get; }
+
+        private bool isDead;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction)
             : base(blueprint, faction)
@@ -59,8 +61,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             State = mutableState.CreateProxy();
 
             damageExecutor = new DamageExecutor(Events);
-
-            Reports = reports.AsReadOnly();
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()

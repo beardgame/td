@@ -5,6 +5,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities.Collections;
@@ -17,6 +18,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private sealed class UpgradeReport : IUpgradeReport
         {
+            public ReportType Type => ReportType.Upgrades;
+
             private readonly BuildingUpgradeManager<T> source;
 
             public UpgradeReport(BuildingUpgradeManager<T> source)
