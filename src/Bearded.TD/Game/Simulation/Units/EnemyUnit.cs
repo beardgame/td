@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
@@ -9,10 +8,10 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Components.Movement;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -31,7 +30,6 @@ namespace Bearded.TD.Game.Simulation.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        ISyncable,
         IDamageSource
     {
         public Id<EnemyUnit> Id { get; }
@@ -44,7 +42,6 @@ namespace Bearded.TD.Game.Simulation.Units
         private readonly ComponentEvents events = new();
 
         private readonly ComponentCollection<EnemyUnit> components;
-        private ImmutableArray<ISyncable> syncables;
         private IHealth health = null!;
         private bool isDead;
 
@@ -72,17 +69,15 @@ namespace Bearded.TD.Game.Simulation.Units
             base.OnAdded();
 
             Game.IdAs(this);
-            Game.Meta.Synchronizer.RegisterSyncable(this);
 
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
+            components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
-
-            syncables = components.Get<ISyncable>().ToImmutableArray();
 
             radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         }
@@ -162,7 +157,5 @@ namespace Bearded.TD.Game.Simulation.Units
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
-
-        public IStateToSync GetCurrentStateToSync() => new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }

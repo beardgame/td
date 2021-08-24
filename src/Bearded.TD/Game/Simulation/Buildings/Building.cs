@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
@@ -11,7 +10,6 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -32,10 +30,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         IMortal,
         INamed,
         IPlacedBuilding,
-        IReportSubject,
-        ISyncable
+        IReportSubject
     {
-
         public Id<Building> Id { get; }
         public string Name { get; }
 
@@ -43,7 +39,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly DamageExecutor damageExecutor;
         private readonly SortedSet<IReport> reports =
             new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));
-        private ImmutableArray<ISyncable> syncables;
 
         public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
@@ -130,10 +125,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private void materialize()
         {
+            AddComponent(new Syncer<Building>());
             mutableState.IsMaterialized = true;
-
-            Game.Meta.Synchronizer.RegisterSyncable(this);
-            syncables = Components.Get<ISyncable>().ToImmutableArray();
             OccupiedTileAccumulator.AccumulateOccupiedTiles(this).ForEach(tile => Game.Navigator.AddBackupSink(tile));
         }
 
@@ -156,8 +149,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             base.Draw(drawers);
         }
-
-        public IStateToSync GetCurrentStateToSync() =>
-            new CompositeStateToSync(syncables.Select(s => s.GetCurrentStateToSync()));
     }
 }

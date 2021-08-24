@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -15,66 +16,76 @@ namespace Bearded.TD.Game.Commands.Synchronization
     static class SyncEntities
     {
         public abstract class Implementation<T> : ISerializableCommand<GameInstance>
-            where T : class, IIdable<T>, ISyncable
+            where T : class, IComponentOwner, IIdable<T>
         {
-            private readonly IList<(T, IStateToSync)> syncedObjects;
+            private readonly IList<(ISyncer<T>, IStateToSync)> syncers;
 
-            protected Implementation(IList<(T, IStateToSync)> syncedObjects)
+            protected Implementation(IList<(ISyncer<T>, IStateToSync)> syncers)
             {
-                this.syncedObjects = syncedObjects;
+                this.syncers = syncers;
             }
 
             public void Execute()
             {
-                foreach (var (_, stateToSync) in syncedObjects)
+                foreach (var (_, stateToSync) in syncers)
                 {
                     stateToSync.Apply();
                 }
             }
 
-            public ICommandSerializer<GameInstance> Serializer => ToSerializer(syncedObjects);
+            public ICommandSerializer<GameInstance> Serializer => ToSerializer(syncers);
 
             protected abstract ICommandSerializer<GameInstance> ToSerializer(
-                IEnumerable<(T, IStateToSync)> syncedObjects);
+                IEnumerable<(ISyncer<T>, IStateToSync)> syncedObjects);
         }
 
-        public abstract class Serializer<T> : ICommandSerializer<GameInstance> where T : class, IIdable<T>, ISyncable
+        public abstract class Serializer<T> : ICommandSerializer<GameInstance>
+            where T : class, IComponentOwner, IIdable<T>
         {
-            private (Id<T> id, byte[] data)[] syncedObjects = System.Array.Empty<(Id<T> id, byte[] data)>();
+            private (Id<T> id, byte[] data)[] syncers = System.Array.Empty<(Id<T>, byte[])>();
 
             protected Serializer() {}
 
-            protected Serializer(IEnumerable<(T obj, IStateToSync synchronizer)> syncedObjects)
+            protected Serializer(IEnumerable<(ISyncer<T> syncer, IStateToSync state)> syncers)
             {
-                this.syncedObjects = syncedObjects
-                    .Select(tuple => (tuple.obj.Id, dataFromStateToSync(tuple.synchronizer)))
+                this.syncers = syncers
+                    .Select(tuple => (tuple.syncer.EntityId, dataFromStateToSync(tuple.state)))
                     .ToArray();
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-                ToImplementation(syncedObjects.SelectMany(tuple =>
+                ToImplementation(syncers.SelectMany(tuple =>
                 {
                     var (id, data) = tuple;
-                    if (!game.State.TryFind(id, out var unit))
+                    if (!game.State.TryFind(id, out var entity))
                     {
                         game.Meta.Logger.Debug?.Log(
                             $"Trying to sync an object that doesn't exist. Type: {typeof(T)} ID: {id}");
-                        return Enumerable.Empty<(T obj, IStateToSync synchronizer)>();
+                        return Enumerable.Empty<(ISyncer<T>, IStateToSync)>();
                     }
-                    var synchronizer = populatedStateToSyncFor(unit, data);
-                    return (unit, synchronizer).Yield();
+
+                    var syncer = entity.GetComponents<ISyncer<T>>().SingleOrDefault();
+                    if (syncer == null)
+                    {
+                        game.Meta.Logger.Debug?.Log(
+                            $"Trying to sync an object without syncer. Type: {typeof(T)} ID: {id}");
+                        return Enumerable.Empty<(ISyncer<T>, IStateToSync)>();
+                    }
+
+                    var stateToSync = populatedStateToSyncFor(syncer, data);
+                    return (syncer, synchronizer: stateToSync).Yield();
                 }).ToImmutableArray());
 
             protected abstract ISerializableCommand<GameInstance> ToImplementation(
-                ImmutableArray<(T, IStateToSync)> syncedObjects);
+                ImmutableArray<(ISyncer<T>, IStateToSync)> syncers);
 
             public void Serialize(INetBufferStream stream)
             {
-                stream.SerializeArrayCount(ref syncedObjects);
-                for (var i = 0; i < syncedObjects.Length; i++)
+                stream.SerializeArrayCount(ref syncers);
+                for (var i = 0; i < syncers.Length; i++)
                 {
-                    stream.Serialize(ref syncedObjects[i].id);
-                    stream.Serialize(ref syncedObjects[i].data);
+                    stream.Serialize(ref syncers[i].id);
+                    stream.Serialize(ref syncers[i].data);
                 }
             }
 
@@ -86,9 +97,9 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 return buffer.Data;
             }
 
-            private static IStateToSync populatedStateToSyncFor(ISyncable unit, byte[] data)
+            private static IStateToSync populatedStateToSyncFor(ISyncer<T> syncer, byte[] data)
             {
-                var stateToSync = unit.GetCurrentStateToSync();
+                var stateToSync = syncer.GetCurrentStateToSync();
                 populateStateToSyncFromData(stateToSync, data);
                 return stateToSync;
             }

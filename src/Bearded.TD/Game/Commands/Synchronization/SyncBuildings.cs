@@ -12,14 +12,17 @@ namespace Bearded.TD.Game.Commands.Synchronization
     static class SyncBuildings
     {
         public static ISerializableCommand<GameInstance> Command(IEnumerable<Building> buildings)
-            => new Implementation(buildings.Select(u => (u, u.GetCurrentStateToSync())).ToList());
+            => new Implementation(buildings
+                .Select(b => b.GetComponents<ISyncer<Building>>().Single())
+                .Select(syncer => (syncer, syncer.GetCurrentStateToSync()))
+                .ToImmutableArray());
 
         private sealed class Implementation : SyncEntities.Implementation<Building>
         {
-            public Implementation(IList<(Building, IStateToSync)> syncedObjects) : base(syncedObjects) { }
+            public Implementation(IList<(ISyncer<Building>, IStateToSync)> syncers) : base(syncers) { }
 
             protected override ICommandSerializer<GameInstance> ToSerializer(
-                IEnumerable<(Building, IStateToSync)> syncedObjects) => new Serializer(syncedObjects);
+                IEnumerable<(ISyncer<Building>, IStateToSync)> syncedObjects) => new Serializer(syncedObjects);
         }
 
         private sealed class Serializer : SyncEntities.Serializer<Building>
@@ -27,10 +30,10 @@ namespace Bearded.TD.Game.Commands.Synchronization
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(IEnumerable<(Building, IStateToSync)> syncedObjects) : base(syncedObjects) { }
+            public Serializer(IEnumerable<(ISyncer<Building>, IStateToSync)> syncers) : base(syncers) { }
 
             protected override ISerializableCommand<GameInstance> ToImplementation(
-                ImmutableArray<(Building, IStateToSync)> syncedObjects) => new Implementation(syncedObjects);
+                ImmutableArray<(ISyncer<Building>, IStateToSync)> syncedObjects) => new Implementation(syncedObjects);
         }
     }
 }
