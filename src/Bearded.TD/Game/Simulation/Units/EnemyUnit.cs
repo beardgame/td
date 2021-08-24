@@ -73,7 +73,7 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
-            components.Add(new DamageExecutor<EnemyUnit>());
+            components.Add(new DamageReceiver<EnemyUnit>());
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");

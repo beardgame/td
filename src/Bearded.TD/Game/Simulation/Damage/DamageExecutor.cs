@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    sealed class DamageExecutor<T> : Component<T>, IDamageExecutor
+    sealed class DamageReceiver<T> : Component<T>, IDamageReceiver
     {
         protected override void Initialize() {}
 
@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         public override void Draw(CoreDrawers drawers) {}
     }
 
-    interface IDamageExecutor
+    interface IDamageReceiver
     {
         DamageResult Damage(DamageInfo damageInfo);
     }

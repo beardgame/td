@@ -106,12 +106,12 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                 return;
             }
 
-            if (!target.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+            if (!target.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
             {
                 return;
             }
 
-            var result = damageExecutor.Damage(new DamageInfo(
+            var result = damageReceiver.Damage(new DamageInfo(
                 StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
                 DamageType.Energy,
                 Weapon.Owner as Building

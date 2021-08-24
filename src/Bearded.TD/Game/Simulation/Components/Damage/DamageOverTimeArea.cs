@@ -52,9 +52,9 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
                     var distanceSquared = (centerPosition - unit.Position).LengthSquared;
 
                     if (distanceSquared < rangeSquared
-                        && unit.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+                        && unit.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
                     {
-                        var result = damageExecutor.Damage(damageInfo);
+                        var result = damageReceiver.Damage(damageInfo);
                         Events.Send(new CausedDamage(unit, result));
                     }
                 }

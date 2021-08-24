@@ -20,12 +20,12 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         public void HandleEvent(HitEnemy @event)
         {
-            if (!@event.Enemy.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+            if (!@event.Enemy.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
             {
                 DebugAssert.State.IsInvalid();
             }
 
-            var result = damageExecutor.Damage(
+            var result = damageReceiver.Damage(
                 new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, Owner.DamageSource));
             Events.Send(new CausedDamage(@event.Enemy, result));
         }
