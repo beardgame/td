@@ -17,14 +17,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         private readonly GlobalGameEvents events;
-        private readonly Dictionary<Tile, IPlacedBuilding> buildingLookup = new();
+        private readonly Dictionary<Tile, IBuilding> buildingLookup = new();
 
         public BuildingLayer(GlobalGameEvents events)
         {
             this.events = events;
         }
 
-        public void AddBuilding(IPlacedBuilding building)
+        public void AddBuilding(IBuilding building)
         {
             foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        public void RemoveBuilding(IPlacedBuilding building)
+        public void RemoveBuilding(IBuilding building)
         {
             foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
@@ -47,13 +47,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
-        public IPlacedBuilding? GetBuildingFor(Tile tile)
+        public IBuilding? GetBuildingFor(Tile tile)
         {
             buildingLookup.TryGetValue(tile, out var building);
             return building;
         }
 
-        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IPlacedBuilding? building)
+        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IBuilding? building)
         {
             building = GetBuildingFor(tile);
             return building?.State.IsMaterialized ?? false;
@@ -70,6 +70,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             };
         }
 
-        public IPlacedBuilding? this[Tile tile] => GetBuildingFor(tile);
+        public IBuilding? this[Tile tile] => GetBuildingFor(tile);
     }
 }

@@ -22,13 +22,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IPositionable
         where T : BuildingBase<T>
     {
-        protected ComponentCollection<T> Components { get; }
+        private readonly ComponentCollection<T> components;
         protected ComponentEvents Events { get; } = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
         public abstract IBuildingState State { get; }
 
-        public IBuildingBlueprint Blueprint { get; }
+        protected IBuildingBlueprint Blueprint { get; }
 
         public Faction Faction { get; }
         public Position3 Position { get; private set; }
@@ -39,14 +39,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             Blueprint = blueprint;
             Faction = faction;
-            Components = new ComponentCollection<T>((T) this, Events);
+            components = new ComponentCollection<T>((T) this, Events);
         }
 
         protected override void OnAdded()
         {
             base.OnAdded();
             Events.Subscribe(this);
-            Components.Add(InitializeComponents());
+            components.Add(InitializeComponents());
         }
 
         public void HandleEvent(FootprintChanged @event)
@@ -72,24 +72,24 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
-            Components.Add(component);
+            components.Add(component);
         }
 
         protected abstract IEnumerable<IComponent<T>> InitializeComponents();
-        public IEnumerable<TComponent> GetComponents<TComponent>() => Components.Get<TComponent>();
+        public IEnumerable<TComponent> GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner<T>.GetComponents<TComponent>() => GetComponents<TComponent>();
 
-        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => Components.Get<TComponent>();
+        IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();
 
         public override void Update(TimeSpan elapsedTime)
         {
-            Components.Update(elapsedTime);
+            components.Update(elapsedTime);
         }
 
         public override void Draw(CoreDrawers drawers)
         {
-            Components.Draw(drawers);
+            components.Draw(drawers);
         }
     }
 }

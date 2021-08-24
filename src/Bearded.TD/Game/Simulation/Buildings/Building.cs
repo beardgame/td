@@ -29,7 +29,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         IListener<ReportAdded>,
         IMortal,
         INamed,
-        IPlacedBuilding,
         IReportSubject
     {
         public Id<Building> Id { get; }
