@@ -15,7 +15,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components.Fire
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IPreviewListener<TakeDamage>, IListener<Spark>
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
         where T : GameObject, IPositionable
     {
         private IDamageSource? lastFireHitOwner;
@@ -41,7 +41,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             combustable.Extinguished += onExtinguished;
 
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Events.Subscribe<TakeDamage>(this);
+            Events.Subscribe<TookDamage>(this);
             Events.Subscribe<Spark>(this);
         }
 
@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             Events.Send(new FireExtinguished());
         }
 
-        public void PreviewEvent(ref TakeDamage @event)
+        public void HandleEvent(TookDamage @event)
         {
             if (dealingDamageToOwner)
                 return;
@@ -63,19 +63,19 @@ namespace Bearded.TD.Game.Simulation.Components.Fire
             combustable.Spark();
         }
 
-        private void onDamaged(DamageInfo damage)
+        private void onDamaged(DamageResult result)
         {
-            switch (damage.Type)
+            switch (result.Damage.Type)
             {
                 case DamageType.Energy:
-                    combustable.HitWithFire(damage.Amount.NumericValue * EnergyPerEnergyDamage);
+                    combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerEnergyDamage);
                     break;
                 case DamageType.Fire:
-                    combustable.HitWithFire(damage.Amount.NumericValue * EnergyPerFireDamage);
+                    combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerFireDamage);
                     break;
             }
 
-            lastFireHitOwner = damage.Source ?? lastFireHitOwner;
+            lastFireHitOwner = result.Damage.Source ?? lastFireHitOwner;
         }
 
         public override void Update(TimeSpan elapsedTime)

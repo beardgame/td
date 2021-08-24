@@ -27,8 +27,8 @@ namespace Bearded.TD.Game.Simulation.Components.Statistics
         {
             events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
             {
-                totalDamage += e.Result.DamageTaken.NumericValue;
-                currentWaveDamage += e.Result.DamageTaken.NumericValue;
+                totalDamage += e.Result.Damage.Amount.NumericValue;
+                currentWaveDamage += e.Result.Damage.Amount.NumericValue;
             }));
             events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
             {
