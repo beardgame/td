@@ -3,12 +3,17 @@ using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Tiles
 {
-    readonly struct TileEdge : IEquatable<TileEdge>
+    readonly struct TileEdge// : IEquatable<TileEdge>
     {
         private readonly Tile tile;
         private readonly Direction direction;
 
         public bool IsValid => direction != Unknown;
+
+        public (Tile, Tile) AdjacentTiles =>
+            direction is Right or UpRight or UpLeft
+                ? (tile, tile.Neighbor(direction))
+                : throw invalidDirectionException();
 
         public static TileEdge From(Tile tile, Direction direction)
         {
@@ -57,19 +62,14 @@ namespace Bearded.TD.Tiles
             };
         }
 
-        public (Tile, Tile) AdjacentTiles =>
-            direction is Right or UpRight or UpLeft
-                ? (tile, tile.Neighbor(direction))
-                : throw invalidDirectionException();
-
-        private ArgumentOutOfRangeException invalidDirectionException() =>
-            new (nameof(direction), direction, "Tile edge has invalid direction.");
-
         public static bool operator ==(TileEdge left, TileEdge right) => left.Equals(right);
         public static bool operator !=(TileEdge left, TileEdge right) => !left.Equals(right);
         public override bool Equals(object? obj) => obj is TileEdge other && Equals(other);
         public bool Equals(TileEdge other) => tile.Equals(other.tile) && direction == other.direction;
         public override int GetHashCode() => HashCode.Combine(tile, (int) direction);
+
+        private ArgumentOutOfRangeException invalidDirectionException() =>
+            new (nameof(direction), direction, "Tile edge has invalid direction.");
     }
 
     interface ITileEdges<out TEdgeData>

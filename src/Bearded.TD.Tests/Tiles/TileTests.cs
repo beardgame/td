@@ -207,31 +207,8 @@ namespace Bearded.TD.Tests.Tiles
                 new object[] { 3, new [] { DownLeft, DownLeft, DownRight, Right, Right } },
             };
 
-        private static IEnumerable<Tile> someArbitraryTiles { get; } =
-            new List<Tile>
-            {
-                new (0, 0),
-                new (1, 0),
-                new (0, 1),
-                new (1, 1),
-                new (-1, 0),
-                new (0, -1),
-                new (-1, -1),
-                new (1, -1),
-                new (-1, 1),
-                new (24, 0),
-                new (0, 37),
-                new (42, 11678),
-                new (-215, 0),
-                new (0, -23),
-                new (-125, -16162),
-                new (2341, -1123),
-                new (-2315, 2673),
-                new (10000, 10000),
-            };
-
         public static IEnumerable<object[]> ArbitraryTilesJoinedWithTotalDistancesAndStepLists { get; } =
-            (from tile in someArbitraryTiles
+            (from tile in TileTestConstants.SomeArbitraryTiles
                 from otherParameters in TotalDistanceAndStepLists
                 select otherParameters.Prepend(tile).ToArray()).ToList();
     }
