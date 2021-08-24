@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Components.Damage
@@ -19,7 +20,12 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
         public void HandleEvent(HitEnemy @event)
         {
-            var result = @event.Enemy.Damage(
+            if (!@event.Enemy.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+            {
+                DebugAssert.State.IsInvalid();
+            }
+
+            var result = damageExecutor.Damage(
                 new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, Owner.DamageSource));
             Events.Send(new CausedDamage(@event.Enemy, result));
         }

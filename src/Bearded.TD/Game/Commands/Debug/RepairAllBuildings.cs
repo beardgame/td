@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Utilities;
@@ -19,9 +20,14 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var building in Game.State.GameObjects.OfType<Building>())
                 {
+                    if (!building.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+                    {
+                        continue;
+                    }
+
                     building.GetComponents<IHealth>()
                         .MaybeSingle()
-                        .Match(health => building.Damage(
+                        .Match(health => damageExecutor.Damage(
                             new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention, null)));
                 }
             }

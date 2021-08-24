@@ -1,5 +1,4 @@
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Rendering;
@@ -47,14 +46,13 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
                 {
                     return;
                 }
-                // TODO: why do we need to know it's a building?
-                if (target is not Building targetAsBuilding)
+                if (!target.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
                 {
                     return;
                 }
 
-                var result = targetAsBuilding.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner));
-                Events.Send(new CausedDamage(targetAsBuilding, result));
+                var result = damageExecutor.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner));
+                Events.Send(new CausedDamage(target, result));
                 nextAttack += 1 / Parameters.AttackRate;
             }
         }

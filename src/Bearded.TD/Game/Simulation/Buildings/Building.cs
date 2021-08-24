@@ -35,7 +35,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public string Name { get; }
 
         private readonly BuildingState mutableState;
-        private readonly DamageExecutor damageExecutor;
         private readonly SortedSet<IReport> reports =
             new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));
 
@@ -53,26 +52,19 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             mutableState = new BuildingState();
             State = mutableState.CreateProxy();
-
-            damageExecutor = new DamageExecutor(Events);
         }
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
-        public void AttributeDamage(IMortal target, DamageResult damageResult)
+        public void AttributeDamage(IDamageTarget target, DamageResult damageResult)
         {
             Events.Send(new CausedDamage(target, damageResult));
         }
 
-        public void AttributeKill(IMortal target)
+        public void AttributeKill(IDamageTarget target)
         {
             Events.Send(new CausedKill(target));
-        }
-
-        public DamageResult Damage(DamageInfo damage)
-        {
-            return damageExecutor.Damage(damage);
         }
 
         public void HandleEvent(ConstructionFinished @event)

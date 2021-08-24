@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         private DivineIntervention() {}
 
-        public void AttributeDamage(IMortal target, DamageResult result) {}
-        public void AttributeKill(IMortal target) {}
+        public void AttributeDamage(IDamageTarget target, DamageResult result) {}
+        public void AttributeKill(IDamageTarget target) {}
     }
 }

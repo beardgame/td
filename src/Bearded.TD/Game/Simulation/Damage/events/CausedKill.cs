@@ -4,9 +4,9 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     readonly struct CausedKill : IComponentEvent
     {
-        public IMortal Target { get; }
+        public IDamageTarget Target { get; }
 
-        public CausedKill(IMortal target)
+        public CausedKill(IDamageTarget target)
         {
             Target = target;
         }

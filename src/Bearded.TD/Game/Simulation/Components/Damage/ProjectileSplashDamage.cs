@@ -45,12 +45,14 @@ namespace Bearded.TD.Game.Simulation.Components.Damage
 
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
-                if ((enemy.Position - center).LengthSquared > distanceSquared)
+                if ((enemy.Position - center).LengthSquared > distanceSquared
+                    || !enemy.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
                 {
                     continue;
                 }
 
-                var result = enemy.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
+                var result = damageExecutor
+                    .Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
                 Events.Send(new CausedDamage(enemy, result));
             }
         }

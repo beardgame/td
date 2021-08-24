@@ -6,6 +6,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -78,7 +79,7 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                         {
                             var damagePerSecond = damageFactor * Parameters.DamagePerSecond;
                             enemy.Match(
-                                e => tryDamageEnemy(e, damagePerSecond),
+                                e => tryDamageTarget<EnemyUnit>(e, damagePerSecond),
                                 () => throw new InvalidOperationException());
 
                             beamSegments.Add((lastEnd, point, damageFactor));
@@ -91,7 +92,8 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
             }
         }
 
-        private void tryDamageEnemy(IMortal enemy, double damagePerSecond)
+        private void tryDamageTarget<T>(T target, double damagePerSecond)
+            where T : IComponentOwner, IDamageTarget
         {
             if (lastDamageTime == null)
             {
@@ -104,13 +106,18 @@ namespace Bearded.TD.Game.Simulation.Components.Weapons
                 return;
             }
 
-            var result = enemy.Damage(new DamageInfo(
+            if (!target.TryGetSingleComponent<IDamageExecutor>(out var damageExecutor))
+            {
+                return;
+            }
+
+            var result = damageExecutor.Damage(new DamageInfo(
                 StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
                 DamageType.Energy,
                 Weapon.Owner as Building
             ));
             lastDamageTime = Game.Time;
-            Events.Send(new CausedDamage(enemy, result));
+            Events.Send(new CausedDamage(target, result));
         }
 
         public override void Draw(CoreDrawers drawers)

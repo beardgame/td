@@ -11,6 +11,7 @@ using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Components.Movement;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -27,16 +28,16 @@ namespace Bearded.TD.Game.Simulation.Units
     [ComponentOwner]
     sealed class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
+        IDamageTarget,
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        IDamageSource
+        IDamageSource, IListener<TookDamage>
     {
         public Id<EnemyUnit> Id { get; }
 
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
-        private readonly DamageExecutor damageExecutor;
         private Unit radius;
 
         private readonly ComponentEvents events = new();
@@ -61,7 +62,6 @@ namespace Bearded.TD.Game.Simulation.Units
 
             components = new ComponentCollection<EnemyUnit>(this, events);
             enemyMovement = new EnemyMovementDummy(currentTile);
-            damageExecutor = new DamageExecutor(events);
         }
 
         protected override void OnAdded()
@@ -73,6 +73,7 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
+            components.Add(new DamageExecutor<EnemyUnit>());
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
@@ -80,6 +81,7 @@ namespace Bearded.TD.Game.Simulation.Units
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
 
             radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
+            events.Subscribe(this);
         }
 
         protected override void OnDelete()
@@ -124,10 +126,9 @@ namespace Bearded.TD.Game.Simulation.Units
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
-        public DamageResult Damage(DamageInfo damageInfo)
+        public void HandleEvent(TookDamage @event)
         {
-            lastDamageSource = damageInfo.Source ?? lastDamageSource;
-            return damageExecutor.Damage(damageInfo);
+            lastDamageSource = @event.Source ?? lastDamageSource;
         }
 
         public void OnDeath()
@@ -142,12 +143,12 @@ namespace Bearded.TD.Game.Simulation.Units
             Delete();
         }
 
-        public void AttributeDamage(IMortal target, DamageResult damageResult)
+        public void AttributeDamage(IDamageTarget target, DamageResult damageResult)
         {
             events.Send(new CausedDamage(target, damageResult));
         }
 
-        public void AttributeKill(IMortal target)
+        public void AttributeKill(IDamageTarget target)
         {
             events.Send(new CausedKill(target));
         }

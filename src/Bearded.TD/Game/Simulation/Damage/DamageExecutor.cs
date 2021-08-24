@@ -1,21 +1,29 @@
-using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Rendering;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    sealed class DamageExecutor
+    sealed class DamageExecutor<T> : Component<T>, IDamageExecutor
     {
-        private readonly ComponentEvents events;
-
-        public DamageExecutor(ComponentEvents events)
-        {
-            this.events = events;
-        }
+        protected override void Initialize() {}
 
         public DamageResult Damage(DamageInfo damageInfo)
         {
             var takeDamage = new TakeDamage(damageInfo);
-            events.Preview(ref takeDamage);
-            return new DamageResult(takeDamage.DamageTaken);
+            Events.Preview(ref takeDamage);
+            var result = new DamageResult(takeDamage.DamageTaken);
+            Events.Send(new TookDamage(damageInfo.Source, result));
+            return result;
         }
+
+        public override void Update(TimeSpan elapsedTime) {}
+
+        public override void Draw(CoreDrawers drawers) {}
+    }
+
+    interface IDamageExecutor
+    {
+        DamageResult Damage(DamageInfo damageInfo);
     }
 }
