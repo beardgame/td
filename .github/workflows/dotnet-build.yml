@@ -42,10 +42,12 @@ jobs:
             **/test-results.trx
           reporter: dotnet-trx
       - name: Send webhook
-        if: failure()
-        uses: appleboy/discord-action@master
+        if: always()
+        uses: sarisia/actions-status-discord@v1
         with:
-          webhook_id: ${{ secrets.WEBHOOK_ID }}
-          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-          color: "#fc2929"
-          message: "TD Build failed"
+          webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
+          description: |
+            ✔️ Passed: ${{ env.passed }}
+            ❌ Failed: ${{ env.failed }}
+            ⚠️ Skipped: ${{ env.skipped }}
+            [Test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
