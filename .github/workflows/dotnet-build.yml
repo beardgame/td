@@ -5,6 +5,8 @@ on:
     branches: [ develop ]
   pull_request:
     branches: [ develop ]
+  schedule:
+    - cron: 0 1 * * WED
 
 jobs:
   build:
@@ -43,7 +45,7 @@ jobs:
             **/test-results.trx
           reporter: dotnet-trx
       - name: Send webhook
-        if: always()
+        if: ${{ failure() || github.event_name == 'schedule' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
