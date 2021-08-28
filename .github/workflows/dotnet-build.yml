@@ -38,7 +38,8 @@ jobs:
         if: always()
         with:
           name: .NET tests
-          path: test-results.trx
+          path: |
+            **/test-results.trx
           reporter: dotnet-trx
       - name: Send webhook
         if: failure()
