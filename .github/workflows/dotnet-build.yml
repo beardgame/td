@@ -41,13 +41,14 @@ jobs:
           path: |
             **/test-results.trx
           reporter: dotnet-trx
+        id: text-reporter
       - name: Send webhook
         if: always()
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
           description: |
-            ✔️ Passed: ${{ env.passed }}
-            ❌ Failed: ${{ env.failed }}
-            ⚠️ Skipped: ${{ env.skipped }}
+            ✔️ Passed: ${{ steps.test-reporter.outputs.passed }}
+            ❌ Failed: ${{ steps.test-reporter.outputs.failed }}
+            ⚠️ Skipped: ${{ steps.test-reporter.outputs.skipped }}
             [Test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
