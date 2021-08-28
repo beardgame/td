@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx"
       - name: Upload Verify test results
         if: failure()
         uses: actions/upload-artifact@v2
@@ -33,7 +33,14 @@ jobs:
           name: verify-test-results
           path: |
             **/*.received.*
-      - name: Send failure webhook
+      - name: Create test report
+        uses: dorny/test-reporter@v1
+        if: success() | failure()
+        with:
+          name: .NET tests
+          path: test-results.trx
+          reporter: dotnet-trx
+      - name: Send webhook
         if: failure()
         uses: appleboy/discord-action@master
         with:
