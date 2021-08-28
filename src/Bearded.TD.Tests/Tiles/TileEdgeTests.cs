@@ -229,7 +229,7 @@ namespace Bearded.TD.Tests.Tiles
                 from directions in allDirectionPairs
                 select directions.Prepend(tile).ToArray()).ToImmutableArray();
 
-        private record ModifiableEdges(string Right, string UpRight, string UpLeft)
+        private sealed record ModifiableEdges(string Right, string UpRight, string UpLeft)
             : IModifiableTileEdges<ModifiableEdges, string>
         {
             public ModifiableEdges WithRight(string data) => this with { Right = data };
