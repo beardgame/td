@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         {
             Events.Subscribe<HealDamage>(this);
             Events.Subscribe<TakeDamage>(this);
-            Events.Send(new ReportAdded(new HealthReport(this)));
+            ReportAggregator.Register(Events, new HealthReport(this));
         }
 
         public void HandleEvent(HealDamage @event)

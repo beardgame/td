@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
@@ -16,14 +17,15 @@ namespace Bearded.TD.Game.Simulation.Selection
         Component<T>,
         ISelectable,
         IListener<ObjectDeleting>
-        where T : IComponentOwner, IGameObject, IReportSubject
+        where T : IComponentOwner, IGameObject
     {
         private SelectionLayer? selectionLayer;
         private SelectionState selectionState;
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
         private SelectionManager.UndoDelegate? resetFunc;
 
-        public IReportSubject Subject => Owner;
+        public IReportSubject Subject =>
+            Owner.GetComponents<IReportSubject>().SingleOrDefault() ?? new EmptyReportSubject();
 
         protected override void Initialize()
         {

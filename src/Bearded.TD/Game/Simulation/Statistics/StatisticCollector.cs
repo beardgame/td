@@ -39,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Statistics
                 (previousWaveDamage, currentWaveDamage) = (currentWaveDamage, 0);
                 (previousWaveKills, currentWaveKills) = (currentWaveKills, 0);
             }));
-            events.Send(new ReportAdded(new StatisticsReport(this)));
+            ReportAggregator.Register(events, new StatisticsReport(this));
         }
 
         public void Update(TimeSpan elapsedTime) {}

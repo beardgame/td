@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
@@ -9,7 +8,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -27,19 +25,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
         IDamageSource,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
-        IListener<ReportAdded>,
         IMortal,
-        INamed,
-        IReportSubject
+        INamed
     {
         public Id<Building> Id { get; }
         public string Name { get; }
 
         private readonly BuildingState mutableState;
-        private readonly SortedSet<IReport> reports =
-            new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));
-
-        public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
         public override IBuildingState State { get; }
 
@@ -78,11 +70,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             materialize();
         }
 
-        public void HandleEvent(ReportAdded @event)
-        {
-            reports.Add(@event.Report);
-        }
-
         protected override void OnAdded()
         {
             Game.IdAs(this);
@@ -94,7 +81,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 .Subscribe(Events);
             Events.Subscribe<ConstructionFinished>(this);
             Events.Subscribe<ConstructionStarted>(this);
-            Events.Subscribe<ReportAdded>(this);
             base.OnAdded();
         }
 

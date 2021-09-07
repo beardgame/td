@@ -1,7 +1,7 @@
-using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.World;
@@ -27,6 +27,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
             building.AddComponent(new IncompleteBuilding<Building>());
+            building.AddComponent(new ReportSubject<Building>());
             building.AddComponent(new Selectable<Building>());
             building.AddComponent(new StaticTileOccupation<Building>(footprint));
             building.AddComponent(new StatisticCollector<Building>());

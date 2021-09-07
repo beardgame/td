@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void Initialize()
         {
-            Events.Send(new ReportAdded(new UpgradeReport(this)));
+            ReportAggregator.Register(Events, new UpgradeReport(this));
         }
 
         public bool CanBeUpgradedBy(Faction faction) => faction.SharesBehaviorWith<FactionResources>(Owner.Faction);
