@@ -8,6 +8,7 @@ namespace Bearded.TD.Game.Input
 {
     sealed class BuildingInteractionHandler : InteractionHandler
     {
+        private readonly BuildingFactory buildingFactory;
         private readonly Faction faction;
         private readonly IBuildingBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
@@ -16,6 +17,7 @@ namespace Bearded.TD.Game.Input
 
         public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
         {
+            buildingFactory = new BuildingFactory(game.State);
             this.faction = faction;
             this.blueprint = blueprint;
             TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup());
@@ -23,10 +25,7 @@ namespace Bearded.TD.Game.Input
 
         protected override void OnStart(ICursorHandler cursor)
         {
-            ghost = new BuildingGhost(blueprint, faction);
-            Game.State.Add(ghost);
-            ghostTileOccupation = new MovableTileOccupation<BuildingGhost>();
-            ghost.AddComponent(ghostTileOccupation);
+            ghost = buildingFactory.CreateGhost(blueprint, faction, out ghostTileOccupation);
         }
 
         public override void Update(ICursorHandler cursor)

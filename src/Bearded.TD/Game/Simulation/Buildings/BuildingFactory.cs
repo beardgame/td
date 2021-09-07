@@ -33,5 +33,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             gameState.BuildingLayer.AddBuilding(building);
             return building;
         }
+
+        public BuildingGhost CreateGhost(
+            IBuildingBlueprint blueprint, Faction faction, out MovableTileOccupation<BuildingGhost> tileOccupation)
+        {
+            var ghost = new BuildingGhost(blueprint, faction);
+            gameState.Add(ghost);
+            tileOccupation = new MovableTileOccupation<BuildingGhost>();
+            ghost.AddComponent(tileOccupation);
+            return ghost;
+        }
     }
 }
