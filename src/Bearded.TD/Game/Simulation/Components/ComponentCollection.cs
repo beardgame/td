@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 

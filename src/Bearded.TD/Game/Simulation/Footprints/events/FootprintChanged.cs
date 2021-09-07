@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Game.Simulation.Footprints

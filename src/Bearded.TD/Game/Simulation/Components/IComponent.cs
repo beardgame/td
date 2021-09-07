@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Game.Simulation.Components.Events;
-using Bearded.TD.Game.Simulation.Upgrades;
+﻿using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 

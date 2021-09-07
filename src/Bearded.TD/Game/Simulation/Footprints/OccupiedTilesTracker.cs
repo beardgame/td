@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;

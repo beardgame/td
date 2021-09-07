@@ -2,7 +2,6 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Damage;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Rendering;

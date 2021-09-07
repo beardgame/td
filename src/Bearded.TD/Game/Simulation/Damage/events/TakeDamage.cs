@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.Components.Events;
+using Bearded.TD.Game.Simulation.Components;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage

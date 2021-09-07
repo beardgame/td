@@ -1,6 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components.Graphical;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;

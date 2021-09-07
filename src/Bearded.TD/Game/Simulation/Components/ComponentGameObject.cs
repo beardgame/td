@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Components.Events;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;

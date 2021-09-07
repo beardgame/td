@@ -1,6 +1,7 @@
 using System;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
