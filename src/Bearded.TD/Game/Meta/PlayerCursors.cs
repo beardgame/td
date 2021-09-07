@@ -5,7 +5,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Rendering;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -23,7 +22,7 @@ namespace Bearded.TD.Game.Meta
         private static readonly TimeSpan timeBetweenSyncs = .1.S();
 
         private readonly GameInstance game;
-        private readonly Dictionary<Player, Tile> latestKnownCursorPosition = new();
+        private readonly Dictionary<Player, Position2> latestKnownCursorPosition = new();
         private Instant nextUpdate;
 
         public PlayerCursors(GameInstance game)
@@ -31,16 +30,16 @@ namespace Bearded.TD.Game.Meta
             this.game = game;
         }
 
-        public void SetPlayerCursorPosition(Player p, Tile t)
+        public void SetPlayerCursorPosition(Player p, Position2 pos)
         {
-            latestKnownCursorPosition[p] = t;
+            latestKnownCursorPosition[p] = pos;
         }
 
         public void Update()
         {
             if (game.State == null || game.State.Time < nextUpdate) return;
 
-            game.Request(SyncCursors.Request(game, game.Me, Level.GetTile(game.PlayerInput.CursorPosition)));
+            game.Request(SyncCursors.Request(game, game.Me, game.PlayerInput.CursorPosition));
             game.State.Meta.Dispatcher.RunOnlyOnServer(
                 SyncCursors.Command, game, ImmutableDictionary.CreateRange(latestKnownCursorPosition));
             nextUpdate = game.State.Time + timeBetweenSyncs;
@@ -54,11 +53,11 @@ namespace Bearded.TD.Game.Meta
                 color: Color.White * 0.4f
             );
 
-            foreach (var (player, tile) in latestKnownCursorPosition)
+            foreach (var (player, position) in latestKnownCursorPosition)
             {
                 if (player == game.Me) continue;
                 drawers.PointLight.Draw(
-                    Level.GetPosition(tile).NumericValue.WithZ(otherCursorLightHeight),
+                    position.NumericValue.WithZ(otherCursorLightHeight),
                     radius: otherCursorLightRadius,
                     color: player.Color
                 );
