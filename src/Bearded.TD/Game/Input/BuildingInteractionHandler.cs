@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Footprints;
 
 namespace Bearded.TD.Game.Input
 {

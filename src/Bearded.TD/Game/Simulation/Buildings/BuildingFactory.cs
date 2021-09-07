@@ -1,6 +1,7 @@
 using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.World;

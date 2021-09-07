@@ -1,4 +1,3 @@
-using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
