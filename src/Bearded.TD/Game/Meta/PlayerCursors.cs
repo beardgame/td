@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Meta
         private const float otherCursorLightHeight = 1;
         private const float otherCursorLightRadius = 2.5f;
 
-        private static readonly TimeSpan timeBetweenSyncs = .1.S();
+        private static readonly TimeSpan timeBetweenSyncs = .05.S();
 
         private readonly GameInstance game;
         private readonly Dictionary<Player, Position2> latestKnownCursorPosition = new();
