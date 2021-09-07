@@ -26,6 +26,7 @@ namespace Bearded.TD.Game.Input
         protected override void OnStart(ICursorHandler cursor)
         {
             ghost = buildingFactory.CreateGhost(blueprint, faction, out ghostTileOccupation);
+            Game.PlayerCursors.AttachGhost(blueprint);
         }
 
         public override void Update(ICursorHandler cursor)
@@ -47,6 +48,7 @@ namespace Bearded.TD.Game.Input
             ghost?.Delete();
             ghost = null;
             ghostTileOccupation = null;
+            Game.PlayerCursors.DetachGhost();
         }
     }
 }
