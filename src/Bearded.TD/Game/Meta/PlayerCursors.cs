@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Meta
         private static readonly TimeSpan timeBetweenSyncs = .05.S();
 
         private readonly GameInstance game;
-        private readonly Dictionary<Player, Position2> latestKnownCursorPosition = new();
+        private readonly Dictionary<Player, PlayerCursorData> cursors = new();
         private Instant nextUpdate;
 
         public PlayerCursors(GameInstance game)
@@ -32,7 +32,17 @@ namespace Bearded.TD.Game.Meta
 
         public void SetPlayerCursorPosition(Player p, Position2 pos)
         {
-            latestKnownCursorPosition[p] = pos;
+            if (!cursors.TryGetValue(p, out var currentData))
+            {
+                cursors[p] = new PlayerCursorData(pos, game.State.Time, pos);
+                return;
+            }
+            cursors[p] = currentData with
+            {
+                LastSyncedLocation = pos,
+                LastSyncedTime = game.State.Time,
+                LocationAtLastSyncTime = currentData.LocationAtTime(game.State.Time),
+            };
         }
 
         public void Update()
@@ -41,7 +51,9 @@ namespace Bearded.TD.Game.Meta
 
             game.Request(SyncCursors.Request(game, game.Me, game.PlayerInput.CursorPosition));
             game.State.Meta.Dispatcher.RunOnlyOnServer(
-                SyncCursors.Command, game, ImmutableDictionary.CreateRange(latestKnownCursorPosition));
+                SyncCursors.Command,
+                game,
+                cursors.ToImmutableDictionary(pair => pair.Key, pair => pair.Value.LastSyncedLocation));
             nextUpdate = game.State.Time + timeBetweenSyncs;
         }
 
@@ -53,15 +65,23 @@ namespace Bearded.TD.Game.Meta
                 color: Color.White * 0.4f
             );
 
-            foreach (var (player, position) in latestKnownCursorPosition)
+            foreach (var (player, cursor) in cursors)
             {
                 if (player == game.Me) continue;
                 drawers.PointLight.Draw(
-                    position.NumericValue.WithZ(otherCursorLightHeight),
+                    cursor.LocationAtTime(game.State.Time).NumericValue.WithZ(otherCursorLightHeight),
                     radius: otherCursorLightRadius,
                     color: player.Color
                 );
             }
+        }
+
+        private sealed record PlayerCursorData(
+            Position2 LastSyncedLocation, Instant LastSyncedTime, Position2 LocationAtLastSyncTime)
+        {
+            public Position2 LocationAtTime(Instant time) =>
+                Position2.Lerp(
+                    LocationAtLastSyncTime, LastSyncedLocation, (float) ((time - LastSyncedTime) / timeBetweenSyncs));
         }
     }
 }
