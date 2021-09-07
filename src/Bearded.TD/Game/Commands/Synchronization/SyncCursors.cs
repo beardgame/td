@@ -37,6 +37,11 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
             public ISerializableCommand<GameInstance>? ToCommand()
             {
+                // TODO: improve this
+                // Instead of sending all the cursor events to clients one by one, we want to synchronize the cursors in
+                // batch instead. The following is a bit of a hacky solution, but currently we don't have a good way of
+                // executing commands on only on client. So right now we just execute this locally, and let the server
+                // pick up this new position in the next sync round.
                 game.PlayerCursors.SetPlayerCursorPosition(player, cursorPosition);
                 return null;
             }
