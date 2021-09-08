@@ -10,6 +10,7 @@ uniform vec3 farPlaneUnitX;
 uniform vec3 farPlaneUnitY;
 uniform vec3 cameraPosition;
 
+in vec2 lightCenterUV;
 in vec2 fragmentXY;
 in vec3 lightPosition;
 in vec3 lightDirection;
@@ -77,5 +78,31 @@ void main()
     if (diffuse == 0)
         discard;
 
-    outRGB = vec4(color * diffuse, 0);
+    vec3 rgb = color * diffuse;
+
+
+    int samples = 5 + int(lightRadiusSquared);
+    vec2 uvAccum = uv;
+    vec2 uvStep = (lightCenterUV - uv) / (samples + 1);
+    float zLimitAccum = fragmentPosition.z;
+    float zLimitStep = vectorToLight.z / (samples + 1);
+    float shadowUmbraFactor = 1;
+    for (int i = 0; i < samples; i++)
+    {
+        uvAccum += uvStep;
+        zLimitAccum += zLimitStep;
+
+        float z = getFragmentPositionFromDepth(uvAccum).z;
+
+        if (z > zLimitAccum)
+        {
+            float shadowDistance = abs(z - zLimitAccum) * 10;
+            if (shadowDistance > 1)
+                discard;
+
+            shadowUmbraFactor = min(shadowUmbraFactor, 1 - shadowDistance);
+        }
+    }
+
+    outRGB = vec4(rgb, 0) * shadowUmbraFactor;
 }
