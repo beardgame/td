@@ -6,6 +6,7 @@ using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
+using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
@@ -13,8 +14,10 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         Tilemap<TileGeometry> ExpectedTilemap, NodeGenerationContext Context)
     {
         public static TestContext CreateEmpty() => CreateForHexagonalNodeWithRadius(-1);
-        public static TestContext CreateForHexagonalNodeWithRadius(int radius, int randomSeed = 0)
+        public static TestContext CreateForHexagonalNodeWithRadius(int radius, int randomSeed = 0, int connectionCount = 0)
         {
+            var random = new Random(randomSeed);
+
             var subjectTilemap = new Tilemap<TileGeometry>(radius + 2);
             var expectedTilemap = new Tilemap<TileGeometry>(radius + 2);
 
@@ -26,10 +29,15 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 
             var area = Area.From(tiles);
 
+            var connections = radius <= 0 && connectionCount > 0
+                ? ImmutableArray<Tile>.Empty
+                : Tilemap.GetRingCenteredAt(arbitrarilyPerturbedCenter, radius)
+                    .RandomSubset(connectionCount, random).ToImmutableArray();
+
             var context = NodeGenerationContext.Create(
                 subjectTilemap, area,
-                ImmutableArray<Circle>.Empty, ImmutableArray<Tile>.Empty,
-                new LevelGenerationCommandAccumulator(), new Random(randomSeed)
+                ImmutableArray<Circle>.Empty, connections,
+                new LevelGenerationCommandAccumulator(), random
             );
 
             return new TestContext(subjectTilemap, expectedTilemap, context);
