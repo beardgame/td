@@ -13,7 +13,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         Tilemap<TileGeometry> ExpectedTilemap, NodeGenerationContext Context)
     {
         public static TestContext CreateEmpty() => CreateForHexagonalNodeWithRadius(-1);
-        public static TestContext CreateForHexagonalNodeWithRadius(int radius)
+        public static TestContext CreateForHexagonalNodeWithRadius(int radius, int randomSeed = 0)
         {
             var subjectTilemap = new Tilemap<TileGeometry>(radius + 2);
             var expectedTilemap = new Tilemap<TileGeometry>(radius + 2);
@@ -29,7 +29,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             var context = NodeGenerationContext.Create(
                 subjectTilemap, area,
                 ImmutableArray<Circle>.Empty, ImmutableArray<Tile>.Empty,
-                new LevelGenerationCommandAccumulator(), new Random()
+                new LevelGenerationCommandAccumulator(), new Random(randomSeed)
             );
 
             return new TestContext(subjectTilemap, expectedTilemap, context);
