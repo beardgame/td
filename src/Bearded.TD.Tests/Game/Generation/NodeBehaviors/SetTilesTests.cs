@@ -1,70 +1,36 @@
 using System;
-using System.Collections.Immutable;
-using System.Linq;
-using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using FsCheck;
 using FsCheck.Xunit;
-using Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
-    public class SetTileTests
+    public class SetTilesTests
     {
-        private sealed record TestContext(Tilemap<TileGeometry> SubjectTilemap,
-            Tilemap<TileGeometry> ExpectedTilemap, NodeGenerationContext Context)
+        private INodeBehavior<Node> behaviourWithParameters(TileType type)
+            => new SetTiles(new SetTiles.BehaviorParameters(type));
+
+        public SetTilesTests()
         {
-            public static TestContext CreateForHexagonalNodeWithRadius(int radius)
-            {
-                var subjectTilemap = new Tilemap<TileGeometry>(radius + 2);
-                var expectedTilemap = new Tilemap<TileGeometry>(radius + 2);
-
-                var arbitrarilyPerturbedCenter = Tile.Origin.Neighbor(Direction.UpRight);
-
-                var tiles = Enumerable
-                    .Range(0, radius + 1)
-                    .SelectMany(r => Tilemap.GetRingCenteredAt(arbitrarilyPerturbedCenter, r));
-
-                var area = Area.From(tiles);
-
-                var context = NodeGenerationContext.Create(
-                    subjectTilemap, area,
-                    ImmutableArray<Circle>.Empty, ImmutableArray<Tile>.Empty,
-                    new LevelGenerationCommandAccumulator(), new Random()
-                );
-
-                return new TestContext(subjectTilemap, expectedTilemap, context);
-            }
-
-            public void AssertSubjectTilemapEqualsExpectedTilemap()
-            {
-                SubjectTilemap.Should().HaveSameContentAs(ExpectedTilemap);
-            }
+            Arb.Register<TilemapGenerators>();
         }
 
-        private INodeBehavior<Node> behaviourWithParameters(TileType type)
-            => new SetTile(new SetTile.BehaviorParameters(type));
-
-        [Fact]
-        public void MakesNoChangesWithEmptyNode()
+        [Property]
+        public void MakesNoChangesWithEmptyNode(TileType type)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(-1);
+            var test = TestContext.CreateEmpty();
 
-            behaviourWithParameters(TileType.Crevice)
+            behaviourWithParameters(type)
                 .Generate(test.Context);
 
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
-        [Theory]
-        [InlineData(TileType.Floor)]
-        [InlineData(TileType.Crevice)]
-        [InlineData(TileType.Wall)]
+        [Property]
         public void SetsAllTilesInNodeToGivenType(TileType type)
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
@@ -79,20 +45,20 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
-        [Fact]
-        public void SetsNoTilesForEmptySelection()
+        [Property]
+        public void SetsNoTilesForEmptySelection(TileType type)
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
-            behaviourWithParameters(TileType.Crevice)
+            behaviourWithParameters(type)
                 .Generate(test.Context);
 
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
         [Property]
-        public void SetsExactlyThoseTilesInSelection(int seed)
+        public void SetsExactlyThoseTilesInSelection(TileType type, int seed)
         {
             var random = new Random(seed);
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
@@ -103,10 +69,10 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             }
             foreach (var tile in test.Context.Tiles.Selection)
             {
-                test.ExpectedTilemap[tile] = new TileGeometry(TileType.Crevice, 0, 0.U());
+                test.ExpectedTilemap[tile] = new TileGeometry(type, 0, 0.U());
             }
 
-            behaviourWithParameters(TileType.Crevice)
+            behaviourWithParameters(type)
                 .Generate(test.Context);
 
             test.AssertSubjectTilemapEqualsExpectedTilemap();

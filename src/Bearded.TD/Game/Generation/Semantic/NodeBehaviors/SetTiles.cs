@@ -4,12 +4,12 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 {
-    [NodeBehavior("setTile")]
-    sealed class SetTile : NodeBehavior<SetTile.BehaviorParameters>
+    [NodeBehavior("setTiles")]
+    sealed class SetTiles : NodeBehavior<SetTiles.BehaviorParameters>
     {
         public record BehaviorParameters(TileType Type);
 
-        public SetTile(BehaviorParameters parameters) : base(parameters) { }
+        public SetTiles(BehaviorParameters parameters) : base(parameters) { }
 
         public override void Generate(NodeGenerationContext context)
         {
