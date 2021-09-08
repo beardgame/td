@@ -9,10 +9,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
     {
         public record BehaviourParameters(double Percentage);
 
-        public SelectRandom(BehaviourParameters parameters)
-            : base(parameters)
-        {
-        }
+        public SelectRandom(BehaviourParameters parameters) : base(parameters) { }
 
         public override void Generate(NodeGenerationContext context)
         {
