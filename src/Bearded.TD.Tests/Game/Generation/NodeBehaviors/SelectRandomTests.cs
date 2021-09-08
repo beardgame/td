@@ -26,10 +26,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 
             behaviourWithParameters(0).Generate(test.Context);
 
-            foreach (var tile in test.Context.Tiles.All)
-            {
-                test.Context.Tiles.Selection.Contains(tile).Should().BeFalse();
-            }
+            test.Context.Tiles.Selection.Count.Should().Be(0);
         }
 
         [Fact]
@@ -40,10 +37,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 
             behaviourWithParameters(1).Generate(test.Context);
 
-            foreach (var tile in test.Context.Tiles.All)
-            {
-                test.Context.Tiles.Selection.Contains(tile).Should().BeTrue();
-            }
+            test.Context.Tiles.Selection.Count.Should().Be(test.Context.Tiles.All.Count);
         }
 
         [Property]
