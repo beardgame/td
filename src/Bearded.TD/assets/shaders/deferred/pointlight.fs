@@ -10,7 +10,7 @@ uniform vec3 farPlaneUnitX;
 uniform vec3 farPlaneUnitY;
 uniform vec3 cameraPosition;
 
-in vec2 fragmentXY;
+in vec2 lightCenterUV;
 in vec3 lightPosition;
 in float lightRadiusSquared;
 in vec4 lightColor;
@@ -30,14 +30,15 @@ vec3 getFragmentPositionFromDepth(vec2 uv)
     return fragmentPosition;
 }
 
+float dither(vec2 xy)
+{
+    return fract(dot(xy, vec2(36, 7) / 16.0f));
+}
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
 
-    vec3 normal = texture(normalBuffer, uv).xyz;
-    normal = normal * 2 - 1;
-
-    float depth = texture(depthBuffer, uv).x;
 
     vec3 fragmentPosition = getFragmentPositionFromDepth(uv);
 
@@ -49,6 +50,9 @@ void main()
     if (a < 0)
         discard;
 
+    vec3 normal = texture(normalBuffer, uv).xyz;
+    normal = normal * 2 - 1;
+
     vec3 lightNormal = normalize(vectorToLight);
 
     float f = dot(lightNormal, normal);
@@ -58,6 +62,32 @@ void main()
 
     vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
 
-    outRGB = vec4(rgb, 0);
+    int samples = 5 + int(lightRadiusSquared);
+    vec2 uvAccum = uv;
+    vec2 uvStep = (lightCenterUV - uv) / (samples + 1);
+    float zLimitAccum = fragmentPosition.z;
+    float zLimitStep = vectorToLight.z / (samples + 1);
+    float shadowUmbraFactor = 1;
+    for (int i = 0; i < samples; i++)
+    {
+        uvAccum += uvStep;
+        zLimitAccum += zLimitStep;
 
+        float z = getFragmentPositionFromDepth(uvAccum).z;
+
+        if (z > zLimitAccum)
+        {
+            float shadowDistance = abs(z - zLimitAccum) * 10;
+            if (shadowDistance > 1)
+                discard;
+
+            shadowUmbraFactor = min(shadowUmbraFactor, 1 - shadowDistance);
+        }
+    }
+
+    outRGB = vec4(rgb, 0) * shadowUmbraFactor;
+
+
+    //outRGB = vec4(lightCenterUV, 0, 1);
+    //outRGB = vec4(uv - lightCenterUV, 0, 0);
 }
