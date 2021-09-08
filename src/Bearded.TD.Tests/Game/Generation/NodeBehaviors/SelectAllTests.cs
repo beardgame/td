@@ -2,18 +2,12 @@ using System;
 using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.Utilities;
 using FluentAssertions;
-using FsCheck;
 using FsCheck.Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectAllTests
     {
-        public SelectAllTests()
-        {
-            Arb.Register<TilemapGenerators>();
-        }
-
         [Property]
         public void SelectsAll(int seed)
         {

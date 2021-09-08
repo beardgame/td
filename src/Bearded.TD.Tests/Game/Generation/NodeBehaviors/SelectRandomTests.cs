@@ -1,9 +1,7 @@
-using System;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.Utilities;
 using FluentAssertions;
-using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
 
@@ -11,11 +9,6 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectRandomTests
     {
-        public SelectRandomTests()
-        {
-            Arb.Register<TilemapGenerators>();
-        }
-
         private static INodeBehavior<Node> behaviourWithParameters(double percentage)
             => new SelectRandom(new SelectRandom.BehaviourParameters(percentage));
 
