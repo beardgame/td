@@ -6,18 +6,25 @@ using Bearded.TD.Tiles;
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 {
     [NodeBehavior("erodeSelection")]
-    sealed class ErodeSelection : NodeBehavior
+    sealed class ErodeSelection : NodeBehavior<ErodeSelection.BehaviorParameters>
     {
+        public sealed record BehaviorParameters(int Strength = 6);
+
+        public ErodeSelection(BehaviorParameters parameters) : base(parameters) { }
+
         public override void Generate(NodeGenerationContext context)
         {
+            if (Parameters.Strength == 0)
+                return;
+
             var tilesToRemove = new List<Tile>();
             foreach (var tile in context.Tiles.Selection)
             {
-                var allNeighborsSelected = tile
+                var selectedNeighbors = tile
                     .PossibleNeighbours()
-                    .All(context.Tiles.Selection.Contains);
+                    .Count(context.Tiles.Selection.Contains);
 
-                if(!allNeighborsSelected)
+                if(selectedNeighbors < Parameters.Strength)
                     tilesToRemove.Add(tile);
             }
 

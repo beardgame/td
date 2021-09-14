@@ -1,20 +1,34 @@
+using System;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Tiles;
+using Bearded.Utilities;
 using FluentAssertions;
+using FsCheck.Experimental;
+using FsCheck.Xunit;
 using Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class ErodeSelectionTests
     {
+        private static ErodeSelection behaviorWithDefaultParameters()
+        {
+            return new ErodeSelection(new ErodeSelection.BehaviorParameters());
+        }
+
+        private static ErodeSelection behaviorWithParameters(int strength)
+        {
+            return new ErodeSelection(new ErodeSelection.BehaviorParameters(strength));
+        }
+
         [Fact]
         public void DoesNotModifyEmptySelection()
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             test.Context.Tiles.Selection.Count.Should().Be(0);
         }
@@ -28,16 +42,17 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
             test.Context.Tiles.Selection.Add(new Tile(2, 0));
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             test.Context.Tiles.Selection.Count.Should().Be(0);
         }
+
         [Fact]
         public void RemovesOuterRingFromFullSelection()
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(5);
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -58,7 +73,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
                 test.Context.Tiles.Selection.Add(tile);
             }
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -81,7 +96,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
                     test.Context.Tiles.Selection.Add(tile);
             }
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -99,7 +114,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             var test = TestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.Remove(new Tile(1, 1));
 
-            new ErodeSelection().Generate(test.Context);
+            behaviorWithDefaultParameters().Generate(test.Context);
 
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -109,6 +124,154 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
                 var tileSelected = test.Context.Tiles.Selection.Contains(tile);
 
                 tileSelected.Should().Be(tileIsNotOnNodeEdge && !tileIsInExpandedHole);
+            }
+        }
+
+        [Property]
+        public void DoesNotChangeSelectionWithStrengthZero(int seed)
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var random = new Random(seed);
+            test.Context.Tiles.Selection.RemoveAll();
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var selected = random.NextBool();
+                if (selected)
+                    test.Context.Tiles.Selection.Add(tile);
+            }
+
+            behaviorWithParameters(0).Generate(test.Context);
+
+            random = new Random(seed);
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var selected = random.NextBool();
+
+                test.Context.Tiles.Selection.Contains(tile).Should().Be(selected);
+            }
+        }
+
+        [Fact]
+        public void RemovesOnlySingleTilesWithStrengthOne()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            test.Context.Tiles.Selection.RemoveAll();
+            test.Context.Tiles.Selection.Add(new Tile(0, 0));
+            test.Context.Tiles.Selection.Add(new Tile(1, 0));
+            test.Context.Tiles.Selection.Add(new Tile(2, 0));
+            test.Context.Tiles.Selection.Add(new Tile(4, 0));
+
+            behaviorWithParameters(1).Generate(test.Context);
+
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var selected =
+                    tile == new Tile(0, 0) ||
+                    tile == new Tile(1, 0) ||
+                    tile == new Tile(2, 0);
+
+                test.Context.Tiles.Selection.Contains(tile).Should().Be(selected);
+            }
+        }
+
+        [Fact]
+        public void RemovesEndTilesFromLineSelectionWithStrengthTwo()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(3);
+            test.Context.Tiles.Selection.RemoveAll();
+            test.Context.Tiles.Selection.Add(new Tile(0, 0));
+            test.Context.Tiles.Selection.Add(new Tile(1, 0));
+            test.Context.Tiles.Selection.Add(new Tile(2, 0));
+            test.Context.Tiles.Selection.Add(new Tile(3, 0));
+
+            behaviorWithParameters(2).Generate(test.Context);
+
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var selected =
+                    tile == new Tile(1, 0) ||
+                    tile == new Tile(2, 0);
+
+                test.Context.Tiles.Selection.Contains(tile).Should().Be(selected);
+            }
+        }
+
+        [Fact]
+        public void DoesNotModifyHexagonSelectionWithStrengthTwo()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            test.Context.Tiles.Selection.RemoveAll();
+            foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
+            {
+                test.Context.Tiles.Selection.Add(tile);
+            }
+
+            behaviorWithParameters(2).Generate(test.Context);
+
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var tileSelected = test.Context.Tiles.Selection.Contains(tile);
+
+                tileSelected.Should().Be(tile.Radius <= 3);
+            }
+        }
+
+        [Fact]
+        public void RemovesAllTilesFromLineSelectionWithStrengthThree()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(3);
+            test.Context.Tiles.Selection.RemoveAll();
+            test.Context.Tiles.Selection.Add(new Tile(0, 0));
+            test.Context.Tiles.Selection.Add(new Tile(1, 0));
+            test.Context.Tiles.Selection.Add(new Tile(2, 0));
+            test.Context.Tiles.Selection.Add(new Tile(3, 0));
+
+            behaviorWithParameters(3).Generate(test.Context);
+
+            test.Context.Tiles.Selection.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void DoesNotModifyHexagonSelectionWithStrengthThree()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            test.Context.Tiles.Selection.RemoveAll();
+            foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
+            {
+                test.Context.Tiles.Selection.Add(tile);
+            }
+
+            behaviorWithParameters(3).Generate(test.Context);
+
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var tileSelected = test.Context.Tiles.Selection.Contains(tile);
+
+                tileSelected.Should().Be(tile.Radius <= 3);
+            }
+        }
+
+        [Fact]
+        public void RemovesCornersFromHexagonSelectionWithStrengthFour()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            test.Context.Tiles.Selection.RemoveAll();
+            foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
+            {
+                test.Context.Tiles.Selection.Add(tile);
+            }
+
+            behaviorWithParameters(4).Generate(test.Context);
+
+            var corners = Directions.All.Enumerate()
+                .Select(d => Tile.Origin.Neighbor(d).Neighbor(d).Neighbor(d))
+                .ToHashSet();
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var tileSelected = test.Context.Tiles.Selection.Contains(tile);
+                var isCorner = corners.Contains(tile);
+
+                tileSelected.Should().Be(tile.Radius <= 3 && !isCorner);
             }
         }
     }
