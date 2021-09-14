@@ -4,7 +4,6 @@ using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using FluentAssertions;
-using FsCheck.Experimental;
 using FsCheck.Xunit;
 using Xunit;
 
