@@ -40,6 +40,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var ghost = new BuildingGhost(blueprint, faction);
             gameState.Add(ghost);
+            ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
             tileOccupation = new MovableTileOccupation<BuildingGhost>();
             ghost.AddComponent(tileOccupation);
             return ghost;

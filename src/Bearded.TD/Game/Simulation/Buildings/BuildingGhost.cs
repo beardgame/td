@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public BuildingGhost(IBuildingBlueprint blueprint, Faction faction)
             : base(blueprint, faction) {}
 
-        protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents()
-            => new BuildingGhostDrawing().Yield().Concat(Blueprint.GetComponentsForGhost());
+        protected override IEnumerable<IComponent<BuildingGhost>> InitializeComponents() =>
+            Blueprint.GetComponentsForGhost();
     }
 }
