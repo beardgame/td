@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Reports
             existingReports.ForEach(reportConsumer);
             events.Subscribe(new AddReportListener(reportConsumer));
         }
-        
+
         private sealed class AddReportListener : IListener<ReportAdded>
         {
             private readonly Action<IReport> reportConsumer;
