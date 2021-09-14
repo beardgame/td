@@ -13,7 +13,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
     {
         private static ErodeSelection behaviorWithDefaultParameters()
         {
-            return new ErodeSelection(new ErodeSelection.BehaviorParameters());
+            return new ErodeSelection(new ErodeSelection.BehaviorParameters(null));
         }
 
         private static ErodeSelection behaviorWithParameters(int strength)
