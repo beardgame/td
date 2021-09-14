@@ -38,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private bool isDead;
 
         public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction)
-            : base(blueprint, faction)
+            : base(blueprint)
         {
             Id = id;
             Name = blueprint.Name;

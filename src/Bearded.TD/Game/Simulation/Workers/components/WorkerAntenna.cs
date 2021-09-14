@@ -3,6 +3,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -12,9 +13,11 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("workerAntenna")]
-    sealed class WorkerAntenna<T> : Component<T, IWorkerAntennaParameters>, IWorkerAntenna
-        where T : GameObject, IFactioned, IPositionable
+    sealed class WorkerAntenna<T>
+        : Component<T, IWorkerAntennaParameters>, IListener<ObjectDeleting>, IWorkerAntenna
+        where T : IComponentOwner, IGameObject, IPositionable
     {
+        private Faction? faction;
         private IBuilding? ownerAsBuilding;
         private WorkerNetwork? workerNetwork;
         private bool isInitialized;
@@ -29,8 +32,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         protected override void Initialize()
         {
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
+
             ownerAsBuilding = Owner as IBuilding;
-            Owner.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             initializeIfOwnerIsCompletedBuilding();
 
             if (ownerAsBuilding != null)
@@ -57,6 +61,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private void initializeInternal()
         {
+            if (faction == null) return;
+
+            faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             if (workerNetwork == null)
             {
                 Owner.Game.Meta.Logger.Debug?.Log(
@@ -65,7 +72,6 @@ namespace Bearded.TD.Game.Simulation.Workers
 
             WorkerRange = Parameters.WorkerRange;
             workerNetwork?.RegisterAntenna(this);
-            Owner.Deleting += () => workerNetwork?.UnregisterAntenna(this);
             isInitialized = true;
         }
 
@@ -88,6 +94,11 @@ namespace Bearded.TD.Game.Simulation.Workers
         {
             fullNetworkDrawer?.Draw();
             localNetworkDrawer?.Draw();
+        }
+
+        public void HandleEvent(ObjectDeleting @event)
+        {
+            workerNetwork?.UnregisterAntenna(this);
         }
     }
 }

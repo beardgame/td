@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -16,7 +15,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         : GameObject,
             IBuilding,
             IComponentOwner<T>,
-            IFactioned,
             IListener<FootprintChanged>,
             IPositionable
         where T : BuildingBase<T>
@@ -29,15 +27,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected IBuildingBlueprint Blueprint { get; }
 
-        public Faction Faction { get; }
         public Position3 Position { get; private set; }
 
-        protected BuildingBase(
-            IBuildingBlueprint blueprint,
-            Faction faction)
+        protected BuildingBase(IBuildingBlueprint blueprint)
         {
             Blueprint = blueprint;
-            Faction = faction;
             components = new ComponentCollection<T>((T) this, Events);
         }
 

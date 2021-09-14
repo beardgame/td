@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
@@ -28,17 +27,15 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private TileWalker tileWalker = null!;
 
+        public Faction? Faction { get; private set; }
         public Tile CurrentTile => tileWalker.CurrentTile;
-        public IFactioned HubOwner { get; private set; } = null!;
         public new IWorkerParameters Parameters => base.Parameters;
 
         public WorkerComponent(IWorkerParameters parameters) : base(parameters) { }
 
         protected override void Initialize()
         {
-            Owner.FindInComponentOwnerTree<IFactioned>().Match(
-                onValue: owner => HubOwner = owner,
-                onNothing: () => throw new InvalidDataException());
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => Faction = o.Faction);
             tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
             // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
             Owner.Game.Meta.Events.Send(new WorkerAdded(this));
@@ -137,7 +134,7 @@ namespace Bearded.TD.Game.Simulation.Workers
     interface IWorkerComponent
     {
         Tile CurrentTile { get; }
-        IFactioned HubOwner { get; }
+        Faction Faction { get; }
         IWorkerParameters Parameters { get; }
         void AssignToTaskManager(WorkerTaskManager faction);
         void AssignTask(IWorkerTask task);
