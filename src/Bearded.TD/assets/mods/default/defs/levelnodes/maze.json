@@ -1,0 +1,23 @@
+{
+    "id" : "maze",
+    "behaviors" : [
+
+        { "id" : "tagSelected", "parameters" : { "value" : 1 } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "tagSelected", "parameters" : { "value" : -1 } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "tagSelected", "parameters" : { "value" : 1 } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "tagSelected", "parameters" : { "value" : -1 } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "tagSelected", "parameters" : { "value" : 1 } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "tagSelected", "parameters" : { "value" : -1 } },
+
+        { "id" : "selectRandom", "parameters" : { "percentage" : 0.15 } },
+        { "id" : "tagSelected", "parameters" : { "value" : 1 } },
+
+        { "id" : "selectTag", "parameters" : { } },
+        { "id" : "setTiles", "parameters" : { "type" : "floor" } }
+    ]
+}
