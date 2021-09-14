@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
@@ -15,7 +13,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [ComponentOwner]
-    sealed class Weapon : IGameObject, IPositionable, IFactioned, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
+    sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
     {
         private readonly ITurret turret;
         private readonly Building? ownerAsBuilding;
@@ -35,7 +33,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public Maybe<IComponentOwner> Parent => Just((IComponentOwner)turret.Owner);
         public IGameObject Owner => turret.Owner;
         public Position3 Position => turret.Position;
-        public Faction Faction => turret.OwnerFaction;
 
         public GameState Game => Owner.Game;
 

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -15,14 +14,13 @@ namespace Bearded.TD.Game.Simulation.Weapons
     {
         Weapon Weapon { get; }
         IGameObject Owner { get; }
-        Faction OwnerFaction { get; }
         Direction2 NeutralDirection { get; }
         Maybe<Angle> MaximumTurningAngle { get; }
     }
 
     [Component("turret")]
     sealed class Turret<T> : Component<T, ITurretParameters>, ITurret
-        where T : IComponentOwner, IFactioned, IGameObject, IPositionable
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         private Weapon weapon = null!;
         private ITransformable transform = null!;
@@ -54,7 +52,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         Weapon ITurret.Weapon => weapon;
         IGameObject ITurret.Owner => Owner;
-        Faction ITurret.OwnerFaction => Owner.Faction;
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
         {
