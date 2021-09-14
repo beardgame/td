@@ -7,9 +7,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
     {
         public record BehaviorParameters(string? Tag, double Value = 1);
 
-        public TagSelected(BehaviorParameters parameters) : base(parameters)
-        {
-        }
+        public TagSelected(BehaviorParameters parameters) : base(parameters) { }
 
         public override void Generate(NodeGenerationContext context)
         {

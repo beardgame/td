@@ -1,4 +1,5 @@
 using System;
+using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.Utilities;
 using FluentAssertions;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class TagSelectedTests
     {
-        private static TagSelected behaviorWithParameters(double value = 0, string? tag = null)
+        private static INodeBehavior<Node> behaviorWithParameters(double value = 0, string? tag = null)
         {
             return new TagSelected(new TagSelected.BehaviorParameters(tag, value));
         }
