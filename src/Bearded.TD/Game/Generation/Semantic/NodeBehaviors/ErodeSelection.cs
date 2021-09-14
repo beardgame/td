@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
 
@@ -14,23 +12,11 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
 
         public override void Generate(NodeGenerationContext context)
         {
-            if (Parameters.Strength == 0)
-                return;
-
-            var tilesToRemove = new List<Tile>();
-            foreach (var tile in context.Tiles.Selection)
+            var eroded = context.Tiles.Selection.Erode(Parameters.Strength);
+            context.Tiles.Selection.RemoveAll();
+            foreach (var tile in eroded)
             {
-                var selectedNeighbors = tile
-                    .PossibleNeighbours()
-                    .Count(context.Tiles.Selection.Contains);
-
-                if(selectedNeighbors < Parameters.Strength)
-                    tilesToRemove.Add(tile);
-            }
-
-            foreach (var tile in tilesToRemove)
-            {
-                context.Tiles.Selection.Remove(tile);
+                context.Tiles.Selection.Add(tile);
             }
         }
     }

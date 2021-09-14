@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -18,6 +19,15 @@ namespace Bearded.TD.Tiles
         }
 
         public static IArea Erode(this IArea area) =>
-            From(area.Enumerated.Where(t => t.PossibleNeighbours().All(area.Contains)));
+            Erode(area, t => t.PossibleNeighbours().All(area.Contains));
+
+        public static IArea Erode(this IArea area, int minimumNeighborsToKeepTile) =>
+            Erode(area, n => n >= minimumNeighborsToKeepTile);
+
+        public static IArea Erode(this IArea area, Func<int, bool> keepTileWithNeighborCount) =>
+            Erode(area, t => keepTileWithNeighborCount(t.PossibleNeighbours().Count(area.Contains)));
+
+        public static IArea Erode(this IArea area, Func<Tile, bool> keepTile) =>
+            From(area.Enumerated.Where(keepTile));
     }
 }
