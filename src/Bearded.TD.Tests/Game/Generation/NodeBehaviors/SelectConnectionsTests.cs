@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
     public sealed class SelectConnectionsTests
     {
         [Fact]
-        public void SelectsNothingIfThereAreNoCollections()
+        public void SelectsNothingIfThereAreNoConnections()
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2, connectionCount: 0);
             test.Context.Tiles.Selection.RemoveAll();
