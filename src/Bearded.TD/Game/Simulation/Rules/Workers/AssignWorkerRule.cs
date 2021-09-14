@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Rules.Workers
 
         public void HandleEvent(WorkerAdded @event)
         {
-            var hubFaction = @event.Worker.HubOwner.Faction;
+            var hubFaction = @event.Worker.Faction;
 
             switch (distributionMethod)
             {

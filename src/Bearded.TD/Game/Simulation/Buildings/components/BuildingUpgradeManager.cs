@@ -23,18 +23,28 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IBuildingUpgradeManager,
             IBuildingUpgradeSyncer,
             IUpgradable
-        where T : IComponentOwner<T>, IFactioned, IGameObject, INamed
+        where T : IComponentOwner<T>, IGameObject, INamed
     {
+        private Faction? faction;
         private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
         private readonly Dictionary<ModAwareId, IncompleteUpgrade> upgradesInProgress = new();
         public IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress =>
             upgradesInProgress.Values.ToImmutableArray();
 
-        public IEnumerable<IUpgradeBlueprint> ApplicableUpgrades =>
-            Owner.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
-                ? technology.GetApplicableUpgradesFor(this)
-                : Enumerable.Empty<IUpgradeBlueprint>();
+        public IEnumerable<IUpgradeBlueprint> ApplicableUpgrades
+        {
+            get
+            {
+                if (faction == null)
+                {
+                    return Enumerable.Empty<IUpgradeBlueprint>();
+                }
+                return faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                    ? technology.GetApplicableUpgradesFor(this)
+                    : Enumerable.Empty<IUpgradeBlueprint>();
+            }
+        }
 
         public event GenericEventHandler<IIncompleteUpgrade>? UpgradeQueued;
         public event GenericEventHandler<IUpgradeBlueprint>? UpgradeCompleted;
@@ -47,9 +57,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void Initialize()
         {
             ReportAggregator.Register(Events, new UpgradeReport(this));
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
         }
 
-        public bool CanBeUpgradedBy(Faction faction) => faction.SharesBehaviorWith<FactionResources>(Owner.Faction);
+        public bool CanBeUpgradedBy(Faction faction) =>
+            this.faction?.SharesBehaviorWith<FactionResources>(faction) ?? false;
 
         public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {

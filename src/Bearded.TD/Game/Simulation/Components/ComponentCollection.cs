@@ -37,6 +37,7 @@ namespace Bearded.TD.Game.Simulation.Components
             }
             components.Add(component);
             component.OnAdded(owner, events);
+            events.Send(new ComponentAdded(component));
         }
 
         public IEnumerable<T> Get<T>()

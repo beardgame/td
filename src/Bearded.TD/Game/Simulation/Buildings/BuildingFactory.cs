@@ -27,6 +27,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
             building.AddComponent(new IncompleteBuilding<Building>());
+            building.AddComponent(new OwnedByFaction<Building>(faction));
             building.AddComponent(new ReportSubject<Building>());
             building.AddComponent(new Selectable<Building>());
             building.AddComponent(new StaticTileOccupation<Building>(footprint));
@@ -38,8 +39,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public BuildingGhost CreateGhost(
             IBuildingBlueprint blueprint, Faction faction, out MovableTileOccupation<BuildingGhost> tileOccupation)
         {
-            var ghost = new BuildingGhost(blueprint, faction);
+            var ghost = new BuildingGhost(blueprint);
             gameState.Add(ghost);
+            ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
+            ghost.AddComponent(new OwnedByFaction<BuildingGhost>(faction));
             tileOccupation = new MovableTileOccupation<BuildingGhost>();
             ghost.AddComponent(tileOccupation);
             return ghost;

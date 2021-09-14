@@ -1,6 +1,7 @@
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
@@ -13,13 +14,16 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class BuildingGhostDrawing : Component<BuildingGhost>
+    sealed class BuildingGhostDrawing<T> : Component<T>
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+        private Faction? faction;
 
         protected override void Initialize()
         {
             occupiedTilesTracker.Initialize(Owner, Events);
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
         }
 
         public override void Update(TimeSpan elapsedTime) {}
@@ -29,7 +33,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var primitiveDrawer = drawers.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
-            Owner.Faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var workerNetwork);
+            WorkerNetwork workerNetwork = null;
+            faction?.TryGetBehaviorIncludingAncestors(out workerNetwork);
             foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
                 var baseColor = Color.Green;
@@ -97,7 +102,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var maxDistanceSquared = maxDistance.Squared;
 
-            Owner.Faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var workerNetwork);
+            WorkerNetwork? workerNetwork = null;
+            faction?.TryGetBehaviorIncludingAncestors(out workerNetwork);
             var networkBorder = TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
 
             TileAreaBorderRenderer.Render(networkBorder, Owner.Game, getLineColor);

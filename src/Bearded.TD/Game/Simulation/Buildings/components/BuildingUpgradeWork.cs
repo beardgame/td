@@ -9,10 +9,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
 {
     // TODO: remove this component when it's done upgrading
     sealed class BuildingUpgradeWork<T> : Component<T>
-        where T : IComponentOwner, IFactioned, IGameObject
+        where T : IComponentOwner, IGameObject
     {
         private readonly IIncompleteUpgrade incompleteUpgrade;
-        private FactionResources resources = null!;
+        private FactionResources? resources;
         private ResourceConsumer? resourceConsumer;
 
         private bool started;
@@ -25,15 +25,18 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void Initialize()
         {
-            if (!Owner.Faction.TryGetBehaviorIncludingAncestors(out resources))
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, ownedByFaction =>
             {
-                throw new NotSupportedException("Cannot upgrade building without resources.");
-            }
+                if (!ownedByFaction.Faction.TryGetBehaviorIncludingAncestors(out resources))
+                {
+                    throw new NotSupportedException("Cannot upgrade building without resources.");
+                }
+            });
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (finished || (Owner is IBuilding building && !building.State.CanApplyUpgrades))
+            if (resources == null || finished || (Owner is IBuilding building && !building.State.CanApplyUpgrades))
             {
                 return;
             }

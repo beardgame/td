@@ -10,13 +10,17 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("workerHub")]
     sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
-        where T : GameObject, IComponentOwner, IFactioned, IPositionable
+        where T : IComponentOwner, IGameObject, IPositionable
     {
+        private Faction? faction;
         private int numWorkersActive;
 
         public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
-        protected override void Initialize() { }
+        protected override void Initialize()
+        {
+            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
+        }
 
         public override void Update(TimeSpan elapsedTime)
         {
@@ -36,6 +40,10 @@ namespace Bearded.TD.Game.Simulation.Workers
         private void addNewWorker()
         {
             var obj = new ComponentGameObject(Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
+            if (faction != null)
+            {
+                obj.AddComponent(new OwnedByFaction<ComponentGameObject>(faction));
+            }
 
             Owner.Game.Add(obj);
             numWorkersActive++;

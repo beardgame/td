@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Simulation.Events
             return listeners;
         }
 
-        private bool tryGetListeners<TEvent>([NotNullWhen(returnValue: true)] out List<IListener<TEvent>>? listeners)
+        private bool tryGetListeners<TEvent>([NotNullWhen(true)] out List<IListener<TEvent>>? listeners)
             where TEvent : struct, TEventInterface
         {
             if (listenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
