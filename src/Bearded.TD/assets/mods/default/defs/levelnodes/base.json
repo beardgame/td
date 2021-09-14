@@ -4,7 +4,7 @@
         { "id" : "base" },
         { "id" : "forceToCenter" },
         { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "base" } },
-        { "id" : "makeAllTilesFloor" },
+        { "id" : "setTiles", "parameters" : { "type" : "floor" } },
         { "id" : "spawnBuilding", "parameters" : { "building" : "base", "faction" : "players" } }
     ]
 }

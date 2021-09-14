@@ -2,7 +2,7 @@
     "id" : "spawner",
     "behaviors" : [
         { "id" : "spawner" },
-        { "id" : "makeAllTilesFloor" },
+        { "id" : "setTiles", "parameters" : { "type" : "floor" } },
         {
             "id" : "spawnCrystals",
             "parameters" : {
