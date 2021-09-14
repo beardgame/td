@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
     [NodeBehavior("tagSelected")]
     sealed class TagSelected : NodeBehavior<TagSelected.BehaviorParameters>
     {
-        public record BehaviorParameters(string? Tag, double Value);
+        public record BehaviorParameters(string? Tag, double Value = 1);
 
         public TagSelected(BehaviorParameters parameters) : base(parameters)
         {

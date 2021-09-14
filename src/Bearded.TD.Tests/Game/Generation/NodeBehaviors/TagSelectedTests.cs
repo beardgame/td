@@ -30,6 +30,21 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             }
         }
 
+        [Fact]
+        public void DefaultsToValueOneIfNoneIsGiven()
+        {
+            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+
+            new TagSelected(new TagSelected.BehaviorParameters(null)).Generate(test.Context);
+
+            foreach (var tile in test.Context.Tiles.All)
+            {
+                var tagValue = test.Context.Tiles.Tags["default"][tile];
+
+                tagValue.Should().Be(1);
+            }
+        }
+
         [Property]
         public void SetsDefaultTagToNonZeroValue(NormalFloat value)
         {
