@@ -1,6 +1,6 @@
 {
     "id" : "empty",
     "behaviors" : [
-        { "id" : "makeAllTilesFloor" }
+        { "id" : "setTiles", "parameters" : { "type" : "floor" } }
     ]
 }

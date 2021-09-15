@@ -1,6 +1,6 @@
 {
     "id" : "thin-path",
     "behaviors" : [
-        { "id" : "setRandomTiles", "parameters" : { "percentage" : 1, "type" : "crevice" } }
+        { "id" : "setTiles", "parameters" : { "type" : "crevice" } }
     ]
 }

@@ -73,7 +73,8 @@
                         { "id" : "default.pillars", "weight" : 1, "minNumber" : 1 },
                         { "id" : "default.pits", "weight" : 1, "minNumber" : 1 },
                         { "id" : "default.pits-and-pillars", "weight" : 0.5, "minNumber" : 1 },
-                        { "id" : "default.thin-path", "weight" : 0.5, "minNumber" : 1 }
+                        { "id" : "default.thin-path", "weight" : 0.5, "minNumber" : 1 },
+                        { "id" : "default.maze", "weight" : 0.5, "minNumber" : 1 }
                     ], "weight" : 1 },
                     { "id" : "spawner", "weight" : 1 }
                 ]
