@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.Generation
 {

@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Content.Models

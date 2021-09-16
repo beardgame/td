@@ -1,7 +1,7 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 

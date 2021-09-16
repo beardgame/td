@@ -1,8 +1,8 @@
 ﻿using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
+using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {

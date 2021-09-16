@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;

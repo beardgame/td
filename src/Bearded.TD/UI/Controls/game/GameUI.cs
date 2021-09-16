@@ -2,11 +2,10 @@
 using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Meta;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;

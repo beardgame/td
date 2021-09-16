@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;

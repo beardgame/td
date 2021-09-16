@@ -1,6 +1,6 @@
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.GameLoop
 {

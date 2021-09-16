@@ -6,6 +6,7 @@ using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.World;

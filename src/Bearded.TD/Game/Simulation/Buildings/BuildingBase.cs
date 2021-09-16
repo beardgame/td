@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

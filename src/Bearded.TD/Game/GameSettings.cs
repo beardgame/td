@@ -1,7 +1,6 @@
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Game
 {
