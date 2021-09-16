@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Bearded.TD.Shared.Events;
 
-namespace Bearded.TD.Game.Simulation.Events
+namespace Bearded.TD.Shared.Events
 {
-    abstract class GameEvents<TEventInterface, TPreviewEventInterface>
+    public abstract class GameEvents<TEventInterface, TPreviewEventInterface>
         where TEventInterface : IEvent
         where TPreviewEventInterface: IPreviewEvent
     {
