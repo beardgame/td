@@ -22,7 +22,6 @@ namespace Bearded.TD.Tiles
 
             public readonly struct State
             {
-                public Tile Origin { get; private init; }
                 public Tile Target { get; private init; }
 
                 public Dictionary<Tile, (double CostFromOrigin, int StepsFromOrigin, Direction StepHere)>
@@ -35,7 +34,6 @@ namespace Bearded.TD.Tiles
                 {
                     var state = new State
                     {
-                        Origin = origin,
                         Target = target,
                         Seen = new(origin.DistanceTo(target) * 6)
                         {
