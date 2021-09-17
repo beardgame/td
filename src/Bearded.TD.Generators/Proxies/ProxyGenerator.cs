@@ -41,7 +41,8 @@ namespace Bearded.TD.Generators.Proxies
                     throw new InvalidOperationException("Could not find automatic proxy attribute.");
 
                 var interfacesToGeneratorFor =
-                    findInterfacesWithAttribute(context.Compilation, receiver.Interfaces, automaticProxyAttribute);
+                    SymbolFilters.FindSymbolsWithAttribute(
+                        context.Compilation, receiver.Interfaces, automaticProxyAttribute);
 
                 foreach (var interfaceSymbol in interfacesToGeneratorFor)
                 {

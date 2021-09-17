@@ -1,6 +1,6 @@
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.IO;
 using Newtonsoft.Json;
 

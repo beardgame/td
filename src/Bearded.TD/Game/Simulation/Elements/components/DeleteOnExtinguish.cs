@@ -1,6 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements

@@ -2,9 +2,9 @@
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;

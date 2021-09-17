@@ -3,10 +3,10 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 

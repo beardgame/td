@@ -1,13 +1,13 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

@@ -1,12 +1,12 @@
-namespace Bearded.TD.Game.Simulation.Events
+namespace Bearded.TD.Shared.Events
 {
-    interface IListener<in TEvent>
+    public interface IListener<in TEvent>
         where TEvent : IEvent
     {
         void HandleEvent(TEvent @event);
     }
 
-    interface IPreviewListener<TEvent>
+    public interface IPreviewListener<TEvent>
         where TEvent : IPreviewEvent
     {
         void PreviewEvent(ref TEvent @event);

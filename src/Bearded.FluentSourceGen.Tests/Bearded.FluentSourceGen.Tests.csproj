@@ -8,8 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-        <PackageReference Include="Verify.SourceGenerators" Version="0.3.0" />
-        <PackageReference Include="Verify.Xunit" Version="11.20.1" />
+        <PackageReference Include="Verify.SourceGenerators" Version="1.1.0" />
+        <PackageReference Include="Verify.Xunit" Version="11.27.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.console" Version="2.4.1">
           <PrivateAssets>all</PrivateAssets>
@@ -22,7 +22,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Bearded.FluentSourceGen\Bearded.FluentSourceGen.csproj" />
+        <ProjectReference Include="..\Bearded.FluentSourceGen\Bearded.FluentSourceGen.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="goldens/*.cs" />
     </ItemGroup>
 
 </Project>

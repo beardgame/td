@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Components

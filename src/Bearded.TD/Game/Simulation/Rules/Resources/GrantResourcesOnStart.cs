@@ -1,8 +1,8 @@
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Game.Simulation.Rules.Resources

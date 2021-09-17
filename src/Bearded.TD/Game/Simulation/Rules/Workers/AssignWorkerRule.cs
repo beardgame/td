@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Workers;
+using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.Simulation.Rules.Workers
 {
