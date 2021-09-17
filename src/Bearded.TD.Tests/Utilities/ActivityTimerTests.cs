@@ -338,5 +338,36 @@ namespace Bearded.TD.Tests.Utilities
                 .HaveCount(1).And
                 .Contain(a => a.Activity == Activity.UpdateGame && a.TimeSpan == new TimeSpan(2));
         }
+
+        [Fact]
+        public void StartReturnsDisposableThatStopsActivityOnDispose()
+        {
+            var disposable = (IDisposable)timer.Start(Activity.UpdateGame);
+            advanceTime(1);
+            disposable.Dispose();
+            advanceTime(1);
+
+            var activities = timer.Reset();
+
+            activities.Should()
+                .HaveCount(1).And
+                .Contain(a => a.Activity == Activity.UpdateGame && a.TimeSpan == new TimeSpan(1));
+        }
+
+        [Fact]
+        public void StartReturnsDisposableThatStopsActivityWithUsingStatement()
+        {
+            using (timer.Start(Activity.UpdateGame))
+            {
+                advanceTime(1);
+            }
+            advanceTime(1);
+
+            var activities = timer.Reset();
+
+            activities.Should()
+                .HaveCount(1).And
+                .Contain(a => a.Activity == Activity.UpdateGame && a.TimeSpan == new TimeSpan(1));
+        }
     }
 }

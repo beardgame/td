@@ -18,12 +18,14 @@ namespace Bearded.TD.Utilities.Performance
             getCurrentTime = getTime;
         }
 
-        public void Start(Activity activity)
+        public ActivityStopDisposable Start(Activity activity)
         {
             var currentTime = getCurrentTime();
 
             tryPausingCurrentActivity(currentTime);
             startNewActivity(activity, currentTime);
+
+            return new(this, activity);
         }
 
         public void Stop(Activity activity)
@@ -99,6 +101,23 @@ namespace Bearded.TD.Utilities.Performance
             }
 
             return builder.MoveToImmutable();
+        }
+
+        public readonly struct ActivityStopDisposable : IDisposable
+        {
+            private readonly ActivityTimer timer;
+            private readonly Activity activity;
+
+            public ActivityStopDisposable(ActivityTimer timer, Activity activity)
+            {
+                this.timer = timer;
+                this.activity = activity;
+            }
+
+            public void Dispose()
+            {
+                timer.Stop(activity);
+            }
         }
     }
 }
