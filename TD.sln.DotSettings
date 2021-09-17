@@ -154,43 +154,43 @@ namespace $NAMESPACE$&#xD;
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;&#xD;
-using Bearded.TD.Networking.Serialization;&#xD;
-&#xD;
-namespace $NAMESPACE$&#xD;
-{&#xD;
-    static class $CLASS$&#xD;
-    {&#xD;
-        public static IRequest Request() =&gt; new Implementation();&#xD;
-&#xD;
-        private class Implementation : IRequest&#xD;
-        {&#xD;
-            public bool CheckPreconditions()&#xD;
-            {&#xD;
-                throw new System.NotImplementedException();&#xD;
-            }&#xD;
-&#xD;
-            public ICommand ToCommand()&#xD;
-            {&#xD;
-                throw new System.NotImplementedException();&#xD;
-            }&#xD;
-&#xD;
-            public IRequestSerializer Serializer =&gt; new Serializer();&#xD;
-        }&#xD;
-&#xD;
-        private class Serializer : IRequestSerializer&#xD;
-        {&#xD;
-            // ReSharper disable once UnusedMember.Local&#xD;
-            public Serializer() { }&#xD;
-&#xD;
-            public IRequest GetRequest(GameInstance game)&#xD;
-                =&gt; new Implementation();&#xD;
-&#xD;
-            public void Serialize(INetBufferStream stream)&#xD;
-            {&#xD;
-            }&#xD;
-        }&#xD;
-    }&#xD;
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DCCEB49BBF587540B6270E148D6C0975/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;
+using Bearded.TD.Networking.Serialization;
+
+namespace $NAMESPACE$
+{
+    static class $CLASS$
+    {
+        public static IRequest Request() =&gt; new Implementation();
+
+        private class Implementation : IRequest
+        {
+            public bool CheckPreconditions()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public ICommand ToCommand()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            IRequestSerializer IRequest.Serializer =&gt; new Serializer();
+        }
+
+        private class Serializer : IRequestSerializer
+        {
+            // ReSharper disable once UnusedMember.Local
+            public Serializer() { }
+
+            public IRequest GetRequest(GameInstance game)
+                =&gt; new Implementation();
+
+            public void Serialize(INetBufferStream stream)
+            {
+            }
+        }
+    }
 }</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
@@ -236,7 +236,7 @@ namespace $NAMESPACE$
                 throw new System.NotImplementedException();
             }
 
-            public ICommandSerializer&lt;GameInstance&gt; Serializer =&gt; new Serializer();
+            ICommandSerializer&lt;GameInstance&gt; ISerializableCommand&lt;GameInstance&gt;.Serializer =&gt; new Serializer();
         }
 
         private sealed class Serializer : ICommandSerializer&lt;GameInstance&gt;
