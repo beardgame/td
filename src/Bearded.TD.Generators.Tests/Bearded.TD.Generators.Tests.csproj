@@ -29,11 +29,6 @@
 
     <ItemGroup>
         <Compile Remove="**\*.verified.cs" />
-        <None Include="**\*.verified.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="TechEffects\goldens" />
     </ItemGroup>
 
 </Project>
