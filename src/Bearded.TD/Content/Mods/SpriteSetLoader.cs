@@ -20,6 +20,8 @@ namespace Bearded.TD.Content.Mods
 
         public SpriteSet TryLoad(FileInfo file, Content.Serialization.Models.SpriteSet jsonModel)
         {
+            _ = jsonModel.Id ?? throw new InvalidDataException($"{nameof(jsonModel.Id)} must not be null");
+
             var packedSpriteSet = loadPackedSpriteSet(
                 file.Directory ?? throw new NullReferenceException(), context, jsonModel);
 
@@ -33,6 +35,9 @@ namespace Bearded.TD.Content.Mods
         private static ISpriteSetImplementation loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,
             Serialization.Models.SpriteSet jsonModel)
         {
+            _ = jsonModel.Id ?? throw new InvalidDataException($"{nameof(jsonModel.Id)} must be non-null");
+            _ = jsonModel.Shader ?? throw new InvalidDataException($"{nameof(jsonModel.Shader)} must be non-null");
+
             var samplers = getSamplers(jsonModel);
             var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
@@ -105,15 +110,18 @@ namespace Bearded.TD.Content.Mods
 
             var samplers = new List<(string, string, string)>();
 
-            foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers))
+            if (jsonModel.TextureSamplers != null)
             {
-                if (string.IsNullOrWhiteSpace(sampler.Sampler))
-                    throw new InvalidDataException("Texture sampler needs non empty 'sampler' property");
+                foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers))
+                {
+                    if (string.IsNullOrWhiteSpace(sampler.Sampler))
+                        throw new InvalidDataException("Texture sampler needs non empty 'sampler' property");
 
-                if (string.IsNullOrEmpty(sampler.Prefix) && string.IsNullOrEmpty(sampler.Suffix))
-                    foundDefaultSampler = true;
+                    if (string.IsNullOrEmpty(sampler.Prefix) && string.IsNullOrEmpty(sampler.Suffix))
+                        foundDefaultSampler = true;
 
-                samplers.Add((sampler.Sampler, sampler.Prefix ?? "", sampler.Suffix ?? ""));
+                    samplers.Add((sampler.Sampler, sampler.Prefix ?? "", sampler.Suffix ?? ""));
+                }
             }
 
             if (!foundDefaultSampler && !string.IsNullOrWhiteSpace(jsonModel.DefaultTextureSampler))

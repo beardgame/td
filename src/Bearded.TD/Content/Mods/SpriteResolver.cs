@@ -32,7 +32,7 @@ namespace Bearded.TD.Content.Mods
 
             try
             {
-                if (modId == thisMod.Id)
+                if (modId == null || modId == thisMod.Id)
                 {
                     return spriteFrom(thisModsSpriteSets, id);
                 }

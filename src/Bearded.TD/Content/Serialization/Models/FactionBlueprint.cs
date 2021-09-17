@@ -11,10 +11,10 @@ namespace Bearded.TD.Content.Serialization.Models
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class FactionBlueprint : IConvertsTo<IFactionBlueprint, Void>
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public string? Name { get; set; }
         public Color? Color { get; set; }
-        public List<IFactionBehavior> Behaviors { get; set; } = new();
+        public List<IFactionBehavior>? Behaviors { get; set; }
 
         public IFactionBlueprint ToGameModel(ModMetadata modMetadata, Void resolvers)
         {
@@ -22,7 +22,8 @@ namespace Bearded.TD.Content.Serialization.Models
                 ExternalId<Faction>.FromLiteral(Id),
                 Name,
                 Color,
-                Behaviors.Select(FactionBehaviorFactories.CreateFactionBehaviorFactory));
+                Behaviors?.Select(FactionBehaviorFactories.CreateFactionBehaviorFactory)
+                    ?? Enumerable.Empty<IFactionBehaviorFactory<Faction>>());
         }
     }
 }

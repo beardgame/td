@@ -14,20 +14,26 @@ namespace Bearded.TD.Content.Serialization.Models
     sealed class TechnologyBlueprint
         : IConvertsTo<Content.Models.TechnologyBlueprint, TechnologyBlueprint.DependencyResolvers>
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        public string? Id { get; set; }
+        public string? Name { get; set; }
         public int Cost { get; set; }
-        public List<TechnologyUnlock> Unlocks { get; set; }
-        public List<string> RequiredTechs { get; set; } = new();
+        public List<TechnologyUnlock>? Unlocks { get; set; }
+        public List<string>? RequiredTechs { get; set; }
 
         public Content.Models.TechnologyBlueprint ToGameModel(ModMetadata modMetadata, DependencyResolvers resolvers)
         {
+            _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
+            _ = Name ?? throw new InvalidDataException($"{nameof(Name)} must be non-null");
+
             return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
                 Name,
                 Cost,
-                ImmutableArray.CreateRange(Unlocks.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))),
-                RequiredTechs.Select(resolvers.TechnologyResolver.Resolve));
+                ImmutableArray.CreateRange(Unlocks
+                    ?.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))
+                    ?? Enumerable.Empty<ITechnologyUnlock>()),
+                RequiredTechs?.Select(resolvers.TechnologyResolver.Resolve)
+                    ?? Enumerable.Empty<ITechnologyBlueprint>());
         }
 
         public sealed class DependencyResolvers
@@ -46,9 +52,10 @@ namespace Bearded.TD.Content.Serialization.Models
             }
         }
 
-        // ReSharper disable once ClassNeverInstantiated.Global
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         public sealed class TechnologyUnlock
         {
+            [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
             public enum UnlockType
             {
                 Unknown = 0,
@@ -57,21 +64,20 @@ namespace Bearded.TD.Content.Serialization.Models
             }
 
             public UnlockType Type { get; set; }
-            public string Blueprint { get; set; }
+            public string? Blueprint { get; set; }
 
             public ITechnologyUnlock ToGameModel(
                 IDependencyResolver<IBuildingBlueprint> buildingResolver,
                 IDependencyResolver<IUpgradeBlueprint> upgradeResolver)
             {
-                switch (Type)
+                _ = Blueprint ?? throw new InvalidDataException($"{nameof(Blueprint)} must be non-null");
+
+                return Type switch
                 {
-                    case UnlockType.Building:
-                        return new BuildingUnlock(buildingResolver.Resolve(Blueprint));
-                    case UnlockType.Upgrade:
-                        return new UpgradeUnlock(upgradeResolver.Resolve(Blueprint));
-                    default:
-                        throw new InvalidDataException($"Invalid unlock type: {Type}");
-                }
+                    UnlockType.Building => new BuildingUnlock(buildingResolver.Resolve(Blueprint)),
+                    UnlockType.Upgrade => new UpgradeUnlock(upgradeResolver.Resolve(Blueprint)),
+                    _ => throw new InvalidDataException($"Invalid unlock type: {Type}")
+                };
             }
         }
     }

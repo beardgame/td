@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Tiles;
@@ -16,19 +17,22 @@ namespace Bearded.TD.Content.Serialization.Models
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         public sealed class Footprint
         {
-            public List<Step> Tiles { get; set; }
+            public List<Step>? Tiles { get; set; }
             public Angle Orientation { get; set; }
         }
 
-        public string Id { get; set; }
-        public List<Footprint> Footprints { get; set; }
+        public string? Id { get; set; }
+        public List<Footprint>? Footprints { get; set; }
 
-        public Game.Simulation.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void _)
+        public Game.Simulation.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void v)
         {
+            _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
+            var footprints = Footprints ?? new List<Footprint>();
+
             return new(
                 ModAwareId.FromNameInMod(Id, modMetadata),
-                Footprints.Select(footprint => new Bearded.TD.Tiles.Footprint(footprint.Tiles)),
-                Footprints.Select(footprint => footprint.Orientation)
+                footprints.Select(footprint => new Bearded.TD.Tiles.Footprint(footprint.Tiles ?? Enumerable.Empty<Step>())),
+                footprints.Select(footprint => footprint.Orientation)
             );
         }
     }

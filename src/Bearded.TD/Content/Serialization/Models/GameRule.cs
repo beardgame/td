@@ -6,9 +6,9 @@ namespace Bearded.TD.Content.Serialization.Models
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class GameRule<TParameters> : IGameRule
     {
-        public string Id { get; set; }
-        public TParameters Parameters { get; set; }
+        public string? Id { get; set; }
+        public TParameters? Parameters { get; set; }
 
-        object IBehaviorTemplate.Parameters => Parameters;
+        object? IBehaviorTemplate.Parameters => Parameters;
     }
 }

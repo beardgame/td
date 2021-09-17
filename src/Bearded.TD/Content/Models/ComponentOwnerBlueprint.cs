@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Content.Mods;
@@ -37,7 +38,7 @@ namespace Bearded.TD.Content.Models
     sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
     {
         public ModAwareId Id { get; }
-        private readonly IReadOnlyCollection<IComponent> componentParameters;
+        private readonly ImmutableArray<IComponent> componentParameters;
 
         private readonly Dictionary<Type, object> componentFactoriesByOwnerType = new Dictionary<Type, object>();
 
@@ -64,11 +65,10 @@ namespace Bearded.TD.Content.Models
             return factories;
         }
 
-        public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponent>? components)
+        public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponent> components)
         {
             Id = id;
-
-            componentParameters = (components?.ToList() ?? new List<IComponent>()).AsReadOnly();
+            componentParameters = components.ToImmutableArray();
         }
 
         public bool CanApplyUpgradeEffect<T>(IUpgradeEffect effect)

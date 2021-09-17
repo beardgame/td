@@ -13,7 +13,7 @@ namespace Bearded.TD.Content.Serialization.Converters
         public override bool CanConvert(Type objectType)
             => typeof(T).IsAssignableFrom(objectType) || objectType == nullableType;
 
-        public sealed override object ReadJson(JsonReader reader, Type objectType,
+        public sealed override object? ReadJson(JsonReader reader, Type objectType,
             object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)

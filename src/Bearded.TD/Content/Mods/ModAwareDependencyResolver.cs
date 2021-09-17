@@ -23,7 +23,7 @@ namespace Bearded.TD.Content.Mods
         {
             try
             {
-                if (id.ModId == thisMod.Id)
+                if (id.ModId == null || id.ModId == thisMod.Id)
                 {
                     return GetDependencyFromThisMod(id);
                 }

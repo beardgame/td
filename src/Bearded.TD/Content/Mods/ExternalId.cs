@@ -19,7 +19,7 @@ namespace Bearded.TD.Content.Mods
             Value = value;
         }
 
-        public static ExternalId<T> FromLiteral(string literal) => new(literal);
+        public static ExternalId<T> FromLiteral(string? literal) => new(literal);
 
         public bool Equals(ExternalId<T> other) => Value == other.Value;
 

@@ -85,7 +85,7 @@ namespace Bearded.TD.UI.Controls
             if (debugOverlay != null)
             {
                 debugOverlay.Terminate();
-                Navigation.Close(debugOverlay);
+                Navigation?.Close(debugOverlay);
             }
             base.Terminate();
         }

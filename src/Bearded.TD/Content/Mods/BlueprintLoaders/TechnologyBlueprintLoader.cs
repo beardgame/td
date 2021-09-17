@@ -84,7 +84,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
                 }
                 catch (InvalidDataException e)
                 {
-                    logLoadingException(e, jsonModel.Name);
+                    logLoadingException(e, jsonModel.Name ?? "UNKNOWN");
                     continue;
                 }
 
@@ -121,13 +121,18 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             IDictionary<string, TechnologyBlueprintJson> unvisitedModelsByName,
             ICollection<TechnologyBlueprintJson> sortedModels)
         {
+            _ = model.Id ?? throw new InvalidDataException($"{nameof(model.Id)} must not be null");
+
             unvisitedModelsByName.Remove(model.Id);
 
-            foreach (var requiredName in model.RequiredTechs)
+            if (model.RequiredTechs != null)
             {
-                if (unvisitedModelsByName.TryGetValue(requiredName, out var requiredModel))
+                foreach (var requiredName in model.RequiredTechs)
                 {
-                    topologicalSortVisit(requiredModel, unvisitedModelsByName, sortedModels);
+                    if (unvisitedModelsByName.TryGetValue(requiredName, out var requiredModel))
+                    {
+                        topologicalSortVisit(requiredModel, unvisitedModelsByName, sortedModels);
+                    }
                 }
             }
 

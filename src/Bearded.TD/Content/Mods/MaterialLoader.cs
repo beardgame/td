@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -15,9 +16,10 @@ namespace Bearded.TD.Content.Mods
             this.context = context;
         }
 
-        public ArrayTexture CreateArrayTexture(FileInfo file, List<string> textureFilenames)
+        public ArrayTexture CreateArrayTexture(FileInfo file, IEnumerable<string> textureFilenames)
         {
-            var baseDir = file.Directory;
+            var baseDir = file.Directory ?? throw new InvalidOperationException("Directory should never be null");
+
             var textureFiles = textureFilenames
                 .Select(name => (Name: name, File: baseDir.GetFiles(name).SingleOrDefault()))
                 .Where(f => f.File != null ? true : throw new InvalidDataException($"Could not find unique material texture file '{f.Name}'."))

@@ -18,8 +18,8 @@ namespace Bearded.TD.Game.Simulation.Units
             ITileWalkerOwner,
             ISyncable
     {
-        private TileWalker tileWalker;
-        private PassabilityLayer passabilityLayer;
+        private TileWalker tileWalker = null!;
+        private PassabilityLayer passabilityLayer = null!;
 
         public Position2 Position => tileWalker.Position;
         public Tile CurrentTile => tileWalker.CurrentTile;
