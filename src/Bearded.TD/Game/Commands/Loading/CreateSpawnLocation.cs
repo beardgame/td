@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 game.State.Add(new SpawnLocation(id, tile));
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(id, tile);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(id, tile);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

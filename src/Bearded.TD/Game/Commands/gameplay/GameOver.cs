@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public void Execute() => game.Meta.DoGameOver();
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer();
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

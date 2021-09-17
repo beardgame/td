@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             }
 
             public void Execute() => unit.Kill(damageSource);
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(unit, damageSource);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(unit, damageSource);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

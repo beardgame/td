@@ -26,7 +26,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
                 spawnLocation.WakeUp();
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(spawnLocation);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(spawnLocation);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

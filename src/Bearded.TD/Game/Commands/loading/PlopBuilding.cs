@@ -48,7 +48,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 constructionSyncer.SyncCompleteBuild();
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(faction, id, blueprint, footprint);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(faction, id, blueprint, footprint);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

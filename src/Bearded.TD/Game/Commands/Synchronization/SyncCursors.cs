@@ -52,7 +52,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 return null;
             }
 
-            public IRequestSerializer<Player, GameInstance> Serializer =>
+            IRequestSerializer<Player, GameInstance> IRequest<Player, GameInstance>.Serializer =>
                 new Serializer(new Dictionary<Player, (Position2, IBuildingBlueprint?)>
                 {
                     { player, (cursorPosition, attachedGhost) }
@@ -79,7 +79,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 }
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(cursorStates);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(cursorStates);
         }
 
         private sealed class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>

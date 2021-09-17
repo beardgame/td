@@ -33,7 +33,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public void Execute() => game.Add(new EnemyUnit(unitId, blueprint, tile));
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(blueprint, tile, unitId);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, tile, unitId);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

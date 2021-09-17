@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Commands
         ICommandSerializer<GameInstance>
         where TSelf : UnifiedDebugRequestCommandWithoutParameter<TSelf>, new()
     {
-        protected GameInstance Game { get; private set; }
+        protected GameInstance Game { get; private init; } = null!;
 
         public static UnifiedDebugRequestCommandWithoutParameter<TSelf> For(GameInstance game)
             => new TSelf { Game = game };

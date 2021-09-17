@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 upgradeSyncer.SyncStartUpgrade(upgradeId);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(building, upgradeId);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building, upgradeId);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

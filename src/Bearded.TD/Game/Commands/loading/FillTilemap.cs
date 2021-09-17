@@ -50,7 +50,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 }
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(tileGeometries, drawInfos);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(tileGeometries, drawInfos);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

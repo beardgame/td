@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 constructor.SyncStartBuild();
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(building);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

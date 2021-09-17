@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Commands.Loading
                     .ForEach(p => p.ConnectionState = PlayerConnectionState.Waiting);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(mod, enabled);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(mod, enabled);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
@@ -53,6 +53,7 @@ namespace Bearded.TD.Game.Commands.Loading
             private bool enabled;
 
             [UsedImplicitly]
+            // ReSharper disable once NotNullMemberIsNotInitialized
             public Serializer() {}
 
             public Serializer(ModMetadata mod, bool enabled)

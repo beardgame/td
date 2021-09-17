@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 game.Players.ForEach(p => p.ConnectionState = PlayerConnectionState.LoadingMods);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(mods);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(mods);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

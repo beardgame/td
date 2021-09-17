@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Commands.General
                 game.ChatLog.Add(new ChatMessage(null, message));
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(gameSettings);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(gameSettings);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Commands.General
                 game.AddPlayer(player);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(player);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(player);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

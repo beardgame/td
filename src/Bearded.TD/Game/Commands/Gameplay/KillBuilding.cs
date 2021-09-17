@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             }
 
             public void Execute() => building.Delete();
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(building);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

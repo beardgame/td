@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 game.State.Add(obj);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(blueprint, position, direction);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, position, direction);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

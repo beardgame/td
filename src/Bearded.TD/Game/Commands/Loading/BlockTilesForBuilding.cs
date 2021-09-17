@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 tiles.ForEach(game.State.BuildingPlacementLayer.BlockTileForBuilding);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(tiles);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(tiles);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

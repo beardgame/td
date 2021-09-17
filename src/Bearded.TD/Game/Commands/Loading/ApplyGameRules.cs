@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 }
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(gameMode);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(gameMode);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>

@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Commands.GameLoop
                 game.WaveDirector.ExecuteScript(script);
             }
 
-            public ICommandSerializer<GameInstance> Serializer => new Serializer(script);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(script);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
