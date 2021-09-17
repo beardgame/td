@@ -9,6 +9,7 @@ namespace Bearded.TD.Generators.Tests.Listeners
     {
         [EventListener(typeof(MyEvents))]
         [UsedImplicitly]
+        // ReSharper disable once PartialTypeWithSinglePart
         sealed partial class MyEventListener
             : IListener<FirstEvent>, IListener<SecondEvent>, IPreviewListener<PreviewEvent>
         {

@@ -25,7 +25,7 @@ namespace Bearded.TD.Generators.TechEffects
                 .build();
         }
 
-        private readonly StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder sb = new();
 
         private ModifiableSourceGenerator addFileTop(string @namespace, string className, string interfaceName)
         {

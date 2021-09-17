@@ -31,7 +31,7 @@ namespace Bearded.TD.Generators.TechEffects
         {
             try
             {
-                if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
+                if (context.SyntaxReceiver is not SyntaxReceiver receiver)
                 {
                     return;
                 }
@@ -84,7 +84,7 @@ namespace Bearded.TD.Generators.TechEffects
             {
                 var fieldModel = compilation.GetSemanticModel(fieldSyntax.SyntaxTree);
                 var fieldSymbolsWithAttribute = fieldSyntax.Declaration.Variables
-                    .Select(v => v == null ? null : fieldModel.GetDeclaredSymbol(v) as IFieldSymbol)
+                    .Select(v => fieldModel.GetDeclaredSymbol(v) as IFieldSymbol)
                     .Where(symbol => symbol != null)
                     .Where(symbol =>
                         symbol?.GetAttributes().Any(a =>
@@ -131,10 +131,9 @@ namespace Bearded.TD.Generators.TechEffects
 
         private sealed class SyntaxReceiver : ISyntaxReceiver
         {
-            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new List<InterfaceDeclarationSyntax>();
+            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new();
 
-            public List<FieldDeclarationSyntax> AttributeConverterCandidates { get; } =
-                new List<FieldDeclarationSyntax>();
+            public List<FieldDeclarationSyntax> AttributeConverterCandidates { get; } = new();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {

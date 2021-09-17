@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -57,26 +56,9 @@ namespace Bearded.TD.Generators.Proxies
             }
         }
 
-        private static IEnumerable<INamedTypeSymbol> findInterfacesWithAttribute(
-            Compilation compilation, IEnumerable<InterfaceDeclarationSyntax> interfaces, ISymbol attribute)
-        {
-            foreach (var interfaceSyntax in interfaces)
-            {
-                var classModel = compilation.GetSemanticModel(interfaceSyntax.SyntaxTree);
-                var classSymbol = classModel.GetDeclaredSymbol(interfaceSyntax) as INamedTypeSymbol
-                    ?? throw new InvalidCastException("Expected a named type");
-
-                if (classSymbol.GetAttributes().Any(
-                    a => a.AttributeClass?.Equals(attribute, SymbolEqualityComparer.Default) ?? false))
-                {
-                    yield return classSymbol;
-                }
-            }
-        }
-
         private sealed class SyntaxReceiver : ISyntaxReceiver
         {
-            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new List<InterfaceDeclarationSyntax>();
+            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
