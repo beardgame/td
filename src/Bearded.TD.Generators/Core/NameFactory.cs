@@ -10,7 +10,7 @@ namespace Bearded.TD.Generators
             }
 
             return interfaceName[0] == 'I' && isUpperCase(interfaceName[1])
-                ? new NameFactory(interfaceName.Substring(1))
+                ? new NameFactory(interfaceName[1..])
                 : new NameFactory(interfaceName);
         }
 
@@ -25,8 +25,8 @@ namespace Bearded.TD.Generators
 
         public string ClassNameWithSuffix(string suffix) => baseName + suffix;
 
-        public string FieldName() => baseName.Substring(0, 1).ToLowerInvariant() + baseName.Substring(1);
+        public string FieldName() => baseName[..1].ToLowerInvariant() + baseName[1..];
 
-        private static bool isUpperCase(char symbol) => symbol >= 'A' && symbol <= 'Z';
+        private static bool isUpperCase(char symbol) => symbol is >= 'A' and <= 'Z';
     }
 }

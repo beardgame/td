@@ -8,7 +8,7 @@ namespace Bearded.TD.Generators.TechEffects
 
         public static string ToCamelCase(string str)
         {
-            var camelCaseStr = char.ToLowerInvariant(str[0]) + str.Substring(1);
+            var camelCaseStr = char.ToLowerInvariant(str[0]) + str[1..];
             return reservedNames.Contains(camelCaseStr) ? $"@{camelCaseStr}" : camelCaseStr;
         }
     }

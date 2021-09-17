@@ -20,7 +20,7 @@ namespace Bearded.TD.Generators.Proxies
                 .build();
         }
 
-        private readonly StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder sb = new();
 
         private ProxySourceGenerator addFileTop(string @namespace, string className, string interfaceName)
         {

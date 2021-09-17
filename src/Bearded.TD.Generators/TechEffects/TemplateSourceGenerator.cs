@@ -21,7 +21,7 @@ namespace Bearded.TD.Generators.TechEffects
                 .build();
         }
 
-        private readonly StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder sb = new();
 
         private TemplateSourceGenerator addFileTop(string @namespace, string className, string interfaceName)
         {
