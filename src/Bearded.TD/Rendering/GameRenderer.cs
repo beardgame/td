@@ -73,14 +73,8 @@ namespace Bearded.TD.Rendering
             ContentRenderers.ClearAll();
 
             game.PlayerCursors.DrawCursors(drawers);
-            drawAmbientLight();
             drawGameObjects();
             drawDebug();
-        }
-
-        private void drawAmbientLight()
-        {
-            var radius = game.State.Level.Radius;
         }
 
         private void drawGameObjects()

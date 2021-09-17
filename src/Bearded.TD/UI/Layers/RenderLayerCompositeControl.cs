@@ -8,7 +8,7 @@ namespace Bearded.TD.UI.Layers
 {
     abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
     {
-        private IRendererRouter renderRouter;
+        private IRendererRouter renderRouter = null!;
         private bool skipNextRender;
 
         public override void Render(IRendererRouter router)

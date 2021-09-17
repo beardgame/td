@@ -114,12 +114,12 @@ namespace {@namespace}
             {
                 var parameterType = isNullable ? $"{type}?" : type;
                 return $@"
-            {parameterType} {toCamelCase(name)}";
+            {parameterType} {ToCamelCase(name)}";
             }
 
             private static string constructorAssignment(string name, string? defaultValue)
             {
-                var val = toCamelCase(name);
+                var val = ToCamelCase(name);
                 if (defaultValue != null)
                 {
                     val += $".GetValueOrDefault({defaultValue})";

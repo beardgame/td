@@ -1,11 +1,12 @@
 using System.Linq;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Components.Generic
+namespace Bearded.TD.Game.Simulation.Synchronization
 {
     sealed class Syncer<T> : Component<T>, ISyncer<T>
         where T : IComponentOwner, IDeletable, IGameObject, IIdable<T>

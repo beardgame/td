@@ -17,10 +17,10 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
     {
-        private Logger logger;
-        private IGraphicsLoader graphicsLoader;
-        private ClientNetworkInterface networkInterface;
-        private RenderContext renderContext;
+        private Logger logger = null!;
+        private IGraphicsLoader graphicsLoader = null!;
+        private ClientNetworkInterface networkInterface = null!;
+        private RenderContext renderContext = null!;
 
         public IList<Proto.Lobby> Lobbies { get; } = new List<Proto.Lobby>();
 

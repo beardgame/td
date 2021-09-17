@@ -32,7 +32,7 @@ namespace Bearded.TD.Tests.Game.Generation
         {
             var tags = tagsWithTiles();
 
-            Func<AreaTagValues> getLayerWithNullName = () => tags[null];
+            Func<AreaTagValues> getLayerWithNullName = () => tags[null!];
 
             getLayerWithNullName.Should().Throw<ArgumentException>();
         }

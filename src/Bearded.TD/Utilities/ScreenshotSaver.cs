@@ -26,6 +26,7 @@ namespace Bearded.TD.Utilities
         {
             logger.Info?.Log($"Trying to send screenshot ({viewport.Width}x{viewport.Height}) to Discord...");
 
+            // ReSharper disable once AsyncVoidLambda
             return tryTaskRun("Sending screenshot to Discord", async () =>
             {
                 var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
@@ -55,6 +56,7 @@ namespace Bearded.TD.Utilities
         {
             logger.Info?.Log($"Trying to save screenshot ({viewport.Width}x{viewport.Height}) to disk...");
 
+            // ReSharper disable once AsyncVoidLambda
             return tryTaskRun("Saving screenshot", async () =>
             {
                 var bitmap = await makeScreenshotAsync(viewport);

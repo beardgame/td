@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Lidgren.Network;
 
 namespace Bearded.TD.Utilities
@@ -25,6 +24,7 @@ namespace Bearded.TD.Utilities
             var array = buffer.ReadBytes(size);
             var ptr = Marshal.AllocHGlobal(size);
             Marshal.Copy(array, 0, ptr, size);
+            // ReSharper disable once PossibleNullReferenceException
             s = (T)Marshal.PtrToStructure(ptr, typeof(T));
             Marshal.FreeHGlobal(ptr);
         }

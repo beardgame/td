@@ -31,7 +31,7 @@ namespace Bearded.TD.Game
             Logger = logger;
 
             var commandDispatcher = new ServerCommandDispatcher<Player, GameInstance>(new DefaultCommandExecutor(), network);
-            RequestDispatcher = new ServerRequestDispatcher<Player, GameInstance>(commandDispatcher, logger);
+            RequestDispatcher = new ServerRequestDispatcher<Player, GameInstance>(commandDispatcher);
             Dispatcher = new ServerDispatcher<GameInstance>(commandDispatcher);
             GameSynchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
             PlayerManagerFactory = game =>
@@ -57,7 +57,7 @@ namespace Bearded.TD.Game
         {
             Logger = logger;
 
-            RequestDispatcher = new ClientRequestDispatcher<Player, GameInstance>(network, logger);
+            RequestDispatcher = new ClientRequestDispatcher<Player, GameInstance>(network);
             Dispatcher = new ClientDispatcher<GameInstance>();
             GameSynchronizer = new ClientGameSynchronizer();
             PlayerManagerFactory = _ => null;

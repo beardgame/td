@@ -218,7 +218,7 @@ namespace Bearded.TD.Game.Generation
                     .Select(t => (t, tilesConnectedTo(t)))
                     .ToList();
 
-                var changedTiles = 0;
+                int changedTiles;
                 var pass = 0;
 
                 do
@@ -250,18 +250,6 @@ namespace Bearded.TD.Game.Generation
 
                 bool isWalkable(Tile t0, Tile t1) =>
                     Math.Abs(heightTilemap[t0] - heightTilemap[t1]) < Constants.Game.Navigation.MaxWalkableHeightDifference.NumericValue;
-            }
-
-            private void createPathsToCorners()
-            {
-                logger.Trace?.Log("Digging paths to all corners");
-
-                var result = createPathFindingTilemapToTile(level.Center, level.Corners);
-
-                foreach (var start in level.Corners)
-                {
-                    digAlongShortestPath(start, level.Center, result);
-                }
             }
 
             private void createTunnels()
@@ -313,14 +301,6 @@ namespace Bearded.TD.Game.Generation
                 var pushedPoints = points.Select(t => pushTileToLowestHardnessInRange(t, 5)).Distinct();
 
                 return pushedPoints.Concat(level.Corners).Concat(ImmutableArray.Create(level.Center));
-            }
-
-            private Tile snapTileToAlreadyCarved(Tile tile, int searchRadius)
-            {
-                var floorTilesInRange = Tilemap.GetSpiralCenteredAt(tile, searchRadius)
-                    .Where(t => level.IsValid(t) && typeTilemap[t] == TileType.Floor)
-                    .ToList();
-                return floorTilesInRange.Count > 0 ? floorTilesInRange[random.Next(floorTilesInRange.Count)] : tile;
             }
 
             private Tile pushTileToLowestHardnessInRange(Tile tile, int searchRadius)

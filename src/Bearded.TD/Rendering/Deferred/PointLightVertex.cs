@@ -9,6 +9,7 @@ namespace Bearded.TD.Rendering.Deferred
     [StructLayout(LayoutKind.Sequential)]
     readonly struct PointLightVertex : IVertexData
     {
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Vector3 vertexPosition;
         private readonly Vector3 vertexLightPosition;
         private readonly float vertexLightRadiusSquared;

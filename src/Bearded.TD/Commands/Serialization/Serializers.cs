@@ -9,7 +9,7 @@ namespace Bearded.TD.Commands.Serialization
 {
     sealed class Serializers<TActor, TObject>
     {
-        public static Serializers<TActor, TObject> Instance { get; private set; }
+        public static Serializers<TActor, TObject> Instance { get; private set; } = null!;
 
         private readonly Dictionary<Type, int> requestIds;
         private readonly Dictionary<Type, int> commandIds;
@@ -24,7 +24,6 @@ namespace Bearded.TD.Commands.Serialization
         public ICommandSerializer<TObject> CommandSerializer(int id) => commandSerializers[id]();
         public bool IsRequestSerializer(int id) => id >= 0 && id < firstCommandId;
         public bool IsCommandSerializer(int id) => id >= firstCommandId && id < maxId;
-        public bool IsValidId(int id) => id >= 0 && id < maxId;
 
         public static void Initialize()
         {
@@ -107,7 +106,7 @@ namespace Bearded.TD.Commands.Serialization
         private static Dictionary<Type, int> getIds(List<Type> types, int offset = 0)
             => types
                 .OrderBy(t => t.FullName)
-                .ToDictionary(t => t, t => offset++);
+                .ToDictionary(t => t, _ => offset++);
 
         private static Dictionary<int, Func<T>> createConstructors<T>(List<Type> types, Dictionary<Type, int> ids)
             => types.ToDictionary(t => ids[t], constructor<T>);

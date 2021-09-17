@@ -7,27 +7,22 @@ namespace Bearded.TD
     {
         public static class Paths
         {
-            private static string settingsDirectory;
+            private static string? settingsDirectory;
 
-            public static string SettingsDirectory
+            public static string SettingsDirectory => settingsDirectory ??= getValidSettingsDirectory();
+
+            private static string getValidSettingsDirectory()
             {
-                get
-                {
-                    if (settingsDirectory != null)
-                        return settingsDirectory;
-
-                    var dir = Environment.UserSettingsDirectoryFor("Bearded.TD");
-                    if (!Directory.Exists(dir))
-                        Directory.CreateDirectory(dir);
-
-                    settingsDirectory = dir;
-                    return dir;
-                }
+                var dir = Environment.UserSettingsDirectoryFor("Bearded.TD");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                return dir;
             }
 
             public static readonly string UserSettingsFile = SettingsDirectory + "/usersettings.json";
             public static readonly string LogFile = SettingsDirectory + "/debug.log";
 
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public static class Content
             {
                 private static readonly string workingDir =
@@ -40,11 +35,6 @@ namespace Bearded.TD
 #if !DEBUG
                     return file;
 #endif
-                    // point at asset files in the actual repo instead of the binary folder for easy live editing
-
-                    // your\td\path
-                    // \bin\Bearded.TD\Debug\ -> \src\Bearded.TD\
-                    // assets\file.ext
 
                     var newFile = file
                         .Replace("\\", "/")

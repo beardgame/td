@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -80,7 +79,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
                         {
                             var damagePerSecond = damageFactor * Parameters.DamagePerSecond;
                             enemy.Match(
-                                e => tryDamageTarget<EnemyUnit>(e, damagePerSecond),
+                                e => tryDamageTarget(e, damagePerSecond),
                                 () => throw new InvalidOperationException());
 
                             beamSegments.Add((lastEnd, point, damageFactor));

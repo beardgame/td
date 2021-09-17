@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
@@ -9,6 +9,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectTagCompareModeSerializationTests
     {
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         private sealed class Model
         {
             public CompareMode G;

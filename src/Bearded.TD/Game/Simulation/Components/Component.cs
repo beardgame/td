@@ -44,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Components
     {
         protected TOwner Owner { get; private set; }
 
-        protected ComponentEvents Events { get; private set; }
+        protected ComponentEvents Events { get; private set; } = null!;
 
         public void OnAdded(TOwner owner, ComponentEvents events)
         {

@@ -104,7 +104,7 @@ namespace Bearded.TD.Utilities.Console
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
                 .Where(m => m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).Any())
                 .Select(m => (
-                    Name: ((CommandParameterCompletionAttribute)m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).First()).Name,
+                    ((CommandParameterCompletionAttribute)m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).First()).Name,
                     Parameters: (IEnumerable<string>)m.Invoke(null, null)
                     ));
 

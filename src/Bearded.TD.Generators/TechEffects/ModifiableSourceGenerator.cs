@@ -119,7 +119,7 @@ namespace {@namespace}
 
             public static string ModifiableProperty(string type, string name)
             {
-                var fieldName = toCamelCase(name);
+                var fieldName = ToCamelCase(name);
                 return $@"
         private readonly AttributeWithModifications<{type}> {fieldName};
         public {type} {name} => {fieldName}.Value;
@@ -151,7 +151,7 @@ namespace {@namespace}
                 }
 
                 var fromRawConverter = converter == null ? $"x => ({type}) x" : $"{converter}.ToWrapped";
-                var fieldName = toCamelCase(name);
+                var fieldName = ToCamelCase(name);
 
                 return $@"
             {fieldName} = new AttributeWithModifications<{type}>(
@@ -177,7 +177,7 @@ namespace {@namespace}
             private static string staticConstructorAttributeTuple(string attributeType, string propertyName)
             {
                 return $@"
-                    ({attributeType}, instance => instance.{toCamelCase(propertyName)})";
+                    ({attributeType}, instance => instance.{ToCamelCase(propertyName)})";
             }
 
             public static string CreateModifiableMethod(string interfaceName, string className) => $@"

@@ -12,7 +12,7 @@ namespace Bearded.TD.UI.Controls
             var ipBinding = Binding.Create(UserSettings.Instance.Misc.SavedNetworkAddress);
 
             var list = new ListControl {ItemSource = new LobbyListItemSource(model)};
-            model.LobbyReceived += lobby => list.OnAppendItems(1);
+            model.LobbyReceived += _ => list.OnAppendItems(1);
 
             this.BuildLayout()
                 .ForFullScreen()

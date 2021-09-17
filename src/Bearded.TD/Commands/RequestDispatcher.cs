@@ -1,7 +1,6 @@
 ﻿using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
-using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Commands
 {
@@ -13,12 +12,10 @@ namespace Bearded.TD.Commands
     class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
     {
         private readonly ClientNetworkInterface network;
-        private readonly Logger logger;
 
-        public ClientRequestDispatcher(ClientNetworkInterface network, Logger logger)
+        public ClientRequestDispatcher(ClientNetworkInterface network)
         {
             this.network = network;
-            this.logger = logger;
         }
 
         public void Dispatch(TActor _, IRequest<TActor, TObject> request)
@@ -44,24 +41,22 @@ namespace Bearded.TD.Commands
     class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
     {
         private readonly ICommandDispatcher<TObject> commandDispatcher;
-        private readonly Logger logger;
 
-        public ServerRequestDispatcher(ICommandDispatcher<TObject> commandDispatcher, Logger logger)
+        public ServerRequestDispatcher(ICommandDispatcher<TObject> commandDispatcher)
         {
             this.commandDispatcher = commandDispatcher;
-            this.logger = logger;
         }
 
         public void Dispatch(TActor actor, IRequest<TActor, TObject> request)
         {
             var command = request.CheckPreconditions(actor)
                 ? execute(request)
-                : cancel(request);
+                : cancel();
 
             commandDispatcher.Dispatch(command);
         }
 
-        private ISerializableCommand<TObject>? cancel(IRequest<TActor, TObject> request)
+        private static ISerializableCommand<TObject>? cancel()
         {
             return null;
         }

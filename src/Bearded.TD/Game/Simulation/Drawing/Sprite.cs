@@ -44,6 +44,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
             sprite.Draw(p, Parameters.Size.NumericValue, angle, Parameters.Color);
         }
 
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly Func<IDirected, float> adjustSpriteAngleToDirection =
             directed => (directed.Direction - 90.Degrees()).Radians;
     }

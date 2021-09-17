@@ -2,7 +2,6 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using Lidgren.Network;

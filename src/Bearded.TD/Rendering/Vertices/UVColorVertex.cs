@@ -9,6 +9,7 @@ namespace Bearded.TD.Rendering.Vertices
     [StructLayout(LayoutKind.Sequential)]
     readonly struct UVColorVertex : IVertexData
     {
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Vector3 position;
         private readonly Vector2 uv;
         private readonly Color color;

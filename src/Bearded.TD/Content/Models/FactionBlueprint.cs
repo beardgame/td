@@ -15,7 +15,6 @@ namespace Bearded.TD.Content.Models
         public Color? Color { get; }
 
         private readonly ImmutableArray<IFactionBehaviorFactory<Faction>> behaviorParameters;
-        private ModAwareId id;
 
         public IEnumerable<IFactionBehavior<Faction>> GetBehaviors() => behaviorParameters.Select(f => f.Create());
 

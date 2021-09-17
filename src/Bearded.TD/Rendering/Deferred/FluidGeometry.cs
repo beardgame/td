@@ -44,7 +44,7 @@ namespace Bearded.TD.Rendering.Deferred
             flow = new Tilemap<Vector2>(radius + 1);
 
             renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
-                new IRenderSetting[]{
+                new[]{
                 context.Settings.ViewMatrix,
                 context.Settings.ProjectionMatrix,
                 context.Settings.Time,

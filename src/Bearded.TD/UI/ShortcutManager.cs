@@ -23,7 +23,7 @@ namespace Bearded.TD.UI
         }
 
         private static readonly Dictionary<ShortcutModifierKeys, Func<ModifierKeys, bool>> stateExtractors =
-            new Dictionary<ShortcutModifierKeys, Func<ModifierKeys, bool>>
+            new()
             {
                 {ShortcutModifierKeys.Shift, m => m.Shift},
                 {ShortcutModifierKeys.Control, m => m.Control},
@@ -40,7 +40,7 @@ namespace Bearded.TD.UI
         public Id<Shortcut> RegisterShortcut(Keys key, ShortcutModifierKeys modifierKeys, Action action)
         {
             var id = ids.GetNext<Shortcut>();
-            shortcuts.Add(key, new Shortcut(id, key, modifierKeys, action));
+            shortcuts.Add(key, new Shortcut(id, modifierKeys, action));
             return id;
         }
 
@@ -70,14 +70,12 @@ namespace Bearded.TD.UI
         public sealed class Shortcut
         {
             public Id<Shortcut> Id { get; }
-            private readonly Keys key;
             public ShortcutModifierKeys ModifierKeys { get; }
             public Action Action { get; }
 
-            public Shortcut(Id<Shortcut> id, Keys key, ShortcutModifierKeys modifierKeys, Action action)
+            public Shortcut(Id<Shortcut> id, ShortcutModifierKeys modifierKeys, Action action)
             {
                 Id = id;
-                this.key = key;
                 ModifierKeys = modifierKeys;
                 Action = action;
             }

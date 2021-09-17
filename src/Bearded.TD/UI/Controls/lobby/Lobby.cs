@@ -18,10 +18,10 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     {
-        private LobbyManager lobbyManager;
-        private Logger logger;
+        private LobbyManager lobbyManager = null!;
+        private Logger logger = null!;
 
-        private GameSettings.Builder gameSettings;
+        private GameSettings.Builder gameSettings = null!;
         private ChatMessage? lastSeenChatMessage;
 
         private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;

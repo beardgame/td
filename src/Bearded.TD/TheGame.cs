@@ -37,14 +37,14 @@ namespace Bearded.TD
         private readonly ManualActionQueue glActionQueue = new();
         private readonly ScreenshotSaver screenshots;
 
-        private InputManager inputManager;
-        private RenderContext renderContext;
-        private RootControl rootControl;
-        private UIUpdater uiUpdater;
-        private EventManager eventManager;
+        private InputManager inputManager = null!;
+        private RenderContext renderContext = null!;
+        private RootControl rootControl = null!;
+        private UIUpdater uiUpdater = null!;
+        private EventManager eventManager = null!;
 
-        private CachedRendererRouter rendererRouter;
-        private NavigationController navigationController;
+        private CachedRendererRouter rendererRouter = null!;
+        private NavigationController navigationController = null!;
 
         private ViewportSize viewportSize;
 

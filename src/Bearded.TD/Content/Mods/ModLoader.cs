@@ -32,7 +32,6 @@ namespace Bearded.TD.Content.Mods
             private readonly ModLoadingContext context;
             private readonly ModMetadata meta;
             private readonly ReadOnlyCollection<Mod> loadedDependencies;
-            private JsonSerializer serializer;
 
             public Loader(ModLoadingContext context, ModMetadata meta, ReadOnlyCollection<Mod> loadedDependencies)
             {
@@ -50,7 +49,7 @@ namespace Bearded.TD.Content.Mods
             {
                 context.Profiler.StartLoading();
 
-                configureSerializer();
+                var serializer = configureSerializer();
 
                 var loadingContext = new BlueprintLoadingContext(context, meta, serializer, loadedDependencies);
 
@@ -89,9 +88,9 @@ namespace Bearded.TD.Content.Mods
                     tags.GetForCurrentMod());
             }
 
-            private void configureSerializer()
+            private JsonSerializer configureSerializer()
             {
-                serializer = new JsonSerializer();
+                var serializer = new JsonSerializer();
                 serializer.Converters.AddRange(
                     new StepConverter(),
                     new TileConverter(),
@@ -124,6 +123,8 @@ namespace Bearded.TD.Content.Mods
                 );
                 foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
                     serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
+
+                return serializer;
             }
         }
     }

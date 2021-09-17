@@ -17,17 +17,17 @@ namespace Bearded.TD.UI.Controls
     {
         private static readonly char[] space = {' '};
 
-        private readonly List<string> commandHistory = new List<string>();
-        private readonly ConcurrentQueue<Logger.Entry> loggerEntriesAdded = new ConcurrentQueue<Logger.Entry>();
+        private readonly List<string> commandHistory = new();
+        private readonly ConcurrentQueue<Logger.Entry> loggerEntriesAdded = new();
         private int commandHistoryIndex = -1;
 
-        private Logger logger;
+        private Logger logger = null!;
 
         public bool IsEnabled { get; private set; }
 
-        public VoidEventHandler Enabled;
-        public VoidEventHandler Disabled;
-        public GenericEventHandler<Logger.Entry> LogEntryAdded;
+        public VoidEventHandler? Enabled;
+        public VoidEventHandler? Disabled;
+        public GenericEventHandler<Logger.Entry>? LogEntryAdded;
 
         protected override void Initialize(DependencyResolver dependencies, Void parameters)
         {
@@ -138,7 +138,7 @@ namespace Bearded.TD.UI.Controls
         private void addToHistory(string command)
         {
             // Don't add double commands.
-            if (commandHistory.Count > 0 && commandHistory[commandHistory.Count - 1] == command) return;
+            if (commandHistory.Count > 0 && commandHistory[^1] == command) return;
             commandHistory.Add(command);
             commandHistoryIndex = -1;
 

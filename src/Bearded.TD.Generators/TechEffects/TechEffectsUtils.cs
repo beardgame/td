@@ -6,7 +6,7 @@ namespace Bearded.TD.Generators.TechEffects
     {
         private static readonly ImmutableHashSet<string> reservedNames = ImmutableHashSet.Create("object");
 
-        public static string toCamelCase(string str)
+        public static string ToCamelCase(string str)
         {
             var camelCaseStr = char.ToLowerInvariant(str[0]) + str.Substring(1);
             return reservedNames.Contains(camelCaseStr) ? $"@{camelCaseStr}" : camelCaseStr;

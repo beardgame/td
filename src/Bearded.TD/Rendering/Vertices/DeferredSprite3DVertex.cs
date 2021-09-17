@@ -15,6 +15,7 @@ namespace Bearded.TD.Rendering.Vertices
                 (position, uv, data) => new DeferredSprite3DVertex(
                     position, data.Normal, data.Tangent, uv, data.Color);
 
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Vector3 position;
         private readonly Vector3 normal;
         private readonly Vector3 tangent;

@@ -8,7 +8,7 @@ namespace Bearded.TD.Rendering.Deferred
     [StructLayout(LayoutKind.Sequential)]
     readonly struct FluidVertex : IVertexData
     {
-        // ReSharper disable NotAccessedField.Local
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Vector3 position;
         private readonly Vector3 normal;
         private readonly Vector2 flow;

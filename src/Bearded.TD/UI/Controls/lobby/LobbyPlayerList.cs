@@ -28,7 +28,7 @@ namespace Bearded.TD.UI.Controls
             public double HeightOfItemAt(int index) => RowHeight;
 
             public Control CreateItemControlFor(int index) => IsCompact
-                ? (Control) new CompactRow(lobby.Players[index])
+                ? new CompactRow(lobby.Players[index])
                 : new FullWidthRow(lobby.Players[index]);
 
             public void DestroyItemControlAt(int index, Control control)

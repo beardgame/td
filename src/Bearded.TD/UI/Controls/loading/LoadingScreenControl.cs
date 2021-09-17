@@ -4,6 +4,9 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class LoadingScreenControl : CompositeControl
     {
-        public LoadingScreenControl(LoadingScreen _) {}
+        public LoadingScreenControl(LoadingScreen loadingScreen)
+        {
+            _ = loadingScreen;
+        }
     }
 }

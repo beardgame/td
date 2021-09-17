@@ -19,6 +19,7 @@ namespace Bearded.TD.UI.Controls
             get => scrollOffset;
             private set
             {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (scrollOffset == value) return;
                 scrollOffset = value;
                 clampScrollPosition();

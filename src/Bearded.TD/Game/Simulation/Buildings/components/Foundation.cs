@@ -209,6 +209,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private const float topWidthFactor = 0.8f;
 
+        // ReSharper disable StaticMemberInGenericType
         private static readonly ImmutableArray<Direction> directions =
             Extensions.Directions.Append(Direction.Right).ToImmutableArray();
         private static readonly ImmutableArray<Vector2> cornerVectors =
@@ -221,5 +222,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 .Select(c => (c + new Vector2(HexagonSide)) / HexagonDiameter)
                 .Select(xy => new Vector2(xy.X, 1 - xy.Y))
                 .ToImmutableArray();
+        // ReSharper restore StaticMemberInGenericType
     }
 }

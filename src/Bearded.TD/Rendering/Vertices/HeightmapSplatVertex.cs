@@ -9,6 +9,7 @@ namespace Bearded.TD.Rendering.Vertices
     [StructLayout(LayoutKind.Sequential)]
     readonly struct HeightmapSplatVertex : IVertexData
     {
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Vector2 position;
         private readonly Vector2 uv;
         private readonly float minHeight;

@@ -3,12 +3,11 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Components.Generic;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Selection;
+using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -37,7 +36,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private bool isDead;
 
-        public Building(Id<Building> id, IBuildingBlueprint blueprint, Faction faction)
+        public Building(Id<Building> id, IBuildingBlueprint blueprint)
             : base(blueprint)
         {
             Id = id;

@@ -12,17 +12,6 @@ using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
 
-/*
- - get spawners and base from mod files somehow
-    - decide based on mod files what nodes to add
-        - nodes come from:
-            - 'game rules/settings' in game mode or something - don't overcomplicate for now
-
-    - nodes know how to put down spawners/base through node behaviours
- - node behaviours should become proper 'behaviours' and serialise from mod file
-
- */
-
 namespace Bearded.TD.Game.Generation
 {
     sealed class SemanticLevelGenerator : ILevelGenerator
@@ -45,10 +34,7 @@ namespace Bearded.TD.Game.Generation
 
             var random = new Random(seed);
 
-            var area = Tilemap.TileCountForRadius(radius);
             var areaPerNode = 10 * 10;
-            var nodeCount = area / areaPerNode / 2;
-            var creviceCount = nodeCount;
             var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
 
             var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(parameters, random);
@@ -73,7 +59,7 @@ namespace Bearded.TD.Game.Generation
                 var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
 
                 const float toOuterRadius = 2 / 1.73205080757f;
-                foreach (var (direction, feature) in node.MacroFeatures)
+                foreach (var (direction, _) in node.MacroFeatures)
                 {
                     var before = center + direction.CornerBefore() * nodeRadius * toOuterRadius;
                     var after = center + direction.CornerAfter() * nodeRadius * toOuterRadius;

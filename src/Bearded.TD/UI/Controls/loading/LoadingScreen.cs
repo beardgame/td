@@ -8,7 +8,7 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
     {
-        private LoadingManager loadingManager;
+        private LoadingManager loadingManager = null!;
 
         public event VoidEventHandler? ModLoadingUpdated;
 

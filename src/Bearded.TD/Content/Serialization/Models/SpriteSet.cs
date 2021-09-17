@@ -14,8 +14,8 @@ namespace Bearded.TD.Content.Serialization.Models
         public class TextureSampler
         {
             public string Sampler { get; set; }
-            public string Prefix { get; set; }
-            public string Suffix { get; set; }
+            public string? Prefix { get; set; }
+            public string? Suffix { get; set; }
         }
 
         public string Id { get; set; }
@@ -25,7 +25,7 @@ namespace Bearded.TD.Content.Serialization.Models
         public Content.Models.Shader Shader { get; set; }
 
         public string DefaultTextureSampler { get; set; }
-        public List<TextureSampler> TextureSamplers { get; set; }
+        public List<TextureSampler> TextureSamplers { get; set; } = new();
 
         public bool Pixelate { get; set; }
 

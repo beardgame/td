@@ -12,7 +12,7 @@ namespace Bearded.TD.UI.Controls
     {
         private Logger logger = null!;
         private IGraphicsLoader graphicsLoader = null!;
-        private RenderContext renderContext;
+        private RenderContext renderContext = null!;
 
         protected override void Initialize(DependencyResolver dependencies, Void _)
         {
