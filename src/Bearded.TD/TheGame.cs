@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using Bearded.Graphics;
@@ -12,19 +14,24 @@ using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
+using Bearded.TD.Utilities.Performance;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
 using Bearded.UI.Navigation;
 using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.SpaceTime;
 using Bearded.Utilities.Threading;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Activity = Bearded.TD.Utilities.Performance.Activity;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
+using TimeSpan = System.TimeSpan;
 using Window = Bearded.Graphics.Windowing.Window;
 
 namespace Bearded.TD
@@ -36,6 +43,8 @@ namespace Bearded.TD
         private readonly Logger logger;
         private readonly ManualActionQueue glActionQueue = new();
         private readonly ScreenshotSaver screenshots;
+        private readonly ActivityTimer activityTimer;
+        private readonly Queue<ImmutableArray<TimedActivity>> recordedActivityTimes = new();
 
         private InputManager inputManager = null!;
         private RenderContext renderContext = null!;
@@ -52,6 +61,9 @@ namespace Bearded.TD
         {
             this.logger = logger;
             screenshots = new ScreenshotSaver(logger, glActionQueue);
+
+            var activityStopwatch = Stopwatch.StartNew();
+            activityTimer = new ActivityTimer(() => new Instant(activityStopwatch.Elapsed.TotalSeconds));
 
             instance = this;
         }
@@ -74,6 +86,9 @@ namespace Bearded.TD
 
             var dependencyResolver = new DependencyResolver();
             dependencyResolver.Add(logger);
+            dependencyResolver.Add(activityTimer);
+            dependencyResolver.Add(
+                (IEnumerable<ImmutableArray<TimedActivity>>)recordedActivityTimes.AsReadOnlyEnumerable());
 
             renderContext = new RenderContext(glActionQueue, logger);
 
@@ -122,8 +137,12 @@ namespace Bearded.TD
             navigationController.Exited += Close;
 
             shortcuts.RegisterShortcut(Keys.GraveAccent, debugConsole.Toggle);
+            shortcuts.RegisterShortcut(Keys.F3, () => togglePerformanceOverlay(logger, null));
 
             UserSettings.SettingsChanged += TriggerResize;
+
+            if (UserSettings.Instance.Debug.PerformanceOverlay)
+                instance!.navigationController.Push<PerformanceOverlay>();
         }
 
         protected override void OnResize(ResizeEventArgs e)
@@ -140,6 +159,9 @@ namespace Bearded.TD
 
         protected override void OnUpdate(UpdateEventArgs e)
         {
+            recordLastFramesPerformance();
+            using var _ = activityTimer.Start(Activity.UpdateGame);
+
             inputManager.Update(NativeWindow.IsFocused);
 
             if (inputManager.IsKeyPressed(Keys.LeftAlt) && inputManager.IsKeyHit(Keys.F4))
@@ -151,16 +173,33 @@ namespace Bearded.TD
             uiUpdater.Update(e);
         }
 
+        private void recordLastFramesPerformance()
+        {
+            var lastFramesMetrics = activityTimer.Reset(Activity.QuantumFluctuations);
+
+            recordedActivityTimes.Enqueue(lastFramesMetrics);
+
+            if (recordedActivityTimes.Count > 100)
+                recordedActivityTimes.Dequeue();
+        }
+
         protected override void OnRender(UpdateEventArgs e)
         {
-            tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(16));
+            using var discard = activityTimer.Start(Activity.RenderGame);
+
+            using (activityTimer.Start(Activity.GLQueueHandler))
+            {
+                tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(16));
+            }
 
             renderContext.Compositor.PrepareForFrame();
             rootControl.Render(rendererRouter);
             renderContext.Compositor.FinalizeFrame();
 
-            SwapBuffers();
-
+            using (activityTimer.Start(Activity.SwapBuffer))
+            {
+                SwapBuffers();
+            }
 #if DEBUG
             if (inputManager.IsKeyHit(Keys.F11))
             {
@@ -194,5 +233,16 @@ namespace Bearded.TD
         {
             instance!.navigationController.Push<UIDebugOverlay>();
         }
+
+        [Command("perf")]
+        private static void togglePerformanceOverlay(Logger logger, CommandParameters? _)
+        {
+            UserSettings.Instance.Debug.PerformanceOverlay = !UserSettings.Instance.Debug.PerformanceOverlay;
+            UserSettings.RaiseSettingsChanged();
+            UserSettings.Save(logger);
+            if (UserSettings.Instance.Debug.PerformanceOverlay)
+                instance!.navigationController.Push<PerformanceOverlay>();
+        }
+
     }
 }

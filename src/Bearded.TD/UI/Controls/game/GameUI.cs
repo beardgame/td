@@ -82,11 +82,7 @@ namespace Bearded.TD.UI.Controls
             NotificationsUI.Terminate();
             ActionBar.Terminate();
             TechnologyUI.Terminate();
-            if (debugOverlay != null)
-            {
-                debugOverlay.Terminate();
-                Navigation?.Close(debugOverlay);
-            }
+            updateOverlayState(false, ref debugOverlay);
             base.Terminate();
         }
 
@@ -114,18 +110,24 @@ namespace Bearded.TD.UI.Controls
         [Conditional("DEBUG")]
         private void updateGameDebugOverlayState()
         {
-            switch (UserSettings.Instance.Debug.GameDebugScreen)
+            updateOverlayState(UserSettings.Instance.Debug.GameDebugScreen, ref debugOverlay);
+        }
+
+        private void updateOverlayState<TOverlay>(bool showOverlay, ref TOverlay? overlay)
+            where TOverlay : NavigationNode<Void>
+        {
+            switch (showOverlay)
             {
-                case true when debugOverlay == null:
+                case true when overlay == null:
                 {
-                    debugOverlay = Navigation.Push<GameDebugOverlay>();
+                    overlay = Navigation.Push<TOverlay>();
                     break;
                 }
-                case false when debugOverlay != null:
+                case false when overlay != null:
                 {
-                    debugOverlay.Terminate();
-                    Navigation.Close(debugOverlay);
-                    debugOverlay = null;
+                    overlay.Terminate();
+                    Navigation.Close(overlay);
+                    overlay = null;
                     break;
                 }
             }

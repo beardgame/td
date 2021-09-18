@@ -58,6 +58,8 @@ namespace Bearded.TD.Meta
         {
             public bool GameDebugScreen = false;
 
+            public bool PerformanceOverlay = false;
+
             // most useful game debug settings
             [SettingOptions(0.1, 0.5, 1, 2, 10)]
             public double GameSpeed = 1;
