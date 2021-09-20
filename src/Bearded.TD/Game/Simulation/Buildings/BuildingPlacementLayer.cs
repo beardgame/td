@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return level.IsValid(tile)
                 && !blockedTiles.Contains(tile)
                 && geometryLayer[tile].Type == TileType.Floor
-                && buildingLayer[tile] == null;
+                && buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None;
         }
 
         private bool allAdjacentTilesAreWalkable(IEnumerable<Tile> tiles)

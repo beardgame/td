@@ -25,6 +25,35 @@ namespace Bearded.TD.Game.Simulation.Components
             events.Subscribe(listener);
         }
 
+        public static void Depend<T1, T2>(IComponentOwner owner, ComponentEvents events, Action<T1, T2> consumer)
+        {
+            var dep1Found = false;
+            var dep2Found = false;
+            var dep1 = default(T1);
+            var dep2 = default(T2);
+
+            Depend<T1>(owner, events, dep =>
+            {
+                dep1Found = true;
+                dep1 = dep;
+                collectDependencies();
+            });
+            Depend<T2>(owner, events, dep =>
+            {
+                dep2Found = true;
+                dep2 = dep;
+                collectDependencies();
+            });
+
+            void collectDependencies()
+            {
+                if (dep1Found && dep2Found)
+                {
+                    consumer(dep1, dep2);
+                }
+            }
+        }
+
         private sealed class DependencyListener<T> : IListener<ComponentAdded>
         {
             private bool isResolved;

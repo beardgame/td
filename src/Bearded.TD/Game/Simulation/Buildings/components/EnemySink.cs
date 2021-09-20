@@ -1,37 +1,34 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     [Component("sink")]
-    sealed class EnemySink<T> : Component<T>
+    sealed class EnemySink<T> : EnemySinkBase<T>
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private Maybe<IHealth> healthComponent;
-        private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
         protected override void Initialize()
         {
-            occupiedTilesTracker.Initialize(Owner, Events);
-
-            foreach (var tile in occupiedTilesTracker.OccupiedTiles)
-            {
-                Owner.Game.Navigator.AddSink(tile);
-            }
-
-            occupiedTilesTracker.TileAdded += Owner.Game.Navigator.AddSink;
-            occupiedTilesTracker.TileRemoved += Owner.Game.Navigator.RemoveSink;
-
+            base.Initialize();
             healthComponent = Owner.GetComponents<IHealth>().MaybeSingle();
         }
 
-        public override void Update(TimeSpan elapsedTime) { }
+        protected override void AddSink(Tile t)
+        {
+            Owner.Game.Navigator.AddSink(t);
+        }
+
+        protected override void RemoveSink(Tile t)
+        {
+            Owner.Game.Navigator.RemoveSink(t);
+        }
 
         public override void Draw(CoreDrawers drawers)
         {

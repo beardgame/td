@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
@@ -14,6 +15,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     {
         Weapon Weapon { get; }
         IGameObject Owner { get; }
+        IBuildingState? BuildingState { get; }
         Direction2 NeutralDirection { get; }
         Maybe<Angle> MaximumTurningAngle { get; }
     }
@@ -25,6 +27,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private Weapon weapon = null!;
         private ITransformable transform = null!;
 
+        public IBuildingState? BuildingState { get; private set; }
         public Position3 Position =>
             (Owner.Position.XY() + transform.LocalCoordinateTransform.Transform(Parameters.Offset))
             .WithZ(Owner.Position.Z + Parameters.Height);
@@ -38,6 +41,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
             weapon = new Weapon(Parameters.Weapon, this);
             transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
+            ComponentDependencies.Depend<IBuildingStateProvider>(
+                Owner, Events, provider => BuildingState = provider.State);
         }
 
         public override void Update(TimeSpan elapsedTime)

@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -23,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     sealed class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer, IEnemyUnitTargeter
     {
         private PassabilityLayer passabilityLayer = null!;
-        private TileRangeDrawer? tileRangeDrawer;
+        private TileRangeDrawer tileRangeDrawer = null!;
 
         // mutable state
         private Instant endOfIdleTime;
@@ -47,11 +46,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
         protected override void Initialize()
         {
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
-            if (Owner.Owner is IBuilding building)
-            {
-                tileRangeDrawer = new TileRangeDrawer(
-                    game, () => building.State.RangeDrawing, getTilesToDraw, Color.Green);
-            }
+            tileRangeDrawer = new TileRangeDrawer(
+                game, () => Owner.RangeDrawStyle, getTilesToDraw, Color.Green);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -143,7 +139,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public override void Draw(CoreDrawers drawers)
         {
-            tileRangeDrawer?.Draw();
+            tileRangeDrawer.Draw();
         }
 
         private IEnumerable<Tile> getTilesToDraw()

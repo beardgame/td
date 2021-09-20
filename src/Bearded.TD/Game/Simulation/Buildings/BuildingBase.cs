@@ -23,7 +23,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected ComponentEvents Events { get; } = new();
 
         public Maybe<IComponentOwner> Parent => Maybe.Nothing;
-        public abstract IBuildingState State { get; }
 
         protected IBuildingBlueprint Blueprint { get; }
 

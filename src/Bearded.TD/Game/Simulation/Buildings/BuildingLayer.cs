@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
@@ -47,6 +48,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             }
         }
 
+        private IBuildingState? getBuildingStateFor(Tile tile)
+        {
+            return GetBuildingFor(tile)?.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
+        }
+
         public IBuilding? GetBuildingFor(Tile tile)
         {
             buildingLookup.TryGetValue(tile, out var building);
@@ -56,16 +62,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IBuilding? building)
         {
             building = GetBuildingFor(tile);
-            return building?.State.IsMaterialized ?? false;
+            return getBuildingStateFor(tile)?.IsMaterialized ?? false;
         }
 
         public Occupation GetOccupationFor(Tile tile)
         {
-            var building = GetBuildingFor(tile);
-            return building switch
+            var state = getBuildingStateFor(tile);
+            return state switch
             {
                 null => Occupation.None,
-                {State: {IsMaterialized: true}} => Occupation.MaterializedBuilding,
+                {IsMaterialized: true} => Occupation.MaterializedBuilding,
                 _ => Occupation.ReservedForBuilding
             };
         }

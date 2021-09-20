@@ -26,18 +26,18 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
 
     [Component("statusEffectEmitter")]
     sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>
-        where T : GameObject, IPositionable
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         // TODO: allow this to affect other things than enemies as well
         private readonly HashSet<EnemyUnit> affectedUnits = new();
 
+        private IBuildingState? buildingState;
         private TileRangeDrawer? tileRangeDrawer;
 
         private Id<Modification> modificationId;
         private UnitLayer unitLayer = null!;
         private Tile ownerTile;
         private Unit range;
-        private IBuilding? ownerAsBuilding;
         private ImmutableArray<Tile> tilesInRange;
 
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
@@ -48,14 +48,14 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
             unitLayer = Owner.Game.UnitLayer;
             ownerTile = Level.GetTile(Owner.Position.XY());
             range = Parameters.Range;
-            ownerAsBuilding = Owner as IBuilding;
             recalculateTilesInRange();
 
-            if (ownerAsBuilding != null)
+            ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p =>
             {
+                buildingState = p.State;
                 tileRangeDrawer = new TileRangeDrawer(
-                    Owner.Game, () => ownerAsBuilding.State.RangeDrawing, () => tilesInRange, Color.Green);
-            }
+                    Owner.Game, () => buildingState.RangeDrawing, () => tilesInRange, Color.Green);
+            });
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -64,7 +64,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
 
             // Don't apply status effects for uncompleted buildings
             // We probably should have a better pattern for this...
-            if (!ownerAsBuilding?.State.IsFunctional ?? false)
+            if (!buildingState?.IsFunctional ?? false)
             {
                 return;
             }

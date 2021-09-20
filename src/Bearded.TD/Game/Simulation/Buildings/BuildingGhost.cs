@@ -6,8 +6,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
     [ComponentOwner]
     sealed class BuildingGhost : BuildingBase<BuildingGhost>
     {
-        public override IBuildingState State { get; } = new GhostBuildingState();
-
         public BuildingGhost(IBuildingBlueprint blueprint)
             : base(blueprint) {}
 

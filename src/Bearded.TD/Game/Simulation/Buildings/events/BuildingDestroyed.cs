@@ -1,14 +1,15 @@
-﻿using Bearded.TD.Game.Simulation.Events;
+﻿using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Events;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     readonly struct BuildingDestroyed : IGlobalEvent
     {
-        public Building Builder { get; }
+        public IComponentOwner Building { get; }
 
-        public BuildingDestroyed(Building building)
+        public BuildingDestroyed(IComponentOwner building)
         {
-            Builder = building;
+            Building = building;
         }
     }
 }

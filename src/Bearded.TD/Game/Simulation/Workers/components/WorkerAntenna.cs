@@ -9,6 +9,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Workers
 {
@@ -17,8 +18,8 @@ namespace Bearded.TD.Game.Simulation.Workers
         : Component<T, IWorkerAntennaParameters>, IListener<ObjectDeleting>, IWorkerAntenna
         where T : IComponentOwner, IGameObject, IPositionable
     {
+        private IBuildingState? state;
         private Faction? faction;
-        private IBuilding? ownerAsBuilding;
         private WorkerNetwork? workerNetwork;
         private bool isInitialized;
         private TileRangeDrawer? fullNetworkDrawer;
@@ -32,38 +33,36 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         protected override void Initialize()
         {
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
-
-            ownerAsBuilding = Owner as IBuilding;
-            initializeIfOwnerIsCompletedBuilding();
-
-            if (ownerAsBuilding != null)
+            ComponentDependencies.Depend<IOwnedByFaction, IBuildingStateProvider>(Owner, Events, (o, p) =>
             {
+                faction = o.Faction;
+                state = p.State;
+
                 fullNetworkDrawer = new TileRangeDrawer(
                     Owner.Game,
-                    () => ownerAsBuilding!.State.RangeDrawing,
+                    () => state.RangeDrawing,
                     () => TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false),
                     Color.DodgerBlue);
 
                 localNetworkDrawer = new TileRangeDrawer(
                     Owner.Game,
-                    () => ownerAsBuilding!.State.RangeDrawing,
-                    () => TileAreaBorder.From(((IWorkerAntenna) this).Coverage),
+                    () => state.RangeDrawing,
+                    () => TileAreaBorder.From(((IWorkerAntenna)this).Coverage),
                     Color.Orange);
-            }
+            });
+            initializeIfOwnerIsCompletedBuilding();
         }
 
         private void initializeIfOwnerIsCompletedBuilding()
         {
-            if (ownerAsBuilding?.State.IsFunctional ?? false)
+            if (state?.IsFunctional ?? false)
                 initializeInternal();
         }
 
         private void initializeInternal()
         {
-            if (faction == null) return;
-
-            faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
+            State.Satisfies(faction != null);
+            faction!.TryGetBehaviorIncludingAncestors(out workerNetwork);
             if (workerNetwork == null)
             {
                 Owner.Game.Meta.Logger.Debug?.Log(

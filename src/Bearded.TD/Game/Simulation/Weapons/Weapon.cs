@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
     {
         private readonly ITurret turret;
-        private readonly Building? ownerAsBuilding;
+        private readonly IDamageSource? damageSource;
 
         private readonly ComponentCollection<Weapon> components;
         private readonly ComponentEvents events = new();
@@ -36,10 +36,14 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public GameState Game => Owner.Game;
 
+        // TODO: this should not be revealed here
+        public TileRangeDrawer.RangeDrawStyle RangeDrawStyle =>
+            turret.BuildingState?.RangeDrawing ?? TileRangeDrawer.RangeDrawStyle.DoNotDraw;
+
         public Weapon(IComponentOwnerBlueprint blueprint, ITurret turret)
         {
             this.turret = turret;
-            ownerAsBuilding = turret.Owner as Building;
+            damageSource = turret.Owner as IDamageSource;
 
             components = new ComponentCollection<Weapon>(this, events);
             components.Add(blueprint.GetComponents<Weapon>());
@@ -53,7 +57,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void HandleEvent(CausedDamage @event)
         {
-            ownerAsBuilding?.AttributeDamage(@event.Target, @event.Result);
+            damageSource?.AttributeDamage(@event.Target, @event.Result);
         }
 
         public void AimIn(Direction2 direction)
@@ -78,7 +82,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (ownerAsBuilding == null || !ownerAsBuilding.State.IsFunctional)
+            if (damageSource == null || !(turret.BuildingState?.IsFunctional ?? false))
             {
                 return;
             }

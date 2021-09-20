@@ -74,7 +74,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
             => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
 
         public void HandleEvent(BuildingDestroyed @event)
-            => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Builder).ForEach(updatePassabilityForTile);
+            => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
 
         private void updatePassabilityForTile(Tile tile)
         {

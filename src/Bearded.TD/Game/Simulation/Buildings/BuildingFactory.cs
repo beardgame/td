@@ -1,3 +1,4 @@
+using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -24,6 +25,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var building = new Building(id, blueprint);
             gameState.Add(building);
+            if (!building.GetComponents<IEnemySink>().Any())
+            {
+                building.AddComponent(new BackupSink<Building>());
+            }
+            building.AddComponent(new BuildingStateManager<Building>());
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
             building.AddComponent(new IncompleteBuilding<Building>());
@@ -42,6 +48,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var ghost = new BuildingGhost(blueprint);
             gameState.Add(ghost);
             ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
+            ghost.AddComponent(new GhostBuildingStateProvider<BuildingGhost>());
             ghost.AddComponent(new OwnedByFaction<BuildingGhost>(faction));
             tileOccupation = new MovableTileOccupation<BuildingGhost>();
             ghost.AddComponent(tileOccupation);

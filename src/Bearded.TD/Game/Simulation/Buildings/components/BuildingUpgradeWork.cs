@@ -12,6 +12,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         where T : IComponentOwner, IGameObject
     {
         private readonly IIncompleteUpgrade incompleteUpgrade;
+        private IBuildingState? state;
         private FactionResources? resources;
         private ResourceConsumer? resourceConsumer;
 
@@ -25,6 +26,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void Initialize()
         {
+            ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
             ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, ownedByFaction =>
             {
                 if (!ownedByFaction.Faction.TryGetBehaviorIncludingAncestors(out resources))
@@ -36,7 +38,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (resources == null || finished || (Owner is IBuilding building && !building.State.CanApplyUpgrades))
+            if (resources == null || finished || !(state?.CanApplyUpgrades ?? false))
             {
                 return;
             }
