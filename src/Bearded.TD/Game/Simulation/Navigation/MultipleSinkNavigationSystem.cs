@@ -263,6 +263,7 @@ namespace Bearded.TD.Game.Simulation.Navigation
                     textDrawer.DrawLine(
                         xyz: p.WithZ(),
                         text: $"{distance}",
+                        fontHeight: fontHeight,
                         alignHorizontal: 0.5f,
                         parameters: color);
                 }
