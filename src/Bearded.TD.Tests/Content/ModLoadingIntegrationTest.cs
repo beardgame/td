@@ -67,7 +67,7 @@ namespace Bearded.TD.Tests.Content
                 IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders,
                 string shaderProgramName) => new MockRendererShader();
 
-            public ArrayTexture CreateArrayTexture(List<Bitmap> layers) => ArrayTexture.Empty(1, 1, 1);
+            public ArrayTexture CreateArrayTexture(List<Bitmap> layers) => default!;
         }
 
         private sealed class MockSpriteSetImplementation : ISpriteSetImplementation
