@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx" -v diag --blame-crash
+        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx" -v d --blame-crash
       - name: Upload Verify test results
         if: failure()
         uses: actions/upload-artifact@v2
