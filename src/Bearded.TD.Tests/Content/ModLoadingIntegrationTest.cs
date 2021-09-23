@@ -57,20 +57,17 @@ namespace Bearded.TD.Tests.Content
         private sealed class MockGraphicsLoader : IGraphicsLoader
         {
             public ISpriteSetImplementation CreateSpriteSet(
-                IEnumerable<string> samplers, IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites, Shader shader, bool pixelate, string id)
-            {
-                return new MockSpriteSetImplementation();
-            }
+                IEnumerable<string> samplers,
+                IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
+                Shader shader,
+                bool pixelate,
+                string id) => new MockSpriteSetImplementation();
 
-            public IRendererShader CreateRendererShader(IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
-            {
-                return new MockRendererShader();
-            }
+            public IRendererShader CreateRendererShader(
+                IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders,
+                string shaderProgramName) => new MockRendererShader();
 
-            public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
-            {
-                return ArrayTexture.Empty(1, 1, 1);
-            }
+            public ArrayTexture CreateArrayTexture(List<Bitmap> layers) => ArrayTexture.Empty(1, 1, 1);
         }
 
         private sealed class MockSpriteSetImplementation : ISpriteSetImplementation
@@ -80,14 +77,15 @@ namespace Bearded.TD.Tests.Content
             public SpriteParameters GetSpriteParameters(string name) => default;
 
             public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-                SpriteSet spriteSet, SpriteRenderers spriteRenderers,
-                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex) where TVertex : struct, IVertexData =>
-                default!;
+                SpriteSet spriteSet,
+                SpriteRenderers spriteRenderers,
+                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+                where TVertex : struct, IVertexData => default!;
 
             public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-                SpriteRenderers spriteRenderers, DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
-                params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData =>
-                default;
+                SpriteRenderers spriteRenderers,
+                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+                params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
         }
 
         private sealed class MockRendererShader : IRendererShader
