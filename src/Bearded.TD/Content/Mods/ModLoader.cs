@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
@@ -17,7 +16,6 @@ using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBl
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
 
 namespace Bearded.TD.Content.Mods
@@ -57,46 +55,37 @@ namespace Bearded.TD.Content.Mods
 
                 var tags = new UpgradeTagResolver(meta, loadedDependencies);
 
-                try
-                {
-                    var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
-                    var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
-                    var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
-                    var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
-                    var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
-                    var buildings = new BuildingBlueprintLoader(loadingContext, tags).LoadBlueprints();
-                    var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
-                    var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
-                    var technologies =
-                        new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
-                    var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
-                    var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
+                var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
+                var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
+                var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
+                var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
+                var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
+                var buildings = new BuildingBlueprintLoader(loadingContext, tags).LoadBlueprints();
+                var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
+                var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
+                var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
+                var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
+                var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
-                    context.Profiler.FinishLoading();
-                    context.Logger.Debug?.Log(
-                        $"Mod {meta.Id} finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
+                context.Profiler.FinishLoading();
+                context.Logger.Debug?.Log(
+                    $"Mod {meta.Id} finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
 
-                    return new Mod(
-                        meta.Id,
-                        meta.Name,
-                        shaders,
-                        materials,
-                        sprites,
-                        footprints,
-                        buildings,
-                        units,
-                        componentOwners,
-                        upgrades,
-                        technologies,
-                        levelNodes,
-                        gameModes,
-                        tags.GetForCurrentMod());
-                }
-                catch (InvalidOperationException e)
-                {
-                    Console.Write(e.StackTrace);
-                    throw;
-                }
+                return new Mod(
+                    meta.Id,
+                    meta.Name,
+                    shaders,
+                    materials,
+                    sprites,
+                    footprints,
+                    buildings,
+                    units,
+                    componentOwners,
+                    upgrades,
+                    technologies,
+                    levelNodes,
+                    gameModes,
+                    tags.GetForCurrentMod());
             }
 
             private JsonSerializer configureSerializer()
