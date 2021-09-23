@@ -4,7 +4,47 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/src"
+    directory: "/src/Bearded.FluentSourceGen.Tests"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.FluentSourceGen"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.Generators.Tests"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.Generators"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.MasterServer"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.Proto"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.Shared"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD.Tests"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+  - package-ecosystem: "nuget"
+    directory: "/src/Bearded.TD"
     schedule:
       interval: "weekly"
       day: "tuesday"
