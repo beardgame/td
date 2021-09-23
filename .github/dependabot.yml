@@ -8,6 +8,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    commit-message:
+      prefix: "⬆"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
@@ -16,3 +18,5 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    commit-message:
+      prefix: "⬆"
