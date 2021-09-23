@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx" -v d --blame-crash
+        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx" --blame-crash
       - name: Upload Verify test results
         if: failure()
         uses: actions/upload-artifact@v2
@@ -42,3 +42,10 @@ jobs:
           name: test-results
           path: |
             **/test-results.trx
+      - name: Temporarily upload crash dump
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: crash-dump
+          path: |
+            **/*.dmp
