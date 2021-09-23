@@ -35,15 +35,13 @@ jobs:
           name: verify-test-results
           path: |
             **/*.received.*
-      - name: Create test report
-        id: test-reporter
-        uses: dorny/test-reporter@v1
+      - name: Upload test results
         if: always()
+        uses: actions/upload-artifact@v2
         with:
-          name: .NET tests
+          name: test-results
           path: |
             **/test-results.trx
-          reporter: dotnet-trx
       - name: Send webhook
         if: ${{ failure() || github.event_name == 'schedule' }}
         uses: sarisia/actions-status-discord@v1

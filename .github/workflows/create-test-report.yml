@@ -1,0 +1,35 @@
+name: Create test report [.NET Core]
+
+on:
+  workflow_run:
+    workflows: ['Build & Test [.NET Core]']
+    types:
+      - completed
+
+jobs:
+  report:
+
+    name: Create test report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create test report
+        id: test-reporter
+        uses: dorny/test-reporter@v1
+        with:
+          artifact: test-results
+          name: xUnit tests
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
+
+      - name: Send webhook
+        if: ${{ github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.event == 'schedule' }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
+          description: |
+            **Test summary**
+            ✔️ Passed: ${{ steps.test-reporter.outputs.passed }}
+            ❌ Failed: ${{ steps.test-reporter.outputs.failed }}
+            ⚠️ Skipped: ${{ steps.test-reporter.outputs.skipped }}
+            [Test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
