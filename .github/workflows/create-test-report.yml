@@ -32,4 +32,4 @@ jobs:
             ✔️ Passed: ${{ steps.test-reporter.outputs.passed }}
             ❌ Failed: ${{ steps.test-reporter.outputs.failed }}
             ⚠️ Skipped: ${{ steps.test-reporter.outputs.skipped }}
-            [Test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [Test report](${{ github.event.workflow_run.html_url }})
