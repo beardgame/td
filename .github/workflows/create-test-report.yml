@@ -1,8 +1,8 @@
-name: Create test report [.NET Core]
+name: Create test report
 
 on:
   workflow_run:
-    workflows: ['Build & Test [.NET Core]']
+    workflows: ['Build & test']
     types:
       - completed
 
