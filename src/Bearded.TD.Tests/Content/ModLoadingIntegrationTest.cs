@@ -36,13 +36,13 @@ namespace Bearded.TD.Tests.Content
 
             foreach (var modForLoading in sortedMods.Select(modMetadata => new ModForLoading(modMetadata)))
             {
-                // modForLoading.StartLoading(context, loadedMods.AsReadOnly());
-                // waitForModLoaded(modForLoading);
-                // if (!modForLoading.DidLoadSuccessfully)
-                // {
-                //     modForLoading.Rethrow();
-                // }
-                // loadedMods.Add(modForLoading.GetLoadedMod());
+                modForLoading.StartLoading(context, loadedMods.AsReadOnly());
+                waitForModLoaded(modForLoading);
+                if (!modForLoading.DidLoadSuccessfully)
+                {
+                    modForLoading.Rethrow();
+                }
+                loadedMods.Add(modForLoading.GetLoadedMod());
             }
         }
 
