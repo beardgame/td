@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IUpgradable
         where T : IComponentOwner<T>, IGameObject, INamed
     {
-        private Faction? faction;
+        private IFactionProvider? factionProvider;
         private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
         private readonly Dictionary<ModAwareId, IncompleteUpgrade> upgradesInProgress = new();
@@ -36,11 +36,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             get
             {
-                if (faction == null)
+                if (factionProvider == null)
                 {
                     return Enumerable.Empty<IUpgradeBlueprint>();
                 }
-                return faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                return factionProvider.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
                     ? technology.GetApplicableUpgradesFor(this)
                     : Enumerable.Empty<IUpgradeBlueprint>();
             }
@@ -57,11 +57,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void Initialize()
         {
             ReportAggregator.Register(Events, new UpgradeReport(this));
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         }
 
         public bool CanBeUpgradedBy(Faction faction) =>
-            this.faction?.SharesBehaviorWith<FactionResources>(faction) ?? false;
+            factionProvider?.Faction.SharesBehaviorWith<FactionResources>(faction) ?? false;
 
         public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
         {

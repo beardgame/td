@@ -4,11 +4,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Factions
 {
-    sealed class OwnedByFaction<T> : Component<T>, IOwnedByFaction
+    sealed class FactionProvider<T> : Component<T>, IFactionProvider
     {
         public Faction Faction { get; }
 
-        public OwnedByFaction(Faction faction)
+        public FactionProvider(Faction faction)
         {
             Faction = faction;
         }
@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Factions
         public override void Draw(CoreDrawers drawers) {}
     }
 
-    interface IOwnedByFaction
+    interface IFactionProvider
     {
         public Faction Faction { get; }
     }

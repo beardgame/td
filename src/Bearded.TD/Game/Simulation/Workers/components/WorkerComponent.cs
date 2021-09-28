@@ -13,6 +13,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers
@@ -21,6 +22,7 @@ namespace Bearded.TD.Game.Simulation.Workers
     // TODO: make generic
     sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent
     {
+        private IFactionProvider? factionProvider;
         private WorkerTaskManager? workerTaskManager;
         private WorkerState? currentState;
         private IEnumerable<Tile> taskTiles = Enumerable.Empty<Tile>();
@@ -35,7 +37,11 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         protected override void Initialize()
         {
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => Faction = o.Faction);
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
+            {
+                factionProvider = provider;
+                Faction = provider.Faction;
+            });
             tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
             // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
             Owner.Game.Meta.Events.Send(new WorkerAdded(this));
@@ -48,6 +54,11 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public override void Update(TimeSpan elapsedTime)
         {
+            if (factionProvider?.Faction != Faction)
+            {
+                State.IsInvalid("Workers cannot change their faction.");
+            }
+
             currentState?.Update(elapsedTime);
             tileWalker.Update(elapsedTime, Parameters.MovementSpeed);
 

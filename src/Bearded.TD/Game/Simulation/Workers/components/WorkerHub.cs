@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -14,6 +15,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private IBuildingState? state;
+        private IFactionProvider? factionProvider;
         private Faction? faction;
         private int numWorkersActive;
 
@@ -22,7 +24,11 @@ namespace Bearded.TD.Game.Simulation.Workers
         protected override void Initialize()
         {
             ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
+            {
+                factionProvider = provider;
+                faction = provider.Faction;
+            });
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -30,6 +36,11 @@ namespace Bearded.TD.Game.Simulation.Workers
             if (faction == null || !(state?.IsFunctional ?? false))
             {
                 return;
+            }
+
+            if (factionProvider?.Faction != faction)
+            {
+                State.IsInvalid("Worker hubs cannot change from one faction to another.");
             }
 
             while (numWorkersActive < Parameters.NumWorkers)
@@ -44,7 +55,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         {
             State.Satisfies(faction != null);
             var obj = new ComponentGameObject(Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
-            obj.AddComponent(new OwnedByFaction<ComponentGameObject>(faction!));
+            obj.AddComponent(new FactionProvider<ComponentGameObject>(faction!));
 
             Owner.Game.Add(obj);
             numWorkersActive++;
