@@ -152,6 +152,8 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public void AddComponent(IComponent<EnemyUnit> component) => components.Add(component);
 
+        public void RemoveComponent(IComponent<EnemyUnit> component) => components.Remove(component);
+
         IEnumerable<TComponent> IComponentOwner<EnemyUnit>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<TComponent> IComponentOwner.GetComponents<TComponent>() => components.Get<TComponent>();

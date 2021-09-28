@@ -62,9 +62,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void AddComponent(IComponent<T> component)
         {
+            // TODO: why is this restriction even here?
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
             components.Add(component);
+        }
+
+        public void RemoveComponent(IComponent<T> component)
+        {
+            components.Remove(component);
         }
 
         protected abstract IEnumerable<IComponent<T>> InitializeComponents();
