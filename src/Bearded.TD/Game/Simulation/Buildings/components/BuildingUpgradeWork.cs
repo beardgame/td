@@ -8,9 +8,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    // TODO: remove this component when it's done upgrading
     sealed class BuildingUpgradeWork<T> : Component<T>
-        where T : IComponentOwner, IGameObject
+        where T : IComponentOwner<T>, IGameObject
     {
         private readonly IIncompleteUpgrade incompleteUpgrade;
         private IBuildingState? state;
@@ -52,6 +51,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 resourceConsumer?.CompleteIfNeeded();
                 finished = true;
+                Owner.RemoveComponent(this);
                 return;
             }
 
@@ -59,6 +59,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 resourceConsumer?.Abort();
                 finished = true;
+                Owner.RemoveComponent(this);
                 return;
             }
 
