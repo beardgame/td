@@ -13,7 +13,7 @@ using static Bearded.Utilities.Maybe;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [ComponentOwner]
-    sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Weapon>, IListener<CausedDamage>
+    sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Weapon>
     {
         private readonly ITurret turret;
         private readonly IDamageSource? damageSource;
@@ -54,11 +54,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.ApplyTo(this);
 
         public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(this);
-
-        public void HandleEvent(CausedDamage @event)
-        {
-            damageSource?.AttributeDamage(@event.Target, @event.Result);
-        }
 
         public void AimIn(Direction2 direction)
         {
