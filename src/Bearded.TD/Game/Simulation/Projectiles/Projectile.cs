@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Physics;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
@@ -17,7 +14,6 @@ namespace Bearded.TD.Game.Simulation.Projectiles
     sealed class Projectile : GameObject, IPositionable, IComponentOwner<Projectile>, IListener<CausedDamage>
     {
         private readonly IComponentOwnerBlueprint blueprint;
-        private readonly IBuildingUpgradeManager? upgradeManager;
         private readonly ComponentCollection<Projectile> components;
         private readonly ComponentEvents events = new();
 
@@ -27,33 +23,19 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public Position3 Position { get; set; }
 
-        public Projectile(
-            IComponentOwnerBlueprint blueprint, Position3 position, Velocity3 velocity, Building? damageSource)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, Building? damageSource)
         {
             this.blueprint = blueprint;
-            upgradeManager = damageSource?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault();
             Position = position;
             DamageSource = damageSource;
 
             components = new ComponentCollection<Projectile>(this, events);
             events.Subscribe(this);
-
-            components.Add(new ParabolicMovement(velocity));
         }
 
         protected override void OnAdded()
         {
             components.Add(blueprint.GetComponents<Projectile>());
-
-            foreach (var upgrade in upgradeManager?.AppliedUpgrades ?? Enumerable.Empty<IUpgradeBlueprint>())
-            {
-                if (!upgrade.CanApplyTo(this))
-                {
-                    continue;
-                }
-
-                upgrade.ApplyTo(this);
-            }
         }
 
         public void HandleEvent(CausedDamage @event)

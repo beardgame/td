@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Physics
             this.velocity = velocity;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             tile = Level.GetTile(Owner.Position.XY());
         }

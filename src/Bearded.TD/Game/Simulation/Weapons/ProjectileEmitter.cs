@@ -1,6 +1,8 @@
-﻿using Bearded.TD.Content.Models;
+﻿using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
@@ -60,19 +62,38 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void emitProjectile()
         {
-            var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
+            var muzzleVelocity = getMuzzleVelocity();
 
+            var projectile = new Projectile(Parameters.Projectile, Weapon.Position, Weapon.Owner as Building);
+
+            Game.Add(projectile);
+            projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
+
+            applyCurrentUpgradesTo(projectile);
+        }
+
+        private void applyCurrentUpgradesTo(Projectile projectile)
+        {
+            var upgrades = (Weapon.Owner as Building)
+                ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
+                ?.AppliedUpgrades
+                .Where(u => u.CanApplyTo(projectile))
+                ?? Enumerable.Empty<IUpgradeBlueprint>();
+
+            foreach (var upgrade in upgrades)
+            {
+                upgrade.ApplyTo(projectile);
+            }
+        }
+
+        private Velocity3 getMuzzleVelocity()
+        {
             var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
             var velocityXY = direction * Parameters.MuzzleSpeed;
 
-            Game.Add(
-                new Projectile(
-                    Parameters.Projectile,
-                    Weapon.Position,
-                    velocityXY.WithZ(velocityZ),
-                    Weapon.Owner as Building
-                )
-            );
+            var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
+
+            return velocityXY.WithZ(velocityZ);
         }
 
         private Speed verticalSpeedCompensationToTarget(IEnemyUnitTargeter targeter)
