@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Simulation.Damage
                         && unit.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
                     {
                         var result = damageReceiver.Damage(damageInfo);
-                        Events.Send(new CausedDamage(unit, result));
+                        Events.Send(new CausedDamage(result));
                     }
                 }
             }

@@ -23,12 +23,12 @@ namespace Bearded.TD.Game.Simulation.Statistics
 
         protected override void OnAdded()
         {
-            Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
+            Events.Subscribe(Listener.ForEvent<AttributedDamage>(e =>
             {
                 totalDamage += e.Result.Damage.Amount.NumericValue;
                 currentWaveDamage += e.Result.Damage.Amount.NumericValue;
             }));
-            Events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
+            Events.Subscribe(Listener.ForEvent<AttributedKill>(_ =>
             {
                 totalKills++;
                 currentWaveKills++;

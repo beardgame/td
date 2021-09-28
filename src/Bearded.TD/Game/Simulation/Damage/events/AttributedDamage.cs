@@ -2,11 +2,11 @@ using Bearded.TD.Game.Simulation.Components;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    readonly struct CausedDamage : IComponentEvent
+    readonly struct AttributedDamage : IComponentEvent
     {
         public DamageResult Result { get; }
 
-        public CausedDamage(DamageResult result)
+        public AttributedDamage(DamageResult result)
         {
             Result = result;
         }

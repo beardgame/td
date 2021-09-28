@@ -119,7 +119,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 damageSource
             ));
             lastDamageTime = Game.Time;
-            Events.Send(new CausedDamage(target, result));
+            Events.Send(new CausedDamage(result));
         }
 
         public override void Draw(CoreDrawers drawers)

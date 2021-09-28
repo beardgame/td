@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     interface IDamageSource
     {
-        void AttributeDamage(IDamageTarget target, DamageResult result);
+        void AttributeDamage(DamageResult result);
         void AttributeKill(IDamageTarget target);
     }
 
@@ -17,14 +17,14 @@ namespace Bearded.TD.Game.Simulation.Damage
     {
         public Id<T> Id => Owner.Id;
 
-        public void AttributeDamage(IDamageTarget target, DamageResult damageResult)
+        public void AttributeDamage(DamageResult damageResult)
         {
-            Events.Send(new CausedDamage(target, damageResult));
+            Events.Send(new AttributedDamage(damageResult));
         }
 
         public void AttributeKill(IDamageTarget target)
         {
-            Events.Send(new CausedKill(target));
+            Events.Send(new AttributedKill(target));
         }
 
         protected override void OnAdded() { }

@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Simulation.Damage
             Events.Preview(ref takeDamage);
             var result = new DamageResult(takeDamage.Damage.WithAdjustedAmount(takeDamage.DamageTaken));
             Events.Send(new TookDamage(damageInfo.Source, result));
+            damageInfo.Source?.AttributeDamage(result);
             return result;
         }
 
