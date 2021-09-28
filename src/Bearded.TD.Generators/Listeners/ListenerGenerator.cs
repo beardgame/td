@@ -54,7 +54,7 @@ namespace Bearded.TD.Generators.Listeners
                         .First(a =>
                             a.AttributeClass?.Equals(eventListenerAttribute, SymbolEqualityComparer.Default) ?? false);
                     var eventsType = attribute.ConstructorArguments.First().Value as ITypeSymbol
-                        ?? throw new InvalidOperationException();
+                        ?? throw new InvalidOperationException("Could not find type symbol.");
                     var listenerInterfaces = classSymbol.Interfaces.Where(i =>
                     {
                         var unboundedType = i.ConstructUnboundGenericType();
