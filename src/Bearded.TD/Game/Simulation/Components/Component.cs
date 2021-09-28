@@ -29,6 +29,8 @@ namespace Bearded.TD.Game.Simulation.Components
 
         protected abstract void OnAdded();
 
+        public virtual void OnRemoved() {}
+
         public abstract void Update(TimeSpan elapsedTime);
 
         public abstract void Draw(CoreDrawers drawers);
@@ -54,6 +56,8 @@ namespace Bearded.TD.Game.Simulation.Components
         }
 
         protected abstract void OnAdded();
+
+        public virtual void OnRemoved() {}
 
         public abstract void Update(TimeSpan elapsedTime);
 
