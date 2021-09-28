@@ -85,8 +85,12 @@ namespace Bearded.TD.Generators.Listeners
                 {
                     case ClassDeclarationSyntax classSyntax:
                         Classes.Add(classSyntax);
-                        ClassModifiers.Add(
-                            classSyntax.Identifier.Text, classSyntax.Modifiers.Select(m => m.Text).ToImmutableArray());
+                        if (!ClassModifiers.ContainsKey(classSyntax.Identifier.Text))
+                        {
+                            ClassModifiers.Add(
+                                classSyntax.Identifier.Text,
+                                classSyntax.Modifiers.Select(m => m.Text).ToImmutableArray());
+                        }
                         break;
                 }
             }
