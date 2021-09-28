@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         protected override void OnAdded()
         {
-            damageSource = Owner.FindInComponentOwnerTree<IDamageSource>().ValueOrDefault(() => null);
+             Owner.TryGetSingleComponentInOwnerTree(out damageSource);
         }
 
         public override void Update(TimeSpan elapsedTime)

@@ -16,7 +16,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
     sealed class Building :
         BuildingBase<Building>,
         IIdable<Building>,
-        IDamageSource,
         IMortal,
         INamed
     {
@@ -35,16 +34,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
-
-        public void AttributeDamage(IDamageTarget target, DamageResult damageResult)
-        {
-            Events.Send(new CausedDamage(target, damageResult));
-        }
-
-        public void AttributeKill(IDamageTarget target)
-        {
-            Events.Send(new CausedKill(target));
-        }
 
         protected override void OnAdded()
         {

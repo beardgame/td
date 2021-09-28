@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -22,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly ComponentCollection<T> components;
         protected ComponentEvents Events { get; } = new();
 
-        public Maybe<IComponentOwner> Parent => Maybe.Nothing;
+        public IComponentOwner? Parent => null;
 
         protected IBuildingBlueprint Blueprint { get; }
 

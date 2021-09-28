@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.Utilities.Maybe;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Projectiles
@@ -15,14 +13,15 @@ namespace Bearded.TD.Game.Simulation.Projectiles
         private readonly ComponentCollection<Projectile> components;
         private readonly ComponentEvents events = new();
 
-        public Maybe<IComponentOwner> Parent => Nothing;
+        public IComponentOwner? Parent { get; }
 
         public Position3 Position { get; set; }
 
-        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position)
+        public Projectile(IComponentOwnerBlueprint blueprint, Position3 position, IComponentOwner? parent)
         {
             this.blueprint = blueprint;
             Position = position;
+            Parent = parent;
 
             components = new ComponentCollection<Projectile>(this, events);
         }

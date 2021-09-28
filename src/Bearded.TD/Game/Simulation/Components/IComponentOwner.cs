@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Simulation.Components
 {
     interface IComponentOwner
     {
-        Maybe<IComponentOwner> Parent { get; }
+        IComponentOwner? Parent { get; }
 
         IEnumerable<T> GetComponents<T>();
     }

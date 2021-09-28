@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
@@ -29,7 +30,7 @@ namespace Bearded.TD.Game.Simulation.Units
         IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
-        IDamageSource, IListener<TookDamage>
+        IListener<TookDamage>
     {
         public Id<EnemyUnit> Id { get; }
 
@@ -43,7 +44,7 @@ namespace Bearded.TD.Game.Simulation.Units
         private IHealth health = null!;
         private bool isDead;
 
-        public Maybe<IComponentOwner> Parent { get; } = Maybe.Nothing;
+        public IComponentOwner? Parent => null;
 
         public Position3 Position => enemyMovement.Position.WithZ(Game.GeometryLayer[CurrentTile].DrawInfo.Height + radius);
         public Tile CurrentTile => enemyMovement.CurrentTile;
@@ -71,6 +72,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             components.Add(blueprint.GetComponents());
             components.Add(new DamageReceiver<EnemyUnit>());
+            components.Add(new DamageSource<EnemyUnit>());
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
@@ -138,16 +140,6 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.Meta.Events.Send(new EnemyKilled(this, damageSource));
             damageSource?.AttributeKill(this);
             Delete();
-        }
-
-        public void AttributeDamage(IDamageTarget target, DamageResult damageResult)
-        {
-            events.Send(new CausedDamage(target, damageResult));
-        }
-
-        public void AttributeKill(IDamageTarget target)
-        {
-            events.Send(new CausedKill(target));
         }
 
         public void AddComponent(IComponent<EnemyUnit> component) => components.Add(component);

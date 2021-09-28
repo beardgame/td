@@ -28,9 +28,10 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             if (!@event.Enemy.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
             {
                 DebugAssert.State.IsInvalid();
+                return;
             }
 
-            var damageSource = Owner.TryGetSingleComponent<DamageSource>(out var s) ? s.Source : null;
+            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
             var result = damageReceiver.Damage(
                 new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, damageSource));

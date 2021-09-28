@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             // of range.
             var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
-            var damageSource = Owner.TryGetSingleComponent<DamageSource>(out var s) ? s.Source : null;
+            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {

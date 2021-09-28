@@ -64,16 +64,10 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
             var muzzleVelocity = getMuzzleVelocity();
 
-            var parent = Weapon.Owner as Building;
-
-            var projectile = new Projectile(Parameters.Projectile, Weapon.Position);
+            var projectile = new Projectile(Parameters.Projectile, Weapon.Position, Owner);
 
             Game.Add(projectile);
             projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
-            if (parent != null)
-            {
-                projectile.AddComponent(new DamageSource(parent));
-            }
 
             applyCurrentUpgradesTo(projectile);
         }

@@ -16,7 +16,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
     sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Weapon>
     {
         private readonly ITurret turret;
-        private readonly IDamageSource? damageSource;
 
         private readonly ComponentCollection<Weapon> components;
         private readonly ComponentEvents events = new();
@@ -30,7 +29,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public Direction2 NeutralDirection => turret.NeutralDirection;
         public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
 
-        public Maybe<IComponentOwner> Parent => Just((IComponentOwner)turret.Owner);
+        public IComponentOwner? Parent => (IComponentOwner)turret.Owner;
         public IGameObject Owner => turret.Owner;
         public Position3 Position => turret.Position;
 
@@ -43,7 +42,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public Weapon(IComponentOwnerBlueprint blueprint, ITurret turret)
         {
             this.turret = turret;
-            damageSource = turret.Owner as IDamageSource;
 
             components = new ComponentCollection<Weapon>(this, events);
             components.Add(blueprint.GetComponents<Weapon>());
@@ -77,7 +75,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void Update(TimeSpan elapsedTime)
         {
-            if (damageSource == null || !(turret.BuildingState?.IsFunctional ?? false))
+            if (turret.BuildingState is not { IsFunctional: true })
             {
                 return;
             }
