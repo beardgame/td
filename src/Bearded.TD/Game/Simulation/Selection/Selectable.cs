@@ -37,6 +37,12 @@ namespace Bearded.TD.Game.Simulation.Selection
             Events.Subscribe(this);
         }
 
+        public override void OnRemoved()
+        {
+            occupiedTilesTracker.Dispose(Events);
+            Events.Unsubscribe(this);
+        }
+
         public void ResetSelection()
         {
             var oldState = selectionState;

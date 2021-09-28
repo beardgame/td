@@ -43,6 +43,8 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public void AddComponent(IComponent<Projectile> component) => components.Add(component);
 
+        public void RemoveComponent(IComponent<Projectile> component) => components.Remove(component);
+
         IEnumerable<TComponent> IComponentOwner<Projectile>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();

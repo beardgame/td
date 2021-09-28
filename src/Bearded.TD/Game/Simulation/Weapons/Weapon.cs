@@ -98,6 +98,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public void AddComponent(IComponent<Weapon> component) => components.Add(component);
 
+        public void RemoveComponent(IComponent<Weapon> component) => components.Remove(component);
+
         IEnumerable<TComponent> IComponentOwner<Weapon>.GetComponents<TComponent>() => components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();

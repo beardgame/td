@@ -18,6 +18,11 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             Events.Subscribe(this);
         }
 
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe(this);
+        }
+
         public void HandleEvent(HitEnemy @event)
         {
             if (!@event.Enemy.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))

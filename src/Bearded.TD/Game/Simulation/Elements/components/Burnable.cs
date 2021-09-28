@@ -45,6 +45,12 @@ namespace Bearded.TD.Game.Simulation.Elements
             Events.Subscribe<Spark>(this);
         }
 
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe<TookDamage>(this);
+            Events.Unsubscribe<Spark>(this);
+        }
+
         private void onExtinguished()
         {
             Events.Send(new FireExtinguished());

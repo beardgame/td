@@ -29,6 +29,19 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             }
         }
 
+        public override void OnRemoved()
+        {
+            if (Parameters.OnHitEnemy)
+            {
+                Events.Unsubscribe<HitEnemy>(this);
+            }
+
+            if (Parameters.OnHitLevel)
+            {
+                Events.Unsubscribe<HitLevel>(this);
+            }
+        }
+
         public void HandleEvent(HitLevel @event)
         {
             onHit();

@@ -30,6 +30,12 @@ namespace Bearded.TD.Game.Simulation.Footprints
             events.Subscribe<TileLeft>(this);
         }
 
+        public void Dispose(ComponentEvents events)
+        {
+            events.Unsubscribe<TileEntered>(this);
+            events.Unsubscribe<TileLeft>(this);
+        }
+
         public void HandleEvent(TileEntered @event)
         {
             if (!occupiedTiles.Contains(@event.Tile))

@@ -17,6 +17,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Events.Subscribe(this);
         }
 
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe(this);
+            occupiedTilesTracker.Dispose(Events);
+        }
+
         protected abstract void AddSink(Tile t);
         protected abstract void RemoveSink(Tile t);
 

@@ -28,6 +28,14 @@ namespace Bearded.TD.Game.Simulation.Drawing
             drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
         }
 
+        public override void OnRemoved()
+        {
+            if (Parameters.SurviveObjectDeletion)
+            {
+                Owner.Deleting -= persistTrail;
+            }
+        }
+
         private void persistTrail()
         {
             var obj = new PersistentTrail(drawer, Parameters, tracer, Owner.Position);

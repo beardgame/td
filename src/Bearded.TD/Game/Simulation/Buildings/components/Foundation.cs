@@ -60,6 +60,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             occupiedTilesTracker.Initialize(Owner, Events);
         }
 
+        public override void OnRemoved()
+        {
+            occupiedTilesTracker.Dispose(Events);
+        }
+
         public override void Update(TimeSpan elapsedTime)
         {
         }
