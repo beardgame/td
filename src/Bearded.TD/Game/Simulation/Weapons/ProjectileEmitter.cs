@@ -24,6 +24,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         protected override void OnAdded()
         {
+            base.OnAdded();
+
             targeter = ((IComponentOwner)Weapon).GetComponents<IEnemyUnitTargeter>().MaybeFirst();
         }
 
