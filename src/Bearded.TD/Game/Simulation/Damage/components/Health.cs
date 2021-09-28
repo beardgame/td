@@ -9,6 +9,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage
@@ -43,6 +44,11 @@ namespace Bearded.TD.Game.Simulation.Damage
             Events.Subscribe<HealDamage>(this);
             Events.Subscribe<TakeDamage>(this);
             ReportAggregator.Register(Events, new HealthReport(this));
+        }
+
+        public override void OnRemoved()
+        {
+            State.IsInvalid("Can never remove health components.");
         }
 
         public void HandleEvent(HealDamage @event)

@@ -26,6 +26,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         }
 
+        public override void OnRemoved()
+        {
+            occupiedTilesTracker.Dispose(Events);
+        }
+
         public override void Update(TimeSpan elapsedTime) {}
 
         public override void Draw(CoreDrawers drawers)
