@@ -43,7 +43,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
             tileRangeDrawer = new TileRangeDrawer(

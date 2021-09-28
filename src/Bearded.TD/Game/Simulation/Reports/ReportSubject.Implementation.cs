@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Reports
         public Faction? Faction => factionProvider?.Faction;
         public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ReportAggregator.AggregateForever(Events, r => reports.Add(r));
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);

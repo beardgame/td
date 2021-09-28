@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
 
         public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
             unitLayer = Owner.Game.UnitLayer;

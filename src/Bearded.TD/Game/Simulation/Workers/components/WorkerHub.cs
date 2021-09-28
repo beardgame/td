@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>

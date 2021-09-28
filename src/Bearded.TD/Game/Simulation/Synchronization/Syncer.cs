@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Synchronization
     {
         public Id<T> EntityId => Owner.Id;
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Owner.Game.Meta.Synchronizer.RegisterSyncable(Owner);
         }

@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             damageSource = Owner.FindInComponentOwnerTree<IDamageSource>().ValueOrDefault(() => null);
         }

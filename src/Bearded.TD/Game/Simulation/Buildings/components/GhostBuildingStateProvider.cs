@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         public IBuildingState State { get; } = new GhostBuildingState();
 
-        protected override void Initialize() { }
+        protected override void OnAdded() { }
         public override void Update(TimeSpan elapsedTime) { }
         public override void Draw(CoreDrawers drawers) { }
     }

@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Simulation.Elements
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             combustable = new Combustable(
                 Parameters.FuelAmount,

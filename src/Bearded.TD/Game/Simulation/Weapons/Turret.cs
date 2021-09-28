@@ -37,7 +37,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             weapon = new Weapon(Parameters.Weapon, this);
             transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;

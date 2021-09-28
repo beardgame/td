@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

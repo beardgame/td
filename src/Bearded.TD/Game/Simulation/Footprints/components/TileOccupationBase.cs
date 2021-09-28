@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Footprints
     {
         public abstract IEnumerable<Tile> OccupiedTiles { get; }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             foreach (var occupiedTile in OccupiedTiles)
             {

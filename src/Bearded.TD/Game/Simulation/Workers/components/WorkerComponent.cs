@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public WorkerComponent(IWorkerParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
             {

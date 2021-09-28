@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
     {
         public ProjectileDamage(IProjectileDamageComponentParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Events.Subscribe(this);
         }

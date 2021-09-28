@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Elements
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

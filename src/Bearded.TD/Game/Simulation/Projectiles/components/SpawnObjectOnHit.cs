@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             if (Parameters.OnHitEnemy)
             {

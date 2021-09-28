@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
     class GameOverOnDestroy<T> : Component<T>
         where T : GameObject
     {
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Owner.Deleting += onDeleting;
         }

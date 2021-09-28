@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.taskId = taskId;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
             {

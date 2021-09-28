@@ -54,7 +54,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             AppliedUpgrades = appliedUpgrades.AsReadOnly();
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ReportAggregator.Register(Events, new UpgradeReport(this));
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
