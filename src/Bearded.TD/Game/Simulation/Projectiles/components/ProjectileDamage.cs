@@ -25,8 +25,10 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                 DebugAssert.State.IsInvalid();
             }
 
+            var damageSource = Owner.TryGetSingleComponent<DamageSource>(out var s) ? s.Source : null;
+
             var result = damageReceiver.Damage(
-                new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, Owner.DamageSource));
+                new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, damageSource));
             Events.Send(new CausedDamage(@event.Enemy, result));
         }
 
