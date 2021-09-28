@@ -11,7 +11,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [Component("splashDamageOnHit")]
-    sealed class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,
+    sealed class ProjectileSplashDamage : Component<ComponentGameObject, IProjectileSplashDamageComponentParameters>,
         IListener<HitLevel>, IListener<HitEnemy>
     {
         public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters) {}

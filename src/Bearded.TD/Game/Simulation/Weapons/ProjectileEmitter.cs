@@ -3,10 +3,10 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Physics;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons
@@ -33,8 +33,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
             => base.CanApplyUpgradeEffect(effect)
-                || Parameters.Projectile.CanApplyUpgradeEffect<Projectile>(effect)
-                || effect.CanApplyToComponentCollectionForType<Projectile>();
+                || Parameters.Projectile.CanApplyUpgradeEffect<ComponentGameObject>(effect)
+                || effect.CanApplyToComponentCollectionForType<ComponentGameObject>();
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {
@@ -62,9 +62,9 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void emitProjectile()
         {
-            var muzzleVelocity = getMuzzleVelocity();
+            var (direction, muzzleVelocity) = getMuzzleVelocity();
 
-            var projectile = new Projectile(Parameters.Projectile, Weapon.Position, Owner);
+            var projectile = new ComponentGameObject(Parameters.Projectile, Owner, Weapon.Position, direction);
 
             Game.Add(projectile);
             projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
@@ -72,7 +72,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             applyCurrentUpgradesTo(projectile);
         }
 
-        private void applyCurrentUpgradesTo(Projectile projectile)
+        private void applyCurrentUpgradesTo(ComponentGameObject projectile)
         {
             var upgrades = (Weapon.Owner as Building)
                 ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
@@ -86,14 +86,14 @@ namespace Bearded.TD.Game.Simulation.Weapons
             }
         }
 
-        private Velocity3 getMuzzleVelocity()
+        private (Direction2, Velocity3) getMuzzleVelocity()
         {
             var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
             var velocityXY = direction * Parameters.MuzzleSpeed;
 
             var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
 
-            return velocityXY.WithZ(velocityZ);
+            return (direction, velocityXY.WithZ(velocityZ));
         }
 
         private Speed verticalSpeedCompensationToTarget(IEnemyUnitTargeter targeter)
