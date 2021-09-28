@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
     {
         public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Events.Subscribe<HitLevel>(this);
             Events.Subscribe<HitEnemy>(this);

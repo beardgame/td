@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.incompleteUpgrade = incompleteUpgrade;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>

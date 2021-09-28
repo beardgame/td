@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             State = state.CreateProxy();
         }
 
-        protected override void Initialize() {
+        protected override void OnAdded() {
             SelectionListener.Create(
                     onFocus: () => state.SelectionState = SelectionState.Focused,
                     onFocusReset: () => state.SelectionState = SelectionState.Default,

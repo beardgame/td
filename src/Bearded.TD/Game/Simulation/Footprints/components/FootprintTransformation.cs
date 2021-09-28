@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Footprints
         public Matrix2 LocalCoordinateTransform { get; private set; }
         public Angle LocalOrientationTransform { get; private set; }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Events.Subscribe(this);
         }

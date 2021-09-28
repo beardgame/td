@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Elements
     {
         private bool sparked;
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

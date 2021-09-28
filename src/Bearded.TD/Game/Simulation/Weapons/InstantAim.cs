@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     [Component("instantAim")]
     class InstantAim : Component<Weapon>
     {
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

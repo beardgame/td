@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public LinearAccelerationAim(ILinearAccelerationAimParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

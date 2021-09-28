@@ -17,5 +17,6 @@ namespace Bearded.TD.Game.Simulation.Components
     interface IComponent<in TOwner> : IComponent
     {
         void OnAdded(TOwner owner, ComponentEvents events);
+        void OnRemoved();
     }
 }

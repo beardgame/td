@@ -42,7 +42,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             // TODO: base height should possibly be the lowest tile height or even lower to prevent gaps with terrain
             BaseHeight = Owner.Position.Z;

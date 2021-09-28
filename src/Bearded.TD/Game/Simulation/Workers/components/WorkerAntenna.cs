@@ -32,7 +32,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public WorkerAntenna(IWorkerAntennaParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IFactionProvider, IBuildingStateProvider>(Owner, Events, (provider, p) =>
             {

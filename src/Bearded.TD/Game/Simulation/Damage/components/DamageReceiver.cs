@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     sealed class DamageReceiver<T> : Component<T>, IDamageReceiver
     {
-        protected override void Initialize() {}
+        protected override void OnAdded() {}
 
         public DamageResult Damage(DamageInfo damageInfo)
         {

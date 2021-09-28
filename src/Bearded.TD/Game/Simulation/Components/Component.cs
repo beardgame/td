@@ -24,10 +24,12 @@ namespace Bearded.TD.Game.Simulation.Components
         {
             Owner = owner;
             Events = events;
-            Initialize();
+            OnAdded();
         }
 
-        protected abstract void Initialize();
+        protected abstract void OnAdded();
+
+        public virtual void OnRemoved() {}
 
         public abstract void Update(TimeSpan elapsedTime);
 
@@ -50,10 +52,12 @@ namespace Bearded.TD.Game.Simulation.Components
         {
             Owner = owner;
             Events = events;
-            Initialize();
+            OnAdded();
         }
 
-        protected abstract void Initialize();
+        protected abstract void OnAdded();
+
+        public virtual void OnRemoved() {}
 
         public abstract void Update(TimeSpan elapsedTime);
 

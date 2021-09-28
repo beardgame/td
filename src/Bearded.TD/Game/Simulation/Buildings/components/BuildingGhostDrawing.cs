@@ -20,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
         private IFactionProvider? factionProvider;
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             occupiedTilesTracker.Initialize(Owner, Events);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);

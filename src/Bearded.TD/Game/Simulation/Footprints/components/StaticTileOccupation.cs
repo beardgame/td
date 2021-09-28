@@ -17,9 +17,8 @@ namespace Bearded.TD.Game.Simulation.Footprints
             this.footprint = footprint;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            base.Initialize();
             Events.Send(new FootprintChanged(footprint));
         }
 

@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             progressTracker = new ProgressTracker(this);
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             healthGiven = 1.HitPoints();
             maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
