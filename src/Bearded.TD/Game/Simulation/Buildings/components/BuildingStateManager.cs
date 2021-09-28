@@ -1,9 +1,11 @@
 ﻿using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
@@ -13,7 +15,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         : Component<T>,
             IBuildingStateProvider,
             IListener<ConstructionFinished>,
-            IListener<ConstructionStarted>
+            IListener<ConstructionStarted>,
+            IListener<ObjectRepaired>,
+            IListener<ObjectRuined>
         where T : IComponentOwner<T>, IDeletable, IIdable<T>, IGameObject
     {
         private readonly BuildingState state = new();
@@ -34,6 +38,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 .Subscribe(Events);
             Events.Subscribe<ConstructionFinished>(this);
             Events.Subscribe<ConstructionStarted>(this);
+            Events.Subscribe<ObjectRuined>(this);
+        }
+
+        public override void OnRemoved()
+        {
+            DebugAssert.State.IsInvalid("Building state should never be removed.");
         }
 
         public void HandleEvent(ConstructionFinished @event)
@@ -44,6 +54,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void HandleEvent(ConstructionStarted @event)
         {
             materialize();
+        }
+
+        public void HandleEvent(ObjectRepaired @event)
+        {
+            state.IsRuined = false;
+        }
+
+        public void HandleEvent(ObjectRuined @event)
+        {
+            state.IsRuined = true;
         }
 
         private void materialize()
