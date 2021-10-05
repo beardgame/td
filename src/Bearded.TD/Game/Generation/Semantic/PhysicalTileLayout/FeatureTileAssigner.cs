@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
             var nodesWithAreas = assignTilesToClosestContainingCircleArea(nodes);
             var nodesWithAreasAfterErosion = erode(nodesWithAreas).ToList();
-            var nodeTiles = nodesWithAreasAfterErosion.SelectMany(f => f.Tiles.Enumerated).ToImmutableHashSet();
+            var nodeTiles = nodesWithAreasAfterErosion.SelectMany(f => f.Tiles).ToImmutableHashSet();
             var crevicesWithAreas = assignTilesToClosestContainingCircleArea(crevices, nodeTiles);
             var (connectionsWithAreas, connectionBoundaryTiles) = assignTilesAlongConnection(connections, nodeTiles);
 
@@ -130,7 +130,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         private IEnumerable<TiledFeature> erode(IEnumerable<TiledFeature> features)
         {
             return features
-                .Select(f => f.Feature.WithTiles(f.Tiles.Enumerated.Where(t => t.PossibleNeighbours().All(f.Tiles.Contains))));
+                .Select(f => f.Feature.WithTiles(f.Tiles.Where(t => t.PossibleNeighbours().All(f.Tiles.Contains))));
         }
     }
 }

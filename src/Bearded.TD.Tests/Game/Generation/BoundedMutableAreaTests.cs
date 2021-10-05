@@ -224,9 +224,7 @@ namespace Bearded.TD.Tests.Game.Generation
 
             var asIArea = (IArea)area;
 
-            asIArea.Enumerated.Should().BeEquivalentTo(expectedTiles);
-            asIArea.ToImmutableHashSet().Should().BeEquivalentTo(expectedTiles);
-            asIArea.ToImmutableArray().Should().BeEquivalentTo(expectedTiles);
+            asIArea.Should().BeEquivalentTo(expectedTiles);
         }
     }
 }

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features
 {
@@ -14,7 +12,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         public BoundedMutableArea(IArea bounds)
         {
             this.bounds = bounds;
-            tiles = new HashSet<Tile>(bounds.Enumerated);
+            tiles = new HashSet<Tile>(bounds);
         }
 
         public int Count => tiles.Count;
@@ -42,11 +40,5 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         }
 
         public IEnumerator<Tile> GetEnumerator() => tiles.GetEnumerator();
-
-        IEnumerable<Tile> IArea.Enumerated => tiles.AsReadOnlyEnumerable();
-
-        ImmutableHashSet<Tile> IArea.ToImmutableHashSet() => tiles.ToImmutableHashSet();
-
-        ImmutableArray<Tile> IArea.ToImmutableArray() => tiles.ToImmutableArray();
     }
 }
