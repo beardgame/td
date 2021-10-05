@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
-using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Simulation.Weapons
 {
@@ -20,14 +17,11 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private readonly ComponentCollection<Weapon> components;
         private readonly ComponentEvents events = new();
 
-        public Maybe<Direction2> AimDirection { get; private set; }
         private Angle currentDirectionOffset;
         public Direction2 CurrentDirection => turret.NeutralDirection + currentDirectionOffset;
 
-        public bool ShootingThisFrame { get; private set; }
-
         public Direction2 NeutralDirection => turret.NeutralDirection;
-        public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
+        public Angle? MaximumTurningAngle => turret.MaximumTurningAngle;
 
         public IComponentOwner? Parent => (IComponentOwner)turret.Owner;
         public IGameObject Owner => turret.Owner;
@@ -53,24 +47,14 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(this);
 
-        public void AimIn(Direction2 direction)
-        {
-            AimDirection = Just(direction);
-        }
-
-        public void ShootThisFrame()
-        {
-            ShootingThisFrame = true;
-        }
-
         public void Turn(Angle angle)
         {
             var newDirection = CurrentDirection + angle;
             var newAngleOffset = newDirection - turret.NeutralDirection;
 
-            currentDirectionOffset = MaximumTurningAngle
-                .Select(max => newAngleOffset.Clamped(-max, max))
-                .ValueOrDefault(newAngleOffset);
+            currentDirectionOffset = MaximumTurningAngle is { } maxAngle
+                ? newAngleOffset.Clamped(-maxAngle, maxAngle)
+                : newAngleOffset;
         }
 
         public void Update(TimeSpan elapsedTime)
@@ -79,12 +63,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
             {
                 return;
             }
-
-            // TODO: component order currently matters - if the order is inverted, the weapon will not shoot
-            // this needs a proper solution (event/subscription based system?) to handle communication between components
-            // and it has to work no matter what order components are ordered in
-            ShootingThisFrame = false;
-            AimDirection = Nothing;
 
             components.Update(elapsedTime);
         }

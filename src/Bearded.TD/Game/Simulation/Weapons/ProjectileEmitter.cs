@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private Instant nextPossibleShootTime;
         private bool firstShotInBurst = true;
 
-        private Maybe<IEnemyUnitTargeter> targeter;
+        private ITargeter<IPositionable>? targeter;
 
         public ProjectileEmitter(IProjectileEmitterParameters parameters)
             : base(parameters)
@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
             base.OnAdded();
 
-            targeter = ((IComponentOwner)Weapon).GetComponents<IEnemyUnitTargeter>().MaybeFirst();
+            ComponentDependencies.Depend<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
         }
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
@@ -91,14 +91,16 @@ namespace Bearded.TD.Game.Simulation.Weapons
             var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
             var velocityXY = direction * Parameters.MuzzleSpeed;
 
-            var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
+            var velocityZ = targeter?.Target is { } target
+                ? verticalSpeedCompensationToTarget(target)
+                : Speed.Zero;
 
             return (direction, velocityXY.WithZ(velocityZ));
         }
 
-        private Speed verticalSpeedCompensationToTarget(IEnemyUnitTargeter targeter)
+        private Speed verticalSpeedCompensationToTarget(IPositionable target)
         {
-            var difference = targeter.Target.Position - Weapon.Position;
+            var difference = target.Position - Weapon.Position;
             var distance = difference.Length;
             // TODO: the division below should work in spacetime
             var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleSpeed.NumericValue);
