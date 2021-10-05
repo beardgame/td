@@ -199,14 +199,14 @@ namespace Bearded.TD.Content.Behaviors
 
             if (parameterType == emptyConstructorParameterType)
             {
-                State.Satisfies(parameterData == null, $"Expected null, but parameter data was {parameterData}");
+                State.Satisfies(parameterData == null, $"[{id}] Expected null, but parameter data was {parameterData}");
                 parameterData = default(TEmptyConstructorParameters);
             }
             else
             {
                 State.Satisfies(
                     parameterType.IsInstanceOfType(parameterData),
-                    $"Expected instance of {parameterData}, but {parameterType} is not.");
+                    $"[{id}] Expected instance of {parameterData}, but {parameterType} is not.");
             }
 
             var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
