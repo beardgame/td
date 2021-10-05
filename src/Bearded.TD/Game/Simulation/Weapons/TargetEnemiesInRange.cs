@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -33,7 +32,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private Instant endOfIdleTime;
         private Instant nextTileInRangeRecalculationTime;
 
-        private Maybe<Angle> currentMaxTurningAngle;
+        private Angle? currentMaxTurningAngle;
         private Unit currentRange;
         private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
@@ -57,7 +56,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
             tileRangeDrawer = new TileRangeDrawer(
                 game, () => Owner.RangeDrawStyle, getTilesToDraw, Color.Green);
-            AimDirection = Owner.NeutralDirection;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -90,6 +88,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void goIdle()
         {
+            if(Owner.MaximumTurningAngle != null)
+                AimDirection = Owner.NeutralDirection;
             TriggerPulled = false;
 
             endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
@@ -114,10 +114,11 @@ namespace Bearded.TD.Game.Simulation.Weapons
             var level = game.Level;
             var navigator = game.Navigator;
 
-            tilesInRange = Owner.MaximumTurningAngle.Match(
-                max => new LevelVisibilityChecker().InDirection(Owner.NeutralDirection, max),
-                () => new LevelVisibilityChecker()
-                ).EnumerateVisibleTiles(
+            var visibilityChecker = currentMaxTurningAngle is { } maxAngle
+                ? new LevelVisibilityChecker().InDirection(Owner.NeutralDirection, maxAngle)
+                : new LevelVisibilityChecker();
+
+            tilesInRange = visibilityChecker.EnumerateVisibleTiles(
                     level,
                     position.XY(),
                     currentRange,

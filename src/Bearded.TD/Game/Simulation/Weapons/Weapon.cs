@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public Direction2 CurrentDirection => turret.NeutralDirection + currentDirectionOffset;
 
         public Direction2 NeutralDirection => turret.NeutralDirection;
-        public Maybe<Angle> MaximumTurningAngle => turret.MaximumTurningAngle;
+        public Angle? MaximumTurningAngle => turret.MaximumTurningAngle;
 
         public IComponentOwner? Parent => (IComponentOwner)turret.Owner;
         public IGameObject Owner => turret.Owner;
@@ -52,9 +52,9 @@ namespace Bearded.TD.Game.Simulation.Weapons
             var newDirection = CurrentDirection + angle;
             var newAngleOffset = newDirection - turret.NeutralDirection;
 
-            currentDirectionOffset = MaximumTurningAngle
-                .Select(max => newAngleOffset.Clamped(-max, max))
-                .ValueOrDefault(newAngleOffset);
+            currentDirectionOffset = MaximumTurningAngle is { } maxAngle
+                ? newAngleOffset.Clamped(-maxAngle, maxAngle)
+                : newAngleOffset;
         }
 
         public void Update(TimeSpan elapsedTime)
