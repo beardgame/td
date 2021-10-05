@@ -4,7 +4,14 @@
         { "id" : "base" },
         { "id" : "forceToCenter" },
         { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "base" } },
+
         { "id" : "setTiles", "parameters" : { "type" : "floor" } },
+
+        { "id" : "selectAll" },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "erodeSelection", "parameters" : { } },
+        { "id" : "selectRandomSubset", "parameters" : { "numTiles" : 1 } },
         { "id" : "spawnBuilding", "parameters" : { "building" : "base", "faction" : "players" } }
     ]
 }
