@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
             base.OnAdded();
 
-            ComponentDependencies.Depend<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
+            ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
         }
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)

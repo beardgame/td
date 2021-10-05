@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         protected override void OnAdded()
         {
-            ComponentDependencies.Depend<IWeaponTrigger>(Owner, Events, c => trigger = c);
+            ComponentDependencies.DependDynamic<IWeaponTrigger>(Owner, Events, c => trigger = c);
         }
 
         public override void Update(TimeSpan elapsedTime)
