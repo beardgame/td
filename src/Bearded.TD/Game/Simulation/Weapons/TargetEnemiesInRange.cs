@@ -19,7 +19,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [Component("targetEnemiesInRange")]
-    sealed class TargetEnemiesInRange : Component<Weapon, ITargetEnemiesInRange>, IWeaponRangeDrawer, IEnemyUnitTargeter
+    sealed class TargetEnemiesInRange
+        : Component<Weapon, ITargetEnemiesInRange>,
+            IWeaponRangeDrawer,
+            ITargeter<IPositionable>,
+            IWeaponAimer,
+            IWeaponTrigger
     {
         private PassabilityLayer passabilityLayer = null!;
         private TileRangeDrawer tileRangeDrawer = null!;
@@ -32,12 +37,16 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private Unit currentRange;
         private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-        public EnemyUnit? Target { get; private set; }
+        private EnemyUnit? target;
+        public IPositionable? Target => target;
 
         private bool dontDrawThisFrame;
 
         private GameState game => Owner.Owner.Game;
         private Position3 position => Owner.Position;
+
+        public bool TriggerPulled { get; private set; }
+        public Direction2 AimDirection { get; private set; }
 
         public TargetEnemiesInRange(ITargetEnemiesInRange parameters) : base(parameters)
         {
@@ -48,6 +57,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
             tileRangeDrawer = new TileRangeDrawer(
                 game, () => Owner.RangeDrawStyle, getTilesToDraw, Color.Green);
+            AimDirection = Owner.NeutralDirection;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -63,20 +73,25 @@ namespace Bearded.TD.Game.Simulation.Weapons
             ensureTilesInRangeList();
             ensureTargetingState();
 
-            if (Target == null)
+            if (target == null)
             {
                 goIdle();
                 return;
             }
 
-            var direction = (Target.Position - position).XY().Direction;
-            Owner.AimIn(direction);
-            // TODO: this is ugly but necessary - see comment in Weapon about component order
-            Owner.ShootThisFrame();
+            shootAt(target.Position);
+        }
+
+        private void shootAt(Position3 targetPosition)
+        {
+            AimDirection = (targetPosition - position).XY().Direction;
+            TriggerPulled = true;
         }
 
         private void goIdle()
         {
+            TriggerPulled = false;
+
             endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
         }
 
@@ -118,13 +133,13 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void ensureTargetingState()
         {
-            if (Target?.Deleted == true)
-                Target = null;
+            if (target?.Deleted == true)
+                target = null;
 
-            if (Target != null && !tilesInRange.Contains(Target.CurrentTile))
-                Target = null;
+            if (target != null && !tilesInRange.Contains(target.CurrentTile))
+                target = null;
 
-            if (Target != null)
+            if (target != null)
                 return;
 
             tryFindTarget();
@@ -132,7 +147,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void tryFindTarget()
         {
-            Target = tilesInRange
+            target = tilesInRange
                 .SelectMany(game.UnitLayer.GetUnitsOnTile)
                 .FirstOrDefault();
         }
@@ -170,10 +185,5 @@ namespace Bearded.TD.Game.Simulation.Weapons
             recalculateTilesInRange();
             return tilesInRange;
         }
-    }
-
-    interface IWeaponRangeDrawer
-    {
-        IEnumerable<Tile> TakeOverDrawingThisFrame();
     }
 }

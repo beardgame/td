@@ -8,13 +8,17 @@ namespace Bearded.TD.Game.Simulation.Weapons
     [Component("instantAim")]
     class InstantAim : Component<Weapon>
     {
+        private IWeaponAimer? aimer;
+
         protected override void OnAdded()
         {
+            ComponentDependencies.Depend<IWeaponAimer>(Owner, Events, c => aimer = c);
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            Owner.AimDirection.Match(aimIn);
+            if (aimer != null)
+                aimIn(aimer.AimDirection);
         }
 
         private void aimIn(Direction2 direction)
