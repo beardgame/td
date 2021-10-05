@@ -3,7 +3,7 @@
     "behaviors" : [
         { "id" : "base" },
         { "id" : "forceToCenter" },
-        { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "base" } },
+        { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "spawner" } },
 
         { "id" : "setTiles", "parameters" : { "type" : "floor" } },
 
