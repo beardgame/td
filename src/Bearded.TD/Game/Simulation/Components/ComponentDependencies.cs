@@ -9,10 +9,10 @@ namespace Bearded.TD.Game.Simulation.Components
     {
         public static void Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
         {
-            var found = owner.GetComponents<T>().ToList();
-            if (found.Count > 0)
+            var found = owner.GetComponents<T>().FirstOrDefault();
+            if (found != null)
             {
-                consumer(found[0]);
+                consumer(found);
                 return;
             }
 
