@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
         private void ensureBuildingsAreOnFloor(NodeGenerationContext context)
         {
             var nonFloorTiles =
-                context.Content.BuildingTiles.Enumerated.Where(t => context.Tiles.Get(t).Type != TileType.Floor);
+                context.Content.BuildingTiles.Where(t => context.Tiles.Get(t).Type != TileType.Floor);
             foreach (var tile in nonFloorTiles)
             {
                 context.Tiles.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));

@@ -27,7 +27,6 @@ namespace Bearded.TD.Tiles
         public static IArea Erode(this IArea area, Func<int, bool> keepTileWithNeighborCount) =>
             Erode(area, t => keepTileWithNeighborCount(t.PossibleNeighbours().Count(area.Contains)));
 
-        public static IArea Erode(this IArea area, Func<Tile, bool> keepTile) =>
-            From(area.Enumerated.Where(keepTile));
+        public static IArea Erode(this IArea area, Func<Tile, bool> keepTile) => From(area.Where(keepTile));
     }
 }
