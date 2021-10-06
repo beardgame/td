@@ -12,11 +12,6 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public sealed class BoundedMutableAreaTests
     {
-        public BoundedMutableAreaTests()
-        {
-            Arb.Register<TileGenerator>();
-        }
-
         private static BoundedMutableArea areaWithTiles(params Tile[] tiles) => new(Area.From(tiles));
         private static BoundedMutableArea areaWithTiles(IEnumerable<Tile> tiles) => new(Area.From(tiles));
 
@@ -28,7 +23,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(0);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void NewEmptyAreaContainsNoTiles(Tile tile)
         {
             var area = areaWithTiles();
@@ -36,7 +31,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(tile).Should().BeFalse();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void NewAreaHasSameSizeAsGivenArea(ushort count)
         {
             var tiles = Enumerable.Range(0, count).Select(c => new Tile(c, c)).ToList();
@@ -45,7 +40,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(tiles.Count);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void NewAreaContainsAllTilesInOriginalArea(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -54,7 +49,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(otherTile).Should().BeTrue();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AfterRemoveAllIsEmpty(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -64,7 +59,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(0);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AfterRemoveAllContainsNoTiles(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -75,7 +70,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(otherTile).Should().BeFalse();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AfterRemoveAllAndResetHasOriginalCount(ushort count)
         {
             var tiles = Enumerable.Range(0, count).Select(c => new Tile(c, c)).ToList();
@@ -87,7 +82,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(tiles.Count);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AfterRemoveAllAndResetHasOriginalTiles(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -99,7 +94,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(otherTile).Should().BeTrue();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void RemovingTileLowersCount(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -110,7 +105,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(originalCount - 1);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void DoesNotContainRemovedTile(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -120,7 +115,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(tile).Should().BeFalse();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void RemovingTileOutsideBoundsDoesNothing(Tile tile)
         {
             var area = areaWithTiles(tile);
@@ -131,7 +126,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Contains(tile).Should().BeTrue();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AddingTileToEmptyAreaFails(Tile tile)
         {
             var area = areaWithTiles();
@@ -141,7 +136,7 @@ namespace Bearded.TD.Tests.Game.Generation
             addingTileToEmpty.Should().Throw<ArgumentException>();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AddingTileOutOfBoundsFails(Tile tile, Tile otherTile)
         {
             if (tile == otherTile)
@@ -154,7 +149,7 @@ namespace Bearded.TD.Tests.Game.Generation
             addingTileOutOfBounds.Should().Throw<ArgumentException>();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AddingTileInBoundsSucceeds(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
@@ -168,7 +163,7 @@ namespace Bearded.TD.Tests.Game.Generation
             addingTilesInBounds.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AddingTilesAlreadyContainedDoesNotIncreaseCount(Tile tile)
         {
             var area = areaWithTiles(tile);
@@ -178,7 +173,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(1);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AddingRemovedTilesIncreasesCount(Tile tile, Tile otherTile)
         {
             if (tile == otherTile)
@@ -193,7 +188,7 @@ namespace Bearded.TD.Tests.Game.Generation
             area.Count.Should().Be(2);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void ContainsTilesAddedAfterRemovingThem(Tile tile, Tile otherTile)
         {
             var area = areaWithTiles(tile, otherTile);
