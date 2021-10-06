@@ -8,7 +8,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Units
 {
-    class EnemyMovementDummy : IEnemyMovement
+    sealed class EnemyMovementDummy : IEnemyMovement
     {
         public Position2 Position { get; }
         public Tile CurrentTile { get; }
@@ -23,6 +23,7 @@ namespace Bearded.TD.Game.Simulation.Units
         }
 
         public void OnAdded(EnemyUnit owner, ComponentEvents events) => throw new InvalidOperationException();
+        public void OnRemoved() => throw new InvalidOperationException();
         public void Update(TimeSpan elapsedTime) => throw new InvalidOperationException();
         public void Draw(CoreDrawers drawers) => throw new InvalidOperationException();
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();

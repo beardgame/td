@@ -16,6 +16,8 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
         private readonly LevelGenerationCommandAccumulator commandAccumulator;
         private readonly IArea tiles;
 
+        public IArea BuildingTiles { get; private set; } = Area.Empty();
+
         public NodeContentGenerationContext(LevelGenerationCommandAccumulator commandAccumulator, IArea tiles)
         {
             this.commandAccumulator = commandAccumulator;
@@ -40,7 +42,12 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             {
                 throw new ArgumentException("May not place buildings outside node.", nameof(rootTile));
             }
+            if (positionedFootprint.OccupiedTiles.Any(BuildingTiles.Contains))
+            {
+                throw new InvalidOperationException("May not place buildings on top of each other.");
+            }
 
+            BuildingTiles = Area.Union(BuildingTiles, Area.From(positionedFootprint.OccupiedTiles));
             commandAccumulator.PlaceBuilding(blueprint, positionedFootprint, faction);
         }
 

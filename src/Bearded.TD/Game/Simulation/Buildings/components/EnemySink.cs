@@ -14,9 +14,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private Maybe<IHealth> healthComponent;
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            base.Initialize();
+            base.OnAdded();
             healthComponent = Owner.GetComponents<IHealth>().MaybeSingle();
         }
 

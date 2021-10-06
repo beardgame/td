@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Simulation.Selection
         public IReportSubject Subject =>
             Owner.GetComponents<IReportSubject>().SingleOrDefault() ?? new EmptyReportSubject();
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             selectionLayer = Owner.Game.SelectionLayer;
             occupiedTilesTracker.Initialize(Owner, Events);
@@ -35,6 +35,12 @@ namespace Bearded.TD.Game.Simulation.Selection
             occupiedTilesTracker.TileAdded += registerTile;
             occupiedTilesTracker.TileRemoved += unregisterTile;
             Events.Subscribe(this);
+        }
+
+        public override void OnRemoved()
+        {
+            occupiedTilesTracker.Dispose(Events);
+            Events.Unsubscribe(this);
         }
 
         public void ResetSelection()

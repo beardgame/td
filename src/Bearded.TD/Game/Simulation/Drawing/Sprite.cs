@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ownerAsDirected = Maybe.FromNullable(Owner as IDirected);
             sprite = Parameters.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);

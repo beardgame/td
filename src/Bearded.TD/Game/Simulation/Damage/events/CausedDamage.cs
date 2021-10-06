@@ -4,12 +4,10 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     readonly struct CausedDamage : IComponentEvent
     {
-        public IDamageTarget Target { get; }
         public DamageResult Result { get; }
 
-        public CausedDamage(IDamageTarget target, DamageResult result)
+        public CausedDamage(DamageResult result)
         {
-            Target = target;
             Result = result;
         }
     }

@@ -3,7 +3,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
@@ -11,7 +10,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics
 {
-    sealed class StatisticCollector<T> : IComponent<T>, ISyncable where T : GameObject
+    sealed class StatisticCollector<T> : Component<T>, ISyncable where T : GameObject
     {
         private long totalDamage;
         private long totalKills;
@@ -22,35 +21,29 @@ namespace Bearded.TD.Game.Simulation.Statistics
         private long previousWaveDamage;
         private long previousWaveKills;
 
-        public void OnAdded(T owner, ComponentEvents events)
+        protected override void OnAdded()
         {
-            events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
+            Events.Subscribe(Listener.ForEvent<AttributedDamage>(e =>
             {
                 totalDamage += e.Result.Damage.Amount.NumericValue;
                 currentWaveDamage += e.Result.Damage.Amount.NumericValue;
             }));
-            events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
+            Events.Subscribe(Listener.ForEvent<AttributedKill>(_ =>
             {
                 totalKills++;
                 currentWaveKills++;
             }));
-            owner.Game.Meta.Events.Subscribe(Listener.ForEvent<WaveStarted>(_ =>
+            Owner.Game.Meta.Events.Subscribe(Listener.ForEvent<WaveStarted>(_ =>
             {
                 (previousWaveDamage, currentWaveDamage) = (currentWaveDamage, 0);
                 (previousWaveKills, currentWaveKills) = (currentWaveKills, 0);
             }));
-            ReportAggregator.Register(events, new StatisticsReport(this));
+            ReportAggregator.Register(Events, new StatisticsReport(this));
         }
 
-        public void Update(TimeSpan elapsedTime) {}
+        public override void Update(TimeSpan elapsedTime) {}
 
-        public void Draw(CoreDrawers drawers) {}
-
-        public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
-
-        public void ApplyUpgradeEffect(IUpgradeEffect effect) { }
-
-        public bool RemoveUpgradeEffect(IUpgradeEffect effect) => false;
+        public override void Draw(CoreDrawers drawers) {}
 
         public IStateToSync GetCurrentStateToSync() => new StatisticCollectorStateToSync(this);
 

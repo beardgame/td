@@ -7,12 +7,38 @@ namespace Bearded.TD.Game.Simulation.Components
 {
     static class ComponentDependencies
     {
+        public static void DependDynamic<T>(IComponentOwner owner, ComponentEvents events, Action<T?> consumer)
+            where T : class
+        {
+            var currentDependency = owner.GetComponents<T>().LastOrDefault();
+            if (currentDependency != null)
+            {
+                consumer(currentDependency);
+            }
+
+            var listener = new DynamicDependencyListener<T>();
+            listener.AddedComponent += dep =>
+            {
+                currentDependency = dep;
+                consumer(dep);
+            };
+            listener.RemovedComponent += dep =>
+            {
+                if (dep != currentDependency)
+                    return;
+                currentDependency = owner.GetComponents<T>().LastOrDefault();
+                consumer(currentDependency);
+            };
+            events.Subscribe<ComponentAdded>(listener);
+            events.Subscribe<ComponentRemoved>(listener);
+        }
+
         public static void Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
         {
-            var found = owner.GetComponents<T>().ToList();
-            if (found.Count > 0)
+            var found = owner.GetComponents<T>().FirstOrDefault();
+            if (found != null)
             {
-                consumer(found[0]);
+                consumer(found);
                 return;
             }
 
@@ -65,6 +91,26 @@ namespace Bearded.TD.Game.Simulation.Components
 
                 Resolved?.Invoke(dependency);
                 isResolved = true;
+            }
+        }
+
+        private sealed class DynamicDependencyListener<T> : IListener<ComponentAdded>, IListener<ComponentRemoved>
+        {
+            public event GenericEventHandler<T>? AddedComponent;
+            public event GenericEventHandler<T>? RemovedComponent;
+
+            public void HandleEvent(ComponentAdded @event)
+            {
+                if (@event.Component is not T dependency) return;
+
+                AddedComponent?.Invoke(dependency);
+            }
+
+            public void HandleEvent(ComponentRemoved @event)
+            {
+                if (@event.Component is not T dependency) return;
+
+                RemovedComponent?.Invoke(dependency);
             }
         }
     }

@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
         IGameObject Owner { get; }
         IBuildingState? BuildingState { get; }
         Direction2 NeutralDirection { get; }
-        Maybe<Angle> MaximumTurningAngle { get; }
+        Angle? MaximumTurningAngle { get; }
     }
 
     [Component("turret")]
@@ -33,11 +32,11 @@ namespace Bearded.TD.Game.Simulation.Weapons
             .WithZ(Owner.Position.Z + Parameters.Height);
 
         public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
-        public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
+        public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             weapon = new Weapon(Parameters.Weapon, this);
             transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;

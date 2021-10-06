@@ -37,6 +37,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
             var nodes = composite.Children;
 
             var result = ImmutableDictionary.CreateBuilder<NodeGroup, int>();
+            result.AddRange(nodes.Select(n => new KeyValuePair<NodeGroup, int>(n, 0)));
 
             var assignedCount = 0;
 
@@ -112,15 +113,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical
                     return false;
                 }
 
-                if (!result.ContainsKey(n))
-                {
-                    result[n] = count;
-                }
-                else
-                {
-                    result[n] = result[n] + count;
-                }
-
+                result[n] += count;
                 assignedCount += count;
 
                 return true;

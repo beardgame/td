@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
@@ -32,8 +33,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new BuildingStateManager<Building>());
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
+            building.AddComponent(new DamageSource<Building>());
             building.AddComponent(new IncompleteBuilding<Building>());
-            building.AddComponent(new OwnedByFaction<Building>(faction));
+            building.AddComponent(new FactionProvider<Building>(faction));
             building.AddComponent(new ReportSubject<Building>());
             building.AddComponent(new Selectable<Building>());
             building.AddComponent(new StaticTileOccupation<Building>(footprint));
@@ -49,7 +51,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             gameState.Add(ghost);
             ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
             ghost.AddComponent(new GhostBuildingStateProvider<BuildingGhost>());
-            ghost.AddComponent(new OwnedByFaction<BuildingGhost>(faction));
+            ghost.AddComponent(new FactionProvider<BuildingGhost>(faction));
             tileOccupation = new MovableTileOccupation<BuildingGhost>();
             ghost.AddComponent(tileOccupation);
             return ghost;

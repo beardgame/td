@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -26,13 +27,13 @@ namespace Bearded.TD.Game.Simulation.Damage
                 case null:
                     type = (byte) SupportedImplementation.None;
                     break;
-                case Building building:
+                case DamageSource<Building> b:
                     type = (byte) SupportedImplementation.Building;
-                    id = building.Id.Value;
+                    id = b.Id.Value;
                     break;
-                case EnemyUnit enemy:
+                case DamageSource<EnemyUnit> e:
                     type = (byte) SupportedImplementation.Enemy;
-                    id = enemy.Id.Value;
+                    id = e.Id.Value;
                     break;
                 case DivineIntervention:
                     type = (byte) SupportedImplementation.DivineIntervention;
@@ -45,8 +46,8 @@ namespace Bearded.TD.Game.Simulation.Damage
             return type switch
             {
                 (byte) SupportedImplementation.None => null,
-                (byte) SupportedImplementation.Building => instance.State.Find(new Id<Building>(id)),
-                (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)),
+                (byte) SupportedImplementation.Building => instance.State.Find(new Id<Building>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
+                (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
                 (byte) SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
                 _ => throw new IndexOutOfRangeException()
             };

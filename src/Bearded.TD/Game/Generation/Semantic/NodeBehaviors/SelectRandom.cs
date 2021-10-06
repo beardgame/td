@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
             context.Tiles.Selection.RemoveAll();
 
             var numberOfTilesToSelect = MoreMath.RoundToInt(context.Tiles.All.Count * Parameters.Percentage);
-            var tilesToSelect = context.Tiles.All.Enumerated.RandomSubset(numberOfTilesToSelect, context.Random);
+            var tilesToSelect = context.Tiles.All.RandomSubset(numberOfTilesToSelect, context.Random);
 
             foreach (var tile in tilesToSelect)
             {

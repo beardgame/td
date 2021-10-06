@@ -12,9 +12,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Events.Subscribe(this);
+        }
+
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe(this);
+            occupiedTilesTracker.Dispose(Events);
         }
 
         protected abstract void AddSink(Tile t);

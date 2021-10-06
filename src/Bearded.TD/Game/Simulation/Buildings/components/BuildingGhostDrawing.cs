@@ -18,12 +18,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
-        private Faction? faction;
+        private IFactionProvider? factionProvider;
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             occupiedTilesTracker.Initialize(Owner, Events);
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, o => faction = o.Faction);
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
+        }
+
+        public override void OnRemoved()
+        {
+            occupiedTilesTracker.Dispose(Events);
         }
 
         public override void Update(TimeSpan elapsedTime) {}
@@ -34,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var anyTileOutsideWorkerNetwork = false;
 
             WorkerNetwork workerNetwork = null;
-            faction?.TryGetBehaviorIncludingAncestors(out workerNetwork);
+            factionProvider?.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
                 var baseColor = Color.Green;
@@ -103,7 +108,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var maxDistanceSquared = maxDistance.Squared;
 
             WorkerNetwork? workerNetwork = null;
-            faction?.TryGetBehaviorIncludingAncestors(out workerNetwork);
+            factionProvider?.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             var networkBorder = TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
 
             TileAreaBorderRenderer.Render(networkBorder, Owner.Game, getLineColor);

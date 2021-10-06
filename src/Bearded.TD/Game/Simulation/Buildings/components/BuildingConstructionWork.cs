@@ -9,6 +9,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
+using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
@@ -18,18 +19,25 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private readonly Id<IWorkerTask> taskId;
 
-        private BuildingWorkerTask workerTask = null!;
+        private IFactionProvider? factionProvider;
+        private Faction? faction;
+        private BuildingWorkerTask? workerTask;
 
         public BuildingConstructionWork(Id<IWorkerTask> taskId)
         {
             this.taskId = taskId;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, ownedByFaction =>
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
             {
-                var faction = ownedByFaction.Faction;
+                State.Satisfies(
+                    factionProvider == null && faction == null,
+                    "Should not initialize faction provider more than once.");
+
+                factionProvider = provider;
+                faction = provider.Faction;
 
                 if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
                 {
@@ -51,7 +59,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             });
         }
 
-        public override void Update(TimeSpan elapsedTime) {}
+        public override void Update(TimeSpan elapsedTime)
+        {
+            if (factionProvider?.Faction != faction)
+            {
+                State.IsInvalid(
+                    "Did not expect the faction provider to ever provide a different faction during the construction " +
+                    "work.");
+            }
+        }
         public override void Draw(CoreDrawers drawers) {}
     }
 }

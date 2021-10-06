@@ -11,15 +11,21 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [Component("splashDamageOnHit")]
-    sealed class ProjectileSplashDamage : Component<Projectile, IProjectileSplashDamageComponentParameters>,
+    sealed class ProjectileSplashDamage : Component<ComponentGameObject, IProjectileSplashDamageComponentParameters>,
         IListener<HitLevel>, IListener<HitEnemy>
     {
         public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             Events.Subscribe<HitLevel>(this);
             Events.Subscribe<HitEnemy>(this);
+        }
+
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe<HitLevel>(this);
+            Events.Unsubscribe<HitEnemy>(this);
         }
 
         public void HandleEvent(HitLevel @event)
@@ -43,6 +49,8 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             // of range.
             var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
+            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
+
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
                 if ((enemy.Position - center).LengthSquared > distanceSquared
@@ -52,8 +60,8 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                 }
 
                 var result = damageReceiver
-                    .Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, Owner.DamageSource));
-                Events.Send(new CausedDamage(enemy, result));
+                    .Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, damageSource));
+                Events.Send(new CausedDamage(result));
             }
         }
 

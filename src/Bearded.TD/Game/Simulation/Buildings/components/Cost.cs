@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public Cost(Content.Models.ICost parameters) : base(parameters) { }
 
-        protected override void Initialize() { }
+        protected override void OnAdded() { }
         public override void Update(TimeSpan elapsedTime) { }
         public override void Draw(CoreDrawers drawers) { }
     }

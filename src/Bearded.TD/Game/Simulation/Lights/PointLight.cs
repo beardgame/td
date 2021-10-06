@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Lights
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
         }
 

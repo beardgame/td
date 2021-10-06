@@ -19,7 +19,8 @@ namespace Bearded.TD.Game.Simulation.Workers
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private IBuildingState? state;
-        private Faction? faction;
+        private IFactionProvider? factionProvider;
+        private Faction? initializedFaction;
         private WorkerNetwork? workerNetwork;
         private bool isInitialized;
         private TileRangeDrawer? fullNetworkDrawer;
@@ -31,11 +32,11 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public WorkerAntenna(IWorkerAntennaParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            ComponentDependencies.Depend<IOwnedByFaction, IBuildingStateProvider>(Owner, Events, (o, p) =>
+            ComponentDependencies.Depend<IFactionProvider, IBuildingStateProvider>(Owner, Events, (provider, p) =>
             {
-                faction = o.Faction;
+                factionProvider = provider;
                 state = p.State;
 
                 fullNetworkDrawer = new TileRangeDrawer(
@@ -61,8 +62,9 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         private void initializeInternal()
         {
-            State.Satisfies(faction != null);
-            faction!.TryGetBehaviorIncludingAncestors(out workerNetwork);
+            State.Satisfies(factionProvider != null);
+            initializedFaction = factionProvider!.Faction;
+            initializedFaction.TryGetBehaviorIncludingAncestors(out workerNetwork);
             if (workerNetwork == null)
             {
                 Owner.Game.Meta.Logger.Debug?.Log(
@@ -76,7 +78,14 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public override void Update(TimeSpan elapsedTime)
         {
-            // TODO: this can probably be done event based
+            if (isInitialized && factionProvider?.Faction != initializedFaction)
+            {
+                workerNetwork?.UnregisterAntenna(this);
+                initializedFaction = null;
+                workerNetwork = null;
+                isInitialized = false;
+            }
+
             if (!isInitialized)
             {
                 initializeIfOwnerIsCompletedBuilding();

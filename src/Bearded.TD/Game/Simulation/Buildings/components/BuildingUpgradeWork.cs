@@ -3,16 +3,18 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering;
+using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    // TODO: remove this component when it's done upgrading
     sealed class BuildingUpgradeWork<T> : Component<T>
-        where T : IComponentOwner, IGameObject
+        where T : IComponentOwner<T>, IGameObject
     {
         private readonly IIncompleteUpgrade incompleteUpgrade;
         private IBuildingState? state;
+        private IFactionProvider? factionProvider;
+        private Faction? faction;
         private FactionResources? resources;
         private ResourceConsumer? resourceConsumer;
 
@@ -24,12 +26,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.incompleteUpgrade = incompleteUpgrade;
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
-            ComponentDependencies.Depend<IOwnedByFaction>(Owner, Events, ownedByFaction =>
+            ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
             {
-                if (!ownedByFaction.Faction.TryGetBehaviorIncludingAncestors(out resources))
+                factionProvider = provider;
+                faction = provider.Faction;
+                if (!faction.TryGetBehaviorIncludingAncestors(out resources))
                 {
                     throw new NotSupportedException("Cannot upgrade building without resources.");
                 }
@@ -47,6 +51,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 resourceConsumer?.CompleteIfNeeded();
                 finished = true;
+                Owner.RemoveComponent(this);
                 return;
             }
 
@@ -54,7 +59,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 resourceConsumer?.Abort();
                 finished = true;
+                Owner.RemoveComponent(this);
                 return;
+            }
+
+            if (factionProvider?.Faction != faction)
+            {
+                State.IsInvalid(
+                    "Did not expect the faction provider to ever provide a different faction during the upgrade work.");
             }
 
             if (resourceConsumer == null)

@@ -1,10 +1,12 @@
-﻿using Bearded.TD.Content.Models;
+﻿using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Projectiles;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons
@@ -15,24 +17,24 @@ namespace Bearded.TD.Game.Simulation.Weapons
         private Instant nextPossibleShootTime;
         private bool firstShotInBurst = true;
 
-        private Maybe<IEnemyUnitTargeter> targeter;
+        private ITargeter<IPositionable>? targeter;
 
         public ProjectileEmitter(IProjectileEmitterParameters parameters)
             : base(parameters)
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            base.Initialize();
+            base.OnAdded();
 
-            targeter = ((IComponentOwner)Weapon).GetComponents<IEnemyUnitTargeter>().MaybeFirst();
+            ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
         }
 
         public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
             => base.CanApplyUpgradeEffect(effect)
-                || Parameters.Projectile.CanApplyUpgradeEffect<Projectile>(effect)
-                || effect.CanApplyToComponentCollectionForType<Projectile>();
+                || Parameters.Projectile.CanApplyUpgradeEffect<ComponentGameObject>(effect)
+                || effect.CanApplyToComponentCollectionForType<ComponentGameObject>();
 
         protected override void UpdateIdle(TimeSpan elapsedTime)
         {
@@ -60,24 +62,45 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void emitProjectile()
         {
-            var velocityZ = targeter.Match(verticalSpeedCompensationToTarget, () => Speed.Zero);
+            var (direction, muzzleVelocity) = getMuzzleVelocity();
 
+            var projectile = new ComponentGameObject(Parameters.Projectile, Owner, Weapon.Position, direction);
+
+            Game.Add(projectile);
+            projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
+
+            applyCurrentUpgradesTo(projectile);
+        }
+
+        private void applyCurrentUpgradesTo(ComponentGameObject projectile)
+        {
+            var upgrades = (Weapon.Owner as Building)
+                ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
+                ?.AppliedUpgrades
+                .Where(u => u.CanApplyTo(projectile))
+                ?? Enumerable.Empty<IUpgradeBlueprint>();
+
+            foreach (var upgrade in upgrades)
+            {
+                upgrade.ApplyTo(projectile);
+            }
+        }
+
+        private (Direction2, Velocity3) getMuzzleVelocity()
+        {
             var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
             var velocityXY = direction * Parameters.MuzzleSpeed;
 
-            Game.Add(
-                new Projectile(
-                    Parameters.Projectile,
-                    Weapon.Position,
-                    velocityXY.WithZ(velocityZ),
-                    Weapon.Owner as Building
-                )
-            );
+            var velocityZ = targeter?.Target is { } target
+                ? verticalSpeedCompensationToTarget(target)
+                : Speed.Zero;
+
+            return (direction, velocityXY.WithZ(velocityZ));
         }
 
-        private Speed verticalSpeedCompensationToTarget(IEnemyUnitTargeter targeter)
+        private Speed verticalSpeedCompensationToTarget(IPositionable target)
         {
-            var difference = targeter.Target.Position - Weapon.Position;
+            var difference = target.Position - Weapon.Position;
             var distance = difference.Length;
             // TODO: the division below should work in spacetime
             var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleSpeed.NumericValue);

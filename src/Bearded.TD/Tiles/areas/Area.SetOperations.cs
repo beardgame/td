@@ -23,7 +23,7 @@ namespace Bearded.TD.Tiles
             var setBuilder = ImmutableHashSet.CreateBuilder<Tile>();
             foreach (var area in areas)
             {
-                setBuilder.UnionWith(area.Enumerated);
+                setBuilder.UnionWith(area);
             }
 
             return new HashSetArea(setBuilder.ToImmutable());

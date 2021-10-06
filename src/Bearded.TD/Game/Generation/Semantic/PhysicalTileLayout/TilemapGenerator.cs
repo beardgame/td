@@ -53,7 +53,18 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
                 behavior.Generate(context);
             }
 
+            ensureBuildingsAreOnFloor(context);
             ensureConnectedness(context);
+        }
+
+        private void ensureBuildingsAreOnFloor(NodeGenerationContext context)
+        {
+            var nonFloorTiles =
+                context.Content.BuildingTiles.Where(t => context.Tiles.Get(t).Type != TileType.Floor);
+            foreach (var tile in nonFloorTiles)
+            {
+                context.Tiles.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));
+            }
         }
 
         private void ensureConnectedness(NodeGenerationContext context)
@@ -63,10 +74,12 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             if (connections.Length < 2)
                 return;
 
-            var expensivePathMinimum = context.Tiles.All.Count * 2;
+            var tileCount = context.Tiles.All.Count;
+            var expensivePathMinimum = tileCount * 2;
+            var buildingTileCost = tileCount * expensivePathMinimum;
 
             var pathfinder = Pathfinder
-                .WithTileCosts(t => context.Tiles.Get(t).Type == TileType.Floor ? 1 : expensivePathMinimum, 1)
+                .WithTileCosts(tileCost, 1)
                 .InArea(context.Tiles.All);
 
             foreach (var tile in connections.Skip(1))
@@ -91,6 +104,15 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             foreach (var tile in connections)
             {
                 setFloor(tile);
+            }
+
+            double? tileCost(Tile tile)
+            {
+                if (context.Content.BuildingTiles.Contains(tile))
+                {
+                    return buildingTileCost;
+                }
+                return context.Tiles.Get(tile).Type == TileType.Floor ? 1 : expensivePathMinimum;
             }
 
             void setFloor(Tile tile) => context.Tiles.Set(tile, new TileGeometry(TileType.Floor, 0, Unit.Zero));

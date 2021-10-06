@@ -20,18 +20,14 @@ namespace Bearded.TD.Tiles
                 this.radius = radius;
             }
 
-            public int Count => Enumerated.Count();
+            public int Count => enumerated.Count();
 
             public bool Contains(Tile tile) =>
                 (Level.GetPosition(tile) - center).LengthSquared < radius.Squared;
 
-            public IEnumerable<Tile> Enumerated => Level.TilesWithCenterInCircle(center, radius);
+            private IEnumerable<Tile> enumerated => Level.TilesWithCenterInCircle(center, radius);
 
-            public IEnumerator<Tile> GetEnumerator() => Enumerated.GetEnumerator();
-
-            public ImmutableHashSet<Tile> ToImmutableHashSet() => Enumerated.ToImmutableHashSet();
-
-            public ImmutableArray<Tile> ToImmutableArray() => Enumerated.ToImmutableArray();
+            public IEnumerator<Tile> GetEnumerator() => enumerated.GetEnumerator();
         }
     }
 }

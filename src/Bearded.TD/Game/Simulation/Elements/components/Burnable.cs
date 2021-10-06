@@ -30,7 +30,7 @@ namespace Bearded.TD.Game.Simulation.Elements
 
         public Burnable(IBurnableParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             combustable = new Combustable(
                 Parameters.FuelAmount,
@@ -43,6 +43,12 @@ namespace Bearded.TD.Game.Simulation.Elements
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
             Events.Subscribe<TookDamage>(this);
             Events.Subscribe<Spark>(this);
+        }
+
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe<TookDamage>(this);
+            Events.Unsubscribe<Spark>(this);
         }
 
         private void onExtinguished()

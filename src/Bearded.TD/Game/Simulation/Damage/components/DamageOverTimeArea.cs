@@ -16,9 +16,9 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters) {}
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
-            damageSource = Owner.FindInComponentOwnerTree<IDamageSource>().ValueOrDefault(() => null);
+             Owner.TryGetSingleComponentInOwnerTree(out damageSource);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -55,7 +55,7 @@ namespace Bearded.TD.Game.Simulation.Damage
                         && unit.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
                     {
                         var result = damageReceiver.Damage(damageInfo);
-                        Events.Send(new CausedDamage(unit, result));
+                        Events.Send(new CausedDamage(result));
                     }
                 }
             }

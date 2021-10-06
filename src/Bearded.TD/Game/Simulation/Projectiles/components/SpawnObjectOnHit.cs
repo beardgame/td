@@ -16,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
         {
         }
 
-        protected override void Initialize()
+        protected override void OnAdded()
         {
             if (Parameters.OnHitEnemy)
             {
@@ -26,6 +26,19 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             if (Parameters.OnHitLevel)
             {
                 Events.Subscribe<HitLevel>(this);
+            }
+        }
+
+        public override void OnRemoved()
+        {
+            if (Parameters.OnHitEnemy)
+            {
+                Events.Unsubscribe<HitEnemy>(this);
+            }
+
+            if (Parameters.OnHitLevel)
+            {
+                Events.Unsubscribe<HitLevel>(this);
             }
         }
 

@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 {
     sealed class DamageReceiver<T> : Component<T>, IDamageReceiver
     {
-        protected override void Initialize() {}
+        protected override void OnAdded() {}
 
         public DamageResult Damage(DamageInfo damageInfo)
         {
@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Simulation.Damage
             Events.Preview(ref takeDamage);
             var result = new DamageResult(takeDamage.Damage.WithAdjustedAmount(takeDamage.DamageTaken));
             Events.Send(new TookDamage(damageInfo.Source, result));
+            damageInfo.Source?.AttributeDamage(result);
             return result;
         }
 

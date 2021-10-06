@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -22,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly ComponentCollection<T> components;
         protected ComponentEvents Events { get; } = new();
 
-        public Maybe<IComponentOwner> Parent => Maybe.Nothing;
+        public IComponentOwner? Parent => null;
 
         protected IBuildingBlueprint Blueprint { get; }
 
@@ -62,9 +61,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void AddComponent(IComponent<T> component)
         {
+            // TODO: why is this restriction even here?
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             DebugAssert.State.Satisfies(Game != null, "Cannot add components before adding the game object to a game.");
             components.Add(component);
+        }
+
+        public void RemoveComponent(IComponent<T> component)
+        {
+            components.Remove(component);
         }
 
         protected abstract IEnumerable<IComponent<T>> InitializeComponents();

@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Footprints
 
         public FootprintGroup(Content.Models.IFootprintGroup parameters) : base(parameters) { }
 
-        protected override void Initialize() { }
+        protected override void OnAdded() { }
         public override void Update(TimeSpan elapsedTime) { }
         public override void Draw(CoreDrawers drawers) { }
     }

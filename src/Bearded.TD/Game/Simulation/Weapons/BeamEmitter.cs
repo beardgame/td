@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -111,13 +110,15 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 return;
             }
 
+            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
+
             var result = damageReceiver.Damage(new DamageInfo(
                 StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
                 DamageType.Energy,
-                Weapon.Owner as Building
+                damageSource
             ));
             lastDamageTime = Game.Time;
-            Events.Send(new CausedDamage(target, result));
+            Events.Send(new CausedDamage(result));
         }
 
         public override void Draw(CoreDrawers drawers)
