@@ -27,6 +27,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=75b05185_002Dbad7_002D4aca_002Dadfa_002Df8ef13057e1b/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Static, Instance" AccessRightKinds="Private" Description="Methods (private)"&gt;&lt;ElementKinds&gt;&lt;Kind Name="METHOD" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=a340719a_002D813a_002D473a_002D907f_002D3546304165ab/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Static, Instance" AccessRightKinds="Private" Description="Property (private)"&gt;&lt;ElementKinds&gt;&lt;Kind Name="PROPERTY" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=d82eddb3_002Dbdf5_002D4cd7_002Dbe6c_002De21afeae529c/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Static, Instance" AccessRightKinds="Private" Description="Methods, fields &amp;amp; properties (private)"&gt;&lt;ElementKinds&gt;&lt;Kind Name="FIELD" /&gt;&lt;Kind Name="METHOD" /&gt;&lt;Kind Name="PROPERTY" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;&lt;/Policy&gt;</s:String>
+	<s:String x:Key="/Default/CustomTools/CustomToolsData/@EntryValue"></s:String>
 	
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpAttributeForSingleLineMethodUpgrade/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpKeepExistingMigration/@EntryIndexedValue">True</s:Boolean>
@@ -59,13 +60,15 @@
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
+using JetBrains.Annotations;
 
 namespace $NAMESPACE$
 {
     static class $CLASS$
     {
-        public static IRequest&lt;GameInstance&gt; Request(GameInstance game)
+        public static IRequest&lt;Player, GameInstance&gt; Request(GameInstance game)
             =&gt; new Implementation(game);
 
         private sealed class Implementation : UnifiedRequestCommand
@@ -77,7 +80,7 @@ namespace $NAMESPACE$
                 this.game = game;
             }
 
-            public override bool CheckPreconditions() =&gt; true;
+            public override bool CheckPreconditions(Player actor) =&gt; true;
 
             public override void Execute()
             {
@@ -89,7 +92,7 @@ namespace $NAMESPACE$
 
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
-            // ReSharper disable once UnusedMember.Local
+            [UsedImplicitly]
             public Serializer() { }
 
             protected override UnifiedRequestCommand GetSerialized(GameInstance game)
