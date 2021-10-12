@@ -118,14 +118,13 @@ namespace Bearded.TD.UI.Factories
                     progressBar.Value.Progress.SourceUpdated += progress =>
                         barControl.Anchor(a => a.Left(relativePercentage: progress));
                 }
-                else
-                {
-                    button.Add(new ButtonBackgroundEffect(() => button.IsEnabled));
-                }
+                button.Add(new ButtonBackgroundEffect(() =>
+                    button.IsEnabled && (progressBar?.Progress.Value ?? 0) == 0));
 
                 if (isEnabled != null)
                 {
                     isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
+                    button.IsEnabled = isEnabled.Value;
                 }
 
                 if (onClick != null)
