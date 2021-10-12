@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Shared.Events;
@@ -28,26 +27,33 @@ namespace Bearded.TD.Game.Simulation.Reports
             }
         }
 
-        public static void AggregateForever(ComponentEvents events, Action<IReport> reportConsumer)
+        public static void AggregateForever(ComponentEvents events, IReportConsumer reportConsumer)
         {
             var existingReports = new List<IReport>();
             events.Send(new GatherReports(existingReports));
-            existingReports.ForEach(reportConsumer);
-            events.Subscribe(new AddReportListener(reportConsumer));
+            existingReports.ForEach(reportConsumer.OnReportAdded);
+            var reportListener = new ReportListener(reportConsumer);
+            events.Subscribe<ReportAdded>(reportListener);
+            events.Subscribe<ReportRemoved>(reportListener);
         }
 
-        private sealed class AddReportListener : IListener<ReportAdded>
+        private sealed class ReportListener : IListener<ReportAdded>, IListener<ReportRemoved>
         {
-            private readonly Action<IReport> reportConsumer;
+            private readonly IReportConsumer reportConsumer;
 
-            public AddReportListener(Action<IReport> reportConsumer)
+            public ReportListener(IReportConsumer reportConsumer)
             {
                 this.reportConsumer = reportConsumer;
             }
 
             public void HandleEvent(ReportAdded @event)
             {
-                reportConsumer(@event.Report);
+                reportConsumer.OnReportAdded(@event.Report);
+            }
+
+            public void HandleEvent(ReportRemoved @event)
+            {
+                reportConsumer.OnReportRemoved(@event.Report);
             }
         }
     }

@@ -8,7 +8,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Reports
 {
-    sealed class ReportSubject<T> : Component<T>, IReportSubject
+    sealed class ReportSubject<T> : Component<T>, IReportSubject, ReportAggregator.IReportConsumer
         where T : IComponentOwner, INamed
     {
         private readonly SortedSet<IReport> reports =
@@ -22,8 +22,18 @@ namespace Bearded.TD.Game.Simulation.Reports
 
         protected override void OnAdded()
         {
-            ReportAggregator.AggregateForever(Events, r => reports.Add(r));
+            ReportAggregator.AggregateForever(Events, this);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
+        }
+
+        public void OnReportAdded(IReport report)
+        {
+            reports.Add(report);
+        }
+
+        public void OnReportRemoved(IReport report)
+        {
+            reports.Remove(report);
         }
 
         public override void Update(TimeSpan elapsedTime) { }
