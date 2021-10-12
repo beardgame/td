@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
@@ -39,6 +40,7 @@ namespace Bearded.TD.UI.Controls
                 IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
                 IUpgradeReport upgradeReport =>
                     new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
+                IManualControlReport manualControlReport => new ManualControlReportControl(manualControlReport),
 
                 _ => throw new InvalidOperationException($"Cannot create control for report {report}")
             };

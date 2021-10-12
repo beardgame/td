@@ -17,6 +17,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
         IBuildingState? BuildingState { get; }
         Direction2 NeutralDirection { get; }
         Angle? MaximumTurningAngle { get; }
+        void OverrideTargeting(IManualTarget3 target);
+        void StopTargetOverride();
     }
 
     [Component("turret")]
@@ -25,6 +27,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     {
         private Weapon weapon = null!;
         private ITransformable transform = null!;
+        private TargetOverride? targetOverride;
 
         public IBuildingState? BuildingState { get; private set; }
         public Position3 Position =>
@@ -54,6 +57,23 @@ namespace Bearded.TD.Game.Simulation.Weapons
             weapon.Draw(drawers);
         }
 
+        public void OverrideTargeting(IManualTarget3 target)
+        {
+            StopTargetOverride();
+
+            targetOverride = new TargetOverride(target);
+            weapon.AddComponent(targetOverride);
+        }
+
+        public void StopTargetOverride()
+        {
+            if (targetOverride == null)
+                return;
+
+            weapon.RemoveComponent(targetOverride);
+            targetOverride = null;
+        }
+
         Weapon ITurret.Weapon => weapon;
         IGameObject ITurret.Owner => Owner;
 
@@ -74,6 +94,38 @@ namespace Bearded.TD.Game.Simulation.Weapons
             removed |= base.RemoveUpgradeEffect(effect);
             removed |= weapon.RemoveUpgradeEffect(effect);
             return removed;
+        }
+
+        private sealed class TargetOverride : Component<Weapon>,
+            IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
+        {
+            private readonly IManualTarget3 target;
+
+            IPositionable? ITargeter<IPositionable>.Target => this;
+
+            public Direction2 AimDirection { get; private set; }
+            public Position3 Position { get; private set; }
+            public bool TriggerPulled { get; private set; }
+
+            public TargetOverride(IManualTarget3 target)
+            {
+                this.target = target;
+            }
+
+            protected override void OnAdded()
+            {
+            }
+
+            public override void Update(TimeSpan elapsedTime)
+            {
+                Position = target.Target;
+                AimDirection = Direction2.Between(Owner.Position.NumericValue.Xy, Position.NumericValue.Xy);
+                TriggerPulled = target.TriggerDown;
+            }
+
+            public override void Draw(CoreDrawers drawers)
+            {
+            }
         }
     }
 }
