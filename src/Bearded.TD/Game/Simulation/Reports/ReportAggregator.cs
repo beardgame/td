@@ -6,10 +6,12 @@ namespace Bearded.TD.Game.Simulation.Reports
 {
     static partial class ReportAggregator
     {
-        public static void Register(ComponentEvents events, IReport report)
+        public static IReportHandle Register(ComponentEvents events, IReport report)
         {
             events.Send(new ReportAdded(report));
-            events.Subscribe(new GatherReportsListener(report));
+            var listener = new GatherReportsListener(report);
+            events.Subscribe(listener);
+            return new ReportHandle(events, report, listener);
         }
 
         private sealed class GatherReportsListener : IListener<GatherReports>
