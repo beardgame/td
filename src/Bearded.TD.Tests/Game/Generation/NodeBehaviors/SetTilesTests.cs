@@ -9,17 +9,12 @@ using FsCheck.Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
-    public class SetTilesTests
+    public sealed class SetTilesTests
     {
         private INodeBehavior<Node> behaviourWithParameters(TileType type)
             => new SetTiles(new SetTiles.BehaviorParameters(type));
 
-        public SetTilesTests()
-        {
-            Arb.Register<TilemapGenerators>();
-        }
-
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void MakesNoChangesWithEmptyNode(TileType type)
         {
             var test = TestContext.CreateEmpty();
@@ -30,7 +25,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void SetsAllTilesInNodeToGivenType(TileType type)
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
@@ -45,7 +40,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void SetsNoTilesForEmptySelection(TileType type)
         {
             var test = TestContext.CreateForHexagonalNodeWithRadius(2);
@@ -57,7 +52,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             test.AssertSubjectTilemapEqualsExpectedTilemap();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void SetsExactlyThoseTilesInSelection(TileType type, int seed)
         {
             var random = new Random(seed);

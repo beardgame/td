@@ -2,22 +2,16 @@ using System;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
 using FluentAssertions;
-using FsCheck;
 using FsCheck.Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation
 {
     public sealed class AreaTagValuesTests
     {
-        public AreaTagValuesTests()
-        {
-            Arb.Register<TileGenerator>();
-        }
-
         private static AreaTagValues emptyAreaTags() => new(Area.Empty());
         private static AreaTagValues tagsWithTiles(params Tile[] tiles) => new(Area.From(tiles));
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void IfEmptyWontAllowSettingTagValueForAnyTile(Tile tile)
         {
             var tags = emptyAreaTags();
@@ -27,7 +21,7 @@ namespace Bearded.TD.Tests.Game.Generation
             setTile.Should().Throw<ArgumentException>();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void IfEmptyWontAllowGettingTagValueForAnyTile(Tile tile)
         {
             var tags = emptyAreaTags();
@@ -37,7 +31,7 @@ namespace Bearded.TD.Tests.Game.Generation
             getTile.Should().Throw<ArgumentException>();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AllowsSettingTagValueForAKnownTile(Tile tile)
         {
             var tags = tagsWithTiles(tile);
@@ -47,7 +41,7 @@ namespace Bearded.TD.Tests.Game.Generation
             setTile.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AllowsGettingTagValueForAKnownTile(Tile tile)
         {
             var tags = tagsWithTiles(tile);
@@ -57,7 +51,7 @@ namespace Bearded.TD.Tests.Game.Generation
             getTile.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AllowsSettingTagValueForAnyKnownTile(Tile tile, Tile otherTile)
         {
             var tags = tagsWithTiles(new Tile(1, 2), tile, otherTile);
@@ -67,7 +61,7 @@ namespace Bearded.TD.Tests.Game.Generation
             setTile.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void AllowsGettingTagValueForAnyKnownTile(Tile tile, Tile otherTile)
         {
             var tags = tagsWithTiles(new Tile(1, 2), tile, otherTile);
@@ -77,7 +71,7 @@ namespace Bearded.TD.Tests.Game.Generation
             getTile.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void UnsetTagValueIsZero(Tile tile)
         {
             var tags = tagsWithTiles(tile);
@@ -87,7 +81,7 @@ namespace Bearded.TD.Tests.Game.Generation
             value.Should().Be(0);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void ReturnsLastValueSet(Tile tile, double value)
         {
             var tags = tagsWithTiles(tile);
@@ -100,7 +94,7 @@ namespace Bearded.TD.Tests.Game.Generation
             tags[tile].Should().Be(value);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void ReturnsDifferentSetValuesForDifferentTiles(Tile tile, Tile otherTile, double value, double otherValue)
         {
             if (tile == otherTile)
@@ -115,7 +109,7 @@ namespace Bearded.TD.Tests.Game.Generation
             tags[otherTile].Should().Be(otherValue);
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void ReturnsZeroForATileEvenIfAnotherWasSet(Tile tile, Tile otherTile, double value)
         {
             if (tile == otherTile)
