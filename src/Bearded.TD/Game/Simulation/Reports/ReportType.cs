@@ -7,6 +7,7 @@ namespace Bearded.TD.Game.Simulation.Reports
         EntityProperties,
         EntityActions,
         Effectivity,
+        ManualControl,
         Upgrades,
     }
 }

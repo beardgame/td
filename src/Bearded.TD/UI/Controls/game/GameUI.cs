@@ -40,6 +40,8 @@ namespace Bearded.TD.UI.Controls
         public event VoidEventHandler? GameOverTriggered;
         public event VoidEventHandler? GameLeft;
 
+        public readonly Binding<bool> ShowDiegeticUI = new(true);
+
         private NavigationController? entityStatusNavigation;
 
         private GameDebugOverlay? debugOverlay;

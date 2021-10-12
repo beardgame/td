@@ -23,35 +23,47 @@ namespace Bearded.TD.UI.Controls
             CanBeFocused = true;
 
             Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
-            Add(new ActionBarControl(gameUI.ActionBar)
-                .Anchor(a => a
-                    .Left(width: 160)
-                    .Top(margin: -200, height: 400, relativePercentage: .5))
-                .BindIsVisible(Binding.Combine(
-                    isGameRunning, isEntityStatusOpen,
-                    (gameRunning, entityStatusOpen) => gameRunning && !entityStatusOpen)));
+
             var gameStatusControl = new GameStatusUIControl(gameUI.GameStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
                     .Top(margin: 0, height: 220))
                 .Subscribe(ctrl => ctrl.TechnologyButtonClicked += () => technologyUIControl.IsVisible = true)
                 .BindIsVisible(isGameRunning);
-            Add(gameStatusControl);
-            Add(new PlayerStatusUIControl(gameUI.PlayerStatusUI)
+
+            var nonDiegeticUIWrapper = CompositeControl.CreateClickThrough();
+            nonDiegeticUIWrapper.BindIsVisible(gameUI.ShowDiegeticUI);
+            nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar)
+                .Anchor(a => a
+                    .Left(width: 160)
+                    .Top(margin: -200, height: 400, relativePercentage: .5))
+                .BindIsVisible(Binding.Combine(
+                    isGameRunning, isEntityStatusOpen,
+                    (gameRunning, entityStatusOpen) => gameRunning && !entityStatusOpen)));
+            nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar)
+                .Anchor(a => a
+                    .Left(width: 160)
+                    .Top(margin: -200, height: 400, relativePercentage: .5))
+                .BindIsVisible(Binding.Combine(
+                    isGameRunning, isEntityStatusOpen,
+                    (gameRunning, entityStatusOpen) => gameRunning && !entityStatusOpen)));
+            nonDiegeticUIWrapper.Add(gameStatusControl);
+            nonDiegeticUIWrapper.Add(new PlayerStatusUIControl(gameUI.PlayerStatusUI)
                 .Anchor(a => a
                     .Right(width: 200)
                     .Below(gameStatusControl, height: 100))
                 .BindIsVisible(isGameRunning));
+            Add(nonDiegeticUIWrapper);
 
             gameUI.EntityStatusOpened += _ => isEntityStatusOpen.SetFromSource(true);
             gameUI.EntityStatusClosed += () => isEntityStatusOpen.SetFromSource(false);
 
-            gamePausedControl = new GamePausedControl {IsVisible = false}
+            gamePausedControl = new GamePausedControl { IsVisible = false }
                 .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked);
             Add(gamePausedControl);
 
-            technologyUIControl = new TechnologyUIControl(gameUI.TechnologyUI) {IsVisible = false}
+            technologyUIControl = new TechnologyUIControl(gameUI.TechnologyUI) { IsVisible = false }
                 .Anchor(a => a
                     .Top(margin: 80)
                     .Bottom(margin: 80)
@@ -100,10 +112,12 @@ namespace Bearded.TD.UI.Controls
                     {
                         onGameResume();
                     }
+
                     break;
                 default:
                     return false;
             }
+
             return true;
         }
 
@@ -125,7 +139,7 @@ namespace Bearded.TD.UI.Controls
             Add(new GameEndControl("you lose")
                 .Anchor(a => a
                     .Top(margin: 0, height: 64)
-                    .Left(relativePercentage: .5, margin: - 120, width: 240))
+                    .Left(relativePercentage: .5, margin: -120, width: 240))
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked));
         }
 
@@ -134,7 +148,7 @@ namespace Bearded.TD.UI.Controls
             Add(new GameEndControl("you win")
                 .Anchor(a => a
                     .Top(margin: 0, height: 64)
-                    .Left(relativePercentage: .5, margin: - 120, width: 240))
+                    .Left(relativePercentage: .5, margin: -120, width: 240))
                 .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked));
         }
     }
