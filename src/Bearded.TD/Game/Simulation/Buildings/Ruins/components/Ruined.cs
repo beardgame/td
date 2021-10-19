@@ -99,6 +99,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
 
         public void HandleEvent(RepairFinished @event)
         {
+            Events.Send(new ConvertToFaction(@event.RepairingFaction));
             // We need to defer deletion because we want to unsubscribe from this event.
             deleteNextFrame = true;
         }
