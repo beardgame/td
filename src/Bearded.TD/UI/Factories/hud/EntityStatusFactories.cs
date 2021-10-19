@@ -119,6 +119,11 @@ namespace Bearded.TD.UI.Factories
                 {
                     control.RemoveAllChildren();
                     disposer.DisposeAndReset();
+
+                    void onReportsUpdated() => updateReports(subject);
+                    subject.ReportsUpdated += onReportsUpdated;
+                    disposer.AddOnDispose(() => subject.ReportsUpdated -= onReportsUpdated);
+
                     var column = control.BuildScrollableColumn();
                     foreach (var r in subject.Reports)
                     {

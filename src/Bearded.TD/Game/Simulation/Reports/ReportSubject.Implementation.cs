@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Reports
@@ -20,6 +21,8 @@ namespace Bearded.TD.Game.Simulation.Reports
         public Faction? Faction => factionProvider?.Faction;
         public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
+        public event VoidEventHandler? ReportsUpdated;
+
         protected override void OnAdded()
         {
             ReportAggregator.AggregateForever(Events, this);
@@ -29,11 +32,13 @@ namespace Bearded.TD.Game.Simulation.Reports
         public void OnReportAdded(IReport report)
         {
             reports.Add(report);
+            ReportsUpdated?.Invoke();
         }
 
         public void OnReportRemoved(IReport report)
         {
             reports.Remove(report);
+            ReportsUpdated?.Invoke();
         }
 
         public override void Update(TimeSpan elapsedTime) { }
