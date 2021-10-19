@@ -161,7 +161,6 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 {
                     resources.ProvideResources(expectedResourcesGiven - resourcesGiven);
                     resourcesGiven = expectedResourcesGiven;
-                    Console.WriteLine(resourcesGiven);
                 }
             }
 
