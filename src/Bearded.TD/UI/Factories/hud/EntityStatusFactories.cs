@@ -12,13 +12,13 @@ namespace Bearded.TD.UI.Factories
     static class EntityStatusFactories
     {
         public static Layouts.Layout AddEntityStatus(
-            this Layouts.Layout layout, BuilderFunc<Builder> builderFunc)
+            this Layouts.Layout layout, BuilderFunc<Builder> builderFunc, out Disposer disposer)
         {
             var builder = new Builder();
             builderFunc(builder);
             var details = new ControlContainer { new BackgroundBox() };
             layout
-                .DockFixedSizeToLeft(builder.Build(details), Constants.UI.Menu.Width)
+                .DockFixedSizeToLeft(builder.Build(details, out disposer), Constants.UI.Menu.Width)
                 .DockFixedSizeToLeft(details, Constants.UI.Menu.Width);
             return layout;
         }
@@ -56,7 +56,7 @@ namespace Bearded.TD.UI.Factories
                 return this;
             }
 
-            public Control Build(ControlContainer detailsContainer)
+            public Control Build(ControlContainer detailsContainer, out Disposer disposer)
             {
                 if (entityName == null)
                 {
@@ -83,9 +83,10 @@ namespace Bearded.TD.UI.Factories
                     layout.DockFixedSizeToTop(buildTextAttributes(out var height), height);
                 }
 
+                disposer = new Disposer();
                 if (reportSubject != null)
                 {
-                    layout.FillContent(buildReports(detailsContainer));
+                    layout.FillContent(buildReports(detailsContainer, disposer));
                 }
 
                 return control;
@@ -104,9 +105,8 @@ namespace Bearded.TD.UI.Factories
                 return control;
             }
 
-            private Control buildReports(ControlContainer detailsContainer)
+            private Control buildReports(ControlContainer detailsContainer, Disposer disposer)
             {
-                var disposer = new Disposer();
                 var control = new CompositeControl();
                 reportSubject!.SourceUpdated += updateReports;
                 if (reportSubject.Value != null)

@@ -3,6 +3,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Utilities;
 using Bearded.UI.Navigation;
+using Bearded.Utilities;
 using JetBrains.Annotations;
 
 namespace Bearded.TD.UI.Controls
@@ -18,6 +19,8 @@ namespace Bearded.TD.UI.Controls
         public GameInstance Game => game!;
         public IPulse Pulse => pulse;
 
+        public VoidEventHandler? Closing;
+
         protected override void Initialize(DependencyResolver dependencies, IReportSubject subject)
         {
             base.Initialize(dependencies, subject);
@@ -27,6 +30,13 @@ namespace Bearded.TD.UI.Controls
             pulse = new Pulse(game.State, Constants.UI.Statistics.TimeBetweenUIUpdates);
         }
 
+
+        public override void Terminate()
+        {
+            Closing?.Invoke();
+            base.Terminate();
+        }
+
         public override void Update(UpdateEventArgs args)
         {
             pulse.Update();
@@ -34,7 +44,7 @@ namespace Bearded.TD.UI.Controls
 
         public void Close()
         {
-            Navigation.Exit();
+            Navigation?.Exit();
         }
     }
 }
