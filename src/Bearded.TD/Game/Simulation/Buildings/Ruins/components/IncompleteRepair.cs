@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             IIncompleteRepair,
             IRepairSyncer,
             ProgressTracker.IProgressSubject
-        where T : IComponentOwner<T>, INamed
+        where T : IComponentOwner<T>, IGameObject, INamed
     {
         private readonly Faction repairingFaction;
         private readonly ProgressTracker progressTracker;
@@ -56,6 +56,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
         public void OnComplete()
         {
             Events.Send(new RepairFinished(repairingFaction));
+            Owner.Game.Meta.Events.Send(new BuildingRepairFinished(Owner.Name, Owner));
         }
 
         public void OnCancel()

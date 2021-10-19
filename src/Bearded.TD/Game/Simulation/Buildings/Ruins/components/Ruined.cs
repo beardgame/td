@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             IRuined,
             IListener<RepairCancelled>,
             IListener<RepairFinished>
-        where T : IComponentOwner<T>, INamed
+        where T : IComponentOwner<T>, IGameObject, INamed
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
         private ReportAggregator.IReportHandle? reportHandle;
