@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.Graphics;
@@ -11,6 +12,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Meta
 {
@@ -20,7 +22,13 @@ namespace Bearded.TD.Game.Meta
         private const float playerCursorLightRadius = 5;
 
         private const float otherCursorLightHeight = 1;
-        private const float otherCursorLightRadius = 2.5f;
+        private const float otherCursorLightMinRadius = 2.5f;
+        private const float otherCursorLightMaxRadius = 5f;
+        private const float otherCursorLightMinAlpha = .5f;
+        private const float otherCursorLightMaxAlpha = .9f;
+
+        private const float momentumFactor = 1E-5f;
+        private const float momentumDecayPerSecond = .99999f;
 
         private static readonly TimeSpan timeBetweenSyncs = .05.S();
 
@@ -48,14 +56,40 @@ namespace Bearded.TD.Game.Meta
         {
             if (!cursors.TryGetValue(p, out var currentData))
             {
-                cursors[p] = new PlayerCursorData(pos, game.State.Time, pos, blueprint);
+                cursors[p] = new PlayerCursorData(pos, 0f, game.State.Time, pos, 0f, Velocity2.Zero, blueprint);
                 return;
             }
+
+            var timeSinceLastSync = game.State.Time - currentData.LastSyncedTime;
+            var velocitySinceLastSync = timeSinceLastSync == TimeSpan.Zero
+                ? currentData.VelocityBeforeLastSyncTime
+                : (pos - currentData.LastSyncedLocation) / timeSinceLastSync;
+
+            // Decay
+            var decay = MathF.Pow(1 - momentumDecayPerSecond, (float)timeSinceLastSync.NumericValue);
+            var momentum = MathF.Max(0, currentData.LastSyncedMomentum * decay);
+            // New energy
+            if (timeSinceLastSync > TimeSpan.Zero)
+            {
+                var averageVelocitySquared =
+                    (0.5f * (velocitySinceLastSync.Length + currentData.VelocityBeforeLastSyncTime.Length)).Squared;
+
+                var oldDirection = currentData.VelocityBeforeLastSyncTime.Direction;
+                var newDirection = velocitySinceLastSync.Direction;
+                var angularVelocity = (newDirection - oldDirection).Abs() / timeSinceLastSync;
+
+                momentum += (float)timeSinceLastSync.NumericValue * momentumFactor *
+                    averageVelocitySquared.NumericValue * angularVelocity.NumericValue;
+            }
+
             cursors[p] = currentData with
             {
                 LastSyncedLocation = pos,
+                LastSyncedMomentum = momentum,
                 LastSyncedTime = game.State.Time,
                 LocationAtLastSyncTime = currentData.LocationAtTime(game.State.Time),
+                MomentumAtLastSyncTime = currentData.MomentumAtTime(game.State.Time),
+                VelocityBeforeLastSyncTime = velocitySinceLastSync,
                 AttachedGhost = blueprint,
             };
         }
@@ -134,25 +168,50 @@ namespace Bearded.TD.Game.Meta
 
             foreach (var (player, cursor) in cursors)
             {
-                if (player == game.Me) continue;
+                if (player == game.Me)
+                {
+                    Console.WriteLine(cursor.MomentumAtTime(game.State.Time));
+                    continue;
+                }
+
+                var pos = cursor.LocationAtTime(game.State.Time);
+                var momentum = cursor.MomentumAtTime(game.State.Time);
+
                 drawers.PointLight.Draw(
-                    cursor.LocationAtTime(game.State.Time).NumericValue.WithZ(otherCursorLightHeight),
-                    radius: otherCursorLightRadius,
-                    color: player.Color
+                    pos.NumericValue.WithZ(otherCursorLightHeight),
+                    radius: radiusForMomentum(momentum),
+                    color: player.Color * alphaForMomentum(momentum)
                 );
             }
         }
 
+        private static float radiusForMomentum(float momentum) =>
+            otherCursorLightMinRadius +
+            lerpFactorForMomentum(momentum) * (otherCursorLightMaxRadius - otherCursorLightMinRadius);
+
+        private static float alphaForMomentum(float momentum) =>
+            otherCursorLightMinAlpha +
+            lerpFactorForMomentum(momentum) * (otherCursorLightMaxAlpha - otherCursorLightMinAlpha);
+
+        private static float lerpFactorForMomentum(float momentum) => MathF.Max(0, 1 - 1 / (1 + momentum));
+
         private sealed record PlayerCursorData(
             Position2 LastSyncedLocation,
+            float LastSyncedMomentum,
             Instant LastSyncedTime,
             Position2 LocationAtLastSyncTime,
+            float MomentumAtLastSyncTime,
+            Velocity2 VelocityBeforeLastSyncTime,
             IBuildingBlueprint? AttachedGhost,
             InstantiatedGhost? InstantiatedGhost = null)
         {
             public Position2 LocationAtTime(Instant time) =>
                 Position2.Lerp(
                     LocationAtLastSyncTime, LastSyncedLocation, (float) ((time - LastSyncedTime) / timeBetweenSyncs));
+
+            public float MomentumAtTime(Instant time) =>
+                Interpolate.Lerp(
+                    MomentumAtLastSyncTime, LastSyncedMomentum, (float)((time - LastSyncedTime) / timeBetweenSyncs));
         }
 
         private sealed record InstantiatedGhost(
