@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Camera
         private float zoomSpeed =>
             Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
 
-        private Maybe<Position2> goalPosition;
+        private Position2? goalPosition;
         private float goalDistance;
         private Position2 scrollAnchor;
         private Vector2 zoomAnchor;
@@ -50,9 +50,10 @@ namespace Bearded.TD.Game.Camera
         {
             if (isGrabbed) return;
 
-            goalPosition.Match(
-                onValue: pos => moveToGoalPosition(args, pos),
-                onNothing: () => updatePositionFromAggregatedOffset(args));
+            if (goalPosition is { } position)
+                moveToGoalPosition(args, position);
+            else
+                updatePositionFromAggregatedOffset(args);
         }
 
         private void moveToGoalPosition(UpdateEventArgs args, Position2 goalPos)
@@ -65,7 +66,7 @@ namespace Bearded.TD.Game.Camera
             if (distanceSquared <= maxEpsilonSquared)
             {
                 camera.Position = goalPos;
-                goalPosition = Maybe.Nothing;
+                goalPosition = null;
             }
 
             var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
@@ -150,7 +151,7 @@ namespace Bearded.TD.Game.Camera
         /// <remarks>Will be interrupted by other scrolling behaviours.</remarks>
         public void ScrollToWorldPos(Position2 worldPos)
         {
-            goalPosition = Maybe.Just(worldPos);
+            goalPosition = worldPos;
         }
 
         /// <summary>
@@ -214,7 +215,7 @@ namespace Bearded.TD.Game.Camera
 
         private void interruptScrollToPosition()
         {
-            goalPosition = Maybe.Nothing;
+            goalPosition = null;
         }
 
         /// <summary>
