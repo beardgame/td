@@ -1,7 +1,9 @@
 using Bearded.TD.Game;
+using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Controls
@@ -52,10 +54,12 @@ namespace Bearded.TD.UI.Controls
             protected override void OnStart(ICursorHandler cursor)
             {
                 report.StartControl(this);
+                cursor.SetCameraController(new CameraController(Game.CameraController, report, this));
             }
 
             protected override void OnEnd(ICursorHandler cursor)
             {
+                cursor.ResetCameraController();
                 report.EndControl();
             }
 
@@ -68,6 +72,32 @@ namespace Bearded.TD.UI.Controls
                 {
                     Game.PlayerInput.ResetInteractionHandler();
                 }
+            }
+        }
+
+        private class CameraController : ICameraController
+        {
+            private readonly GameCameraController controller;
+            private readonly IManualControlReport report;
+            private readonly IManualTarget2 target;
+
+            public CameraController(GameCameraController controller, IManualControlReport report, IManualTarget2 target)
+            {
+                this.controller = controller;
+                this.report = report;
+                this.target = target;
+            }
+
+            public void HandleInput(InputState input)
+            {
+                var subjectP = report.SubjectPosition;
+                var targetP = target.Target;
+                var cameraP = subjectP + (targetP - subjectP) * 0.5f;
+                controller.ScrollToWorldPos(cameraP);
+            }
+
+            public void Stop()
+            {
             }
         }
     }

@@ -9,7 +9,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.Game.Input
 {
-    sealed class MouseCameraController
+    sealed class DefaultMouseKeyboardCameraController : ICameraController
     {
         private readonly GameCameraController cameraController;
 
@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Input
 
         private bool isDragging;
 
-        public MouseCameraController(GameCameraController cameraController)
+        public DefaultMouseKeyboardCameraController(GameCameraController cameraController)
         {
             this.cameraController = cameraController;
 
@@ -46,6 +46,12 @@ namespace Bearded.TD.Game.Input
             updateScrolling(input);
             updateZoom(input);
             updateDragging(input);
+        }
+
+        public void Stop()
+        {
+            if (isDragging)
+                stopDragging();
         }
 
         private void updateScrolling(InputState input)

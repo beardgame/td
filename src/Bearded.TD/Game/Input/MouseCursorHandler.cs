@@ -8,8 +8,9 @@ namespace Bearded.TD.Game.Input
     sealed class MouseCursorHandler : ICursorHandler
     {
         private readonly GameCamera camera;
-        private readonly MouseCameraController cameraController;
+        private readonly ICameraController defaultCameraController;
         private TileSelection tileSelection;
+        private ICameraController currentCameraController;
 
         public ActionState Click { get; private set; }
         public ActionState Cancel { get; private set; }
@@ -20,13 +21,14 @@ namespace Bearded.TD.Game.Input
         public MouseCursorHandler(GameCamera camera, GameCameraController cameraController)
         {
             this.camera = camera;
-            this.cameraController = new MouseCameraController(cameraController);
+            defaultCameraController = new DefaultMouseKeyboardCameraController(cameraController);
+            currentCameraController = defaultCameraController;
             tileSelection = TileSelection.FromFootprints(FootprintGroup.Single);
         }
 
         public void HandleInput(InputState input)
         {
-            cameraController.HandleInput(input);
+            currentCameraController.HandleInput(input);
             CursorPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
             Click = input.Mouse.Click;
             Cancel = input.Mouse.Cancel;
@@ -43,5 +45,13 @@ namespace Bearded.TD.Game.Input
         {
             CurrentFootprint = tileSelection.GetPositionedFootprint(CursorPosition);
         }
+
+        public void SetCameraController(ICameraController controller)
+        {
+            currentCameraController.Stop();
+            currentCameraController = controller;
+        }
+
+        public void ResetCameraController() => SetCameraController(defaultCameraController);
     }
 }
