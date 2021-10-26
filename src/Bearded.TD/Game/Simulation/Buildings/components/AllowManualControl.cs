@@ -16,24 +16,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    interface IManualControlReport : IReport
-    {
-        void StartControl(IManualTarget2 target);
-        void EndControl();
-    }
-
-    interface IManualTarget2
-    {
-        Position2 Target { get; }
-        bool TriggerDown { get; }
-    }
-
-    interface IManualTarget3
-    {
-        Position3 Target { get; }
-        bool TriggerDown { get; }
-    }
-
     sealed class AllowManualControl<T> : Component<T>, IManualControlReport
         where T : IComponentOwner<T>, IGameObject, IPositionable
     {
