@@ -71,7 +71,7 @@ namespace Bearded.TD.UI.Controls
 
             lastFilledIndex++;
             handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-            labels[lastFilledIndex] = (blueprint.GetName<Building>(), $"{blueprint.GetResourceCost<Building>().NumericValue}");
+            labels[lastFilledIndex] = (blueprint.GetName(), $"{blueprint.GetResourceCost().NumericValue}");
         }
     }
 }

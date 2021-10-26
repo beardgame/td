@@ -137,7 +137,7 @@ namespace Bearded.TD.Game.Meta
                         {
                             InstantiatedGhost = new InstantiatedGhost(
                                 ghost,
-                                TileSelection.FromFootprints(notYetInstantiatedGhost.GetFootprintGroup<Building>()),
+                                TileSelection.FromFootprints(notYetInstantiatedGhost.GetFootprintGroup()),
                                 tileOccupation)
                         };
                         cursors[player] = cursor;
