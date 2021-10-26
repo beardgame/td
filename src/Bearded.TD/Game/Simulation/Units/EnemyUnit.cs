@@ -8,7 +8,6 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
@@ -17,7 +16,6 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -28,13 +26,11 @@ namespace Bearded.TD.Game.Simulation.Units
     sealed class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
         IDamageTarget,
-        IIdable<EnemyUnit>,
         IMortal,
         IPositionable,
         IListener<TookDamage>
     {
-        public Id<EnemyUnit> Id { get; }
-
+        private readonly Id<EnemyUnit> id;
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
         private Unit radius;
@@ -56,7 +52,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
-            Id = id;
+            this.id = id;
             this.blueprint = blueprint;
 
             components = new ComponentCollection<EnemyUnit>(this, events);
@@ -72,7 +68,7 @@ namespace Bearded.TD.Game.Simulation.Units
             components.Add(blueprint.GetComponents());
             components.Add(new DamageReceiver<EnemyUnit>());
             components.Add(new DamageSource<EnemyUnit>());
-            components.Add(new IdProvider<EnemyUnit>(Id));
+            components.Add(new IdProvider<EnemyUnit>(id));
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");

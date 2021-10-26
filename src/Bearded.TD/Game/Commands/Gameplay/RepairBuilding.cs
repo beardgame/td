@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Networking.Serialization;
@@ -88,7 +89,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             public Serializer(Faction faction, Building building, Id<IWorkerTask> taskId)
             {
                 this.faction = faction.Id;
-                this.building = building.Id;
+                this.building = building.FindId();
                 this.taskId = taskId;
             }
 
