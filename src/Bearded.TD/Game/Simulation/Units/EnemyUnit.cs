@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -73,6 +74,7 @@ namespace Bearded.TD.Game.Simulation.Units
             components.Add(blueprint.GetComponents());
             components.Add(new DamageReceiver<EnemyUnit>());
             components.Add(new DamageSource<EnemyUnit>());
+            components.Add(new IdProvider<EnemyUnit>(Id));
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
