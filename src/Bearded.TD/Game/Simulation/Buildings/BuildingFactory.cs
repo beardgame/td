@@ -1,4 +1,5 @@
 using System.Linq;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -22,7 +23,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         // TODO: should return a ComponentGameObject instead
         public Building Create(
-            Id<Building> id, IBuildingBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+            Id<Building> id, IComponentOwnerBlueprint blueprint, Faction faction, PositionedFootprint footprint)
         {
             var building = new Building(blueprint);
             gameState.Add(building);
@@ -49,7 +50,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public Building CreateGhost(
-            IBuildingBlueprint blueprint, Faction faction, out MovableTileOccupation<Building> tileOccupation)
+            IComponentOwnerBlueprint blueprint, Faction faction, out MovableTileOccupation<Building> tileOccupation)
         {
             var ghost = new Building(blueprint);
             gameState.Add(ghost);

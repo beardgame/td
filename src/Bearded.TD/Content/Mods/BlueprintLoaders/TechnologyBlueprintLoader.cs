@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
@@ -17,7 +17,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         : BaseBlueprintLoader<
             ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>
     {
-        private readonly ReadonlyBlueprintCollection<IBuildingBlueprint> buildings;
+        private readonly ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners;
         private readonly ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades;
 
         protected override DependencySelector SelectDependency { get; } = m => m.Blueprints.Technologies;
@@ -25,10 +25,10 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         protected override string RelativePath => "defs/technologies";
 
         public TechnologyBlueprintLoader(BlueprintLoadingContext context,
-            ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
+            ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades) : base(context)
         {
-            this.buildings = buildings;
+            this.componentOwners = componentOwners;
             this.upgrades = upgrades;
         }
 
@@ -65,15 +65,16 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
             var blueprints = new List<ITechnologyBlueprint>();
             var accumulatingBlueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
 
-            var buildingResolver = new BlueprintDependencyResolver<IBuildingBlueprint>(
-                Context.Meta, buildings, Context.LoadedDependencies, m => m.Blueprints.Buildings);
+            var componentOwnerResolver = new BlueprintDependencyResolver<IComponentOwnerBlueprint>(
+                Context.Meta, componentOwners, Context.LoadedDependencies, m => m.Blueprints.ComponentOwners);
             var upgradeResolver = new BlueprintDependencyResolver<IUpgradeBlueprint>(
                 Context.Meta, upgrades, Context.LoadedDependencies, m => m.Blueprints.Upgrades);
             var technologyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
                 Context.Meta, accumulatingBlueprintCollection, Context.LoadedDependencies, m => m.Blueprints.Technologies);
 
             var dependencyResolvers =
-                new TechnologyBlueprintJson.DependencyResolvers(buildingResolver, upgradeResolver, technologyResolver);
+                new TechnologyBlueprintJson.DependencyResolvers(
+                    componentOwnerResolver, upgradeResolver, technologyResolver);
 
             foreach (var jsonModel in sortedJsonModels)
             {

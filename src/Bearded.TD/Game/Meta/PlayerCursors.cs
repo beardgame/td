@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -34,7 +35,7 @@ namespace Bearded.TD.Game.Meta
 
         private readonly GameInstance game;
         private readonly Dictionary<Player, PlayerCursorData> cursors = new();
-        private IBuildingBlueprint? attachedGhost;
+        private IComponentOwnerBlueprint? attachedGhost;
         private Instant nextSync;
 
         public PlayerCursors(GameInstance game)
@@ -42,7 +43,7 @@ namespace Bearded.TD.Game.Meta
             this.game = game;
         }
 
-        public void AttachGhost(IBuildingBlueprint blueprint)
+        public void AttachGhost(IComponentOwnerBlueprint blueprint)
         {
             attachedGhost = blueprint;
         }
@@ -52,7 +53,7 @@ namespace Bearded.TD.Game.Meta
             attachedGhost = null;
         }
 
-        public void SyncPlayerCursorPosition(Player p, Position2 pos, IBuildingBlueprint? blueprint)
+        public void SyncPlayerCursorPosition(Player p, Position2 pos, IComponentOwnerBlueprint? blueprint)
         {
             if (!cursors.TryGetValue(p, out var currentData))
             {
@@ -136,7 +137,7 @@ namespace Bearded.TD.Game.Meta
                         {
                             InstantiatedGhost = new InstantiatedGhost(
                                 ghost,
-                                TileSelection.FromFootprints(notYetInstantiatedGhost.GetFootprintGroup()),
+                                TileSelection.FromFootprints(notYetInstantiatedGhost.GetFootprintGroup<Building>()),
                                 tileOccupation)
                         };
                         cursors[player] = cursor;
@@ -201,7 +202,7 @@ namespace Bearded.TD.Game.Meta
             Position2 LocationAtLastSyncTime,
             float MomentumAtLastSyncTime,
             Velocity2 VelocityBeforeLastSyncTime,
-            IBuildingBlueprint? AttachedGhost,
+            IComponentOwnerBlueprint? AttachedGhost,
             InstantiatedGhost? InstantiatedGhost = null)
         {
             public Position2 LocationAtTime(Instant time) =>

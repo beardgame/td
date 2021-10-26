@@ -16,13 +16,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private readonly ComponentCollection<Building> components;
         private readonly ComponentEvents events = new();
-        private readonly IBuildingBlueprint blueprint;
+        private readonly IComponentOwnerBlueprint blueprint;
 
         public IComponentOwner? Parent => null;
 
         public Position3 Position { get; set; }
 
-        public Building(IBuildingBlueprint blueprint)
+        public Building(IComponentOwnerBlueprint blueprint)
         {
             this.blueprint = blueprint;
             components = new ComponentCollection<Building>(this, events);
@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             base.OnAdded();
-            components.Add(blueprint.GetComponents());
+            components.Add(blueprint.GetComponents<Building>());
         }
 
         protected override void OnDelete()

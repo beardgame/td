@@ -2,6 +2,7 @@ using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities;
@@ -22,7 +23,7 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders
         {
             var nodeGroupConverter = new NodeGroupConverter(Context.FindDependencyResolver<INodeBlueprint>());
             var technologyUnlockConverter = new TechnologyUnlockConverter(
-                Context.FindDependencyResolver<IBuildingBlueprint>(),
+                Context.FindDependencyResolver<IComponentOwnerBlueprint>(),
                 Context.FindDependencyResolver<IUpgradeBlueprint>());
 
             Context.Serializer.Converters.Add(nodeGroupConverter);

@@ -20,7 +20,6 @@ namespace Bearded.TD.Game
         public ReadonlyBlueprintCollection<Material> Materials { get; }
         public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
         public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
-        public ReadonlyBlueprintCollection<IBuildingBlueprint> Buildings { get; }
         public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
         public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
         public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
@@ -32,7 +31,6 @@ namespace Bearded.TD.Game
             ReadonlyBlueprintCollection<Material> materials,
             ReadonlyBlueprintCollection<SpriteSet> sprites,
             ReadonlyBlueprintCollection<FootprintGroup> footprints,
-            ReadonlyBlueprintCollection<IBuildingBlueprint> buildings,
             ReadonlyBlueprintCollection<IUnitBlueprint> units,
             ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
             ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
@@ -44,7 +42,6 @@ namespace Bearded.TD.Game
             Materials = materials;
             Sprites = sprites;
             Footprints = footprints;
-            Buildings = buildings;
             Units = units;
             ComponentOwners = componentOwners;
             Upgrades = upgrades;
@@ -61,7 +58,6 @@ namespace Bearded.TD.Game
                 flatten(list, b => b.Materials),
                 flatten(list, b => b.Sprites),
                 flatten(list, b => b.Footprints),
-                flatten(list, b => b.Buildings),
                 flatten(list, b => b.Units),
                 flatten(list, b => b.ComponentOwners),
                 flatten(list, b => b.Upgrades),

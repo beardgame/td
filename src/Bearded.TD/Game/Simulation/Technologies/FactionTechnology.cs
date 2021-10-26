@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities.Collections;
@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
     sealed class FactionTechnology : FactionBehavior<Faction>
     {
         private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies = new();
-        private readonly HashSet<IBuildingBlueprint> unlockedBuildings = new();
+        private readonly HashSet<IComponentOwnerBlueprint> unlockedBuildings = new();
         private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new();
         private readonly List<ITechnologyBlueprint> queuedTechnologies = new();
 
@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
 
         private double techCostMultiplier = 1;
 
-        public IEnumerable<IBuildingBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
+        public IEnumerable<IComponentOwnerBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
         protected override void Execute() {}
 
@@ -179,9 +179,9 @@ namespace Bearded.TD.Game.Simulation.Technologies
             Events.Send(new TechnologyUnlocked(this, technology));
         }
 
-        public bool IsBuildingUnlocked(IBuildingBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
+        public bool IsBuildingUnlocked(IComponentOwnerBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
 
-        public void UnlockBuilding(IBuildingBlueprint blueprint)
+        public void UnlockBuilding(IComponentOwnerBlueprint blueprint)
         {
             if (unlockedBuildings.Add(blueprint))
             {

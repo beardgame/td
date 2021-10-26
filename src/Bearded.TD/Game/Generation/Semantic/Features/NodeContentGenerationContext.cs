@@ -34,10 +34,10 @@ namespace Bearded.TD.Game.Generation.Semantic.Features
             commandAccumulator.PlaceSpawnLocation(tile);
         }
 
-        public void PlaceBuilding(IBuildingBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
+        public void PlaceBuilding(IComponentOwnerBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
         {
             // TODO: we currently hardcode the 0 variant of the footprint group. Pending a footprint rework.
-            var positionedFootprint = blueprint.GetFootprintGroup().Positioned(0, rootTile);
+            var positionedFootprint = blueprint.GetFootprintGroup<Building>().Positioned(0, rootTile);
             if (!positionedFootprint.OccupiedTiles.All(tiles.Contains))
             {
                 throw new ArgumentException("May not place buildings outside node.", nameof(rootTile));

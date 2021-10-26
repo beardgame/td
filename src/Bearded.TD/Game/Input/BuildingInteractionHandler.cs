@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 
@@ -10,17 +11,17 @@ namespace Bearded.TD.Game.Input
     {
         private readonly BuildingFactory buildingFactory;
         private readonly Faction faction;
-        private readonly IBuildingBlueprint blueprint;
+        private readonly IComponentOwnerBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
         private Building? ghost;
         private MovableTileOccupation<Building>? ghostTileOccupation;
 
-        public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
+        public BuildingInteractionHandler(GameInstance game, Faction faction, IComponentOwnerBlueprint blueprint) : base(game)
         {
             buildingFactory = new BuildingFactory(game.State);
             this.faction = faction;
             this.blueprint = blueprint;
-            TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup());
+            TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup<Building>());
         }
 
         protected override void OnStart(ICursorHandler cursor)

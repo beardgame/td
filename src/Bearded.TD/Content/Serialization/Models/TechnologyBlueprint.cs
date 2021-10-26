@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using JetBrains.Annotations;
@@ -30,7 +30,7 @@ namespace Bearded.TD.Content.Serialization.Models
                 Name,
                 Cost,
                 ImmutableArray.CreateRange(Unlocks
-                    ?.Select(u => u.ToGameModel(resolvers.BuildingResolver, resolvers.UpgradeResolver))
+                    ?.Select(u => u.ToGameModel(resolvers.ComponentOwnerResolver, resolvers.UpgradeResolver))
                     ?? Enumerable.Empty<ITechnologyUnlock>()),
                 RequiredTechs?.Select(resolvers.TechnologyResolver.Resolve)
                     ?? Enumerable.Empty<ITechnologyBlueprint>());
@@ -38,15 +38,15 @@ namespace Bearded.TD.Content.Serialization.Models
 
         public sealed class DependencyResolvers
         {
-            public IDependencyResolver<IBuildingBlueprint> BuildingResolver { get; }
+            public IDependencyResolver<IComponentOwnerBlueprint> ComponentOwnerResolver { get; }
             public IDependencyResolver<IUpgradeBlueprint> UpgradeResolver { get; }
             public IDependencyResolver<ITechnologyBlueprint> TechnologyResolver { get; }
 
-            public DependencyResolvers(IDependencyResolver<IBuildingBlueprint> buildingResolver,
+            public DependencyResolvers(IDependencyResolver<IComponentOwnerBlueprint> componentOwnerResolver,
                 IDependencyResolver<IUpgradeBlueprint> upgradeResolver,
                 IDependencyResolver<ITechnologyBlueprint> technologyResolver)
             {
-                BuildingResolver = buildingResolver;
+                ComponentOwnerResolver = componentOwnerResolver;
                 UpgradeResolver = upgradeResolver;
                 TechnologyResolver = technologyResolver;
             }
@@ -67,7 +67,7 @@ namespace Bearded.TD.Content.Serialization.Models
             public string? Blueprint { get; set; }
 
             public ITechnologyUnlock ToGameModel(
-                IDependencyResolver<IBuildingBlueprint> buildingResolver,
+                IDependencyResolver<IComponentOwnerBlueprint> buildingResolver,
                 IDependencyResolver<IUpgradeBlueprint> upgradeResolver)
             {
                 _ = Blueprint ?? throw new InvalidDataException($"{nameof(Blueprint)} must be non-null");

@@ -4,6 +4,7 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Commands.Loading
                 GameState gameState,
                 Faction faction,
                 Id<Building> id,
-                IBuildingBlueprint blueprint,
+                IComponentOwnerBlueprint blueprint,
                 PositionedFootprint footprint)
             => new Implementation(gameState, faction, id, blueprint, footprint);
 
@@ -28,10 +29,10 @@ namespace Bearded.TD.Game.Commands.Loading
             private readonly GameState gameState;
             private readonly Faction faction;
             private readonly Id<Building> id;
-            private readonly IBuildingBlueprint blueprint;
+            private readonly IComponentOwnerBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameState gameState, Faction faction, Id<Building> id, IBuildingBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(GameState gameState, Faction faction, Id<Building> id, IComponentOwnerBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.gameState = gameState;
                 this.faction = faction;
@@ -80,7 +81,7 @@ namespace Bearded.TD.Game.Commands.Loading
                     game.State,
                     game.State.Factions.Resolve(faction),
                     id,
-                    game.Blueprints.Buildings[blueprint],
+                    game.Blueprints.ComponentOwners[blueprint],
                     new PositionedFootprint(
                         game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile(footprintX, footprintY)));

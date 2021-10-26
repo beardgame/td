@@ -3,6 +3,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
@@ -17,7 +18,10 @@ namespace Bearded.TD.Game.Commands.Gameplay
     static class BuildBuilding
     {
         public static IRequest<Player, GameInstance> Request(
-                GameInstance game, Faction faction, IBuildingBlueprint blueprint, PositionedFootprint footprint) =>
+                GameInstance game,
+                Faction faction,
+                IComponentOwnerBlueprint blueprint,
+                PositionedFootprint footprint) =>
             new Implementation(
                 game, faction, Id<Building>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
 
@@ -26,7 +30,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             private readonly GameInstance game;
             private readonly Faction faction;
             private readonly Id<Building> id;
-            private readonly IBuildingBlueprint blueprint;
+            private readonly IComponentOwnerBlueprint blueprint;
             private readonly PositionedFootprint footprint;
             private readonly Id<IWorkerTask> taskId;
 
@@ -34,7 +38,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 GameInstance game,
                 Faction faction,
                 Id<Building> id,
-                IBuildingBlueprint blueprint,
+                IComponentOwnerBlueprint blueprint,
                 PositionedFootprint footprint,
                 Id<IWorkerTask> taskId)
             {
@@ -52,7 +56,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                 {
                     return false;
                 }
-                return blueprint.GetFootprintGroup() == footprint.Footprint
+                return blueprint.GetFootprintGroup<Building>() == footprint.Footprint
                     && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
                     && factionTechnology.IsBuildingUnlocked(blueprint)
                     && faction.SharesBehaviorWith<WorkerNetwork>(actor.Faction);
@@ -113,7 +117,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
                     game,
                     game.State.Factions.Resolve(faction),
                     id,
-                    game.Blueprints.Buildings[blueprint],
+                    game.Blueprints.ComponentOwners[blueprint],
                     new PositionedFootprint(
                         game.Blueprints.Footprints[footprint], footprintIndex,
                         new Tile(footprintX, footprintY)),

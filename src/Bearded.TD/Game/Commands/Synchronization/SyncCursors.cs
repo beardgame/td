@@ -4,7 +4,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -16,11 +16,11 @@ namespace Bearded.TD.Game.Commands.Synchronization
     static class SyncCursors
     {
         public static IRequest<Player, GameInstance> Request(
-                GameInstance game, Player player, Position2 cursorPosition, IBuildingBlueprint? attachedGhost) =>
+                GameInstance game, Player player, Position2 cursorPosition, IComponentOwnerBlueprint? attachedGhost) =>
             new RequestImplementation(game, player, cursorPosition, attachedGhost);
 
         public static ISerializableCommand<GameInstance> Command(
-                GameInstance game, IDictionary<Player, (Position2, IBuildingBlueprint?)> cursorStates) =>
+                GameInstance game, IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates) =>
             new CommandImplementation(game, cursorStates);
 
         private sealed class RequestImplementation : IRequest<Player, GameInstance>
@@ -28,10 +28,10 @@ namespace Bearded.TD.Game.Commands.Synchronization
             private readonly GameInstance game;
             private readonly Player player;
             private readonly Position2 cursorPosition;
-            private readonly IBuildingBlueprint? attachedGhost;
+            private readonly IComponentOwnerBlueprint? attachedGhost;
 
             public RequestImplementation(
-                GameInstance game, Player player, Position2 cursorPosition, IBuildingBlueprint? attachedGhost)
+                GameInstance game, Player player, Position2 cursorPosition, IComponentOwnerBlueprint? attachedGhost)
             {
                 this.game = game;
                 this.player = player;
@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
             }
 
             IRequestSerializer<Player, GameInstance> IRequest<Player, GameInstance>.Serializer =>
-                new Serializer(new Dictionary<Player, (Position2, IBuildingBlueprint?)>
+                new Serializer(new Dictionary<Player, (Position2, IComponentOwnerBlueprint?)>
                 {
                     { player, (cursorPosition, attachedGhost) }
                 });
@@ -62,10 +62,10 @@ namespace Bearded.TD.Game.Commands.Synchronization
         private sealed class CommandImplementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
-            private readonly IDictionary<Player, (Position2, IBuildingBlueprint?)> cursorStates;
+            private readonly IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates;
 
             public CommandImplementation(
-                GameInstance game, IDictionary<Player, (Position2, IBuildingBlueprint?)> cursorStates)
+                GameInstance game, IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates)
             {
                 this.game = game;
                 this.cursorStates = cursorStates;
@@ -79,7 +79,8 @@ namespace Bearded.TD.Game.Commands.Synchronization
                 }
             }
 
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(cursorStates);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+                new Serializer(cursorStates);
         }
 
         private sealed class Serializer : IRequestSerializer<Player, GameInstance>, ICommandSerializer<GameInstance>
@@ -90,7 +91,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
             public Serializer() {}
 
             public Serializer(
-                IDictionary<Player, (Position2 Position, IBuildingBlueprint? AttachedGhost)> cursorStates)
+                IDictionary<Player, (Position2 Position, IComponentOwnerBlueprint? AttachedGhost)> cursorStates)
             {
                 this.cursorStates = cursorStates.Select(pair => (
                     pair.Key.Id,
@@ -109,7 +110,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
                     game,
                     game.PlayerFor(player),
                     new Position2(x, y),
-                    ghost.IsValid ? game.Blueprints.Buildings[ghost] : null);
+                    ghost.IsValid ? game.Blueprints.ComponentOwners[ghost] : null);
             }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
@@ -120,7 +121,9 @@ namespace Bearded.TD.Game.Commands.Synchronization
                         tuple => game.PlayerFor(tuple.Player),
                         tuple => (
                             new Position2(tuple.X, tuple.Y),
-                            tuple.AttachedGhost.IsValid ? game.Blueprints.Buildings[tuple.AttachedGhost] : null)));
+                            tuple.AttachedGhost.IsValid
+                                ? game.Blueprints.ComponentOwners[tuple.AttachedGhost]
+                                : null)));
             }
 
             public void Serialize(INetBufferStream stream)
