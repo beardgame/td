@@ -1,9 +1,19 @@
 ﻿using System.Linq;
+using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input
 {
     sealed class DefaultInteractionHandler : InteractionHandler
     {
+        private static readonly TimeSpan doubleClickInterval = 0.2.S();
+
+        private ISelectable? lastSelected;
+        private Instant lastSelectedTime;
+
         public DefaultInteractionHandler(GameInstance game) : base(game) { }
 
         public override void Update(ICursorHandler cursor)
@@ -22,7 +32,10 @@ namespace Bearded.TD.Game.Input
             {
                 if (clicked)
                 {
-                    Game.SelectionManager.SelectObject(selectable);
+                    if (!doubleClick(selectable))
+                    {
+                        Game.SelectionManager.SelectObject(selectable);
+                    }
                 }
                 else
                 {
@@ -40,6 +53,36 @@ namespace Bearded.TD.Game.Input
                     Game.SelectionManager.ResetFocus();
                 }
             }
+        }
+
+        private bool doubleClick(ISelectable selectable)
+        {
+            var now = Game.State.Time;
+            var timeSinceLastSelected = now - lastSelectedTime;
+
+            if (lastSelected == selectable
+                && timeSinceLastSelected < doubleClickInterval
+                && tryDoubleClickInteraction(selectable))
+            {
+                return true;
+            }
+
+            lastSelected = selectable;
+            lastSelectedTime = now;
+            return false;
+        }
+
+        private bool tryDoubleClickInteraction(ISelectable selectable)
+        {
+            var manualControl = selectable.Subject.Reports.OfType<IManualControlReport>().FirstOrDefault();
+
+            if (manualControl == null)
+                return false;
+
+            Game.SelectionManager.ResetSelection();
+            Game.PlayerInput.SetInteractionHandler(new ManualControlInteractionHandler(Game, manualControl));
+
+            return true;
         }
     }
 }
