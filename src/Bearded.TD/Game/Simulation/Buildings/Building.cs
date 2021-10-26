@@ -31,12 +31,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override IEnumerable<IComponent<Building>> InitializeComponents()
             => Blueprint.GetComponentsForBuilding();
 
-        protected override void OnAdded()
-        {
-            Game.IdAs(this);
-            base.OnAdded();
-        }
-
         public void OnDeath()
         {
             isDead = true;

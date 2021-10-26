@@ -151,13 +151,23 @@ namespace Bearded.TD.Game.Simulation
         public void IdAs<T>(T obj)
             where T : GameObject, IIdable<T>
         {
+            IdAs(obj.Id, obj);
+            obj.Deleting += () => DeleteId(obj.Id);
+        }
+
+        public void IdAs<T>(Id<T> id, T obj)
+        {
             var dict = getDictionary<T>();
-            dict.Add(obj);
-            obj.Deleting += () => dict.Remove(obj);
+            dict.Add(id, obj);
+        }
+
+        public bool DeleteId<T>(Id<T> id)
+        {
+            var dict = getDictionary<T>();
+            return dict.Remove(id);
         }
 
         public T Find<T>(Id<T> id)
-            where T : class, IIdable<T>
         {
             return getDictionary<T>()[id];
         }
@@ -180,13 +190,12 @@ namespace Bearded.TD.Game.Simulation
             return l;
         }
 
-        private IdDictionary<T> getDictionary<T>()
-            where T : class, IIdable<T>
+        private Dictionary<Id<T>, T> getDictionary<T>()
         {
             if (dictionaries.TryGetValue(typeof(T), out var dict))
-                return (IdDictionary<T>)dict;
+                return (Dictionary<Id<T>, T>)dict;
 
-            var d = new IdDictionary<T>();
+            var d = new Dictionary<Id<T>, T>();
             dictionaries.Add(typeof(T), d);
             return d;
         }

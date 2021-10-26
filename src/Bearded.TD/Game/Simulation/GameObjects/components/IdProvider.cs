@@ -6,6 +6,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.GameObjects
 {
     sealed class IdProvider<T> : Component<T>, IIdProvider<T>
+        where T : IGameObject
     {
         public Id<T> Id { get; }
 
@@ -14,7 +15,17 @@ namespace Bearded.TD.Game.Simulation.GameObjects
             Id = id;
         }
 
-        protected override void OnAdded() {}
+        protected override void OnAdded()
+        {
+            Owner.Game.IdAs(Id, Owner);
+        }
+
+        public override void OnRemoved()
+        {
+            base.OnRemoved();
+            Owner.Game.DeleteId(Id);
+        }
+
         public override void Update(TimeSpan elapsedTime) {}
         public override void Draw(CoreDrawers drawers) {}
     }

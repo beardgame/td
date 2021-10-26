@@ -67,8 +67,6 @@ namespace Bearded.TD.Game.Simulation.Units
         {
             base.OnAdded();
 
-            Game.IdAs(this);
-
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
