@@ -30,14 +30,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 building.AddComponent(new BackupSink<Building>());
             }
+            building.AddComponent(new AllowManualControl<Building>());
             building.AddComponent(new BuildingStateManager<Building>());
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
             building.AddComponent(new DamageSource<Building>());
-            building.AddComponent(new AllowManualControl<Building>());
+            building.AddComponent(new FactionProvider<Building>(faction));
+            building.AddComponent(new FootprintPosition<Building>());
             building.AddComponent(new IdProvider<Building>(id));
             building.AddComponent(new IncompleteBuilding<Building>());
-            building.AddComponent(new FactionProvider<Building>(faction));
             building.AddComponent(new ReportSubject<Building>());
             building.AddComponent(new Selectable<Building>());
             building.AddComponent(new StaticTileOccupation<Building>(footprint));
@@ -54,6 +55,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
             ghost.AddComponent(new GhostBuildingStateProvider<BuildingGhost>());
             ghost.AddComponent(new FactionProvider<BuildingGhost>(faction));
+            ghost.AddComponent(new FootprintPosition<BuildingGhost>());
             tileOccupation = new MovableTileOccupation<BuildingGhost>();
             ghost.AddComponent(tileOccupation);
             return ghost;
