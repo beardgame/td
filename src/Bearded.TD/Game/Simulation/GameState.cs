@@ -172,7 +172,7 @@ namespace Bearded.TD.Game.Simulation
             return getDictionary<T>()[id];
         }
 
-        public bool TryFind<T>(Id<T> id, [NotNullWhen(true)] out T? result) where T : class, IIdable<T>
+        public bool TryFind<T>(Id<T> id, [NotNullWhen(true)] out T? result) where T : class
         {
             return getDictionary<T>().TryGetValue(id, out result);
         }

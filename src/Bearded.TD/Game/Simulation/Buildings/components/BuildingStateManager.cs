@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IListener<ConstructionStarted>,
             IListener<ObjectRepaired>,
             IListener<ObjectRuined>
-        where T : IComponentOwner<T>, IDeletable, IIdable<T>, IGameObject
+        where T : IComponentOwner<T>, IDeletable, IGameObject
     {
         private readonly BuildingState state = new();
 
