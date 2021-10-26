@@ -12,8 +12,8 @@ namespace Bearded.TD.Game.Input
         private readonly Faction faction;
         private readonly IBuildingBlueprint blueprint;
         protected override TileSelection TileSelection { get; }
-        private BuildingGhost? ghost;
-        private MovableTileOccupation<BuildingGhost>? ghostTileOccupation;
+        private Building? ghost;
+        private MovableTileOccupation<Building>? ghostTileOccupation;
 
         public BuildingInteractionHandler(GameInstance game, Faction faction, IBuildingBlueprint blueprint) : base(game)
         {

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using JetBrains.Annotations;
 
@@ -20,8 +21,8 @@ namespace Bearded.TD.Content.Serialization.Models
 
             return new Content.Models.BuildingBlueprint(
                 ModAwareId.FromNameInMod(Id, modMetadata),
-                Components?.Select(ComponentFactories.CreateBuildingComponentFactory)
-                    ?? Enumerable.Empty<BuildingComponentFactory>()
+                Components?.Select(ComponentFactories.CreateComponentFactory<Building>)
+                    ?? Enumerable.Empty<IComponentFactory<Building>>()
             );
         }
     }

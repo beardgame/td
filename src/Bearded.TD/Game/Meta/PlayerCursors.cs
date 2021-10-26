@@ -214,6 +214,6 @@ namespace Bearded.TD.Game.Meta
         }
 
         private sealed record InstantiatedGhost(
-            BuildingGhost Ghost, TileSelection Selection, MovableTileOccupation<BuildingGhost> TileOccupation);
+            Building Ghost, TileSelection Selection, MovableTileOccupation<Building> TileOccupation);
     }
 }

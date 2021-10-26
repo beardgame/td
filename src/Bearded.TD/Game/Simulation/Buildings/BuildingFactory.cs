@@ -48,16 +48,16 @@ namespace Bearded.TD.Game.Simulation.Buildings
             return building;
         }
 
-        public BuildingGhost CreateGhost(
-            IBuildingBlueprint blueprint, Faction faction, out MovableTileOccupation<BuildingGhost> tileOccupation)
+        public Building CreateGhost(
+            IBuildingBlueprint blueprint, Faction faction, out MovableTileOccupation<Building> tileOccupation)
         {
-            var ghost = new BuildingGhost(blueprint);
+            var ghost = new Building(blueprint);
             gameState.Add(ghost);
-            ghost.AddComponent(new BuildingGhostDrawing<BuildingGhost>());
-            ghost.AddComponent(new GhostBuildingStateProvider<BuildingGhost>());
-            ghost.AddComponent(new FactionProvider<BuildingGhost>(faction));
-            ghost.AddComponent(new FootprintPosition<BuildingGhost>());
-            tileOccupation = new MovableTileOccupation<BuildingGhost>();
+            ghost.AddComponent(new BuildingGhostDrawing<Building>());
+            ghost.AddComponent(new GhostBuildingStateProvider<Building>());
+            ghost.AddComponent(new FactionProvider<Building>(faction));
+            ghost.AddComponent(new FootprintPosition<Building>());
+            tileOccupation = new MovableTileOccupation<Building>();
             ghost.AddComponent(tileOccupation);
             return ghost;
         }
