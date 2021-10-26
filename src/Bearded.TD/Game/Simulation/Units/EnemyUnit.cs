@@ -26,8 +26,8 @@ namespace Bearded.TD.Game.Simulation.Units
     sealed class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
         IDamageTarget,
-        IMortal,
         IPositionable,
+        IListener<EnactDeath>,
         IListener<TookDamage>
     {
         private readonly Id<EnemyUnit> id;
@@ -76,7 +76,8 @@ namespace Bearded.TD.Game.Simulation.Units
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
 
             radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
-            events.Subscribe(this);
+            events.Subscribe<EnactDeath>(this);
+            events.Subscribe<TookDamage>(this);
         }
 
         protected override void OnDelete()
@@ -126,7 +127,7 @@ namespace Bearded.TD.Game.Simulation.Units
             lastDamageSource = @event.Source ?? lastDamageSource;
         }
 
-        public void OnDeath()
+        public void HandleEvent(EnactDeath @event)
         {
             isDead = true;
         }

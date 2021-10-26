@@ -28,7 +28,6 @@ namespace Bearded.TD.Game.Simulation.Damage
         ISyncable,
         IListener<HealDamage>,
         IPreviewListener<TakeDamage>
-        where T : IMortal
     {
         public HitPoints CurrentHealth { get; private set; }
         public HitPoints MaxHealth { get; private set; }
@@ -88,7 +87,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         {
             if (CurrentHealth <= HitPoints.Zero)
             {
-                Owner.OnDeath();
+                Events.Send(new EnactDeath());
             }
         }
 
