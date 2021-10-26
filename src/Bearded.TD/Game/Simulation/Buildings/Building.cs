@@ -27,12 +27,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             isDead = true;
         }
 
-        protected override void OnDelete()
-        {
-            Game.BuildingLayer.RemoveBuilding(this);
-            base.OnDelete();
-        }
-
         public override void Update(TimeSpan elapsedTime)
         {
             base.Update(elapsedTime);
