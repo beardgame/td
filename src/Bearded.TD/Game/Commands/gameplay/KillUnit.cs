@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -37,7 +38,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public Serializer(EnemyUnit unit, IDamageSource? damageSource)
             {
-                this.unit = unit.Id;
+                this.unit = unit.FindId();
                 damageSourceSerializer.Populate(damageSource);
             }
 

@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -13,9 +14,15 @@ namespace Bearded.TD.Game.Simulation.Damage
     }
 
     sealed class DamageSource<T> : Component<T>, IDamageSource
-        where T : IIdable<T>
+        where T : IComponentOwner
     {
-        public Id<T> Id => Owner.Id;
+        private IIdProvider<T>? idProvider;
+        public Id<T> Id => idProvider?.Id ?? Id<T>.Invalid;
+
+        protected override void OnAdded()
+        {
+            ComponentDependencies.Depend<IIdProvider<T>>(Owner, Events, provider => idProvider = provider);
+        }
 
         public void AttributeDamage(DamageResult damageResult)
         {
@@ -27,7 +34,6 @@ namespace Bearded.TD.Game.Simulation.Damage
             Events.Send(new AttributedKill(target));
         }
 
-        protected override void OnAdded() { }
         public override void Update(TimeSpan elapsedTime) { }
         public override void Draw(CoreDrawers drawers) { }
     }

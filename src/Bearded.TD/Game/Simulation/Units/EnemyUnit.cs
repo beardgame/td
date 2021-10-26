@@ -7,7 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Projectiles;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
@@ -16,7 +16,6 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -27,13 +26,11 @@ namespace Bearded.TD.Game.Simulation.Units
     sealed class EnemyUnit : GameObject,
         IComponentOwner<EnemyUnit>,
         IDamageTarget,
-        IIdable<EnemyUnit>,
-        IMortal,
         IPositionable,
+        IListener<EnactDeath>,
         IListener<TookDamage>
     {
-        public Id<EnemyUnit> Id { get; }
-
+        private readonly Id<EnemyUnit> id;
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
         private Unit radius;
@@ -55,7 +52,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
         {
-            Id = id;
+            this.id = id;
             this.blueprint = blueprint;
 
             components = new ComponentCollection<EnemyUnit>(this, events);
@@ -66,13 +63,12 @@ namespace Bearded.TD.Game.Simulation.Units
         {
             base.OnAdded();
 
-            Game.IdAs(this);
-
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
             components.Add(new DamageReceiver<EnemyUnit>());
             components.Add(new DamageSource<EnemyUnit>());
+            components.Add(new IdProvider<EnemyUnit>(id));
             components.Add(new Syncer<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
@@ -80,7 +76,8 @@ namespace Bearded.TD.Game.Simulation.Units
                 ?? throw new InvalidOperationException("All enemies must have a movement behaviour.");
 
             radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
-            events.Subscribe(this);
+            events.Subscribe<EnactDeath>(this);
+            events.Subscribe<TookDamage>(this);
         }
 
         protected override void OnDelete()
@@ -130,7 +127,7 @@ namespace Bearded.TD.Game.Simulation.Units
             lastDamageSource = @event.Source ?? lastDamageSource;
         }
 
-        public void OnDeath()
+        public void HandleEvent(EnactDeath @event)
         {
             isDead = true;
         }

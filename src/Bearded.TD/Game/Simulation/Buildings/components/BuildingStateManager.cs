@@ -1,6 +1,9 @@
-﻿using Bearded.TD.Game.Meta;
+﻿using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Commands.Gameplay;
+using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Rendering;
@@ -16,9 +19,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IBuildingStateProvider,
             IListener<ConstructionFinished>,
             IListener<ConstructionStarted>,
+            IListener<EnactDeath>,
             IListener<ObjectRepaired>,
             IListener<ObjectRuined>
-        where T : IComponentOwner<T>, IDeletable, IIdable<T>, IGameObject
+        where T : IComponentOwner<T>, IDeletable, IGameObject
     {
         private readonly BuildingState state = new();
 
@@ -38,6 +42,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 .Subscribe(Events);
             Events.Subscribe<ConstructionFinished>(this);
             Events.Subscribe<ConstructionStarted>(this);
+            Events.Subscribe<EnactDeath>(this);
+            Events.Subscribe<ObjectRepaired>(this);
             Events.Subscribe<ObjectRuined>(this);
         }
 
@@ -54,6 +60,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void HandleEvent(ConstructionStarted @event)
         {
             materialize();
+        }
+
+        public void HandleEvent(EnactDeath @event)
+        {
+            state.IsDead = true;
         }
 
         public void HandleEvent(ObjectRepaired @event)
@@ -73,7 +84,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Events.Send(new Materialized());
         }
 
-        public override void Update(TimeSpan elapsedTime) { }
+        public override void Update(TimeSpan elapsedTime)
+        {
+            if (state.IsDead)
+            {
+                // TODO: building necessary right now
+                (Owner as Building).Sync(KillBuilding.Command);
+            }
+        }
+
         public override void Draw(CoreDrawers drawers) { }
     }
 }

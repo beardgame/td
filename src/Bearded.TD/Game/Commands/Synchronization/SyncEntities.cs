@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.Linq;
 using Lidgren.Network;
 
@@ -16,7 +15,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
     static class SyncEntities
     {
         public abstract class Implementation<T> : ISerializableCommand<GameInstance>
-            where T : class, IComponentOwner, IIdable<T>
+            where T : class, IComponentOwner
         {
             private readonly IList<(ISyncer<T>, IStateToSync)> syncers;
 
@@ -40,7 +39,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
         }
 
         public abstract class Serializer<T> : ICommandSerializer<GameInstance>
-            where T : class, IComponentOwner, IIdable<T>
+            where T : class, IComponentOwner
         {
             private (Id<T> id, byte[] data)[] syncers = System.Array.Empty<(Id<T>, byte[])>();
 

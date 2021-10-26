@@ -170,7 +170,6 @@ namespace Bearded.TD.Game.Meta
             {
                 if (player == game.Me)
                 {
-                    Console.WriteLine(cursor.MomentumAtTime(game.State.Time));
                     continue;
                 }
 

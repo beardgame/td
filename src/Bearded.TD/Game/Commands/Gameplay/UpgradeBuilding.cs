@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Networking.Serialization;
@@ -68,7 +69,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
             public Serializer(Building building, IUpgradeBlueprint upgrade)
             {
-                this.building = building.Id;
+                this.building = building.FindId();
                 this.upgrade = upgrade.Id;
             }
 

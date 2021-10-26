@@ -4,6 +4,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
@@ -47,7 +48,7 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
             public Serializer(Building building, ModAwareId upgradeId)
             {
-                this.building = building.Id;
+                this.building = building.FindId();
                 this.upgradeId = upgradeId;
             }
 
