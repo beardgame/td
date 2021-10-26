@@ -24,7 +24,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Commands
         }
 
         public void PlaceBuilding(
-            IBuildingBlueprint blueprint, PositionedFootprint footprint, ExternalId<Faction> externalId)
+            IComponentOwnerBlueprint blueprint, PositionedFootprint footprint, ExternalId<Faction> externalId)
         {
             commands.Add(gameInstance => PlopBuilding.Command(
                 gameInstance.State,

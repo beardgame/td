@@ -12,7 +12,6 @@ using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
-using BuildingBlueprintJson = Bearded.TD.Content.Serialization.Models.BuildingBlueprint;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
@@ -58,12 +57,11 @@ namespace Bearded.TD.Content.Mods
                 var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
                 var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
                 var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
-                var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
                 var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
-                var buildings = new BuildingBlueprintLoader(loadingContext, tags).LoadBlueprints();
+                var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
                 var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
                 var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
-                var technologies = new TechnologyBlueprintLoader(loadingContext, buildings, upgrades).LoadBlueprints();
+                var technologies = new TechnologyBlueprintLoader(loadingContext, componentOwners, upgrades).LoadBlueprints();
                 var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
                 var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
@@ -78,7 +76,6 @@ namespace Bearded.TD.Content.Mods
                     materials,
                     sprites,
                     footprints,
-                    buildings,
                     units,
                     componentOwners,
                     upgrades,

@@ -23,15 +23,6 @@ namespace Bearded.TD.Content.Serialization.Models
         public static IComponentFactory<TOwner> CreateComponentFactory<TOwner>(IComponent parameters) =>
             factories.CreateBehaviorFactory<TOwner>(parameters) as IComponentFactory<TOwner>;
 
-        public static BuildingComponentFactory CreateBuildingComponentFactory(IBuildingComponent parameters)
-        {
-            var forBuilding = factories.CreateBehaviorFactory<Building>(parameters);
-            var forGhost = factories.CreateBehaviorFactory<BuildingGhost>(parameters);
-
-            return new BuildingComponentFactory(
-                parameters, forBuilding as IComponentFactory<Building>, forGhost as IComponentFactory<BuildingGhost>);
-        }
-
         private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
             Func<TParameters, IComponent<TOwner>> constructor)
             where TParameters : IParametersTemplate<TParameters>

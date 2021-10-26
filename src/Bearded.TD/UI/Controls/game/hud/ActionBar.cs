@@ -2,6 +2,7 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
@@ -61,7 +62,7 @@ namespace Bearded.TD.UI.Controls
             ActionsChanged?.Invoke();
         }
 
-        private void addBuilding(IBuildingBlueprint blueprint)
+        private void addBuilding(IComponentOwnerBlueprint blueprint)
         {
             if (lastFilledIndex == Constants.Game.GameUI.ActionBarSize - 2)
             {
@@ -70,7 +71,7 @@ namespace Bearded.TD.UI.Controls
 
             lastFilledIndex++;
             handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-            labels[lastFilledIndex] = (blueprint.GetName(), $"{blueprint.GetResourceCost().NumericValue}");
+            labels[lastFilledIndex] = (blueprint.GetName<Building>(), $"{blueprint.GetResourceCost<Building>().NumericValue}");
         }
     }
 }

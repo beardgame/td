@@ -1,14 +1,15 @@
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 
 namespace Bearded.TD.Game.Simulation.Technologies
 {
     sealed class BuildingUnlock : ITechnologyUnlock
     {
-        private readonly IBuildingBlueprint buildingBlueprint;
+        private readonly IComponentOwnerBlueprint buildingBlueprint;
 
-        public string Description => $"Unlock building: {buildingBlueprint.GetName()}";
+        public string Description => $"Unlock building: {buildingBlueprint.GetName<Building>()}";
 
-        public BuildingUnlock(IBuildingBlueprint buildingBlueprint)
+        public BuildingUnlock(IComponentOwnerBlueprint buildingBlueprint)
         {
             this.buildingBlueprint = buildingBlueprint;
         }

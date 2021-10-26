@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Tiles;
 using JetBrains.Annotations;
@@ -22,6 +23,6 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
         }
 
         [UsedImplicitly]
-        public sealed record BehaviorParameters(IBuildingBlueprint Building, ExternalId<Faction> Faction);
+        public sealed record BehaviorParameters(IComponentOwnerBlueprint Building, ExternalId<Faction> Faction);
     }
 }
