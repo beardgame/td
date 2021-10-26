@@ -12,5 +12,7 @@ namespace Bearded.TD.Game.Input
         PositionedFootprint CurrentFootprint { get; }
         void HandleInput(InputState inputContext);
         void SetTileSelection(TileSelection tileSelection);
+        void SetCameraController(ICameraController controller);
+        void ResetCameraController();
     }
 }

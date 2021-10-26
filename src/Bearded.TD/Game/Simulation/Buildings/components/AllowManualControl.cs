@@ -35,6 +35,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
         }
 
+        public Position2 SubjectPosition => Owner.Position.XY();
+
         public void StartControl(IManualTarget2 target)
         {
             DebugAssert.State.Satisfies(crossHair == null);
