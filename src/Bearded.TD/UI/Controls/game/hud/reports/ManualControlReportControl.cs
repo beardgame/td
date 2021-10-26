@@ -1,3 +1,5 @@
+using Bearded.TD.Game;
+using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.UI.Factories;
 using Bearded.Utilities.SpaceTime;
@@ -6,14 +8,14 @@ namespace Bearded.TD.UI.Controls
 {
     sealed class ManualControlReportControl : ReportControl
     {
+        private readonly GameInstance game;
         private readonly IManualControlReport report;
-
-        private bool active;
 
         public override double Height { get; }
 
-        public ManualControlReportControl(IManualControlReport report)
+        public ManualControlReportControl(GameInstance game, IManualControlReport report)
         {
+            this.game = game;
             this.report = report;
 
             var column = this.BuildFixedColumn();
@@ -23,12 +25,8 @@ namespace Bearded.TD.UI.Controls
 
         private void startControl()
         {
-            if (active)
-                report.EndControl();
-            else
-                report.StartControl(new ControlOverride());
-
-            active = !active;
+            game.SelectionManager.ResetSelection();
+            game.PlayerInput.SetInteractionHandler(new ControlOverride(game, report));
         }
 
         public override void Update()
@@ -37,14 +35,40 @@ namespace Bearded.TD.UI.Controls
 
         public override void Dispose()
         {
-            if (active)
-                report.EndControl();
         }
 
-        private class ControlOverride : IManualTarget2
+        private class ControlOverride : InteractionHandler, IManualTarget2
         {
-            public Position2 Target { get; }
-            public bool TriggerDown => true;
+            private readonly IManualControlReport report;
+
+            public Position2 Target { get; private set; }
+            public bool TriggerDown { get; private set; }
+
+            public ControlOverride(GameInstance game, IManualControlReport report) : base(game)
+            {
+                this.report = report;
+            }
+
+            protected override void OnStart(ICursorHandler cursor)
+            {
+                report.StartControl(this);
+            }
+
+            protected override void OnEnd(ICursorHandler cursor)
+            {
+                report.EndControl();
+            }
+
+            public override void Update(ICursorHandler cursor)
+            {
+                Target = cursor.CursorPosition;
+                TriggerDown = cursor.Click.Active;
+
+                if (cursor.Cancel.Hit)
+                {
+                    Game.PlayerInput.ResetInteractionHandler();
+                }
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Bearded.TD.UI.Controls
             return report switch
             {
                 IHealthReport healthReport => new HealthReportControl(healthReport),
-                IManualControlReport manualControlReport => new ManualControlReportControl(manualControlReport),
+                IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),
                 IRuinedReport ruinedReport => new RuinedReportControl(game, ruinedReport),
                 IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
                 IUpgradeReport upgradeReport =>
