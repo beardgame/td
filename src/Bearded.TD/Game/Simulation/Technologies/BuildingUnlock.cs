@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Technologies
     {
         private readonly IBuildingBlueprint buildingBlueprint;
 
-        public string Description => $"Unlock building: {buildingBlueprint.Name}";
+        public string Description => $"Unlock building: {buildingBlueprint.GetName()}";
 
         public BuildingUnlock(IBuildingBlueprint buildingBlueprint)
         {

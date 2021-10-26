@@ -40,8 +40,6 @@ namespace Bearded.TD.Game.Synchronization
         {
             if (game.State.Time >= nextSync)
             {
-                logger.Trace?.Log("Starting sync round");
-
                 foreach (var (_, synchronizer) in synchronizers)
                 {
                     ((ISynchronizer)synchronizer).SendBatch(commandDispatcher);

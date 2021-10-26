@@ -17,6 +17,26 @@ namespace Bearded.TD.Utilities
             disposables.Add(disposable);
         }
 
+        public void AddOnDispose(Action action)
+        {
+            disposables.Add(new ActionDisposable(action));
+        }
+
+        private sealed class ActionDisposable : IDisposable
+        {
+            private readonly Action onDispose;
+
+            public ActionDisposable(Action onDispose)
+            {
+                this.onDispose = onDispose;
+            }
+
+            public void Dispose()
+            {
+                onDispose();
+            }
+        }
+
         public void Dispose()
         {
             if (isDisposed)

@@ -26,7 +26,8 @@ namespace Bearded.TD.UI.Controls
                     .WithName(name)
                     .AddTextAttribute("Owned by", ownerName, ownerColor)
                     .WithReports(reports, new ReportControlFactory(model.Game, model.Pulse))
-                    .WithCloseAction(model.Close));
+                    .WithCloseAction(model.Close), out var disposer);
+            model.Closing += disposer.Dispose;
 
             onReportSubjectSet();
         }

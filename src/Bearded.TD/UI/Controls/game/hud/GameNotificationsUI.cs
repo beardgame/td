@@ -36,6 +36,9 @@ namespace Bearded.TD.UI.Controls
                 textAndGameObjectEventListener<BuildingConstructionFinished>(
                     @event => $"Constructed {@event.Name}",
                     @event => @event.GameObject),
+                textAndGameObjectEventListener<BuildingRepairFinished>(
+                    @event => $"Repaired {@event.Name}",
+                    @event => @event.GameObject),
                 textAndGameObjectEventListener<BuildingUpgradeFinished>(
                     @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
                     @event => @event.GameObject),

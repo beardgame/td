@@ -12,21 +12,13 @@ namespace Bearded.TD.Content.Models
     sealed class BuildingBlueprint : IBuildingBlueprint
     {
         public ModAwareId Id { get; }
-        public string Name { get; }
-
-        public IReadOnlyList<UpgradeTag> Tags { get; }
         private IReadOnlyList<BuildingComponentFactory> componentFactories { get; }
 
         public BuildingBlueprint(
             ModAwareId id,
-            string name,
-            IEnumerable<UpgradeTag> tags,
             IEnumerable<BuildingComponentFactory> componentFactories)
         {
             Id = id;
-            Name = name;
-
-            Tags = tags.ToImmutableArray();
             this.componentFactories = componentFactories.ToImmutableArray();
         }
 

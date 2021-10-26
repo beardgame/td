@@ -1,8 +1,7 @@
 {
   "id": "wall",
-  "name": "Wall",
-  "footprint": "single",
   "components": [
+    { "id" : "name", "parameters" : { "name" : "Wall" } },
     { "id" : "cost", "parameters" : { "resources" : 15 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },

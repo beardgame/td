@@ -1,7 +1,7 @@
 {
   "id" : "beamTurret",
-  "name" : "Beam Turret",
   "components" : [
+    { "id" : "name", "parameters" : { "name" : "Beam Turret" } },
     { "id" : "cost", "parameters" : { "resources" : 75 } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },

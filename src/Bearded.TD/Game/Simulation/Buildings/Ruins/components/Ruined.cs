@@ -10,7 +10,6 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins
@@ -21,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             IRuined,
             IListener<RepairCancelled>,
             IListener<RepairFinished>
-        where T : IComponentOwner<T>, INamed
+        where T : IComponentOwner<T>, IGameObject
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
         private ReportAggregator.IReportHandle? reportHandle;
@@ -99,6 +98,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
 
         public void HandleEvent(RepairFinished @event)
         {
+            Events.Send(new ConvertToFaction(@event.RepairingFaction));
             // We need to defer deletion because we want to unsubscribe from this event.
             deleteNextFrame = true;
         }

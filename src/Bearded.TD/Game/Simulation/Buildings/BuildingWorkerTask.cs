@@ -11,7 +11,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly IIncompleteBuilding incompleteBuilding;
 
         public override string Name => $"Build {incompleteBuilding.StructureName}";
-        public override double PercentCompleted => incompleteBuilding.PercentageComplete;
         protected override bool IsCompleted => incompleteBuilding.IsCompleted;
         protected override bool IsCancelled => incompleteBuilding.IsCancelled;
 

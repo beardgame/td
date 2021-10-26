@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         public Id<IWorkerTask> Id { get; }
         public abstract string Name { get; }
         public IEnumerable<Tile> Tiles { get; }
-        public abstract double PercentCompleted { get; }
+        public double PercentCompleted => resourceConsumer.PercentageDone;
         public bool CanAbort => !started;
         public bool Finished { get; private set; }
 
