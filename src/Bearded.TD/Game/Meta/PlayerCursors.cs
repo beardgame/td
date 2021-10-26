@@ -168,12 +168,6 @@ namespace Bearded.TD.Game.Meta
 
             foreach (var (player, cursor) in cursors)
             {
-                if (player == game.Me)
-                {
-                    Console.WriteLine(cursor.MomentumAtTime(game.State.Time));
-                    continue;
-                }
-
                 var pos = cursor.LocationAtTime(game.State.Time);
                 var momentum = cursor.MomentumAtTime(game.State.Time);
 
