@@ -21,7 +21,7 @@ namespace Bearded.TD.Game.Input
             buildingFactory = new BuildingFactory(game.State);
             this.faction = faction;
             this.blueprint = blueprint;
-            TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup<Building>());
+            TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup());
         }
 
         protected override void OnStart(ICursorHandler cursor)
