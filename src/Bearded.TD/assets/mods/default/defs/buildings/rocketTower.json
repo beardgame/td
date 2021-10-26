@@ -1,7 +1,7 @@
 {
   "id" : "rocketTower",
-  "name" : "Rocket Tower",
   "components" : [
+    { "id" : "name", "parameters" : { "name" : "Rocket Tower" } },
     { "id" : "cost", "parameters" : { "resources" : 100 } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },

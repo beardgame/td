@@ -2,22 +2,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Reports
 {
     sealed class ReportSubject<T> : Component<T>, IReportSubject, ReportAggregator.IReportConsumer
-        where T : IComponentOwner, INamed
+        where T : IComponentOwner
     {
         private readonly SortedSet<IReport> reports =
             new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));
 
+        private INameProvider? nameProvider;
         private IFactionProvider? factionProvider;
 
-        public string Name => Owner.Name;
+        public string Name => nameProvider.NameOrDefault();
         public Faction? Faction => factionProvider?.Faction;
         public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
@@ -26,6 +27,7 @@ namespace Bearded.TD.Game.Simulation.Reports
         protected override void OnAdded()
         {
             ReportAggregator.AggregateForever(Events, this);
+            ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         }
 

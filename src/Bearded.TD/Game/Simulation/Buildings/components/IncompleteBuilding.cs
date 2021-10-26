@@ -3,6 +3,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
@@ -18,14 +19,15 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IIncompleteBuilding,
             IListener<ObjectDeleting>,
             ProgressTracker.IProgressSubject
-        where T : GameObject, IComponentOwner, IDeletable, INamed
+        where T : GameObject, IComponentOwner, IDeletable
     {
         private readonly ProgressTracker progressTracker;
 
+        private INameProvider? nameProvider;
         private HitPoints healthGiven;
         private HitPoints maxHealth;
 
-        public string StructureName => Owner.Name;
+        public string StructureName => nameProvider.NameOrDefault();
 
         public double PercentageComplete { get; private set; }
 
@@ -36,6 +38,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         protected override void OnAdded()
         {
+            ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
             healthGiven = 1.HitPoints();
             maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
         }
@@ -81,7 +84,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             addHealth(healthRemaining);
 
             Events.Send(new ConstructionFinished());
-            Owner.Game.Meta.Events.Send(new BuildingConstructionFinished(Owner.Name, Owner));
+            Owner.Game.Meta.Events.Send(new BuildingConstructionFinished(StructureName, Owner));
         }
 
         private void addHealth(HitPoints hitPoints)

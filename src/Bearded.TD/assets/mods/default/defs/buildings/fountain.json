@@ -1,7 +1,7 @@
 {
   "id" : "fountain",
-  "name" : "Small Fountain",
   "components" : [
+    { "id" : "name", "parameters" : { "name" : "Small Fountain" } },
     { "id" : "cost", "parameters" : { "resources" : 5 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },

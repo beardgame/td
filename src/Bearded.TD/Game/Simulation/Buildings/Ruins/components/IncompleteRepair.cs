@@ -2,9 +2,9 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins
@@ -14,10 +14,11 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             IIncompleteRepair,
             IRepairSyncer,
             ProgressTracker.IProgressSubject
-        where T : IComponentOwner<T>, IGameObject, INamed
+        where T : IComponentOwner<T>, IGameObject
     {
         private readonly Faction repairingFaction;
         private readonly ProgressTracker progressTracker;
+        private INameProvider? nameProvider;
 
         public ResourceAmount Cost { get; }
         public double PercentageComplete { get; private set; }
@@ -29,7 +30,10 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             progressTracker = new ProgressTracker(this);
         }
 
-        protected override void OnAdded() {}
+        protected override void OnAdded()
+        {
+            ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
+        }
 
         public override void Update(TimeSpan elapsedTime) {}
         public override void Draw(CoreDrawers drawers) {}
@@ -56,7 +60,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
         public void OnComplete()
         {
             Events.Send(new RepairFinished(repairingFaction));
-            Owner.Game.Meta.Events.Send(new BuildingRepairFinished(Owner.Name, Owner));
+            Owner.Game.Meta.Events.Send(new BuildingRepairFinished(nameProvider.NameOrDefault(), Owner));
         }
 
         public void OnCancel()
@@ -66,7 +70,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
 
         public bool IsCompleted => progressTracker.IsCompleted;
         public bool IsCancelled => progressTracker.IsCancelled;
-        public string StructureName => Owner.Name;
+        public string StructureName => nameProvider.NameOrDefault();
         public void StartRepair() => progressTracker.Start();
         public void SetRepairProgress(double percentage) => progressTracker.SetProgress(percentage);
         public void CompleteRepair() => progressTracker.Complete();

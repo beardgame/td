@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -15,7 +14,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings
 {
     sealed class BuildingConstructionWork<T> : Component<T>
-        where T : IComponentOwner, IDeletable, IGameObject, INamed
+        where T : IComponentOwner, IDeletable, IGameObject
     {
         private readonly Id<IWorkerTask> taskId;
 

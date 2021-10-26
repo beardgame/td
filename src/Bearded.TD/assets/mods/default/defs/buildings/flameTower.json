@@ -1,7 +1,7 @@
 {
   "id" : "flameTower",
-  "name" : "Flame Turret",
   "components" : [
+    { "id" : "name", "parameters" : { "name" : "Flame Turret" } },
     { "id" : "cost", "parameters" : { "resources" : 100 } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },

@@ -6,12 +6,12 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -23,8 +23,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IBuildingUpgradeManager,
             IBuildingUpgradeSyncer,
             IUpgradable
-        where T : IComponentOwner<T>, IGameObject, INamed
+        where T : IComponentOwner<T>, IGameObject
     {
+        private INameProvider? nameProvider;
         private IFactionProvider? factionProvider;
         private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
         public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
@@ -57,6 +58,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             ReportAggregator.Register(Events, new UpgradeReport(this));
+            ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
             ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         }
 
@@ -74,7 +76,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             upgradesInProgress.Add(upgrade.Id, incompleteUpgrade);
 
             UpgradeQueued?.Invoke(incompleteUpgrade);
-            Owner.Game.Meta.Events.Send(new BuildingUpgradeQueued(Owner.Name, Owner, incompleteUpgrade));
+            Owner.Game.Meta.Events.Send(
+                new BuildingUpgradeQueued(nameProvider.NameOrDefault(), Owner, incompleteUpgrade));
 
             return incompleteUpgrade;
         }
@@ -92,7 +95,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             appliedUpgrades.Add(incompleteUpgrade.Upgrade);
 
             UpgradeCompleted?.Invoke(incompleteUpgrade.Upgrade);
-            Owner.Game.Meta.Events.Send(new BuildingUpgradeFinished(Owner.Name, Owner, incompleteUpgrade.Upgrade));
+            Owner.Game.Meta.Events.Send(
+                new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
         }
 
         private void onUpgradeCancelled(IIncompleteUpgrade incompleteUpgrade)
@@ -103,7 +107,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 return;
             }
 
-            Owner.Game.Meta.Events.Send(new BuildingUpgradeCancelled(Owner.Name, Owner, incompleteUpgrade.Upgrade));
+            Owner.Game.Meta.Events.Send(
+                new BuildingUpgradeCancelled(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
         }
 
         public void SyncStartUpgrade(ModAwareId upgradeId)

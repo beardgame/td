@@ -1,7 +1,7 @@
 {
   "id" : "ruinedBeams",
-  "name" : "Super beam Turret",
   "components" : [
+    { "id" : "name", "parameters" : { "name" : "Super Beam Turret" } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "footprintTransformation" },
