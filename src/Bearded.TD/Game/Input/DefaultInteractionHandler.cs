@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
