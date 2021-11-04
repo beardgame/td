@@ -48,9 +48,6 @@ namespace Bearded.TD
                 logger.Info?.Log("Creating game");
                 var game = new TheGame(logger);
 
-                logger.Info?.Log("Initialising game");
-                _ = game.Initialize();
-
                 logger.Info?.Log("Running game");
                 game.Run();
 
