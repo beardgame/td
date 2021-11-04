@@ -193,8 +193,12 @@ namespace Bearded.TD.Rendering
                     ))
             ));
 
+            var compositedFrameAtRenderResolution = WithContext(
+                c => c.SetViewport(s => new Rectangle(0, 0, s.Resolution.X, s.Resolution.Y)),
+                compositedFrame
+                );
 
-            var fullRender = compositedFrame.Then(
+            var fullRender = compositedFrameAtRenderResolution.Then(
                 WithContext(
                     c => c.SetDebugName("Copy/scale image to output render target")
                         .BindRenderTarget(s => s.FinalRenderTarget),
