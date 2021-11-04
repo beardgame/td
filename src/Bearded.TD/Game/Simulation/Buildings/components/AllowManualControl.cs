@@ -92,7 +92,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 var targetPoint = target.Target;
                 var tile = Level.GetTile(targetPoint);
-                var targetHeight = Owner.Game.GeometryLayer[tile].Geometry.FloorHeight;
+                var targetHeight = Owner.Game.Level.IsValid(tile)
+                    ? Owner.Game.GeometryLayer[tile].Geometry.FloorHeight
+                    : Unit.Zero;
                 var clampedTargetHeight = targetHeight.NumericValue.Clamped(0, 0.25f).U();
 
                 Target = targetPoint.WithZ(clampedTargetHeight + 0.2.U());
