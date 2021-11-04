@@ -39,7 +39,8 @@ namespace Bearded.TD.Rendering
 
             public ContentRenderers Content { get; }
 
-            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget, ContentRenderers content)
+            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget,
+                ContentRenderers content)
             {
                 Resolution = resolution;
                 LowResResolution = lowResResolution;
@@ -77,39 +78,42 @@ namespace Bearded.TD.Rendering
 
             var textures = new
             {
-                DiffuseLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest), // rgba
-                NormalLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest), // xyz
-                DepthLowRes = Texture(PixelInternalFormat.R16f, setup: upscaleNearest), // z (0-1, camera space)
-                DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f, setup: upscaleNearest),
+                DiffuseLowRes =
+                    Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "DiffuseLowRes"), // rgba
+                NormalLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "NormalLowRes"), // xyz
+                DepthLowRes =
+                    Texture(PixelInternalFormat.R16f, setup: upscaleNearest,
+                        label: "DepthLowRes"), // z (0-1, camera space)
+                DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f, setup: upscaleNearest,
+                    label: "DepthMaskLowRes"),
 
-                Diffuse = Texture(PixelInternalFormat.Rgba), // rgba
-                Normal = Texture(PixelInternalFormat.Rgba), // xyz
-                Depth = Texture(PixelInternalFormat.R16f), // z (0-1, camera space)
-                DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f),
+                Diffuse = Texture(PixelInternalFormat.Rgba, label: "Diffuse"), // rgba
+                Normal = Texture(PixelInternalFormat.Rgba, label: "Normal"), // xyz
+                Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
+                DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
 
-                LightAccum = Texture(PixelInternalFormat.Rgb),
-                Composition = Texture(PixelInternalFormat.Rgba),
+                LightAccum = Texture(PixelInternalFormat.Rgb, label: "LightAccum"),
+                Composition = Texture(PixelInternalFormat.Rgba, label: "Composition"),
             };
 
             var targets = new
             {
-                GeometryLowRes = RenderTargetWithDepthAndColors(
+                GeometryLowRes = RenderTargetWithDepthAndColors("GeometryLowRes",
                     textures.DepthMaskLowRes, textures.DiffuseLowRes, textures.NormalLowRes, textures.DepthLowRes),
-                Geometry = RenderTargetWithDepthAndColors(
+                Geometry = RenderTargetWithDepthAndColors("Geometry",
                     textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
-                LightAccum = RenderTargetWithDepthAndColors(textures.DepthMask, textures.LightAccum),
-                Composition = RenderTargetWithDepthAndColors(textures.DepthMask, textures.Composition),
+                LightAccum = RenderTargetWithDepthAndColors("LightAccum", textures.DepthMask, textures.LightAccum),
+                Composition = RenderTargetWithDepthAndColors("Composition", textures.DepthMask, textures.Composition),
 
-                UpscaleDiffuse = RenderTargetWithColors(textures.Diffuse),
-                UpscaleNormal = RenderTargetWithColors(textures.Normal),
-                UpscaleDepth = RenderTargetWithColors(textures.Depth),
-                UpscaleDepthMask = RenderTargetWithDepthAndColors(textures.DepthMask),
+                UpscaleDiffuse = RenderTargetWithColors("UpscaleDiffuse", textures.Diffuse),
+                UpscaleNormal = RenderTargetWithColors("UpscaleNormal", textures.Normal),
+                UpscaleDepth = RenderTargetWithColors("UpscaleDepth", textures.Depth),
+                UpscaleDepthMask = RenderTargetWithDepthAndColors("UpscaleDepthMask", textures.DepthMask),
             };
 
             DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
 
             var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
-
 
             var resizedBuffers = InOrder(
                 Resize(s => s.Resolution,
@@ -122,7 +126,8 @@ namespace Bearded.TD.Rendering
 
             var renderedGBuffers = resizedBuffers.Then(InOrder(
                 WithContext(
-                    c => c.BindRenderTarget(targets.GeometryLowRes)
+                    c => c.SetDebugName("Render level to low-res g-buffers")
+                        .BindRenderTarget(targets.GeometryLowRes)
                         .SetViewport(s => new Rectangle(0, 0, s.LowResResolution.X, s.LowResResolution.Y))
                         .SetDepthMode(Default),
                     InOrder(
@@ -130,17 +135,22 @@ namespace Bearded.TD.Rendering
                         ClearDepth(),
                         Do(s => s.Content.LevelRenderer.RenderAll()),
                         Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup))
-                        )),
+                    )),
                 // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling
                 // compositing two different pipelines with most steps shared should be easy
-                upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
-                upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
-                upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
                 WithContext(
-                    c => c.SetDepthMode(WriteOnly),
-                    upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask)),
+                    c => c.SetDebugName("Upscale G-buffers"),
+                    InOrder(
+                        upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
+                        upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
+                        upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
+                        WithContext(
+                            c => c.SetDepthMode(WriteOnly),
+                            upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask))
+                    )),
                 WithContext(
-                    c => c.BindRenderTarget(targets.Geometry)
+                    c => c.SetDebugName("Draw world draw groups to full-scale g-buffers")
+                        .BindRenderTarget(targets.Geometry)
                         .SetDepthMode(Default)
                         .SetBlendMode(Premultiplied),
                     Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
@@ -148,7 +158,8 @@ namespace Bearded.TD.Rendering
 
             var compositedFrame = renderedGBuffers.Then(InOrder(
                 WithContext(
-                    c => c.BindRenderTarget(targets.LightAccum)
+                    c => c.SetDebugName("Render lights to light accumulation buffer")
+                        .BindRenderTarget(targets.LightAccum)
                         .SetDepthMode(TestOnly(DepthFunction.Gequal))
                         .SetBlendMode(Premultiplied)
                         .SetCullMode(RenderBack),
@@ -157,18 +168,23 @@ namespace Bearded.TD.Rendering
                         Render(pointLightRenderer, spotLightRenderer)
                     )),
                 WithContext(
-                    c => c.BindRenderTarget(targets.Composition),
+                    c => c.SetDebugName("Composite final image")
+                        .BindRenderTarget(targets.Composition),
                     InOrder(
-                        PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
-                            // TODO: it should be much easier to quickly pass in a couple of textures
-                            new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
-                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
-                            new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
-                            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
-                            hexagonalFallOffDistance
-                        ),
                         WithContext(
-                            c => c.SetDepthMode(TestOnly(DepthFunction.Less))
+                            c => c.SetDebugName("Composite light buffer and g-buffers"),
+                            PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
+                                // TODO: it should be much easier to quickly pass in a couple of textures
+                                new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
+                                new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
+                                new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
+                                settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
+                                settings.CameraPosition,
+                                hexagonalFallOffDistance
+                            )),
+                        WithContext(
+                            c => c.SetDebugName("Render fluids and other post-light groups")
+                                .SetDepthMode(TestOnly(DepthFunction.Less))
                                 .SetBlendMode(Premultiplied),
                             InOrder(
                                 Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
@@ -180,15 +196,18 @@ namespace Bearded.TD.Rendering
 
             var fullRender = compositedFrame.Then(
                 WithContext(
-                    c => c.BindRenderTarget(s => s.FinalRenderTarget),
+                    c => c.SetDebugName("Copy/scale image to output render target")
+                        .BindRenderTarget(s => s.FinalRenderTarget),
                     PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
                         new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
                         new Vector2Uniform("uvOffset", Vector2.Zero)
-                        )
                     )
+                )
             );
 
-            pipeline = fullRender;
+            pipeline = WithContext(
+                c => c.SetDebugName("Render game state"),
+                fullRender);
 
             // TODO: it would be neat to have some steps have a more semantic associated output
             // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
@@ -240,7 +259,8 @@ namespace Bearded.TD.Rendering
 
         private (Vector2i LowResResolution, Vector2i Resolution) resizeForCameraDistance(float cameraDistance)
         {
-            var lowResResolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
+            var lowResResolution =
+                calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
             var resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
 
             setLevelViewMatrix(cameraDistance);
@@ -256,8 +276,8 @@ namespace Bearded.TD.Rendering
 
             var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
 
-            var w = (int) (viewport.Width * bufferSizeFactor * scale);
-            var h = (int) (viewport.Height * bufferSizeFactor * scale);
+            var w = (int)(viewport.Width * bufferSizeFactor * scale);
+            var h = (int)(viewport.Height * bufferSizeFactor * scale);
 
             return (w, h);
         }
@@ -282,14 +302,15 @@ namespace Bearded.TD.Rendering
             levelUpSampleUVOffset.Value = offset;
         }
 
-        private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture, PipelineRenderTarget target)
+        private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture,
+            PipelineRenderTarget target)
         {
             return WithContext(
                 c => c.BindRenderTarget(target),
                 PostProcess(shaders.GetShaderProgram(shaderName), out _,
                     new TextureUniform("inputTexture", TextureUnit.Texture0, texture.Texture),
                     levelUpSampleUVOffset
-                    )
+                )
             );
         }
 

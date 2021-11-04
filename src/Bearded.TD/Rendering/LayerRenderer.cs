@@ -32,12 +32,15 @@ namespace Bearded.TD.Rendering
             this.deferredRenderer = deferredRenderer;
 
             renderLayer = WithContext(
-                    c => c.BindRenderTarget(s => s.Target)
+                    c => c.SetDebugName(s => $"Render layer {s.Layer}")
+                        .BindRenderTarget(s => s.Target)
                         .SetScissorRegion(s => ScissorRegion.SingleOrFullTarget(s.Layer.RenderOptions.ClipDrawRegion)),
                     InOrder(
                         Do(s => settings.SetSettingsFor(s.Layer)),
                         Do(tryRenderDeferred),
-                        WithContext(c => c.SetBlendMode(Premultiplied),
+                        WithContext(c => c
+                                .SetDebugName("Render primitives, UI and fonts")
+                                .SetBlendMode(Premultiplied),
                             Render(
                                 renderers.PrimitivesRenderer,
                                 renderers.ConsoleBackgroundRenderer,
