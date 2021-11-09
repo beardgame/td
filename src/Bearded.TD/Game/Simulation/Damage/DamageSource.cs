@@ -26,12 +26,12 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public void AttributeDamage(DamageResult damageResult)
         {
-            Events.Send(new AttributedDamage(damageResult));
+            Events.Send(new CausedDamage(damageResult));
         }
 
         public void AttributeKill(IDamageTarget target)
         {
-            Events.Send(new AttributedKill(target));
+            Events.Send(new CausedKill(target));
         }
 
         public override void Update(TimeSpan elapsedTime) { }
