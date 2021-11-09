@@ -1,5 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
@@ -12,9 +12,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         private PreviewTakeDamage(DamageInfo damageInfo, HitPoints? damageCap)
         {
-            DebugAssert.Argument.Satisfies(
-                damageCap == null ||
-                damageCap >= HitPoints.Zero && damageCap <= damageInfo.Amount);
+            Argument.Satisfies(damageCap == null || damageCap >= HitPoints.Zero);
 
             DamageInfo = damageInfo;
             DamageCap = damageCap;

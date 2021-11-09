@@ -6,10 +6,10 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -24,6 +24,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         private readonly ProgressTracker progressTracker;
 
         private INameProvider? nameProvider;
+        private IHealthEventReceiver? receiver;
         private HitPoints healthGiven;
         private HitPoints maxHealth;
 
@@ -39,6 +40,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void OnAdded()
         {
             ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
+            ComponentDependencies.Depend<IHealthEventReceiver>(Owner, Events, r => receiver = r);
             healthGiven = 1.HitPoints();
             maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
         }
@@ -60,6 +62,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void OnStart()
         {
+            State.Satisfies(receiver != null);
             Events.Send(new ConstructionStarted());
             Owner.Game.Meta.Events.Send(new BuildingConstructionStarted(Owner));
         }
@@ -68,7 +71,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             PercentageComplete = percentage;
             var expectedHealthGiven = new HitPoints(MoreMath.CeilToInt(percentage * maxHealth.NumericValue));
-            DebugAssert.State.Satisfies(expectedHealthGiven >= 0.HitPoints());
+            State.Satisfies(expectedHealthGiven >= 0.HitPoints());
             if (expectedHealthGiven == HitPoints.Zero)
             {
                 return;
@@ -89,7 +92,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private void addHealth(HitPoints hitPoints)
         {
-            Events.Send(new HealDamage(hitPoints));
+            receiver!.Heal(new HealInfo(hitPoints));
         }
 
         public void OnCancel()

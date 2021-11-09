@@ -4,10 +4,8 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    sealed class DamageReceiver<T> : Component<T>, IDamageReceiver
+    sealed class HealthEventReceiver<T> : Component<T>, IHealthEventReceiver
     {
-        protected override void OnAdded() {}
-
         public void Damage(DamageInfo damageInfo, IDamageSource? source)
         {
             var previewDamage = new PreviewTakeDamage(damageInfo);
@@ -18,22 +16,43 @@ namespace Bearded.TD.Game.Simulation.Damage
             {
                 modifiedDamageInfo = damageInfo.WithAdjustedAmount(damageCap);
             }
-            var result = new DamageResult(modifiedDamageInfo);
 
             if (modifiedDamageInfo.Amount > HitPoints.Zero)
             {
+                var result = new DamageResult(modifiedDamageInfo);
                 Events.Send(new TakeDamage(result, source));
                 source?.AttributeDamage(result);
             }
         }
+
+        public void Heal(HealInfo healInfo)
+        {
+            var previewHeal = new PreviewHealDamage(healInfo);
+            Events.Preview(ref previewHeal);
+
+            var modifiedHealInfo = healInfo;
+            if (previewHeal.HealCap is { } healCap && healCap < modifiedHealInfo.Amount)
+            {
+                modifiedHealInfo = healInfo.WithAdjustedAmount(healCap);
+            }
+
+            if (modifiedHealInfo.Amount > HitPoints.Zero)
+            {
+                var result = new HealResult(modifiedHealInfo);
+                Events.Send(new HealDamage(result));
+            }
+        }
+
+        protected override void OnAdded() {}
 
         public override void Update(TimeSpan elapsedTime) {}
 
         public override void Draw(CoreDrawers drawers) {}
     }
 
-    interface IDamageReceiver
+    interface IHealthEventReceiver
     {
         void Damage(DamageInfo damageInfo, IDamageSource? source);
+        void Heal(HealInfo healInfo);
     }
 }

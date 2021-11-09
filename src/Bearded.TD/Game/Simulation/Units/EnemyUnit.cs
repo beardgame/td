@@ -66,7 +66,7 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
-            components.Add(new DamageReceiver<EnemyUnit>());
+            components.Add(new HealthEventReceiver<EnemyUnit>());
             components.Add(new DamageSource<EnemyUnit>());
             components.Add(new IdProvider<EnemyUnit>(id));
             components.Add(new Syncer<EnemyUnit>());

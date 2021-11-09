@@ -19,15 +19,11 @@ namespace Bearded.TD.Game.Commands.Debug
             {
                 foreach (var building in Game.State.GameObjects.OfType<Building>())
                 {
-                    if (!building.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+                    if (!building.TryGetSingleComponent<IHealthEventReceiver>(out var healthEventReceiver))
                     {
                         continue;
                     }
-
-                    building.GetComponents<IHealth>()
-                        .MaybeSingle()
-                        .Match(health => damageReceiver.Damage(
-                            new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention), null));
+                    healthEventReceiver.Heal(new HealInfo(HitPoints.Max));
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public bool TryDoDamage(IComponentOwner target, DamageInfo damage)
         {
-            if (!target.TryGetSingleComponent<IDamageReceiver>(out var receiver))
+            if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
             {
                 return false;
             }

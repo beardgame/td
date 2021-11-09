@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
@@ -5,6 +6,8 @@ namespace Bearded.TD.Game.Simulation.Damage
     readonly struct HitPoints : IDiscreteMeasure1
     {
         public static HitPoints Zero { get; } = new(0);
+
+        public static HitPoints Max { get; } = new(int.MaxValue);
 
         public int NumericValue { get; }
 
