@@ -85,7 +85,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
                 sprite = sprites
                     .GetSprite("plus")
-                    .MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
+                    .MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create,
+                        Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
             }
 
             public override void Update(TimeSpan elapsedTime)

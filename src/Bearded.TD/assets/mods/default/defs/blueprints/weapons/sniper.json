@@ -22,7 +22,8 @@
             "id" : "sprite",
             "parameters": {
                 "sprite": "buildings.turret01-24px",
-                "color": "White"
+                "color": "White",
+                "shader" : "building"
             }
         }
     ]

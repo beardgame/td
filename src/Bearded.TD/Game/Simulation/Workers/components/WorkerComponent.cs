@@ -71,7 +71,8 @@ namespace Bearded.TD.Game.Simulation.Workers
         {
             var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
             var sprite =
-                sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
+                sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create,
+                    Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
 
             sprite.Draw(Owner.Position.NumericValue, 0.5f, workerTaskManager?.WorkerColor ?? Color.White);
         }

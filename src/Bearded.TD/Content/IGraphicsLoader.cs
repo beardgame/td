@@ -13,7 +13,6 @@ namespace Bearded.TD.Content
     {
         ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
             IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
-            Shader shader,
             bool pixelate, string id);
 
         IRendererShader CreateRendererShader(

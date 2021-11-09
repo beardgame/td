@@ -31,14 +31,13 @@ namespace Bearded.TD.Rendering.Loading
         }
 
         public ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
-            IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
-            Shader shader, bool pixelate, string id)
+            IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites, bool pixelate, string id)
         {
             var spriteRectangles = sprites.Select(rectangleWithBitmaps).ToList();
             if (spriteRectangles.Count == 0)
             {
                 logger.Warning?.Log($"Sprite set '{id}' contains no sprites.");
-                return new PackedSpriteSetBuilder(new List<string>(), 0, 0).Build(glActions, shader, pixelate);
+                return new PackedSpriteSetBuilder(new List<string>(), 0, 0).Build(glActions, pixelate);
             }
 
             var packedSprites = BinPacking.Pack(spriteRectangles);
@@ -63,7 +62,7 @@ namespace Bearded.TD.Rendering.Loading
                 }
             }
 
-            return builder.Build(glActions, shader, pixelate);
+            return builder.Build(glActions, pixelate);
 
 
             static BinPacking.Rectangle<(string Name, Dictionary<string, Bitmap> BitmapsBySampler)>

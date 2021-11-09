@@ -19,11 +19,11 @@ namespace Bearded.TD.Rendering.Loading
             this.spriteSet = spriteSet;
         }
 
-        public IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-            SpriteRenderers spriteRenderers, DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+        public IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
             where TVertex : struct, IVertexData
         {
-            return spriteSet.MakeConcreteWith(spriteRenderers, createVertex).GetSprite(name);
+            return spriteSet.MakeConcreteWith(spriteRenderers, createVertex, shader).GetSprite(name);
         }
     }
 }
