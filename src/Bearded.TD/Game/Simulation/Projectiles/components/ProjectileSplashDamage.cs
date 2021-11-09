@@ -60,7 +60,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
                 }
 
                 var result = damageReceiver
-                    .Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, damageSource));
+                    .Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic), damageSource);
                 Events.Send(new CausedDamage(result));
             }
         }

@@ -124,7 +124,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public void HandleEvent(TakeDamage @event)
         {
-            lastDamageSource = @event.Damage.Damage.Source ?? lastDamageSource;
+            lastDamageSource = @event.Source ?? lastDamageSource;
         }
 
         public void HandleEvent(EnactDeath @event)

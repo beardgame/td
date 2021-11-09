@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Elements
             if (dealingDamageToOwner)
                 return;
 
-            onDamaged(@event.Damage);
+            onDamaged(@event.Damage, @event.Source);
         }
 
         public void HandleEvent(Spark @event)
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Simulation.Elements
             combustable.Spark();
         }
 
-        private void onDamaged(DamageResult result)
+        private void onDamaged(DamageResult result, IDamageSource? source)
         {
             switch (result.Damage.Type)
             {
@@ -81,7 +81,7 @@ namespace Bearded.TD.Game.Simulation.Elements
                     break;
             }
 
-            lastFireHitOwner = result.Damage.Source ?? lastFireHitOwner;
+            lastFireHitOwner = source ?? lastFireHitOwner;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -108,11 +108,10 @@ namespace Bearded.TD.Game.Simulation.Elements
                     StaticRandom
                         .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
                             combustable.BurningSpeed.NumericValue)).HitPoints(),
-                    DamageType.Fire,
-                    damageSource);
+                    DamageType.Fire);
 
                 dealingDamageToOwner = true;
-                damageReceiver.Damage(damage);
+                damageReceiver.Damage(damage, damageSource);
 
                 dealingDamageToOwner = false;
             }

@@ -34,7 +34,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
             var result = damageReceiver.Damage(
-                new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic, damageSource));
+                new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic), damageSource);
             Events.Send(new CausedDamage(result));
         }
 

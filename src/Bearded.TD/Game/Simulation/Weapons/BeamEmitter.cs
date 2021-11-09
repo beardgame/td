@@ -112,11 +112,12 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
             Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
-            var result = damageReceiver.Damage(new DamageInfo(
-                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
-                DamageType.Energy,
-                damageSource
-            ));
+            var result = damageReceiver.Damage(
+                new DamageInfo(
+                    StaticRandom.Discretise((float)(damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
+                    DamageType.Energy
+                ),
+                damageSource);
             lastDamageTime = Game.Time;
             Events.Send(new CausedDamage(result));
         }

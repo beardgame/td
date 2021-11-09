@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Damage
     {
         protected override void OnAdded() {}
 
-        public DamageResult Damage(DamageInfo damageInfo)
+        public DamageResult Damage(DamageInfo damageInfo, IDamageSource? source)
         {
             var previewDamage = new PreviewTakeDamage(damageInfo);
             Events.Preview(ref previewDamage);
@@ -23,8 +23,8 @@ namespace Bearded.TD.Game.Simulation.Damage
 
             if (modifiedDamageInfo.Amount > HitPoints.Zero)
             {
-                Events.Send(new TakeDamage(result));
-                damageInfo.Source?.AttributeDamage(result);
+                Events.Send(new TakeDamage(result, source));
+                source?.AttributeDamage(result);
             }
             return result;
         }
@@ -36,6 +36,6 @@ namespace Bearded.TD.Game.Simulation.Damage
 
     interface IDamageReceiver
     {
-        DamageResult Damage(DamageInfo damageInfo);
+        DamageResult Damage(DamageInfo damageInfo, IDamageSource? source);
     }
 }

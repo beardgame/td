@@ -53,7 +53,7 @@ namespace Bearded.TD.Game.Simulation.Damage
 
                 Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
-                var result = damageReceiver.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, damageSource));
+                var result = damageReceiver.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic), damageSource);
                 Events.Send(new CausedDamage(result));
                 nextAttack += 1 / Parameters.AttackRate;
             }

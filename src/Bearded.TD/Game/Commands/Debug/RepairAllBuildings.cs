@@ -27,7 +27,7 @@ namespace Bearded.TD.Game.Commands.Debug
                     building.GetComponents<IHealth>()
                         .MaybeSingle()
                         .Match(health => damageReceiver.Damage(
-                            new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention, null)));
+                            new DamageInfo(-health.MaxHealth, DamageType.DivineIntervention), null));
                 }
             }
         }
