@@ -41,10 +41,10 @@ namespace Bearded.TD.Game.Simulation.Workers
             {
                 factionProvider = provider;
                 Faction = provider.Faction;
+                // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
+                Owner.Game.Meta.Events.Send(new WorkerAdded(this));
             });
             tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
-            // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
-            Owner.Game.Meta.Events.Send(new WorkerAdded(this));
         }
 
         private void onDelete()

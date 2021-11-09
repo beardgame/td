@@ -24,22 +24,24 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public ComponentGameObject Create(
-            Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+            Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
+            PositionedFootprint footprint)
         {
-            var building = new ComponentGameObject(blueprint, null, Position3.Zero, Direction2.Zero);
-            gameState.Add(building);
+            var building = ComponentGameObjectFactory.CreateWithDefaultRenderer(
+                gameState, blueprint, null, Position3.Zero, Direction2.Zero);
             if (!building.GetComponents<IEnemySink>().Any())
             {
                 building.AddComponent(new BackupSink<ComponentGameObject>());
             }
+
             building.AddComponent(new AllowManualControl<ComponentGameObject>());
             building.AddComponent(new BuildingStateManager<ComponentGameObject>());
             building.AddComponent(new BuildingUpgradeManager<ComponentGameObject>());
-            building.AddComponent(new HealthEventReceiver<ComponentGameObject>());
             building.AddComponent(new DamageSource<ComponentGameObject>());
             building.AddComponent(new DebugInvulnerable<ComponentGameObject>());
             building.AddComponent(new FactionProvider<ComponentGameObject>(faction));
             building.AddComponent(new FootprintPosition());
+            building.AddComponent(new HealthEventReceiver<ComponentGameObject>());
             building.AddComponent(new IdProvider<ComponentGameObject>(id));
             building.AddComponent(new IncompleteBuilding<ComponentGameObject>());
             building.AddComponent(new ReportSubject<ComponentGameObject>());
@@ -52,10 +54,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public ComponentGameObject CreateGhost(
-            IComponentOwnerBlueprint blueprint, Faction faction, out MovableTileOccupation<ComponentGameObject> tileOccupation)
+            IComponentOwnerBlueprint blueprint, Faction faction,
+            out MovableTileOccupation<ComponentGameObject> tileOccupation)
         {
-            var ghost = new ComponentGameObject(blueprint, null, Position3.Zero, Direction2.Zero);
-            gameState.Add(ghost);
+            var ghost = ComponentGameObjectFactory.CreateWithoutRenderer(
+                gameState, blueprint, null, Position3.Zero, Direction2.Zero);
             ghost.AddComponent(new BuildingGhostDrawing<ComponentGameObject>());
             ghost.AddComponent(new GhostBuildingStateProvider<ComponentGameObject>());
             ghost.AddComponent(new FactionProvider<ComponentGameObject>(faction));

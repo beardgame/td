@@ -54,8 +54,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         private void onHit()
         {
-            var obj = new ComponentGameObject(Parameters.Object, Owner, Owner.Position, Direction2.Zero);
-            Owner.Game.Add(obj);
+            ComponentGameObjectFactory.CreateWithDefaultRenderer(Owner.Game, Parameters.Object, Owner, Owner.Position, Direction2.Zero);
         }
 
         public override void Update(TimeSpan elapsedTime)

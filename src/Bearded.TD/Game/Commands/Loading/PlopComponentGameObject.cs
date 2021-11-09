@@ -31,8 +31,7 @@ namespace Bearded.TD.Game.Commands.Loading
 
             public void Execute()
             {
-                var obj = new ComponentGameObject(blueprint, null, position, direction);
-                game.State.Add(obj);
+                ComponentGameObjectFactory.CreateWithDefaultRenderer(game.State, blueprint, null, position, direction);
             }
 
             ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, position, direction);

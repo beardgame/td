@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
     }
 
     [Component("turret")]
-    sealed class Turret<T> : Component<T, ITurretParameters>, ITurret
+    sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedComponentOwner
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private Weapon weapon = null!;
@@ -36,6 +36,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
         public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
+
+        public IComponentOwner NestedComponentOwner => weapon;
 
         public Turret(ITurretParameters parameters) : base(parameters) { }
 

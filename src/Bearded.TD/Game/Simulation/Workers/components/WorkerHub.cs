@@ -54,10 +54,10 @@ namespace Bearded.TD.Game.Simulation.Workers
         private void addNewWorker()
         {
             State.Satisfies(faction != null);
-            var obj = new ComponentGameObject(Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
+            var obj = ComponentGameObjectFactory.CreateWithDefaultRenderer(
+                Owner.Game, Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
             obj.AddComponent(new FactionProvider<ComponentGameObject>(faction!));
 
-            Owner.Game.Add(obj);
             numWorkersActive++;
         }
     }
