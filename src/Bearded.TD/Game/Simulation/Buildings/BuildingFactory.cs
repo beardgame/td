@@ -23,7 +23,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             this.gameState = gameState;
         }
 
-        // TODO: should return a ComponentGameObject instead
         public ComponentGameObject Create(
             Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction, PositionedFootprint footprint)
         {
