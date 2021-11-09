@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
@@ -10,11 +11,21 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public DamageResult Damage(DamageInfo damageInfo)
         {
-            var takeDamage = new TakeDamage(damageInfo);
-            Events.Preview(ref takeDamage);
-            var result = new DamageResult(takeDamage.Damage.WithAdjustedAmount(takeDamage.DamageTaken));
-            Events.Send(new TookDamage(damageInfo.Source, result));
-            damageInfo.Source?.AttributeDamage(result);
+            var previewDamage = new PreviewTakeDamage(damageInfo);
+            Events.Preview(ref previewDamage);
+
+            var modifiedDamageInfo = damageInfo;
+            if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamageInfo.Amount)
+            {
+                modifiedDamageInfo = damageInfo.WithAdjustedAmount(damageCap);
+            }
+            var result = new DamageResult(modifiedDamageInfo);
+
+            if (modifiedDamageInfo.Amount > HitPoints.Zero)
+            {
+                Events.Send(new TakeDamage(result));
+                damageInfo.Source?.AttributeDamage(result);
+            }
             return result;
         }
 

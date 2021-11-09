@@ -1,25 +1,14 @@
 using Bearded.TD.Game.Simulation.Components;
-using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    readonly struct TakeDamage : IComponentPreviewEvent
+    readonly struct TakeDamage : IComponentEvent
     {
-        public DamageInfo Damage { get; }
-        public HitPoints DamageTaken { get; }
+        public DamageResult Damage { get; }
 
-        public TakeDamage(DamageInfo damage) : this(damage, HitPoints.Zero) {}
-
-        public TakeDamage(DamageInfo damage, HitPoints damageTaken)
+        public TakeDamage(DamageResult damage)
         {
             Damage = damage;
-            DamageTaken = damageTaken;
-        }
-
-        public TakeDamage DamageAdded(HitPoints damageAmount)
-        {
-            Argument.Satisfies(DamageTaken + damageAmount <= Damage.Amount);
-            return new TakeDamage(Damage, DamageTaken + damageAmount);
         }
     }
 }

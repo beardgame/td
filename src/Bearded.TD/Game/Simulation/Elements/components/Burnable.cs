@@ -15,8 +15,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TookDamage>, IListener<Spark>
-        where T : GameObject, IPositionable
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>
+        where T : IComponentOwner, IGameObject, IPositionable
     {
         private IDamageSource? lastFireHitOwner;
         private IDamageSource? damageSource;
@@ -41,13 +41,13 @@ namespace Bearded.TD.Game.Simulation.Elements
             combustable.Extinguished += onExtinguished;
 
             damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Events.Subscribe<TookDamage>(this);
+            Events.Subscribe<TakeDamage>(this);
             Events.Subscribe<Spark>(this);
         }
 
         public override void OnRemoved()
         {
-            Events.Unsubscribe<TookDamage>(this);
+            Events.Unsubscribe<TakeDamage>(this);
             Events.Unsubscribe<Spark>(this);
         }
 
@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Simulation.Elements
             Events.Send(new FireExtinguished());
         }
 
-        public void HandleEvent(TookDamage @event)
+        public void HandleEvent(TakeDamage @event)
         {
             if (dealingDamageToOwner)
                 return;
@@ -102,15 +102,20 @@ namespace Bearded.TD.Game.Simulation.Elements
 
             damageSource ??= lastFireHitOwner;
 
-            var damage = new DamageInfo(
-                StaticRandom.Discretise((float) (elapsedTime.NumericValue * damagePerFuel * combustable.BurningSpeed.NumericValue)).HitPoints(),
-                DamageType.Fire,
-                damageSource);
+            if (Owner.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+            {
+                var damage = new DamageInfo(
+                    StaticRandom
+                        .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
+                            combustable.BurningSpeed.NumericValue)).HitPoints(),
+                    DamageType.Fire,
+                    damageSource);
 
-            dealingDamageToOwner = true;
-            var takeDamage = new TakeDamage(damage);
-            Events.Preview(ref takeDamage);
-            dealingDamageToOwner = false;
+                dealingDamageToOwner = true;
+                damageReceiver.Damage(damage);
+
+                dealingDamageToOwner = false;
+            }
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
                 fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);

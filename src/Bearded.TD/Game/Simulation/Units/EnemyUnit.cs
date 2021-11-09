@@ -28,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.Units
         IDamageTarget,
         IPositionable,
         IListener<EnactDeath>,
-        IListener<TookDamage>
+        IListener<TakeDamage>
     {
         private readonly Id<EnemyUnit> id;
         private readonly IUnitBlueprint blueprint;
@@ -77,7 +77,7 @@ namespace Bearded.TD.Game.Simulation.Units
 
             radius = ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
             events.Subscribe<EnactDeath>(this);
-            events.Subscribe<TookDamage>(this);
+            events.Subscribe<TakeDamage>(this);
         }
 
         protected override void OnDelete()
@@ -122,9 +122,9 @@ namespace Bearded.TD.Game.Simulation.Units
         public void OnTileChanged(Tile oldTile, Tile newTile) =>
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
 
-        public void HandleEvent(TookDamage @event)
+        public void HandleEvent(TakeDamage @event)
         {
-            lastDamageSource = @event.Source ?? lastDamageSource;
+            lastDamageSource = @event.Damage.Damage.Source ?? lastDamageSource;
         }
 
         public void HandleEvent(EnactDeath @event)

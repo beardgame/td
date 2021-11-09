@@ -36,6 +36,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new BuildingUpgradeManager<Building>());
             building.AddComponent(new DamageReceiver<Building>());
             building.AddComponent(new DamageSource<Building>());
+            building.AddComponent(new DebugInvulnerable<Building>());
             building.AddComponent(new FactionProvider<Building>(faction));
             building.AddComponent(new FootprintPosition<Building>());
             building.AddComponent(new IdProvider<Building>(id));

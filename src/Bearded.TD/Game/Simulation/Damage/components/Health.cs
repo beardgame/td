@@ -27,7 +27,8 @@ namespace Bearded.TD.Game.Simulation.Damage
         IHealth,
         ISyncable,
         IListener<HealDamage>,
-        IPreviewListener<TakeDamage>
+        IPreviewListener<PreviewTakeDamage>,
+        IListener<TakeDamage>
     {
         public HitPoints CurrentHealth { get; private set; }
         public HitPoints MaxHealth { get; private set; }
@@ -55,27 +56,24 @@ namespace Bearded.TD.Game.Simulation.Damage
             onHealed(@event.Amount);
         }
 
-        public void PreviewEvent(ref TakeDamage @event)
+        public void PreviewEvent(ref PreviewTakeDamage @event)
         {
-            var oldHealth = CurrentHealth;
-            onDamaged(@event.Damage);
-            var damageDone = oldHealth - CurrentHealth;
-            @event = @event.DamageAdded(damageDone);
+            @event = @event.CappedAt(CurrentHealth);
         }
 
-        private void onDamaged(DamageInfo damage)
+        public void HandleEvent(TakeDamage @event)
         {
-            if (damage.Amount > HitPoints.Zero && UserSettings.Instance.Debug.InvulnerableBuildings && Owner is Building)
-            {
-                return;
-            }
-
-            changeHealth(-damage.Amount);
+            onDamaged(@event.Damage.Damage);
         }
 
         private void onHealed(HitPoints health)
         {
             changeHealth(health);
+        }
+
+        private void onDamaged(DamageInfo damage)
+        {
+            changeHealth(-damage.Amount);
         }
 
         private void changeHealth(HitPoints healthChange)
