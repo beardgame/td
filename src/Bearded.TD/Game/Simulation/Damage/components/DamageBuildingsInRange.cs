@@ -41,8 +41,8 @@ namespace Bearded.TD.Game.Simulation.Damage
             {
                 var desiredDirection = Owner.Game.Navigator.GetDirections(Owner.CurrentTile);
 
-                if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(
-                    Owner.CurrentTile.Neighbor(desiredDirection), out var target))
+                var neighbor = Owner.CurrentTile.Neighbor(desiredDirection);
+                if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(neighbor, out var target))
                 {
                     return;
                 }
