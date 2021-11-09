@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
@@ -8,7 +7,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Components
 {
     [ComponentOwner]
-    sealed class ComponentGameObject : GameObject, IComponentGameObject, IComponentOwner<ComponentGameObject>, IPositionable, IDirected
+    sealed class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObject>, IPositionable, IDirected
     {
         private readonly IComponentOwnerBlueprint blueprint;
         public IComponentOwner? Parent { get; }
@@ -60,12 +59,5 @@ namespace Bearded.TD.Game.Simulation.Components
             components.Get<TComponent>();
 
         IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
-    }
-
-    [Obsolete("Temporary interface while we are consolidating BuildingBase with ComponentGameObject")]
-    interface IComponentGameObject
-    {
-        public GameState Game { get; }
-        public Position3 Position { get; set; }
     }
 }
