@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
@@ -17,17 +16,19 @@ namespace Bearded.TD.Game.Commands.Gameplay
 {
     static class RepairBuilding
     {
-        public static IRequest<Player, GameInstance> Request(GameInstance game, Faction faction, Building building)
+        public static IRequest<Player, GameInstance> Request(
+            GameInstance game, Faction faction, ComponentGameObject building)
             => new Implementation(game, faction, building, Id<IWorkerTask>.Invalid);
 
         private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
             private readonly Faction faction;
-            private readonly Building building;
+            private readonly ComponentGameObject building;
             private readonly Id<IWorkerTask> taskId;
 
-            public Implementation(GameInstance game, Faction faction, Building building, Id<IWorkerTask> taskId)
+            public Implementation(
+                GameInstance game, Faction faction, ComponentGameObject building, Id<IWorkerTask> taskId)
             {
                 this.game = game;
                 this.faction = faction;
@@ -80,13 +81,13 @@ namespace Bearded.TD.Game.Commands.Gameplay
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
             private Id<Faction> faction;
-            private Id<Building> building;
+            private Id<ComponentGameObject> building;
             private Id<IWorkerTask> taskId;
 
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(Faction faction, Building building, Id<IWorkerTask> taskId)
+            public Serializer(Faction faction, ComponentGameObject building, Id<IWorkerTask> taskId)
             {
                 this.faction = faction.Id;
                 this.building = building.FindId();

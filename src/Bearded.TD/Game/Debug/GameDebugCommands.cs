@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Debug
             //       less pollution of objects escaping their respective abstraction layer.
             foreach (var gameObj in gameInstance.State.GameObjects)
             {
-                if (gameObj is Building or SpawnLocation or ComponentGameObject)
+                if (gameObj is SpawnLocation or ComponentGameObject)
                 {
                     gameObj.Delete();
                 }

@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Commands
             commands.Add(gameInstance => PlopBuilding.Command(
                 gameInstance.State,
                 gameInstance.State.Factions.Find(externalId),
-                gameInstance.Ids.GetNext<Building>(),
+                gameInstance.Ids.GetNext<ComponentGameObject>(),
                 blueprint,
                 footprint));
         }

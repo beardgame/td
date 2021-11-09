@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
-using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
-using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -18,15 +17,14 @@ namespace Bearded.TD.Game.Synchronization
 
         private readonly Dictionary<Type, object> synchronizers = new();
         private readonly ICommandDispatcher<GameInstance> commandDispatcher;
-        private readonly Logger logger;
         private Instant nextSync = Instant.Zero;
 
-        public ServerGameSynchronizer(ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
+        public ServerGameSynchronizer(ICommandDispatcher<GameInstance> commandDispatcher)
         {
             this.commandDispatcher = commandDispatcher;
-            this.logger = logger;
 
-            synchronizers.Add(typeof(Building), new Synchronizer<Building>(SyncBuildings.Command));
+            synchronizers.Add(
+                typeof(ComponentGameObject), new Synchronizer<ComponentGameObject>(SyncBuildings.Command));
             synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncEnemies.Command));
         }
 

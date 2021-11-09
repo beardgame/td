@@ -133,14 +133,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private void sendSyncUpgradeStart(IIncompleteUpgrade incompleteUpgrade)
         {
-            // TODO: currently cast needed to get the building ID
-            Owner.Sync(SyncUpgradeStart.Command, Owner as Building, incompleteUpgrade.Upgrade.Id);
+            // TODO(building): currently cast needed to get the building ID
+            Owner.Sync(SyncUpgradeStart.Command, Owner as ComponentGameObject, incompleteUpgrade.Upgrade.Id);
         }
 
         private void sendSyncUpgradeCompletion(IIncompleteUpgrade incompleteUpgrade)
         {
-            // TODO: currently cast needed to get the building ID
-            Owner.Sync(SyncUpgradeCompletion.Command, Owner as Building, incompleteUpgrade.Upgrade.Id);
+            // TODO(building): currently cast needed to get the building ID
+            Owner.Sync(SyncUpgradeCompletion.Command, Owner as ComponentGameObject, incompleteUpgrade.Upgrade.Id);
         }
 
         public override void Update(TimeSpan elapsedTime) {}

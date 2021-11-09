@@ -50,14 +50,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public void SendSyncStart()
         {
-            // TODO: currently cast needed to get the building ID
-            (Owner as Building)?.Sync(SyncBuildingConstructionStart.Command);
+            // TODO(building): currently cast needed to get the ID
+            (Owner as ComponentGameObject)?.Sync(SyncBuildingConstructionStart.Command);
         }
 
         public void SendSyncComplete()
         {
-            // TODO: currently cast needed to get the building ID
-            (Owner as Building)?.Sync(SyncBuildingConstructionCompletion.Command);
+            // TODO(building): currently cast needed to get the ID
+            (Owner as ComponentGameObject)?.Sync(SyncBuildingConstructionCompletion.Command);
         }
 
         public void OnStart()

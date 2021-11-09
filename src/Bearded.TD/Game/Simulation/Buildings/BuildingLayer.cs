@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -18,51 +19,34 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         private readonly GlobalGameEvents events;
-        private readonly Dictionary<Tile, IBuilding> buildingLookup = new();
+        private readonly Dictionary<Tile, ComponentGameObject> buildingLookup = new();
 
         public BuildingLayer(GlobalGameEvents events)
         {
             this.events = events;
         }
 
-        public void AddBuilding(IBuilding building)
+        public void AddBuilding(ComponentGameObject building)
         {
             foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
-                DebugAssert.State.Satisfies(!buildingLookup.ContainsKey(tile));
+                State.Satisfies(!buildingLookup.ContainsKey(tile));
                 buildingLookup.Add(tile, building);
             }
         }
 
-        public void RemoveBuilding(IBuilding building)
+        public void RemoveBuilding(ComponentGameObject building)
         {
             foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
             {
-                DebugAssert.State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
+                State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
                 buildingLookup.Remove(tile);
             }
 
-            if (building is Building finishedBuilding)
+            if (building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State is { IsMaterialized: true })
             {
-                events.Send(new BuildingDestroyed(finishedBuilding));
+                events.Send(new BuildingDestroyed(building));
             }
-        }
-
-        private IBuildingState? getBuildingStateFor(Tile tile)
-        {
-            return GetBuildingFor(tile)?.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
-        }
-
-        public IBuilding? GetBuildingFor(Tile tile)
-        {
-            buildingLookup.TryGetValue(tile, out var building);
-            return building;
-        }
-
-        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IBuilding? building)
-        {
-            building = GetBuildingFor(tile);
-            return getBuildingStateFor(tile)?.IsMaterialized ?? false;
         }
 
         public Occupation GetOccupationFor(Tile tile)
@@ -76,6 +60,34 @@ namespace Bearded.TD.Game.Simulation.Buildings
             };
         }
 
-        public IBuilding? this[Tile tile] => GetBuildingFor(tile);
+        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out ComponentGameObject? building)
+        {
+            if (GetBuildingFor(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
+            {
+                building = candidate;
+                return true;
+            }
+
+            building = null;
+            return false;
+        }
+
+        private IBuildingState? getBuildingStateFor(Tile tile)
+        {
+            return GetBuildingFor(tile) is { } building ? getStateFor(building) : null;
+        }
+
+        public ComponentGameObject? GetBuildingFor(Tile tile)
+        {
+            buildingLookup.TryGetValue(tile, out var building);
+            return building;
+        }
+
+        public ComponentGameObject? this[Tile tile] => GetBuildingFor(tile);
+
+        private static IBuildingState? getStateFor(IComponentOwner building)
+        {
+            return building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
+        }
     }
 }

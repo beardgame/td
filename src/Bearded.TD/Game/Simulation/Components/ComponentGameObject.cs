@@ -54,6 +54,8 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public void RemoveComponent(IComponent<ComponentGameObject> component) => components.Remove(component);
 
+        public IEnumerable<TComponent> GetComponents<TComponent>() => components.Get<TComponent>();
+
         IEnumerable<TComponent> IComponentOwner<ComponentGameObject>.GetComponents<TComponent>() =>
             components.Get<TComponent>();
 

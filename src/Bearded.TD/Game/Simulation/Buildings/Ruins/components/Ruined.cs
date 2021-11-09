@@ -128,7 +128,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
                 throw new InvalidDataException(
                     "Ruined reports should not exist for ruined components without repair cost.");
 
-            public Building Building => (instance.Owner as Building)!;
+            public ComponentGameObject Building => (instance.Owner as ComponentGameObject)!;
             public bool RepairInProgress => instance.incompleteRepair != null;
             public double PercentageComplete => instance.incompleteRepair?.PercentageComplete ?? 0;
             public bool CanBeRepairedBy(Faction faction) => instance.CanBeRepairedBy(faction);
@@ -143,8 +143,8 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
 
     interface IRuinedReport : IReport
     {
-        // TODO: this should be a component owner
-        Building Building { get; }
+        // TODO(building): cast needed to get the ID
+        ComponentGameObject Building { get; }
         ResourceAmount RepairCost { get; }
         bool RepairInProgress { get; }
         double PercentageComplete { get; }

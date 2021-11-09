@@ -33,7 +33,7 @@ namespace Bearded.TD.Game
             var commandDispatcher = new ServerCommandDispatcher<Player, GameInstance>(new DefaultCommandExecutor(), network);
             RequestDispatcher = new ServerRequestDispatcher<Player, GameInstance>(commandDispatcher);
             Dispatcher = new ServerDispatcher<GameInstance>(commandDispatcher);
-            GameSynchronizer = new ServerGameSynchronizer(commandDispatcher, logger);
+            GameSynchronizer = new ServerGameSynchronizer(commandDispatcher);
             PlayerManagerFactory = game =>
             {
                 var playerManager = new PlayerManager(game, network, Dispatcher);

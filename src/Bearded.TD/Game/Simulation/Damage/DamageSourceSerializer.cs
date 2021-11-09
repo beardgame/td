@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         private enum SupportedImplementation : byte
         {
             None,
-            Building,
+            GameObject,
             Enemy,
             DivineIntervention,
         }
@@ -27,8 +27,8 @@ namespace Bearded.TD.Game.Simulation.Damage
                 case null:
                     type = (byte) SupportedImplementation.None;
                     break;
-                case DamageSource<Building> b:
-                    type = (byte) SupportedImplementation.Building;
+                case DamageSource<ComponentGameObject> b:
+                    type = (byte) SupportedImplementation.GameObject;
                     id = b.Id.Value;
                     break;
                 case DamageSource<EnemyUnit> e:
@@ -46,7 +46,7 @@ namespace Bearded.TD.Game.Simulation.Damage
             return type switch
             {
                 (byte) SupportedImplementation.None => null,
-                (byte) SupportedImplementation.Building => instance.State.Find(new Id<Building>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
+                (byte) SupportedImplementation.GameObject => instance.State.Find(new Id<ComponentGameObject>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
                 (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
                 (byte) SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
                 _ => throw new IndexOutOfRangeException()

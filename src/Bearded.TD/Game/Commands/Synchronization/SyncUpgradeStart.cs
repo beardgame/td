@@ -4,6 +4,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -13,15 +14,15 @@ namespace Bearded.TD.Game.Commands.Synchronization
 {
     static class SyncUpgradeStart
     {
-        public static ISerializableCommand<GameInstance> Command(Building building, ModAwareId upgradeId) =>
+        public static ISerializableCommand<GameInstance> Command(ComponentGameObject building, ModAwareId upgradeId) =>
             new Implementation(building, upgradeId);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly Building building;
+            private readonly ComponentGameObject building;
             private readonly ModAwareId upgradeId;
 
-            public Implementation(Building building, ModAwareId upgradeId)
+            public Implementation(ComponentGameObject building, ModAwareId upgradeId)
             {
                 this.building = building;
                 this.upgradeId = upgradeId;
@@ -40,13 +41,13 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private Id<Building> building;
+            private Id<ComponentGameObject> building;
             private ModAwareId upgradeId;
 
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(Building building, ModAwareId upgradeId)
+            public Serializer(ComponentGameObject building, ModAwareId upgradeId)
             {
                 this.building = building.FindId();
                 this.upgradeId = upgradeId;

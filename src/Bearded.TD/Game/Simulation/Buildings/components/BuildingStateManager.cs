@@ -88,8 +88,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             if (state.IsDead)
             {
-                // TODO: building necessary right now
-                (Owner as Building).Sync(KillBuilding.Command);
+                // TODO(building): cast necessary right now
+                (Owner as ComponentGameObject).Sync(DeleteGameObject.Command);
             }
         }
 

@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Commands.Loading
         public static ISerializableCommand<GameInstance> Command(
                 GameState gameState,
                 Faction faction,
-                Id<Building> id,
+                Id<ComponentGameObject> id,
                 IComponentOwnerBlueprint blueprint,
                 PositionedFootprint footprint)
             => new Implementation(gameState, faction, id, blueprint, footprint);
@@ -28,11 +28,16 @@ namespace Bearded.TD.Game.Commands.Loading
         {
             private readonly GameState gameState;
             private readonly Faction faction;
-            private readonly Id<Building> id;
+            private readonly Id<ComponentGameObject> id;
             private readonly IComponentOwnerBlueprint blueprint;
             private readonly PositionedFootprint footprint;
 
-            public Implementation(GameState gameState, Faction faction, Id<Building> id, IComponentOwnerBlueprint blueprint, PositionedFootprint footprint)
+            public Implementation(
+                GameState gameState,
+                Faction faction,
+                Id<ComponentGameObject> id,
+                IComponentOwnerBlueprint blueprint,
+                PositionedFootprint footprint)
             {
                 this.gameState = gameState;
                 this.faction = faction;
@@ -49,12 +54,13 @@ namespace Bearded.TD.Game.Commands.Loading
                 constructionSyncer.SyncCompleteBuild();
             }
 
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(faction, id, blueprint, footprint);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+                new Serializer(faction, id, blueprint, footprint);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private Id<Building> id;
+            private Id<ComponentGameObject> id;
             private Id<Faction> faction;
             private ModAwareId blueprint;
             private ModAwareId footprint;
@@ -65,7 +71,7 @@ namespace Bearded.TD.Game.Commands.Loading
             [UsedImplicitly]
             public Serializer() {}
 
-            public Serializer(Faction faction, Id<Building> id, IBlueprint blueprint, PositionedFootprint footprint)
+            public Serializer(Faction faction, Id<ComponentGameObject> id, IBlueprint blueprint, PositionedFootprint footprint)
             {
                 this.id = id;
                 this.faction = faction.Id;

@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -11,14 +12,14 @@ namespace Bearded.TD.Game.Commands.Synchronization
 {
     static class SyncBuildingConstructionStart
     {
-        public static ISerializableCommand<GameInstance> Command(Building building)
+        public static ISerializableCommand<GameInstance> Command(ComponentGameObject building)
             => new Implementation(building);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
-            private readonly Building building;
+            private readonly ComponentGameObject building;
 
-            public Implementation(Building building)
+            public Implementation(ComponentGameObject building)
             {
                 this.building = building;
             }
@@ -36,9 +37,9 @@ namespace Bearded.TD.Game.Commands.Synchronization
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private Id<Building> building;
+            private Id<ComponentGameObject> building;
 
-            public Serializer(Building building)
+            public Serializer(ComponentGameObject building)
             {
                 this.building = building.FindId();
             }

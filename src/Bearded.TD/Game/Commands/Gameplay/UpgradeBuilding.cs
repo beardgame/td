@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -15,16 +16,16 @@ namespace Bearded.TD.Game.Commands.Gameplay
     static class UpgradeBuilding
     {
         public static IRequest<Player, GameInstance> Request(
-            GameInstance game, Building building, IUpgradeBlueprint upgrade)
+            GameInstance game, ComponentGameObject building, IUpgradeBlueprint upgrade)
             => new Implementation(game, building, upgrade);
 
         private sealed class Implementation : UnifiedRequestCommand
         {
             private readonly GameInstance game;
-            private readonly Building building;
+            private readonly ComponentGameObject building;
             private readonly IUpgradeBlueprint upgrade;
 
-            public Implementation(GameInstance game, Building building, IUpgradeBlueprint upgrade)
+            public Implementation(GameInstance game, ComponentGameObject building, IUpgradeBlueprint upgrade)
             {
                 this.game = game;
                 this.building = building;
@@ -50,7 +51,7 @@ namespace Bearded.TD.Game.Commands.Gameplay
             {
                 var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
                 var incompleteUpgrade = upgradeManager.QueueUpgrade(upgrade);
-                building.AddComponent(new BuildingUpgradeWork<Building>(incompleteUpgrade));
+                building.AddComponent(new BuildingUpgradeWork<ComponentGameObject>(incompleteUpgrade));
             }
 
             public override ISerializableCommand<GameInstance> ToCommand() =>
@@ -61,13 +62,13 @@ namespace Bearded.TD.Game.Commands.Gameplay
 
         private sealed class Serializer : UnifiedRequestCommandSerializer
         {
-            private Id<Building> building;
+            private Id<ComponentGameObject> building;
             private ModAwareId upgrade;
 
             [UsedImplicitly]
             public Serializer() { }
 
-            public Serializer(Building building, IUpgradeBlueprint upgrade)
+            public Serializer(ComponentGameObject building, IUpgradeBlueprint upgrade)
             {
                 this.building = building.FindId();
                 this.upgrade = upgrade.Id;

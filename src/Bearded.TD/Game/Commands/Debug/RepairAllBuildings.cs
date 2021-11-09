@@ -4,7 +4,6 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Commands.Debug
 {
@@ -17,9 +16,10 @@ namespace Bearded.TD.Game.Commands.Debug
         {
             public override void Execute()
             {
-                foreach (var building in Game.State.GameObjects.OfType<Building>())
+                foreach (var building in Game.State.GameObjects.OfType<ComponentGameObject>())
                 {
-                    if (!building.TryGetSingleComponent<IHealthEventReceiver>(out var healthEventReceiver))
+                    if (!building.TryGetSingleComponent<IBuildingState>(out _)
+                        || !building.TryGetSingleComponent<IHealthEventReceiver>(out var healthEventReceiver))
                     {
                         continue;
                     }

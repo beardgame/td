@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
@@ -30,13 +31,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             public IUpgradeReportInstance CreateInstance(GameInstance game)
             {
-                // TODO: the cast below should really not exist
-                return new UpgradeReportInstance((source.Owner as Building)!, source, game);
+                // TODO(building): the cast below should really not exist
+                return new UpgradeReportInstance((source.Owner as ComponentGameObject)!, source, game);
             }
 
             private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
             {
-                private readonly Building subject;
+                private readonly ComponentGameObject subject;
                 private readonly IBuildingUpgradeManager upgradeManager;
                 private readonly GameInstance game;
                 private readonly GlobalGameEvents events;
@@ -53,8 +54,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 public event VoidEventHandler? UpgradesUpdated;
                 public event VoidEventHandler? AvailableUpgradesUpdated;
 
-                // TODO: subject should be a IComponentGameObject, not a Building
-                public UpgradeReportInstance(Building subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
+                public UpgradeReportInstance(ComponentGameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
                 {
                     this.subject = subject;
                     this.upgradeManager = upgradeManager;

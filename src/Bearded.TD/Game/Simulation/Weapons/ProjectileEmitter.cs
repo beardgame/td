@@ -74,7 +74,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         private void applyCurrentUpgradesTo(ComponentGameObject projectile)
         {
-            var upgrades = (Weapon.Owner as Building)
+            var upgrades = (Weapon.Owner as ComponentGameObject)
                 ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
                 ?.AppliedUpgrades
                 .Where(u => u.CanApplyTo(projectile))

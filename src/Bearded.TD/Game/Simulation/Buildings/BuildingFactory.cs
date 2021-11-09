@@ -9,6 +9,8 @@ using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
@@ -22,44 +24,44 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         // TODO: should return a ComponentGameObject instead
-        public Building Create(
-            Id<Building> id, IComponentOwnerBlueprint blueprint, Faction faction, PositionedFootprint footprint)
+        public ComponentGameObject Create(
+            Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction, PositionedFootprint footprint)
         {
-            var building = new Building(blueprint);
+            var building = new ComponentGameObject(blueprint, null, Position3.Zero, Direction2.Zero);
             gameState.Add(building);
             if (!building.GetComponents<IEnemySink>().Any())
             {
-                building.AddComponent(new BackupSink<Building>());
+                building.AddComponent(new BackupSink<ComponentGameObject>());
             }
-            building.AddComponent(new AllowManualControl<Building>());
-            building.AddComponent(new BuildingStateManager<Building>());
-            building.AddComponent(new BuildingUpgradeManager<Building>());
-            building.AddComponent(new HealthEventReceiver<Building>());
-            building.AddComponent(new DamageSource<Building>());
-            building.AddComponent(new DebugInvulnerable<Building>());
-            building.AddComponent(new FactionProvider<Building>(faction));
-            building.AddComponent(new FootprintPosition<Building>());
-            building.AddComponent(new IdProvider<Building>(id));
-            building.AddComponent(new IncompleteBuilding<Building>());
-            building.AddComponent(new ReportSubject<Building>());
-            building.AddComponent(new Selectable<Building>());
-            building.AddComponent(new StaticTileOccupation<Building>(footprint));
-            building.AddComponent(new StatisticCollector<Building>());
+            building.AddComponent(new AllowManualControl<ComponentGameObject>());
+            building.AddComponent(new BuildingStateManager<ComponentGameObject>());
+            building.AddComponent(new BuildingUpgradeManager<ComponentGameObject>());
+            building.AddComponent(new HealthEventReceiver<ComponentGameObject>());
+            building.AddComponent(new DamageSource<ComponentGameObject>());
+            building.AddComponent(new DebugInvulnerable<ComponentGameObject>());
+            building.AddComponent(new FactionProvider<ComponentGameObject>(faction));
+            building.AddComponent(new FootprintPosition<ComponentGameObject>());
+            building.AddComponent(new IdProvider<ComponentGameObject>(id));
+            building.AddComponent(new IncompleteBuilding<ComponentGameObject>());
+            building.AddComponent(new ReportSubject<ComponentGameObject>());
+            building.AddComponent(new Selectable<ComponentGameObject>());
+            building.AddComponent(new StaticTileOccupation<ComponentGameObject>(footprint));
+            building.AddComponent(new StatisticCollector<ComponentGameObject>());
             gameState.BuildingLayer.AddBuilding(building);
             building.Deleting += () => gameState.BuildingLayer.RemoveBuilding(building);
             return building;
         }
 
-        public Building CreateGhost(
-            IComponentOwnerBlueprint blueprint, Faction faction, out MovableTileOccupation<Building> tileOccupation)
+        public ComponentGameObject CreateGhost(
+            IComponentOwnerBlueprint blueprint, Faction faction, out MovableTileOccupation<ComponentGameObject> tileOccupation)
         {
-            var ghost = new Building(blueprint);
+            var ghost = new ComponentGameObject(blueprint, null, Position3.Zero, Direction2.Zero);
             gameState.Add(ghost);
-            ghost.AddComponent(new BuildingGhostDrawing<Building>());
-            ghost.AddComponent(new GhostBuildingStateProvider<Building>());
-            ghost.AddComponent(new FactionProvider<Building>(faction));
-            ghost.AddComponent(new FootprintPosition<Building>());
-            tileOccupation = new MovableTileOccupation<Building>();
+            ghost.AddComponent(new BuildingGhostDrawing<ComponentGameObject>());
+            ghost.AddComponent(new GhostBuildingStateProvider<ComponentGameObject>());
+            ghost.AddComponent(new FactionProvider<ComponentGameObject>(faction));
+            ghost.AddComponent(new FootprintPosition<ComponentGameObject>());
+            tileOccupation = new MovableTileOccupation<ComponentGameObject>();
             ghost.AddComponent(tileOccupation);
             return ghost;
         }
