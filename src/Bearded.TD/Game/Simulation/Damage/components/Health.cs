@@ -1,10 +1,8 @@
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Meta;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
@@ -26,6 +24,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         Component<T, IHealthComponentParameter>,
         IHealth,
         ISyncable,
+        IPreviewListener<PreviewHealDamage>,
         IListener<HealDamage>,
         IPreviewListener<PreviewTakeDamage>,
         IListener<TakeDamage>
@@ -41,7 +40,9 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         protected override void OnAdded()
         {
+            Events.Subscribe<PreviewHealDamage>(this);
             Events.Subscribe<HealDamage>(this);
+            Events.Subscribe<PreviewTakeDamage>(this);
             Events.Subscribe<TakeDamage>(this);
             ReportAggregator.Register(Events, new HealthReport(this));
         }
@@ -51,9 +52,14 @@ namespace Bearded.TD.Game.Simulation.Damage
             State.IsInvalid("Can never remove health components.");
         }
 
+        public void PreviewEvent(ref PreviewHealDamage @event)
+        {
+            @event = @event.CappedAt(MaxHealth - CurrentHealth);
+        }
+
         public void HandleEvent(HealDamage @event)
         {
-            onHealed(@event.Amount);
+            onHealed(@event.Heal.Heal);
         }
 
         public void PreviewEvent(ref PreviewTakeDamage @event)
@@ -66,9 +72,9 @@ namespace Bearded.TD.Game.Simulation.Damage
             onDamaged(@event.Damage.Damage);
         }
 
-        private void onHealed(HitPoints health)
+        private void onHealed(HealInfo heal)
         {
-            changeHealth(health);
+            changeHealth(heal.Amount);
         }
 
         private void onDamaged(DamageInfo damage)

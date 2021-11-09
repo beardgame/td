@@ -41,21 +41,17 @@ namespace Bearded.TD.Game.Simulation.Damage
             {
                 var desiredDirection = Owner.Game.Navigator.GetDirections(Owner.CurrentTile);
 
-                if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(
-                    Owner.CurrentTile.Neighbor(desiredDirection), out var target))
-                {
-                    return;
-                }
-                if (!target.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+                var neighbor = Owner.CurrentTile.Neighbor(desiredDirection);
+                if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(neighbor, out var target))
                 {
                     return;
                 }
 
-                Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
-
-                var result = damageReceiver.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic, damageSource));
-                Events.Send(new CausedDamage(result));
-                nextAttack += 1 / Parameters.AttackRate;
+                var damage = new DamageInfo(Parameters.Damage, DamageType.Kinetic);
+                if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage))
+                {
+                    nextAttack += 1 / Parameters.AttackRate;
+                }
             }
         }
 

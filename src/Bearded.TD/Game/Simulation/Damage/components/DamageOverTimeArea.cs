@@ -43,7 +43,8 @@ namespace Bearded.TD.Game.Simulation.Damage
 
             var centerPosition = Owner.Position;
             var rangeSquared = Parameters.Range.Squared;
-            var damageInfo = new DamageInfo(damage, Parameters.Type, damageSource);
+            var damageInfo = new DamageInfo(damage, Parameters.Type);
+            var executor = DamageExecutor.FromDamageSource(damageSource);
 
             foreach (var tile in Tilemap.GetSpiralCenteredAt(centerTile, tileRadius))
             {
@@ -51,11 +52,9 @@ namespace Bearded.TD.Game.Simulation.Damage
                 {
                     var distanceSquared = (centerPosition - unit.Position).LengthSquared;
 
-                    if (distanceSquared < rangeSquared
-                        && unit.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+                    if (distanceSquared < rangeSquared)
                     {
-                        var result = damageReceiver.Damage(damageInfo);
-                        Events.Send(new CausedDamage(result));
+                        executor.TryDoDamage(unit, damageInfo);
                     }
                 }
             }

@@ -105,20 +105,13 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 return;
             }
 
-            if (!target.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+            var damage = new DamageInfo(
+                StaticRandom.Discretise((float)(damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
+                DamageType.Energy);
+            if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage))
             {
-                return;
+                lastDamageTime = Game.Time;
             }
-
-            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
-
-            var result = damageReceiver.Damage(new DamageInfo(
-                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
-                DamageType.Energy,
-                damageSource
-            ));
-            lastDamageTime = Game.Time;
-            Events.Send(new CausedDamage(result));
         }
 
         public override void Draw(CoreDrawers drawers)

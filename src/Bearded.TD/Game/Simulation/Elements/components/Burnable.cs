@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Elements
             if (dealingDamageToOwner)
                 return;
 
-            onDamaged(@event.Damage);
+            onDamaged(@event.Damage, @event.Source);
         }
 
         public void HandleEvent(Spark @event)
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Simulation.Elements
             combustable.Spark();
         }
 
-        private void onDamaged(DamageResult result)
+        private void onDamaged(DamageResult result, IDamageSource? source)
         {
             switch (result.Damage.Type)
             {
@@ -81,7 +81,7 @@ namespace Bearded.TD.Game.Simulation.Elements
                     break;
             }
 
-            lastFireHitOwner = result.Damage.Source ?? lastFireHitOwner;
+            lastFireHitOwner = source ?? lastFireHitOwner;
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -102,20 +102,14 @@ namespace Bearded.TD.Game.Simulation.Elements
 
             damageSource ??= lastFireHitOwner;
 
-            if (Owner.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
-            {
-                var damage = new DamageInfo(
-                    StaticRandom
-                        .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
-                            combustable.BurningSpeed.NumericValue)).HitPoints(),
-                    DamageType.Fire,
-                    damageSource);
-
-                dealingDamageToOwner = true;
-                damageReceiver.Damage(damage);
-
-                dealingDamageToOwner = false;
-            }
+            dealingDamageToOwner = true;
+            var damage = new DamageInfo(
+                StaticRandom
+                    .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
+                        combustable.BurningSpeed.NumericValue)).HitPoints(),
+                DamageType.Fire);
+            DamageExecutor.FromDamageSource(damageSource).TryDoDamage(Owner, damage);
+            dealingDamageToOwner = false;
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
                 fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
