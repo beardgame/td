@@ -5,7 +5,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities.Geometry;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing
 {
