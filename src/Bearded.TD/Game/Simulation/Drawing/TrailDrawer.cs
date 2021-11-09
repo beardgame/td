@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities;
@@ -17,7 +18,8 @@ namespace Bearded.TD.Game.Simulation.Drawing
 
         public TrailDrawer(GameState game, ISpriteBlueprint sprite)
         {
-            this.sprite = sprite.MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
+            this.sprite = sprite.MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create,
+                game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
         }
 
         public void DrawTrail(

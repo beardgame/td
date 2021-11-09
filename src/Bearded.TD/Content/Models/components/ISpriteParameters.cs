@@ -10,6 +10,8 @@ namespace Bearded.TD.Content.Models
 
         ISpriteBlueprint Sprite { get; }
 
+        Shader? Shader { get; }
+
         [Modifiable(1)]
         Unit Size { get; }
 

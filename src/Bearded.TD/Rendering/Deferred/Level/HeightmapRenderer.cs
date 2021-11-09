@@ -139,6 +139,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
                     game.Meta.SpriteRenderers,
                     HeightmapSplatVertex.Create,
+                    game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("heightmap-splatter")],
                     HeightmapRadiusUniform
                 );
         }

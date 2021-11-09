@@ -36,13 +36,12 @@ namespace Bearded.TD.Content.Mods
             Serialization.Models.SpriteSet jsonModel)
         {
             _ = jsonModel.Id ?? throw new InvalidDataException($"{nameof(jsonModel.Id)} must be non-null");
-            _ = jsonModel.Shader ?? throw new InvalidDataException($"{nameof(jsonModel.Shader)} must be non-null");
 
             var samplers = getSamplers(jsonModel);
             var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
             return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-                samplers.Select(s => s.name), sprites, jsonModel.Shader, jsonModel.Pixelate, jsonModel.Id);
+                samplers.Select(s => s.name), sprites, jsonModel.Pixelate, jsonModel.Id);
         }
 
         private static IEnumerable<(string, Dictionary<string, Lazy<Bitmap>>)>

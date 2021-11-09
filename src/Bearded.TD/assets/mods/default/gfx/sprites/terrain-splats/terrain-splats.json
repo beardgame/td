@@ -1,5 +1,4 @@
 ﻿{
     "id" : "terrain-splats",
-    "shader" : "heightmap-splatter",
     "defaultTextureSampler" : "splat"
 }

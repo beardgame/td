@@ -42,19 +42,20 @@ namespace Bearded.TD.Content.Models
 
         public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
             SpriteRenderers spriteRenderers,
-            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
             where TVertex : struct, IVertexData
         {
-            return sprites.MakeConcreteWith(this, spriteRenderers, createVertex);
+            return sprites.MakeConcreteWith(this, spriteRenderers, createVertex, shader);
         }
 
         public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
             SpriteRenderers spriteRenderers,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+            Shader shader,
             params IRenderSetting[] customRenderSettings)
             where TVertex : struct, IVertexData
         {
-            return sprites.MakeCustomRendererWith(spriteRenderers, createVertex, customRenderSettings);
+            return sprites.MakeCustomRendererWith(spriteRenderers, createVertex, shader, customRenderSettings);
         }
 
         public void Dispose()

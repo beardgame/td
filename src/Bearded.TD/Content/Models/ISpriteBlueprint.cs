@@ -8,9 +8,8 @@ namespace Bearded.TD.Content.Models
     {
         SpriteParameters SpriteParameters { get; }
 
-        IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-            SpriteRenderers spriteRenderers,
-            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+        IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
             where TVertex : struct, IVertexData;
     }
 }

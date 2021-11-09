@@ -34,7 +34,8 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.gun-turret",
-                "color": "White"
+                "color": "White",
+                "shader" : "building"
             }
         }
     ]

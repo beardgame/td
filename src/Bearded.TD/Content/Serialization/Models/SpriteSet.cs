@@ -21,8 +21,6 @@ namespace Bearded.TD.Content.Serialization.Models
         public SpriteDrawGroup DrawGroup { get; set; } = SpriteDrawGroup.Unknown;
         public int DrawGroupOrderKey { get; set; }
 
-        public Content.Models.Shader? Shader { get; set; }
-
         public string? DefaultTextureSampler { get; set; }
         public List<TextureSampler>? TextureSamplers { get; set; }
 

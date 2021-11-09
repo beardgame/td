@@ -1,6 +1,7 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
@@ -25,7 +26,8 @@ namespace Bearded.TD.Game.Simulation.Drawing
         protected override void OnAdded()
         {
             ownerAsDirected = Maybe.FromNullable(Owner as IDirected);
-            sprite = Parameters.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create);
+            sprite = Parameters.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create,
+                Parameters.Shader ?? Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
         }
 
         public override void Update(TimeSpan elapsedTime)

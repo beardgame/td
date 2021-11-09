@@ -24,7 +24,8 @@ namespace Bearded.TD.Rendering.InGameUI
         {
             // TODO: This should not be hard coded
             var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create);
+            var sprite = sprites.GetSprite("halo").MakeConcreteWith(game.Meta.SpriteRenderers, UVColorVertex.Create,
+                game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
 
             Render(border, sprite, getLineColor, lineWidth);
         }

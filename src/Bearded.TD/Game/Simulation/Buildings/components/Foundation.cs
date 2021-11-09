@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
@@ -50,7 +51,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             // TODO: don't hardcode this, specify in parameters
             var sprites = Parameters.Sprites.MakeConcreteWith(
-                Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create);
+                Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create,
+                Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-sprite-3d")]);
 
             // this can remain hardcoded I think, at least for now
             // later we may want to depend on parameters for tower specific config

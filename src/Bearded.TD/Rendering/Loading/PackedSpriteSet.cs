@@ -12,19 +12,12 @@ namespace Bearded.TD.Rendering.Loading
         private readonly ImmutableArray<TextureUniform> textures;
         private readonly ImmutableDictionary<string, SpriteParameters> sprites;
 
-        // TODO: this should only serve as a 'default shader' and maybe not even that,
-        // but not having it we need to specify it everywhere where we refer to the sprite and it gets a mess
-        // the implicit association with between shader code and vertex fields is also not represented anywhere :/
-        private readonly Shader shader;
-
         public PackedSpriteSet(
             IEnumerable<TextureUniform> textures,
-            IDictionary<string, SpriteParameters> sprites,
-            Shader shader)
+            IDictionary<string, SpriteParameters> sprites)
         {
             this.textures = textures.ToImmutableArray();
             this.sprites = sprites.ToImmutableDictionary();
-            this.shader = shader;
         }
 
         public SpriteParameters GetSpriteParameters(string name)
@@ -34,11 +27,12 @@ namespace Bearded.TD.Rendering.Loading
 
         public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
             SpriteSet spriteSet, SpriteRenderers spriteRenderers,
-            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+            Shader shader)
             where TVertex : struct, IVertexData
         {
             return spriteRenderers.GetOrCreateDrawableSpriteSetFor(
-                spriteSet,
+                spriteSet, shader,
                 () => DrawableSpriteSet.Create(textures, sprites, shader, createVertex)
             );
         }
@@ -46,6 +40,7 @@ namespace Bearded.TD.Rendering.Loading
         public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
             SpriteRenderers spriteRenderers,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+            Shader shader,
             params IRenderSetting[] customRenderSettings)
             where TVertex : struct, IVertexData
         {

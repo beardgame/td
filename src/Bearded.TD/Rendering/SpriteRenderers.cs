@@ -25,7 +25,7 @@ namespace Bearded.TD.Rendering
 
         private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
 
-        private readonly Dictionary<SpriteSet, Dictionary<(Type, Type), object>> knownSpriteSets = new();
+        private readonly Dictionary<SpriteSet, Dictionary<(Type, Type, Shader), object>> knownSpriteSets = new();
         private readonly Dictionary<SpriteDrawGroup, Renderers> renderersByDrawGroup =
             Enum.GetValues<SpriteDrawGroup>().ToDictionary(g => g, _ => new Renderers());
 
@@ -43,15 +43,15 @@ namespace Bearded.TD.Rendering
         }
 
         public DrawableSpriteSet<TVertex, TVertexData> GetOrCreateDrawableSpriteSetFor<TVertex, TVertexData>(
-            SpriteSet spriteSet, Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
+            SpriteSet spriteSet, Shader shader, Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
             where TVertex : struct, IVertexData
         {
-            var typeKey = (typeof(TVertex), typeof(TVertexData));
+            var key = (typeof(TVertex), typeof(TVertexData), shader);
 
             var spriteSets = knownSpriteSets.GetValueOrInsertNewDefaultFor(spriteSet);
 
             var drawable = (DrawableSpriteSet<TVertex, TVertexData>)
-                spriteSets.GetOrInsert(typeKey, createDrawableAndRegisterDefaultRenderer);
+                spriteSets.GetOrInsert(key, createDrawableAndRegisterDefaultRenderer);
 
             return drawable;
 

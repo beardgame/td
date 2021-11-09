@@ -62,7 +62,7 @@ namespace Bearded.TD.Rendering.Loading
         private int flatCoordinate(int x, int y)
             => 4 * (y * width + x);
 
-        public PackedSpriteSet Build(IActionQueue glActions, Shader shader, bool pixelate)
+        public PackedSpriteSet Build(IActionQueue glActions, bool pixelate)
         {
             var premultiply = TextureTransformation.Premultiply;
 
@@ -77,8 +77,7 @@ namespace Bearded.TD.Rendering.Loading
 
             return new PackedSpriteSet(
                 textureUniforms,
-                sprites,
-                shader
+                sprites
             );
         }
 
