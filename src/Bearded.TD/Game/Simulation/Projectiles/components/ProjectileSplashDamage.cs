@@ -49,17 +49,15 @@ namespace Bearded.TD.Game.Simulation.Projectiles
             // of range.
             var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
-            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
+            var damageExecutor = DamageExecutor.FromObject(Owner);
+            var damage = new DamageInfo(Parameters.Damage, DamageType.Kinetic);
 
             foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
             {
-                if ((enemy.Position - center).LengthSquared > distanceSquared
-                    || !enemy.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
+                if ((enemy.Position - center).LengthSquared <= distanceSquared)
                 {
-                    continue;
+                    damageExecutor.TryDoDamage(enemy, damage);
                 }
-
-                damageReceiver.Damage(new DamageInfo(Parameters.Damage, DamageType.Kinetic), damageSource);
             }
         }
 

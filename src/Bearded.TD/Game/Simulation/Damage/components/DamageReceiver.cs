@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage
@@ -9,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Damage
     {
         protected override void OnAdded() {}
 
-        public DamageResult Damage(DamageInfo damageInfo, IDamageSource? source)
+        public void Damage(DamageInfo damageInfo, IDamageSource? source)
         {
             var previewDamage = new PreviewTakeDamage(damageInfo);
             Events.Preview(ref previewDamage);
@@ -26,7 +25,6 @@ namespace Bearded.TD.Game.Simulation.Damage
                 Events.Send(new TakeDamage(result, source));
                 source?.AttributeDamage(result);
             }
-            return result;
         }
 
         public override void Update(TimeSpan elapsedTime) {}
@@ -36,6 +34,6 @@ namespace Bearded.TD.Game.Simulation.Damage
 
     interface IDamageReceiver
     {
-        DamageResult Damage(DamageInfo damageInfo, IDamageSource? source);
+        void Damage(DamageInfo damageInfo, IDamageSource? source);
     }
 }

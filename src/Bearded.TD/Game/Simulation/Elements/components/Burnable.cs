@@ -102,19 +102,14 @@ namespace Bearded.TD.Game.Simulation.Elements
 
             damageSource ??= lastFireHitOwner;
 
-            if (Owner.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
-            {
-                var damage = new DamageInfo(
-                    StaticRandom
-                        .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
-                            combustable.BurningSpeed.NumericValue)).HitPoints(),
-                    DamageType.Fire);
-
-                dealingDamageToOwner = true;
-                damageReceiver.Damage(damage, damageSource);
-
-                dealingDamageToOwner = false;
-            }
+            dealingDamageToOwner = true;
+            var damage = new DamageInfo(
+                StaticRandom
+                    .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
+                        combustable.BurningSpeed.NumericValue)).HitPoints(),
+                DamageType.Fire);
+            DamageExecutor.FromDamageSource(damageSource).TryDoDamage(Owner, damage);
+            dealingDamageToOwner = false;
 
             if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
                 fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);

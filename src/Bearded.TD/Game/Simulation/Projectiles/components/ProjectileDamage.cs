@@ -25,16 +25,9 @@ namespace Bearded.TD.Game.Simulation.Projectiles
 
         public void HandleEvent(HitEnemy @event)
         {
-            if (!@event.Enemy.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
-            {
-                DebugAssert.State.IsInvalid();
-                return;
-            }
-
-            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
-
-            damageReceiver.Damage(
-                new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic), damageSource);
+            var damage = new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic);
+            var damageDone = DamageExecutor.FromObject(Owner).TryDoDamage(@event.Enemy, damage);
+            DebugAssert.State.Satisfies(damageDone);
         }
 
         public override void Update(TimeSpan elapsedTime) { }
