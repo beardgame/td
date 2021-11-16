@@ -1,6 +1,7 @@
 using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -59,6 +60,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             var ghost = ComponentGameObjectFactory.CreateWithoutRenderer(
                 gameState, blueprint, null, Position3.Zero, Direction2.Zero);
+            ghost.AddComponent(new GhostBuildingRenderer<ComponentGameObject>());
             ghost.AddComponent(new BuildingGhostDrawing<ComponentGameObject>());
             ghost.AddComponent(new GhostBuildingStateProvider<ComponentGameObject>());
             ghost.AddComponent(new FactionProvider<ComponentGameObject>(faction));
