@@ -58,7 +58,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                     baseColor = Color.Orange;
                 }
 
-                var color = baseColor * 0.5f;
+                var color = baseColor * 0.2f;
                 drawTile(drawers, color, tile);
 
                 if (!isTileValidForBuilding)

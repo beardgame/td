@@ -28,13 +28,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
             PositionedFootprint footprint)
         {
-            var building = ComponentGameObjectFactory.CreateWithDefaultRenderer(
+            var building = ComponentGameObjectFactory.CreateWithoutRenderer(
                 gameState, blueprint, null, Position3.Zero, Direction2.Zero);
             if (!building.GetComponents<IEnemySink>().Any())
             {
                 building.AddComponent(new BackupSink<ComponentGameObject>());
             }
 
+            building.AddComponent(new GhostBuildingRenderer<ComponentGameObject>());
             building.AddComponent(new AllowManualControl<ComponentGameObject>());
             building.AddComponent(new BuildingStateManager<ComponentGameObject>());
             building.AddComponent(new BuildingUpgradeManager<ComponentGameObject>());
