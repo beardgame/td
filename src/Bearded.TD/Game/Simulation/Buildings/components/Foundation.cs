@@ -5,6 +5,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
@@ -28,13 +29,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
     }
 
     [Component("foundation")]
-    sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation
+    sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, IDrawableComponent
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-        private Sprite spriteSide = null!;
-        private Sprite spriteTop = null!;
+        private SpriteDrawInfo<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)> spriteSide;
+        private SpriteDrawInfo<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)> spriteTop;
 
         public Unit BaseHeight { get; private set; }
         public Unit TopHeight { get; private set; }
@@ -50,14 +51,12 @@ namespace Bearded.TD.Game.Simulation.Buildings
             TopHeight = BaseHeight + Parameters.Height;
 
             // TODO: don't hardcode this, specify in parameters
-            var sprites = Parameters.Sprites.MakeConcreteWith(
-                Owner.Game.Meta.SpriteRenderers, DeferredSprite3DVertex.Create,
-                Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-sprite-3d")]);
+            var shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-sprite-3d")];
 
             // this can remain hardcoded I think, at least for now
             // later we may want to depend on parameters for tower specific config
-            spriteSide = sprites.GetSprite("side");
-            spriteTop = sprites.GetSprite("top");
+            spriteSide = SpriteDrawInfo.From(Parameters.Sprites.GetSprite("side"), DeferredSprite3DVertex.Create, shader);
+            spriteTop = SpriteDrawInfo.From(Parameters.Sprites.GetSprite("top"), DeferredSprite3DVertex.Create, shader);
 
             occupiedTilesTracker.Initialize(Owner, Events);
         }
@@ -73,13 +72,17 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Draw(CoreDrawers drawers)
         {
+        }
+
+        public void Draw(IComponentRenderer renderer)
+        {
             foreach (var tile in occupiedTilesTracker.OccupiedTiles)
             {
-                drawTile(tile, BaseHeight, TopHeight);
+                drawTile(renderer, tile, BaseHeight, TopHeight);
             }
         }
 
-        private void drawTile(Tile tile, Unit z0, Unit z1)
+        private void drawTile(IComponentRenderer renderer, Tile tile, Unit z0, Unit z1)
         {
             // TODO: cache the geometry
             var center = Level
@@ -88,18 +91,18 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             for (var i = 0; i < 6; i++)
             {
-                drawWall(z0.NumericValue, z1.NumericValue, i, center);
+                drawWall(renderer, z0.NumericValue, z1.NumericValue, i, center);
             }
 
-            drawTop(z1.NumericValue, center);
+            drawTop(renderer, z1.NumericValue, center);
 
             for (var i = 0; i < 3; i++)
             {
-                drawConnectionIfNeeded(tile, i, center);
+                drawConnectionIfNeeded(renderer, tile, i, center);
             }
         }
 
-        private void drawConnectionIfNeeded(Tile tile, int i, Vector2 center)
+        private void drawConnectionIfNeeded(IComponentRenderer renderer, Tile tile, int i, Vector2 center)
         {
             var direction = directions[i];
             var neighbor = tile.Neighbor(direction);
@@ -117,11 +120,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var neighborBuilding = Owner.Game.BuildingLayer[neighbor];
 
             neighborBuilding?.GetComponents<IFoundation>().MaybeFirst().Match(
-                neighborFoundation => drawConnection(i, center, neighbor, neighborFoundation)
+                neighborFoundation => drawConnection(renderer, i, center, neighbor, neighborFoundation)
             );
         }
 
-        private void drawConnection(int i, Vector2 center, Tile neighbor, IFoundation neighborFoundation)
+        private void drawConnection(IComponentRenderer renderer, int i, Vector2 center, Tile neighbor, IFoundation neighborFoundation)
         {
             var z0 = Math.Min(BaseHeight.NumericValue, neighborFoundation.BaseHeight.NumericValue);
             var z1 = Math.Min(TopHeight.NumericValue, neighborFoundation.TopHeight.NumericValue);
@@ -133,10 +136,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var cornerBeforeN = cornerVectors[i + 4];
             var cornerAfterN = cornerVectors[i + 3];
 
-            drawConnectionWall(centerN, cornerBeforeN, center, cornerBefore, z0, z1);
-            drawConnectionWall(center, cornerAfter, centerN, cornerAfterN, z0, z1);
+            drawConnectionWall(renderer, centerN, cornerBeforeN, center, cornerBefore, z0, z1);
+            drawConnectionWall(renderer, center, cornerAfter, centerN, cornerAfterN, z0, z1);
 
-            spriteSide.DrawQuad(
+            renderer.DrawQuad(
+                spriteSide,
                 (center + cornerBefore * topWidthFactor).WithZ(z1),
                 (center + cornerAfter * topWidthFactor).WithZ(z1),
                 (centerN + cornerAfterN * topWidthFactor).WithZ(z1),
@@ -145,7 +149,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             );
         }
 
-        private void drawConnectionWall(Vector2 center, Vector2 cornerVector, Vector2 center2, Vector2 cornerVector2,
+        private void drawConnectionWall(IComponentRenderer renderer, Vector2 center, Vector2 cornerVector, Vector2 center2, Vector2 cornerVector2,
             float z0, float z1)
         {
             var p0 = (center + cornerVector).WithZ(z0);
@@ -157,7 +161,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var tangentY = p1 - p0;
             var normal = Vector3.Cross(tangentX, tangentY);
 
-            spriteSide.DrawQuad(
+            renderer.DrawQuad(
+                spriteSide,
                 p0, p1, p2, p3,
                 new Vector2(0, 1),
                 new Vector2(0, 0),
@@ -167,17 +172,18 @@ namespace Bearded.TD.Game.Simulation.Buildings
             );
         }
 
-        private void drawTop(float z1, Vector2 center)
+        private void drawTop(IComponentRenderer renderer, float z1, Vector2 center)
         {
             var data = (Vector3.UnitZ, Vector3.UnitX, Color.White);
 
-            drawTopQuad(z1, center, data, 0);
-            drawTopQuad(z1, center, data, 3);
+            drawTopQuad(renderer, z1, center, data, 0);
+            drawTopQuad(renderer, z1, center, data, 3);
         }
 
-        private void drawTopQuad(float z1, Vector2 center, (Vector3 Normal, Vector3 Tangent, Color Color) data, int cornerOffset)
+        private void drawTopQuad(IComponentRenderer renderer, float z1, Vector2 center, (Vector3 Normal, Vector3 Tangent, Color Color) data, int cornerOffset)
         {
-            spriteTop.DrawQuad(
+            renderer.DrawQuad(
+                spriteTop,
                 (center + cornerVectors[cornerOffset + 0] * topWidthFactor).WithZ(z1),
                 (center + cornerVectors[cornerOffset + 1] * topWidthFactor).WithZ(z1),
                 (center + cornerVectors[cornerOffset + 2] * topWidthFactor).WithZ(z1),
@@ -190,7 +196,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             );
         }
 
-        private void drawWall(float z0, float z1, int i, Vector2 center)
+        private void drawWall(IComponentRenderer renderer, float z0, float z1, int i, Vector2 center)
         {
             var cornerBefore = cornerVectors[i];
             var cornerAfter = cornerVectors[i + 1];
@@ -204,7 +210,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
             var tangentY = p1 - p0;
             var normal = Vector3.Cross(tangentX, tangentY);
 
-            spriteSide.DrawQuad(
+            renderer.DrawQuad(
+                spriteSide,
                 p0, p1, p2, p3,
                 new Vector2(0, 1),
                 new Vector2(0, 0),

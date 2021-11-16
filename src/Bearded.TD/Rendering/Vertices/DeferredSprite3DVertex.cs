@@ -34,11 +34,11 @@ namespace Bearded.TD.Rendering.Vertices
         public VertexAttribute[] VertexAttributes => vertexAttributes;
 
         private static readonly VertexAttribute[] vertexAttributes = MakeAttributeArray(
-            MakeAttributeTemplate<Vector3>("vertexPosition"),
+            MakeAttributeTemplate<Vector3>("v_position"),
             MakeAttributeTemplate<Vector3>("vertexNormal"),
             MakeAttributeTemplate<Vector3>("vertexTangent"),
-            MakeAttributeTemplate<Vector2>("vertexUV"),
-            MakeAttributeTemplate<Color>("vertexColor")
+            MakeAttributeTemplate<Vector2>("v_texcoord"),
+            MakeAttributeTemplate<Color>("v_color")
         );
     }
 }

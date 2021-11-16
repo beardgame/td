@@ -4,6 +4,7 @@ uniform sampler2D diffuse;
 uniform sampler2D normal;
 uniform float time;
 
+in vec3 fragmentPosition;
 in vec2 fragmentUV;
 in vec4 fragmentColor;
 in float fragmentDepth;
@@ -28,11 +29,15 @@ void main()
 
     float n = dot(nX, nX) + dot(nY, nY);
 
-    if (n < 0.5 && a < 0.01)
+    bool isOutline = n > 0.5 || a > 0.01;
+    if (isOutline)
+    {
+        outRGBA = vec4(fragmentColor.rgb, 0);
+        outNormal = vec4(0);
+        outDepth = vec4(fragmentDepth, 0, 0, 1);
+    }
+    else
+    {
         discard;
-
-
-    outRGBA = vec4(fragmentColor.rgb, 0);
-    outNormal = vec4(0);
-    outDepth = vec4(fragmentDepth, 0, 0, 1);
+    }
 }

@@ -1,11 +1,11 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
-using OpenTK.Mathematics;
+using Bearded.TD.Rendering;
 
 namespace Bearded.TD.Game.Simulation.Drawing
 {
-    class GhostBuildingRenderer<T> : BaseComponentRenderer<T>
+    class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>
         where T : IGameObject, IComponentOwner
     {
         private Shader shader = null!;
@@ -17,13 +17,10 @@ namespace Bearded.TD.Game.Simulation.Drawing
             shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("building-ghost")];
         }
 
-        public override void DrawSprite<TVertex, TVertexData>(
-            SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, float angle, TVertexData data)
+        protected override IDrawableSprite<TVertexData> Drawable<TVertex, TVertexData>(
+            SpriteDrawInfo<TVertex, TVertexData> sprite)
         {
-            var drawable =
-                sprite.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, sprite.Create, shader);
-
-            drawable.Draw(position, size, angle, data);
+            return sprite.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, sprite.Create, shader);
         }
     }
 }
