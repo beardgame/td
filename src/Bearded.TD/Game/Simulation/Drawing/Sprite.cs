@@ -3,7 +3,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities.Geometry;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
