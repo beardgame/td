@@ -57,10 +57,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
 
         private void initializeSprite()
         {
-            var shader = Parameters.Shader ??
-                Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")];
-
-            sprite = SpriteDrawInfo.From(Parameters.Sprite, UVColorVertex.Create, shader);
+            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Shader, Parameters.Sprite);
         }
 
         private void initializeParticles()
