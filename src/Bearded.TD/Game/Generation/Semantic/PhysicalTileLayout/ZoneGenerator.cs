@@ -16,16 +16,16 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
             return game => DefineZones.Command(game, patchWithIds(game, zones));
         }
 
-        private static ImmutableArray<ZoneDefinition> generateZones(IEnumerable<TiledFeature> tiledFeatures)
+        private static ImmutableArray<Zone> generateZones(IEnumerable<TiledFeature> tiledFeatures)
         {
             // TODO: figure out what to do with the tiles between nodes.
             return tiledFeatures
                 .OfType<TiledFeature.Node>()
-                .Select(node => new ZoneDefinition(Id<Zone>.Invalid, node.Tiles.ToImmutableArray()))
+                .Select(node => new Zone(Id<Zone>.Invalid, node.Tiles.ToImmutableArray()))
                 .ToImmutableArray();
         }
 
-        private static ImmutableArray<ZoneDefinition> patchWithIds(GameInstance game, IEnumerable<ZoneDefinition> zones)
+        private static ImmutableArray<Zone> patchWithIds(GameInstance game, IEnumerable<Zone> zones)
         {
             return zones.Select(zone => zone with { Id = game.Ids.GetNext<Zone>() }).ToImmutableArray();
         }
