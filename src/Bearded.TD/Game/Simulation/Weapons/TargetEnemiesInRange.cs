@@ -23,7 +23,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
             IWeaponRangeDrawer,
             ITargeter<IPositionable>,
             IWeaponAimer,
-            IWeaponTrigger
+            IWeaponTrigger,
+            IWeaponRange
     {
         private PassabilityLayer passabilityLayer = null!;
         private TileRangeDrawer tileRangeDrawer = null!;
@@ -46,6 +47,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public bool TriggerPulled { get; private set; }
         public Direction2 AimDirection { get; private set; }
+
+        public Unit Range => currentRange;
 
         public TargetEnemiesInRange(ITargetEnemiesInRange parameters) : base(parameters)
         {

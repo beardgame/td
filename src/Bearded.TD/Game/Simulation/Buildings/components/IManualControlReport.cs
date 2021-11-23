@@ -6,6 +6,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
     interface IManualControlReport : IReport
     {
         Position2 SubjectPosition { get; }
+        Unit SubjectRange { get; }
         void StartControl(IManualTarget2 target);
         void EndControl();
     }

@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Camera
         private readonly float levelRadius;
 
         private float maxCameraRadius => levelRadius - 3;
-        private float maxCameraDistance => levelRadius;
+        private float maxCameraDistance => maxCameraDistanceOverride ?? levelRadius;
 
         private float zoomSpeed =>
             Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
@@ -22,6 +22,7 @@ namespace Bearded.TD.Game.Camera
         private Position2 scrollAnchor;
         private Vector2 zoomAnchor;
         private bool isGrabbed;
+        private float? maxCameraDistanceOverride;
 
         // Aggregated for the whole frame.
         private Difference2 aggregatedPositionVelocity;
@@ -92,7 +93,8 @@ namespace Bearded.TD.Game.Camera
                 + aggregatedDistanceOffset * zoomSpeed
                 + aggregatedDistanceVelocity * zoomSpeed * args.ElapsedTimeInSf;
 
-            newGoalDistance = newGoalDistance.Clamped(Constants.Camera.ZMin * 0.9f, maxCameraDistance * 1.1f);
+            newGoalDistance = Math.Max(Constants.Camera.ZMin * 0.9f,
+                Math.Min(newGoalDistance, maxCameraDistance * 1.1f));
 
             float error = 0;
 
@@ -133,7 +135,7 @@ namespace Bearded.TD.Game.Camera
 
         private void constrictCameraToLevel(UpdateEventArgs args)
         {
-            var currentMaxCameraRadiusNormalised = 1 - (camera.Distance / maxCameraDistance).Squared().Clamped(0, 1);
+            var currentMaxCameraRadiusNormalised = 1 - (camera.Distance / levelRadius).Squared().Clamped(0, 1);
             var currentMaxCameraRadius = maxCameraRadius * currentMaxCameraRadiusNormalised;
 
             if (camera.Position.NumericValue.LengthSquared <= currentMaxCameraRadius.Squared())
@@ -183,6 +185,11 @@ namespace Bearded.TD.Game.Camera
         {
             aggregatedPositionVelocity += velocity;
             interruptScrollToPosition();
+        }
+
+        public void CenterZoomAnchor()
+        {
+            zoomAnchor = new Vector2(camera.ViewportSize.Width, camera.ViewportSize.Height) * 0.5f;
         }
 
         /// <summary>
@@ -236,5 +243,17 @@ namespace Bearded.TD.Game.Camera
             if (!isGrabbed) throw new Exception("Cannot release camera if it was never grabbed.");
             isGrabbed = false;
         }
+
+
+        public void OverrideMaxCameraDistance(float maxDistance)
+        {
+            maxCameraDistanceOverride = maxDistance;
+        }
+
+        public void ResetMaxCameraDistanceOverride()
+        {
+            maxCameraDistanceOverride = null;
+        }
+
     }
 }
