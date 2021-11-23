@@ -25,12 +25,16 @@ namespace Bearded.TD.Game.Simulation.Exploration
             }
         }
 
-        public void RevealZone(Zone zone)
+        public bool RevealZone(Zone zone)
         {
-            if (revealedZones.Add(zone))
+            if (!revealedZones.Add(zone))
             {
-                events.Send(new ZoneRevealed(zone));
+                return false;
             }
+
+            events.Send(new ZoneRevealed(zone));
+            return true;
+
         }
 
         public ZoneVisibility this[Zone zone] =>
