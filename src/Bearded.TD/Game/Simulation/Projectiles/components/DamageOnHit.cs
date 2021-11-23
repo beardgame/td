@@ -9,9 +9,9 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
     [Component("damageOnHit")]
-    sealed class ProjectileDamage : Component<IComponentOwner, IProjectileDamageComponentParameters>, IListener<HitEnemy>
+    sealed class DamageOnHit : Component<IComponentOwner, IDamageOnHitComponentParameters>, IListener<HitEnemy>
     {
-        public ProjectileDamage(IProjectileDamageComponentParameters parameters) : base(parameters) {}
+        public DamageOnHit(IDamageOnHitComponentParameters parameters) : base(parameters) {}
 
         protected override void OnAdded()
         {

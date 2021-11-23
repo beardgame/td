@@ -3,7 +3,7 @@ using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Content.Models
 {
-    interface IProjectileDamageComponentParameters : IParametersTemplate<IProjectileDamageComponentParameters>
+    interface IDamageOnHitComponentParameters : IParametersTemplate<IDamageOnHitComponentParameters>
     {
         [Modifiable(Type = AttributeType.Damage)]
         HitPoints Damage { get; }

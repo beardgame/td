@@ -31,6 +31,14 @@
                 "timeout" : 0.1,
                 "surviveObjectDeletion" : true
             }
+        },
+        {
+            "id": "spawnObjectOnHit",
+            "parameters": {
+                "object": "sparkExplosion",
+                "onHitLevel": true,
+                "onHitEnemy": false
+            }
         }
     ]
 }
