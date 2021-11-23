@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -70,6 +71,7 @@ namespace Bearded.TD.Game.Simulation.Units
             components.Add(new DamageSource<EnemyUnit>());
             components.Add(new IdProvider<EnemyUnit>(id));
             components.Add(new Syncer<EnemyUnit>());
+            components.Add(new TileBasedVisibility<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()
