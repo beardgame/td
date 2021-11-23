@@ -12,15 +12,15 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
 {
     static class DefineZones
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, ImmutableArray<ZoneDefinition> zones)
+        public static ISerializableCommand<GameInstance> Command(GameInstance game, ImmutableArray<Zone> zones)
             => new Implementation(game, zones);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
-            private readonly ImmutableArray<ZoneDefinition> zones;
+            private readonly ImmutableArray<Zone> zones;
 
-            public Implementation(GameInstance game, ImmutableArray<ZoneDefinition> zones)
+            public Implementation(GameInstance game, ImmutableArray<Zone> zones)
             {
                 this.game = game;
                 this.zones = zones;
@@ -39,9 +39,9 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
-            private ZoneDefinition?[] zones = Array.Empty<ZoneDefinition>();
+            private Zone?[] zones = Array.Empty<Zone>();
 
-            public Serializer(ImmutableArray<ZoneDefinition> zones)
+            public Serializer(ImmutableArray<Zone> zones)
             {
                 this.zones = zones.ToArray();
             }
@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
                 }
             }
 
-            private void serializeZone(INetBufferStream stream, ref ZoneDefinition? zone)
+            private void serializeZone(INetBufferStream stream, ref Zone? zone)
             {
                 // ReSharper disable once InlineOutVariableDeclaration
                 var id = Id<Zone>.Invalid;
@@ -69,7 +69,7 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
                 zone?.Deconstruct(out id, out tiles);
                 stream.Serialize(ref id);
                 serializeTiles(stream, ref tiles);
-                zone = new ZoneDefinition(id, tiles);
+                zone = new Zone(id, tiles);
             }
 
             private void serializeTiles(INetBufferStream stream, ref ImmutableArray<Tile> tiles)

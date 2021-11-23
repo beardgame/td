@@ -19,11 +19,10 @@ namespace Bearded.TD.Game.Simulation.Zones
             zonesByTile = new Tilemap<Zone>(radius);
         }
 
-        public void AddZone(ZoneDefinition definition)
+        public void AddZone(Zone zone)
         {
-            var zone = new Zone(definition.Id, definition.Tiles);
             zonesById.Add(zone);
-            foreach (var tile in definition.Tiles)
+            foreach (var tile in zone.Tiles)
             {
                 DebugAssert.State.Satisfies(() => zonesByTile[tile] == null);
                 zonesByTile[tile] = zone;
