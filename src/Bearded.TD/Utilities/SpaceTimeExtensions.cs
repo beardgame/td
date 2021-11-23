@@ -19,6 +19,8 @@ namespace Bearded.TD.Utilities
 
         public static Velocity3 WithZ(this Velocity2 xy) => xy.WithZ(Speed.Zero);
 
+        public static Difference3 WithZ(this Difference2 xy) => new(xy.X, xy.Y, 0.U());
+
         public static Position3 WithZ(this Position2 xy) => xy.WithZ(Unit.Zero);
 
         public static Velocity3 WithZ(this Velocity2 xy, Speed z) => new(xy.X, xy.Y, z);

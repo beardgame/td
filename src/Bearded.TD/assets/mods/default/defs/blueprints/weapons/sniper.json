@@ -15,7 +15,17 @@
             "parameters" : {
                 "projectile" : "sniperProjectile",
                 "muzzleSpeed" : 50,
-                "fireRate" : 1
+                "fireRate" : 1,
+                "muzzleOffset" : 0.2
+            }
+        },
+        {
+            "id" : "muzzleFlash",
+            "parameters" : {
+                "sprite" : "particle.muzzleflash",
+                "color" : "001E90FF",
+                "size" : 2,
+                "offset" : 0.5
             }
         },
         {

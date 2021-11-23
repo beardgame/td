@@ -2,7 +2,6 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
@@ -65,12 +64,16 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
             var (direction, muzzleVelocity) = getMuzzleVelocity();
 
+            var position = Weapon.Position + (Weapon.CurrentDirection * Parameters.MuzzleOffset).WithZ();
+
             var projectile = ComponentGameObjectFactory.CreateWithDefaultRenderer(
-                Game, Parameters.Projectile, Owner, Weapon.Position, direction);
+                Game, Parameters.Projectile, Owner, position, direction);
 
             projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
 
             applyCurrentUpgradesTo(projectile);
+
+            Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
         }
 
         private void applyCurrentUpgradesTo(ComponentGameObject projectile)

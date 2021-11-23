@@ -17,5 +17,7 @@ namespace Bearded.TD.Content.Models
 
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
+
+        Unit MuzzleOffset { get; }
     }
 }
