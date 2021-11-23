@@ -11,6 +11,7 @@ using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.World.Fluids;
+using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -51,6 +52,7 @@ namespace Bearded.TD.Game.Simulation
         public MiningLayer MiningLayer { get; }
         public SelectionLayer SelectionLayer { get; }
         public PassabilityManager PassabilityManager { get; }
+        public ZoneLayer ZoneLayer { get; }
 
         public WaveDirector WaveDirector { get; }
 
@@ -70,10 +72,11 @@ namespace Bearded.TD.Game.Simulation
             UnitLayer = new UnitLayer();
             BuildingLayer = new BuildingLayer(Meta.Events);
             BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
-                new Lazy<PassabilityLayer>(() => PassabilityManager.GetLayer(Passability.WalkingUnit)));
+                new Lazy<PassabilityLayer>(() => PassabilityManager!.GetLayer(Passability.WalkingUnit)));
             MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
             SelectionLayer = new SelectionLayer();
             PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
+            ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
             Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
             Factions = factions.AsReadOnly();
 
