@@ -19,6 +19,10 @@ namespace Bearded.TD.Game.Simulation.Components
             new(d => AngularAcceleration.FromDegrees((float) d), a => a.AngleValue.Degrees);
 
         [ConvertsAttribute]
+        public static AttributeConverter<AngularVelocity> AngularVelocityConverter =
+            new(d => AngularVelocity.FromDegrees((float) d), a => a.AngleValue.Degrees);
+
+        [ConvertsAttribute]
         public static AttributeConverter<Energy> EnergyConverter =
             new(d => new Energy(d), e => e.NumericValue);
 

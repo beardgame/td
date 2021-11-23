@@ -9,12 +9,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [Component("linearAccelerationAim")]
-    class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>
+    class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>, IAngularAccelerator
     {
         private AngularVelocity angularVelocity;
         private IWeaponAimer? aimer;
 
         public LinearAccelerationAim(ILinearAccelerationAimParameters parameters) : base(parameters) { }
+
+        public void Impact(AngularVelocity impact)
+        {
+            angularVelocity += impact;
+        }
 
         protected override void OnAdded()
         {

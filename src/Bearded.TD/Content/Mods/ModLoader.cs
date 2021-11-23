@@ -101,6 +101,7 @@ namespace Bearded.TD.Content.Mods
                     new SpaceTime1Converter<Volume>(v => new Volume(v)),
                     new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)),
                     new SpaceTime1Converter<AngularAcceleration>(AngularAcceleration.FromDegrees),
+                    new SpaceTime1Converter<AngularVelocity>(AngularVelocity.FromDegrees),
                     new SpaceTime1Converter<Energy>(d => new Energy(d)),
                     new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
                     new SpaceTime1Converter<HitPoints>(d => ((int) d).HitPoints()),
