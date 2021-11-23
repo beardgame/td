@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Camera
         private Position2 position;
         private float distance;
 
-        protected ViewportSize ViewportSize { get; private set; }
+        public ViewportSize ViewportSize { get; private set; }
 
         public Position2 Position
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
@@ -36,6 +37,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public Position2 SubjectPosition => Owner.Position.XY();
+        public Unit SubjectRange { get; private set; }
 
         public void StartControl(IManualTarget2 target)
         {
@@ -44,9 +46,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
             crossHair = new CrossHair(target);
             Owner.AddComponent(crossHair);
 
+            SubjectRange = 3.U();
+
             foreach (var turret in (Owner as IComponentOwner).GetComponents<ITurret>())
             {
                 turret.OverrideTargeting(crossHair);
+                if (turret.Weapon.TryGetSingleComponent<IWeaponRange>(out var range))
+                    SubjectRange = Math.Max(SubjectRange.NumericValue, range.Range.NumericValue).U();
             }
         }
 
