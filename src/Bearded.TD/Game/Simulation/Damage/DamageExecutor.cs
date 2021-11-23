@@ -2,7 +2,7 @@ using Bearded.TD.Game.Simulation.Components;
 
 namespace Bearded.TD.Game.Simulation.Damage
 {
-    sealed class DamageExecutor
+    readonly struct DamageExecutor
     {
         private readonly IDamageSource? damageSource;
 

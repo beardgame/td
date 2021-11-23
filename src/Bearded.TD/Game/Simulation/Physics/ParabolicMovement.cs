@@ -12,10 +12,12 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Physics
 {
-    sealed class ParabolicMovement : Component<ComponentGameObject>
+    sealed class ParabolicMovement : Component<ComponentGameObject>, IDirected3
     {
         private Velocity3 velocity;
         private Tile tile;
+
+        public Difference3 Direction => velocity * 1.S();
 
         public ParabolicMovement(Velocity3 velocity)
         {
