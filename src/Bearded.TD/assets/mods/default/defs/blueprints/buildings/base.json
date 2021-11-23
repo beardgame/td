@@ -19,6 +19,7 @@
       "id" : "workerAntenna",
       "onGhost": true,
       "parameters" : { "workerRange" : 12 }
-    }
+    },
+    { "id" : "revealSurroundingZones", "parameters" : { "steps" : 1 } }
   ]
 }

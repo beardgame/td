@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -50,6 +51,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new Selectable<ComponentGameObject>());
             building.AddComponent(new StaticTileOccupation<ComponentGameObject>(footprint));
             building.AddComponent(new StatisticCollector<ComponentGameObject>());
+            building.AddComponent(new TileBasedVisibility<ComponentGameObject>());
             gameState.BuildingLayer.AddBuilding(building);
             building.Deleting += () => gameState.BuildingLayer.RemoveBuilding(building);
             return building;

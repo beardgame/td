@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Exploration.events;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 
@@ -26,13 +25,20 @@ namespace Bearded.TD.Game.Simulation.Exploration
             }
         }
 
-        public void RevealZone(Zone zone)
+        public bool RevealZone(Zone zone)
         {
-            if (revealedZones.Add(zone))
+            if (!revealedZones.Add(zone))
             {
-                events.Send(new ZoneRevealed(zone));
+                return false;
             }
+
+            events.Send(new ZoneRevealed(zone));
+            return true;
+
         }
+
+        public ZoneVisibility this[Zone zone] =>
+            revealedZones.Contains(zone) ? ZoneVisibility.Revealed : ZoneVisibility.Invisible;
 
         public TileVisibility this[Tile tile]
         {

@@ -27,6 +27,7 @@
             }
         },
         { "id" : "assignWorkers" },
+        { "id" : "revealFullMap" },
         {
             "id" : "contributeNodes",
             "parameters" : {

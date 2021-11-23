@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 
@@ -11,6 +11,7 @@ namespace Bearded.TD.Game.Simulation.Zones
     {
         private readonly IdDictionary<Zone> zonesById = new();
         private readonly Tilemap<Zone?> zonesByTile;
+        private readonly MultiDictionary<Zone, Zone> adjacentZones = new();
 
         public IEnumerable<Zone> AllZones => zonesById.Values;
 
@@ -29,10 +30,16 @@ namespace Bearded.TD.Game.Simulation.Zones
             }
         }
 
+        public void ConnectZones(Zone from, Zone to)
+        {
+            adjacentZones.Add(from, to);
+            adjacentZones.Add(to, from);
+        }
+
         public Zone FindZone(Id<Zone> id) => zonesById[id];
 
         public Zone? ZoneForTile(Tile tile) => zonesByTile[tile];
 
-        public IEnumerable<Zone> AdjacentZones(Zone zone) => throw new NotImplementedException();
+        public IEnumerable<Zone> AdjacentZones(Zone zone) => adjacentZones[zone];
     }
 }

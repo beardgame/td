@@ -1,5 +1,6 @@
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -9,8 +10,11 @@ namespace Bearded.TD.Game.Simulation.Drawing
     class DefaultComponentRenderer<T> : Component<T>, IComponentRenderer
         where T : IGameObject, IComponentOwner
     {
+        private IVisibility? visibility;
+
         protected override void OnAdded()
         {
+            ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -19,7 +23,10 @@ namespace Bearded.TD.Game.Simulation.Drawing
 
         public override void Draw(CoreDrawers drawers)
         {
-            drawRecursively(Owner);
+            if (visibility?.Visibility.IsVisible() ?? true)
+            {
+                drawRecursively(Owner);
+            }
         }
 
         private void drawRecursively(IComponentOwner owner)
