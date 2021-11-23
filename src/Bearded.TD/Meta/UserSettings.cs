@@ -66,6 +66,7 @@ namespace Bearded.TD.Meta
             public bool InvulnerableBuildings = false;
 
             // debug rendering for more complex systems
+            public bool Zones = false;
             public bool LevelMetadata = false;
             public bool LevelGeometry = false;
             public bool LevelGeometryShowHeights = false;

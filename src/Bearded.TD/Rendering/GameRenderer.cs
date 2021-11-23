@@ -89,6 +89,11 @@ namespace Bearded.TD.Rendering
         {
             var settings = UserSettings.Instance.Debug;
 
+            if (settings.Zones)
+            {
+                drawDebugZones();
+            }
+
             if (settings.LevelGeometry)
             {
                 drawDebugLevelGeometry();
@@ -149,6 +154,16 @@ namespace Bearded.TD.Rendering
 
                     shapeDrawer.FillCircle(p, HexagonSide * 0.25f, passability.IsPassable ? Color.Green : Color.Red, 3);
                 }
+            }
+        }
+
+        private void drawDebugZones()
+        {
+            var zoneLayer = game.State.ZoneLayer;
+
+            foreach (var zone in zoneLayer.AllZones)
+            {
+                TileAreaBorderRenderer.Render(TileAreaBorder.From(zone.Tiles), game.State, Color.Azure);
             }
         }
 
@@ -263,8 +278,6 @@ namespace Bearded.TD.Rendering
                             var xyz = Level.GetPosition(tile.XY).WithZ(tile.Z).NumericValue;
                             shapeDrawer.FillCircle(xyz, HexagonSide, tile.Color, 6);
                             break;
-
-
                     }
                 });
         }
