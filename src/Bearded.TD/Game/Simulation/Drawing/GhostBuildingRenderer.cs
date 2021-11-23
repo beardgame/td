@@ -8,7 +8,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing
 {
-    class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>, IListener<ConstructionStarted>
+    sealed class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>, IListener<ConstructionStarted>
         where T : IGameObject, IComponentOwner<T>
     {
         private Shader shader = null!;
