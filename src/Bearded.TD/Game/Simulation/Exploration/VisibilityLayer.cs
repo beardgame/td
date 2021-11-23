@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Exploration.events;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 
