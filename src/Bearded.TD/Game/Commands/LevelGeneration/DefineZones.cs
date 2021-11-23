@@ -6,51 +6,67 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Commands.LevelGeneration
 {
     static class DefineZones
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, ImmutableArray<Zone> zones)
-            => new Implementation(game, zones);
+        public static ISerializableCommand<GameInstance> Command(
+            GameInstance game, ImmutableArray<Zone> zones, ImmutableArray<(Zone, Zone)> connections)
+            => new Implementation(game, zones, connections);
 
         private sealed class Implementation : ISerializableCommand<GameInstance>
         {
             private readonly GameInstance game;
             private readonly ImmutableArray<Zone> zones;
+            private readonly ImmutableArray<(Zone, Zone)> connections;
 
-            public Implementation(GameInstance game, ImmutableArray<Zone> zones)
+            public Implementation(
+                GameInstance game, ImmutableArray<Zone> zones, ImmutableArray<(Zone, Zone)> connections)
             {
                 this.game = game;
                 this.zones = zones;
+                this.connections = connections;
             }
 
             public void Execute()
             {
-                foreach (var zoneDefinition in zones)
+                foreach (var zone in zones)
                 {
-                    game.State.ZoneLayer.AddZone(zoneDefinition);
+                    game.State.ZoneLayer.AddZone(zone);
+                }
+                foreach (var (from, to) in connections)
+                {
+                    game.State.ZoneLayer.ConnectZones(from, to);
                 }
             }
 
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(zones);
+            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+                new Serializer(zones, connections);
         }
 
         private sealed class Serializer : ICommandSerializer<GameInstance>
         {
             private Zone?[] zones = Array.Empty<Zone>();
+            private (Id<Zone>, Id<Zone>)[] connections = Array.Empty<(Id<Zone>, Id<Zone>)>();
 
-            public Serializer(ImmutableArray<Zone> zones)
+            public Serializer(ImmutableArray<Zone> zones, ImmutableArray<(Zone, Zone)> connections)
             {
                 this.zones = zones.ToArray();
+                this.connections = connections.SelectBoth(z => z.Id).ToArray();
             }
 
             // ReSharper disable once UnusedMember.Local
             public Serializer() { }
 
             public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, zones.ToImmutableArray());
+            {
+                var zonesById = zones.ToImmutableDictionary(zone => zone.Id);
+                var resolvedConnections = connections.SelectBoth(id => zonesById[id]).ToImmutableArray();
+                return new Implementation(game, zones.ToImmutableArray(), resolvedConnections);
+            }
 
             public void Serialize(INetBufferStream stream)
             {
@@ -58,6 +74,11 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
                 for (var i = 0; i < zones.Length; i++)
                 {
                     serializeZone(stream, ref zones[i]);
+                }
+                stream.SerializeArrayCount(ref connections);
+                for (var i = 0; i < connections.Length; i++)
+                {
+                    serializeConnection(stream, ref connections[i]);
                 }
             }
 
@@ -85,6 +106,12 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
                 }
 
                 tiles = tilesArray.ToImmutableArray();
+            }
+
+            private void serializeConnection(INetBufferStream stream, ref (Id<Zone>, Id<Zone>) connection)
+            {
+                stream.Serialize(ref connection.Item1);
+                stream.Serialize(ref connection.Item2);
             }
         }
     }
