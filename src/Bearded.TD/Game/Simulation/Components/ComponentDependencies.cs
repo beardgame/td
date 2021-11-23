@@ -33,13 +33,13 @@ namespace Bearded.TD.Game.Simulation.Components
             events.Subscribe<ComponentRemoved>(listener);
         }
 
-        public static void Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
+        public static IDependencyRef Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
         {
             var found = owner.GetComponents<T>().FirstOrDefault();
             if (found != null)
             {
                 consumer(found);
-                return;
+                return new ResolvedDependencyRef();
             }
 
             var listener = new DependencyListener<T>();
@@ -49,6 +49,31 @@ namespace Bearded.TD.Game.Simulation.Components
                 // TODO: we should unsubscribe after this. Luckily component added events happen rarely.
             };
             events.Subscribe(listener);
+            return new PendingDependencyRef<T>(events, listener);
+        }
+
+        public interface IDependencyRef : IDisposable {}
+
+        private sealed class ResolvedDependencyRef : IDependencyRef
+        {
+            public void Dispose() {}
+        }
+
+        private sealed class PendingDependencyRef<T> : IDependencyRef
+        {
+            private readonly ComponentEvents events;
+            private readonly DependencyListener<T> listener;
+
+            public PendingDependencyRef(ComponentEvents events, DependencyListener<T> listener)
+            {
+                this.events = events;
+                this.listener = listener;
+            }
+
+            public void Dispose()
+            {
+                events.Unsubscribe(listener);
+            }
         }
 
         public static void Depend<T1, T2>(IComponentOwner owner, ComponentEvents events, Action<T1, T2> consumer)

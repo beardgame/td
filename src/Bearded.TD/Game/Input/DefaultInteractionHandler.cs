@@ -24,7 +24,8 @@ namespace Bearded.TD.Game.Input
             }
 
             // TODO: make this work for multiple selectables
-            var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile).FirstOrDefault();
+            var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile)
+                .FirstOrDefault(s => s.IsSelectable);
             var clicked = cursor.Click.Hit;
 
             if (selectable != null)
