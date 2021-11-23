@@ -33,6 +33,6 @@ namespace Bearded.TD.Game.Simulation.Zones
 
         public Zone? ZoneForTile(Tile tile) => zonesByTile[tile];
 
-        public IEnumerable<Zone> AdjacentTiles(Zone zone) => throw new NotImplementedException();
+        public IEnumerable<Zone> AdjacentZones(Zone zone) => throw new NotImplementedException();
     }
 }
