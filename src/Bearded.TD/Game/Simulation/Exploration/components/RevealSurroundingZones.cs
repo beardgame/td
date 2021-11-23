@@ -6,7 +6,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Exploration.components
+namespace Bearded.TD.Game.Simulation.Exploration
 {
     [Component("revealSurroundingZones")]
     sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesParameters>
