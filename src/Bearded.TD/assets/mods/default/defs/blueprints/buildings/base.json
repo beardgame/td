@@ -20,6 +20,6 @@
       "onGhost": true,
       "parameters" : { "workerRange" : 12 }
     },
-    { "id" : "revealSurroundingZones", "parameters" : { "steps" : 0 } }
+    { "id" : "revealSurroundingZones", "parameters" : { "steps" : 1 } }
   ]
 }
