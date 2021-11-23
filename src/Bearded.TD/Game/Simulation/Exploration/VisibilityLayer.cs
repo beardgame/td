@@ -33,6 +33,9 @@ namespace Bearded.TD.Game.Simulation.Exploration
             }
         }
 
+        public ZoneVisibility this[Zone zone] =>
+            revealedZones.Contains(zone) ? ZoneVisibility.Revealed : ZoneVisibility.Invisible;
+
         public TileVisibility this[Tile tile]
         {
             get

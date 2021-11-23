@@ -8,6 +8,7 @@ using Bearded.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
@@ -21,6 +22,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Game.World;
+using TileVisibility = Bearded.TD.Game.Simulation.Exploration.TileVisibility;
 using TimeSpan = System.TimeSpan;
 
 namespace Bearded.TD.Rendering
@@ -94,6 +96,11 @@ namespace Bearded.TD.Rendering
                 drawDebugZones();
             }
 
+            if (settings.Visibility)
+            {
+                drawDebugVisibility();
+            }
+
             if (settings.LevelGeometry)
             {
                 drawDebugLevelGeometry();
@@ -160,10 +167,39 @@ namespace Bearded.TD.Rendering
         private void drawDebugZones()
         {
             var zoneLayer = game.State.ZoneLayer;
+            var visibilityLayer = game.State.VisibilityLayer;
 
             foreach (var zone in zoneLayer.AllZones)
             {
-                TileAreaBorderRenderer.Render(TileAreaBorder.From(zone.Tiles), game.State, Color.Azure);
+                var color = visibilityLayer[zone] switch
+                {
+                    ZoneVisibility.Invisible => Color.DarkOrange,
+                    ZoneVisibility.Revealed => Color.LightGreen,
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+
+                TileAreaBorderRenderer.Render(TileAreaBorder.From(zone.Tiles), game.State, color);
+            }
+        }
+
+        private void drawDebugVisibility()
+        {
+            const float a = 0.1f;
+
+            var visibilityLayer = game.State.VisibilityLayer;
+
+            foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
+            {
+                var color = visibilityLayer[tile] switch
+                {
+                    TileVisibility.Invisible => Color.DarkOrange,
+                    TileVisibility.Revealed => Color.YellowGreen,
+                    TileVisibility.Visible => Color.LightGreen,
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+
+                var xyz = Level.GetPosition(tile).NumericValue;
+                shapeDrawer.FillCircle(xyz, HexagonSide, color * a, 6);
             }
         }
 
