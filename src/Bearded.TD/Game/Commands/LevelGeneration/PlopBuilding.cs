@@ -12,7 +12,7 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Loading
+namespace Bearded.TD.Game.Commands.LevelGeneration
 {
     static class PlopBuilding
     {

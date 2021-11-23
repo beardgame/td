@@ -7,7 +7,7 @@ using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Loading
+namespace Bearded.TD.Game.Commands.LevelGeneration
 {
     static class BlockTilesForBuilding
     {

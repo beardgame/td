@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Game.Commands.Loading;
+using Bearded.TD.Game.Commands.LevelGeneration;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
@@ -34,16 +35,18 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout
 
             var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
-            var (tilemap, commands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
+            var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles);
+
+            var (tilemap, levelCommands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
 
             addFeatureAreaMetadata(arrangedFeaturesWithAreas);
             addFeatureTileMetadata(featuresWithTiles);
 
-
             // TODO: these will be generated (and possibly entirely replaced) somewhere above later
             var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
+            CommandFactory tilemapCommand = game => FillTilemap.Command(game, tilemap, drawInfos);
 
-            return commands.Prepend(game => FillTilemap.Command(game, tilemap, drawInfos));
+            return ImmutableArray.Create(tilemapCommand, zoneCommand).Concat(levelCommands);
         }
 
         private void addFeatureTileMetadata(IEnumerable<TiledFeature> features)
