@@ -13,6 +13,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
         where T : IComponentOwner<T>, IGameObject, IPositionable
     {
         private CrossHair? crossHair;
+        private Overdrive<T>? overdrive;
         public ReportType Type => ReportType.ManualControl;
 
         protected override void OnAdded()
@@ -34,7 +35,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void StartControl(IManualTarget2 target)
         {
             DebugAssert.State.Satisfies(crossHair == null);
+            DebugAssert.State.Satisfies(overdrive == null);
 
+            Owner.AddComponent(overdrive = new Overdrive<T>());
             crossHair = new CrossHair(target);
             Owner.AddComponent(crossHair);
 
@@ -51,7 +54,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public void EndControl()
         {
             DebugAssert.State.Satisfies(crossHair != null);
+            DebugAssert.State.Satisfies(overdrive != null);
 
+            Owner.RemoveComponent(overdrive!);
             Owner.RemoveComponent(crossHair!);
             crossHair = null;
 
@@ -59,6 +64,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 turret.StopTargetOverride();
             }
+
         }
     }
 }
