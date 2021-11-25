@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Components
 {
     static class ComponentDependencies
     {
-        public static void DependDynamic<T>(IComponentOwner owner, ComponentEvents events, Action<T?> consumer)
+        public static IDependencyRef DependDynamic<T>(IComponentOwner owner, ComponentEvents events, Action<T?> consumer)
             where T : class
         {
             var currentDependency = owner.GetComponents<T>().LastOrDefault();
@@ -31,6 +31,7 @@ namespace Bearded.TD.Game.Simulation.Components
             };
             events.Subscribe<ComponentAdded>(listener);
             events.Subscribe<ComponentRemoved>(listener);
+            return new DynamicDependencyRef<T>(events, listener);
         }
 
         public static IDependencyRef Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
@@ -116,6 +117,24 @@ namespace Bearded.TD.Game.Simulation.Components
 
                 Resolved?.Invoke(dependency);
                 isResolved = true;
+            }
+        }
+
+        private class DynamicDependencyRef<T> : IDependencyRef
+        {
+            private readonly ComponentEvents events;
+            private readonly DynamicDependencyListener<T> listener;
+
+            public DynamicDependencyRef(ComponentEvents events, DynamicDependencyListener<T> listener)
+            {
+                this.events = events;
+                this.listener = listener;
+            }
+
+            public void Dispose()
+            {
+                events.Unsubscribe<ComponentAdded>(listener);
+                events.Unsubscribe<ComponentRemoved>(listener);
             }
         }
 
