@@ -1,4 +1,3 @@
-using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -19,8 +18,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         private IUpgradeEffect fireRate = null!;
         private IUpgradeEffect damageOverTime = null!;
+        private ComponentDependencies.IDependencyRef weaponTriggerDependency = null!;
 
-        private Instant? nextDamageTime;
+        private IWeaponTrigger? trigger;
+        private bool wasTriggerPulledLastFrame;
+        private Instant nextDamageTime;
 
         protected override void OnAdded()
         {
@@ -31,6 +33,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             fireRate.ApplyTo(Owner);
             damageOverTime.ApplyTo(Owner);
+
+            weaponTriggerDependency = ComponentDependencies
+                .DependDynamic<IWeaponTrigger>(Owner, Events, t => trigger = t);
         }
 
         private static ModificationWithId damageModification(IdManager ids)
@@ -40,37 +45,25 @@ namespace Bearded.TD.Game.Simulation.Buildings
         {
             fireRate.RemoveFrom(Owner);
             damageOverTime.RemoveFrom(Owner);
+            weaponTriggerDependency.Dispose();
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            if (isAnyTriggerPulled(Owner))
+            var triggerIsPulled = trigger?.TriggerPulled ?? false;
+
+            if (triggerIsPulled && nextDamageTime <= Owner.Game.Time)
             {
-                if (nextDamageTime is not { } damageTime)
-                {
-                    damageOwnerAtTime(Owner.Game.Time);
-                }
-                else if (damageTime <= Owner.Game.Time)
-                {
-                    damageOwnerAtTime(damageTime);
-                }
+                damageOwner();
+
+                var timeOfDamage = wasTriggerPulledLastFrame ? nextDamageTime : Owner.Game.Time;
+                nextDamageTime = timeOfDamage + damageInterval;
             }
-            else
-            {
-                nextDamageTime = null;
-            }
+
+            wasTriggerPulledLastFrame = triggerIsPulled;
         }
 
-        private bool isAnyTriggerPulled(IComponentOwner owner)
-        {
-            return owner.GetComponents<IComponent>().Any(
-                c =>
-                    c is IWeaponTrigger { TriggerPulled: true } ||
-                    c is INestedComponentOwner nested && isAnyTriggerPulled(nested.NestedComponentOwner)
-            );
-        }
-
-        private void damageOwnerAtTime(Instant time)
+        private void damageOwner()
         {
             var damage = new HitPoints(
                 Owner.TryGetSingleComponent<IHealth>(out var health)
@@ -79,9 +72,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             var overdriveDamage = new DamageInfo(damage, DamageType.DivineIntervention);
 
-            var success = DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage);
+            DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage);
 
-            nextDamageTime = time + damageInterval;
         }
 
         public override void Draw(CoreDrawers drawers)

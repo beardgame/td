@@ -22,7 +22,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
             public Position3 Target { get; private set; }
-            public bool TriggerDown { get; private set; }
+            public bool TriggerPulled { get; private set; }
 
             public CrossHair(IManualTarget2 target)
             {
@@ -49,7 +49,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 var clampedTargetHeight = targetHeight.NumericValue.Clamped(0, 0.25f).U();
 
                 Target = targetPoint.WithZ(clampedTargetHeight + 0.2.U());
-                TriggerDown = target.TriggerDown;
+                TriggerPulled = target.TriggerDown;
             }
 
             public override void Draw(CoreDrawers drawers)
