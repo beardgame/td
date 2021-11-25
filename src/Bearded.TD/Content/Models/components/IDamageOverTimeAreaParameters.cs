@@ -6,7 +6,7 @@ namespace Bearded.TD.Content.Models
 {
     interface IDamageOverTimeAreaParameters : IParametersTemplate<IDamageOverTimeAreaParameters>
     {
-        [Modifiable(10, Type = AttributeType.Damage)]
+        [Modifiable(10, Type = AttributeType.DamageOverTime)]
         int DamagePerSecond { get; }
 
         DamageType Type { get; }
