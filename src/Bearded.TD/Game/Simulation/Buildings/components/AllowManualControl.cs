@@ -58,6 +58,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             Owner.RemoveComponent(overdrive!);
             Owner.RemoveComponent(crossHair!);
+            overdrive = null;
             crossHair = null;
 
             foreach (var turret in (Owner as IComponentOwner).GetComponents<ITurret>())
