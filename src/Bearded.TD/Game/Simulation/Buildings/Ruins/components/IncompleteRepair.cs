@@ -1,10 +1,12 @@
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins
@@ -19,9 +21,13 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
         private readonly Faction repairingFaction;
         private readonly ProgressTracker progressTracker;
         private INameProvider? nameProvider;
+        private IHealth? health;
+        private IHealthEventReceiver? healthEventReceiver;
 
         public ResourceAmount Cost { get; }
         public double PercentageComplete { get; private set; }
+        private HitPoints hitPointsHealed = HitPoints.Zero;
+        private HitPoints? hitPointsToHeal;
 
         public IncompleteRepair(ResourceAmount cost, Faction repairingFaction)
         {
@@ -33,6 +39,9 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
         protected override void OnAdded()
         {
             ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
+            ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+            ComponentDependencies.Depend<IHealthEventReceiver>(
+                Owner, Events, receiver => healthEventReceiver = receiver);
         }
 
         public override void Update(TimeSpan elapsedTime) {}
@@ -50,17 +59,50 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
             (Owner as ComponentGameObject)?.Sync(SyncBuildingRepairCompletion.Command);
         }
 
-        public void OnStart() {}
+        public void OnStart()
+        {
+            if (health != null && healthEventReceiver != null)
+            {
+                hitPointsToHeal = health.MaxHealth - health.CurrentHealth;
+            }
+        }
 
         public void OnProgressSet(double percentage)
         {
             PercentageComplete = percentage;
+            updateHealing(percentage);
+        }
+
+        private void updateHealing(double percentage)
+        {
+            if (!hitPointsToHeal.HasValue)
+            {
+                return;
+            }
+
+            var expectedHitPointsHealed =
+                new HitPoints(MoreMath.CeilToInt(percentage * hitPointsToHeal.Value.NumericValue));
+            addHitPoints(expectedHitPointsHealed - hitPointsHealed);
+            hitPointsHealed = expectedHitPointsHealed;
         }
 
         public void OnComplete()
         {
+            if (hitPointsToHeal.HasValue)
+            {
+                addHitPoints(hitPointsToHeal.Value - hitPointsHealed);
+            }
+
             Events.Send(new RepairFinished(repairingFaction));
             Owner.Game.Meta.Events.Send(new BuildingRepairFinished(nameProvider.NameOrDefault(), Owner));
+        }
+
+        private void addHitPoints(HitPoints hitPoints)
+        {
+            if (hitPoints != HitPoints.Zero)
+            {
+                healthEventReceiver!.Heal(new HealInfo(hitPoints));
+            }
         }
 
         public void OnCancel()
