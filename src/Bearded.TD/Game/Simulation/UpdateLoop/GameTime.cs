@@ -12,9 +12,13 @@ namespace Bearded.TD.Game.Simulation.UpdateLoop
 
         private readonly DeletableObjectList<IPauseCondition> pauseConditions = new();
 
-        public void Advance(TimeSpan elapsedTime)
+        public void Advance(ref TimeSpan elapsedTime)
         {
             updateIsPaused();
+            if (IsPaused)
+            {
+                elapsedTime = TimeSpan.Zero;
+            }
             Time += elapsedTime;
         }
 

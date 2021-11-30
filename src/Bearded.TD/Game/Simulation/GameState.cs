@@ -199,7 +199,7 @@ namespace Bearded.TD.Game.Simulation
                 throw new Exception("Must finish loading before advancing game state.");
             }
 
-            GameTime.Advance(elapsedTime);
+            GameTime.Advance(ref elapsedTime);
 
             FluidLayer.Update();
             WaveDirector.Update();
