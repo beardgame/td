@@ -133,7 +133,7 @@ namespace Bearded.TD.Rendering
                     InOrder(
                         ClearColor(),
                         ClearDepth(),
-                        Do(s => s.Content.LevelRenderer.RenderAll()),
+                        Do(s => s.Content.LevelRenderer.Render()),
                         Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup))
                     )),
                 // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling

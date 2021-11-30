@@ -37,14 +37,14 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public HeightmapToLevelRenderer(
             GameInstance game, RenderContext context, Material material,
-            HeightmapRenderer heightmapRenderer)
+            Heightmap heightmap)
         {
             renderSettings = context.Settings;
             this.material = material;
             var level = game.State.Level;
             tileMapWidth = level.Radius * 2 + 1;
 
-            (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmapRenderer);
+            (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap);
         }
 
         public void CleanUp()
@@ -222,7 +222,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
             GL.FrontFace(FrontFaceDirection.Ccw);
         }
 
-        private (RhombusGridMesh, IRenderer) setupGridRenderer(RenderContext context, HeightmapRenderer heightmapRenderer)
+        private (RhombusGridMesh, IRenderer) setupGridRenderer(RenderContext context, Heightmap heightmap)
         {
             var mesh = RhombusGridMesh.CreateDefault();
 
@@ -232,9 +232,9 @@ namespace Bearded.TD.Rendering.Deferred.Level
                     context.Settings.ViewMatrixLevel,
                     context.Settings.ProjectionMatrix,
                     context.Settings.FarPlaneDistance,
-                    heightmapRenderer.HeightmapRadiusUniform,
-                    heightmapRenderer.HeightmapPixelSizeUVUniform,
-                    heightmapRenderer.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
+                    heightmap.RadiusUniform,
+                    heightmap.PixelSizeUVUniform,
+                    heightmap.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
                     context.Settings.CameraPosition,
                     heightScaleUniform,
                     heightOffsetUniform,

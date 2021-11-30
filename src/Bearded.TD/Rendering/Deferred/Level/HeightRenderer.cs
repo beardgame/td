@@ -5,7 +5,6 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Rendering;
-using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -16,74 +15,53 @@ using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.TD.Game.Simulation.World.TileType;
 using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
-using Rectangle = System.Drawing.Rectangle;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
-    using static Pipeline;
-    using static Pipeline<int>;
+    using static Pipeline<Void>;
 
-    sealed class HeightmapRenderer
+    sealed class HeightRenderer
     {
+        private readonly Tiles.Level level;
+        private readonly Heightmap heightmap;
         private readonly int splatSeedOffset;
 
-        //TODO: organise fields
-        private readonly int tileMapWidth;
-        private float heightMapPixelsPerTile;
-        private readonly Tiles.Level level;
         private readonly GeometryLayer geometryLayer;
         private readonly PassabilityLayer passabilityLayer;
-        private readonly float heightMapWorldSize;
-        public FloatUniform HeightmapRadiusUniform { get; } = new("heightmapRadius");
-        public FloatUniform HeightmapPixelSizeUVUniform { get; } = new("heightmapPixelSizeUV");
-        private readonly PipelineTexture heightmap;
-        private readonly PipelineRenderTarget heightmapTarget; // H
+
         private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> heightmapSplats;
         private readonly IRenderer heightMapSplatRenderer;
-        private int heightMapResolution;
-        private bool isHeightmapGenerated;
-        private readonly IPipeline<int> renderHeightmapAtResolution;
+        private readonly IPipeline<Void> renderToHeightmap;
 
         private readonly IndexedTrianglesMeshBuilder<ColorVertexData> heightmapBaseMeshBuilder;
         private readonly Renderer heightmapBaseRenderer;
         private readonly ShapeDrawer2<ColorVertexData, Void> heightmapBaseDrawer;
 
-        public HeightmapRenderer(GameInstance game, RenderContext context)
+        private bool isHeightmapGenerated;
+
+        public HeightRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
         {
+            level = game.State.Level;
+            this.heightmap = heightmap;
+
+            heightmap.ResolutionChanged += () => isHeightmapGenerated = false;
+
             splatSeedOffset = game.GameSettings.Seed;
             geometryLayer = game.State.GeometryLayer;
             passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
-            level = game.State.Level;
-            tileMapWidth = level.Radius * 2 + 1;
-            heightMapWorldSize = tileMapWidth * Constants.Game.World.HexagonWidth;
-
-            heightmap = Texture(PixelInternalFormat.R16f, setup: t =>
-            {
-                t.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
-                t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-            });
-
-            heightmapTarget = RenderTargetWithColors(heightmap);
-
-            renderHeightmapAtResolution =
-                InOrder(
-                    Resize(r => new Vector2i(r, r), heightmap),
-                    WithContext(c => c
-                            .BindRenderTarget(heightmapTarget)
-                            .SetViewport(r => new Rectangle(0, 0, r, r))
-                            .SetBlendMode(BlendMode.Premultiplied),
+            renderToHeightmap =
+                heightmap.DrawHeights(
+                    WithContext(
+                        c => c.SetBlendMode(BlendMode.Premultiplied),
                         InOrder(
                             ClearColor(0, 0, 0, 0),
                             Do(renderHeightmap)
-                        )
-                    )
-                );
+                        )));
 
             (heightmapSplats, heightMapSplatRenderer) = findHeightmapSplats(game);
 
@@ -94,53 +72,30 @@ namespace Bearded.TD.Rendering.Deferred.Level
             initializeBaseDrawing(RenderContext context)
         {
             var meshBuilder = new IndexedTrianglesMeshBuilder<ColorVertexData>();
-            var baseRenderer = Renderer.From(meshBuilder.ToRenderable(), HeightmapRadiusUniform);
-            var baseDrawer = new ShapeDrawer2<ColorVertexData, Void>(meshBuilder, (p, _) => new ColorVertexData(p, default));
+            var baseRenderer = Renderer.From(meshBuilder.ToRenderable(), heightmap.RadiusUniform);
+            var baseDrawer =
+                new ShapeDrawer2<ColorVertexData, Void>(meshBuilder, (p, _) => new ColorVertexData(p, default));
 
             context.Shaders.GetShaderProgram("terrain-base").UseOnRenderer(baseRenderer);
 
             return (meshBuilder, baseRenderer, baseDrawer);
         }
 
-        public TextureUniform GetHeightmapUniform(string name, TextureUnit unit)
-        {
-            return new(name, unit, heightmap.Texture);
-        }
-
-        public void SetScale(float scale)
-        {
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (heightMapPixelsPerTile == scale)
-            {
-                return;
-            }
-
-            heightMapPixelsPerTile = scale;
-            heightMapResolution = (int) (tileMapWidth * scale);
-
-            HeightmapRadiusUniform.Value = heightMapWorldSize * 0.5f;
-            HeightmapPixelSizeUVUniform.Value = 1f / heightMapResolution;
-
-            isHeightmapGenerated = false;
-        }
-
         public void CleanUp()
         {
             heightmapBaseMeshBuilder.Dispose();
             heightmapBaseRenderer.Dispose();
-
-            heightmapTarget.Dispose();
-            heightmap.Dispose();
         }
 
-        private (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer) findHeightmapSplats(GameInstance game)
+        private (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer)
+            findHeightmapSplats(GameInstance game)
         {
             return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")]
                 .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
                     game.Meta.SpriteRenderers,
                     HeightmapSplatVertex.Create,
                     game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("heightmap-splatter")],
-                    HeightmapRadiusUniform
+                    heightmap.RadiusUniform
                 );
         }
 
@@ -158,7 +113,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 return;
             }
 
-            renderHeightmapAtResolution.Execute(heightMapResolution);
+            renderToHeightmap.Execute();
 
             isHeightmapGenerated = true;
         }
@@ -195,17 +150,20 @@ namespace Bearded.TD.Rendering.Deferred.Level
             heightmapBaseMeshBuilder.Clear();
         }
 
-        private static readonly (Direction Direction, Vector2 Offset, Vector2 UnitX, Vector2 UnitY)[] transitionDirections =
-            new []{
-                Direction.Right,
-                Direction.UpRight,
-                Direction.UpLeft,
-            }.Select(d => (
-                Direction: d,
-                Offset: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
-                UnitX: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
-                UnitY: d.Vector().PerpendicularLeft * Constants.Game.World.HexagonDiameter * 0.5f
+        private static readonly (Direction Direction, Vector2 Offset, Vector2 UnitX, Vector2 UnitY)[]
+            transitionDirections =
+                new[]
+                {
+                    Direction.Right,
+                    Direction.UpRight,
+                    Direction.UpLeft,
+                }.Select(d => (
+                    Direction: d,
+                    Offset: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
+                    UnitX: d.Vector() * Constants.Game.World.HexagonWidth * 0.5f,
+                    UnitY: d.Vector().PerpendicularLeft * Constants.Game.World.HexagonDiameter * 0.5f
                 )).ToArray();
+
 
         private void renderTransitions()
         {
@@ -224,7 +182,8 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
                 foreach (var (direction, offset, unitX, unitY) in transitionDirections)
                 {
-                    var random = new Random((tile.X + tile.Y * level.Radius * 3) * 3 + (int)direction + splatSeedOffset);
+                    var random =
+                        new Random((tile.X + tile.Y * level.Radius * 3) * 3 + (int)direction + splatSeedOffset);
 
                     var neighbour = tile.Neighbor(direction);
 
