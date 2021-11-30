@@ -120,6 +120,8 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             public void Update()
             {
+                outstandingSpawnStartRequirements.RemoveAll(r => r.Satisfied);
+
                 switch (phase)
                 {
                     case Phase.Downtime:
