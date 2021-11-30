@@ -122,7 +122,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
             {
                 Position = target.Target;
                 AimDirection = Direction2.Between(Owner.Position.NumericValue.Xy, Position.NumericValue.Xy);
-                TriggerPulled = target.TriggerDown;
+                TriggerPulled = target.TriggerPulled;
             }
 
             public override void Draw(CoreDrawers drawers)

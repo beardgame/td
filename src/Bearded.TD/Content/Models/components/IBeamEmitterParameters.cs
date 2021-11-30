@@ -6,7 +6,7 @@ namespace Bearded.TD.Content.Models
 {
     interface IBeamEmitterParameters : IParametersTemplate<IBeamEmitterParameters>
     {
-        [Modifiable(10, Type = AttributeType.Damage)]
+        [Modifiable(10, Type = AttributeType.DamageOverTime)]
         int DamagePerSecond { get; }
 
         [Modifiable(Type = AttributeType.Range)]
