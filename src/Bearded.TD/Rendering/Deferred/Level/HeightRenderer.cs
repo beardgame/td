@@ -27,10 +27,9 @@ namespace Bearded.TD.Rendering.Deferred.Level
     sealed class HeightRenderer
     {
         private readonly Tiles.Level level;
-        private readonly int splatSeedOffset;
-
         private readonly GeometryLayer geometryLayer;
         private readonly PassabilityLayer passabilityLayer;
+        private readonly int splatSeedOffset;
 
         private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> splats;
         private readonly IRenderer splatRenderer;
@@ -45,11 +44,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
         public HeightRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
         {
             level = game.State.Level;
-            heightmap.ResolutionChanged += () => isHeightmapGenerated = false;
-
-            splatSeedOffset = game.GameSettings.Seed;
             geometryLayer = game.State.GeometryLayer;
             passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
+            splatSeedOffset = game.GameSettings.Seed;
+
+            heightmap.ResolutionChanged += () => isHeightmapGenerated = false;
 
             renderToHeightmap =
                 heightmap.DrawHeights(
@@ -102,7 +101,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
             isHeightmapGenerated = false;
         }
 
-        public void EnsureHeightmapIsUpToDate()
+        public void Render()
         {
             if (isHeightmapGenerated)
             {
