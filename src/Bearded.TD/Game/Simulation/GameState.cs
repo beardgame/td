@@ -32,7 +32,6 @@ namespace Bearded.TD.Game.Simulation
         private readonly DeletableObjectList<GameObject> gameObjects = new();
         private readonly Dictionary<Type, object> lists = new();
         private readonly Dictionary<Type, object> dictionaries = new();
-        private readonly Dictionary<Type, object> singletons = new();
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
 
@@ -117,26 +116,6 @@ namespace Bearded.TD.Game.Simulation
             var sameObj = objectsBeingAdded.Pop();
             DebugAssert.State.Satisfies(sameObj == obj);
             // event on added
-        }
-
-        public void RegisterSingleton<T>(T obj)
-            where T : class
-        {
-            if (obj != ObjectBeingAdded)
-                throw new Exception("Sad!");
-
-            var type = typeof(T);
-            if (singletons.ContainsKey(type))
-                throw new Exception($"Can only instantiate one {type.Name} per game.");
-
-            singletons.Add(type, obj);
-        }
-
-        public T Get<T>()
-            where T : class
-        {
-            singletons.TryGetValue(typeof(T), out var obj);
-            return (T)obj ?? throw new InvalidOperationException($"Singleton {typeof(T)} not found.");
         }
 
         public void ListAs<T>(T obj)
