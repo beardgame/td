@@ -36,6 +36,7 @@ namespace Bearded.TD.Game.Meta
         private readonly GameInstance game;
         private readonly Dictionary<Player, PlayerCursorData> cursors = new();
         private IComponentOwnerBlueprint? attachedGhost;
+        private Instant currentTime = Instant.Zero;
         private Instant nextSync;
 
         public PlayerCursors(GameInstance game)
@@ -57,11 +58,11 @@ namespace Bearded.TD.Game.Meta
         {
             if (!cursors.TryGetValue(p, out var currentData))
             {
-                cursors[p] = new PlayerCursorData(pos, 0f, game.State.Time, pos, 0f, Velocity2.Zero, blueprint);
+                cursors[p] = new PlayerCursorData(pos, 0f, currentTime, pos, 0f, Velocity2.Zero, blueprint);
                 return;
             }
 
-            var timeSinceLastSync = game.State.Time - currentData.LastSyncedTime;
+            var timeSinceLastSync = currentTime - currentData.LastSyncedTime;
             var velocitySinceLastSync = timeSinceLastSync == TimeSpan.Zero
                 ? currentData.VelocityBeforeLastSyncTime
                 : (pos - currentData.LastSyncedLocation) / timeSinceLastSync;
@@ -87,17 +88,19 @@ namespace Bearded.TD.Game.Meta
             {
                 LastSyncedLocation = pos,
                 LastSyncedMomentum = momentum,
-                LastSyncedTime = game.State.Time,
-                LocationAtLastSyncTime = currentData.LocationAtTime(game.State.Time),
-                MomentumAtLastSyncTime = currentData.MomentumAtTime(game.State.Time),
+                LastSyncedTime = currentTime,
+                LocationAtLastSyncTime = currentData.LocationAtTime(currentTime),
+                MomentumAtLastSyncTime = currentData.MomentumAtTime(currentTime),
                 VelocityBeforeLastSyncTime = velocitySinceLastSync,
                 AttachedGhost = blueprint,
             };
         }
 
-        public void Update()
+        public void Update(UpdateEventArgs updateEventArgs)
         {
             if (game.State == null) return;
+
+            currentTime += updateEventArgs.ElapsedTimeInS.S();
 
             syncCursors();
             updateGhosts();
@@ -105,7 +108,7 @@ namespace Bearded.TD.Game.Meta
 
         private void syncCursors()
         {
-            if (game.State.Time < nextSync) return;
+            if (currentTime < nextSync) return;
 
             game.Request(SyncCursors.Request(game, game.Me, game.PlayerInput.CursorPosition, attachedGhost));
             game.State.Meta.Dispatcher.RunOnlyOnServer(
@@ -113,7 +116,7 @@ namespace Bearded.TD.Game.Meta
                 game,
                 cursors.ToImmutableDictionary(
                     pair => pair.Key, pair => (pair.Value.LastSyncedLocation, pair.Value.AttachedGhost)));
-            nextSync = game.State.Time + timeBetweenSyncs;
+            nextSync = currentTime + timeBetweenSyncs;
         }
 
         private void updateGhosts()
@@ -152,8 +155,7 @@ namespace Bearded.TD.Game.Meta
                 if (cursor.InstantiatedGhost != null)
                 {
                     var footprint =
-                        cursor.InstantiatedGhost.Selection.GetPositionedFootprint(
-                            cursor.LocationAtTime(game.State.Time));
+                        cursor.InstantiatedGhost.Selection.GetPositionedFootprint(cursor.LocationAtTime(currentTime));
                     cursor.InstantiatedGhost!.TileOccupation.SetFootprint(footprint);
                 }
             }
@@ -174,8 +176,8 @@ namespace Bearded.TD.Game.Meta
                     continue;
                 }
 
-                var pos = cursor.LocationAtTime(game.State.Time);
-                var momentum = cursor.MomentumAtTime(game.State.Time);
+                var pos = cursor.LocationAtTime(currentTime);
+                var momentum = cursor.MomentumAtTime(currentTime);
 
                 drawers.PointLight.Draw(
                     pos.NumericValue.WithZ(otherCursorLightHeight),
