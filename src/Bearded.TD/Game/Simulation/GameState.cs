@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.World.Fluids;
@@ -24,7 +25,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation
 {
     [GameRuleOwner]
-    sealed class GameState : ITimeSource
+    sealed class GameState
     {
         private readonly Stack<GameObject> objectsBeingAdded = new();
         public GameObject? ObjectBeingAdded => objectsBeingAdded.Count == 0 ? null : objectsBeingAdded.Peek();
@@ -35,7 +36,8 @@ namespace Bearded.TD.Game.Simulation
 
         public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
 
-        public Instant Time { get; private set; } = Instant.Zero;
+        public GameTime GameTime { get; } = new();
+        public Instant Time => GameTime.Time;
         public GameMeta Meta { get; }
         public GameSettings GameSettings { get; }
         public Level Level { get; }
@@ -197,7 +199,7 @@ namespace Bearded.TD.Game.Simulation
                 throw new Exception("Must finish loading before advancing game state.");
             }
 
-            Time += elapsedTime;
+            GameTime.Advance(elapsedTime);
 
             FluidLayer.Update();
             WaveDirector.Update();
