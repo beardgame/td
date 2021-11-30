@@ -55,6 +55,7 @@
             }
         },
         { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
+        { "id" : "deferWaveUntilTechPointUsed", "parameters" : {"faction" : "players" } },
         {
             "id" : "scheduleGame",
             "parameters" : {

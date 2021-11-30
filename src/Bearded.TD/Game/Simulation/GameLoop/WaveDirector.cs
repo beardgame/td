@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -45,6 +46,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 NotStarted,
                 Downtime,
+                AwaitingSpawnStartRequirements,
                 Spawning,
                 FinishOff,
                 Completed,
@@ -54,6 +56,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             private readonly WaveScript script;
             private readonly Queue<EnemySpawn> spawnQueue = new();
             private readonly HashSet<EnemyUnit> spawnedUnits = new();
+            private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
 
             private Phase phase;
             private ResourceAmount resourcesGiven;
@@ -78,7 +81,11 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 game.Meta.Events.Subscribe<SkipWaveTimer>(this);
                 game.Meta.Events.Send(
                     new WaveScheduled(
-                        script.Id, script.DisplayName, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
+                        script.Id,
+                        script.DisplayName,
+                        script.SpawnStart,
+                        script.ResourcesAwardedBySpawnPhase,
+                        outstandingSpawnStartRequirements.Add));
                 phase = Phase.Downtime;
                 foreach (var location in script.SpawnLocations)
                 {
@@ -113,16 +120,20 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             public void Update()
             {
+                outstandingSpawnStartRequirements.RemoveAll(r => r.Satisfied);
+
                 switch (phase)
                 {
                     case Phase.Downtime:
                         if (game.Time >= actualSpawnStart)
                         {
-                            phase = Phase.Spawning;
-                            game.Meta.Events.Send(
-                                new WaveStarted(script.Id, script.DisplayName));
-                            updateResources();
-                            updateSpawnQueue();
+                            tryStartSpawningPhase();
+                        }
+                        break;
+                    case Phase.AwaitingSpawnStartRequirements:
+                        if (!game.GameTime.IsPaused)
+                        {
+                            startSpawningPhase();
                         }
                         break;
                     case Phase.Spawning:
@@ -149,6 +160,26 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+
+            private void tryStartSpawningPhase()
+            {
+                if (outstandingSpawnStartRequirements.Count == 0)
+                {
+                    startSpawningPhase();
+                    return;
+                }
+
+                game.GameTime.PauseUntil(PauseCondition.UntilTrue(() => outstandingSpawnStartRequirements.Count == 0));
+                phase = Phase.AwaitingSpawnStartRequirements;
+            }
+
+            private void startSpawningPhase()
+            {
+                phase = Phase.Spawning;
+                game.Meta.Events.Send(new WaveStarted(script.Id, script.DisplayName));
+                updateResources();
+                updateSpawnQueue();
             }
 
             private void updateResources()
@@ -187,10 +218,10 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
                 skippedTime = script.SpawnStart - game.Time;
 
-                startSpawningEnemiesImmediately();
+                adjustSpawnQueueToStartNow();
             }
 
-            private void startSpawningEnemiesImmediately()
+            private void adjustSpawnQueueToStartNow()
             {
                 var queueLength = spawnQueue.Count;
 

@@ -25,7 +25,6 @@ namespace Bearded.TD.Game
         public void HandleInput(InputState inputState)
         {
             game.PlayerInput.HandleInput(inputState);
-            game.PlayerCursors.Update();
         }
 
         public void Update(UpdateEventArgs args)
@@ -36,6 +35,7 @@ namespace Bearded.TD.Game
             }
 
             game.CameraController.Update(args);
+            game.PlayerCursors.Update(args);
 
             var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
 

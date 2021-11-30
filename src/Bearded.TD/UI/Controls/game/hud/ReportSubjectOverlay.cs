@@ -27,7 +27,7 @@ namespace Bearded.TD.UI.Controls
             Subject = subject;
 
             game = dependencies.Resolve<GameInstance>();
-            pulse = new Pulse(game.State, Constants.UI.Statistics.TimeBetweenUIUpdates);
+            pulse = new Pulse(game.State.GameTime, Constants.UI.Statistics.TimeBetweenUIUpdates);
         }
 
 
