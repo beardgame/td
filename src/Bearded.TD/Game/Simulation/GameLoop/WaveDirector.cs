@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -45,7 +46,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 NotStarted,
                 Downtime,
-                Blocked,
+                AwaitingSpawnStartRequirements,
                 Spawning,
                 FinishOff,
                 Completed,
@@ -55,6 +56,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             private readonly WaveScript script;
             private readonly Queue<EnemySpawn> spawnQueue = new();
             private readonly HashSet<EnemyUnit> spawnedUnits = new();
+            private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
 
             private Phase phase;
             private ResourceAmount resourcesGiven;
@@ -79,7 +81,11 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 game.Meta.Events.Subscribe<SkipWaveTimer>(this);
                 game.Meta.Events.Send(
                     new WaveScheduled(
-                        script.Id, script.DisplayName, script.SpawnStart, script.ResourcesAwardedBySpawnPhase));
+                        script.Id,
+                        script.DisplayName,
+                        script.SpawnStart,
+                        script.ResourcesAwardedBySpawnPhase,
+                        outstandingSpawnStartRequirements.Add));
                 phase = Phase.Downtime;
                 foreach (var location in script.SpawnLocations)
                 {
@@ -122,7 +128,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                             tryStartSpawningPhase();
                         }
                         break;
-                    case Phase.Blocked:
+                    case Phase.AwaitingSpawnStartRequirements:
                         if (!game.GameTime.IsPaused)
                         {
                             startSpawningPhase();
@@ -156,16 +162,14 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
             private void tryStartSpawningPhase()
             {
-                var previewEvent = new PreviewWaveStart();
-                game.Meta.Events.Preview(ref previewEvent);
-                if (previewEvent.BlockingConditions?.IsEmpty ?? true)
+                if (outstandingSpawnStartRequirements.Count == 0)
                 {
                     startSpawningPhase();
                     return;
                 }
 
-                previewEvent.BlockingConditions.ForEach(game.GameTime.PauseUntil);
-                phase = Phase.Blocked;
+                game.GameTime.PauseUntil(PauseCondition.UntilTrue(() => outstandingSpawnStartRequirements.Count == 0));
+                phase = Phase.AwaitingSpawnStartRequirements;
             }
 
             private void startSpawningPhase()

@@ -5,7 +5,6 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Technologies;
-using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.Simulation.Rules.GameLoop
@@ -25,7 +24,7 @@ namespace Bearded.TD.Game.Simulation.Rules.GameLoop
             context.Events.Subscribe(new Listener(technology, context.Blueprints.Technologies.All));
         }
 
-        private sealed class Listener : IPreviewListener<PreviewWaveStart>
+        private sealed class Listener : IListener<WaveScheduled>
         {
             private readonly FactionTechnology factionTechnology;
             private readonly IEnumerable<ITechnologyBlueprint> technologyBlueprints;
@@ -36,18 +35,25 @@ namespace Bearded.TD.Game.Simulation.Rules.GameLoop
                 this.technologyBlueprints = technologyBlueprints.ToImmutableArray();
             }
 
-            public void PreviewEvent(ref PreviewWaveStart @event)
+            public void HandleEvent(WaveScheduled @event)
             {
-                if (factionTechnology.TechPoints > 0 && technologyBlueprints.Any(factionTechnology.CanUnlockTechnology))
+                if (technologyBlueprints.Any(factionTechnology.CanUnlockTechnology))
                 {
-                    @event = @event.BlockedBy(new TechPointBlockCondition(factionTechnology));
+                    @event.SpawnStartRequirementConsumer(new TechPointSpawnStartRequirement(factionTechnology));
                 }
             }
         }
 
-        private sealed record TechPointBlockCondition(FactionTechnology FactionTechnology) : IPauseCondition
+        private sealed class TechPointSpawnStartRequirement : ISpawnStartRequirement
         {
-            public bool Deleted => FactionTechnology.TechPoints == 0;
+            private readonly FactionTechnology factionTechnology;
+
+            public bool Satisfied => factionTechnology.TechPoints == 0;
+
+            public TechPointSpawnStartRequirement(FactionTechnology factionTechnology)
+            {
+                this.factionTechnology = factionTechnology;
+            }
         }
 
         public sealed record RuleParameters(ExternalId<Faction> Faction);
