@@ -45,6 +45,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop
             {
                 NotStarted,
                 Downtime,
+                Blocked,
                 Spawning,
                 FinishOff,
                 Completed,
@@ -118,11 +119,13 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                     case Phase.Downtime:
                         if (game.Time >= actualSpawnStart)
                         {
-                            phase = Phase.Spawning;
-                            game.Meta.Events.Send(
-                                new WaveStarted(script.Id, script.DisplayName));
-                            updateResources();
-                            updateSpawnQueue();
+                            tryStartSpawningPhase();
+                        }
+                        break;
+                    case Phase.Blocked:
+                        if (!game.GameTime.IsPaused)
+                        {
+                            startSpawningPhase();
                         }
                         break;
                     case Phase.Spawning:
@@ -149,6 +152,28 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+
+            private void tryStartSpawningPhase()
+            {
+                var previewEvent = new PreviewWaveStart();
+                game.Meta.Events.Preview(ref previewEvent);
+                if (previewEvent.BlockingConditions?.IsEmpty ?? true)
+                {
+                    startSpawningPhase();
+                    return;
+                }
+
+                previewEvent.BlockingConditions.ForEach(game.GameTime.PauseUntil);
+                phase = Phase.Blocked;
+            }
+
+            private void startSpawningPhase()
+            {
+                phase = Phase.Spawning;
+                game.Meta.Events.Send(new WaveStarted(script.Id, script.DisplayName));
+                updateResources();
+                updateSpawnQueue();
             }
 
             private void updateResources()
@@ -187,10 +212,10 @@ namespace Bearded.TD.Game.Simulation.GameLoop
 
                 skippedTime = script.SpawnStart - game.Time;
 
-                startSpawningEnemiesImmediately();
+                adjustSpawnQueueToStartNow();
             }
 
-            private void startSpawningEnemiesImmediately()
+            private void adjustSpawnQueueToStartNow()
             {
                 var queueLength = spawnQueue.Count;
 
