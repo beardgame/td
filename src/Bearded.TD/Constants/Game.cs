@@ -58,6 +58,11 @@ namespace Bearded.TD
                 public static readonly double WaveResourcesMultiplier = 1.2;
             }
 
+            public static class Building
+            {
+                public const double RuinedPercentage = 0.5;
+            }
+
             public static class Worker
             {
                 public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
