@@ -3,6 +3,7 @@ using System.Drawing;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Game;
 using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
@@ -20,6 +21,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         private readonly PipelineRenderTarget renderTarget;
         public FloatUniform RadiusUniform { get; } = new("heightmapRadius");
         public FloatUniform PixelSizeUVUniform { get; } = new("heightmapPixelSizeUV");
+        public Texture Texture => texture.Texture;
 
         private float pixelsPerTile;
         private int resolution;

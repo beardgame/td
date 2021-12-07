@@ -8,6 +8,7 @@ using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
+using Bearded.TD.Rendering.Deferred.Level;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -55,6 +56,10 @@ namespace Bearded.TD.Rendering
         private readonly Vector2Uniform gBufferResolution = new("resolution");
         private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
         private readonly IPipeline<RenderState> pipeline;
+
+        private readonly TextureUniform heightmap = new("heightmap", TextureUnit.Texture3, null!);
+        private readonly FloatUniform heightmapRadius = new("heightmapRadius");
+        private readonly FloatUniform heightmapPixelSizeUV = new("heightmapPixelSizeUV");
 
         private ViewportSize viewport;
 
@@ -178,6 +183,7 @@ namespace Bearded.TD.Rendering
                                 new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
                                 new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
                                 new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
+                                heightmap, heightmapRadius, heightmapPixelSizeUV,
                                 settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
                                 settings.CameraPosition,
                                 hexagonalFallOffDistance
@@ -247,13 +253,22 @@ namespace Bearded.TD.Rendering
             gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
             hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
 
-            deferredLayer.ContentRenderers.LevelRenderer.PrepareForRender();
+            prepareLevel(deferredLayer.ContentRenderers.LevelRenderer);
 
             var state = new RenderState(resolution, lowResResolution, target, deferredLayer.ContentRenderers);
 
             pipeline.Execute(state);
 
             // cleaning of mesh builders will happen in game renderer
+        }
+
+        private void prepareLevel(LevelRenderer renderer)
+        {
+            renderer.PrepareForRender();
+            var hmap = renderer.Heightmap;
+            heightmap.Value = hmap.Texture;
+            heightmapRadius.Value = hmap.RadiusUniform.Value;
+            heightmapPixelSizeUV.Value = hmap.PixelSizeUVUniform.Value;
         }
 
         public void OnResize(ViewportSize newViewport)

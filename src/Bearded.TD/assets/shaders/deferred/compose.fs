@@ -11,6 +11,10 @@ uniform vec3 cameraPosition;
 
 uniform float hexagonalFallOffDistance;
 
+uniform sampler2D heightmap;
+uniform float heightmapRadius;
+uniform float heightmapPixelSizeUV;
+
 in vec2 fragmentUV;
 
 out vec4 outColor;
@@ -41,7 +45,6 @@ float hexDistanceToOrigin(vec2 xy)
 
 void main()
 {
-
     vec4 albedo = texture(albedoTexture, fragmentUV);
     vec3 lightTexture = texture(lightTexture, fragmentUV).rgb;
 
@@ -58,6 +61,16 @@ void main()
     falloff *= falloff;
 
     rgb *= falloff;
+
+
+    vec2 heightMapUV =
+        fragmentPosition.xy / heightmapRadius // -1..1
+        * 0.5 + 0.5; // 0..1
+
+    vec4 heightMapValue = texture(heightmap, heightMapUV);
+    float visibility = heightMapValue.g;
+
+    rgb *= visibility;
 
     outColor = vec4(rgb, albedo.a);
 }

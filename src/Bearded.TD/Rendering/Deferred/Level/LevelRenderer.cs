@@ -9,7 +9,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
 {
     sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
     {
-        private readonly Heightmap heightmap;
+        public Heightmap Heightmap { get; }
         private readonly HeightRenderer heightRenderer;
         private readonly VisibilityRenderer visibilityRenderer;
         private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
@@ -17,10 +17,10 @@ namespace Bearded.TD.Rendering.Deferred.Level
         public LevelRenderer(
             GameInstance game, RenderContext context, Material material)
         {
-            heightmap = new Heightmap(game);
-            heightRenderer = new HeightRenderer(game, context, heightmap);
-            visibilityRenderer = new VisibilityRenderer(game, context, heightmap);
-            heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, heightmap);
+            Heightmap = new Heightmap(game);
+            heightRenderer = new HeightRenderer(game, context, Heightmap);
+            visibilityRenderer = new VisibilityRenderer(game, context, Heightmap);
+            heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
 
             resizeIfNeeded();
             game.Meta.Events.Subscribe<TileDrawInfoChanged>(this);
@@ -48,7 +48,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             var settings = UserSettings.Instance.Graphics;
 
-            heightmap.SetScale(settings.TerrainHeightmapResolution);
+            Heightmap.SetScale(settings.TerrainHeightmapResolution);
             heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
         }
 
@@ -59,7 +59,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public void CleanUp()
         {
-            heightmap.Dispose();
+            Heightmap.Dispose();
             heightRenderer.CleanUp();
             visibilityRenderer.Dispose();
             heightmapToLevelRenderer.CleanUp();
