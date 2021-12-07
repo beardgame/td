@@ -20,6 +20,7 @@ namespace Bearded.TD.Game.Simulation.Units
             unit.AddComponent(new IdProvider<EnemyUnit>(id));
             unit.AddComponent(new Syncer<EnemyUnit>());
             unit.AddComponent(new TileBasedVisibility<EnemyUnit>());
+            unit.AddComponent(new HealthBar<EnemyUnit>());
             return unit;
         }
     }

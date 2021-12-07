@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
@@ -16,7 +14,6 @@ using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Units
@@ -91,16 +88,6 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public override void Draw(CoreDrawers drawers)
         {
-            var drawer = drawers.ConsoleBackground;
-
-            drawer.FillRectangle(
-                Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f), Color.DarkGray);
-
-            var p = (float) health.HealthPercentage;
-            var healthColor = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
-            drawer.FillRectangle(
-                Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1 * p, .1f), healthColor);
-
             components.Draw(drawers);
         }
 

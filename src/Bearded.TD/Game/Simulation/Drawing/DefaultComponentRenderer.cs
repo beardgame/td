@@ -12,6 +12,8 @@ namespace Bearded.TD.Game.Simulation.Drawing
     {
         private IVisibility? visibility;
 
+        public CoreDrawers Core { get; private set; }
+
         protected override void OnAdded()
         {
             ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v);
@@ -23,6 +25,8 @@ namespace Bearded.TD.Game.Simulation.Drawing
 
         public override void Draw(CoreDrawers drawers)
         {
+            Core = drawers;
+
             if (visibility?.Visibility.IsVisible() ?? true)
             {
                 drawRecursively(Owner);
@@ -42,6 +46,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
                     drawRecursively(nested.NestedComponentOwner);
             }
         }
+
 
         public void DrawSprite<TVertex, TVertexData>(
             SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, float angle, TVertexData data)
