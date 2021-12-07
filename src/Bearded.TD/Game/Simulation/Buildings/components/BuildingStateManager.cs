@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Commands;
+﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
@@ -25,6 +26,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
         where T : IComponentOwner<T>, IDeletable, IGameObject
     {
         private readonly BuildingState state = new();
+        private IHealth? health;
+        private ICost? cost;
 
         public IBuildingState State { get; }
 
@@ -45,6 +48,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Events.Subscribe<EnactDeath>(this);
             Events.Subscribe<ObjectRepaired>(this);
             Events.Subscribe<ObjectRuined>(this);
+
+            ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+            ComponentDependencies.Depend<ICost>(Owner, Events, c => cost = c);
         }
 
         public override void OnRemoved()
@@ -86,6 +92,13 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Update(TimeSpan elapsedTime)
         {
+            if (state.IsCompleted &&
+                !state.IsRuined &&
+                (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
+            {
+                Owner.AddComponent(new Ruined<T>(new RuinedParametersTemplate(cost?.Resources / 2)));
+            }
+
             if (state.IsDead)
             {
                 // TODO(building): cast necessary right now
