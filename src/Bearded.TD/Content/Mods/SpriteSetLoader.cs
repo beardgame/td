@@ -27,8 +27,6 @@ namespace Bearded.TD.Content.Mods
 
             return new SpriteSet(
                 ModAwareId.FromNameInMod(jsonModel.Id, meta),
-                jsonModel.DrawGroup,
-                jsonModel.DrawGroupOrderKey,
                 packedSpriteSet);
         }
 

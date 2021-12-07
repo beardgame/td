@@ -6,7 +6,8 @@
             "parameters" : {
                 "sprite" : "crystals.2",
                 "color" : "FF40E0D0",
-                "shader" : "building"
+                "shader" : "building",
+                "drawGroup" : "leveldetail"
             }
         },
         {

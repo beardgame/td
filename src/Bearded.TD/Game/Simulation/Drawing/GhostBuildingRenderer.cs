@@ -43,7 +43,10 @@ namespace Bearded.TD.Game.Simulation.Drawing
         protected override IDrawableSprite<TVertexData> Drawable<TVertex, TVertexData>(
             SpriteDrawInfo<TVertex, TVertexData> sprite)
         {
-            return sprite.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, sprite.Create, shader);
+            return sprite.Sprite.MakeConcreteWith(
+                Owner.Game.Meta.SpriteRenderers,
+                SpriteDrawGroup.Particle, 0,
+                sprite.Create, shader);
         }
 
         public void HandleEvent(ConstructionStarted @event)

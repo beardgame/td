@@ -20,7 +20,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    using Sprite = IDrawableSprite<(Vector3 Normal, Vector3 Tangent, Color Color)>;
+    using Sprite = SpriteDrawInfo<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)>;
 
     interface IFoundation
     {
@@ -34,8 +34,8 @@ namespace Bearded.TD.Game.Simulation.Buildings
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-        private SpriteDrawInfo<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)> spriteSide;
-        private SpriteDrawInfo<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)> spriteTop;
+        private Sprite spriteSide;
+        private Sprite spriteTop;
 
         public Unit BaseHeight { get; private set; }
         public Unit TopHeight { get; private set; }
@@ -55,10 +55,14 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             // this can remain hardcoded I think, at least for now
             // later we may want to depend on parameters for tower specific config
-            spriteSide = SpriteDrawInfo.From(Parameters.Sprites.GetSprite("side"), DeferredSprite3DVertex.Create, shader);
-            spriteTop = SpriteDrawInfo.From(Parameters.Sprites.GetSprite("top"), DeferredSprite3DVertex.Create, shader);
+            spriteSide = sprite("side");
+            spriteTop = sprite("top");
 
             occupiedTilesTracker.Initialize(Owner, Events);
+
+            Sprite sprite(string name) => SpriteDrawInfo
+                .From(Parameters.Sprites.GetSprite(name),
+                    DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.LowResLevelDetail);
         }
 
         public override void OnRemoved()

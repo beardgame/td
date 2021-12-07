@@ -51,7 +51,8 @@
             "parameters": {
                 "sprite": "buildings.gun-turret",
                 "color": "White",
-                "shader" : "building"
+                "shader" : "building",
+                "drawGroup" : "building"
             }
         }
     ]

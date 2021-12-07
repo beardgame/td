@@ -27,7 +27,8 @@
             "parameters": {
                 "sprite": "buildings.rocket-turret",
                 "color": "White",
-                "shader" : "building"
+                "shader" : "building",
+                "drawGroup" : "building"
             }
         }
     ]

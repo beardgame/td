@@ -56,7 +56,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
 
         private void initializeSprite()
         {
-            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Shader, Parameters.Sprite);
+            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
         }
 
         private void initializeParticles()

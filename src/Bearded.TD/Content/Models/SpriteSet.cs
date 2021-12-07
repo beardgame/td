@@ -24,14 +24,10 @@ namespace Bearded.TD.Content.Models
     {
         private readonly ISpriteSetImplementation sprites;
         public ModAwareId Id { get; }
-        public SpriteDrawGroup DrawGroup { get; }
-        public int DrawGroupOrderKey { get; }
 
-        public SpriteSet(ModAwareId id, SpriteDrawGroup drawGroup, int drawGroupOrderKey, ISpriteSetImplementation sprites)
+        public SpriteSet(ModAwareId id, ISpriteSetImplementation sprites)
         {
             Id = id;
-            DrawGroup = drawGroup;
-            DrawGroupOrderKey = drawGroupOrderKey;
             this.sprites = sprites;
         }
 
@@ -42,10 +38,11 @@ namespace Bearded.TD.Content.Models
 
         public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
             SpriteRenderers spriteRenderers,
+            SpriteDrawGroup drawGroup, int drawGroupOrderKey,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
             where TVertex : struct, IVertexData
         {
-            return sprites.MakeConcreteWith(this, spriteRenderers, createVertex, shader);
+            return sprites.MakeConcreteWith(this, spriteRenderers, drawGroup, drawGroupOrderKey, createVertex, shader);
         }
 
         public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(

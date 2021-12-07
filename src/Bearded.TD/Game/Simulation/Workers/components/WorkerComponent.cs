@@ -47,8 +47,8 @@ namespace Bearded.TD.Game.Simulation.Workers
             });
             tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
 
-            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, null,
-                Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"));
+            sprite = SpriteDrawInfo.ForUVColor(Owner.Game,
+                Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"), null);
         }
 
         private void onDelete()

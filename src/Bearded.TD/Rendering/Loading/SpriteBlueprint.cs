@@ -20,10 +20,11 @@ namespace Bearded.TD.Rendering.Loading
         }
 
         public IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+            SpriteDrawGroup drawGroup, int drawGroupOrderKey,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
             where TVertex : struct, IVertexData
         {
-            return spriteSet.MakeConcreteWith(spriteRenderers, createVertex, shader).GetSprite(name);
+            return spriteSet.MakeConcreteWith(spriteRenderers, drawGroup, drawGroupOrderKey, createVertex, shader).GetSprite(name);
         }
     }
 }

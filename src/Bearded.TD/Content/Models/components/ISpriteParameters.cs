@@ -12,6 +12,10 @@ namespace Bearded.TD.Content.Models
 
         Shader? Shader { get; }
 
+        SpriteDrawGroup? DrawGroup { get; }
+
+        int DrawGroupOrderKey { get; }
+
         [Modifiable(1)]
         Unit Size { get; }
 

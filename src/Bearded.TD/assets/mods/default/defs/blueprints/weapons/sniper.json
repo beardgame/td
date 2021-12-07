@@ -33,7 +33,8 @@
             "parameters": {
                 "sprite": "buildings.turret01-24px",
                 "color": "White",
-                "shader" : "building"
+                "shader" : "building",
+                "drawGroup" : "building"
             }
         }
     ]

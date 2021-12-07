@@ -1,6 +1,5 @@
 ﻿{
   "id" : "foundations",
-  "drawGroup" : "LowResLevelDetail",
   "pixelate" : true,
   "textureSamplers" :
   [

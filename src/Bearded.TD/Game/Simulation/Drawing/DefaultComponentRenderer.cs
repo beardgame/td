@@ -76,7 +76,10 @@ namespace Bearded.TD.Game.Simulation.Drawing
             SpriteDrawInfo<TVertex, TVertexData> sprite)
             where TVertex : struct, IVertexData
         {
-            return sprite.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, sprite.Create, sprite.Shader);
+            return sprite.Sprite.MakeConcreteWith(
+                Owner.Game.Meta.SpriteRenderers,
+                sprite.DrawGroup, sprite.DrawGroupOrderKey,
+                sprite.Create, sprite.Shader);
         }
     }
 }

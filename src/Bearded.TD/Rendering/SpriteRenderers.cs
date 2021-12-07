@@ -25,7 +25,7 @@ namespace Bearded.TD.Rendering
 
         private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
 
-        private readonly Dictionary<SpriteSet, Dictionary<(Type, Type, Shader), object>> knownSpriteSets = new();
+        private readonly Dictionary<SpriteSet, Dictionary<(Type, Type, Shader, SpriteDrawGroup, int), object>> knownSpriteSets = new();
         private readonly Dictionary<SpriteDrawGroup, Renderers> renderersByDrawGroup =
             Enum.GetValues<SpriteDrawGroup>().ToDictionary(g => g, _ => new Renderers());
 
@@ -43,10 +43,10 @@ namespace Bearded.TD.Rendering
         }
 
         public DrawableSpriteSet<TVertex, TVertexData> GetOrCreateDrawableSpriteSetFor<TVertex, TVertexData>(
-            SpriteSet spriteSet, Shader shader, Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
+            SpriteSet spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey, Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
             where TVertex : struct, IVertexData
         {
-            var key = (typeof(TVertex), typeof(TVertexData), shader);
+            var key = (typeof(TVertex), typeof(TVertexData), shader, drawGroup, drawGroupOrderKey);
 
             var spriteSets = knownSpriteSets.GetValueOrInsertNewDefaultFor(spriteSet);
 
@@ -58,7 +58,7 @@ namespace Bearded.TD.Rendering
             DrawableSpriteSet<TVertex, TVertexData> createDrawableAndRegisterDefaultRenderer()
             {
                 var d = createDrawable();
-                createAndRegisterRenderer(spriteSet, d);
+                createAndRegisterRenderer(spriteSet, d, drawGroup, drawGroupOrderKey);
                 return d;
             }
         }
@@ -76,14 +76,15 @@ namespace Bearded.TD.Rendering
         }
 
         private void createAndRegisterRenderer<TVertex, TVertexData>(
-            SpriteSet spriteSet, DrawableSpriteSet<TVertex, TVertexData> drawable)
+            SpriteSet spriteSet, DrawableSpriteSet<TVertex, TVertexData> drawable,
+            SpriteDrawGroup drawGroup, int drawGroupOrderKey)
             where TVertex : struct, IVertexData
         {
             var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
-            var renderers = renderersByDrawGroup[spriteSet.DrawGroup];
+            var renderers = renderersByDrawGroup[drawGroup];
 
-            renderers.AddSorted((spriteSet.DrawGroupOrderKey, renderer), drawOrderKeyComparer);
+            renderers.AddSorted((drawGroupOrderKey, renderer), drawOrderKeyComparer);
         }
 
         public void RenderDrawGroup(SpriteDrawGroup group)

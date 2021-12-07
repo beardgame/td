@@ -13,6 +13,7 @@ namespace Bearded.TD.Content.Models
 
         DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
             SpriteSet spriteSet, SpriteRenderers spriteRenderers,
+            SpriteDrawGroup drawGroup, int drawGroupOrderKey,
             DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
             Shader shader)
             where TVertex : struct, IVertexData;

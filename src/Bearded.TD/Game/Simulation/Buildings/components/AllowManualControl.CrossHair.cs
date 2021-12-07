@@ -35,7 +35,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 var spriteBlueprint = Owner.Game.Meta.Blueprints
                     .Sprites[ModAwareId.ForDefaultMod("particle")]
                     .GetSprite("plus");
-                sprite = SpriteDrawInfo.ForUVColor(Owner.Game, null, spriteBlueprint);
+                sprite = SpriteDrawInfo.ForUVColor(Owner.Game, spriteBlueprint, null);
             }
 
             public override void Update(TimeSpan elapsedTime)
