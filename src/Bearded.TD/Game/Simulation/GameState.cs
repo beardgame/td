@@ -59,6 +59,9 @@ namespace Bearded.TD.Game.Simulation
 
         public WaveDirector WaveDirector { get; }
 
+        // TODO: this should be something managed per faction
+        public ExplorationManager ExplorationManager { get; }
+
         private bool finishedLoading;
 
         private readonly GameFactions factions = new();
@@ -85,6 +88,7 @@ namespace Bearded.TD.Game.Simulation
             Factions = factions.AsReadOnly();
 
             WaveDirector = new WaveDirector(this);
+            ExplorationManager = new ExplorationManager(this);
         }
 
         public void FinishLoading()
