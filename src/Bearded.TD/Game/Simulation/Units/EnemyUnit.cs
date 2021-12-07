@@ -7,6 +7,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
@@ -111,8 +112,12 @@ namespace Bearded.TD.Game.Simulation.Units
 
         public void RemoveEffect(IUpgradeEffect effect) => effect.RemoveFrom(this);
 
-        public void OnTileChanged(Tile oldTile, Tile newTile) =>
+        public void OnTileChanged(Tile oldTile, Tile newTile)
+        {
             Game.UnitLayer.MoveEnemyBetweenTiles(oldTile, newTile, this);
+            events.Send(new TileLeft(oldTile));
+            events.Send(new TileEntered(newTile));
+        }
 
         public void HandleEvent(TakeDamage @event)
         {
