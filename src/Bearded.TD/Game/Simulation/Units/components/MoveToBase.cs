@@ -3,7 +3,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
@@ -38,8 +37,6 @@ namespace Bearded.TD.Game.Simulation.Units
         {
             tileWalker.Update(elapsedTime, Parameters.MovementSpeed);
         }
-
-        public override void Draw(CoreDrawers drawers) { }
 
         public void OnTileChanged(Tile oldTile, Tile newTile)
         {

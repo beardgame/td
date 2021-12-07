@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -33,8 +32,6 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public abstract void Update(TimeSpan elapsedTime);
 
-        public abstract void Draw(CoreDrawers drawers);
-
         public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(Parameters);
 
         public virtual void ApplyUpgradeEffect(IUpgradeEffect effect) => effect.ApplyTo(Parameters);
@@ -60,8 +57,6 @@ namespace Bearded.TD.Game.Simulation.Components
         public virtual void OnRemoved() {}
 
         public abstract void Update(TimeSpan elapsedTime);
-
-        public abstract void Draw(CoreDrawers drawers);
 
         public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
 

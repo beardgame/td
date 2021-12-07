@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -94,8 +93,6 @@ namespace Bearded.TD.Game.Simulation.Damage
                 Events.Send(new EnactDeath());
             }
         }
-
-        public override void Draw(CoreDrawers drawers) { }
 
         public override void ApplyUpgradeEffect(IUpgradeEffect effect)
         {

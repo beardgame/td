@@ -3,7 +3,6 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -24,8 +23,6 @@ namespace Bearded.TD.Game.Simulation.Synchronization
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-
-        public override void Draw(CoreDrawers drawers) {}
 
         public IStateToSync GetCurrentStateToSync()
         {

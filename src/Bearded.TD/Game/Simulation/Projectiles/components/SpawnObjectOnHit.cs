@@ -1,6 +1,5 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -58,10 +57,6 @@ namespace Bearded.TD.Game.Simulation.Projectiles
         }
 
         public override void Update(TimeSpan elapsedTime)
-        {
-        }
-
-        public override void Draw(CoreDrawers drawers)
         {
         }
     }

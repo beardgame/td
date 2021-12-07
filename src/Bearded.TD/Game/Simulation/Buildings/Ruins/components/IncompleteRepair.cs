@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -45,7 +44,6 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-        public override void Draw(CoreDrawers drawers) {}
 
         public void SendSyncStart()
         {

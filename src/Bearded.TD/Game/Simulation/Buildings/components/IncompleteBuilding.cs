@@ -4,7 +4,6 @@ using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -46,7 +45,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-        public override void Draw(CoreDrawers drawers) {}
 
         public void SendSyncStart()
         {

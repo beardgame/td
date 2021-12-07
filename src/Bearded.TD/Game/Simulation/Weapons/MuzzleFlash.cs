@@ -2,7 +2,6 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -64,10 +63,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         {
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
         public void HandleEvent(ShotProjectile e)
         {
             currentFlash = new Flash(
@@ -78,19 +73,19 @@ namespace Bearded.TD.Game.Simulation.Weapons
             );
         }
 
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             if (currentFlash is not { } flash)
                 return;
 
-            renderer.DrawSprite(
+            drawer.DrawSprite(
                 sprite,
                 flash.Position.NumericValue,
                 flash.Size,
                 flash.Direction.Radians,
                 Parameters.Color);
 
-            renderer.Core.PointLight.Draw(
+            drawer.Core.PointLight.Draw(
                 flash.Position.NumericValue,
                 2 * flash.Size,
                 Parameters.Color.WithAlpha(255) * 0.5f);

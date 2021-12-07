@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -98,16 +97,12 @@ namespace Bearded.TD.Game.Simulation.Workers
             }
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
         public void HandleEvent(ObjectDeleting @event)
         {
             workerNetwork?.UnregisterAntenna(this);
         }
 
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             fullNetworkDrawer?.Draw();
             localNetworkDrawer?.Draw();

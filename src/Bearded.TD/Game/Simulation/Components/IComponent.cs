@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Components
@@ -7,7 +6,6 @@ namespace Bearded.TD.Game.Simulation.Components
     interface IComponent
     {
         void Update(TimeSpan elapsedTime);
-        void Draw(CoreDrawers drawers);
 
         bool CanApplyUpgradeEffect(IUpgradeEffect effect);
         void ApplyUpgradeEffect(IUpgradeEffect effect);

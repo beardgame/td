@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements
@@ -20,10 +19,6 @@ namespace Bearded.TD.Game.Simulation.Elements
 
             Events.Send(new Spark());
             sparked = true;
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

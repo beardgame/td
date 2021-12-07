@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -144,7 +143,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-        public override void Draw(CoreDrawers drawers) {}
     }
 
     interface IBuildingUpgradeManager

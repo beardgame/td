@@ -3,7 +3,6 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -102,11 +101,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
             }
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             var now = Owner.Game.Time;
             foreach (var p in particles)
@@ -120,7 +115,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
                 switch (Parameters.DrawMode)
                 {
                     case ParticleDrawMode.Sprite:
-                        renderer.DrawSprite(
+                        drawer.DrawSprite(
                             sprite,
                             p.Position.NumericValue,
                             Parameters.Size,
@@ -138,7 +133,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
                         var p2 = c + v - w;
                         var p3 = c - v - w;
 
-                        renderer.DrawQuad(sprite, p0, p1, p2, p3, argb);
+                        drawer.DrawQuad(sprite, p0, p1, p2, p3, argb);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

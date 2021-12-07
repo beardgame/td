@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -72,13 +71,9 @@ namespace Bearded.TD.Game.Simulation.Workers
             Owner.Deleting += onDelete;
         }
 
-        public override void Draw(CoreDrawers drawers)
+        public void Draw(IComponentDrawer drawer)
         {
-        }
-
-        public void Draw(IComponentRenderer renderer)
-        {
-            renderer.DrawSprite(sprite, Owner.Position.NumericValue, 0.5f, 0,
+            drawer.DrawSprite(sprite, Owner.Position.NumericValue, 0.5f, 0,
                 workerTaskManager?.WorkerColor ?? Color.White);
         }
 

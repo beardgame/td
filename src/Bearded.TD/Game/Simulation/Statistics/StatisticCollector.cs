@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics
@@ -42,8 +41,6 @@ namespace Bearded.TD.Game.Simulation.Statistics
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-
-        public override void Draw(CoreDrawers drawers) {}
 
         public IStateToSync GetCurrentStateToSync() => new StatisticCollectorStateToSync(this);
 

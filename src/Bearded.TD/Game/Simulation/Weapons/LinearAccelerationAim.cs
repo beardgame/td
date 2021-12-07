@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -58,10 +57,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
             var velocityMultiplier = (float)Math.Pow(damping, elapsedTime.NumericValue);
 
             angularVelocity *= velocityMultiplier;
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

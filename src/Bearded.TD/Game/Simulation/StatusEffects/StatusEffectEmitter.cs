@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -114,11 +113,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
             }
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             tileRangeDrawer?.Draw();
         }

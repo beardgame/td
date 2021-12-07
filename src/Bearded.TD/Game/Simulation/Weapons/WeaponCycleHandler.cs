@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
@@ -38,10 +37,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         }
 
         protected virtual void UpdateIdle(TimeSpan elapsedTime)
-        {
-        }
-
-        public override void Draw(CoreDrawers drawers)
         {
         }
     }

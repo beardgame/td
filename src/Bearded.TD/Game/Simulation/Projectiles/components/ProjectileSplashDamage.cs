@@ -2,7 +2,6 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -62,7 +61,5 @@ namespace Bearded.TD.Game.Simulation.Projectiles
         }
 
         public override void Update(TimeSpan elapsedTime) { }
-
-        public override void Draw(CoreDrawers drawers) { }
     }
 }

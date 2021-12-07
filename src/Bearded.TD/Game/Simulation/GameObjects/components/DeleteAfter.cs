@@ -1,6 +1,5 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects
@@ -26,10 +25,6 @@ namespace Bearded.TD.Game.Simulation.GameObjects
             {
                 Owner.Delete();
             }
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -44,7 +43,5 @@ namespace Bearded.TD.Game.Simulation.Reports
         }
 
         public override void Update(TimeSpan elapsedTime) { }
-
-        public override void Draw(CoreDrawers drawers) { }
     }
 }

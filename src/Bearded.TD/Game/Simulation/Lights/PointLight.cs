@@ -1,7 +1,6 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Lights
@@ -22,17 +21,13 @@ namespace Bearded.TD.Game.Simulation.Lights
         {
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             var position = Owner.Position.NumericValue;
 
             position.Z += Parameters.Height.NumericValue;
 
-            renderer.Core.PointLight.Draw(
+            drawer.Core.PointLight.Draw(
                 position,
                 Parameters.Radius.NumericValue,
                 Parameters.Color

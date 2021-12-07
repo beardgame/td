@@ -4,7 +4,6 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -52,13 +51,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 TriggerPulled = target.TriggerDown;
             }
 
-            public override void Draw(CoreDrawers drawers)
+            public void Draw(IComponentDrawer drawer)
             {
-            }
-
-            public void Draw(IComponentRenderer renderer)
-            {
-                renderer.DrawSprite(
+                drawer.DrawSprite(
                     sprite,
                     Target.NumericValue,
                     0.5f,

@@ -2,7 +2,6 @@ using System;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Weapons;
-using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -22,10 +21,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         }
 
         public override void Update(TimeSpan elapsedTime)
-        {
-        }
-
-        public override void Draw(CoreDrawers drawers)
         {
         }
 

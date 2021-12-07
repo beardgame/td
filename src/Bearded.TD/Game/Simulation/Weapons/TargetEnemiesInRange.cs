@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -157,11 +156,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 .FirstOrDefault();
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             tileRangeDrawer.Draw();
         }

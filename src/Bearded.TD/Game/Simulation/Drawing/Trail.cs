@@ -47,13 +47,9 @@ namespace Bearded.TD.Game.Simulation.Drawing
             tracer.Update(Owner.Game.Time, Owner.Position);
         }
 
-        public override void Draw(CoreDrawers drawers)
+        public void Draw(IComponentDrawer drawer)
         {
-        }
-
-        public void Draw(IComponentRenderer renderer)
-        {
-            drawTrail(drawer, tracer, Parameters, Owner.Game);
+            drawTrail(this.drawer, tracer, Parameters, Owner.Game);
         }
 
 

@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints
@@ -14,7 +13,6 @@ namespace Bearded.TD.Game.Simulation.Footprints
 
         protected override void OnAdded() { }
         public override void Update(TimeSpan elapsedTime) { }
-        public override void Draw(CoreDrawers drawers) { }
     }
 
     interface IFootprintGroup

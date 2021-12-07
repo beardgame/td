@@ -1,7 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -20,10 +19,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
         protected override void RemoveSink(Tile t)
         {
             Owner.Game.Navigator.RemoveSink(t);
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

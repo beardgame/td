@@ -4,7 +4,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -118,15 +117,11 @@ namespace Bearded.TD.Game.Simulation.Elements
             fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             if (!combustable.IsOnFire) return;
 
-            renderer.Core.PointLight.Draw(
+            drawer.Core.PointLight.Draw(
                 Owner.Position.NumericValue,
                 1.5f * fireRenderStrength,
                 Color.OrangeRed * fireRenderStrength

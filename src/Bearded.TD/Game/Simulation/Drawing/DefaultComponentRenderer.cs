@@ -7,7 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Drawing
 {
-    class DefaultComponentRenderer<T> : Component<T>, IComponentRenderer
+    class DefaultComponentRenderer<T> : Component<T>, IComponentRenderer, IComponentDrawer
         where T : IGameObject, IComponentOwner
     {
         private IVisibility? visibility;
@@ -23,7 +23,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
         {
         }
 
-        public override void Draw(CoreDrawers drawers)
+        public void Render(CoreDrawers drawers)
         {
             Core = drawers;
 
@@ -78,6 +78,5 @@ namespace Bearded.TD.Game.Simulation.Drawing
         {
             return sprite.Sprite.MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, sprite.Create, sprite.Shader);
         }
-
     }
 }

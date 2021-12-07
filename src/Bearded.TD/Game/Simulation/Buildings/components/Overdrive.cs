@@ -2,7 +2,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.Weapons;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -74,10 +73,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
             DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage);
 
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

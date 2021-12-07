@@ -2,7 +2,6 @@ using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -23,11 +22,7 @@ namespace Bearded.TD.Game.Simulation.Damage
         {
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             var p = (float) health.HealthPercentage;
 
@@ -41,10 +36,10 @@ namespace Bearded.TD.Game.Simulation.Damage
             var topLeft = Owner.Position.NumericValue - new Vector3(.5f, .5f, 0);
             var size = new Vector2(1, .1f);
 
-            var drawer = renderer.Core.ConsoleBackground;
+            var d = drawer.Core.ConsoleBackground;
 
-            drawer.FillRectangle(topLeft, size, Color.DarkGray);
-            drawer.FillRectangle(topLeft, new Vector2(size.X * p, size.Y), healthColor);
+            d.FillRectangle(topLeft, size, Color.DarkGray);
+            d.FillRectangle(topLeft, new Vector2(size.X * p, size.Y), healthColor);
         }
     }
 }

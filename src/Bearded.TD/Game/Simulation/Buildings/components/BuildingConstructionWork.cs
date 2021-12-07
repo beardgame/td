@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -67,6 +66,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
                     "work.");
             }
         }
-        public override void Draw(CoreDrawers drawers) {}
     }
 }

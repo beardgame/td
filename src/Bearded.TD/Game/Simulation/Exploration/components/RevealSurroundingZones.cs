@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Zones;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -53,7 +52,6 @@ namespace Bearded.TD.Game.Simulation.Exploration
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-        public override void Draw(CoreDrawers drawers) {}
     }
 
     interface IRevealSurroundingZonesParameters : IParametersTemplate<IRevealSurroundingZonesParameters>

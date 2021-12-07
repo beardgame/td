@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -32,7 +31,5 @@ namespace Bearded.TD.Game.Simulation.Footprints
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-
-        public override void Draw(CoreDrawers drawers) { }
     }
 }

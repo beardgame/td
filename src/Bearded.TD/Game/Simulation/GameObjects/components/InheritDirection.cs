@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects
@@ -19,10 +18,6 @@ namespace Bearded.TD.Game.Simulation.GameObjects
         }
 
         public override void Update(TimeSpan elapsedTime)
-        {
-        }
-
-        public override void Draw(CoreDrawers drawers)
         {
         }
     }

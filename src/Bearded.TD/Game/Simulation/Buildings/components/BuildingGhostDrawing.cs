@@ -35,9 +35,9 @@ namespace Bearded.TD.Game.Simulation.Buildings
         public override void Update(TimeSpan elapsedTime) {}
 
 
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
-            var primitiveDrawer = renderer.Core.Primitives;
+            var primitiveDrawer = drawer.Core.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
             WorkerNetwork workerNetwork = null;
@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 var color = baseColor * 0.2f;
-                drawTile(renderer.Core, color, tile);
+                drawTile(drawer.Core, color, tile);
 
                 if (!isTileValidForBuilding)
                     continue;
@@ -94,11 +94,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
             }
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-
         }
 
         private void drawTile(CoreDrawers drawers, Color color, Tile tile)

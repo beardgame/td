@@ -5,7 +5,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -111,7 +110,5 @@ namespace Bearded.TD.Game.Simulation.Selection
         }
 
         public override void Update(TimeSpan elapsedTime) {}
-
-        public override void Draw(CoreDrawers drawers) {}
     }
 }

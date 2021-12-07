@@ -3,7 +3,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
@@ -68,10 +67,6 @@ namespace Bearded.TD.Game.Simulation.Physics
                 default:
                     throw new IndexOutOfRangeException();
             }
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
         }
     }
 }

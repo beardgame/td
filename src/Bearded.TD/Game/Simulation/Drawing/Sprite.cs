@@ -2,7 +2,6 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -31,11 +30,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
         {
         }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
-
-        public void Draw(IComponentRenderer renderer)
+        public void Draw(IComponentDrawer drawer)
         {
             var p = Owner.Position.NumericValue;
             p.Z += Parameters.HeightOffset.NumericValue;
@@ -44,7 +39,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
                 ? (ownerAsDirected.Direction - 90.Degrees()).Radians
                 : 0f;
 
-            renderer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, Parameters.Color);
+            drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, Parameters.Color);
         }
     }
 }

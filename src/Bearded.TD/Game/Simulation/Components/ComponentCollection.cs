@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -90,9 +91,18 @@ namespace Bearded.TD.Game.Simulation.Components
 
         public void Draw(CoreDrawers drawers)
         {
+            drawRecursively(components, drawers);
+        }
+
+        private static void drawRecursively(IEnumerable<IComponent> components, CoreDrawers drawers)
+        {
             foreach (var component in components)
             {
-                component.Draw(drawers);
+                if (component is IComponentRenderer renderer)
+                    renderer.Render(drawers);
+
+                if (component is INestedComponentOwner nested)
+                    drawRecursively(nested.NestedComponentOwner.GetComponents<IComponent>(), drawers);
             }
         }
 

@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -25,7 +24,6 @@ namespace Bearded.TD.Game.Simulation.Units
         public void OnAdded(EnemyUnit owner, ComponentEvents events) => throw new InvalidOperationException();
         public void OnRemoved() => throw new InvalidOperationException();
         public void Update(TimeSpan elapsedTime) => throw new InvalidOperationException();
-        public void Draw(CoreDrawers drawers) => throw new InvalidOperationException();
         public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
         public void ApplyUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();
         public bool RemoveUpgradeEffect(IUpgradeEffect effect) => throw new InvalidOperationException();

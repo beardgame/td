@@ -67,11 +67,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
             components.Update(elapsedTime);
         }
 
-        public void Draw(CoreDrawers drawers)
-        {
-            components.Draw(drawers);
-        }
-
         public void AddComponent(IComponent<Weapon> component) => components.Add(component);
 
         public void RemoveComponent(IComponent<Weapon> component) => components.Remove(component);

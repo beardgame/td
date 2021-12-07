@@ -3,7 +3,6 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -52,11 +51,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
         public override void Update(TimeSpan elapsedTime)
         {
             weapon.Update(elapsedTime);
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-            weapon.Draw(drawers);
         }
 
         public void OverrideTargeting(IManualTarget3 target)
@@ -123,10 +117,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 Position = target.Target;
                 AimDirection = Direction2.Between(Owner.Position.NumericValue.Xy, Position.NumericValue.Xy);
                 TriggerPulled = target.TriggerPulled;
-            }
-
-            public override void Draw(CoreDrawers drawers)
-            {
             }
         }
     }

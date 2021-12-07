@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -110,8 +109,6 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins
                 Owner.RemoveComponent(this);
             }
         }
-
-        public override void Draw(CoreDrawers drawers) {}
 
         private sealed class RuinedReport : IRuinedReport
         {

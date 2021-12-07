@@ -2,7 +2,6 @@ using System;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Rendering;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -97,7 +96,5 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 incompleteUpgrade.CompleteUpgrade();
             }
         }
-
-        public override void Draw(CoreDrawers drawers) {}
     }
 }
