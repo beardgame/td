@@ -31,7 +31,7 @@ namespace Bearded.TD.Game.Commands.LevelGeneration
 
             public void Execute()
             {
-                ComponentGameObjectFactory.CreateWithDefaultRenderer(game.State, blueprint, null, position, direction);
+                ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(game.State, blueprint, null, position, direction);
             }
 
             ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, position, direction);
