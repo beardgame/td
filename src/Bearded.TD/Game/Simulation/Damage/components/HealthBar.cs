@@ -29,11 +29,17 @@ namespace Bearded.TD.Game.Simulation.Damage
 
         public void Draw(IComponentRenderer renderer)
         {
+            var p = (float) health.HealthPercentage;
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            // given the implementation of current/total, this is guaranteed by IEEE754
+            if (p == 1)
+                return;
+
+            var healthColor = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
+
             var topLeft = Owner.Position.NumericValue - new Vector3(.5f, .5f, 0);
             var size = new Vector2(1, .1f);
-
-            var p = (float) health.HealthPercentage;
-            var healthColor = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
 
             var drawer = renderer.Core.ConsoleBackground;
 
