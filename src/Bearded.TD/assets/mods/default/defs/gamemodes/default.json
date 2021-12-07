@@ -55,7 +55,7 @@
             }
         },
         { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
-        { "id" : "deferWaveUntilTechPointUsed", "parameters" : {"faction" : "players" } },
+        { "id" : "deferWaveUntilTechPointUsed", "parameters" : { "faction" : "players" } },
         { "id" : "grantExplorationTokenOnWaveEnd" },
         {
             "id" : "scheduleGame",
@@ -64,6 +64,8 @@
                 "wavesPerChapter" : 5
             }
         },
+        { "id" : "deferWaveUntilExplorationTokenUsed", "parameters" :  { "faction" : "players" } },
+        { "id" : "spawnExplorationBeacons", "parameters" : { "blueprint" : "explorationBeacon" } },
         {
             "id" : "contributeNodes",
             "parameters" : {

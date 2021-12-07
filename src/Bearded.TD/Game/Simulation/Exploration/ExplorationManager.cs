@@ -35,6 +35,7 @@ namespace Bearded.TD.Game.Simulation.Exploration
                         !visibilityLayer[zone].IsRevealed() &&
                         zoneLayer.AdjacentZones(zone).Any(adjZone => visibilityLayer[adjZone].IsRevealed()))
                 .ToImmutableArray();
+            gameState.Meta.Events.Send(new ExplorableZonesChanged(ExplorableZones));
         }
 
         public void ConsumeExplorationToken()
