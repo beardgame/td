@@ -73,7 +73,6 @@ namespace Bearded.TD.Game.Simulation.Exploration
                 // TODO: remove the NumericValue once we can use the System.Linq MinBy.
                 var closestToCentroid =
                     zone.Tiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
-                Console.WriteLine(closestToCentroid);
                 return closestToCentroid;
             }
         }
