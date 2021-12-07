@@ -8,7 +8,6 @@ namespace Bearded.TD.Game.Simulation.Units
     {
         string Name { get; }
         float Value { get; }
-        Color Color { get; }
 
         IEnumerable<IComponent<EnemyUnit>> GetComponents();
     }

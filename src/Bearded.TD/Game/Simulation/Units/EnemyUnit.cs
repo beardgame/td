@@ -93,8 +93,6 @@ namespace Bearded.TD.Game.Simulation.Units
         {
             var drawer = drawers.ConsoleBackground;
 
-            drawer.FillCircle(Position.NumericValue, radius.NumericValue, blueprint.Color, 6);
-
             drawer.FillRectangle(
                 Position.NumericValue - new Vector3(.5f, .5f, 0), new Vector2(1, .1f), Color.DarkGray);
 

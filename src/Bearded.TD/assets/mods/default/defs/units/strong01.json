@@ -2,8 +2,15 @@
     "id" : "strong01",
     "name" : "Strong enemy",
     "value" : 4,
-    "color" : "Yellow",
     "components" : [
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "particle.orb-soft",
+                "color" : "Yellow",
+                "size" : 0.6
+            }
+        },
         { "id" : "health", "parameters" : { "maxHealth" : 250 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 20, "attackRate" : 0.67 } },
