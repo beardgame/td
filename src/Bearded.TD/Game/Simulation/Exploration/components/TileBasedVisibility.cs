@@ -11,10 +11,10 @@ namespace Bearded.TD.Game.Simulation.Exploration
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-        public ObjectVisibility Visibility => occupiedTilesTracker.OccupiedTiles.Any(t =>
-            Owner.Game.VisibilityLayer[t].IsVisible())
-            ? ObjectVisibility.Visible
-            : ObjectVisibility.Invisible;
+        public ObjectVisibility Visibility =>
+            occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsVisible())
+                ? ObjectVisibility.Visible
+                : ObjectVisibility.Invisible;
 
         protected override void OnAdded()
         {
