@@ -1,7 +1,8 @@
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Shared.Events;
 
-namespace Bearded.TD.Game.Simulation.Rules.Exploration
+namespace Bearded.TD.Game.Simulation.Exploration
 {
     [GameRule("revealFullMap")]
     sealed class RevealFullMap : GameRule
