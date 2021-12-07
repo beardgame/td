@@ -9,7 +9,6 @@ namespace Bearded.TD.Game.Simulation.Components
     [ComponentOwner]
     sealed class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObject>, IPositionable, IDirected
     {
-        private readonly IComponentOwnerBlueprint blueprint;
         public IComponentOwner? Parent { get; }
         public Position3 Position { get; set; }
         public Direction2 Direction { get; private set; }
@@ -17,20 +16,12 @@ namespace Bearded.TD.Game.Simulation.Components
         private readonly ComponentCollection<ComponentGameObject> components;
         private readonly ComponentEvents events = new();
 
-        public ComponentGameObject(
-            IComponentOwnerBlueprint blueprint, IComponentOwner? parent, Position3 position, Direction2 direction)
+        public ComponentGameObject(IComponentOwner? parent, Position3 position, Direction2 direction)
         {
-            this.blueprint = blueprint;
             Direction = direction;
             Parent = parent;
             Position = position;
             components = new ComponentCollection<ComponentGameObject>(this, events);
-        }
-
-        protected override void OnAdded()
-        {
-            base.OnAdded();
-            components.Add(blueprint.GetComponents<ComponentGameObject>());
         }
 
         protected override void OnDelete()

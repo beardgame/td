@@ -29,7 +29,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
             PositionedFootprint footprint)
         {
-            var building = ComponentGameObjectFactory.CreateWithoutRenderer(
+            var building = ComponentGameObjectFactory.CreateFromBlueprintWithoutRenderer(
                 gameState, blueprint, null, Position3.Zero, Direction2.Zero);
             if (!building.GetComponents<IEnemySink>().Any())
             {
@@ -61,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             IComponentOwnerBlueprint blueprint, Faction faction,
             out MovableTileOccupation<ComponentGameObject> tileOccupation)
         {
-            var ghost = ComponentGameObjectFactory.CreateWithoutRenderer(
+            var ghost = ComponentGameObjectFactory.CreateFromBlueprintWithoutRenderer(
                 gameState, blueprint, null, Position3.Zero, Direction2.Zero);
             ghost.AddComponent(new GhostBuildingRenderer<ComponentGameObject>());
             ghost.AddComponent(new BuildingGhostDrawing<ComponentGameObject>());

@@ -66,7 +66,7 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
             var position = Weapon.Position + (Weapon.CurrentDirection * Parameters.MuzzleOffset).WithZ();
 
-            var projectile = ComponentGameObjectFactory.CreateWithDefaultRenderer(
+            var projectile = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
                 Game, Parameters.Projectile, Owner, position, direction);
 
             projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
