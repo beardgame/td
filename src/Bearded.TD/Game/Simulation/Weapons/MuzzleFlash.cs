@@ -66,13 +66,6 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public override void Draw(CoreDrawers drawers)
         {
-            if (currentFlash is not { } flash)
-                return;
-
-            drawers.PointLight.Draw(
-                flash.Position.NumericValue,
-                2 * flash.Size,
-                Parameters.Color.WithAlpha(255) * 0.5f);
         }
 
         public void HandleEvent(ShotProjectile e)
@@ -96,6 +89,11 @@ namespace Bearded.TD.Game.Simulation.Weapons
                 flash.Size,
                 flash.Direction.Radians,
                 Parameters.Color);
+
+            renderer.Core.PointLight.Draw(
+                flash.Position.NumericValue,
+                2 * flash.Size,
+                Parameters.Color.WithAlpha(255) * 0.5f);
 
             if (Owner.Game.Time > flash.DeathTime)
                 currentFlash = null;

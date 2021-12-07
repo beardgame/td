@@ -25,7 +25,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
      */
 
     [Component("statusEffectEmitter")]
-    sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>
+    sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>, IDrawableComponent
         where T : IComponentOwner, IGameObject, IPositionable
     {
         // TODO: allow this to affect other things than enemies as well
@@ -115,6 +115,10 @@ namespace Bearded.TD.Game.Simulation.StatusEffects
         }
 
         public override void Draw(CoreDrawers drawers)
+        {
+        }
+
+        public void Draw(IComponentRenderer renderer)
         {
             tileRangeDrawer?.Draw();
         }

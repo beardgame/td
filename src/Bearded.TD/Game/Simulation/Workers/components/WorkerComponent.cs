@@ -5,6 +5,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -20,7 +21,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("worker")]
     // TODO: make generic
-    sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent
+    sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent, IDrawableComponent
     {
         private IFactionProvider? factionProvider;
         private WorkerTaskManager? workerTaskManager;
@@ -28,6 +29,7 @@ namespace Bearded.TD.Game.Simulation.Workers
         private IEnumerable<Tile> taskTiles = Enumerable.Empty<Tile>();
 
         private TileWalker tileWalker = null!;
+        private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
         public Faction? Faction { get; private set; }
         public Tile CurrentTile => tileWalker.CurrentTile;
@@ -45,6 +47,9 @@ namespace Bearded.TD.Game.Simulation.Workers
                 Owner.Game.Meta.Events.Send(new WorkerAdded(this));
             });
             tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
+
+            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, null,
+                Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"));
         }
 
         private void onDelete()
@@ -69,12 +74,12 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public override void Draw(CoreDrawers drawers)
         {
-            var sprites = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
-            var sprite =
-                sprites.GetSprite("halo").MakeConcreteWith(Owner.Game.Meta.SpriteRenderers, UVColorVertex.Create,
-                    Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
+        }
 
-            sprite.Draw(Owner.Position.NumericValue, 0.5f, workerTaskManager?.WorkerColor ?? Color.White);
+        public void Draw(IComponentRenderer renderer)
+        {
+            renderer.DrawSprite(sprite, Owner.Position.NumericValue, 0.5f, 0,
+                workerTaskManager?.WorkerColor ?? Color.White);
         }
 
         public void AssignToTaskManager(WorkerTaskManager workerTaskManager)

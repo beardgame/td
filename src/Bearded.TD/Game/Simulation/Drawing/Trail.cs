@@ -7,7 +7,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing
 {
     [Component("trail")]
-    sealed class Trail<T> : Component<T, ITrailParameters>
+    sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
         where T : GameObject, IPositionable
     {
         private readonly TrailTracer tracer;
@@ -48,6 +48,10 @@ namespace Bearded.TD.Game.Simulation.Drawing
         }
 
         public override void Draw(CoreDrawers drawers)
+        {
+        }
+
+        public void Draw(IComponentRenderer renderer)
         {
             drawTrail(drawer, tracer, Parameters, Owner.Game);
         }

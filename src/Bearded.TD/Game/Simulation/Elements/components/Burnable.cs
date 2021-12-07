@@ -3,6 +3,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -15,7 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements
 {
     [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>
+    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>, IDrawableComponent
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private IDamageSource? lastFireHitOwner;
@@ -119,9 +120,13 @@ namespace Bearded.TD.Game.Simulation.Elements
 
         public override void Draw(CoreDrawers drawers)
         {
+        }
+
+        public void Draw(IComponentRenderer renderer)
+        {
             if (!combustable.IsOnFire) return;
 
-            drawers.PointLight.Draw(
+            renderer.Core.PointLight.Draw(
                 Owner.Position.NumericValue,
                 1.5f * fireRenderStrength,
                 Color.OrangeRed * fireRenderStrength

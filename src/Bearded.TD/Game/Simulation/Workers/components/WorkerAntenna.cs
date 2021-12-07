@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Workers
 {
     [Component("workerAntenna")]
     sealed class WorkerAntenna<T>
-        : Component<T, IWorkerAntennaParameters>, IListener<ObjectDeleting>, IWorkerAntenna
+        : Component<T, IWorkerAntennaParameters>, IListener<ObjectDeleting>, IWorkerAntenna, IDrawableComponent
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private IBuildingState? state;
@@ -100,13 +100,17 @@ namespace Bearded.TD.Game.Simulation.Workers
 
         public override void Draw(CoreDrawers drawers)
         {
-            fullNetworkDrawer?.Draw();
-            localNetworkDrawer?.Draw();
         }
 
         public void HandleEvent(ObjectDeleting @event)
         {
             workerNetwork?.UnregisterAntenna(this);
+        }
+
+        public void Draw(IComponentRenderer renderer)
+        {
+            fullNetworkDrawer?.Draw();
+            localNetworkDrawer?.Draw();
         }
     }
 }

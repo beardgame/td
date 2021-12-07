@@ -24,7 +24,8 @@ namespace Bearded.TD.Game.Simulation.Weapons
             ITargeter<IPositionable>,
             IWeaponAimer,
             IWeaponTrigger,
-            IWeaponRange
+            IWeaponRange,
+            IDrawableComponent
     {
         private PassabilityLayer passabilityLayer = null!;
         private TileRangeDrawer tileRangeDrawer = null!;
@@ -157,6 +158,10 @@ namespace Bearded.TD.Game.Simulation.Weapons
         }
 
         public override void Draw(CoreDrawers drawers)
+        {
+        }
+
+        public void Draw(IComponentRenderer renderer)
         {
             tileRangeDrawer.Draw();
         }

@@ -12,14 +12,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
     sealed class EnemySink<T> : EnemySinkBase<T>
         where T : IComponentOwner, IGameObject, IPositionable
     {
-        private Maybe<IHealth> healthComponent;
-
-        protected override void OnAdded()
-        {
-            base.OnAdded();
-            healthComponent = Owner.GetComponents<IHealth>().MaybeSingle();
-        }
-
         protected override void AddSink(Tile t)
         {
             Owner.Game.Navigator.AddSink(t);
@@ -32,17 +24,6 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Draw(CoreDrawers drawers)
         {
-            healthComponent.Match(health =>
-            {
-                drawers.InGameConsoleFont.DrawLine(
-                    xyz: Owner.Position.NumericValue,
-                    text: health.CurrentHealth.NumericValue.ToString(),
-                    fontHeight: 1,
-                    alignHorizontal: .5f,
-                    alignVertical: .5f,
-                    parameters: Color.White
-                );
-            });
         }
     }
 }

@@ -1,6 +1,7 @@
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Workers;
@@ -14,7 +15,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    sealed class BuildingGhostDrawing<T> : Component<T>
+    sealed class BuildingGhostDrawing<T> : Component<T>, IDrawableComponent
         where T : IComponentOwner, IGameObject, IPositionable
     {
         private readonly OccupiedTilesTracker occupiedTilesTracker = new();
@@ -33,9 +34,10 @@ namespace Bearded.TD.Game.Simulation.Buildings
 
         public override void Update(TimeSpan elapsedTime) {}
 
-        public override void Draw(CoreDrawers drawers)
+
+        public void Draw(IComponentRenderer renderer)
         {
-            var primitiveDrawer = drawers.Primitives;
+            var primitiveDrawer = renderer.Core.Primitives;
             var anyTileOutsideWorkerNetwork = false;
 
             WorkerNetwork workerNetwork = null;
@@ -59,7 +61,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
                 }
 
                 var color = baseColor * 0.2f;
-                drawTile(drawers, color, tile);
+                drawTile(renderer.Core, color, tile);
 
                 if (!isTileValidForBuilding)
                     continue;
@@ -92,6 +94,11 @@ namespace Bearded.TD.Game.Simulation.Buildings
             {
                 renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
             }
+        }
+
+        public override void Draw(CoreDrawers drawers)
+        {
+
         }
 
         private void drawTile(CoreDrawers drawers, Color color, Tile tile)

@@ -5,6 +5,7 @@ using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
@@ -19,7 +20,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons
 {
     [Component("beamEmitter")]
-    sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>
+    sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawableComponent
     {
         private static readonly TimeSpan damageTimeSpan = 0.1.S();
         private const double minDamagePerSecond = .05;
@@ -116,12 +117,16 @@ namespace Bearded.TD.Game.Simulation.Weapons
 
         public override void Draw(CoreDrawers drawers)
         {
+        }
+
+        public void Draw(IComponentRenderer renderer)
+        {
             if (!drawBeam)
             {
                 return;
             }
 
-            var shapeDrawer = drawers.ConsoleBackground;
+            var shapeDrawer = renderer.Core.ConsoleBackground;
             var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
 
             foreach (var (start, end, factor) in beamSegments)
