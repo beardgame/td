@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Drawing
     {
         private IVisibility? visibility;
 
-        public CoreDrawers Core { get; private set; }
+        public CoreDrawers Core { get; private set; } = null!;
 
         protected override void OnAdded()
         {
