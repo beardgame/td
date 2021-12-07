@@ -7,9 +7,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Exploration;
-using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
@@ -31,7 +28,6 @@ namespace Bearded.TD.Game.Simulation.Units
         IListener<EnactDeath>,
         IListener<TakeDamage>
     {
-        private readonly Id<EnemyUnit> id;
         private readonly IUnitBlueprint blueprint;
         private IEnemyMovement enemyMovement;
         private Unit radius;
@@ -51,9 +47,8 @@ namespace Bearded.TD.Game.Simulation.Units
 
         private IDamageSource? lastDamageSource;
 
-        public EnemyUnit(Id<EnemyUnit> id, IUnitBlueprint blueprint, Tile currentTile)
+        public EnemyUnit(IUnitBlueprint blueprint, Tile currentTile)
         {
-            this.id = id;
             this.blueprint = blueprint;
 
             components = new ComponentCollection<EnemyUnit>(this, events);
@@ -67,11 +62,6 @@ namespace Bearded.TD.Game.Simulation.Units
             Game.UnitLayer.AddEnemyToTile(CurrentTile, this);
 
             components.Add(blueprint.GetComponents());
-            components.Add(new HealthEventReceiver<EnemyUnit>());
-            components.Add(new DamageSource<EnemyUnit>());
-            components.Add(new IdProvider<EnemyUnit>(id));
-            components.Add(new Syncer<EnemyUnit>());
-            components.Add(new TileBasedVisibility<EnemyUnit>());
             health = components.Get<IHealth>().SingleOrDefault()
                 ?? throw new InvalidOperationException("All enemies must have a health component.");
             enemyMovement = components.Get<IEnemyMovement>().SingleOrDefault()

@@ -200,9 +200,8 @@ namespace Bearded.TD.Game.Simulation.GameLoop
                 while (spawnQueue.TryPeek(out var spawn) && game.Time >= spawn.Time)
                 {
                     spawnQueue.Dequeue();
-                    var unit = new EnemyUnit(spawn.UnitId, spawn.UnitBlueprint, spawn.SpawnLocation.Tile);
+                    var unit = EnemyUnitFactory.Create(game, spawn.UnitId, spawn.UnitBlueprint, spawn.SpawnLocation.Tile);
                     spawnedUnits.Add(unit);
-                    game.Add(unit);
                 }
             }
 
