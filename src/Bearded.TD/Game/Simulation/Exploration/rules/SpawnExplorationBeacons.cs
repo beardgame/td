@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Zones;
@@ -12,22 +14,26 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Exploration
 {
     [GameRule("spawnExplorationBeacons")]
-    sealed class SpawnExplorationBeacons : GameRule
+    sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RuleParameters>
     {
+        public SpawnExplorationBeacons(RuleParameters parameters) : base(parameters) { }
+
         public override void Execute(GameRuleContext context)
         {
-            context.Events.Subscribe(new Listener(context.GameState));
+            context.Events.Subscribe(new Listener(context.GameState, Parameters.Blueprint));
         }
 
         private sealed class Listener : IListener<ExplorableZonesChanged>
         {
             private readonly GameState gameState;
+            private readonly ComponentOwnerBlueprint blueprint;
 
             private readonly Dictionary<Zone, ComponentGameObject> beaconsByZone = new();
 
-            public Listener(GameState gameState)
+            public Listener(GameState gameState, ComponentOwnerBlueprint blueprint)
             {
                 this.gameState = gameState;
+                this.blueprint = blueprint;
             }
 
             public void HandleEvent(ExplorableZonesChanged @event)
@@ -45,7 +51,8 @@ namespace Bearded.TD.Game.Simulation.Exploration
 
                 foreach (var z in zonesAdded)
                 {
-                    var beacon = ExplorationBeaconFactory.CreateExplorationBeacon(gameState, determineCenter(z), z);
+                    var beacon =
+                        ExplorationBeaconFactory.CreateExplorationBeacon(gameState, blueprint, determineCenter(z), z);
                     beaconsByZone.Add(z, beacon);
                 }
 
@@ -66,8 +73,11 @@ namespace Bearded.TD.Game.Simulation.Exploration
                 // TODO: remove the NumericValue once we can use the System.Linq MinBy.
                 var closestToCentroid =
                     zone.Tiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
+                Console.WriteLine(closestToCentroid);
                 return closestToCentroid;
             }
         }
+
+        public record RuleParameters(ComponentOwnerBlueprint Blueprint);
     }
 }

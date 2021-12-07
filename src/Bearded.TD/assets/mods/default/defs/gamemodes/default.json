@@ -64,7 +64,7 @@
                 "wavesPerChapter" : 5
             }
         },
-        { "id" : "spawnExplorationBeacons" },
+        { "id" : "spawnExplorationBeacons", "parameters" : { "blueprint" : "explorationBeacon" } },
         {
             "id" : "contributeNodes",
             "parameters" : {
