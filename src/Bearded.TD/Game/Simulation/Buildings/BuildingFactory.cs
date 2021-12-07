@@ -44,6 +44,7 @@ namespace Bearded.TD.Game.Simulation.Buildings
             building.AddComponent(new DebugInvulnerable<ComponentGameObject>());
             building.AddComponent(new FactionProvider<ComponentGameObject>(faction));
             building.AddComponent(new FootprintPosition());
+            building.AddComponent(new HealthBar<ComponentGameObject>());
             building.AddComponent(new HealthEventReceiver<ComponentGameObject>());
             building.AddComponent(new IdProvider<ComponentGameObject>(id));
             building.AddComponent(new IncompleteBuilding<ComponentGameObject>());
