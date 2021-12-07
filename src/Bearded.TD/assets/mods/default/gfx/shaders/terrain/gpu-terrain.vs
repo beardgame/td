@@ -35,7 +35,13 @@ void main()
         p.xy / heightmapRadius // -1..1
         * 0.5 + 0.5; // 0..1
 
-    float height = texture(heightmap, heightMapUV).x;
+    vec4 heightMapValue = texture(heightmap, heightMapUV);
+
+    float height = heightMapValue.x;
+
+    float visibility = heightMapValue.y;
+
+    height = mix(1, height, visibility);
 
     height = height * heightScale + heightOffset;
 

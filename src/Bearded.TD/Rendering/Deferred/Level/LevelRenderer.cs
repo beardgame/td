@@ -11,6 +11,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
     {
         private readonly Heightmap heightmap;
         private readonly HeightRenderer heightRenderer;
+        private readonly VisibilityRenderer visibilityRenderer;
         private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
 
         public LevelRenderer(
@@ -18,10 +19,12 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             heightmap = new Heightmap(game);
             heightRenderer = new HeightRenderer(game, context, heightmap);
+            visibilityRenderer = new VisibilityRenderer(game, context, heightmap);
             heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, heightmap);
 
             resizeIfNeeded();
             game.Meta.Events.Subscribe<TileDrawInfoChanged>(this);
+            game.Meta.Events.Subscribe<ZoneRevealed>(this);
         }
 
         public void HandleEvent(TileDrawInfoChanged @event)
@@ -31,13 +34,14 @@ namespace Bearded.TD.Rendering.Deferred.Level
 
         public void HandleEvent(ZoneRevealed @event)
         {
-            // refresh Area.From(@event.Zone.Tiles)[.Dilate()]
+            visibilityRenderer.ZoneChanged(@event.Zone);
         }
 
         public void PrepareForRender()
         {
             resizeIfNeeded();
-            heightRenderer.EnsureHeightmapIsUpToDate();
+            heightRenderer.Render();
+            visibilityRenderer.Render();
         }
 
         private void resizeIfNeeded()
@@ -57,6 +61,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
         {
             heightmap.Dispose();
             heightRenderer.CleanUp();
+            visibilityRenderer.Dispose();
             heightmapToLevelRenderer.CleanUp();
         }
     }

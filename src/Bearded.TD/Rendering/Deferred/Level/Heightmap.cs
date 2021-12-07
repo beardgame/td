@@ -1,11 +1,14 @@
 using System;
 using System.Drawing;
 using Bearded.Graphics.Pipelines;
+using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Game;
 using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static Bearded.Graphics.Pipelines.Context.ColorMask;
+using static Bearded.Graphics.Pipelines.Pipeline;
 
 namespace Bearded.TD.Rendering.Deferred.Level
 {
@@ -13,8 +16,8 @@ namespace Bearded.TD.Rendering.Deferred.Level
     {
         private readonly int tileMapWidth;
 
-        private readonly PipelineTexture texture;
-        private readonly PipelineRenderTarget renderTarget; // H
+        private readonly PipelineTexture texture; // H, V
+        private readonly PipelineRenderTarget renderTarget;
         public FloatUniform RadiusUniform { get; } = new("heightmapRadius");
         public FloatUniform PixelSizeUVUniform { get; } = new("heightmapPixelSizeUV");
 
@@ -28,20 +31,27 @@ namespace Bearded.TD.Rendering.Deferred.Level
             tileMapWidth = game.State.Level.Radius * 2 + 1;
             RadiusUniform.Value = tileMapWidth * Constants.Game.World.HexagonWidth * 0.5f;
 
-            texture = Pipeline.Texture(PixelInternalFormat.R16f, setup: t =>
+            texture = Texture(PixelInternalFormat.Rg16f, setup: t =>
             {
                 t.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
                 t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
             });
 
-            renderTarget = Pipeline.RenderTargetWithColors(texture);
+            renderTarget = RenderTargetWithColors(texture);
         }
 
         public IPipeline<T> DrawHeights<T>(IPipeline<T> render)
+            => drawWithMask(render, DrawRed);
+
+        public IPipeline<T> DrawVisibility<T>(IPipeline<T> render)
+            => drawWithMask(render, DrawGreen);
+
+        private IPipeline<T> drawWithMask<T>(IPipeline<T> render, ColorMask mask)
         {
             return Pipeline<T>.WithContext(
                 c => c.BindRenderTarget(renderTarget)
-                    .SetViewport(_ => new Rectangle(0, 0, resolution, resolution)),
+                    .SetViewport(_ => new Rectangle(0, 0, resolution, resolution))
+                    .SetColorMask(mask),
                 render
             );
         }

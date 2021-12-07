@@ -27,32 +27,28 @@ namespace Bearded.TD.Rendering.Deferred.Level
     sealed class HeightRenderer
     {
         private readonly Tiles.Level level;
-        private readonly Heightmap heightmap;
-        private readonly int splatSeedOffset;
-
         private readonly GeometryLayer geometryLayer;
         private readonly PassabilityLayer passabilityLayer;
+        private readonly int splatSeedOffset;
 
-        private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> heightmapSplats;
-        private readonly IRenderer heightMapSplatRenderer;
+        private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> splats;
+        private readonly IRenderer splatRenderer;
         private readonly IPipeline<Void> renderToHeightmap;
 
-        private readonly IndexedTrianglesMeshBuilder<ColorVertexData> heightmapBaseMeshBuilder;
-        private readonly Renderer heightmapBaseRenderer;
-        private readonly ShapeDrawer2<ColorVertexData, Void> heightmapBaseDrawer;
+        private readonly IndexedTrianglesMeshBuilder<ColorVertexData> baseMeshBuilder;
+        private readonly Renderer baseRenderer;
+        private readonly ShapeDrawer2<ColorVertexData, Void> baseDrawer;
 
         private bool isHeightmapGenerated;
 
         public HeightRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
         {
             level = game.State.Level;
-            this.heightmap = heightmap;
-
-            heightmap.ResolutionChanged += () => isHeightmapGenerated = false;
-
-            splatSeedOffset = game.GameSettings.Seed;
             geometryLayer = game.State.GeometryLayer;
             passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
+            splatSeedOffset = game.GameSettings.Seed;
+
+            heightmap.ResolutionChanged += () => isHeightmapGenerated = false;
 
             renderToHeightmap =
                 heightmap.DrawHeights(
@@ -63,32 +59,25 @@ namespace Bearded.TD.Rendering.Deferred.Level
                             Do(renderHeightmap)
                         )));
 
-            (heightmapSplats, heightMapSplatRenderer) = findHeightmapSplats(game);
-
-            (heightmapBaseMeshBuilder, heightmapBaseRenderer, heightmapBaseDrawer) = initializeBaseDrawing(context);
+            (splats, splatRenderer) = findHeightmapSplats(game, heightmap);
+            (baseMeshBuilder, baseRenderer, baseDrawer) = initializeBaseDrawing(context, heightmap);
         }
 
-        private (IndexedTrianglesMeshBuilder<ColorVertexData>, Renderer, ShapeDrawer2<ColorVertexData, Void>)
-            initializeBaseDrawing(RenderContext context)
+        private static (IndexedTrianglesMeshBuilder<ColorVertexData>, Renderer, ShapeDrawer2<ColorVertexData, Void>)
+            initializeBaseDrawing(RenderContext context, Heightmap heightmap)
         {
             var meshBuilder = new IndexedTrianglesMeshBuilder<ColorVertexData>();
-            var baseRenderer = Renderer.From(meshBuilder.ToRenderable(), heightmap.RadiusUniform);
-            var baseDrawer =
+            var renderer = Renderer.From(meshBuilder.ToRenderable(), heightmap.RadiusUniform);
+            var drawer =
                 new ShapeDrawer2<ColorVertexData, Void>(meshBuilder, (p, _) => new ColorVertexData(p, default));
 
-            context.Shaders.GetShaderProgram("terrain-base").UseOnRenderer(baseRenderer);
+            context.Shaders.GetShaderProgram("terrain-base").UseOnRenderer(renderer);
 
-            return (meshBuilder, baseRenderer, baseDrawer);
+            return (meshBuilder, renderer, drawer);
         }
 
-        public void CleanUp()
-        {
-            heightmapBaseMeshBuilder.Dispose();
-            heightmapBaseRenderer.Dispose();
-        }
-
-        private (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer)
-            findHeightmapSplats(GameInstance game)
+        private static (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer)
+            findHeightmapSplats(GameInstance game, Heightmap heightmap)
         {
             return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")]
                 .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
@@ -99,6 +88,12 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 );
         }
 
+        public void CleanUp()
+        {
+            baseMeshBuilder.Dispose();
+            baseRenderer.Dispose();
+        }
+
         public void TileChanged(Tile tile)
         {
             // TODO: redraw only tiles that have changed instead of everything
@@ -106,7 +101,7 @@ namespace Bearded.TD.Rendering.Deferred.Level
             isHeightmapGenerated = false;
         }
 
-        public void EnsureHeightmapIsUpToDate()
+        public void Render()
         {
             if (isHeightmapGenerated)
             {
@@ -134,20 +129,20 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 var p = Tiles.Level.GetPosition(tile).NumericValue
                     .WithZ(tileHeight(info));
 
-                heightmapBaseDrawer.FillCircle(p, Constants.Game.World.HexagonSide, default, 6);
+                baseDrawer.FillCircle(p, Constants.Game.World.HexagonSide, default, 6);
 
                 count++;
 
                 if (count > 10000)
                 {
-                    heightmapBaseRenderer.Render();
-                    heightmapBaseMeshBuilder.Clear();
+                    baseRenderer.Render();
+                    baseMeshBuilder.Clear();
                     count = 0;
                 }
             }
 
-            heightmapBaseRenderer.Render();
-            heightmapBaseMeshBuilder.Clear();
+            baseRenderer.Render();
+            baseMeshBuilder.Clear();
         }
 
         private static readonly (Direction Direction, Vector2 Offset, Vector2 UnitX, Vector2 UnitY)[]
@@ -220,11 +215,11 @@ namespace Bearded.TD.Rendering.Deferred.Level
                 }
             }
 
-            heightMapSplatRenderer.Render();
-            heightmapSplats.Clear();
+            splatRenderer.Render();
+            splats.Clear();
 
             List<DrawableSprite<HeightmapSplatVertex, (float, float)>> getSpritesWithPrefix(string prefix)
-                => heightmapSplats.AllSprites.Where(s => s.Name.StartsWith(prefix)).Select(s => s.Sprite).ToList();
+                => splats.AllSprites.Where(s => s.Name.StartsWith(prefix)).Select(s => s.Sprite).ToList();
         }
 
         private static float tileHeight(DrawableTileGeometry info) =>
