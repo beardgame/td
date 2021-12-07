@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Exploration
         private ZoneLayer zoneLayer => gameState.ZoneLayer;
         private VisibilityLayer visibilityLayer => gameState.VisibilityLayer;
 
-        public ImmutableArray<Zone> ExplorableZones { get; private set; }
+        private ImmutableArray<Zone> explorableZones;
         public bool HasExplorationToken { get; private set; }
 
         public ExplorationManager(GameState gameState)
@@ -30,11 +30,12 @@ namespace Bearded.TD.Game.Simulation.Exploration
 
         private void recalculateExplorableZones()
         {
-            ExplorableZones = zoneLayer.AllZones.Where(
+            explorableZones = zoneLayer.AllZones.Where(
                     zone =>
                         !visibilityLayer[zone].IsRevealed() &&
                         zoneLayer.AdjacentZones(zone).Any(adjZone => visibilityLayer[adjZone].IsRevealed()))
                 .ToImmutableArray();
+            gameState.Meta.Events.Send(new ExplorableZonesChanged(explorableZones));
         }
 
         public void ConsumeExplorationToken()
