@@ -2,5 +2,5 @@
 
 namespace Bearded.TD.Game.Simulation.Buildings
 {
-    readonly struct Materialized : IComponentEvent { }
+    readonly record struct Materialized : IComponentEvent;
 }

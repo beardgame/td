@@ -4,14 +4,6 @@ namespace Bearded.TD.Game.Simulation.Reports
 {
     static partial class ReportAggregator
     {
-        private readonly struct ReportAdded : IComponentEvent
-        {
-            public IReport Report { get; }
-
-            public ReportAdded(IReport report)
-            {
-                Report = report;
-            }
-        }
+        private readonly record struct ReportAdded(IReport Report) : IComponentEvent;
     }
 }

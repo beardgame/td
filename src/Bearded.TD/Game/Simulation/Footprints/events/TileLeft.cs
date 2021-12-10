@@ -3,13 +3,5 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Footprints
 {
-    readonly struct TileLeft : IComponentEvent
-    {
-        public Tile Tile { get; }
-
-        public TileLeft(Tile tile)
-        {
-            Tile = tile;
-        }
-    }
+    readonly record struct TileLeft(Tile Tile) : IComponentEvent;
 }

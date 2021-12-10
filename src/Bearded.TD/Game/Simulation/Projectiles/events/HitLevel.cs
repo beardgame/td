@@ -2,5 +2,5 @@ using Bearded.TD.Game.Simulation.Components;
 
 namespace Bearded.TD.Game.Simulation.Projectiles
 {
-    readonly struct HitLevel : IComponentEvent {}
+    readonly record struct HitLevel : IComponentEvent;
 }

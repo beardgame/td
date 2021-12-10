@@ -5,14 +5,9 @@ namespace Bearded.TD.Game.Simulation.Reports
 {
     static partial class ReportAggregator
     {
-        private readonly struct GatherReports : IComponentEvent
+        private readonly record struct GatherReports(List<IReport> reports) : IComponentEvent
         {
-            private readonly List<IReport> reports;
-
-            public GatherReports(List<IReport> reports)
-            {
-                this.reports = reports;
-            }
+            private readonly List<IReport> reports = reports;
 
             public void AddReport(IReport report)
             {
