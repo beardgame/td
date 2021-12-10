@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities.Linq;
 using static Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout.PhysicalFeature;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout

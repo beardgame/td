@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration

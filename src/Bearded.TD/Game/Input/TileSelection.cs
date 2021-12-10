@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input

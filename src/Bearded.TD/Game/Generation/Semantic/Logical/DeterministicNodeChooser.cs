@@ -5,7 +5,6 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Generation.Semantic.Logical
 {

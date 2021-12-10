@@ -15,7 +15,6 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
@@ -315,7 +314,7 @@ namespace Bearded.TD.Game.Generation
             {
                 var targetsLeft = new HashSet<Tile>(targets);
 
-                var q = new PriorityQueue<double, Tile>();
+                var q = new Bearded.Utilities.Collections.PriorityQueue<double, Tile>();
                 var result = new Tilemap<(Tile Parent, double Cost)>(hardnessTilemap.Radius);
 
                 result.ForEach(t => result[t] = (origin, double.PositiveInfinity));
@@ -461,7 +460,7 @@ namespace Bearded.TD.Game.Generation
                         .ToList();
                     if (closedNeighbours.Count == 0) break;
 
-                    tile = closedNeighbours.RandomElement(random);
+                    tile = Bearded.Utilities.Linq.Extensions.RandomElement(closedNeighbours, random);
                     creviceTiles.Add(tile);
                 }
 

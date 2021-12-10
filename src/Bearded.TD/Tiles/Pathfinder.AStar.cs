@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Tiles
 {
@@ -28,7 +27,7 @@ namespace Bearded.TD.Tiles
                     Seen { get; private init; }
 
                 // key is tentative total cost _through_ tile, implementing A*
-                public PriorityQueue<double, Tile> Open { get; private init; }
+                public Bearded.Utilities.Collections.PriorityQueue<double, Tile> Open { get; private init; }
 
                 public static State New(Tile origin, Tile target)
                 {

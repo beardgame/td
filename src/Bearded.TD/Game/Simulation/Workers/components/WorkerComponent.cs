@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
