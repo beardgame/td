@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Damage
-{
-    readonly record struct CausedKill(IDamageTarget Target) : IComponentEvent;
-}
+namespace Bearded.TD.Game.Simulation.Damage;
+
+readonly record struct CausedKill(IDamageTarget Target) : IComponentEvent;

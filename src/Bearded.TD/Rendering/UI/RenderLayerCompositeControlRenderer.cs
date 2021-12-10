@@ -1,21 +1,20 @@
 ﻿using Bearded.TD.UI.Layers;
 using Bearded.UI.Rendering;
 
-namespace Bearded.TD.Rendering.UI
+namespace Bearded.TD.Rendering.UI;
+
+sealed class RenderLayerCompositeControlRenderer : IRenderer<RenderLayerCompositeControl>
 {
-    sealed class RenderLayerCompositeControlRenderer : IRenderer<RenderLayerCompositeControl>
+    private readonly FrameCompositor compositor;
+
+    public RenderLayerCompositeControlRenderer(FrameCompositor compositor)
     {
-        private readonly FrameCompositor compositor;
+        this.compositor = compositor;
+    }
 
-        public RenderLayerCompositeControlRenderer(FrameCompositor compositor)
-        {
-            this.compositor = compositor;
-        }
-
-        public void Render(RenderLayerCompositeControl control)
-        {
-            control.UpdateViewport(compositor.ViewPort);
-            compositor.RenderLayer(control);
-        }
+    public void Render(RenderLayerCompositeControl control)
+    {
+        control.UpdateViewport(compositor.ViewPort);
+        compositor.RenderLayer(control);
     }
 }

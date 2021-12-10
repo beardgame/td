@@ -3,231 +3,230 @@ using Bearded.UI;
 using Bearded.UI.Controls;
 using static Bearded.TD.Constants.UI;
 
-namespace Bearded.TD.UI.Factories
+namespace Bearded.TD.UI.Factories;
+
+static class Layouts
 {
-    static class Layouts
+    public static Control WrapHorizontallyCentered(this Control control, double width)
     {
-        public static Control WrapHorizontallyCentered(this Control control, double width)
+        return new CompositeControl
         {
-            return new CompositeControl
-            {
-                control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5))
-            };
+            control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5))
+        };
+    }
+
+    public static Control WrapVerticallyCentered(this Control control, double height)
+    {
+        return new CompositeControl
+        {
+            control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5))
+        };
+    }
+
+    public static PristineLayout BuildLayout(this IControlParent parent) =>
+        new PristineLayout(parent);
+
+    public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
+
+    public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
+        new ScrollableColumnLayout(parent);
+
+    public sealed class PristineLayout : Layout
+    {
+        public PristineLayout(IControlParent parent) : base(parent) {}
+
+        public PristineLayout ForFullScreen()
+        {
+            const double m = LayoutMargin;
+            Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+            Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+            return this;
         }
 
-        public static Control WrapVerticallyCentered(this Control control, double height)
+        public PristineLayout ForContentBox()
         {
-            return new CompositeControl
-            {
-                control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5))
-            };
+            // Use the same margins as full screen for now.
+            return ForFullScreen();
+        }
+    }
+
+    public class Layout
+    {
+        protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
+        protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
+
+        protected IControlParent Parent { get; }
+
+        public Layout(IControlParent parent)
+        {
+            Parent = parent;
         }
 
-        public static PristineLayout BuildLayout(this IControlParent parent) =>
-            new PristineLayout(parent);
-
-        public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
-
-        public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
-            new ScrollableColumnLayout(parent);
-
-        public sealed class PristineLayout : Layout
+        public Layout DockFixedSizeToTop(Control control, double height)
         {
-            public PristineLayout(IControlParent parent) : base(parent) {}
-
-            public PristineLayout ForFullScreen()
-            {
-                const double m = LayoutMargin;
-                Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
-                Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
-                return this;
-            }
-
-            public PristineLayout ForContentBox()
-            {
-                // Use the same margins as full screen for now.
-                return ForFullScreen();
-            }
+            dockToTop(control, new Anchor(Vertical.Top.Percentage, Vertical.Top.Offset + height));
+            return this;
         }
 
-        public class Layout
+        public Layout DockFractionalSizeToTop(Control control, double percentage)
         {
-            protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
-            protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
-
-            protected IControlParent Parent { get; }
-
-            public Layout(IControlParent parent)
-            {
-                Parent = parent;
-            }
-
-            public Layout DockFixedSizeToTop(Control control, double height)
-            {
-                dockToTop(control, new Anchor(Vertical.Top.Percentage, Vertical.Top.Offset + height));
-                return this;
-            }
-
-            public Layout DockFractionalSizeToTop(Control control, double percentage)
-            {
-                dockToTop(control, new Anchor(Vertical.Bottom.Percentage + percentage, Vertical.Bottom.Offset));
-                return this;
-            }
-
-            private void dockToTop(Control control, Anchor divider)
-            {
-                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(Vertical.Top, divider)));
-                Parent.Add(control);
-                moveTopAnchor(divider.WithAddedOffset(LayoutMargin));
-            }
-
-            public Layout ClearSpaceTop(double height)
-            {
-                moveTopAnchor(Vertical.Top.WithAddedOffset(height));
-                return this;
-            }
-
-            private void moveTopAnchor(Anchor divider)
-            {
-                Vertical = new VerticalAnchors(new Anchors(divider, Vertical.Bottom));
-            }
-
-            public Layout DockFixedSizeToBottom(Control control, double height)
-            {
-                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage, Vertical.Bottom.Offset - height));
-                return this;
-            }
-
-            public Layout DockFractionalSizeToBottom(Control control, double percentage)
-            {
-                dockToBottom(control, new Anchor(Vertical.Bottom.Percentage - percentage, Vertical.Bottom.Offset));
-                return this;
-            }
-
-            private void dockToBottom(Control control, Anchor divider)
-            {
-                control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(divider, Vertical.Bottom)));
-                Parent.Add(control);
-                moveBottomAnchor(divider.WithAddedOffset(-LayoutMargin));
-            }
-
-            public Layout ClearSpaceBottom(double height)
-            {
-                moveBottomAnchor(Vertical.Bottom.WithAddedOffset(-height));
-                return this;
-            }
-
-            private void moveBottomAnchor(Anchor divider)
-            {
-                Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider));
-            }
-
-            public Layout DockFixedSizeToLeft(Control control, double width)
-            {
-                dockToLeft(control, new Anchor(Horizontal.Left.Percentage, Horizontal.Left.Offset + width));
-                return this;
-            }
-
-            public Layout DockFractionalSizeToLeft(Control control, double percentage)
-            {
-                dockToLeft(control, new Anchor(Horizontal.Left.Percentage + percentage, Horizontal.Left.Offset));
-                return this;
-            }
-
-            private void dockToLeft(Control control, Anchor divider)
-            {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(Horizontal.Left, divider), Vertical));
-                Parent.Add(control);
-                moveLeftAnchor(divider.WithAddedOffset(LayoutMargin));
-            }
-
-            public Layout ClearSpaceLeft(double width)
-            {
-                moveLeftAnchor(Horizontal.Left.WithAddedOffset(width));
-                return this;
-            }
-
-            private void moveLeftAnchor(Anchor divider)
-            {
-                Horizontal = new HorizontalAnchors(new Anchors(divider, Horizontal.Right));
-            }
-
-            public Layout DockFixedSizeToRight(Control control, double width)
-            {
-                dockToRight(control, new Anchor(Horizontal.Right.Percentage, Horizontal.Right.Offset - width));
-                return this;
-            }
-
-            public Layout DockFractionalSizeToRight(Control control, double percentage)
-            {
-                dockToRight(control, new Anchor(Horizontal.Right.Percentage - percentage, Horizontal.Right.Offset));
-                return this;
-            }
-
-            private void dockToRight(Control control, Anchor divider)
-            {
-                control.Anchor(_ => new AnchorTemplate(new Anchors(divider, Horizontal.Right), Vertical));
-                Parent.Add(control);
-                moveRightAnchor(divider.WithAddedOffset(-LayoutMargin));
-            }
-
-            public Layout ClearSpaceRight(double width)
-            {
-                moveRightAnchor(Horizontal.Right.WithAddedOffset(-width));
-                return this;
-            }
-
-            private void moveRightAnchor(Anchor divider)
-            {
-                Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider));
-            }
-
-            public void FillContent(Control control)
-            {
-                control.Anchor(_ => new AnchorTemplate(Horizontal, Vertical));
-                Parent.Add(control);
-            }
+            dockToTop(control, new Anchor(Vertical.Bottom.Percentage + percentage, Vertical.Bottom.Offset));
+            return this;
         }
 
-        public interface IColumnLayout
+        private void dockToTop(Control control, Anchor divider)
         {
-            IColumnLayout Add(Control control, double height);
+            control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(Vertical.Top, divider)));
+            Parent.Add(control);
+            moveTopAnchor(divider.WithAddedOffset(LayoutMargin));
         }
 
-        public sealed class FixedColumnLayout : IColumnLayout
+        public Layout ClearSpaceTop(double height)
         {
-            private readonly IControlParent parent;
-
-            public double Height { get; private set; }
-
-            public FixedColumnLayout(IControlParent parent)
-            {
-                this.parent = parent;
-            }
-
-            public IColumnLayout Add(Control control, double height)
-            {
-                parent.Add(control.Anchor(a => a.Top(Height, height)));
-                Height += height;
-                return this;
-            }
+            moveTopAnchor(Vertical.Top.WithAddedOffset(height));
+            return this;
         }
 
-        private sealed class ScrollableColumnLayout : IColumnLayout
+        private void moveTopAnchor(Anchor divider)
         {
-            private readonly VerticalScrollableContainer container;
+            Vertical = new VerticalAnchors(new Anchors(divider, Vertical.Bottom));
+        }
 
-            public ScrollableColumnLayout(IControlParent parent)
-            {
-                container = new VerticalScrollableContainer();
-                parent.Add(container);
-            }
+        public Layout DockFixedSizeToBottom(Control control, double height)
+        {
+            dockToBottom(control, new Anchor(Vertical.Bottom.Percentage, Vertical.Bottom.Offset - height));
+            return this;
+        }
 
-            public IColumnLayout Add(Control control, double height)
-            {
-                container.Add(control, height);
-                return this;
-            }
+        public Layout DockFractionalSizeToBottom(Control control, double percentage)
+        {
+            dockToBottom(control, new Anchor(Vertical.Bottom.Percentage - percentage, Vertical.Bottom.Offset));
+            return this;
+        }
+
+        private void dockToBottom(Control control, Anchor divider)
+        {
+            control.Anchor(_ => new AnchorTemplate(Horizontal, new Anchors(divider, Vertical.Bottom)));
+            Parent.Add(control);
+            moveBottomAnchor(divider.WithAddedOffset(-LayoutMargin));
+        }
+
+        public Layout ClearSpaceBottom(double height)
+        {
+            moveBottomAnchor(Vertical.Bottom.WithAddedOffset(-height));
+            return this;
+        }
+
+        private void moveBottomAnchor(Anchor divider)
+        {
+            Vertical = new VerticalAnchors(new Anchors(Vertical.Top, divider));
+        }
+
+        public Layout DockFixedSizeToLeft(Control control, double width)
+        {
+            dockToLeft(control, new Anchor(Horizontal.Left.Percentage, Horizontal.Left.Offset + width));
+            return this;
+        }
+
+        public Layout DockFractionalSizeToLeft(Control control, double percentage)
+        {
+            dockToLeft(control, new Anchor(Horizontal.Left.Percentage + percentage, Horizontal.Left.Offset));
+            return this;
+        }
+
+        private void dockToLeft(Control control, Anchor divider)
+        {
+            control.Anchor(_ => new AnchorTemplate(new Anchors(Horizontal.Left, divider), Vertical));
+            Parent.Add(control);
+            moveLeftAnchor(divider.WithAddedOffset(LayoutMargin));
+        }
+
+        public Layout ClearSpaceLeft(double width)
+        {
+            moveLeftAnchor(Horizontal.Left.WithAddedOffset(width));
+            return this;
+        }
+
+        private void moveLeftAnchor(Anchor divider)
+        {
+            Horizontal = new HorizontalAnchors(new Anchors(divider, Horizontal.Right));
+        }
+
+        public Layout DockFixedSizeToRight(Control control, double width)
+        {
+            dockToRight(control, new Anchor(Horizontal.Right.Percentage, Horizontal.Right.Offset - width));
+            return this;
+        }
+
+        public Layout DockFractionalSizeToRight(Control control, double percentage)
+        {
+            dockToRight(control, new Anchor(Horizontal.Right.Percentage - percentage, Horizontal.Right.Offset));
+            return this;
+        }
+
+        private void dockToRight(Control control, Anchor divider)
+        {
+            control.Anchor(_ => new AnchorTemplate(new Anchors(divider, Horizontal.Right), Vertical));
+            Parent.Add(control);
+            moveRightAnchor(divider.WithAddedOffset(-LayoutMargin));
+        }
+
+        public Layout ClearSpaceRight(double width)
+        {
+            moveRightAnchor(Horizontal.Right.WithAddedOffset(-width));
+            return this;
+        }
+
+        private void moveRightAnchor(Anchor divider)
+        {
+            Horizontal = new HorizontalAnchors(new Anchors(Horizontal.Left, divider));
+        }
+
+        public void FillContent(Control control)
+        {
+            control.Anchor(_ => new AnchorTemplate(Horizontal, Vertical));
+            Parent.Add(control);
+        }
+    }
+
+    public interface IColumnLayout
+    {
+        IColumnLayout Add(Control control, double height);
+    }
+
+    public sealed class FixedColumnLayout : IColumnLayout
+    {
+        private readonly IControlParent parent;
+
+        public double Height { get; private set; }
+
+        public FixedColumnLayout(IControlParent parent)
+        {
+            this.parent = parent;
+        }
+
+        public IColumnLayout Add(Control control, double height)
+        {
+            parent.Add(control.Anchor(a => a.Top(Height, height)));
+            Height += height;
+            return this;
+        }
+    }
+
+    private sealed class ScrollableColumnLayout : IColumnLayout
+    {
+        private readonly VerticalScrollableContainer container;
+
+        public ScrollableColumnLayout(IControlParent parent)
+        {
+            container = new VerticalScrollableContainer();
+            parent.Add(container);
+        }
+
+        public IColumnLayout Add(Control control, double height)
+        {
+            container.Add(control, height);
+            return this;
         }
     }
 }

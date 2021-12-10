@@ -6,48 +6,47 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Gameplay
+namespace Bearded.TD.Game.Commands.Gameplay;
+
+static class DeleteGameObject
 {
-    static class DeleteGameObject
+    public static ISerializableCommand<GameInstance> Command(ComponentGameObject gameObject) =>
+        new Implementation(gameObject);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(ComponentGameObject gameObject) =>
-            new Implementation(gameObject);
+        private readonly ComponentGameObject gameObject;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(ComponentGameObject gameObject)
         {
-            private readonly ComponentGameObject gameObject;
-
-            public Implementation(ComponentGameObject gameObject)
-            {
-                this.gameObject = gameObject;
-            }
-
-            public void Execute() => gameObject.Delete();
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
-                new Serializer(gameObject);
+            this.gameObject = gameObject;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute() => gameObject.Delete();
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+            new Serializer(gameObject);
+    }
+
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<ComponentGameObject> gameObject;
+
+        [UsedImplicitly]
+        public Serializer() {}
+
+        public Serializer(ComponentGameObject gameObject)
         {
-            private Id<ComponentGameObject> gameObject;
+            this.gameObject = gameObject.FindId();
+        }
 
-            [UsedImplicitly]
-            public Serializer() {}
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+        {
+            return new Implementation(game.State.Find(gameObject));
+        }
 
-            public Serializer(ComponentGameObject gameObject)
-            {
-                this.gameObject = gameObject.FindId();
-            }
-
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-            {
-                return new Implementation(game.State.Find(gameObject));
-            }
-
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref gameObject);
-            }
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref gameObject);
         }
     }
 }

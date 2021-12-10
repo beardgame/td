@@ -5,58 +5,57 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+[Component("linearAccelerationAim")]
+class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>, IAngularAccelerator
 {
-    [Component("linearAccelerationAim")]
-    class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>, IAngularAccelerator
+    private AngularVelocity angularVelocity;
+    private IWeaponAimer? aimer;
+
+    public LinearAccelerationAim(ILinearAccelerationAimParameters parameters) : base(parameters) { }
+
+    public void Impact(AngularVelocity impact)
     {
-        private AngularVelocity angularVelocity;
-        private IWeaponAimer? aimer;
+        angularVelocity += impact;
+    }
 
-        public LinearAccelerationAim(ILinearAccelerationAimParameters parameters) : base(parameters) { }
+    protected override void OnAdded()
+    {
+        ComponentDependencies.DependDynamic<IWeaponAimer>(Owner, Events, c => aimer = c);
+    }
 
-        public void Impact(AngularVelocity impact)
-        {
-            angularVelocity += impact;
-        }
+    public override void Update(TimeSpan elapsedTime)
+    {
+        accelerateTowardsGoal(elapsedTime);
+        applyVelocity(elapsedTime);
+        dampVelocity(elapsedTime);
+    }
 
-        protected override void OnAdded()
-        {
-            ComponentDependencies.DependDynamic<IWeaponAimer>(Owner, Events, c => aimer = c);
-        }
+    private void accelerateTowardsGoal(TimeSpan elapsedTime)
+    {
+        if (aimer != null)
+            aimIn(aimer.AimDirection, elapsedTime);
+    }
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            accelerateTowardsGoal(elapsedTime);
-            applyVelocity(elapsedTime);
-            dampVelocity(elapsedTime);
-        }
+    private void aimIn(Direction2 aimDirection, TimeSpan elapsedTime)
+    {
+        var angularDirection = Angle.Between(Owner.CurrentDirection, aimDirection).Sign();
+        var acceleration = Parameters.Acceleration * angularDirection;
 
-        private void accelerateTowardsGoal(TimeSpan elapsedTime)
-        {
-            if (aimer != null)
-                aimIn(aimer.AimDirection, elapsedTime);
-        }
+        angularVelocity += acceleration * elapsedTime;
+    }
 
-        private void aimIn(Direction2 aimDirection, TimeSpan elapsedTime)
-        {
-            var angularDirection = Angle.Between(Owner.CurrentDirection, aimDirection).Sign();
-            var acceleration = Parameters.Acceleration * angularDirection;
+    private void applyVelocity(TimeSpan elapsedTime)
+    {
+        Owner.Turn(angularVelocity * elapsedTime);
+    }
 
-            angularVelocity += acceleration * elapsedTime;
-        }
+    private void dampVelocity(TimeSpan elapsedTime)
+    {
+        var damping = 1 - 1 / (Parameters.DragInverse + 1);
+        var velocityMultiplier = (float)Math.Pow(damping, elapsedTime.NumericValue);
 
-        private void applyVelocity(TimeSpan elapsedTime)
-        {
-            Owner.Turn(angularVelocity * elapsedTime);
-        }
-
-        private void dampVelocity(TimeSpan elapsedTime)
-        {
-            var damping = 1 - 1 / (Parameters.DragInverse + 1);
-            var velocityMultiplier = (float)Math.Pow(damping, elapsedTime.NumericValue);
-
-            angularVelocity *= velocityMultiplier;
-        }
+        angularVelocity *= velocityMultiplier;
     }
 }

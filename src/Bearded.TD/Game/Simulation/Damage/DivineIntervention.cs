@@ -1,13 +1,12 @@
 
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+sealed class DivineIntervention : IDamageSource
 {
-    sealed class DivineIntervention : IDamageSource
-    {
-        public static DivineIntervention DamageSource { get; } = new();
+    public static DivineIntervention DamageSource { get; } = new();
 
-        private DivineIntervention() {}
+    private DivineIntervention() {}
 
-        public void AttributeDamage(DamageResult result) {}
-        public void AttributeKill(IDamageTarget target) {}
-    }
+    public void AttributeDamage(DamageResult result) {}
+    public void AttributeKill(IDamageTarget target) {}
 }

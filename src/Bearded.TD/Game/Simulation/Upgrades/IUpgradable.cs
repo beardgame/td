@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Upgrades
+namespace Bearded.TD.Game.Simulation.Upgrades;
+
+interface IUpgradable
 {
-    interface IUpgradable
-    {
-        bool CanApplyUpgrade(IUpgradeBlueprint upgrade);
-    }
+    bool CanApplyUpgrade(IUpgradeBlueprint upgrade);
 }

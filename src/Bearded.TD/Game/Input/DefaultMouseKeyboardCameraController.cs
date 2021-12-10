@@ -7,97 +7,96 @@ using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace Bearded.TD.Game.Input
+namespace Bearded.TD.Game.Input;
+
+sealed class DefaultMouseKeyboardCameraController : ICameraController
 {
-    sealed class DefaultMouseKeyboardCameraController : ICameraController
+    private readonly GameCameraController cameraController;
+
+    private readonly Dictionary<Func<InputState, ActionState>, Difference2> scrollActions;
+    private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
+
+    private bool isDragging;
+
+    public DefaultMouseKeyboardCameraController(GameCameraController cameraController)
     {
-        private readonly GameCameraController cameraController;
+        this.cameraController = cameraController;
 
-        private readonly Dictionary<Func<InputState, ActionState>, Difference2> scrollActions;
-        private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
-
-        private bool isDragging;
-
-        public DefaultMouseKeyboardCameraController(GameCameraController cameraController)
+        scrollActions = new Dictionary<Func<InputState, ActionState>, Difference2>
         {
-            this.cameraController = cameraController;
-
-            scrollActions = new Dictionary<Func<InputState, ActionState>, Difference2>
-            {
-                { actionFunc(Keys.Left, Keys.A), new Difference2(-Vector2.UnitX) },
-                { actionFunc(Keys.Right, Keys.D), new Difference2(Vector2.UnitX) },
-                { actionFunc(Keys.Up, Keys.W), new Difference2(Vector2.UnitY) },
-                { actionFunc(Keys.Down, Keys.S), new Difference2(-Vector2.UnitY) },
-            };
-            zoomActions = new Dictionary<Func<InputState, ActionState>, float>
-            {
-                { actionFunc(Keys.PageDown), 1f },
-                { actionFunc(Keys.PageUp), -1f },
-            };
-        }
-
-        private static Func<InputState, ActionState> actionFunc(params Keys[] keys)
+            { actionFunc(Keys.Left, Keys.A), new Difference2(-Vector2.UnitX) },
+            { actionFunc(Keys.Right, Keys.D), new Difference2(Vector2.UnitX) },
+            { actionFunc(Keys.Up, Keys.W), new Difference2(Vector2.UnitY) },
+            { actionFunc(Keys.Down, Keys.S), new Difference2(-Vector2.UnitY) },
+        };
+        zoomActions = new Dictionary<Func<InputState, ActionState>, float>
         {
-            return input => input.ForAnyKey(keys);
-        }
+            { actionFunc(Keys.PageDown), 1f },
+            { actionFunc(Keys.PageUp), -1f },
+        };
+    }
 
-        public void HandleInput(InputState input)
-        {
-            updateScrolling(input);
-            updateZoom(input);
-            updateDragging(input);
-        }
+    private static Func<InputState, ActionState> actionFunc(params Keys[] keys)
+    {
+        return input => input.ForAnyKey(keys);
+    }
 
-        public void Stop()
-        {
-            if (isDragging)
-                stopDragging();
-        }
+    public void HandleInput(InputState input)
+    {
+        updateScrolling(input);
+        updateZoom(input);
+        updateDragging(input);
+    }
 
-        private void updateScrolling(InputState input)
-        {
-            var velocity = scrollActions.Aggregate(Difference2.Zero, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
-            cameraController.Scroll(velocity);
-        }
+    public void Stop()
+    {
+        if (isDragging)
+            stopDragging();
+    }
 
-        private void updateZoom(InputState input)
-        {
-            cameraController.SetZoomAnchor(input.Mouse.Position);
+    private void updateScrolling(InputState input)
+    {
+        var velocity = scrollActions.Aggregate(Difference2.Zero, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
+        cameraController.Scroll(velocity);
+    }
 
-            var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue;
-            cameraController.ConstantZoom(mouseScroll);
+    private void updateZoom(InputState input)
+    {
+        cameraController.SetZoomAnchor(input.Mouse.Position);
 
-            var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
-            cameraController.Zoom(velocity);
-        }
+        var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue;
+        cameraController.ConstantZoom(mouseScroll);
 
-        private void updateDragging(InputState input)
-        {
-            if (isDragging)
-                continueDragging(input.Mouse.Position);
-            else if (input.Mouse.Drag.Active)
-                startDragging(input.Mouse.Position);
+        var velocity = zoomActions.Aggregate(0f, (v, a) => v + a.Key(input).AnalogAmount * a.Value);
+        cameraController.Zoom(velocity);
+    }
 
-            if (!input.Mouse.Drag.Active && isDragging)
-                stopDragging();
-        }
+    private void updateDragging(InputState input)
+    {
+        if (isDragging)
+            continueDragging(input.Mouse.Position);
+        else if (input.Mouse.Drag.Active)
+            startDragging(input.Mouse.Position);
 
-        private void startDragging(Vector2 mousePos)
-        {
-            cameraController.SetScrollAnchor(mousePos);
-            cameraController.Grab();
-            isDragging = true;
-        }
+        if (!input.Mouse.Drag.Active && isDragging)
+            stopDragging();
+    }
 
-        private void continueDragging(Vector2 mousePos)
-        {
-            cameraController.MoveScrollAnchor(mousePos);
-        }
+    private void startDragging(Vector2 mousePos)
+    {
+        cameraController.SetScrollAnchor(mousePos);
+        cameraController.Grab();
+        isDragging = true;
+    }
 
-        private void stopDragging()
-        {
-            isDragging = false;
-            cameraController.Release();
-        }
+    private void continueDragging(Vector2 mousePos)
+    {
+        cameraController.MoveScrollAnchor(mousePos);
+    }
+
+    private void stopDragging()
+    {
+        isDragging = false;
+        cameraController.Release();
     }
 }

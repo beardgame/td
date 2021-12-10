@@ -2,13 +2,12 @@
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Units
-{
-    interface IUnitBlueprint : IBlueprint
-    {
-        string Name { get; }
-        float Value { get; }
+namespace Bearded.TD.Game.Simulation.Units;
 
-        IEnumerable<IComponent<EnemyUnit>> GetComponents();
-    }
+interface IUnitBlueprint : IBlueprint
+{
+    string Name { get; }
+    float Value { get; }
+
+    IEnumerable<IComponent<EnemyUnit>> GetComponents();
 }

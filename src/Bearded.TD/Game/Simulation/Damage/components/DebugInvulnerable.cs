@@ -3,23 +3,22 @@ using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+sealed class DebugInvulnerable<T> : Component<T>, IPreviewListener<PreviewTakeDamage>
 {
-    sealed class DebugInvulnerable<T> : Component<T>, IPreviewListener<PreviewTakeDamage>
+    protected override void OnAdded()
     {
-        protected override void OnAdded()
-        {
-            Events.Subscribe(this);
-        }
+        Events.Subscribe(this);
+    }
 
-        public override void Update(TimeSpan elapsedTime) {}
+    public override void Update(TimeSpan elapsedTime) {}
 
-        public void PreviewEvent(ref PreviewTakeDamage @event)
+    public void PreviewEvent(ref PreviewTakeDamage @event)
+    {
+        if (UserSettings.Instance.Debug.InvulnerableBuildings)
         {
-            if (UserSettings.Instance.Debug.InvulnerableBuildings)
-            {
-                @event = @event.CappedAt(HitPoints.Zero);
-            }
+            @event = @event.CappedAt(HitPoints.Zero);
         }
     }
 }

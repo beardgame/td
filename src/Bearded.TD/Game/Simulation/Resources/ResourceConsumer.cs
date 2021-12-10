@@ -3,80 +3,79 @@ using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Simulation.Resources
+namespace Bearded.TD.Game.Simulation.Resources;
+
+sealed class ResourceConsumer
 {
-    sealed class ResourceConsumer
+    private readonly Func<Instant> currentTimeProvider;
+    private readonly FactionResources.IResourceReservation reservation;
+    private readonly ResourceAmount resourcesRequested;
+
+    public ResourceRate ConsumptionRate { get; private set; }
+
+    private Instant? consumptionStartTime;
+    private Instant time => currentTimeProvider();
+
+    public bool CanConsume => reservation.IsCommitted;
+    public double PercentageDone => (resourcesRequested - reservation.ResourcesLeftToClaim) / resourcesRequested;
+    public bool IsDone => reservation.ResourcesLeftToClaim == ResourceAmount.Zero;
+
+    public ResourceConsumer(GameState game, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
+        : this(() => game.Time, reservation, consumptionRate) { }
+
+    public ResourceConsumer(
+        Func<Instant> currentTimeProvider, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
     {
-        private readonly Func<Instant> currentTimeProvider;
-        private readonly FactionResources.IResourceReservation reservation;
-        private readonly ResourceAmount resourcesRequested;
+        this.currentTimeProvider = currentTimeProvider;
+        this.reservation = reservation;
+        ConsumptionRate = consumptionRate;
+        resourcesRequested = reservation.ResourcesLeftToClaim;
+    }
 
-        public ResourceRate ConsumptionRate { get; private set; }
+    public void UpdateConsumptionRate(ResourceRate newRate)
+    {
+        ConsumptionRate = newRate;
+    }
 
-        private Instant? consumptionStartTime;
-        private Instant time => currentTimeProvider();
-
-        public bool CanConsume => reservation.IsCommitted;
-        public double PercentageDone => (resourcesRequested - reservation.ResourcesLeftToClaim) / resourcesRequested;
-        public bool IsDone => reservation.ResourcesLeftToClaim == ResourceAmount.Zero;
-
-        public ResourceConsumer(GameState game, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
-            : this(() => game.Time, reservation, consumptionRate) { }
-
-        public ResourceConsumer(
-            Func<Instant> currentTimeProvider, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
+    public void PrepareIfNeeded()
+    {
+        if (!reservation.IsReadyToReceive)
         {
-            this.currentTimeProvider = currentTimeProvider;
-            this.reservation = reservation;
-            ConsumptionRate = consumptionRate;
-            resourcesRequested = reservation.ResourcesLeftToClaim;
+            reservation.MarkReadyToReceive();
         }
+    }
 
-        public void UpdateConsumptionRate(ResourceRate newRate)
-        {
-            ConsumptionRate = newRate;
-        }
+    public void CompleteIfNeeded()
+    {
+        PrepareIfNeeded();
+        State.Satisfies(reservation.IsCommitted);
+        reservation.ClaimResources(reservation.ResourcesLeftToClaim);
+    }
 
-        public void PrepareIfNeeded()
+    public void Update()
+    {
+        if (consumptionStartTime == null)
         {
-            if (!reservation.IsReadyToReceive)
+            if (reservation.IsCommitted)
             {
-                reservation.MarkReadyToReceive();
+                consumptionStartTime = time;
             }
+            return;
         }
 
-        public void CompleteIfNeeded()
-        {
-            PrepareIfNeeded();
-            State.Satisfies(reservation.IsCommitted);
-            reservation.ClaimResources(reservation.ResourcesLeftToClaim);
-        }
+        var expectedResourcesConsumed = DiscreteSpaceTime1Math.Min(
+            resourcesRequested,
+            ConsumptionRate.InTime(time - consumptionStartTime.Value));
+        var actualResourcesConsumed = resourcesRequested - reservation.ResourcesLeftToClaim;
+        var resourcesToClaim = expectedResourcesConsumed - actualResourcesConsumed;
 
-        public void Update()
-        {
-            if (consumptionStartTime == null)
-            {
-                if (reservation.IsCommitted)
-                {
-                    consumptionStartTime = time;
-                }
-                return;
-            }
+        State.Satisfies(resourcesToClaim >= ResourceAmount.Zero);
 
-            var expectedResourcesConsumed = DiscreteSpaceTime1Math.Min(
-                resourcesRequested,
-                ConsumptionRate.InTime(time - consumptionStartTime.Value));
-            var actualResourcesConsumed = resourcesRequested - reservation.ResourcesLeftToClaim;
-            var resourcesToClaim = expectedResourcesConsumed - actualResourcesConsumed;
+        reservation.ClaimResources(resourcesToClaim);
+    }
 
-            State.Satisfies(resourcesToClaim >= ResourceAmount.Zero);
-
-            reservation.ClaimResources(resourcesToClaim);
-        }
-
-        public void Abort()
-        {
-            reservation.CancelRemainingResources();
-        }
+    public void Abort()
+    {
+        reservation.CancelRemainingResources();
     }
 }

@@ -1,40 +1,39 @@
 using System;
 using Bearded.UI.Controls;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class ControlContainer : CompositeControl
 {
-    sealed class ControlContainer : CompositeControl
+    private Control? currentControl;
+    private Action? currentDisposer;
+
+    public ControlContainer()
     {
-        private Control? currentControl;
-        private Action? currentDisposer;
+        IsClickThrough = true;
+        IsVisible = false;
+    }
 
-        public ControlContainer()
+    public void SetControl(Control control, Action? disposer = null)
+    {
+        ClearControl();
+        Add(control);
+        currentControl = control;
+        currentDisposer = disposer;
+
+        IsVisible = true;
+    }
+
+    public void ClearControl()
+    {
+        currentDisposer?.Invoke();
+        currentDisposer = null;
+        if (currentControl != null)
         {
-            IsClickThrough = true;
-            IsVisible = false;
+            Remove(currentControl);
+            currentControl = null;
         }
 
-        public void SetControl(Control control, Action? disposer = null)
-        {
-            ClearControl();
-            Add(control);
-            currentControl = control;
-            currentDisposer = disposer;
-
-            IsVisible = true;
-        }
-
-        public void ClearControl()
-        {
-            currentDisposer?.Invoke();
-            currentDisposer = null;
-            if (currentControl != null)
-            {
-                Remove(currentControl);
-                currentControl = null;
-            }
-
-            IsVisible = false;
-        }
+        IsVisible = false;
     }
 }

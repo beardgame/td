@@ -5,54 +5,53 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.General
+namespace Bearded.TD.Game.Commands.General;
+
+static class AddPlayer
 {
-    static class AddPlayer
+    public static ISerializableCommand<GameInstance> Command(GameInstance game, Player player)
+        => new Implementation(game, player);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, Player player)
-            => new Implementation(game, player);
+        private readonly GameInstance game;
+        private readonly Player player;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(GameInstance game, Player player)
         {
-            private readonly GameInstance game;
-            private readonly Player player;
-
-            public Implementation(GameInstance game, Player player)
-            {
-                this.game = game;
-                this.player = player;
-            }
-
-            public void Execute()
-            {
-                game.AddPlayer(player);
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(player);
+            this.game = game;
+            this.player = player;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private Id<Player> id;
-            private string name = "";
+            game.AddPlayer(player);
+        }
 
-            [UsedImplicitly]
-            public Serializer() {}
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(player);
+    }
 
-            public Serializer(Player player)
-            {
-                id = player.Id;
-                name = player.Name;
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<Player> id;
+        private string name = "";
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, new Player(id, name));
+        [UsedImplicitly]
+        public Serializer() {}
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref id);
-                stream.Serialize(ref name);
-            }
+        public Serializer(Player player)
+        {
+            id = player.Id;
+            name = player.Name;
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(game, new Player(id, name));
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref id);
+            stream.Serialize(ref name);
         }
     }
 }

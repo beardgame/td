@@ -4,34 +4,33 @@ using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.World;
 
-namespace Bearded.TD.Game.Input
+namespace Bearded.TD.Game.Input;
+
+sealed class MiningInteractionHandler : InteractionHandler
 {
-    sealed class MiningInteractionHandler : InteractionHandler
+    private readonly Faction faction;
+
+    public MiningInteractionHandler(GameInstance game, Faction faction) : base(game)
     {
-        private readonly Faction faction;
+        this.faction = faction;
+    }
 
-        public MiningInteractionHandler(GameInstance game, Faction faction) : base(game)
+    public override void Update(ICursorHandler cursor)
+    {
+        var currentTile = cursor.CurrentFootprint;
+        if (!currentTile.IsValid(Game.State.Level)) return;
+
+        if (cursor.Click.Hit)
         {
-            this.faction = faction;
+            foreach (var tile in currentTile.OccupiedTiles.Where(
+                         t => Game.State.GeometryLayer[t].Type == TileType.Wall))
+            {
+                Game.Request(MineTile.Request(Game, faction, tile));
+            }
         }
-
-        public override void Update(ICursorHandler cursor)
+        else if (cursor.Cancel.Hit)
         {
-            var currentTile = cursor.CurrentFootprint;
-            if (!currentTile.IsValid(Game.State.Level)) return;
-
-            if (cursor.Click.Hit)
-            {
-                foreach (var tile in currentTile.OccupiedTiles.Where(
-                    t => Game.State.GeometryLayer[t].Type == TileType.Wall))
-                {
-                    Game.Request(MineTile.Request(Game, faction, tile));
-                }
-            }
-            else if (cursor.Cancel.Hit)
-            {
-                Game.PlayerInput.ResetInteractionHandler();
-            }
+            Game.PlayerInput.ResetInteractionHandler();
         }
     }
 }

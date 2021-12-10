@@ -1,10 +1,9 @@
-﻿namespace Bearded.TD.Commands
+﻿namespace Bearded.TD.Commands;
+
+class ServerDispatcher<TObject> : BaseServerDispatcher<TObject>
 {
-    class ServerDispatcher<TObject> : BaseServerDispatcher<TObject>
+    public ServerDispatcher(ICommandDispatcher<TObject> commandDispatcher)
+        : base(commandDispatcher)
     {
-        public ServerDispatcher(ICommandDispatcher<TObject> commandDispatcher)
-            : base(commandDispatcher)
-        {
-        }
     }
 }

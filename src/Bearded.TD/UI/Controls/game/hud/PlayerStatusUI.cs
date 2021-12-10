@@ -5,71 +5,70 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class PlayerStatusUI
 {
-    sealed class PlayerStatusUI
+    private GameInstance game;
+
+    private readonly List<PlayerModel> players = new List<PlayerModel>();
+
+    public ReadOnlyCollection<PlayerModel> Players { get; }
+
+    public event VoidEventHandler? PlayersChanged;
+
+    public PlayerStatusUI()
     {
-        private GameInstance game;
+        Players = players.AsReadOnly();
+    }
 
-        private readonly List<PlayerModel> players = new List<PlayerModel>();
+    public void Initialize(GameInstance game)
+    {
+        this.game = game;
+    }
 
-        public ReadOnlyCollection<PlayerModel> Players { get; }
-
-        public event VoidEventHandler? PlayersChanged;
-
-        public PlayerStatusUI()
+    public void Update()
+    {
+        if (players.Count != game.SortedPlayers.Count)
         {
-            Players = players.AsReadOnly();
+            resetPlayerList();
+            return;
         }
 
-        public void Initialize(GameInstance game)
+        for (var i = 0; i < players.Count; i++)
         {
-            this.game = game;
-        }
-
-        public void Update()
-        {
-            if (players.Count != game.SortedPlayers.Count)
+            if (players[i].Id != game.SortedPlayers[i].Id)
             {
                 resetPlayerList();
-                return;
+                break;
             }
-
-            for (var i = 0; i < players.Count; i++)
-            {
-                if (players[i].Id != game.SortedPlayers[i].Id)
-                {
-                    resetPlayerList();
-                    break;
-                }
-                players[i].Ping = game.SortedPlayers[i].LastKnownPing;
-            }
+            players[i].Ping = game.SortedPlayers[i].LastKnownPing;
         }
+    }
 
-        private void resetPlayerList()
+    private void resetPlayerList()
+    {
+        players.Clear();
+        foreach (var player in game.SortedPlayers)
         {
-            players.Clear();
-            foreach (var player in game.SortedPlayers)
-            {
-                players.Add(new PlayerModel(player.Id, player.Name, player.Color, player.LastKnownPing));
-            }
-            PlayersChanged?.Invoke();
+            players.Add(new PlayerModel(player.Id, player.Name, player.Color, player.LastKnownPing));
         }
+        PlayersChanged?.Invoke();
+    }
 
-        public class PlayerModel
+    public class PlayerModel
+    {
+        public Id<Player> Id { get; }
+        public string Name { get; }
+        public Color Color { get; }
+        public int Ping { get; set; }
+
+        public PlayerModel(Id<Player> id, string name, Color color, int ping)
         {
-            public Id<Player> Id { get; }
-            public string Name { get; }
-            public Color Color { get; }
-            public int Ping { get; set; }
-
-            public PlayerModel(Id<Player> id, string name, Color color, int ping)
-            {
-                Name = name;
-                Color = color;
-                Id = id;
-                Ping = ping;
-            }
+            Name = name;
+            Color = color;
+            Id = id;
+            Ping = ping;
         }
     }
 }

@@ -2,35 +2,34 @@
 using Bearded.Utilities;
 using Lidgren.Network;
 
-namespace Bearded.TD.Game.Players
+namespace Bearded.TD.Game.Players;
+
+struct LobbyPlayerInfo
 {
-    struct LobbyPlayerInfo
+    private Id<Player> id;
+
+    public Id<Player> Id => id;
+
+    public LobbyPlayerInfo(Id<Player> id)
     {
-        private Id<Player> id;
+        this.id = id;
+    }
 
-        public Id<Player> Id => id;
+    public void Serialize(INetBufferStream buffer)
+    {
+        buffer.Serialize(ref id);
+    }
 
-        public LobbyPlayerInfo(Id<Player> id)
-        {
-            this.id = id;
-        }
+    public static LobbyPlayerInfo ForPlayer(Player player)
+    {
+        return new LobbyPlayerInfo(player.Id);
+    }
 
-        public void Serialize(INetBufferStream buffer)
-        {
-            buffer.Serialize(ref id);
-        }
-
-        public static LobbyPlayerInfo ForPlayer(Player player)
-        {
-            return new LobbyPlayerInfo(player.Id);
-        }
-
-        public static LobbyPlayerInfo FromBuffer(NetBuffer buffer)
-        {
-            var playerInfo = new LobbyPlayerInfo();
-            var reader = new NetBufferReader(buffer);
-            playerInfo.Serialize(reader);
-            return playerInfo;
-        }
+    public static LobbyPlayerInfo FromBuffer(NetBuffer buffer)
+    {
+        var playerInfo = new LobbyPlayerInfo();
+        var reader = new NetBufferReader(buffer);
+        playerInfo.Serialize(reader);
+        return playerInfo;
     }
 }

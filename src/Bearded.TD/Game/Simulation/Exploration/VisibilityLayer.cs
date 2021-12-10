@@ -3,55 +3,54 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Simulation.Exploration
+namespace Bearded.TD.Game.Simulation.Exploration;
+
+sealed class VisibilityLayer
 {
-    sealed class VisibilityLayer
+    private readonly GlobalGameEvents events;
+    private readonly ZoneLayer zoneLayer;
+    private readonly HashSet<Zone> revealedZones = new();
+
+    public VisibilityLayer(GlobalGameEvents events, ZoneLayer zoneLayer)
     {
-        private readonly GlobalGameEvents events;
-        private readonly ZoneLayer zoneLayer;
-        private readonly HashSet<Zone> revealedZones = new();
+        this.events = events;
+        this.zoneLayer = zoneLayer;
+    }
 
-        public VisibilityLayer(GlobalGameEvents events, ZoneLayer zoneLayer)
+    public void RevealAllZones()
+    {
+        foreach (var zone in zoneLayer.AllZones)
         {
-            this.events = events;
-            this.zoneLayer = zoneLayer;
+            RevealZone(zone);
+        }
+    }
+
+    public bool RevealZone(Zone zone)
+    {
+        if (!revealedZones.Add(zone))
+        {
+            return false;
         }
 
-        public void RevealAllZones()
+        events.Send(new ZoneRevealed(zone));
+        return true;
+
+    }
+
+    public ZoneVisibility this[Zone zone] =>
+        revealedZones.Contains(zone) ? ZoneVisibility.Revealed : ZoneVisibility.Invisible;
+
+    public TileVisibility this[Tile tile]
+    {
+        get
         {
-            foreach (var zone in zoneLayer.AllZones)
+            var zone = zoneLayer.ZoneForTile(tile);
+            if (zone == null)
             {
-                RevealZone(zone);
-            }
-        }
-
-        public bool RevealZone(Zone zone)
-        {
-            if (!revealedZones.Add(zone))
-            {
-                return false;
+                return TileVisibility.Revealed;
             }
 
-            events.Send(new ZoneRevealed(zone));
-            return true;
-
-        }
-
-        public ZoneVisibility this[Zone zone] =>
-            revealedZones.Contains(zone) ? ZoneVisibility.Revealed : ZoneVisibility.Invisible;
-
-        public TileVisibility this[Tile tile]
-        {
-            get
-            {
-                var zone = zoneLayer.ZoneForTile(tile);
-                if (zone == null)
-                {
-                    return TileVisibility.Revealed;
-                }
-
-                return revealedZones.Contains(zone) ? TileVisibility.Visible : TileVisibility.Invisible;
-            }
+            return revealedZones.Contains(zone) ? TileVisibility.Visible : TileVisibility.Invisible;
         }
     }
 }

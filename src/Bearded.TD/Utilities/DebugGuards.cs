@@ -1,17 +1,16 @@
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities;
+
+static class DebugGuards
 {
-    static class DebugGuards
-    {
-        public static bool IsInDebugMode => isInDebugMode();
-        public static bool IsInReleaseMode => !isInDebugMode();
+    public static bool IsInDebugMode => isInDebugMode();
+    public static bool IsInReleaseMode => !isInDebugMode();
         
-        private static bool isInDebugMode()
-        {
+    private static bool isInDebugMode()
+    {
 #if DEBUG
-            return true;
+        return true;
 #else
             return false;
 #endif
-        }
     }
 }

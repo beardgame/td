@@ -9,71 +9,70 @@ using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
-namespace Bearded.TD.Content.Models
+namespace Bearded.TD.Content.Models;
+
+sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
 {
-    sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
+    private ComponentOwnerBlueprint? blueprint;
+    public ModAwareId Id { get; }
+
+    public ComponentOwnerBlueprintProxy(ModAwareId id)
     {
-        private ComponentOwnerBlueprint? blueprint;
-        public ModAwareId Id { get; }
-
-        public ComponentOwnerBlueprintProxy(ModAwareId id)
-        {
-            Id = id;
-        }
-
-        public void InjectActualBlueprint(ComponentOwnerBlueprint actualBlueprint)
-        {
-            if (blueprint != null)
-                throw new InvalidOperationException("Cannot inject blueprint more than once.");
-            if (actualBlueprint.Id != Id)
-                throw new InvalidOperationException("Id of injected blueprint must match.");
-
-            blueprint = actualBlueprint;
-        }
-
-        IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint!.GetComponents<T>();
-        bool IComponentOwnerBlueprint.CanApplyUpgradeEffect<T>(IUpgradeEffect effect) => blueprint!.CanApplyUpgradeEffect<T>(effect);
+        Id = id;
     }
 
-    sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
+    public void InjectActualBlueprint(ComponentOwnerBlueprint actualBlueprint)
     {
-        public ModAwareId Id { get; }
-        private readonly ImmutableArray<IComponent> componentParameters;
+        if (blueprint != null)
+            throw new InvalidOperationException("Cannot inject blueprint more than once.");
+        if (actualBlueprint.Id != Id)
+            throw new InvalidOperationException("Id of injected blueprint must match.");
 
-        private readonly Dictionary<Type, object> componentFactoriesByOwnerType = new Dictionary<Type, object>();
+        blueprint = actualBlueprint;
+    }
 
-        public IEnumerable<IComponent<T>> GetComponents<T>()
-        {
-            return getFactories<T>().Select(f => f.Create());
-        }
+    IEnumerable<IComponent<T>> IComponentOwnerBlueprint.GetComponents<T>() => blueprint!.GetComponents<T>();
+    bool IComponentOwnerBlueprint.CanApplyUpgradeEffect<T>(IUpgradeEffect effect) => blueprint!.CanApplyUpgradeEffect<T>(effect);
+}
 
-        private IReadOnlyCollection<IComponentFactory<T>> getFactories<T>()
-        {
-            if (componentFactoriesByOwnerType.TryGetValue(typeof(T), out var factories))
-                return (IReadOnlyCollection<IComponentFactory<T>>) factories;
+sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
+{
+    public ModAwareId Id { get; }
+    private readonly ImmutableArray<IComponent> componentParameters;
 
-            return createFactories<T>();
-        }
+    private readonly Dictionary<Type, object> componentFactoriesByOwnerType = new Dictionary<Type, object>();
 
-        private IReadOnlyCollection<IComponentFactory<T>> createFactories<T>()
-        {
-            var factories = componentParameters.Select(ComponentFactories.CreateComponentFactory<T>).NotNull()
-                .ToList().AsReadOnly();
+    public IEnumerable<IComponent<T>> GetComponents<T>()
+    {
+        return getFactories<T>().Select(f => f.Create());
+    }
 
-            componentFactoriesByOwnerType.Add(typeof(T), factories);
+    private IReadOnlyCollection<IComponentFactory<T>> getFactories<T>()
+    {
+        if (componentFactoriesByOwnerType.TryGetValue(typeof(T), out var factories))
+            return (IReadOnlyCollection<IComponentFactory<T>>) factories;
 
-            return factories;
-        }
+        return createFactories<T>();
+    }
 
-        public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponent> components)
-        {
-            Id = id;
-            componentParameters = components.ToImmutableArray();
-        }
+    private IReadOnlyCollection<IComponentFactory<T>> createFactories<T>()
+    {
+        var factories = componentParameters.Select(ComponentFactories.CreateComponentFactory<T>).NotNull()
+            .ToList().AsReadOnly();
 
-        public bool CanApplyUpgradeEffect<T>(IUpgradeEffect effect)
-        {
-            return getFactories<T>().Any(f => f.CanApplyUpgradeEffect(effect));
-        }
+        componentFactoriesByOwnerType.Add(typeof(T), factories);
+
+        return factories;
+    }
+
+    public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponent> components)
+    {
+        Id = id;
+        componentParameters = components.ToImmutableArray();
+    }
+
+    public bool CanApplyUpgradeEffect<T>(IUpgradeEffect effect)
+    {
+        return getFactories<T>().Any(f => f.CanApplyUpgradeEffect(effect));
     }
 }

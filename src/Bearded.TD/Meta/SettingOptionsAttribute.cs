@@ -1,14 +1,13 @@
 using System;
 
-namespace Bearded.TD.Meta
-{
-    class SettingOptionsAttribute : Attribute
-    {
-        public object[] Options { get; }
+namespace Bearded.TD.Meta;
 
-        public SettingOptionsAttribute(params object[] options)
-        {
-            Options = options;
-        }
+class SettingOptionsAttribute : Attribute
+{
+    public object[] Options { get; }
+
+    public SettingOptionsAttribute(params object[] options)
+    {
+        Options = options;
     }
 }

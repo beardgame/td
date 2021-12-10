@@ -7,56 +7,55 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Workers
+namespace Bearded.TD.Game.Simulation.Workers;
+
+sealed class MiningTaskPlaceholder : GameObject
 {
-    sealed class MiningTaskPlaceholder : GameObject
+    private readonly Faction faction;
+    private readonly Tile tile;
+    private readonly Id<IWorkerTask> taskId;
+    private MiningTask task = null!;
+
+    public MiningTaskPlaceholder(Faction faction, Tile tile, Id<IWorkerTask> taskId)
     {
-        private readonly Faction faction;
-        private readonly Tile tile;
-        private readonly Id<IWorkerTask> taskId;
-        private MiningTask task = null!;
+        this.faction = faction;
+        this.tile = tile;
 
-        public MiningTaskPlaceholder(Faction faction, Tile tile, Id<IWorkerTask> taskId)
+        this.taskId = taskId;
+    }
+
+    protected override void OnAdded()
+    {
+        base.OnAdded();
+
+        task = new MiningTask(taskId, this, tile, Game.GeometryLayer);
+        if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
         {
-            this.faction = faction;
-            this.tile = tile;
-
-            this.taskId = taskId;
+            throw new NotSupportedException("Cannot mine tile without workers.");
         }
+        workers.RegisterTask(task);
+        Game.MiningLayer.MarkTileForMining(tile);
+    }
 
-        protected override void OnAdded()
-        {
-            base.OnAdded();
+    protected override void OnDelete()
+    {
+        Game.MiningLayer.CancelTileForMining(tile);
 
-            task = new MiningTask(taskId, this, tile, Game.GeometryLayer);
-            if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
-            {
-                throw new NotSupportedException("Cannot mine tile without workers.");
-            }
-            workers.RegisterTask(task);
-            Game.MiningLayer.MarkTileForMining(tile);
-        }
+        base.OnDelete();
+    }
 
-        protected override void OnDelete()
-        {
-            Game.MiningLayer.CancelTileForMining(tile);
+    public override void Update(TimeSpan elapsedTime)
+    {
+        if (!task.Finished) return;
 
-            base.OnDelete();
-        }
+        Game.Meta.Events.Send(new TileMined(faction, tile));
+        Delete();
+    }
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            if (!task.Finished) return;
-
-            Game.Meta.Events.Send(new TileMined(faction, tile));
-            Delete();
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-            var color = .5f * Color.MediumVioletRed;
-            drawers.ConsoleBackground.FillCircle(
-                Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, color, 6);
-        }
+    public override void Draw(CoreDrawers drawers)
+    {
+        var color = .5f * Color.MediumVioletRed;
+        drawers.ConsoleBackground.FillCircle(
+            Level.GetPosition(tile).NumericValue, Constants.Game.World.HexagonSide, color, 6);
     }
 }

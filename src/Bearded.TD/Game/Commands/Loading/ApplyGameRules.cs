@@ -5,55 +5,54 @@ using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Loading
+namespace Bearded.TD.Game.Commands.Loading;
+
+static class ApplyGameRules
 {
-    static class ApplyGameRules
+    public static ISerializableCommand<GameInstance> Command(GameInstance game, IGameModeBlueprint gameMode)
+        => new Implementation(game, gameMode);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game, IGameModeBlueprint gameMode)
-            => new Implementation(game, gameMode);
+        private readonly GameInstance game;
+        private readonly IGameModeBlueprint gameMode;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(GameInstance game, IGameModeBlueprint gameMode)
         {
-            private readonly GameInstance game;
-            private readonly IGameModeBlueprint gameMode;
-
-            public Implementation(GameInstance game, IGameModeBlueprint gameMode)
-            {
-                this.game = game;
-                this.gameMode = gameMode;
-            }
-
-            public void Execute()
-            {
-                var context = new GameRuleContext(game.State, game.Meta.Events, game.SortedPlayers, game.Blueprints);
-                foreach (var ruleFactory in gameMode.Rules)
-                {
-                    ruleFactory.Create().Execute(context);
-                }
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(gameMode);
+            this.game = game;
+            this.gameMode = gameMode;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private ModAwareId gameModeId;
-
-            [UsedImplicitly]
-            public Serializer() {}
-
-            public Serializer(IGameModeBlueprint gameModeBlueprint)
+            var context = new GameRuleContext(game.State, game.Meta.Events, game.SortedPlayers, game.Blueprints);
+            foreach (var ruleFactory in gameMode.Rules)
             {
-                gameModeId = gameModeBlueprint.Id;
+                ruleFactory.Create().Execute(context);
             }
+        }
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-                new Implementation(game, game.Blueprints.GameModes[gameModeId]);
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(gameMode);
+    }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref gameModeId);
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private ModAwareId gameModeId;
+
+        [UsedImplicitly]
+        public Serializer() {}
+
+        public Serializer(IGameModeBlueprint gameModeBlueprint)
+        {
+            gameModeId = gameModeBlueprint.Id;
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
+            new Implementation(game, game.Blueprints.GameModes[gameModeId]);
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref gameModeId);
         }
     }
 }

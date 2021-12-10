@@ -1,17 +1,16 @@
 
 using System.Drawing;
 
-namespace Bearded.TD.UI.Layers
+namespace Bearded.TD.UI.Layers;
+
+struct RenderOptions
 {
-    struct RenderOptions
+    public Rectangle? ClipDrawRegion { get; }
+
+    public RenderOptions(Rectangle? clipDrawRegion = null)
     {
-        public Rectangle? ClipDrawRegion { get; }
+        ClipDrawRegion = clipDrawRegion;
+    }
 
-        public RenderOptions(Rectangle? clipDrawRegion = null)
-        {
-            ClipDrawRegion = clipDrawRegion;
-        }
-
-        public static RenderOptions Default => new RenderOptions();
-     }
+    public static RenderOptions Default => new RenderOptions();
 }

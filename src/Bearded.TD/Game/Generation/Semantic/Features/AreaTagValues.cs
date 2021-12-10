@@ -2,34 +2,33 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Features
+namespace Bearded.TD.Game.Generation.Semantic.Features;
+
+sealed class AreaTagValues
 {
-    sealed class AreaTagValues
+    private readonly IArea tiles;
+    private readonly Dictionary<Tile, double> values = new();
+
+    public AreaTagValues(IArea tiles)
     {
-        private readonly IArea tiles;
-        private readonly Dictionary<Tile, double> values = new();
+        this.tiles = tiles;
+    }
 
-        public AreaTagValues(IArea tiles)
+    public double this[Tile tile]
+    {
+        set
         {
-            this.tiles = tiles;
+            if (!tiles.Contains(tile))
+                throw new ArgumentOutOfRangeException(nameof(tile), "Cannot set unknown tile.");
+
+            values[tile] = value;
         }
-
-        public double this[Tile tile]
+        get
         {
-            set
-            {
-                if (!tiles.Contains(tile))
-                    throw new ArgumentOutOfRangeException(nameof(tile), "Cannot set unknown tile.");
+            if (!tiles.Contains(tile))
+                throw new ArgumentOutOfRangeException(nameof(tile), "Cannot get unknown tile.");
 
-                values[tile] = value;
-            }
-            get
-            {
-                if (!tiles.Contains(tile))
-                    throw new ArgumentOutOfRangeException(nameof(tile), "Cannot get unknown tile.");
-
-                return values.TryGetValue(tile, out var value) ? value : 0;
-            }
+            return values.TryGetValue(tile, out var value) ? value : 0;
         }
     }
 }

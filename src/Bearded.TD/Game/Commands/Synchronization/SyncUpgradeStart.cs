@@ -10,57 +10,56 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Synchronization
+namespace Bearded.TD.Game.Commands.Synchronization;
+
+static class SyncUpgradeStart
 {
-    static class SyncUpgradeStart
+    public static ISerializableCommand<GameInstance> Command(ComponentGameObject building, ModAwareId upgradeId) =>
+        new Implementation(building, upgradeId);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(ComponentGameObject building, ModAwareId upgradeId) =>
-            new Implementation(building, upgradeId);
+        private readonly ComponentGameObject building;
+        private readonly ModAwareId upgradeId;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(ComponentGameObject building, ModAwareId upgradeId)
         {
-            private readonly ComponentGameObject building;
-            private readonly ModAwareId upgradeId;
-
-            public Implementation(ComponentGameObject building, ModAwareId upgradeId)
-            {
-                this.building = building;
-                this.upgradeId = upgradeId;
-            }
-
-            public void Execute()
-            {
-                var upgradeSyncer = building.GetComponents<IBuildingUpgradeSyncer>().SingleOrDefault()
-                    ?? throw new InvalidOperationException(
-                        "Cannot sync building upgrade start on a building without building upgrade syncer.");
-                upgradeSyncer.SyncStartUpgrade(upgradeId);
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building, upgradeId);
+            this.building = building;
+            this.upgradeId = upgradeId;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private Id<ComponentGameObject> building;
-            private ModAwareId upgradeId;
+            var upgradeSyncer = building.GetComponents<IBuildingUpgradeSyncer>().SingleOrDefault()
+                ?? throw new InvalidOperationException(
+                    "Cannot sync building upgrade start on a building without building upgrade syncer.");
+            upgradeSyncer.SyncStartUpgrade(upgradeId);
+        }
 
-            [UsedImplicitly]
-            public Serializer() { }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building, upgradeId);
+    }
 
-            public Serializer(ComponentGameObject building, ModAwareId upgradeId)
-            {
-                this.building = building.FindId();
-                this.upgradeId = upgradeId;
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<ComponentGameObject> building;
+        private ModAwareId upgradeId;
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-                new Implementation(game.State.Find(building), upgradeId);
+        [UsedImplicitly]
+        public Serializer() { }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref building);
-                stream.Serialize(ref upgradeId);
-            }
+        public Serializer(ComponentGameObject building, ModAwareId upgradeId)
+        {
+            this.building = building.FindId();
+            this.upgradeId = upgradeId;
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
+            new Implementation(game.State.Find(building), upgradeId);
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref building);
+            stream.Serialize(ref upgradeId);
         }
     }
 }

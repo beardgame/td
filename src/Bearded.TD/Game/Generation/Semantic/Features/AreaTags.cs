@@ -1,30 +1,29 @@
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Features
+namespace Bearded.TD.Game.Generation.Semantic.Features;
+
+sealed class AreaTags
 {
-    sealed class AreaTags
+    private readonly IArea area;
+    private readonly Dictionary<string, AreaTagValues> layers = new();
+
+    public AreaTags(IArea area)
     {
-        private readonly IArea area;
-        private readonly Dictionary<string, AreaTagValues> layers = new();
+        this.area = area;
+    }
 
-        public AreaTags(IArea area)
+    public AreaTagValues this[string name]
+    {
+        get
         {
-            this.area = area;
-        }
-
-        public AreaTagValues this[string name]
-        {
-            get
+            if (!layers.TryGetValue(name, out var layer))
             {
-                if (!layers.TryGetValue(name, out var layer))
-                {
-                    layer = new AreaTagValues(area);
-                    layers.Add(name, layer);
-                }
-
-                return layer;
+                layer = new AreaTagValues(area);
+                layers.Add(name, layer);
             }
+
+            return layer;
         }
     }
 }

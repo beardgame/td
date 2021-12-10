@@ -1,11 +1,10 @@
-namespace Bearded.TD.Game.Simulation.Reports
+namespace Bearded.TD.Game.Simulation.Reports;
+
+static partial class ReportAggregator
 {
-    static partial class ReportAggregator
+    public interface IReportConsumer
     {
-        public interface IReportConsumer
-        {
-            void OnReportAdded(IReport report);
-            void OnReportRemoved(IReport report);
-        }
+        void OnReportAdded(IReport report);
+        void OnReportRemoved(IReport report);
     }
 }

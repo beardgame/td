@@ -1,9 +1,8 @@
 using Bearded.TD.Game.Simulation.Reports;
 
-namespace Bearded.TD.Game.Simulation.Upgrades
+namespace Bearded.TD.Game.Simulation.Upgrades;
+
+interface IUpgradeReport : IReport
 {
-    interface IUpgradeReport : IReport
-    {
-        IUpgradeReportInstance CreateInstance(GameInstance game);
-    }
+    IUpgradeReportInstance CreateInstance(GameInstance game);
 }

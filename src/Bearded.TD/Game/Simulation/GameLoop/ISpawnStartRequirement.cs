@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.GameLoop
+namespace Bearded.TD.Game.Simulation.GameLoop;
+
+interface ISpawnStartRequirement
 {
-    interface ISpawnStartRequirement
-    {
-        public bool Satisfied { get; }
-    }
+    public bool Satisfied { get; }
 }

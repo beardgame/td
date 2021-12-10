@@ -1,8 +1,7 @@
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game;
+
+public enum WorkerDistributionMethod : byte
 {
-    public enum WorkerDistributionMethod : byte
-    {
-        RoundRobin,
-        Neutral
-    }
+    RoundRobin,
+    Neutral
 }

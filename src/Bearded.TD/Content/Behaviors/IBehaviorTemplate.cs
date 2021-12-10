@@ -1,8 +1,7 @@
-namespace Bearded.TD.Content.Behaviors
+namespace Bearded.TD.Content.Behaviors;
+
+interface IBehaviorTemplate
 {
-    interface IBehaviorTemplate
-    {
-        string? Id { get; }
-        object? Parameters { get; }
-    }
+    string? Id { get; }
+    object? Parameters { get; }
 }

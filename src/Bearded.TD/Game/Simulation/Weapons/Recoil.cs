@@ -4,39 +4,38 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+interface IRecoilParameters : IParametersTemplate<IRecoilParameters>
 {
-    interface IRecoilParameters : IParametersTemplate<IRecoilParameters>
+    AngularVelocity Impulse { get; }
+}
+
+[Component("recoil")]
+sealed class Recoil<T> : Component<T, IRecoilParameters>, IListener<ShotProjectile>
+    where T : IComponentOwner
+{
+    private IAngularAccelerator? accelerator;
+
+    public Recoil(IRecoilParameters parameters) : base(parameters)
     {
-        AngularVelocity Impulse { get; }
     }
 
-    [Component("recoil")]
-    sealed class Recoil<T> : Component<T, IRecoilParameters>, IListener<ShotProjectile>
-        where T : IComponentOwner
+    protected override void OnAdded()
     {
-        private IAngularAccelerator? accelerator;
+        ComponentDependencies.Depend<IAngularAccelerator>(Owner, Events, a => accelerator = a);
 
-        public Recoil(IRecoilParameters parameters) : base(parameters)
-        {
-        }
+        Events.Subscribe(this);
+    }
 
-        protected override void OnAdded()
-        {
-            ComponentDependencies.Depend<IAngularAccelerator>(Owner, Events, a => accelerator = a);
+    public void HandleEvent(ShotProjectile e)
+    {
+        accelerator?.Impact(
+            Parameters.Impulse * StaticRandom.Float(0.5f, 1) * StaticRandom.Sign()
+        );
+    }
 
-            Events.Subscribe(this);
-        }
-
-        public void HandleEvent(ShotProjectile e)
-        {
-            accelerator?.Impact(
-                Parameters.Impulse * StaticRandom.Float(0.5f, 1) * StaticRandom.Sign()
-                );
-        }
-
-        public override void Update(TimeSpan elapsedTime)
-        {
-        }
+    public override void Update(TimeSpan elapsedTime)
+    {
     }
 }

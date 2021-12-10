@@ -1,10 +1,9 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.UI
+namespace Bearded.TD.UI;
+
+static class Formatters
 {
-    static class Formatters
-    {
-        public static string ToDisplayString(this TimeSpan timeSpan) =>
-            System.TimeSpan.FromSeconds(timeSpan.NumericValue).ToString("m\\:ss");
-    }
+    public static string ToDisplayString(this TimeSpan timeSpan) =>
+        System.TimeSpan.FromSeconds(timeSpan.NumericValue).ToString("m\\:ss");
 }

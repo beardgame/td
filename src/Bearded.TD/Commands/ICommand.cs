@@ -1,7 +1,6 @@
-﻿namespace Bearded.TD.Commands
+﻿namespace Bearded.TD.Commands;
+
+interface ICommand
 {
-    interface ICommand
-    {
-        void Execute();
-    }
+    void Execute();
 }

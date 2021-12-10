@@ -6,60 +6,58 @@ using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.LevelGeneration
+namespace Bearded.TD.Game.Commands.LevelGeneration;
+
+static class CreateSpawnLocation
 {
-    static class CreateSpawnLocation
+    public static ISerializableCommand<GameInstance> Command(
+        GameInstance game, Id<SpawnLocation> id, Tile tile)
+        => new Implementation(game, id, tile);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(
-                GameInstance game, Id<SpawnLocation> id, Tile tile)
-            => new Implementation(game, id, tile);
+        private readonly GameInstance game;
+        private readonly Id<SpawnLocation> id;
+        private readonly Tile tile;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(GameInstance game, Id<SpawnLocation> id, Tile tile)
         {
-            private readonly GameInstance game;
-            private readonly Id<SpawnLocation> id;
-            private readonly Tile tile;
-
-            public Implementation(GameInstance game, Id<SpawnLocation> id, Tile tile)
-            {
-                this.game = game;
-                this.id = id;
-                this.tile = tile;
-            }
-
-            public void Execute()
-            {
-                game.State.Add(new SpawnLocation(id, tile));
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(id, tile);
+            this.game = game;
+            this.id = id;
+            this.tile = tile;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private Id<SpawnLocation> id;
-            private int tileX;
-            private int tileY;
+            game.State.Add(new SpawnLocation(id, tile));
+        }
 
-            [UsedImplicitly]
-            public Serializer() { }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(id, tile);
+    }
 
-            public Serializer(Id<SpawnLocation> id, Tile tile)
-            {
-                this.id = id;
-                (tileX, tileY) = tile;
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<SpawnLocation> id;
+        private int tileX;
+        private int tileY;
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game, id, new Tile(tileX, tileY));
+        [UsedImplicitly]
+        public Serializer() { }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref id);
-                stream.Serialize(ref tileX);
-                stream.Serialize(ref tileY);
-            }
+        public Serializer(Id<SpawnLocation> id, Tile tile)
+        {
+            this.id = id;
+            (tileX, tileY) = tile;
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(game, id, new Tile(tileX, tileY));
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref id);
+            stream.Serialize(ref tileX);
+            stream.Serialize(ref tileY);
         }
     }
 }
-

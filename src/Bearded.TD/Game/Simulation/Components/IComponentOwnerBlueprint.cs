@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Upgrades;
 
-namespace Bearded.TD.Game.Simulation.Components
-{
-    interface IComponentOwnerBlueprint : IBlueprint
-    {
-        IEnumerable<IComponent<TOwner>> GetComponents<TOwner>();
+namespace Bearded.TD.Game.Simulation.Components;
 
-        bool CanApplyUpgradeEffect<TOwner>(IUpgradeEffect effect);
-    }
+interface IComponentOwnerBlueprint : IBlueprint
+{
+    IEnumerable<IComponent<TOwner>> GetComponents<TOwner>();
+
+    bool CanApplyUpgradeEffect<TOwner>(IUpgradeEffect effect);
 }

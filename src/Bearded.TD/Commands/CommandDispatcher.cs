@@ -1,56 +1,55 @@
 ﻿using Bearded.TD.Networking;
 
-namespace Bearded.TD.Commands
+namespace Bearded.TD.Commands;
+
+interface ICommandDispatcher<TObject>
 {
-    interface ICommandDispatcher<TObject>
+    void Dispatch(ISerializableCommand<TObject>? command);
+}
+
+sealed class ClientCommandDispatcher<TObject> : ICommandDispatcher<TObject>
+{
+    private readonly ICommandExecutor executor;
+
+    public ClientCommandDispatcher(ICommandExecutor executor)
     {
-        void Dispatch(ISerializableCommand<TObject>? command);
+        this.executor = executor;
     }
 
-    sealed class ClientCommandDispatcher<TObject> : ICommandDispatcher<TObject>
+    public void Dispatch(ISerializableCommand<TObject>? command)
     {
-        private readonly ICommandExecutor executor;
+        executor.Execute(command!);
+    }
+}
 
-        public ClientCommandDispatcher(ICommandExecutor executor)
-        {
-            this.executor = executor;
-        }
+sealed class ServerCommandDispatcher<TActor, TObject> : ICommandDispatcher<TObject>
+{
+    private readonly ICommandExecutor executor;
+    private readonly ServerNetworkInterface network;
 
-        public void Dispatch(ISerializableCommand<TObject>? command)
-        {
-            executor.Execute(command!);
-        }
+    public ServerCommandDispatcher(ICommandExecutor executor, ServerNetworkInterface network)
+    {
+        this.executor = executor;
+        this.network = network;
     }
 
-    sealed class ServerCommandDispatcher<TActor, TObject> : ICommandDispatcher<TObject>
+    public void Dispatch(ISerializableCommand<TObject>? command)
     {
-        private readonly ICommandExecutor executor;
-        private readonly ServerNetworkInterface network;
+        if (command == null)
+            return;
 
-        public ServerCommandDispatcher(ICommandExecutor executor, ServerNetworkInterface network)
-        {
-            this.executor = executor;
-            this.network = network;
-        }
+        sendToAllPlayers(command);
 
-        public void Dispatch(ISerializableCommand<TObject>? command)
-        {
-            if (command == null)
-                return;
+        executor.Execute(command);
+    }
 
-            sendToAllPlayers(command);
+    private void sendToAllPlayers(ISerializableCommand<TObject> command)
+    {
+        if (network.PeerCount == 0)
+            return;
 
-            executor.Execute(command);
-        }
-
-        private void sendToAllPlayers(ISerializableCommand<TObject> command)
-        {
-            if (network.PeerCount == 0)
-                return;
-
-            var message = network.CreateMessage();
-            CommandToNetworkMessageWriter.WriteCommandToMessage<TActor, TObject>(command, message);
-            network.SendMessageToAll(message, NetworkChannel.Chat);
-        }
+        var message = network.CreateMessage();
+        CommandToNetworkMessageWriter.WriteCommandToMessage<TActor, TObject>(command, message);
+        network.SendMessageToAll(message, NetworkChannel.Chat);
     }
 }

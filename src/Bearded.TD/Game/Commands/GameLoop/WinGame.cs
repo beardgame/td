@@ -4,39 +4,38 @@ using Bearded.TD.Game.Simulation;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.GameLoop
+namespace Bearded.TD.Game.Commands.GameLoop;
+
+static class WinGame
 {
-    static class WinGame
+    public static ISerializableCommand<GameInstance> Command(GameState game)
+        => new Implementation(game);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(GameState game)
-            => new Implementation(game);
+        private readonly GameState game;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(GameState game)
         {
-            private readonly GameState game;
-
-            public Implementation(GameState game)
-            {
-                this.game = game;
-            }
-
-            public void Execute()
-            {
-                game.Meta.DoGameVictory();
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
+            this.game = game;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            [UsedImplicitly]
-            public Serializer() { }
-
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game.State);
-
-            public void Serialize(INetBufferStream stream) { }
+            game.Meta.DoGameVictory();
         }
+
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
+    }
+
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        [UsedImplicitly]
+        public Serializer() { }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(game.State);
+
+        public void Serialize(INetBufferStream stream) { }
     }
 }

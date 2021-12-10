@@ -10,88 +10,87 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
-{
-    interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
-    {
-        ISpriteBlueprint Sprite { get; }
-        Color Color { get; }
-        Shader? Shader { get; }
-        float Size { get; }
-        Unit Offset { get; }
+namespace Bearded.TD.Game.Simulation.Weapons;
 
-        [Modifiable(0.03)]
-        TimeSpan MinDuration { get; }
+interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
+{
+    ISpriteBlueprint Sprite { get; }
+    Color Color { get; }
+    Shader? Shader { get; }
+    float Size { get; }
+    Unit Offset { get; }
+
+    [Modifiable(0.03)]
+    TimeSpan MinDuration { get; }
+}
+
+[Component("muzzleFlash")]
+sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableComponent, IListener<ShotProjectile>
+    where T : IGameObject, IPositionable, IDirected
+{
+    private readonly struct Flash
+    {
+        public Position3 Position { get; }
+        public Direction2 Direction { get; }
+        public float Size { get; }
+        public Instant DeathTime { get; }
+
+        public Flash(Position3 position, Direction2 direction, float size, Instant deathTime)
+        {
+            Position = position;
+            Direction = direction;
+            Size = size;
+            DeathTime = deathTime;
+        }
     }
 
-    [Component("muzzleFlash")]
-    sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableComponent, IListener<ShotProjectile>
-        where T : IGameObject, IPositionable, IDirected
+    private SpriteDrawInfo<UVColorVertex, Color> sprite;
+
+    private Flash? currentFlash;
+
+    public MuzzleFlash(IMuzzleFlashParameters parameters) : base(parameters)
     {
-        private readonly struct Flash
-        {
-            public Position3 Position { get; }
-            public Direction2 Direction { get; }
-            public float Size { get; }
-            public Instant DeathTime { get; }
+    }
 
-            public Flash(Position3 position, Direction2 direction, float size, Instant deathTime)
-            {
-                Position = position;
-                Direction = direction;
-                Size = size;
-                DeathTime = deathTime;
-            }
-        }
+    protected override void OnAdded()
+    {
+        sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
 
-        private SpriteDrawInfo<UVColorVertex, Color> sprite;
+        Events.Subscribe(this);
+    }
 
-        private Flash? currentFlash;
+    public override void Update(TimeSpan elapsedTime)
+    {
+    }
 
-        public MuzzleFlash(IMuzzleFlashParameters parameters) : base(parameters)
-        {
-        }
+    public void HandleEvent(ShotProjectile e)
+    {
+        currentFlash = new Flash(
+            e.Position + (e.MuzzleDirection * Parameters.Offset).WithZ(),
+            e.MuzzleDirection,
+            Parameters.Size * StaticRandom.Float(0.75f, 1f),
+            Owner.Game.Time + Parameters.MinDuration
+        );
+    }
 
-        protected override void OnAdded()
-        {
-            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
+    public void Draw(IComponentDrawer drawer)
+    {
+        if (currentFlash is not { } flash)
+            return;
 
-            Events.Subscribe(this);
-        }
+        drawer.DrawSprite(
+            sprite,
+            flash.Position.NumericValue,
+            flash.Size,
+            flash.Direction.Radians,
+            Parameters.Color);
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-        }
+        drawer.Core.PointLight.Draw(
+            flash.Position.NumericValue,
+            2 * flash.Size,
+            Parameters.Color.WithAlpha(255) * 0.5f);
 
-        public void HandleEvent(ShotProjectile e)
-        {
-            currentFlash = new Flash(
-                e.Position + (e.MuzzleDirection * Parameters.Offset).WithZ(),
-                e.MuzzleDirection,
-                Parameters.Size * StaticRandom.Float(0.75f, 1f),
-                Owner.Game.Time + Parameters.MinDuration
-            );
-        }
-
-        public void Draw(IComponentDrawer drawer)
-        {
-            if (currentFlash is not { } flash)
-                return;
-
-            drawer.DrawSprite(
-                sprite,
-                flash.Position.NumericValue,
-                flash.Size,
-                flash.Direction.Radians,
-                Parameters.Color);
-
-            drawer.Core.PointLight.Draw(
-                flash.Position.NumericValue,
-                2 * flash.Size,
-                Parameters.Color.WithAlpha(255) * 0.5f);
-
-            if (Owner.Game.Time > flash.DeathTime)
-                currentFlash = null;
-        }
+        if (Owner.Game.Time > flash.DeathTime)
+            currentFlash = null;
     }
 }

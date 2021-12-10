@@ -1,24 +1,23 @@
 using System;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.Game.Simulation.UpdateLoop
+namespace Bearded.TD.Game.Simulation.UpdateLoop;
+
+interface IPauseCondition : IDeletable {}
+
+static class PauseCondition
 {
-    interface IPauseCondition : IDeletable {}
+    public static IPauseCondition UntilTrue(Func<bool> predicate) => new PredicatePauseCondition(predicate);
 
-    static class PauseCondition
+    private sealed class PredicatePauseCondition : IPauseCondition
     {
-        public static IPauseCondition UntilTrue(Func<bool> predicate) => new PredicatePauseCondition(predicate);
+        private readonly Func<bool> predicate;
 
-        private sealed class PredicatePauseCondition : IPauseCondition
+        public bool Deleted => predicate();
+
+        public PredicatePauseCondition(Func<bool> predicate)
         {
-            private readonly Func<bool> predicate;
-
-            public bool Deleted => predicate();
-
-            public PredicatePauseCondition(Func<bool> predicate)
-            {
-                this.predicate = predicate;
-            }
+            this.predicate = predicate;
         }
     }
 }

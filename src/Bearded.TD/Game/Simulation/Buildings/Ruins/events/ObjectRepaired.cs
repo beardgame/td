@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 
-namespace Bearded.TD.Game.Simulation.Buildings.Ruins
-{
-    readonly record struct ObjectRepaired : IComponentEvent;
-}
+namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
+
+readonly record struct ObjectRepaired : IComponentEvent;

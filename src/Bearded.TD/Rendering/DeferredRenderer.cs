@@ -18,326 +18,325 @@ using OpenTK.Mathematics;
 using static Bearded.Graphics.Pipelines.Context.CullMode;
 using static Bearded.TD.Content.Models.SpriteDrawGroup;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Rendering;
+
+using static Graphics.Pipelines.Context.BlendMode;
+using static Graphics.Pipelines.Context.DepthMode;
+using static Pipeline;
+using static Pipeline<DeferredRenderer.RenderState>;
+
+class DeferredRenderer
 {
-    using static Graphics.Pipelines.Context.BlendMode;
-    using static Graphics.Pipelines.Context.DepthMode;
-    using static Pipeline;
-    using static Pipeline<DeferredRenderer.RenderState>;
+    private static readonly SpriteDrawGroup[] worldLowResDrawGroups = { LowResLevelDetail };
+    private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
+    private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
 
-    class DeferredRenderer
+    public class RenderState
     {
-        private static readonly SpriteDrawGroup[] worldLowResDrawGroups = { LowResLevelDetail };
-        private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
-        private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
+        public Vector2i Resolution { get; }
+        public Vector2i LowResResolution { get; }
 
-        public class RenderState
+        public RenderTarget FinalRenderTarget { get; }
+
+        public ContentRenderers Content { get; }
+
+        public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget,
+            ContentRenderers content)
         {
-            public Vector2i Resolution { get; }
-            public Vector2i LowResResolution { get; }
+            Resolution = resolution;
+            LowResResolution = lowResResolution;
+            FinalRenderTarget = finalRenderTarget;
+            Content = content;
+        }
+    }
 
-            public RenderTarget FinalRenderTarget { get; }
+    private readonly CoreShaders shaders;
+    private readonly CoreRenderSettings settings;
+    private readonly Vector2Uniform levelUpSampleUVOffset = new("uvOffset");
+    private readonly Vector2Uniform gBufferResolution = new("resolution");
+    private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
+    private readonly IPipeline<RenderState> pipeline;
 
-            public ContentRenderers Content { get; }
+    private readonly TextureUniform heightmap = new("heightmap", TextureUnit.Texture3, null!);
+    private readonly FloatUniform heightmapRadius = new("heightmapRadius");
+    private readonly FloatUniform heightmapPixelSizeUV = new("heightmapPixelSizeUV");
 
-            public RenderState(Vector2i resolution, Vector2i lowResResolution, RenderTarget finalRenderTarget,
-                ContentRenderers content)
-            {
-                Resolution = resolution;
-                LowResResolution = lowResResolution;
-                FinalRenderTarget = finalRenderTarget;
-                Content = content;
-            }
+    private ViewportSize viewport;
+
+    public IRenderSetting DepthBuffer { get; }
+
+    public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; } = new();
+    public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
+
+    public DeferredRenderer(
+        CoreRenderSettings settings,
+        CoreShaders coreShaders)
+    {
+        this.settings = settings;
+        shaders = coreShaders;
+
+        void upscaleNearest(Texture.Target t)
+        {
+            t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+            t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
         }
 
-        private readonly CoreShaders shaders;
-        private readonly CoreRenderSettings settings;
-        private readonly Vector2Uniform levelUpSampleUVOffset = new("uvOffset");
-        private readonly Vector2Uniform gBufferResolution = new("resolution");
-        private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
-        private readonly IPipeline<RenderState> pipeline;
-
-        private readonly TextureUniform heightmap = new("heightmap", TextureUnit.Texture3, null!);
-        private readonly FloatUniform heightmapRadius = new("heightmapRadius");
-        private readonly FloatUniform heightmapPixelSizeUV = new("heightmapPixelSizeUV");
-
-        private ViewportSize viewport;
-
-        public IRenderSetting DepthBuffer { get; }
-
-        public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; } = new();
-        public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
-
-        public DeferredRenderer(
-            CoreRenderSettings settings,
-            CoreShaders coreShaders)
+        var textures = new
         {
-            this.settings = settings;
-            shaders = coreShaders;
+            DiffuseLowRes =
+                Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "DiffuseLowRes"), // rgba
+            NormalLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "NormalLowRes"), // xyz
+            DepthLowRes =
+                Texture(PixelInternalFormat.R16f, setup: upscaleNearest,
+                    label: "DepthLowRes"), // z (0-1, camera space)
+            DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f, setup: upscaleNearest,
+                label: "DepthMaskLowRes"),
 
-            void upscaleNearest(Texture.Target t)
-            {
-                t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
-                t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-            }
+            Diffuse = Texture(PixelInternalFormat.Rgba, label: "Diffuse"), // rgba
+            Normal = Texture(PixelInternalFormat.Rgba, label: "Normal"), // xyz
+            Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
+            DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
 
-            var textures = new
-            {
-                DiffuseLowRes =
-                    Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "DiffuseLowRes"), // rgba
-                NormalLowRes = Texture(PixelInternalFormat.Rgba, setup: upscaleNearest, label: "NormalLowRes"), // xyz
-                DepthLowRes =
-                    Texture(PixelInternalFormat.R16f, setup: upscaleNearest,
-                        label: "DepthLowRes"), // z (0-1, camera space)
-                DepthMaskLowRes = DepthTexture(PixelInternalFormat.DepthComponent32f, setup: upscaleNearest,
-                    label: "DepthMaskLowRes"),
+            LightAccum = Texture(PixelInternalFormat.Rgb, label: "LightAccum"),
+            Composition = Texture(PixelInternalFormat.Rgba, label: "Composition"),
+        };
 
-                Diffuse = Texture(PixelInternalFormat.Rgba, label: "Diffuse"), // rgba
-                Normal = Texture(PixelInternalFormat.Rgba, label: "Normal"), // xyz
-                Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
-                DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
+        var targets = new
+        {
+            GeometryLowRes = RenderTargetWithDepthAndColors("GeometryLowRes",
+                textures.DepthMaskLowRes, textures.DiffuseLowRes, textures.NormalLowRes, textures.DepthLowRes),
+            Geometry = RenderTargetWithDepthAndColors("Geometry",
+                textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
+            LightAccum = RenderTargetWithDepthAndColors("LightAccum", textures.DepthMask, textures.LightAccum),
+            Composition = RenderTargetWithDepthAndColors("Composition", textures.DepthMask, textures.Composition),
 
-                LightAccum = Texture(PixelInternalFormat.Rgb, label: "LightAccum"),
-                Composition = Texture(PixelInternalFormat.Rgba, label: "Composition"),
-            };
+            UpscaleDiffuse = RenderTargetWithColors("UpscaleDiffuse", textures.Diffuse),
+            UpscaleNormal = RenderTargetWithColors("UpscaleNormal", textures.Normal),
+            UpscaleDepth = RenderTargetWithColors("UpscaleDepth", textures.Depth),
+            UpscaleDepthMask = RenderTargetWithDepthAndColors("UpscaleDepthMask", textures.DepthMask),
+        };
 
-            var targets = new
-            {
-                GeometryLowRes = RenderTargetWithDepthAndColors("GeometryLowRes",
-                    textures.DepthMaskLowRes, textures.DiffuseLowRes, textures.NormalLowRes, textures.DepthLowRes),
-                Geometry = RenderTargetWithDepthAndColors("Geometry",
-                    textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
-                LightAccum = RenderTargetWithDepthAndColors("LightAccum", textures.DepthMask, textures.LightAccum),
-                Composition = RenderTargetWithDepthAndColors("Composition", textures.DepthMask, textures.Composition),
+        DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
 
-                UpscaleDiffuse = RenderTargetWithColors("UpscaleDiffuse", textures.Diffuse),
-                UpscaleNormal = RenderTargetWithColors("UpscaleNormal", textures.Normal),
-                UpscaleDepth = RenderTargetWithColors("UpscaleDepth", textures.Depth),
-                UpscaleDepthMask = RenderTargetWithDepthAndColors("UpscaleDepthMask", textures.DepthMask),
-            };
+        var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
 
-            DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
+        var resizedBuffers = InOrder(
+            Resize(s => s.Resolution,
+                textures.DepthMask, textures.Diffuse, textures.Normal,
+                textures.Depth, textures.LightAccum, textures.Composition),
+            Resize(s => s.LowResResolution,
+                textures.DepthMaskLowRes, textures.DiffuseLowRes,
+                textures.NormalLowRes, textures.DepthLowRes)
+        );
 
-            var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
+        var renderedGBuffers = resizedBuffers.Then(InOrder(
+            WithContext(
+                c => c.SetDebugName("Render level to low-res g-buffers")
+                    .BindRenderTarget(targets.GeometryLowRes)
+                    .SetViewport(s => new Rectangle(0, 0, s.LowResResolution.X, s.LowResResolution.Y))
+                    .SetDepthMode(Default),
+                InOrder(
+                    ClearColor(),
+                    ClearDepth(),
+                    Do(s => s.Content.LevelRenderer.Render()),
+                    Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup))
+                )),
+            // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling
+            // compositing two different pipelines with most steps shared should be easy
+            WithContext(
+                c => c.SetDebugName("Upscale G-buffers"),
+                InOrder(
+                    upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
+                    upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
+                    upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
+                    WithContext(
+                        c => c.SetDepthMode(WriteOnly),
+                        upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask))
+                )),
+            WithContext(
+                c => c.SetDebugName("Draw world draw groups to full-scale g-buffers")
+                    .BindRenderTarget(targets.Geometry)
+                    .SetDepthMode(Default)
+                    .SetBlendMode(Premultiplied),
+                Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
+        ));
 
-            var resizedBuffers = InOrder(
-                Resize(s => s.Resolution,
-                    textures.DepthMask, textures.Diffuse, textures.Normal,
-                    textures.Depth, textures.LightAccum, textures.Composition),
-                Resize(s => s.LowResResolution,
-                    textures.DepthMaskLowRes, textures.DiffuseLowRes,
-                    textures.NormalLowRes, textures.DepthLowRes)
-            );
+        var compositedFrame = renderedGBuffers.Then(InOrder(
+            WithContext(
+                c => c.SetDebugName("Render lights to light accumulation buffer")
+                    .BindRenderTarget(targets.LightAccum)
+                    .SetDepthMode(TestOnly(DepthFunction.Gequal))
+                    .SetBlendMode(Premultiplied)
+                    .SetCullMode(RenderBack),
+                InOrder(
+                    ClearColor(),
+                    Render(pointLightRenderer, spotLightRenderer)
+                )),
+            WithContext(
+                c => c.SetDebugName("Composite final image")
+                    .BindRenderTarget(targets.Composition),
+                InOrder(
+                    WithContext(
+                        c => c.SetDebugName("Composite light buffer and g-buffers"),
+                        PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
+                            // TODO: it should be much easier to quickly pass in a couple of textures
+                            new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
+                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
+                            new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
+                            heightmap, heightmapRadius, heightmapPixelSizeUV,
+                            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
+                            settings.CameraPosition,
+                            hexagonalFallOffDistance
+                        )),
+                    WithContext(
+                        c => c.SetDebugName("Render fluids and other post-light groups")
+                            .SetDepthMode(TestOnly(DepthFunction.Less))
+                            .SetBlendMode(Premultiplied),
+                        InOrder(
+                            Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
+                            Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
+                        ))
+                ))
+        ));
 
-            var renderedGBuffers = resizedBuffers.Then(InOrder(
-                WithContext(
-                    c => c.SetDebugName("Render level to low-res g-buffers")
-                        .BindRenderTarget(targets.GeometryLowRes)
-                        .SetViewport(s => new Rectangle(0, 0, s.LowResResolution.X, s.LowResResolution.Y))
-                        .SetDepthMode(Default),
-                    InOrder(
-                        ClearColor(),
-                        ClearDepth(),
-                        Do(s => s.Content.LevelRenderer.Render()),
-                        Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup))
-                    )),
-                // TODO: if low and regular resolution are same, render level to regular target directly and skip upscaling
-                // compositing two different pipelines with most steps shared should be easy
-                WithContext(
-                    c => c.SetDebugName("Upscale G-buffers"),
-                    InOrder(
-                        upscale("deferred/copy", textures.DiffuseLowRes, targets.UpscaleDiffuse),
-                        upscale("deferred/copy", textures.NormalLowRes, targets.UpscaleNormal),
-                        upscale("deferred/copy", textures.DepthLowRes, targets.UpscaleDepth),
-                        WithContext(
-                            c => c.SetDepthMode(WriteOnly),
-                            upscale("deferred/copyDepth", textures.DepthMaskLowRes, targets.UpscaleDepthMask))
-                    )),
-                WithContext(
-                    c => c.SetDebugName("Draw world draw groups to full-scale g-buffers")
-                        .BindRenderTarget(targets.Geometry)
-                        .SetDepthMode(Default)
-                        .SetBlendMode(Premultiplied),
-                    Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
-            ));
+        var compositedFrameAtRenderResolution = WithContext(
+            c => c.SetViewport(s => new Rectangle(0, 0, s.Resolution.X, s.Resolution.Y)),
+            compositedFrame
+        );
 
-            var compositedFrame = renderedGBuffers.Then(InOrder(
-                WithContext(
-                    c => c.SetDebugName("Render lights to light accumulation buffer")
-                        .BindRenderTarget(targets.LightAccum)
-                        .SetDepthMode(TestOnly(DepthFunction.Gequal))
-                        .SetBlendMode(Premultiplied)
-                        .SetCullMode(RenderBack),
-                    InOrder(
-                        ClearColor(),
-                        Render(pointLightRenderer, spotLightRenderer)
-                    )),
-                WithContext(
-                    c => c.SetDebugName("Composite final image")
-                        .BindRenderTarget(targets.Composition),
-                    InOrder(
-                        WithContext(
-                            c => c.SetDebugName("Composite light buffer and g-buffers"),
-                            PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
-                                // TODO: it should be much easier to quickly pass in a couple of textures
-                                new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
-                                new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
-                                new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
-                                heightmap, heightmapRadius, heightmapPixelSizeUV,
-                                settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
-                                settings.CameraPosition,
-                                hexagonalFallOffDistance
-                            )),
-                        WithContext(
-                            c => c.SetDebugName("Render fluids and other post-light groups")
-                                .SetDepthMode(TestOnly(DepthFunction.Less))
-                                .SetBlendMode(Premultiplied),
-                            InOrder(
-                                Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
-                                Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
-                            ))
-                    ))
-            ));
-
-            var compositedFrameAtRenderResolution = WithContext(
-                c => c.SetViewport(s => new Rectangle(0, 0, s.Resolution.X, s.Resolution.Y)),
-                compositedFrame
-                );
-
-            var fullRender = compositedFrameAtRenderResolution.Then(
-                WithContext(
-                    c => c.SetDebugName("Copy/scale image to output render target")
-                        .BindRenderTarget(s => s.FinalRenderTarget),
-                    PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
-                        new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
-                        new Vector2Uniform("uvOffset", Vector2.Zero)
-                    )
+        var fullRender = compositedFrameAtRenderResolution.Then(
+            WithContext(
+                c => c.SetDebugName("Copy/scale image to output render target")
+                    .BindRenderTarget(s => s.FinalRenderTarget),
+                PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
+                    new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
+                    new Vector2Uniform("uvOffset", Vector2.Zero)
                 )
-            );
+            )
+        );
 
-            pipeline = WithContext(
-                c => c.SetDebugName("Render game state"),
-                fullRender);
+        pipeline = WithContext(
+            c => c.SetDebugName("Render game state"),
+            fullRender);
 
-            // TODO: it would be neat to have some steps have a more semantic associated output
-            // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
-            // by a call that takes texture definitions, and returns a pipeline step that also
-            // exposes the PipeLineTexture objects which can then be used as input for future steps
-            // and that would possibly allow us to write things more like a tree of actual dependencies
-            // instead of of a linear chain of commands
-        }
+        // TODO: it would be neat to have some steps have a more semantic associated output
+        // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
+        // by a call that takes texture definitions, and returns a pipeline step that also
+        // exposes the PipeLineTexture objects which can then be used as input for future steps
+        // and that would possibly allow us to write things more like a tree of actual dependencies
+        // instead of of a linear chain of commands
+    }
 
-        private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
-            PipelineTexture normalBuffer)
+    private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
+        PipelineTexture normalBuffer)
+    {
+        var neededSettings = new[]
         {
-            var neededSettings = new[]
-            {
-                settings.ViewMatrix, settings.ProjectionMatrix,
-                settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
-                new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
-                DepthBuffer, gBufferResolution
-            };
+            settings.ViewMatrix, settings.ProjectionMatrix,
+            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
+            new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
+            DepthBuffer, gBufferResolution
+        };
 
-            var pointLight = BatchedRenderer.From(PointLights.ToRenderable(), neededSettings);
-            shaders.GetShaderProgram("deferred/pointlight").UseOnRenderer(pointLight);
+        var pointLight = BatchedRenderer.From(PointLights.ToRenderable(), neededSettings);
+        shaders.GetShaderProgram("deferred/pointlight").UseOnRenderer(pointLight);
 
-            var spotLight = BatchedRenderer.From(Spotlights.ToRenderable(), neededSettings);
-            shaders.GetShaderProgram("deferred/spotlight").UseOnRenderer(spotLight);
+        var spotLight = BatchedRenderer.From(Spotlights.ToRenderable(), neededSettings);
+        shaders.GetShaderProgram("deferred/spotlight").UseOnRenderer(spotLight);
 
-            return (pointLight, spotLight);
-        }
+        return (pointLight, spotLight);
+    }
 
-        public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
-        {
-            var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
-            gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
-            hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
+    public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
+    {
+        var (lowResResolution, resolution) = resizeForCameraDistance(deferredLayer.CameraDistance);
+        gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
+        hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
 
-            prepareLevel(deferredLayer.ContentRenderers.LevelRenderer);
+        prepareLevel(deferredLayer.ContentRenderers.LevelRenderer);
 
-            var state = new RenderState(resolution, lowResResolution, target, deferredLayer.ContentRenderers);
+        var state = new RenderState(resolution, lowResResolution, target, deferredLayer.ContentRenderers);
 
-            pipeline.Execute(state);
+        pipeline.Execute(state);
 
-            // cleaning of mesh builders will happen in game renderer
-        }
+        // cleaning of mesh builders will happen in game renderer
+    }
 
-        private void prepareLevel(LevelRenderer renderer)
-        {
-            renderer.PrepareForRender();
-            var hmap = renderer.Heightmap;
-            heightmap.Value = hmap.Texture;
-            heightmapRadius.Value = hmap.RadiusUniform.Value;
-            heightmapPixelSizeUV.Value = hmap.PixelSizeUVUniform.Value;
-        }
+    private void prepareLevel(LevelRenderer renderer)
+    {
+        renderer.PrepareForRender();
+        var hmap = renderer.Heightmap;
+        heightmap.Value = hmap.Texture;
+        heightmapRadius.Value = hmap.RadiusUniform.Value;
+        heightmapPixelSizeUV.Value = hmap.PixelSizeUVUniform.Value;
+    }
 
-        public void OnResize(ViewportSize newViewport)
-        {
-            viewport = newViewport;
-        }
+    public void OnResize(ViewportSize newViewport)
+    {
+        viewport = newViewport;
+    }
 
-        private (Vector2i LowResResolution, Vector2i Resolution) resizeForCameraDistance(float cameraDistance)
-        {
-            var lowResResolution =
-                calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
-            var resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
+    private (Vector2i LowResResolution, Vector2i Resolution) resizeForCameraDistance(float cameraDistance)
+    {
+        var lowResResolution =
+            calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileLevelResolution);
+        var resolution = calculateResolution(cameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
 
-            setLevelViewMatrix(cameraDistance);
+        setLevelViewMatrix(cameraDistance);
 
-            return (lowResResolution, resolution);
-        }
+        return (lowResResolution, resolution);
+    }
 
-        private Vector2i calculateResolution(float cameraDistance, float pixelsPerTile)
-        {
-            var screenPixelsPerTile = viewport.Height * 0.5f / cameraDistance;
+    private Vector2i calculateResolution(float cameraDistance, float pixelsPerTile)
+    {
+        var screenPixelsPerTile = viewport.Height * 0.5f / cameraDistance;
 
-            var scale = Math.Min(1, pixelsPerTile / screenPixelsPerTile);
+        var scale = Math.Min(1, pixelsPerTile / screenPixelsPerTile);
 
-            var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
+        var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
 
-            var w = (int)(viewport.Width * bufferSizeFactor * scale);
-            var h = (int)(viewport.Height * bufferSizeFactor * scale);
+        var w = (int)(viewport.Width * bufferSizeFactor * scale);
+        var h = (int)(viewport.Height * bufferSizeFactor * scale);
 
-            return (w, h);
-        }
+        return (w, h);
+    }
 
-        private void setLevelViewMatrix(float cameraDistance)
-        {
-            var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
+    private void setLevelViewMatrix(float cameraDistance)
+    {
+        var pixelStep = 1f / Constants.Rendering.PixelsPerTileLevelResolution;
 
-            var viewMatrix = settings.ViewMatrix.Value;
-            var translation = viewMatrix.Row3;
+        var viewMatrix = settings.ViewMatrix.Value;
+        var translation = viewMatrix.Row3;
 
-            var levelTranslation = new Vector2(
-                MoreMath.RoundToInt(translation.X / pixelStep) * pixelStep,
-                MoreMath.RoundToInt(translation.Y / pixelStep) * pixelStep
-            );
+        var levelTranslation = new Vector2(
+            MoreMath.RoundToInt(translation.X / pixelStep) * pixelStep,
+            MoreMath.RoundToInt(translation.Y / pixelStep) * pixelStep
+        );
 
-            viewMatrix.Row3.Xy = levelTranslation;
-            settings.ViewMatrixLevel.Value = viewMatrix;
+        viewMatrix.Row3.Xy = levelTranslation;
+        settings.ViewMatrixLevel.Value = viewMatrix;
 
-            var offset = (levelTranslation - translation.Xy) / (cameraDistance * 2);
-            offset.X = offset.X / viewport.Width * viewport.Height;
-            levelUpSampleUVOffset.Value = offset;
-        }
+        var offset = (levelTranslation - translation.Xy) / (cameraDistance * 2);
+        offset.X = offset.X / viewport.Width * viewport.Height;
+        levelUpSampleUVOffset.Value = offset;
+    }
 
-        private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture,
-            PipelineRenderTarget target)
-        {
-            return WithContext(
-                c => c.BindRenderTarget(target),
-                PostProcess(shaders.GetShaderProgram(shaderName), out _,
-                    new TextureUniform("inputTexture", TextureUnit.Texture0, texture.Texture),
-                    levelUpSampleUVOffset
-                )
-            );
-        }
+    private IPipeline<RenderState> upscale(string shaderName, PipelineTextureBase texture,
+        PipelineRenderTarget target)
+    {
+        return WithContext(
+            c => c.BindRenderTarget(target),
+            PostProcess(shaders.GetShaderProgram(shaderName), out _,
+                new TextureUniform("inputTexture", TextureUnit.Texture0, texture.Texture),
+                levelUpSampleUVOffset
+            )
+        );
+    }
 
 
-        public void ClearAll()
-        {
-            PointLights.Clear();
-            Spotlights.Clear();
-        }
+    public void ClearAll()
+    {
+        PointLights.Clear();
+        Spotlights.Clear();
     }
 }

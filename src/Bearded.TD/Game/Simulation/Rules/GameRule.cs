@@ -1,19 +1,18 @@
-namespace Bearded.TD.Game.Simulation.Rules
+namespace Bearded.TD.Game.Simulation.Rules;
+
+abstract class GameRule<TParameters> : IGameRule<GameState>
 {
-    abstract class GameRule<TParameters> : IGameRule<GameState>
+    protected TParameters Parameters { get; }
+
+    protected GameRule(TParameters parameters)
     {
-        protected TParameters Parameters { get; }
-
-        protected GameRule(TParameters parameters)
-        {
-            Parameters = parameters;
-        }
-
-        public abstract void Execute(GameRuleContext context);
+        Parameters = parameters;
     }
 
-    abstract class GameRule : GameRule<VoidParameters>
-    {
-        protected GameRule() : base(null) {}
-    }
+    public abstract void Execute(GameRuleContext context);
+}
+
+abstract class GameRule : GameRule<VoidParameters>
+{
+    protected GameRule() : base(null) {}
 }

@@ -1,7 +1,6 @@
-namespace Bearded.TD.Rendering.Loading
+namespace Bearded.TD.Rendering.Loading;
+
+interface IClearable
 {
-    interface IClearable
-    {
-        void Clear();
-    }
+    void Clear();
 }

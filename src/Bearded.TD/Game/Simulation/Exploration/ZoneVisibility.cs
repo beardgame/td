@@ -1,8 +1,7 @@
-namespace Bearded.TD.Game.Simulation.Exploration
+namespace Bearded.TD.Game.Simulation.Exploration;
+
+enum ZoneVisibility : byte
 {
-    enum ZoneVisibility : byte
-    {
-        Invisible,
-        Revealed
-    }
+    Invisible,
+    Revealed
 }

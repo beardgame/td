@@ -1,9 +1,8 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities;
+
+interface ITimeSource
 {
-    interface ITimeSource
-    {
-        Instant Time { get; }
-    }
+    Instant Time { get; }
 }

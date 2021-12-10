@@ -1,10 +1,9 @@
 using System.Collections.Immutable;
 
-namespace Bearded.TD.Game.Simulation.Rules
+namespace Bearded.TD.Game.Simulation.Rules;
+
+interface IGameModeBlueprint : IBlueprint
 {
-    interface IGameModeBlueprint : IBlueprint
-    {
-        string Name { get; }
-        ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
-    }
+    string Name { get; }
+    ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
 }

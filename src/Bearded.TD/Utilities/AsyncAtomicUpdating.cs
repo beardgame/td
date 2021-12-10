@@ -1,36 +1,35 @@
-﻿namespace Bearded.TD.Utilities
+﻿namespace Bearded.TD.Utilities;
+
+public class AsyncAtomicUpdating<T>
+    where T : struct
 {
-    public class AsyncAtomicUpdating<T>
-        where T : struct
+    private readonly object mutex = new object();
+
+    public T Current { get; private set; }
+    public T Previous { get; private set; }
+    private T lastRecorded;
+
+    public void SetLastKnownState(T state)
     {
-        private readonly object mutex = new object();
-
-        public T Current { get; private set; }
-        public T Previous { get; private set; }
-        private T lastRecorded;
-
-        public void SetLastKnownState(T state)
+        lock (mutex)
         {
-            lock (mutex)
-            {
-                lastRecorded = state;
-            }
+            lastRecorded = state;
         }
+    }
 
-        public void Update()
+    public void Update()
+    {
+        lock (mutex)
         {
-            lock (mutex)
-            {
-                UpdateTo(lastRecorded);
-            }
+            UpdateTo(lastRecorded);
         }
+    }
 
-        public void UpdateToDefault() => UpdateTo(default(T));
+    public void UpdateToDefault() => UpdateTo(default(T));
         
-        public void UpdateTo(T state)
-        {
-            Previous = Current;
-            Current = state;
-        }
+    public void UpdateTo(T state)
+    {
+        Previous = Current;
+        Current = state;
     }
 }

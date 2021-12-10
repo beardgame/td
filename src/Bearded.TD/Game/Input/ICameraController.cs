@@ -1,10 +1,9 @@
 using Bearded.TD.Utilities.Input;
 
-namespace Bearded.TD.Game.Input
+namespace Bearded.TD.Game.Input;
+
+interface ICameraController
 {
-    interface ICameraController
-    {
-        void HandleInput(InputState input);
-        void Stop();
-    }
+    void HandleInput(InputState input);
+    void Stop();
 }

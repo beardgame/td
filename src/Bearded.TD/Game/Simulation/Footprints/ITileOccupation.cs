@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Simulation.Footprints
+namespace Bearded.TD.Game.Simulation.Footprints;
+
+interface ITileOccupation
 {
-    interface ITileOccupation
-    {
-        IEnumerable<Tile> OccupiedTiles { get; }
-    }
+    IEnumerable<Tile> OccupiedTiles { get; }
 }

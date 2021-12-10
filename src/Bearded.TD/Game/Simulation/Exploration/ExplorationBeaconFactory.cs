@@ -8,24 +8,23 @@ using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Exploration
+namespace Bearded.TD.Game.Simulation.Exploration;
+
+static class ExplorationBeaconFactory
 {
-    static class ExplorationBeaconFactory
+    public static ComponentGameObject CreateExplorationBeacon(
+        GameState game, ComponentOwnerBlueprint blueprint, Tile tile, Zone zone)
     {
-        public static ComponentGameObject CreateExplorationBeacon(
-            GameState game, ComponentOwnerBlueprint blueprint, Tile tile, Zone zone)
-        {
-            var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
-                game, blueprint, null, Level.GetPosition(tile).WithZ(1.1f));
+        var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
+            game, blueprint, null, Level.GetPosition(tile).WithZ(1.1f));
 
-            obj.AddComponent(new AlwaysVisibleVisibility<ComponentGameObject>());
-            obj.AddComponent(new ReportSubject<ComponentGameObject>());
-            obj.AddComponent(new Selectable<ComponentGameObject>());
-            obj.AddComponent(
-                new StaticTileOccupation<ComponentGameObject>(blueprint.GetFootprintGroup().Positioned(0, tile)));
-            obj.AddComponent(new ZoneRevealer<ComponentGameObject>(zone));
+        obj.AddComponent(new AlwaysVisibleVisibility<ComponentGameObject>());
+        obj.AddComponent(new ReportSubject<ComponentGameObject>());
+        obj.AddComponent(new Selectable<ComponentGameObject>());
+        obj.AddComponent(
+            new StaticTileOccupation<ComponentGameObject>(blueprint.GetFootprintGroup().Positioned(0, tile)));
+        obj.AddComponent(new ZoneRevealer<ComponentGameObject>(zone));
 
-            return obj;
-        }
+        return obj;
     }
 }

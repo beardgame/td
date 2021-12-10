@@ -6,55 +6,54 @@ using Bearded.TD.Networking;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game
+namespace Bearded.TD.Game;
+
+sealed class GameRunner
 {
-    sealed class GameRunner
+    private readonly GameInstance game;
+    private readonly NetworkInterface networkInterface;
+
+    private bool isGameStarted;
+
+    public GameRunner(GameInstance game, NetworkInterface networkInterface)
     {
-        private readonly GameInstance game;
-        private readonly NetworkInterface networkInterface;
+        this.game = game;
+        this.networkInterface = networkInterface;
+        DebugGameManager.Instance.RegisterGame(game);
+    }
 
-        private bool isGameStarted;
+    public void HandleInput(InputState inputState)
+    {
+        game.PlayerInput.HandleInput(inputState);
+    }
 
-        public GameRunner(GameInstance game, NetworkInterface networkInterface)
+    public void Update(UpdateEventArgs args)
+    {
+        if (!isGameStarted)
         {
-            this.game = game;
-            this.networkInterface = networkInterface;
-            DebugGameManager.Instance.RegisterGame(game);
+            isGameStarted = true;
         }
 
-        public void HandleInput(InputState inputState)
-        {
-            game.PlayerInput.HandleInput(inputState);
-        }
+        game.CameraController.Update(args);
+        game.PlayerCursors.Update(args);
 
-        public void Update(UpdateEventArgs args)
-        {
-            if (!isGameStarted)
-            {
-                isGameStarted = true;
-            }
+        var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
 
-            game.CameraController.Update(args);
-            game.PlayerCursors.Update(args);
+        networkInterface.ConsumeMessages();
+        game.UpdatePlayers(args);
 
-            var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
+        if (game.State.Meta.GameOver) return;
 
-            networkInterface.ConsumeMessages();
-            game.UpdatePlayers(args);
+        game.State.Meta.Events.Send(new FrameUpdateStarting());
+        game.State.Navigator.Update();
+        game.State.Advance(elapsedTime);
 
-            if (game.State.Meta.GameOver) return;
+        game.State.Meta.Synchronizer.Synchronize(game);
+    }
 
-            game.State.Meta.Events.Send(new FrameUpdateStarting());
-            game.State.Navigator.Update();
-            game.State.Advance(elapsedTime);
-
-            game.State.Meta.Synchronizer.Synchronize(game);
-        }
-
-        public void Shutdown()
-        {
-            networkInterface.Shutdown();
-            DebugGameManager.Instance.UnregisterGame();
-        }
+    public void Shutdown()
+    {
+        networkInterface.Shutdown();
+        DebugGameManager.Instance.UnregisterGame();
     }
 }

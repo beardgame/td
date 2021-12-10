@@ -2,25 +2,24 @@
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Content.Models
+namespace Bearded.TD.Content.Models;
+
+interface IBeamEmitterParameters : IParametersTemplate<IBeamEmitterParameters>
 {
-    interface IBeamEmitterParameters : IParametersTemplate<IBeamEmitterParameters>
-    {
-        [Modifiable(10, Type = AttributeType.DamageOverTime)]
-        int DamagePerSecond { get; }
+    [Modifiable(10, Type = AttributeType.DamageOverTime)]
+    int DamagePerSecond { get; }
 
-        [Modifiable(Type = AttributeType.Range)]
-        Unit Range { get; }
+    [Modifiable(Type = AttributeType.Range)]
+    Unit Range { get; }
 
-        [Modifiable(0.0f, Type = AttributeType.PiercingFactor)]
-        float PiercingFactor { get; }
+    [Modifiable(0.0f, Type = AttributeType.PiercingFactor)]
+    float PiercingFactor { get; }
 
-        Color Color { get; }
+    Color Color { get; }
 
-        [Modifiable(3)]
-        Unit Width { get; }
+    [Modifiable(3)]
+    Unit Width { get; }
 
-        [Modifiable(1)]
-        Unit CoreWidth { get; }
-    }
+    [Modifiable(1)]
+    Unit CoreWidth { get; }
 }

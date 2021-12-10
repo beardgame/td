@@ -1,9 +1,8 @@
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Reports
+namespace Bearded.TD.Game.Simulation.Reports;
+
+static partial class ReportAggregator
 {
-    static partial class ReportAggregator
-    {
-        private readonly record struct ReportAdded(IReport Report) : IComponentEvent;
-    }
+    private readonly record struct ReportAdded(IReport Report) : IComponentEvent;
 }

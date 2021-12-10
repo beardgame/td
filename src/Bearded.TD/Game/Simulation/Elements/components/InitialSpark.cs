@@ -1,24 +1,23 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Elements
+namespace Bearded.TD.Game.Simulation.Elements;
+
+[Component("initialSpark")]
+class InitialSpark<T> : Component<T>
 {
-    [Component("initialSpark")]
-    class InitialSpark<T> : Component<T>
+    private bool sparked;
+
+    protected override void OnAdded()
     {
-        private bool sparked;
+    }
 
-        protected override void OnAdded()
-        {
-        }
+    public override void Update(TimeSpan elapsedTime)
+    {
+        if (sparked)
+            return;
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            if (sparked)
-                return;
-
-            Events.Send(new Spark());
-            sparked = true;
-        }
+        Events.Send(new Spark());
+        sparked = true;
     }
 }

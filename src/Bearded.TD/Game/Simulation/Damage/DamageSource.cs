@@ -4,35 +4,34 @@ using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+interface IDamageSource
 {
-    interface IDamageSource
+    void AttributeDamage(DamageResult result);
+    void AttributeKill(IDamageTarget target);
+}
+
+sealed class DamageSource<T> : Component<T>, IDamageSource
+    where T : IComponentOwner
+{
+    private IIdProvider<T>? idProvider;
+    public Id<T> Id => idProvider?.Id ?? Id<T>.Invalid;
+
+    protected override void OnAdded()
     {
-        void AttributeDamage(DamageResult result);
-        void AttributeKill(IDamageTarget target);
+        ComponentDependencies.Depend<IIdProvider<T>>(Owner, Events, provider => idProvider = provider);
     }
 
-    sealed class DamageSource<T> : Component<T>, IDamageSource
-        where T : IComponentOwner
+    public void AttributeDamage(DamageResult damageResult)
     {
-        private IIdProvider<T>? idProvider;
-        public Id<T> Id => idProvider?.Id ?? Id<T>.Invalid;
-
-        protected override void OnAdded()
-        {
-            ComponentDependencies.Depend<IIdProvider<T>>(Owner, Events, provider => idProvider = provider);
-        }
-
-        public void AttributeDamage(DamageResult damageResult)
-        {
-            Events.Send(new CausedDamage(damageResult));
-        }
-
-        public void AttributeKill(IDamageTarget target)
-        {
-            Events.Send(new CausedKill(target));
-        }
-
-        public override void Update(TimeSpan elapsedTime) { }
+        Events.Send(new CausedDamage(damageResult));
     }
+
+    public void AttributeKill(IDamageTarget target)
+    {
+        Events.Send(new CausedKill(target));
+    }
+
+    public override void Update(TimeSpan elapsedTime) { }
 }

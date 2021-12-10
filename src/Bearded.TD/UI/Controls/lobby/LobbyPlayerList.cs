@@ -3,124 +3,123 @@ using Bearded.TD.Game.Players;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+static class LobbyPlayerList
 {
-    static class LobbyPlayerList
+    public const float RowHeight = fontSize + 2 * margin + 2 * padding;
+    private const float margin = 2;
+    private const float padding = 4;
+    private const float fontSize = 20;
+    private const float dotSize = 6;
+
+    public sealed class ItemSource : IListItemSource
     {
-        public const float RowHeight = fontSize + 2 * margin + 2 * padding;
-        private const float margin = 2;
-        private const float padding = 4;
-        private const float fontSize = 20;
-        private const float dotSize = 6;
+        private readonly Lobby lobby;
 
-        public sealed class ItemSource : IListItemSource
+        public int ItemCount => lobby.Players.Count;
+        public bool IsCompact { get; set; }
+
+        public ItemSource(Lobby lobby)
         {
-            private readonly Lobby lobby;
-
-            public int ItemCount => lobby.Players.Count;
-            public bool IsCompact { get; set; }
-
-            public ItemSource(Lobby lobby)
-            {
-                this.lobby = lobby;
-            }
-
-            public double HeightOfItemAt(int index) => RowHeight;
-
-            public Control CreateItemControlFor(int index) => IsCompact
-                ? new CompactRow(lobby.Players[index])
-                : new FullWidthRow(lobby.Players[index]);
-
-            public void DestroyItemControlAt(int index, Control control)
-            {
-            }
+            this.lobby = lobby;
         }
 
-        private sealed class CompactRow : CompositeControl
+        public double HeightOfItemAt(int index) => RowHeight;
+
+        public Control CreateItemControlFor(int index) => IsCompact
+            ? new CompactRow(lobby.Players[index])
+            : new FullWidthRow(lobby.Players[index]);
+
+        public void DestroyItemControlAt(int index, Control control)
         {
-            public CompactRow(Player player)
+        }
+    }
+
+    private sealed class CompactRow : CompositeControl
+    {
+        public CompactRow(Player player)
+        {
+            Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
+
+            Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
+                .Left(padding, width: dotSize)
+                .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
+            Add(new Label(player.Name)
             {
-                Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
-
-                Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
-                    .Left(padding, width: dotSize)
-                    .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
-                Add(new Label(player.Name)
-                {
-                    Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
-                }.Anchor(a => a
-                    .Left(2 * padding + dotSize)
-                    .Right(padding)));
-            }
-
-            protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+                Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
+            }.Anchor(a => a
+                .Left(2 * padding + dotSize)
+                .Right(padding)));
         }
 
-        private sealed class FullWidthRow : CompositeControl
+        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+    }
+
+    private sealed class FullWidthRow : CompositeControl
+    {
+        public FullWidthRow(Player player)
         {
-            public FullWidthRow(Player player)
+            Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
+
+            Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
+                .Left(padding, width: dotSize)
+                .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
+            Add(new Label(player.Name)
             {
-                Add(new BackgroundBox { Color = Color.White * .1f }.Anchor(a => a.Bottom(margin).Top(margin)));
+                Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
+            }.Anchor(a => a
+                .Left(2 * padding + dotSize)
+                .Right(relativePercentage: .5)));
 
-                Add(new DynamicDot(() => getStatusColorForPlayer(player)).Anchor(a => a
-                    .Left(padding, width: dotSize)
-                    .Top(margin: -.5 * dotSize, relativePercentage: .5, height: dotSize)));
-                Add(new Label(player.Name)
-                {
-                    Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
-                }.Anchor(a => a
-                    .Left(2 * padding + dotSize)
-                    .Right(relativePercentage: .5)));
-
-                Add(new DynamicLabel(() => getStatusStringForPlayer(player), () => getStatusColorForPlayer(player))
-                {
-                    FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
-                }.Anchor(a => a
-                    .Left(relativePercentage: .5)
-                    .Right(relativePercentage: .75)));
-                Add(new DynamicLabel(() => player.LastKnownPing.ToString())
-                {
-                    Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
-                }.Anchor(a => a
-                    .Left(relativePercentage: .75)
-                    .Right(padding)));
-            }
-
-            protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+            Add(new DynamicLabel(() => getStatusStringForPlayer(player), () => getStatusColorForPlayer(player))
+            {
+                FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
+            }.Anchor(a => a
+                .Left(relativePercentage: .5)
+                .Right(relativePercentage: .75)));
+            Add(new DynamicLabel(() => player.LastKnownPing.ToString())
+            {
+                Color = Color.White, FontSize = fontSize, TextAnchor = Label.TextAnchorLeft
+            }.Anchor(a => a
+                .Left(relativePercentage: .75)
+                .Right(padding)));
         }
 
-        private static string getStatusStringForPlayer(Player player)
-        {
-            switch (player.ConnectionState)
-            {
-                case PlayerConnectionState.Connecting:
-                    return "connecting";
-                case PlayerConnectionState.Waiting:
-                    return "not ready";
-                case PlayerConnectionState.LoadingMods:
-                    return "loading mods";
-                case PlayerConnectionState.Ready:
-                    return "ready";
-                default:
-                    return "unknown";
-            }
-        }
+        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+    }
 
-        private static Color getStatusColorForPlayer(Player player)
+    private static string getStatusStringForPlayer(Player player)
+    {
+        switch (player.ConnectionState)
         {
-            switch (player.ConnectionState)
-            {
-                case PlayerConnectionState.Connecting:
-                    return Color.LightBlue;
-                case PlayerConnectionState.Waiting:
-                    return Color.Gold;
-                case PlayerConnectionState.LoadingMods:
-                    return Color.LightBlue;
-                case PlayerConnectionState.Ready:
-                    return Color.LimeGreen;
-                default:
-                    return Color.HotPink;
-            }
+            case PlayerConnectionState.Connecting:
+                return "connecting";
+            case PlayerConnectionState.Waiting:
+                return "not ready";
+            case PlayerConnectionState.LoadingMods:
+                return "loading mods";
+            case PlayerConnectionState.Ready:
+                return "ready";
+            default:
+                return "unknown";
+        }
+    }
+
+    private static Color getStatusColorForPlayer(Player player)
+    {
+        switch (player.ConnectionState)
+        {
+            case PlayerConnectionState.Connecting:
+                return Color.LightBlue;
+            case PlayerConnectionState.Waiting:
+                return Color.Gold;
+            case PlayerConnectionState.LoadingMods:
+                return Color.LightBlue;
+            case PlayerConnectionState.Ready:
+                return Color.LimeGreen;
+            default:
+                return Color.HotPink;
         }
     }
 }

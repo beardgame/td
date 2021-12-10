@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Drawing
+namespace Bearded.TD.Game.Simulation.Drawing;
+
+interface IDrawableComponent
 {
-    interface IDrawableComponent
-    {
-        void Draw(IComponentDrawer drawer);
-    }
+    void Draw(IComponentDrawer drawer);
 }

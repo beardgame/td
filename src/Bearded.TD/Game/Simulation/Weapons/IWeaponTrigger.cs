@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+internal interface IWeaponTrigger
 {
-    internal interface IWeaponTrigger
-    {
-        bool TriggerPulled { get; }
-    }
+    bool TriggerPulled { get; }
 }

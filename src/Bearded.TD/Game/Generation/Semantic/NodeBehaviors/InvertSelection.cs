@@ -1,22 +1,21 @@
 using Bearded.TD.Game.Generation.Semantic.Features;
 
-namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
+namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
+
+[NodeBehavior("invertSelection")]
+sealed class InvertSelection : NodeBehavior
 {
-    [NodeBehavior("invertSelection")]
-    sealed class InvertSelection : NodeBehavior
+    public override void Generate(NodeGenerationContext context)
     {
-        public override void Generate(NodeGenerationContext context)
+        foreach (var tile in context.Tiles.All)
         {
-            foreach (var tile in context.Tiles.All)
+            if (context.Tiles.Selection.Contains(tile))
             {
-                if (context.Tiles.Selection.Contains(tile))
-                {
-                    context.Tiles.Selection.Remove(tile);
-                }
-                else
-                {
-                    context.Tiles.Selection.Add(tile);
-                }
+                context.Tiles.Selection.Remove(tile);
+            }
+            else
+            {
+                context.Tiles.Selection.Add(tile);
             }
         }
     }

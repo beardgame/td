@@ -1,12 +1,11 @@
 using Bearded.UI.Controls;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+class Overlay : CompositeControl
 {
-    class Overlay : CompositeControl
+    public Overlay()
     {
-        public Overlay()
-        {
-            IsClickThrough = true;
-        }
+        IsClickThrough = true;
     }
 }

@@ -6,55 +6,53 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.GameLoop
+namespace Bearded.TD.Game.Commands.GameLoop;
+
+static class ExecuteWaveScript
 {
-    static class ExecuteWaveScript
+    public static ISerializableCommand<GameInstance> Command(GameState game, WaveScript script)
+        => new Implementation(game, script);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(GameState game, WaveScript script)
-            => new Implementation(game, script);
+        private readonly GameState game;
+        private readonly WaveScript script;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(GameState game, WaveScript script)
         {
-            private readonly GameState game;
-            private readonly WaveScript script;
-
-            public Implementation(GameState game, WaveScript script)
-            {
-                this.game = game;
-                this.script = script;
-            }
-
-            public void Execute()
-            {
-                game.WaveDirector.ExecuteScript(script);
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(script);
+            this.game = game;
+            this.script = script;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private readonly WaveScriptSerializer scriptSerializer;
+            game.WaveDirector.ExecuteScript(script);
+        }
 
-            [UsedImplicitly]
-            public Serializer()
-            {
-                scriptSerializer = new WaveScriptSerializer();
-            }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(script);
+    }
 
-            public Serializer(WaveScript script)
-            {
-                scriptSerializer = new WaveScriptSerializer(script);
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private readonly WaveScriptSerializer scriptSerializer;
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game.State, scriptSerializer.ToWaveScript(game));
+        [UsedImplicitly]
+        public Serializer()
+        {
+            scriptSerializer = new WaveScriptSerializer();
+        }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                scriptSerializer.Serialize(stream);
-            }
+        public Serializer(WaveScript script)
+        {
+            scriptSerializer = new WaveScriptSerializer(script);
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(game.State, scriptSerializer.ToWaveScript(game));
+
+        public void Serialize(INetBufferStream stream)
+        {
+            scriptSerializer.Serialize(stream);
         }
     }
 }
-

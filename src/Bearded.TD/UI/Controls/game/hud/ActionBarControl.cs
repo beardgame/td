@@ -2,49 +2,48 @@
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class ActionBarControl : CompositeControl
 {
-    sealed class ActionBarControl : CompositeControl
+    private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
+
+    private readonly ActionBar model;
+    private readonly Button[] buttons;
+
+    public ActionBarControl(ActionBar model)
     {
-        private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
+        this.model = model;
 
-        private readonly ActionBar model;
-        private readonly Button[] buttons;
+        Add(new BackgroundBox());
 
-        public ActionBarControl(ActionBar model)
+        buttons = new Button[Constants.Game.GameUI.ActionBarSize];
+        for (var i = 0; i < buttons.Length; i++)
         {
-            this.model = model;
-
-            Add(new BackgroundBox());
-
-            buttons = new Button[Constants.Game.GameUI.ActionBarSize];
-            for (var i = 0; i < buttons.Length; i++)
-            {
-                var i1 = i;
-                buttons[i] = new Button().WithDefaultStyle(new ButtonLabelWithCost())
-                    .Anchor(a => a
-                        .Top(relativePercentage: i1 * buttonHeightPercentage)
-                        .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
-                    .Subscribe(b => b.Clicked += _ => model.OnActionClicked(i1));
-                Add(buttons[i]);
-            }
-
-            model.ActionsChanged += updateButtonLabels;
-            updateButtonLabels();
+            var i1 = i;
+            buttons[i] = new Button().WithDefaultStyle(new ButtonLabelWithCost())
+                .Anchor(a => a
+                    .Top(relativePercentage: i1 * buttonHeightPercentage)
+                    .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
+                .Subscribe(b => b.Clicked += _ => model.OnActionClicked(i1));
+            Add(buttons[i]);
         }
 
-        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+        model.ActionsChanged += updateButtonLabels;
+        updateButtonLabels();
+    }
 
-        private void updateButtonLabels()
+    protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+
+    private void updateButtonLabels()
+    {
+        for (var i = 0; i < buttons.Length; i++)
         {
-            for (var i = 0; i < buttons.Length; i++)
-            {
-                var (actionName, cost) = model.ActionLabelForIndex(i);
-                var labelWithCost = buttons[i].FirstChildOfType<ButtonLabelWithCost>();
-                labelWithCost.Name = actionName;
-                labelWithCost.Cost = cost;
-                buttons[i].IsEnabled = actionName != null;
-            }
+            var (actionName, cost) = model.ActionLabelForIndex(i);
+            var labelWithCost = buttons[i].FirstChildOfType<ButtonLabelWithCost>();
+            labelWithCost.Name = actionName;
+            labelWithCost.Cost = cost;
+            buttons[i].IsEnabled = actionName != null;
         }
     }
 }

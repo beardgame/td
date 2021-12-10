@@ -1,8 +1,7 @@
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+interface ITargeter<out T>
 {
-    interface ITargeter<out T>
-    {
-        T? Target { get; }
-    }
+    T? Target { get; }
 }
