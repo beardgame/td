@@ -7,6 +7,8 @@ namespace Bearded.TD.Testing.Components;
 
 sealed class ComponentTestBed
 {
+    private static readonly TimeSpan frameTime = TimeSpan.One / 60f;
+
     private readonly ComponentInternals internals = new();
     private readonly ComponentGameObject obj = new(null, Position3.Zero, Direction2.Zero);
 
@@ -29,6 +31,11 @@ sealed class ComponentTestBed
     public void PreviewEvent<T>(ref T @event) where T : struct, IComponentPreviewEvent
     {
         internals.PreviewEvent(ref @event);
+    }
+
+    public void AdvanceSingleFrame()
+    {
+        obj.Update(frameTime);
     }
 
     private sealed class ComponentInternals : Component<ComponentGameObject>

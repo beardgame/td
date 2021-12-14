@@ -2,7 +2,9 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Testing.Components;
+using Bearded.TD.Testing.Factions;
 using FluentAssertions;
 using Xunit;
 
@@ -41,8 +43,35 @@ public sealed class RuinedTest
     {
         var ruined = new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null));
         testBed.AddComponent(ruined);
+
         testBed.RemoveComponent(ruined);
 
         buildingState.IsFunctional.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RepairFinishedEventRestoresBuildingToFunctional()
+    {
+        var faction = FactionTestFactory.CreateFaction();
+        testBed.AddComponent(new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null)));
+
+        testBed.SendEvent(new RepairFinished(faction));
+        testBed.AdvanceSingleFrame();
+
+        buildingState.IsFunctional.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RepairFinishedEventConvertsFactionToRepairingFaction()
+    {
+        var originalFaction = FactionTestFactory.CreateFaction();
+        var factionProvider = new FactionProvider<ComponentGameObject>(originalFaction);
+        testBed.AddComponent(factionProvider);
+        testBed.AddComponent(new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null)));
+        var repairingFaction = FactionTestFactory.CreateFaction();
+
+        testBed.SendEvent(new RepairFinished(repairingFaction));
+
+        factionProvider.Faction.Should().Be(repairingFaction);
     }
 }
