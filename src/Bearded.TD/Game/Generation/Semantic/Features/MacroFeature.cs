@@ -1,6 +1,5 @@
-namespace Bearded.TD.Game.Generation.Semantic.Features
-{
-    abstract record MacroFeature;
+namespace Bearded.TD.Game.Generation.Semantic.Features;
 
-    sealed record Crevice : MacroFeature;
-}
+abstract record MacroFeature;
+
+sealed record Crevice : MacroFeature;

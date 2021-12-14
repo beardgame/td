@@ -1,11 +1,10 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Generation.Semantic.Features;
 
-namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors
+namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
+
+[NodeBehavior("base")]
+sealed class BaseNodeBehavior : NodeBehavior
 {
-    [NodeBehavior("base")]
-    sealed class BaseNodeBehavior : NodeBehavior
-    {
-        public override ImmutableArray<NodeTag> Tags { get; } = ImmutableArray.Create(new NodeTag("base"));
-    }
+    public override ImmutableArray<NodeTag> Tags { get; } = ImmutableArray.Create(new NodeTag("base"));
 }

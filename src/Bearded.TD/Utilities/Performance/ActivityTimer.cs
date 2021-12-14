@@ -4,120 +4,119 @@ using System.Collections.Immutable;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Utilities.Performance
+namespace Bearded.TD.Utilities.Performance;
+
+sealed class ActivityTimer
 {
-    sealed class ActivityTimer
+    private readonly Func<Instant> getCurrentTime;
+
+    private readonly Dictionary<Activity, TimeSpan> allActivities = new();
+    private readonly Stack<(Activity Activity, Instant StartTime)> currentActivities = new();
+
+    public ActivityTimer(Func<Instant> getTime)
     {
-        private readonly Func<Instant> getCurrentTime;
+        getCurrentTime = getTime;
+    }
 
-        private readonly Dictionary<Activity, TimeSpan> allActivities = new();
-        private readonly Stack<(Activity Activity, Instant StartTime)> currentActivities = new();
+    public ActivityStopDisposable Start(Activity activity)
+    {
+        var currentTime = getCurrentTime();
 
-        public ActivityTimer(Func<Instant> getTime)
-        {
-            getCurrentTime = getTime;
-        }
+        tryPausingCurrentActivity(currentTime);
+        startNewActivity(activity, currentTime);
 
-        public ActivityStopDisposable Start(Activity activity)
-        {
-            var currentTime = getCurrentTime();
+        return new(this, activity);
+    }
 
-            tryPausingCurrentActivity(currentTime);
+    public void Stop(Activity activity)
+    {
+        if (currentActivities.Peek().Activity != activity)
+            throw new InvalidOperationException(
+                "Can only stop running activity.");
+
+        var currentTime = getCurrentTime();
+
+        stopCurrentActivity(currentTime);
+        tryResumingPreviousActivity(currentTime);
+    }
+
+    public ImmutableArray<TimedActivity> Reset(Activity? newActivity = null)
+    {
+        var currentTime = getCurrentTime();
+        tryPausingCurrentActivity(currentTime);
+
+        var result = prepareResultsFromMeasuredActivities();
+
+        currentActivities.Clear();
+        allActivities.Clear();
+
+        if (newActivity is { } activity)
             startNewActivity(activity, currentTime);
 
-            return new(this, activity);
+        return result;
+    }
+
+    private void startNewActivity(Activity activity, Instant currentTime)
+    {
+        currentActivities.Push((activity, currentTime));
+        allActivities.TryAdd(activity, TimeSpan.Zero);
+    }
+
+    private void tryPausingCurrentActivity(Instant currentTime)
+    {
+        if (currentActivities.Count == 0)
+            return;
+
+        var (previousActivity, previousStartTime) = currentActivities.Peek();
+        addIntervalToActivity(previousActivity, previousStartTime, currentTime);
+    }
+
+    private void tryResumingPreviousActivity(Instant currentTime)
+    {
+        if (currentActivities.Count <= 0)
+            return;
+
+        var (previousActivity, _) = currentActivities.Pop();
+        currentActivities.Push((previousActivity, currentTime));
+    }
+
+    private void stopCurrentActivity(Instant currentTime)
+    {
+        var (activity, startTime) = currentActivities.Pop();
+        addIntervalToActivity(activity, startTime, currentTime);
+    }
+
+    private void addIntervalToActivity(Activity activity, Instant startTime, Instant endTime)
+    {
+        allActivities[activity] += endTime - startTime;
+    }
+
+    private ImmutableArray<TimedActivity> prepareResultsFromMeasuredActivities()
+    {
+        var builder = ImmutableArray.CreateBuilder<TimedActivity>(allActivities.Count);
+
+        foreach (var (activity, time) in allActivities)
+        {
+            builder.Add(new TimedActivity(activity, time));
         }
 
-        public void Stop(Activity activity)
+        return builder.MoveToImmutable();
+    }
+
+    public readonly struct ActivityStopDisposable : IDisposable
+    {
+        private readonly ActivityTimer timer;
+        private readonly Activity activity;
+
+        public ActivityStopDisposable(ActivityTimer timer, Activity activity)
         {
-            if (currentActivities.Peek().Activity != activity)
-                throw new InvalidOperationException(
-                    "Can only stop running activity.");
-
-            var currentTime = getCurrentTime();
-
-            stopCurrentActivity(currentTime);
-            tryResumingPreviousActivity(currentTime);
+            this.timer = timer;
+            this.activity = activity;
         }
 
-        public ImmutableArray<TimedActivity> Reset(Activity? newActivity = null)
+        public void Dispose()
         {
-            var currentTime = getCurrentTime();
-            tryPausingCurrentActivity(currentTime);
-
-            var result = prepareResultsFromMeasuredActivities();
-
-            currentActivities.Clear();
-            allActivities.Clear();
-
-            if (newActivity is { } activity)
-                startNewActivity(activity, currentTime);
-
-            return result;
-        }
-
-        private void startNewActivity(Activity activity, Instant currentTime)
-        {
-            currentActivities.Push((activity, currentTime));
-            allActivities.TryAdd(activity, TimeSpan.Zero);
-        }
-
-        private void tryPausingCurrentActivity(Instant currentTime)
-        {
-            if (currentActivities.Count == 0)
-                return;
-
-            var (previousActivity, previousStartTime) = currentActivities.Peek();
-            addIntervalToActivity(previousActivity, previousStartTime, currentTime);
-        }
-
-        private void tryResumingPreviousActivity(Instant currentTime)
-        {
-            if (currentActivities.Count <= 0)
-                return;
-
-            var (previousActivity, _) = currentActivities.Pop();
-            currentActivities.Push((previousActivity, currentTime));
-        }
-
-        private void stopCurrentActivity(Instant currentTime)
-        {
-            var (activity, startTime) = currentActivities.Pop();
-            addIntervalToActivity(activity, startTime, currentTime);
-        }
-
-        private void addIntervalToActivity(Activity activity, Instant startTime, Instant endTime)
-        {
-            allActivities[activity] += endTime - startTime;
-        }
-
-        private ImmutableArray<TimedActivity> prepareResultsFromMeasuredActivities()
-        {
-            var builder = ImmutableArray.CreateBuilder<TimedActivity>(allActivities.Count);
-
-            foreach (var (activity, time) in allActivities)
-            {
-                builder.Add(new TimedActivity(activity, time));
-            }
-
-            return builder.MoveToImmutable();
-        }
-
-        public readonly struct ActivityStopDisposable : IDisposable
-        {
-            private readonly ActivityTimer timer;
-            private readonly Activity activity;
-
-            public ActivityStopDisposable(ActivityTimer timer, Activity activity)
-            {
-                this.timer = timer;
-                this.activity = activity;
-            }
-
-            public void Dispose()
-            {
-                timer.Stop(activity);
-            }
+            timer.Stop(activity);
         }
     }
 }

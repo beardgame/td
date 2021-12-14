@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Components
+namespace Bearded.TD.Game.Simulation.Components;
+
+interface INestedComponentOwner
 {
-    interface INestedComponentOwner
-    {
-        IComponentOwner NestedComponentOwner { get; }
-    }
+    IComponentOwner NestedComponentOwner { get; }
 }

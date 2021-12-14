@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Exploration
+namespace Bearded.TD.Game.Simulation.Exploration;
+
+interface IVisibility
 {
-    interface IVisibility
-    {
-        ObjectVisibility Visibility { get; }
-    }
+    ObjectVisibility Visibility { get; }
 }

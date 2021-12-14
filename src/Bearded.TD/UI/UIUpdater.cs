@@ -1,33 +1,32 @@
 ﻿using Bearded.Graphics;
 using Bearded.Utilities.Collections;
 
-namespace Bearded.TD.UI
+namespace Bearded.TD.UI;
+
+sealed class UIUpdater
 {
-    sealed class UIUpdater
+    private readonly DeletableObjectList<IUpdatable> updatableNavigationNodes = new DeletableObjectList<IUpdatable>();
+
+    public void Update(UpdateEventArgs args)
     {
-        private readonly DeletableObjectList<IUpdatable> updatableNavigationNodes = new DeletableObjectList<IUpdatable>();
-
-        public void Update(UpdateEventArgs args)
+        foreach (var node in updatableNavigationNodes)
         {
-            foreach (var node in updatableNavigationNodes)
-            {
-                node.Update(args);
-            }
+            node.Update(args);
         }
+    }
 
-        public void Add(IUpdatable node)
-        {
-            updatableNavigationNodes.Add(node);
-        }
+    public void Add(IUpdatable node)
+    {
+        updatableNavigationNodes.Add(node);
+    }
 
-        public void Remove(IUpdatable node)
-        {
-            updatableNavigationNodes.Remove(node);
-        }
+    public void Remove(IUpdatable node)
+    {
+        updatableNavigationNodes.Remove(node);
+    }
 
-        public interface IUpdatable : IDeletable
-        {
-            void Update(UpdateEventArgs args);
-        }
+    public interface IUpdatable : IDeletable
+    {
+        void Update(UpdateEventArgs args);
     }
 }

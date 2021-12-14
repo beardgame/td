@@ -4,85 +4,84 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Input
+namespace Bearded.TD.Game.Input;
+
+sealed class DefaultInteractionHandler : InteractionHandler
 {
-    sealed class DefaultInteractionHandler : InteractionHandler
+    private static readonly TimeSpan doubleClickInterval = 0.2.S();
+
+    private ISelectable? lastSelected;
+    private Instant lastSelectedTime;
+
+    public DefaultInteractionHandler(GameInstance game) : base(game) { }
+
+    public override void Update(ICursorHandler cursor)
     {
-        private static readonly TimeSpan doubleClickInterval = 0.2.S();
-
-        private ISelectable? lastSelected;
-        private Instant lastSelectedTime;
-
-        public DefaultInteractionHandler(GameInstance game) : base(game) { }
-
-        public override void Update(ICursorHandler cursor)
+        var currentFootprint = cursor.CurrentFootprint;
+        if (!currentFootprint.IsValid(Game.State.Level))
         {
-            var currentFootprint = cursor.CurrentFootprint;
-            if (!currentFootprint.IsValid(Game.State.Level))
-            {
-                return;
-            }
+            return;
+        }
 
-            // TODO: make this work for multiple selectables
-            var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile)
-                .FirstOrDefault(s => s.IsSelectable);
-            var clicked = cursor.Click.Hit;
+        // TODO: make this work for multiple selectables
+        var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile)
+            .FirstOrDefault(s => s.IsSelectable);
+        var clicked = cursor.Click.Hit;
 
-            if (selectable != null)
+        if (selectable != null)
+        {
+            if (clicked)
             {
-                if (clicked)
+                if (!doubleClick(selectable))
                 {
-                    if (!doubleClick(selectable))
-                    {
-                        Game.SelectionManager.SelectObject(selectable);
-                    }
-                }
-                else
-                {
-                    Game.SelectionManager.FocusObject(selectable);
+                    Game.SelectionManager.SelectObject(selectable);
                 }
             }
             else
             {
-                if (clicked)
-                {
-                    Game.SelectionManager.ResetSelection();
-                }
-                else
-                {
-                    Game.SelectionManager.ResetFocus();
-                }
+                Game.SelectionManager.FocusObject(selectable);
             }
         }
-
-        private bool doubleClick(ISelectable selectable)
+        else
         {
-            var now = Game.State.Time;
-            var timeSinceLastSelected = now - lastSelectedTime;
-
-            if (lastSelected == selectable
-                && timeSinceLastSelected < doubleClickInterval
-                && tryDoubleClickInteraction(selectable))
+            if (clicked)
             {
-                return true;
+                Game.SelectionManager.ResetSelection();
             }
-
-            lastSelected = selectable;
-            lastSelectedTime = now;
-            return false;
+            else
+            {
+                Game.SelectionManager.ResetFocus();
+            }
         }
+    }
 
-        private bool tryDoubleClickInteraction(ISelectable selectable)
+    private bool doubleClick(ISelectable selectable)
+    {
+        var now = Game.State.Time;
+        var timeSinceLastSelected = now - lastSelectedTime;
+
+        if (lastSelected == selectable
+            && timeSinceLastSelected < doubleClickInterval
+            && tryDoubleClickInteraction(selectable))
         {
-            var manualControl = selectable.Subject.Reports.OfType<IManualControlReport>().FirstOrDefault();
-
-            if (manualControl == null)
-                return false;
-
-            Game.SelectionManager.ResetSelection();
-            Game.PlayerInput.SetInteractionHandler(new ManualControlInteractionHandler(Game, manualControl));
-
             return true;
         }
+
+        lastSelected = selectable;
+        lastSelectedTime = now;
+        return false;
+    }
+
+    private bool tryDoubleClickInteraction(ISelectable selectable)
+    {
+        var manualControl = selectable.Subject.Reports.OfType<IManualControlReport>().FirstOrDefault();
+
+        if (manualControl == null)
+            return false;
+
+        Game.SelectionManager.ResetSelection();
+        Game.PlayerInput.SetInteractionHandler(new ManualControlInteractionHandler(Game, manualControl));
+
+        return true;
     }
 }

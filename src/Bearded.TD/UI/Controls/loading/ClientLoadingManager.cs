@@ -5,22 +5,21 @@ using Bearded.TD.Game.Commands.General;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+class ClientLoadingManager : LoadingManager
 {
-    class ClientLoadingManager : LoadingManager
+    public ClientLoadingManager(GameInstance game, NetworkInterface networkInterface)
+        : base(game, networkInterface) { }
+
+    public override void Update(UpdateEventArgs args)
     {
-        public ClientLoadingManager(GameInstance game, NetworkInterface networkInterface)
-            : base(game, networkInterface) { }
+        base.Update(args);
 
-        public override void Update(UpdateEventArgs args)
+        // Instantly finish loading for now.
+        if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
         {
-            base.Update(args);
-
-            // Instantly finish loading for now.
-            if (Game.Me.ConnectionState == PlayerConnectionState.ProcessingLoadingData)
-            {
-                Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.FinishedLoading));
-            }
+            Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.FinishedLoading));
         }
     }
 }

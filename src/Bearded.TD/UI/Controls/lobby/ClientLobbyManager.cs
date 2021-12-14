@@ -1,15 +1,14 @@
 ﻿using Bearded.TD.Game;
 using Bearded.TD.Networking;
 
-namespace Bearded.TD.UI.Controls
-{
-    class ClientLobbyManager : LobbyManager
-    {
-        public override bool CanChangeGameSettings => false;
-        
-        public ClientLobbyManager(GameInstance game, NetworkInterface networkInterface)
-            : base(game, networkInterface) {}
+namespace Bearded.TD.UI.Controls;
 
-        public override LoadingManager GetLoadingManager() => new ClientLoadingManager(Game, Network);
-    }
+class ClientLobbyManager : LobbyManager
+{
+    public override bool CanChangeGameSettings => false;
+        
+    public ClientLobbyManager(GameInstance game, NetworkInterface networkInterface)
+        : base(game, networkInterface) {}
+
+    public override LoadingManager GetLoadingManager() => new ClientLoadingManager(Game, Network);
 }

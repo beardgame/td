@@ -1,20 +1,19 @@
 ﻿using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Components
+namespace Bearded.TD.Game.Simulation.Components;
+
+interface IComponent
 {
-    interface IComponent
-    {
-        void Update(TimeSpan elapsedTime);
+    void Update(TimeSpan elapsedTime);
 
-        bool CanApplyUpgradeEffect(IUpgradeEffect effect);
-        void ApplyUpgradeEffect(IUpgradeEffect effect);
-        bool RemoveUpgradeEffect(IUpgradeEffect effect);
-    }
+    bool CanApplyUpgradeEffect(IUpgradeEffect effect);
+    void ApplyUpgradeEffect(IUpgradeEffect effect);
+    bool RemoveUpgradeEffect(IUpgradeEffect effect);
+}
 
-    interface IComponent<in TOwner> : IComponent
-    {
-        void OnAdded(TOwner owner, ComponentEvents events);
-        void OnRemoved();
-    }
+interface IComponent<in TOwner> : IComponent
+{
+    void OnAdded(TOwner owner, ComponentEvents events);
+    void OnRemoved();
 }

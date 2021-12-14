@@ -1,36 +1,35 @@
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+readonly struct DamageExecutor
 {
-    readonly struct DamageExecutor
+    private readonly IDamageSource? damageSource;
+
+    private DamageExecutor(IDamageSource? damageSource)
     {
-        private readonly IDamageSource? damageSource;
+        this.damageSource = damageSource;
+    }
 
-        private DamageExecutor(IDamageSource? damageSource)
+    public bool TryDoDamage(IComponentOwner target, DamageInfo damage)
+    {
+        if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
         {
-            this.damageSource = damageSource;
+            return false;
         }
 
-        public bool TryDoDamage(IComponentOwner target, DamageInfo damage)
-        {
-            if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
-            {
-                return false;
-            }
+        receiver.Damage(damage, damageSource);
+        return true;
+    }
 
-            receiver.Damage(damage, damageSource);
-            return true;
-        }
+    public static DamageExecutor FromObject(IComponentOwner source)
+    {
+        source.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
+        return FromDamageSource(damageSource);
+    }
 
-        public static DamageExecutor FromObject(IComponentOwner source)
-        {
-            source.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
-            return FromDamageSource(damageSource);
-        }
-
-        public static DamageExecutor FromDamageSource(IDamageSource? source)
-        {
-            return new DamageExecutor(source);
-        }
+    public static DamageExecutor FromDamageSource(IDamageSource? source)
+    {
+        return new DamageExecutor(source);
     }
 }

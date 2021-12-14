@@ -1,11 +1,10 @@
-﻿namespace Bearded.TD.Game
+﻿namespace Bearded.TD.Game;
+
+enum GameStatus
 {
-    enum GameStatus
-    {
-        Unknown,
-        Lobby,
-        Loading,
-        Playing,
-        Paused
-    }
+    Unknown,
+    Lobby,
+    Loading,
+    Playing,
+    Paused
 }

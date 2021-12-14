@@ -3,36 +3,35 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game.Commands.Debug
+namespace Bearded.TD.Game.Commands.Debug;
+
+static class DebugGameOver
 {
-    static class DebugGameOver
+    public static IRequest<Player, GameInstance> Request(GameState game)
+        => new Implementation(game);
+
+    private sealed class Implementation : UnifiedDebugRequestCommand
     {
-        public static IRequest<Player, GameInstance> Request(GameState game)
-            => new Implementation(game);
+        private readonly GameState game;
 
-        private sealed class Implementation : UnifiedDebugRequestCommand
+        public Implementation(GameState game)
         {
-            private readonly GameState game;
-
-            public Implementation(GameState game)
-            {
-                this.game = game;
-            }
-
-            public override void Execute() => game.Meta.DoGameOver();
-
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+            this.game = game;
         }
 
-        private sealed class Serializer : UnifiedRequestCommandSerializer
-        {
-            // ReSharper disable once EmptyConstructor
-            public Serializer() { }
+        public override void Execute() => game.Meta.DoGameOver();
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-                => new Implementation(game.State);
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+    }
 
-            public override void Serialize(INetBufferStream stream) { }
-        }
+    private sealed class Serializer : UnifiedRequestCommandSerializer
+    {
+        // ReSharper disable once EmptyConstructor
+        public Serializer() { }
+
+        protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+            => new Implementation(game.State);
+
+        public override void Serialize(INetBufferStream stream) { }
     }
 }

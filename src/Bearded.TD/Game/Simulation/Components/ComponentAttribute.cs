@@ -2,18 +2,17 @@
 using Bearded.TD.Content.Behaviors;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Simulation.Components
-{
-    [AttributeUsage(AttributeTargets.Class)]
-    [BaseTypeRequired(typeof(IComponent<>))]
-    [MeansImplicitUse]
-    class ComponentAttribute : Attribute, IBehaviorAttribute
-    {
-        public string Id { get; }
+namespace Bearded.TD.Game.Simulation.Components;
 
-        public ComponentAttribute(string id)
-        {
-            Id = id;
-        }
+[AttributeUsage(AttributeTargets.Class)]
+[BaseTypeRequired(typeof(IComponent<>))]
+[MeansImplicitUse]
+class ComponentAttribute : Attribute, IBehaviorAttribute
+{
+    public string Id { get; }
+
+    public ComponentAttribute(string id)
+    {
+        Id = id;
     }
 }

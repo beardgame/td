@@ -3,90 +3,89 @@ using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed partial class UpgradeReportControl : ReportControl
 {
-    sealed partial class UpgradeReportControl : ReportControl
+    public override double Height { get; } = 200;
+
+    private readonly IUpgradeReportInstance reportInstance;
+    private readonly ControlContainer controlContainer;
+
+    private readonly ListControl list;
+    private UpgradeListItems listItems;
+    private bool isDetailsOpen;
+    private bool isAddedToParent;
+
+    public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
     {
-        public override double Height { get; } = 200;
+        this.reportInstance = reportInstance;
+        this.controlContainer = controlContainer;
+        reportInstance.UpgradesUpdated += updateUpgradesFromReport;
 
-        private readonly IUpgradeReportInstance reportInstance;
-        private readonly ControlContainer controlContainer;
+        list = new ListControl(new ViewportClippingLayerControl());
+        listItems = new UpgradeListItems(
+            reportInstance.Upgrades.ToImmutableArray(), reportInstance.CanPlayerUpgradeBuilding);
+        listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
+        list.ItemSource = listItems;
+        Add(list);
+    }
 
-        private readonly ListControl list;
-        private UpgradeListItems listItems;
-        private bool isDetailsOpen;
-        private bool isAddedToParent;
+    protected override void OnAddingToParent()
+    {
+        base.OnAddingToParent();
+        isAddedToParent = true;
+    }
 
-        public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
+    private void updateUpgradesFromReport()
+    {
+        var newUpgrades = reportInstance.Upgrades.ToImmutableArray();
+
+        if (listItems.AppliedUpgrades.Length == newUpgrades.Length)
         {
-            this.reportInstance = reportInstance;
-            this.controlContainer = controlContainer;
-            reportInstance.UpgradesUpdated += updateUpgradesFromReport;
-
-            list = new ListControl(new ViewportClippingLayerControl());
-            listItems = new UpgradeListItems(
-                reportInstance.Upgrades.ToImmutableArray(), reportInstance.CanPlayerUpgradeBuilding);
-            listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
-            list.ItemSource = listItems;
-            Add(list);
-        }
-
-        protected override void OnAddingToParent()
-        {
-            base.OnAddingToParent();
-            isAddedToParent = true;
-        }
-
-        private void updateUpgradesFromReport()
-        {
-            var newUpgrades = reportInstance.Upgrades.ToImmutableArray();
-
-            if (listItems.AppliedUpgrades.Length == newUpgrades.Length)
+            if (isAddedToParent)
             {
-                if (isAddedToParent)
-                {
-                    list.Reload();
-                }
-
-                return;
+                list.Reload();
             }
 
-            listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
-            listItems.DestroyAll();
-            listItems = new UpgradeListItems(newUpgrades, reportInstance.CanPlayerUpgradeBuilding);
-            listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
-            list.ItemSource = listItems;
+            return;
         }
 
-        public override void Update()
+        listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
+        listItems.DestroyAll();
+        listItems = new UpgradeListItems(newUpgrades, reportInstance.CanPlayerUpgradeBuilding);
+        listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
+        list.ItemSource = listItems;
+    }
+
+    public override void Update()
+    {
+        listItems.UpdateProgress();
+    }
+
+    public override void Dispose()
+    {
+        reportInstance.Dispose();
+        if (isDetailsOpen)
         {
-            listItems.UpdateProgress();
+            controlContainer.ClearControl();
         }
+    }
 
-        public override void Dispose()
+    private void onChooseUpgradeButtonClicked()
+    {
+        if (isDetailsOpen)
         {
-            reportInstance.Dispose();
-            if (isDetailsOpen)
-            {
-                controlContainer.ClearControl();
-            }
+            controlContainer.ClearControl();
+            return;
         }
 
-        private void onChooseUpgradeButtonClicked()
+        var details = new UpgradeDetailsControl(reportInstance);
+        controlContainer.SetControl(details, () =>
         {
-            if (isDetailsOpen)
-            {
-                controlContainer.ClearControl();
-                return;
-            }
-
-            var details = new UpgradeDetailsControl(reportInstance);
-            controlContainer.SetControl(details, () =>
-            {
-                details.Dispose();
-                isDetailsOpen = false;
-            });
-            isDetailsOpen = true;
-        }
+            details.Dispose();
+            isDetailsOpen = false;
+        });
+        isDetailsOpen = true;
     }
 }

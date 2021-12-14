@@ -2,31 +2,30 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities;
+
+sealed class DiscordWebhook
 {
-    sealed class DiscordWebhook
+    private readonly string url;
+
+    public DiscordWebhook(string token)
     {
-        private readonly string url;
+        url = $"https://discord.com/api/webhooks/{token}";
+    }
 
-        public DiscordWebhook(string token)
+    public Task SendFileAsync(MemoryStream fileStream, string filename)
+    {
+        return Task.Run(async () =>
         {
-            url = $"https://discord.com/api/webhooks/{token}";
-        }
-
-        public Task SendFileAsync(MemoryStream fileStream, string filename)
-        {
-            return Task.Run(async () =>
+            var form = new MultipartFormDataContent
             {
-                var form = new MultipartFormDataContent
-                {
-                    {new ByteArrayContent(fileStream.ToArray()), "file", filename}
-                };
+                {new ByteArrayContent(fileStream.ToArray()), "file", filename}
+            };
 
-                using var http = new HttpClient();
-                var response = await http.PostAsync(url, form);
+            using var http = new HttpClient();
+            var response = await http.PostAsync(url, form);
 
-                response.EnsureSuccessStatusCode();
-            });
-        }
+            response.EnsureSuccessStatusCode();
+        });
     }
 }

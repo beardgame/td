@@ -1,55 +1,54 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+sealed class HealthEventReceiver<T> : Component<T>, IHealthEventReceiver
 {
-    sealed class HealthEventReceiver<T> : Component<T>, IHealthEventReceiver
+    public void Damage(DamageInfo damageInfo, IDamageSource? source)
     {
-        public void Damage(DamageInfo damageInfo, IDamageSource? source)
+        var previewDamage = new PreviewTakeDamage(damageInfo);
+        Events.Preview(ref previewDamage);
+
+        var modifiedDamageInfo = damageInfo;
+        if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamageInfo.Amount)
         {
-            var previewDamage = new PreviewTakeDamage(damageInfo);
-            Events.Preview(ref previewDamage);
-
-            var modifiedDamageInfo = damageInfo;
-            if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamageInfo.Amount)
-            {
-                modifiedDamageInfo = damageInfo.WithAdjustedAmount(damageCap);
-            }
-
-            if (modifiedDamageInfo.Amount > HitPoints.Zero)
-            {
-                var result = new DamageResult(modifiedDamageInfo);
-                Events.Send(new TakeDamage(result, source));
-                source?.AttributeDamage(result);
-            }
+            modifiedDamageInfo = damageInfo.WithAdjustedAmount(damageCap);
         }
 
-        public void Heal(HealInfo healInfo)
+        if (modifiedDamageInfo.Amount > HitPoints.Zero)
         {
-            var previewHeal = new PreviewHealDamage(healInfo);
-            Events.Preview(ref previewHeal);
+            var result = new DamageResult(modifiedDamageInfo);
+            Events.Send(new TakeDamage(result, source));
+            source?.AttributeDamage(result);
+        }
+    }
 
-            var modifiedHealInfo = healInfo;
-            if (previewHeal.HealCap is { } healCap && healCap < modifiedHealInfo.Amount)
-            {
-                modifiedHealInfo = healInfo.WithAdjustedAmount(healCap);
-            }
+    public void Heal(HealInfo healInfo)
+    {
+        var previewHeal = new PreviewHealDamage(healInfo);
+        Events.Preview(ref previewHeal);
 
-            if (modifiedHealInfo.Amount > HitPoints.Zero)
-            {
-                var result = new HealResult(modifiedHealInfo);
-                Events.Send(new HealDamage(result));
-            }
+        var modifiedHealInfo = healInfo;
+        if (previewHeal.HealCap is { } healCap && healCap < modifiedHealInfo.Amount)
+        {
+            modifiedHealInfo = healInfo.WithAdjustedAmount(healCap);
         }
 
-        protected override void OnAdded() {}
-
-        public override void Update(TimeSpan elapsedTime) {}
+        if (modifiedHealInfo.Amount > HitPoints.Zero)
+        {
+            var result = new HealResult(modifiedHealInfo);
+            Events.Send(new HealDamage(result));
+        }
     }
 
-    interface IHealthEventReceiver
-    {
-        void Damage(DamageInfo damageInfo, IDamageSource? source);
-        void Heal(HealInfo healInfo);
-    }
+    protected override void OnAdded() {}
+
+    public override void Update(TimeSpan elapsedTime) {}
+}
+
+interface IHealthEventReceiver
+{
+    void Damage(DamageInfo damageInfo, IDamageSource? source);
+    void Heal(HealInfo healInfo);
 }

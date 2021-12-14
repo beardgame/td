@@ -1,15 +1,14 @@
-namespace Bearded.TD.Game.Simulation.Damage
+namespace Bearded.TD.Game.Simulation.Damage;
+
+public enum DamageType
 {
-    public enum DamageType
-    {
-        DivineIntervention, // Used for cheats/debugging only
+    DivineIntervention, // Used for cheats/debugging only
 
-        Kinetic,
-        Energy,
+    Kinetic,
+    Energy,
 
-        Fire,
-        Frost,
-        Alchemy,
-        Electricity,
-    }
+    Fire,
+    Frost,
+    Alchemy,
+    Electricity,
 }

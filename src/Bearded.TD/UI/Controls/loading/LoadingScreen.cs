@@ -4,47 +4,46 @@ using Bearded.TD.Game;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
 {
-    sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
+    private LoadingManager loadingManager = null!;
+
+    public event VoidEventHandler? ModLoadingUpdated;
+
+    protected override void Initialize(DependencyResolver dependencies, LoadingManager loadingManager)
     {
-        private LoadingManager loadingManager = null!;
+        base.Initialize(dependencies, loadingManager);
 
-        public event VoidEventHandler? ModLoadingUpdated;
+        this.loadingManager = loadingManager;
+        loadingManager.Game.GameStatusChanged += onGameStatusChanged;
+    }
 
-        protected override void Initialize(DependencyResolver dependencies, LoadingManager loadingManager)
-        {
-            base.Initialize(dependencies, loadingManager);
+    public override void Terminate()
+    {
+        base.Terminate();
 
-            this.loadingManager = loadingManager;
-            loadingManager.Game.GameStatusChanged += onGameStatusChanged;
-        }
+        loadingManager.Game.GameStatusChanged -= onGameStatusChanged;
+    }
 
-        public override void Terminate()
-        {
-            base.Terminate();
+    public override void Update(UpdateEventArgs args)
+    {
+        loadingManager.Update(args);
+        ModLoadingUpdated?.Invoke();
+    }
 
-            loadingManager.Game.GameStatusChanged -= onGameStatusChanged;
-        }
+    private void onGameStatusChanged(GameStatus gameStatus)
+    {
+        if (gameStatus != GameStatus.Playing) throw new Exception("Unexpected game status change.");
+        startGame();
+    }
 
-        public override void Update(UpdateEventArgs args)
-        {
-            loadingManager.Update(args);
-            ModLoadingUpdated?.Invoke();
-        }
-
-        private void onGameStatusChanged(GameStatus gameStatus)
-        {
-            if (gameStatus != GameStatus.Playing) throw new Exception("Unexpected game status change.");
-            startGame();
-        }
-
-        private void startGame()
-        {
-            loadingManager.PrepareUI();
-            Navigation.Replace<GameUI, (GameInstance, GameRunner)>(
-                (loadingManager.Game, new GameRunner(loadingManager.Game, loadingManager.Network)), this);
-            loadingManager.FinalizeUI();
-        }
+    private void startGame()
+    {
+        loadingManager.PrepareUI();
+        Navigation.Replace<GameUI, (GameInstance, GameRunner)>(
+            (loadingManager.Game, new GameRunner(loadingManager.Game, loadingManager.Network)), this);
+        loadingManager.FinalizeUI();
     }
 }

@@ -3,35 +3,33 @@ using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game.Commands.Loading
+namespace Bearded.TD.Game.Commands.Loading;
+
+static class InitializeTypes
 {
-    static class InitializeTypes
+    public static ISerializableCommand<GameInstance> Command()
+        => new Implementation();
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command()
-            => new Implementation();
+        // ReSharper disable once EmptyConstructor
+        public Implementation() {}
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public void Execute()
         {
-            // ReSharper disable once EmptyConstructor
-            public Implementation() {}
-
-            public void Execute()
-            {
-                ParametersTemplateLibrary.TouchModifiableClasses();
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
+            ParametersTemplateLibrary.TouchModifiableClasses();
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
-        {
-            // ReSharper disable once EmptyConstructor
-            public Serializer() { }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
+    }
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => new Implementation();
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        // ReSharper disable once EmptyConstructor
+        public Serializer() { }
 
-            public void Serialize(INetBufferStream stream) { }
-        }
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => new Implementation();
+
+        public void Serialize(INetBufferStream stream) { }
     }
 }
-

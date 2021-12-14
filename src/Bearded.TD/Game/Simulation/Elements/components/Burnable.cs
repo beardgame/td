@@ -12,120 +12,119 @@ using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.Elements;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Elements
+namespace Bearded.TD.Game.Simulation.Elements;
+
+[Component("burnable")]
+sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>, IDrawableComponent
+    where T : IComponentOwner, IGameObject, IPositionable
 {
-    [Component("burnable")]
-    sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>, IDrawableComponent
-        where T : IComponentOwner, IGameObject, IPositionable
+    private IDamageSource? lastFireHitOwner;
+    private IDamageSource? damageSource;
+
+    private Combustable combustable = null!;
+    private double damagePerFuel;
+
+    private float fireRenderStrengthGoal = 1;
+    private float fireRenderStrength;
+    private bool dealingDamageToOwner;
+
+    public Burnable(IBurnableParameters parameters) : base(parameters) {}
+
+    protected override void OnAdded()
     {
-        private IDamageSource? lastFireHitOwner;
-        private IDamageSource? damageSource;
+        combustable = new Combustable(
+            Parameters.FuelAmount,
+            Parameters.FlashPointThreshold,
+            Parameters.BurnSpeed ?? new EnergyConsumptionRate(1),
+            Parameters.StartsOnFire);
 
-        private Combustable combustable = null!;
-        private double damagePerFuel;
+        combustable.Extinguished += onExtinguished;
 
-        private float fireRenderStrengthGoal = 1;
-        private float fireRenderStrength;
-        private bool dealingDamageToOwner;
+        damagePerFuel = Parameters.DamagePerFuel ?? 1;
+        Events.Subscribe<TakeDamage>(this);
+        Events.Subscribe<Spark>(this);
+    }
 
-        public Burnable(IBurnableParameters parameters) : base(parameters) {}
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe<TakeDamage>(this);
+        Events.Unsubscribe<Spark>(this);
+    }
 
-        protected override void OnAdded()
+    private void onExtinguished()
+    {
+        Events.Send(new FireExtinguished());
+    }
+
+    public void HandleEvent(TakeDamage @event)
+    {
+        if (dealingDamageToOwner)
+            return;
+
+        onDamaged(@event.Damage, @event.Source);
+    }
+
+    public void HandleEvent(Spark @event)
+    {
+        combustable.Spark();
+    }
+
+    private void onDamaged(DamageResult result, IDamageSource? source)
+    {
+        switch (result.Damage.Type)
         {
-            combustable = new Combustable(
-                Parameters.FuelAmount,
-                Parameters.FlashPointThreshold,
-                Parameters.BurnSpeed ?? new EnergyConsumptionRate(1),
-                Parameters.StartsOnFire);
-
-            combustable.Extinguished += onExtinguished;
-
-            damagePerFuel = Parameters.DamagePerFuel ?? 1;
-            Events.Subscribe<TakeDamage>(this);
-            Events.Subscribe<Spark>(this);
+            case DamageType.Energy:
+                combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerEnergyDamage);
+                break;
+            case DamageType.Fire:
+                combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerFireDamage);
+                break;
         }
 
-        public override void OnRemoved()
+        lastFireHitOwner = source ?? lastFireHitOwner;
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
+        var (volume, _) = Owner.Game.FluidLayer.Water[Level.GetTile(Owner.Position.XY())];
+
+        if (volume > Volume.Zero)
         {
-            Events.Unsubscribe<TakeDamage>(this);
-            Events.Unsubscribe<Spark>(this);
+            combustable.HitWithWater(elapsedTime * EnergyPerSecondInWater);
         }
 
-        private void onExtinguished()
+        combustable.Update(elapsedTime);
+
+        if (!combustable.IsOnFire)
         {
-            Events.Send(new FireExtinguished());
+            return;
         }
 
-        public void HandleEvent(TakeDamage @event)
-        {
-            if (dealingDamageToOwner)
-                return;
+        damageSource ??= lastFireHitOwner;
 
-            onDamaged(@event.Damage, @event.Source);
-        }
+        dealingDamageToOwner = true;
+        var damage = new DamageInfo(
+            StaticRandom
+                .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
+                    combustable.BurningSpeed.NumericValue)).HitPoints(),
+            DamageType.Fire);
+        DamageExecutor.FromDamageSource(damageSource).TryDoDamage(Owner, damage);
+        dealingDamageToOwner = false;
 
-        public void HandleEvent(Spark @event)
-        {
-            combustable.Spark();
-        }
+        if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
+            fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
 
-        private void onDamaged(DamageResult result, IDamageSource? source)
-        {
-            switch (result.Damage.Type)
-            {
-                case DamageType.Energy:
-                    combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerEnergyDamage);
-                    break;
-                case DamageType.Fire:
-                    combustable.HitWithFire(result.Damage.Amount.NumericValue * EnergyPerFireDamage);
-                    break;
-            }
+        fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
+    }
 
-            lastFireHitOwner = source ?? lastFireHitOwner;
-        }
+    public void Draw(IComponentDrawer drawer)
+    {
+        if (!combustable.IsOnFire) return;
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            var (volume, _) = Owner.Game.FluidLayer.Water[Level.GetTile(Owner.Position.XY())];
-
-            if (volume > Volume.Zero)
-            {
-                combustable.HitWithWater(elapsedTime * EnergyPerSecondInWater);
-            }
-
-            combustable.Update(elapsedTime);
-
-            if (!combustable.IsOnFire)
-            {
-                return;
-            }
-
-            damageSource ??= lastFireHitOwner;
-
-            dealingDamageToOwner = true;
-            var damage = new DamageInfo(
-                StaticRandom
-                    .Discretise((float)(elapsedTime.NumericValue * damagePerFuel *
-                        combustable.BurningSpeed.NumericValue)).HitPoints(),
-                DamageType.Fire);
-            DamageExecutor.FromDamageSource(damageSource).TryDoDamage(Owner, damage);
-            dealingDamageToOwner = false;
-
-            if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
-                fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
-
-            fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
-        }
-
-        public void Draw(IComponentDrawer drawer)
-        {
-            if (!combustable.IsOnFire) return;
-
-            drawer.Core.PointLight.Draw(
-                Owner.Position.NumericValue,
-                1.5f * fireRenderStrength,
-                Color.OrangeRed * fireRenderStrength
-            );
-        }
+        drawer.Core.PointLight.Draw(
+            Owner.Position.NumericValue,
+            1.5f * fireRenderStrength,
+            Color.OrangeRed * fireRenderStrength
+        );
     }
 }

@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Simulation.Footprints
-{
-    readonly record struct TileEntered(Tile Tile) : IComponentEvent;
-}
+namespace Bearded.TD.Game.Simulation.Footprints;
+
+readonly record struct TileEntered(Tile Tile) : IComponentEvent;

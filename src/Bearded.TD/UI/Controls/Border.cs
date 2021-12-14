@@ -2,19 +2,18 @@ using Bearded.Graphics;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+class Border : Control
 {
-    class Border : Control
+    private static readonly Color defaultColor = Color.White;
+
+    public virtual Color Color { get; }
+
+    public Border(Color? color = null)
     {
-        private static readonly Color defaultColor = Color.White;
-
-        public virtual Color Color { get; }
-
-        public Border(Color? color = null)
-        {
-            Color = color ?? defaultColor;
-        }
-
-        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+        Color = color ?? defaultColor;
     }
+
+    protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 }

@@ -1,8 +1,7 @@
-﻿namespace Bearded.TD.Content.Serialization.Models
+﻿namespace Bearded.TD.Content.Serialization.Models;
+
+interface IBuildingComponent : IComponent
 {
-    interface IBuildingComponent : IComponent
-    {
-        bool OnBuilding { get; }
-        bool OnGhost { get; }
-    }
+    bool OnBuilding { get; }
+    bool OnGhost { get; }
 }

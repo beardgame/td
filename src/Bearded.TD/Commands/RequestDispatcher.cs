@@ -2,68 +2,67 @@
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Commands
+namespace Bearded.TD.Commands;
+
+interface IRequestDispatcher<TActor, TObject>
 {
-    interface IRequestDispatcher<TActor, TObject>
+    void Dispatch(TActor actor, IRequest<TActor, TObject> request);
+}
+
+class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+{
+    private readonly ClientNetworkInterface network;
+
+    public ClientRequestDispatcher(ClientNetworkInterface network)
     {
-        void Dispatch(TActor actor, IRequest<TActor, TObject> request);
+        this.network = network;
     }
 
-    class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+    public void Dispatch(TActor _, IRequest<TActor, TObject> request)
     {
-        private readonly ClientNetworkInterface network;
-
-        public ClientRequestDispatcher(ClientNetworkInterface network)
-        {
-            this.network = network;
-        }
-
-        public void Dispatch(TActor _, IRequest<TActor, TObject> request)
-        {
-            sendToServer(request);
-        }
-
-        private void sendToServer(IRequest<TActor, TObject> request)
-        {
-            var message = network.CreateMessage();
-
-            var serializer = request.Serializer;
-            var serializers = Serializers<TActor, TObject>.Instance;
-            var id = serializers.RequestId(request.Serializer);
-
-            message.Write(id);
-            serializer.Serialize(new NetBufferWriter(message));
-
-            network.SendMessage(message, NetworkChannel.Chat);
-        }
+        sendToServer(request);
     }
 
-    class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+    private void sendToServer(IRequest<TActor, TObject> request)
     {
-        private readonly ICommandDispatcher<TObject> commandDispatcher;
+        var message = network.CreateMessage();
 
-        public ServerRequestDispatcher(ICommandDispatcher<TObject> commandDispatcher)
-        {
-            this.commandDispatcher = commandDispatcher;
-        }
+        var serializer = request.Serializer;
+        var serializers = Serializers<TActor, TObject>.Instance;
+        var id = serializers.RequestId(request.Serializer);
 
-        public void Dispatch(TActor actor, IRequest<TActor, TObject> request)
-        {
-            var command = request.CheckPreconditions(actor)
-                ? execute(request)
-                : cancel();
+        message.Write(id);
+        serializer.Serialize(new NetBufferWriter(message));
 
-            commandDispatcher.Dispatch(command);
-        }
+        network.SendMessage(message, NetworkChannel.Chat);
+    }
+}
 
-        private static ISerializableCommand<TObject>? cancel()
-        {
-            return null;
-        }
+class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+{
+    private readonly ICommandDispatcher<TObject> commandDispatcher;
 
-        private ISerializableCommand<TObject>? execute(IRequest<TActor, TObject> request)
-        {
-            return request.ToCommand();
-        }
+    public ServerRequestDispatcher(ICommandDispatcher<TObject> commandDispatcher)
+    {
+        this.commandDispatcher = commandDispatcher;
+    }
+
+    public void Dispatch(TActor actor, IRequest<TActor, TObject> request)
+    {
+        var command = request.CheckPreconditions(actor)
+            ? execute(request)
+            : cancel();
+
+        commandDispatcher.Dispatch(command);
+    }
+
+    private static ISerializableCommand<TObject>? cancel()
+    {
+        return null;
+    }
+
+    private ISerializableCommand<TObject>? execute(IRequest<TActor, TObject> request)
+    {
+        return request.ToCommand();
     }
 }

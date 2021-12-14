@@ -1,13 +1,12 @@
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Buildings
+namespace Bearded.TD.Game.Simulation.Buildings;
+
+interface IManualControlReport : IReport
 {
-    interface IManualControlReport : IReport
-    {
-        Position2 SubjectPosition { get; }
-        Unit SubjectRange { get; }
-        void StartControl(IManualTarget2 target);
-        void EndControl();
-    }
+    Position2 SubjectPosition { get; }
+    Unit SubjectRange { get; }
+    void StartControl(IManualTarget2 target);
+    void EndControl();
 }

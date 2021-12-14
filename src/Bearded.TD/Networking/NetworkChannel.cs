@@ -1,7 +1,6 @@
-﻿namespace Bearded.TD.Networking
+﻿namespace Bearded.TD.Networking;
+
+enum NetworkChannel
 {
-    enum NetworkChannel
-    {
-        Chat = 0,
-    }
+    Chat = 0,
 }

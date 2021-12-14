@@ -1,9 +1,8 @@
 using Bearded.TD.Rendering;
 
-namespace Bearded.TD.Game.Simulation.Drawing
+namespace Bearded.TD.Game.Simulation.Drawing;
+
+interface IComponentRenderer
 {
-    interface IComponentRenderer
-    {
-        void Render(CoreDrawers drawers);
-    }
+    void Render(CoreDrawers drawers);
 }

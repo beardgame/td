@@ -1,11 +1,10 @@
-namespace Bearded.TD.Utilities.Performance
+namespace Bearded.TD.Utilities.Performance;
+
+enum Activity
 {
-    enum Activity
-    {
-        QuantumFluctuations,
-        UpdateGame,
-        RenderGame,
-        SwapBuffer,
-        GLQueueHandler,
-    }
+    QuantumFluctuations,
+    UpdateGame,
+    RenderGame,
+    SwapBuffer,
+    GLQueueHandler,
 }

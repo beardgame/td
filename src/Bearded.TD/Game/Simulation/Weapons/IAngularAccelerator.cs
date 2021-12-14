@@ -1,9 +1,8 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+internal interface IAngularAccelerator
 {
-    internal interface IAngularAccelerator
-    {
-        void Impact(AngularVelocity impact);
-    }
+    void Impact(AngularVelocity impact);
 }

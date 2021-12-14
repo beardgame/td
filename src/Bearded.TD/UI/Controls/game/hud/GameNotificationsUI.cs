@@ -13,147 +13,146 @@ using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class GameNotificationsUI
 {
-    sealed class GameNotificationsUI
+    private readonly ImmutableArray<INotificationListener> notificationListeners;
+    private readonly List<Notification> notifications = new();
+
+    public GameInstance Game { get; private set; } = null!;
+    public ReadOnlyCollection<Notification> Notifications { get; }
+
+    public event VoidEventHandler? NotificationsChanged;
+
+    public GameNotificationsUI()
     {
-        private readonly ImmutableArray<INotificationListener> notificationListeners;
-        private readonly List<Notification> notifications = new();
+        notificationListeners = createNotificationListeners();
+        Notifications = notifications.AsReadOnly();
+    }
 
-        public GameInstance Game { get; private set; } = null!;
-        public ReadOnlyCollection<Notification> Notifications { get; }
+    private ImmutableArray<INotificationListener> createNotificationListeners() =>
+        ImmutableArray.Create<INotificationListener>(
+            textAndGameObjectEventListener<BuildingConstructionFinished>(
+                @event => $"Constructed {@event.Name}",
+                @event => @event.GameObject),
+            textAndGameObjectEventListener<BuildingRepairFinished>(
+                @event => $"Repaired {@event.Name}",
+                @event => @event.GameObject),
+            textAndGameObjectEventListener<BuildingUpgradeFinished>(
+                @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
+                @event => @event.GameObject),
+            textOnlyEventListener<TechnologyUnlocked>(
+                @event => $"Unlocked {@event.Technology.Name}"));
 
-        public event VoidEventHandler? NotificationsChanged;
+    public void Initialize(GameInstance game)
+    {
+        Game = game;
 
-        public GameNotificationsUI()
+        var events = game.Meta.Events;
+        foreach (var notificationListener in notificationListeners)
         {
-            notificationListeners = createNotificationListeners();
-            Notifications = notifications.AsReadOnly();
+            notificationListener.Subscribe(events);
+        }
+    }
+
+    public void Terminate()
+    {
+        var events = Game.Meta.Events;
+        foreach (var notificationListener in notificationListeners)
+        {
+            notificationListener.Unsubscribe(events);
+        }
+    }
+
+    public void Update()
+    {
+        var notificationsChanged = false;
+
+        while (notifications.Count > 0 && notifications[0].ExpirationTime < Game.State.Time)
+        {
+            notifications.RemoveAt(0);
+            notificationsChanged = true;
         }
 
-        private ImmutableArray<INotificationListener> createNotificationListeners() =>
-            ImmutableArray.Create<INotificationListener>(
-                textAndGameObjectEventListener<BuildingConstructionFinished>(
-                    @event => $"Constructed {@event.Name}",
-                    @event => @event.GameObject),
-                textAndGameObjectEventListener<BuildingRepairFinished>(
-                    @event => $"Repaired {@event.Name}",
-                    @event => @event.GameObject),
-                textAndGameObjectEventListener<BuildingUpgradeFinished>(
-                    @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
-                    @event => @event.GameObject),
-                textOnlyEventListener<TechnologyUnlocked>(
-                    @event => $"Unlocked {@event.Technology.Name}"));
-
-        public void Initialize(GameInstance game)
+        if (notificationsChanged)
         {
-            Game = game;
-
-            var events = game.Meta.Events;
-            foreach (var notificationListener in notificationListeners)
-            {
-                notificationListener.Subscribe(events);
-            }
-        }
-
-        public void Terminate()
-        {
-            var events = Game.Meta.Events;
-            foreach (var notificationListener in notificationListeners)
-            {
-                notificationListener.Unsubscribe(events);
-            }
-        }
-
-        public void Update()
-        {
-            var notificationsChanged = false;
-
-            while (notifications.Count > 0 && notifications[0].ExpirationTime < Game.State.Time)
-            {
-                notifications.RemoveAt(0);
-                notificationsChanged = true;
-            }
-
-            if (notificationsChanged)
-            {
-                NotificationsChanged?.Invoke();
-            }
-        }
-
-        private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
-            where T : struct, IGlobalEvent =>
-            new(
-                this,
-                @event => new Notification(
-                    textExtractor(@event),
-                    Maybe.Nothing,
-                    expirationTimeForNotification(),
-                    isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
-
-        private NotificationListener<T> textAndGameObjectEventListener<T>(
-            Func<T, string> textExtractor, Func<T, IGameObject> gameObjectExtractor)
-            where T : struct, IGlobalEvent =>
-                new(
-                    this,
-                    @event => new Notification(
-                        textExtractor(@event),
-                        Maybe.Just(gameObjectExtractor(@event)),
-                        expirationTimeForNotification(),
-                        Maybe.Nothing));
-
-        private void addNotification(Notification notification)
-        {
-            if (notifications.Count == Constants.Game.GameUI.MaxNotifications)
-            {
-                notifications.RemoveAt(0);
-            }
-
-            notifications.Add(notification);
             NotificationsChanged?.Invoke();
         }
+    }
 
-        private Instant expirationTimeForNotification(bool isSevere = false) =>
-            Game.State.Time + (isSevere
-                ? Constants.Game.GameUI.SevereNotificationDuration
-                : Constants.Game.GameUI.NotificationDuration);
+    private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
+        where T : struct, IGlobalEvent =>
+        new(
+            this,
+            @event => new Notification(
+                textExtractor(@event),
+                Maybe.Nothing,
+                expirationTimeForNotification(),
+                isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
 
-        public sealed record Notification(
-            string Text, Maybe<IGameObject> Subject, Instant ExpirationTime, Maybe<Color> Background);
+    private NotificationListener<T> textAndGameObjectEventListener<T>(
+        Func<T, string> textExtractor, Func<T, IGameObject> gameObjectExtractor)
+        where T : struct, IGlobalEvent =>
+        new(
+            this,
+            @event => new Notification(
+                textExtractor(@event),
+                Maybe.Just(gameObjectExtractor(@event)),
+                expirationTimeForNotification(),
+                Maybe.Nothing));
 
-        private interface INotificationListener
+    private void addNotification(Notification notification)
+    {
+        if (notifications.Count == Constants.Game.GameUI.MaxNotifications)
         {
-            void Subscribe(GlobalGameEvents events);
-            void Unsubscribe(GlobalGameEvents events);
+            notifications.RemoveAt(0);
         }
 
-        private sealed class NotificationListener<T> : IListener<T>, INotificationListener where T : struct, IGlobalEvent
+        notifications.Add(notification);
+        NotificationsChanged?.Invoke();
+    }
+
+    private Instant expirationTimeForNotification(bool isSevere = false) =>
+        Game.State.Time + (isSevere
+            ? Constants.Game.GameUI.SevereNotificationDuration
+            : Constants.Game.GameUI.NotificationDuration);
+
+    public sealed record Notification(
+        string Text, Maybe<IGameObject> Subject, Instant ExpirationTime, Maybe<Color> Background);
+
+    private interface INotificationListener
+    {
+        void Subscribe(GlobalGameEvents events);
+        void Unsubscribe(GlobalGameEvents events);
+    }
+
+    private sealed class NotificationListener<T> : IListener<T>, INotificationListener where T : struct, IGlobalEvent
+    {
+        private readonly GameNotificationsUI parent;
+        private readonly Func<T, Notification> eventTransformer;
+
+        public NotificationListener(
+            GameNotificationsUI parent,
+            Func<T, Notification> eventTransformer)
         {
-            private readonly GameNotificationsUI parent;
-            private readonly Func<T, Notification> eventTransformer;
+            this.parent = parent;
+            this.eventTransformer = eventTransformer;
+        }
 
-            public NotificationListener(
-                GameNotificationsUI parent,
-                Func<T, Notification> eventTransformer)
-            {
-                this.parent = parent;
-                this.eventTransformer = eventTransformer;
-            }
+        public void Subscribe(GlobalGameEvents events)
+        {
+            events.Subscribe(this);
+        }
 
-            public void Subscribe(GlobalGameEvents events)
-            {
-                events.Subscribe(this);
-            }
+        public void Unsubscribe(GlobalGameEvents events)
+        {
+            events.Unsubscribe(this);
+        }
 
-            public void Unsubscribe(GlobalGameEvents events)
-            {
-                events.Unsubscribe(this);
-            }
-
-            public void HandleEvent(T @event)
-            {
-                parent.addNotification(eventTransformer(@event));
-            }
+        public void HandleEvent(T @event)
+        {
+            parent.addNotification(eventTransformer(@event));
         }
     }
 }

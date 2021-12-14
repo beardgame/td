@@ -8,53 +8,51 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Commands.Synchronization
+namespace Bearded.TD.Game.Commands.Synchronization;
+
+static class SyncBuildingConstructionCompletion
 {
-    static class SyncBuildingConstructionCompletion
+    public static ISerializableCommand<GameInstance> Command(ComponentGameObject building)
+        => new Implementation(building);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(ComponentGameObject building)
-            => new Implementation(building);
+        private readonly ComponentGameObject building;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(ComponentGameObject building)
         {
-            private readonly ComponentGameObject building;
-
-            public Implementation(ComponentGameObject building)
-            {
-                this.building = building;
-            }
-
-            public void Execute()
-            {
-                var constructor = building.GetComponents<IBuildingConstructionSyncer>().SingleOrDefault()
-                    ?? throw new InvalidOperationException(
-                        "Cannot sync building construction completion on a building without construction syncer.");
-                constructor.SyncCompleteBuild();
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building);
+            this.building = building;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private Id<ComponentGameObject> building;
+            var constructor = building.GetComponents<IBuildingConstructionSyncer>().SingleOrDefault()
+                ?? throw new InvalidOperationException(
+                    "Cannot sync building construction completion on a building without construction syncer.");
+            constructor.SyncCompleteBuild();
+        }
 
-            public Serializer(ComponentGameObject building)
-            {
-                this.building = building.FindId();
-            }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building);
+    }
 
-            // ReSharper disable once UnusedMember.Local
-            public Serializer() { }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<ComponentGameObject> building;
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-                new Implementation(game.State.Find(building));
+        public Serializer(ComponentGameObject building)
+        {
+            this.building = building.FindId();
+        }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref building);
-            }
+        // ReSharper disable once UnusedMember.Local
+        public Serializer() { }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
+            new Implementation(game.State.Find(building));
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref building);
         }
     }
 }
-

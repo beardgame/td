@@ -1,4 +1,3 @@
-namespace Bearded.TD.Game.Simulation.Components
-{
-    readonly record struct ObjectDeleting : IComponentEvent;
-}
+namespace Bearded.TD.Game.Simulation.Components;
+
+readonly record struct ObjectDeleting : IComponentEvent;

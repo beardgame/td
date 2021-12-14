@@ -1,9 +1,8 @@
-namespace Bearded.TD.Game.Simulation.Technologies
-{
-    interface ITechnologyUnlock
-    {
-        string Description { get; }
+namespace Bearded.TD.Game.Simulation.Technologies;
 
-        void Apply(FactionTechnology factionTechnology);
-    }
+interface ITechnologyUnlock
+{
+    string Description { get; }
+
+    void Apply(FactionTechnology factionTechnology);
 }

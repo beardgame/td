@@ -1,9 +1,8 @@
-﻿namespace Bearded.TD.Game.Meta
+﻿namespace Bearded.TD.Game.Meta;
+
+enum SelectionState
 {
-    enum SelectionState
-    {
-        Default = 0,
-        Focused = 1,
-        Selected = 2
-    }
+    Default = 0,
+    Focused = 1,
+    Selected = 2
 }

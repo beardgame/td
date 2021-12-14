@@ -1,9 +1,8 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+interface IWeaponRange
 {
-    interface IWeaponRange
-    {
-        Unit Range { get; }
-    }
+    Unit Range { get; }
 }

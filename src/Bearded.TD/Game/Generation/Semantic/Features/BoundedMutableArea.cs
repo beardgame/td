@@ -2,43 +2,42 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Features
+namespace Bearded.TD.Game.Generation.Semantic.Features;
+
+sealed class BoundedMutableArea : IArea
 {
-    sealed class BoundedMutableArea : IArea
+    private readonly IArea bounds;
+    private readonly HashSet<Tile> tiles;
+
+    public BoundedMutableArea(IArea bounds)
     {
-        private readonly IArea bounds;
-        private readonly HashSet<Tile> tiles;
+        this.bounds = bounds;
+        tiles = new HashSet<Tile>(bounds);
+    }
 
-        public BoundedMutableArea(IArea bounds)
+    public int Count => tiles.Count;
+
+    public bool Contains(Tile tile) => tiles.Contains(tile);
+
+    public void Add(Tile tile)
+    {
+        if (!bounds.Contains(tile))
+            throw new ArgumentOutOfRangeException(nameof(tile), "Cannot add tile out of bounds.");
+
+        tiles.Add(tile);
+    }
+
+    public void Remove(Tile tile) => tiles.Remove(tile);
+
+    public void RemoveAll() => tiles.Clear();
+
+    public void Reset()
+    {
+        foreach (var tile in bounds)
         {
-            this.bounds = bounds;
-            tiles = new HashSet<Tile>(bounds);
-        }
-
-        public int Count => tiles.Count;
-
-        public bool Contains(Tile tile) => tiles.Contains(tile);
-
-        public void Add(Tile tile)
-        {
-            if (!bounds.Contains(tile))
-                throw new ArgumentOutOfRangeException(nameof(tile), "Cannot add tile out of bounds.");
-
             tiles.Add(tile);
         }
-
-        public void Remove(Tile tile) => tiles.Remove(tile);
-
-        public void RemoveAll() => tiles.Clear();
-
-        public void Reset()
-        {
-            foreach (var tile in bounds)
-            {
-                tiles.Add(tile);
-            }
-        }
-
-        public IEnumerator<Tile> GetEnumerator() => tiles.GetEnumerator();
     }
+
+    public IEnumerator<Tile> GetEnumerator() => tiles.GetEnumerator();
 }

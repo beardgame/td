@@ -7,43 +7,42 @@ using Bearded.Utilities;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Color;
 
-namespace Bearded.TD.Rendering.UI
+namespace Bearded.TD.Rendering.UI;
+
+sealed class AutoCompletingTextInputRenderer : IRenderer<AutoCompletingTextInput>
 {
-    sealed class AutoCompletingTextInputRenderer : IRenderer<AutoCompletingTextInput>
+    private readonly TextInputRenderer internalRenderer;
+    private readonly TextDrawerWithDefaults<Color> textDrawer;
+
+    public AutoCompletingTextInputRenderer(
+        IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
     {
-        private readonly TextInputRenderer internalRenderer;
-        private readonly TextDrawerWithDefaults<Color> textDrawer;
+        internalRenderer = new TextInputRenderer(shapeDrawer, textDrawer);
+        this.textDrawer = textDrawer;
+    }
 
-        public AutoCompletingTextInputRenderer(
-            IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+    public void Render(AutoCompletingTextInput textInput)
+    {
+        internalRenderer.Render(textInput);
+
+        if (!textInput.IsEnabled)
         {
-            internalRenderer = new TextInputRenderer(shapeDrawer, textDrawer);
-            this.textDrawer = textDrawer;
+            return;
         }
 
-        public void Render(AutoCompletingTextInput textInput)
-        {
-            internalRenderer.Render(textInput);
+        var argb = White * .5f;
 
-            if (!textInput.IsEnabled)
-            {
-                return;
-            }
+        var stringOffset = textDrawer.StringWidth(textInput.Text, (float) textInput.FontSize);
 
-            var argb = White * .5f;
+        var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
 
-            var stringOffset = textDrawer.StringWidth(textInput.Text, (float) textInput.FontSize);
-
-            var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
-
-            var midLeft = textInput.Frame.TopLeft + new Vector2d(0, textInput.Frame.Size.Y * .5);
-            textDrawer.DrawLine(
-                xyz: ((Vector2) midLeft).WithZ() + stringOffset,
-                text: str,
-                fontHeight: (float) textInput.FontSize,
-                alignVertical: 0.5f,
-                parameters: argb
-            );
-        }
+        var midLeft = textInput.Frame.TopLeft + new Vector2d(0, textInput.Frame.Size.Y * .5);
+        textDrawer.DrawLine(
+            xyz: ((Vector2) midLeft).WithZ() + stringOffset,
+            text: str,
+            fontHeight: (float) textInput.FontSize,
+            alignVertical: 0.5f,
+            parameters: argb
+        );
     }
 }

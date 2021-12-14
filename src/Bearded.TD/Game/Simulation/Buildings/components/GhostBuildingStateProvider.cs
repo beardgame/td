@@ -1,13 +1,12 @@
 ﻿using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Buildings
-{
-    sealed class GhostBuildingStateProvider<T> : Component<T>, IBuildingStateProvider
-    {
-        public IBuildingState State { get; } = new GhostBuildingState();
+namespace Bearded.TD.Game.Simulation.Buildings;
 
-        protected override void OnAdded() { }
-        public override void Update(TimeSpan elapsedTime) { }
-    }
+sealed class GhostBuildingStateProvider<T> : Component<T>, IBuildingStateProvider
+{
+    public IBuildingState State { get; } = new GhostBuildingState();
+
+    protected override void OnAdded() { }
+    public override void Update(TimeSpan elapsedTime) { }
 }

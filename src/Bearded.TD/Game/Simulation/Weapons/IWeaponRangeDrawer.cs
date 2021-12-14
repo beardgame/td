@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+interface IWeaponRangeDrawer
 {
-    interface IWeaponRangeDrawer
-    {
-        IEnumerable<Tile> TakeOverDrawingThisFrame();
-    }
+    IEnumerable<Tile> TakeOverDrawingThisFrame();
 }

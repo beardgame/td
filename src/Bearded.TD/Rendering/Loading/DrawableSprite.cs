@@ -4,85 +4,84 @@ using Bearded.TD.Content.Models;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 
-namespace Bearded.TD.Rendering.Loading
+namespace Bearded.TD.Rendering.Loading;
+
+sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertexData>
+    where TVertex : struct, IVertexData
 {
-    sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertexData>
-        where TVertex : struct, IVertexData
+    public delegate TVertex CreateSprite(Vector3 position, Vector2 uv, TVertexData data);
+
+    private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
+    private readonly CreateSprite createVertex;
+    private readonly UVRectangle uv;
+    private readonly Vector2 baseSize;
+
+    public DrawableSprite(
+        IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
+        CreateSprite createVertex,
+        SpriteParameters spriteParameters)
     {
-        public delegate TVertex CreateSprite(Vector3 position, Vector2 uv, TVertexData data);
+        this.meshBuilder = meshBuilder;
+        this.createVertex = createVertex;
+        uv = spriteParameters.UV;
+        baseSize = spriteParameters.BaseSize;
+    }
 
-        private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
-        private readonly CreateSprite createVertex;
-        private readonly UVRectangle uv;
-        private readonly Vector2 baseSize;
+    public void Draw(Vector3 center, float scale, float angle, TVertexData data)
+    {
+        ((IDrawableSprite<TVertexData>)this).Draw(
+            center, baseSize.X * scale, baseSize.Y * scale, angle, data
+        );
+    }
 
-        public DrawableSprite(
-            IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
-            CreateSprite createVertex,
-            SpriteParameters spriteParameters)
-        {
-            this.meshBuilder = meshBuilder;
-            this.createVertex = createVertex;
-            uv = spriteParameters.UV;
-            baseSize = spriteParameters.BaseSize;
-        }
+    public void Draw(Vector3 center, Vector2 radiusX, Vector2 radiusY, TVertexData data)
+    {
+        var v0 = -radiusX + radiusY;
+        var v1 = radiusX + radiusY;
 
-        public void Draw(Vector3 center, float scale, float angle, TVertexData data)
-        {
-            ((IDrawableSprite<TVertexData>)this).Draw(
-                center, baseSize.X * scale, baseSize.Y * scale, angle, data
-                );
-        }
+        var v2 = -v0;
+        var v3 = -v1;
 
-        public void Draw(Vector3 center, Vector2 radiusX, Vector2 radiusY, TVertexData data)
-        {
-            var v0 = -radiusX + radiusY;
-            var v1 = radiusX + radiusY;
+        v0 += center.Xy;
+        v1 += center.Xy;
+        v2 += center.Xy;
+        v3 += center.Xy;
 
-            var v2 = -v0;
-            var v3 = -v1;
+        var z = center.Z;
 
-            v0 += center.Xy;
-            v1 += center.Xy;
-            v2 += center.Xy;
-            v3 += center.Xy;
+        ((IDrawableSprite<TVertexData>) this).DrawQuad(
+            v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data
+        );
+    }
 
-            var z = center.Z;
+    public void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft,
+        TVertexData topLeftData, TVertexData topRightData, TVertexData bottomRightData, TVertexData bottomLeftData)
+    {
+        meshBuilder.AddQuad(
+            createVertex(topLeft, uv.TopLeft, topLeftData),
+            createVertex(topRight, uv.TopRight, topRightData),
+            createVertex(bottomRight, uv.BottomRight, bottomRightData),
+            createVertex(bottomLeft, uv.BottomLeft, bottomLeftData)
+        );
+    }
 
-            ((IDrawableSprite<TVertexData>) this).DrawQuad(
-                v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data
-            );
-        }
+    public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
+        TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
+    {
+        meshBuilder.AddQuad(
+            createVertex(p0, transformUV(uv0), data0),
+            createVertex(p1, transformUV(uv1), data1),
+            createVertex(p2, transformUV(uv2), data2),
+            createVertex(p3, transformUV(uv3), data3)
+        );
+    }
 
-        public void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft,
-            TVertexData topLeftData, TVertexData topRightData, TVertexData bottomRightData, TVertexData bottomLeftData)
-        {
-            meshBuilder.AddQuad(
-                createVertex(topLeft, uv.TopLeft, topLeftData),
-                createVertex(topRight, uv.TopRight, topRightData),
-                createVertex(bottomRight, uv.BottomRight, bottomRightData),
-                createVertex(bottomLeft, uv.BottomLeft, bottomLeftData)
-            );
-        }
-
-        public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
-            TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
-        {
-            meshBuilder.AddQuad(
-                createVertex(p0, transformUV(uv0), data0),
-                createVertex(p1, transformUV(uv1), data1),
-                createVertex(p2, transformUV(uv2), data2),
-                createVertex(p3, transformUV(uv3), data3)
-            );
-        }
-
-        private Vector2 transformUV(Vector2 localUV)
-        {
-            return Vector2.Lerp(
-                Vector2.Lerp(uv.TopLeft, uv.TopRight, localUV.X),
-                Vector2.Lerp(uv.BottomLeft, uv.BottomRight, localUV.X),
-                localUV.Y
-            );
-        }
+    private Vector2 transformUV(Vector2 localUV)
+    {
+        return Vector2.Lerp(
+            Vector2.Lerp(uv.TopLeft, uv.TopRight, localUV.X),
+            Vector2.Lerp(uv.BottomLeft, uv.BottomRight, localUV.X),
+            localUV.Y
+        );
     }
 }

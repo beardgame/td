@@ -12,90 +12,89 @@ using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class ServerLobbyManager : LobbyManager
 {
-    sealed class ServerLobbyManager : LobbyManager
+    private const float heartbeatTimeSeconds = 10;
+
+    private readonly ServerMasterServer masterServer;
+    private float secondsUntilNextHeartbeat;
+    private bool forceReady;
+
+    public override bool CanChangeGameSettings => true;
+
+    private ServerLobbyManager(GameInstance game, ServerNetworkInterface networkInterface)
+        : base(game, networkInterface)
     {
-        private const float heartbeatTimeSeconds = 10;
+        masterServer = networkInterface.Master;
 
-        private readonly ServerMasterServer masterServer;
-        private float secondsUntilNextHeartbeat;
-        private bool forceReady;
+        // First heartbeat automatically registers lobby.
+        doHeartbeat();
+    }
 
-        public override bool CanChangeGameSettings => true;
+    public override void Update(UpdateEventArgs args)
+    {
+        base.Update(args);
 
-        private ServerLobbyManager(GameInstance game, ServerNetworkInterface networkInterface)
-            : base(game, networkInterface)
+        if (forceReady && Game.ContentManager.IsFinishedLoading)
         {
-            masterServer = networkInterface.Master;
+            Game.Me.ConnectionState = PlayerConnectionState.Ready;
+        }
 
-            // First heartbeat automatically registers lobby.
+        if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
+        {
+            Dispatcher.RunOnlyOnServer(
+                commandDispatcher => commandDispatcher.Dispatch(BeginLoadingGame.Command(Game)));
+        }
+
+        secondsUntilNextHeartbeat -= args.ElapsedTimeInSf;
+        if (secondsUntilNextHeartbeat <= 0)
+        {
             doHeartbeat();
         }
+    }
 
-        public override void Update(UpdateEventArgs args)
-        {
-            base.Update(args);
-
-            if (forceReady && Game.ContentManager.IsFinishedLoading)
+    private void doHeartbeat()
+    {
+        masterServer.RegisterLobby(
+            new Proto.Lobby
             {
-                Game.Me.ConnectionState = PlayerConnectionState.Ready;
+                Id = Network.UniqueIdentifier,
+                Name = $"{Game.Me.Name}'s game",
+                MaxNumPlayers = 4,
+                CurrentNumPlayers = 1,
             }
+        );
+        secondsUntilNextHeartbeat = heartbeatTimeSeconds;
+    }
 
-            if (Game.Players.All(p => p.ConnectionState == PlayerConnectionState.Ready))
-            {
-                Dispatcher.RunOnlyOnServer(
-                    commandDispatcher => commandDispatcher.Dispatch(BeginLoadingGame.Command(Game)));
-            }
+    public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
 
-            secondsUntilNextHeartbeat -= args.ElapsedTimeInSf;
-            if (secondsUntilNextHeartbeat <= 0)
-            {
-                doHeartbeat();
-            }
-        }
+    public static ServerLobbyManager CreateWithReadyPlayer(
+        ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader,
+        RenderContext renderContext)
+    {
+        var m = Create(networkInterface, logger, graphicsLoader, renderContext);
+        m.forceReady = true;
+        return m;
+    }
 
-        private void doHeartbeat()
+    public static ServerLobbyManager Create(
+        ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
+    {
+        var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
+        // TODO: move somewhere else/read from settings
+        contentManager.SetEnabledMods(contentManager.AvailableMods);
+
+        var ids = new IdManager();
+        var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)
         {
-            masterServer.RegisterLobby(
-                new Proto.Lobby
-                {
-                    Id = Network.UniqueIdentifier,
-                    Name = $"{Game.Me.Name}'s game",
-                    MaxNumPlayers = 4,
-                    CurrentNumPlayers = 1,
-                }
-            );
-            secondsUntilNextHeartbeat = heartbeatTimeSeconds;
-        }
+            ConnectionState = PlayerConnectionState.Waiting
+        };
 
-        public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
-
-        public static ServerLobbyManager CreateWithReadyPlayer(
-            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader,
-            RenderContext renderContext)
-        {
-            var m = Create(networkInterface, logger, graphicsLoader, renderContext);
-            m.forceReady = true;
-            return m;
-        }
-
-        public static ServerLobbyManager Create(
-            ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
-        {
-            var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
-            // TODO: move somewhere else/read from settings
-            contentManager.SetEnabledMods(contentManager.AvailableMods);
-
-            var ids = new IdManager();
-            var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)
-            {
-                ConnectionState = PlayerConnectionState.Waiting
-            };
-
-            return new ServerLobbyManager(
-                new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids, renderContext),
-                networkInterface);
-        }
+        return new ServerLobbyManager(
+            new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids, renderContext),
+            networkInterface);
     }
 }

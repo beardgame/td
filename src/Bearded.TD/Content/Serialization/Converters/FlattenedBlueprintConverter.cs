@@ -4,23 +4,22 @@ using Bearded.TD.Game.Simulation;
 using Bearded.Utilities;
 using Newtonsoft.Json;
 
-namespace Bearded.TD.Content.Serialization.Converters
+namespace Bearded.TD.Content.Serialization.Converters;
+
+sealed class FlattenedBlueprintConverter<TInterface, TJsonModel> : JsonConverterBase<TInterface>
+    where TInterface : IBlueprint
+    where TJsonModel : IConvertsTo<TInterface, Void>
 {
-    sealed class FlattenedBlueprintConverter<TInterface, TJsonModel> : JsonConverterBase<TInterface>
-        where TInterface : IBlueprint
-        where TJsonModel : IConvertsTo<TInterface, Void>
+    private readonly ModMetadata modMetadata;
+
+    public FlattenedBlueprintConverter(ModMetadata modMetadata)
     {
-        private readonly ModMetadata modMetadata;
+        this.modMetadata = modMetadata;
+    }
 
-        public FlattenedBlueprintConverter(ModMetadata modMetadata)
-        {
-            this.modMetadata = modMetadata;
-        }
-
-        protected override TInterface ReadJson(JsonReader reader, JsonSerializer serializer)
-        {
-            var jsonModel = serializer.Deserialize<TJsonModel>(reader);
-            return jsonModel.ToGameModel(modMetadata, default);
-        }
+    protected override TInterface ReadJson(JsonReader reader, JsonSerializer serializer)
+    {
+        var jsonModel = serializer.Deserialize<TJsonModel>(reader);
+        return jsonModel.ToGameModel(modMetadata, default);
     }
 }

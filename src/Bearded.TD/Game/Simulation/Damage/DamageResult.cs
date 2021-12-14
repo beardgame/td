@@ -1,12 +1,11 @@
-namespace Bearded.TD.Game.Simulation.Damage
-{
-    readonly struct DamageResult
-    {
-        public DamageInfo Damage { get; }
+namespace Bearded.TD.Game.Simulation.Damage;
 
-        public DamageResult(DamageInfo damage)
-        {
-            Damage = damage;
-        }
+readonly struct DamageResult
+{
+    public DamageInfo Damage { get; }
+
+    public DamageResult(DamageInfo damage)
+    {
+        Damage = damage;
     }
 }

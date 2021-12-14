@@ -1,15 +1,14 @@
-﻿namespace Bearded.TD.Commands
-{
-    interface ICommandExecutor
-    {
-        void Execute(ICommand command);
-    }
+﻿namespace Bearded.TD.Commands;
 
-    sealed class DefaultCommandExecutor : ICommandExecutor
+interface ICommandExecutor
+{
+    void Execute(ICommand command);
+}
+
+sealed class DefaultCommandExecutor : ICommandExecutor
+{
+    public void Execute(ICommand command)
     {
-        public void Execute(ICommand command)
-        {
-            command.Execute();
-        }
+        command.Execute();
     }
 }

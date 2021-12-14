@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Bearded.TD.Tiles
+namespace Bearded.TD.Tiles;
+
+interface IArea : IEnumerable<Tile>
 {
-    interface IArea : IEnumerable<Tile>
-    {
-        int Count { get; }
+    int Count { get; }
 
-        bool Contains(Tile tile);
+    bool Contains(Tile tile);
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

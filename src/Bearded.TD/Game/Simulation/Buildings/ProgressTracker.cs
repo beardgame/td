@@ -1,113 +1,112 @@
 using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Simulation.Buildings
+namespace Bearded.TD.Game.Simulation.Buildings;
+
+sealed class ProgressTracker
 {
-    sealed class ProgressTracker
+    public interface IProgressSubject
     {
-        public interface IProgressSubject
-        {
-            void SendSyncStart();
-            void SendSyncComplete();
+        void SendSyncStart();
+        void SendSyncComplete();
 
-            void OnStart();
-            void OnProgressSet(double percentage);
-            void OnComplete();
-            void OnCancel();
+        void OnStart();
+        void OnProgressSet(double percentage);
+        void OnComplete();
+        void OnCancel();
+    }
+
+    private enum ProgressStage : byte
+    {
+        NotStarted = 0,
+        InProgress = 1,
+        Completed = 2,
+        Cancelled = 3
+    }
+
+    private ProgressStage progressStage = ProgressStage.NotStarted;
+    private ProgressStage syncedProgressStage = ProgressStage.NotStarted;
+
+    public bool IsCompleted => progressStage == ProgressStage.Completed;
+    public bool IsCancelled => progressStage == ProgressStage.Cancelled;
+
+    private readonly IProgressSubject subject;
+
+    public ProgressTracker(IProgressSubject subject)
+    {
+        this.subject = subject;
+    }
+
+    public void Start()
+    {
+        // Avoid duplicate requests.
+        if (progressStage > ProgressStage.NotStarted)
+        {
+            return;
         }
 
-        private enum ProgressStage : byte
+        progressStage = ProgressStage.InProgress;
+        subject.SendSyncStart();
+    }
+
+    public void SyncStart()
+    {
+        State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
+
+        // Catch up the in-memory stage.
+        if (progressStage < ProgressStage.InProgress)
         {
-            NotStarted = 0,
-            InProgress = 1,
-            Completed = 2,
-            Cancelled = 3
-        }
-
-        private ProgressStage progressStage = ProgressStage.NotStarted;
-        private ProgressStage syncedProgressStage = ProgressStage.NotStarted;
-
-        public bool IsCompleted => progressStage == ProgressStage.Completed;
-        public bool IsCancelled => progressStage == ProgressStage.Cancelled;
-
-        private readonly IProgressSubject subject;
-
-        public ProgressTracker(IProgressSubject subject)
-        {
-            this.subject = subject;
-        }
-
-        public void Start()
-        {
-            // Avoid duplicate requests.
-            if (progressStage > ProgressStage.NotStarted)
-            {
-                return;
-            }
-
             progressStage = ProgressStage.InProgress;
-            subject.SendSyncStart();
         }
 
-        public void SyncStart()
+        syncedProgressStage = ProgressStage.InProgress;
+        subject.OnStart();
+    }
+
+    public void SetProgress(double progress)
+    {
+        Argument.Satisfies(progress is >= 0 and <= 1);
+        State.Satisfies(progressStage == ProgressStage.InProgress);
+
+        // Progress is not synced, so we call the callback directly instead of from the sync command.
+        // However, to ensure we don't send progress updates when we haven't called OnStart yet or already called
+        // OnComplete or OnCancel, we ignore progress updates if the synced state is not in progress.
+        if (syncedProgressStage == ProgressStage.InProgress)
         {
-            State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
+            subject.OnProgressSet(progress);
+        }
+    }
 
-            // Catch up the in-memory stage.
-            if (progressStage < ProgressStage.InProgress)
-            {
-                progressStage = ProgressStage.InProgress;
-            }
-
-            syncedProgressStage = ProgressStage.InProgress;
-            subject.OnStart();
+    public void Complete()
+    {
+        // Avoid duplicate sync requests.
+        if (progressStage > ProgressStage.InProgress)
+        {
+            return;
         }
 
-        public void SetProgress(double progress)
+        progressStage = ProgressStage.Completed;
+        subject.SendSyncComplete();
+    }
+
+    public void SyncComplete()
+    {
+        State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
+
+        // Catch up the in-memory stage.
+        if (progressStage < ProgressStage.Completed)
         {
-            Argument.Satisfies(progress is >= 0 and <= 1);
-            State.Satisfies(progressStage == ProgressStage.InProgress);
-
-            // Progress is not synced, so we call the callback directly instead of from the sync command.
-            // However, to ensure we don't send progress updates when we haven't called OnStart yet or already called
-            // OnComplete or OnCancel, we ignore progress updates if the synced state is not in progress.
-            if (syncedProgressStage == ProgressStage.InProgress)
-            {
-                subject.OnProgressSet(progress);
-            }
-        }
-
-        public void Complete()
-        {
-            // Avoid duplicate sync requests.
-            if (progressStage > ProgressStage.InProgress)
-            {
-                return;
-            }
-
             progressStage = ProgressStage.Completed;
-            subject.SendSyncComplete();
         }
 
-        public void SyncComplete()
-        {
-            State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
+        // TODO: catch up remaining progress
 
-            // Catch up the in-memory stage.
-            if (progressStage < ProgressStage.Completed)
-            {
-                progressStage = ProgressStage.Completed;
-            }
+        syncedProgressStage = ProgressStage.Completed;
+        subject.OnComplete();
+    }
 
-            // TODO: catch up remaining progress
-
-            syncedProgressStage = ProgressStage.Completed;
-            subject.OnComplete();
-        }
-
-        public void Cancel()
-        {
-            State.Satisfies(progressStage == ProgressStage.NotStarted);
-            subject.OnCancel();
-        }
+    public void Cancel()
+    {
+        State.Satisfies(progressStage == ProgressStage.NotStarted);
+        subject.OnCancel();
     }
 }

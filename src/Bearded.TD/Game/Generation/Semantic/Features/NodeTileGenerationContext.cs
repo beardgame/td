@@ -2,37 +2,36 @@ using System;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Generation.Semantic.Features
+namespace Bearded.TD.Game.Generation.Semantic.Features;
+
+sealed class NodeTileGenerationContext
 {
-    sealed class NodeTileGenerationContext
+    private readonly Tilemap<TileGeometry> tilemap;
+
+    public IArea All { get; }
+    public BoundedMutableArea Selection { get; }
+    public AreaTags Tags { get; }
+
+    public NodeTileGenerationContext(Tilemap<TileGeometry> tilemap, IArea tiles)
     {
-        private readonly Tilemap<TileGeometry> tilemap;
+        this.tilemap = tilemap;
+        All = tiles;
+        Selection = new BoundedMutableArea(tiles);
+        Tags = new AreaTags(tiles);
+    }
 
-        public IArea All { get; }
-        public BoundedMutableArea Selection { get; }
-        public AreaTags Tags { get; }
+    public TileGeometry Get(Tile tile)
+    {
+        return tilemap[tile];
+    }
 
-        public NodeTileGenerationContext(Tilemap<TileGeometry> tilemap, IArea tiles)
+    public void Set(Tile tile, TileGeometry geometry)
+    {
+        if (!All.Contains(tile))
         {
-            this.tilemap = tilemap;
-            All = tiles;
-            Selection = new BoundedMutableArea(tiles);
-            Tags = new AreaTags(tiles);
+            throw new ArgumentException("May not write to tile outside node.", nameof(tile));
         }
 
-        public TileGeometry Get(Tile tile)
-        {
-            return tilemap[tile];
-        }
-
-        public void Set(Tile tile, TileGeometry geometry)
-        {
-            if (!All.Contains(tile))
-            {
-                throw new ArgumentException("May not write to tile outside node.", nameof(tile));
-            }
-
-            tilemap[tile] = geometry;
-        }
+        tilemap[tile] = geometry;
     }
 }

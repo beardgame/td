@@ -4,49 +4,48 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Simulation.Factions
+namespace Bearded.TD.Game.Simulation.Factions;
+
+sealed class GameFactions : IGameFactions
 {
-    sealed class GameFactions : IGameFactions
+    private readonly IdCollection<Faction> factions = new();
+    private readonly Dictionary<ExternalId<Faction>, Faction> factionsByExternalId = new();
+
+    public ReadOnlyCollection<Faction> All { get; }
+
+    public GameFactions()
     {
-        private readonly IdCollection<Faction> factions = new();
-        private readonly Dictionary<ExternalId<Faction>, Faction> factionsByExternalId = new();
+        All = factions.AsReadOnly;
+    }
 
-        public ReadOnlyCollection<Faction> All { get; }
-
-        public GameFactions()
+    public void Add(Faction faction)
+    {
+        factions.Add(faction);
+        if (faction.ExternalId != ExternalId<Faction>.Invalid)
         {
-            All = factions.AsReadOnly;
+            factionsByExternalId.Add(faction.ExternalId, faction);
+        }
+    }
+
+    public Faction Resolve(Id<Faction> id) => factions[id];
+
+    public Faction Find(ExternalId<Faction> externalId) => factionsByExternalId[externalId];
+
+    public IGameFactions AsReadOnly() => new GameFactionsProxy(this);
+
+    private sealed class GameFactionsProxy : IGameFactions
+    {
+        private readonly GameFactions inner;
+
+        public GameFactionsProxy(GameFactions inner)
+        {
+            this.inner = inner;
         }
 
-        public void Add(Faction faction)
-        {
-            factions.Add(faction);
-            if (faction.ExternalId != ExternalId<Faction>.Invalid)
-            {
-                factionsByExternalId.Add(faction.ExternalId, faction);
-            }
-        }
+        public ReadOnlyCollection<Faction> All => inner.All;
 
-        public Faction Resolve(Id<Faction> id) => factions[id];
+        public Faction Resolve(Id<Faction> id) => inner.Resolve(id);
 
-        public Faction Find(ExternalId<Faction> externalId) => factionsByExternalId[externalId];
-
-        public IGameFactions AsReadOnly() => new GameFactionsProxy(this);
-
-        private sealed class GameFactionsProxy : IGameFactions
-        {
-            private readonly GameFactions inner;
-
-            public GameFactionsProxy(GameFactions inner)
-            {
-                this.inner = inner;
-            }
-
-            public ReadOnlyCollection<Faction> All => inner.All;
-
-            public Faction Resolve(Id<Faction> id) => inner.Resolve(id);
-
-            public Faction Find(ExternalId<Faction> externalId) => inner.Find(externalId);
-        }
+        public Faction Find(ExternalId<Faction> externalId) => inner.Find(externalId);
     }
 }
