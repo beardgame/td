@@ -16,7 +16,7 @@ class InstantAim : Component<Weapon>
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (aimer != null)
+        if (Owner.IsEnabled && aimer != null)
             aimIn(aimer.AimDirection);
     }
 

@@ -68,6 +68,12 @@ sealed class TargetEnemiesInRange
 
     private void tryShootingAtTarget()
     {
+        if (!Owner.IsEnabled)
+        {
+            turnOff();
+            return;
+        }
+
         if (endOfIdleTime > game.Time)
             return;
 
@@ -96,6 +102,11 @@ sealed class TargetEnemiesInRange
         TriggerPulled = false;
 
         endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
+    }
+
+    private void turnOff()
+    {
+        TriggerPulled = false;
     }
 
     private void ensureTilesInRangeList()

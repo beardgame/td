@@ -27,8 +27,12 @@ class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters
 
     public override void Update(TimeSpan elapsedTime)
     {
-        accelerateTowardsGoal(elapsedTime);
-        applyVelocity(elapsedTime);
+        if (Owner.IsEnabled)
+        {
+            accelerateTowardsGoal(elapsedTime);
+            applyVelocity(elapsedTime);
+        }
+
         dampVelocity(elapsedTime);
     }
 

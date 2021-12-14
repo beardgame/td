@@ -27,6 +27,8 @@ sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Wea
 
     public GameState Game => Owner.Game;
 
+    public bool IsEnabled { get; private set; }
+
     // TODO: this should not be revealed here
     public TileRangeDrawer.RangeDrawStyle RangeDrawStyle =>
         turret.BuildingState?.RangeDrawing ?? TileRangeDrawer.RangeDrawStyle.DoNotDraw;
@@ -57,11 +59,6 @@ sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Wea
 
     public void Update(TimeSpan elapsedTime)
     {
-        if (turret.BuildingState is not { IsFunctional: true })
-        {
-            return;
-        }
-
         components.Update(elapsedTime);
     }
 
@@ -74,4 +71,14 @@ sealed class Weapon : IGameObject, IPositionable, IDirected, IComponentOwner<Wea
     IEnumerable<T> IComponentOwner.GetComponents<T>() => components.Get<T>();
 
     Direction2 IDirected.Direction => CurrentDirection;
+
+    public void Enable()
+    {
+        IsEnabled = true;
+    }
+
+    public void Disable()
+    {
+        IsEnabled = false;
+    }
 }

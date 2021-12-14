@@ -27,6 +27,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     private Weapon weapon = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;
+    private bool previouslyFunctional;
 
     public IBuildingState? BuildingState { get; private set; }
     public Position3 Position =>
@@ -37,6 +38,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
     public IComponentOwner NestedComponentOwner => weapon;
+
 
     public Turret(ITurretParameters parameters) : base(parameters) { }
 
@@ -50,7 +52,24 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
 
     public override void Update(TimeSpan elapsedTime)
     {
+        updateFunctional();
+
         weapon.Update(elapsedTime);
+    }
+
+    private void updateFunctional()
+    {
+        var currentlyFunctional = BuildingState?.IsFunctional ?? true;
+
+        if (currentlyFunctional == previouslyFunctional)
+            return;
+
+        if (currentlyFunctional)
+            weapon.Enable();
+        else
+            weapon.Disable();
+
+        previouslyFunctional = currentlyFunctional;
     }
 
     public void OverrideTargeting(IManualTarget3 target)
