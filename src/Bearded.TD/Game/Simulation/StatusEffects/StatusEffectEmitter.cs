@@ -58,17 +58,29 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
 
     public override void Update(TimeSpan elapsedTime)
     {
-        ensureRangeUpToDate();
-
-        // Don't apply status effects for uncompleted buildings
-        // We probably should have a better pattern for this...
-        if (!buildingState?.IsFunctional ?? false)
+        if (buildingState?.IsFunctional == false)
         {
+            removeModificationsFromAllUnits();
             return;
         }
 
+        ensureRangeUpToDate();
+
         removeModificationsFromUnitsOutOfRange();
         addModificationsToNewUnitsInRange();
+    }
+
+    private void removeModificationsFromAllUnits()
+    {
+        if (affectedUnits.Count == 0)
+            return;
+
+        var upgradeEffect = createUpgradeEffect();
+
+        foreach (var unit in affectedUnits)
+        {
+            unit.RemoveEffect(upgradeEffect);
+        }
     }
 
     private void ensureRangeUpToDate()
