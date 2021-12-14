@@ -23,8 +23,13 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
 
     protected override void OnStart(ICursorHandler cursor)
     {
-        report.StartControl(this);
+        report.StartControl(this, cancelControl);
         cursor.SetCameraController(new CameraController(Game.CameraController, report, this));
+    }
+
+    private void cancelControl()
+    {
+        Game.PlayerInput.ResetInteractionHandler();
     }
 
     protected override void OnEnd(ICursorHandler cursor)

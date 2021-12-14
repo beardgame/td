@@ -13,8 +13,10 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
     where T : IComponentOwner<T>, IGameObject, IPositionable
 {
-    private CrossHair? crossHair;
-    private Overdrive<T>? overdrive;
+    private sealed record Control(Action Cancel, CrossHair CrossHair, Overdrive<T> Overdrive);
+
+    private Control? activeControl;
+
     private IFactionProvider? factionProvider;
     private IBuildingStateProvider? buildingState;
     public ReportType Type => ReportType.ManualControl;
@@ -28,6 +30,13 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (activeControl == null)
+            return;
+
+        if (buildingState is { State.IsFunctional: false })
+        {
+            activeControl.Cancel();
+        }
     }
 
     public bool CanBeControlledBy(Faction faction)
@@ -41,20 +50,20 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
     public Position2 SubjectPosition => Owner.Position.XY();
     public Unit SubjectRange { get; private set; }
 
-    public void StartControl(IManualTarget2 target)
+    public void StartControl(IManualTarget2 target, Action cancelControl)
     {
-        DebugAssert.State.Satisfies(crossHair == null);
-        DebugAssert.State.Satisfies(overdrive == null);
+        DebugAssert.State.Satisfies(activeControl == null);
 
-        Owner.AddComponent(overdrive = new Overdrive<T>());
-        crossHair = new CrossHair(target);
-        Owner.AddComponent(crossHair);
+        activeControl = new Control(cancelControl, new CrossHair(target), new Overdrive<T>());
+
+        Owner.AddComponent(activeControl.Overdrive);
+        Owner.AddComponent(activeControl.CrossHair);
 
         SubjectRange = 3.U();
 
         foreach (var turret in (Owner as IComponentOwner).GetComponents<ITurret>())
         {
-            turret.OverrideTargeting(crossHair);
+            turret.OverrideTargeting(activeControl.CrossHair);
             if (turret.Weapon.TryGetSingleComponent<IWeaponRange>(out var range))
                 SubjectRange = Math.Max(SubjectRange.NumericValue, range.Range.NumericValue).U();
         }
@@ -62,13 +71,12 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
 
     public void EndControl()
     {
-        DebugAssert.State.Satisfies(crossHair != null);
-        DebugAssert.State.Satisfies(overdrive != null);
+        DebugAssert.State.Satisfies(activeControl != null);
 
-        Owner.RemoveComponent(overdrive!);
-        Owner.RemoveComponent(crossHair!);
-        overdrive = null;
-        crossHair = null;
+        Owner.RemoveComponent(activeControl!.Overdrive);
+        Owner.RemoveComponent(activeControl.CrossHair);
+
+        activeControl = null;
 
         foreach (var turret in (Owner as IComponentOwner).GetComponents<ITurret>())
         {
