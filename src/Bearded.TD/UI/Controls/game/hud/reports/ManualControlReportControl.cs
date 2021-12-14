@@ -3,6 +3,7 @@ using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
 
@@ -13,6 +14,8 @@ sealed class ManualControlReportControl : ReportControl
     private readonly GameInstance game;
     private readonly IManualControlReport report;
 
+    private readonly Binding<bool> canControl = new();
+
     public override double Height { get; }
 
     public ManualControlReportControl(GameInstance game, IManualControlReport report)
@@ -21,7 +24,7 @@ sealed class ManualControlReportControl : ReportControl
         this.report = report;
 
         var column = this.BuildFixedColumn();
-        column.AddButton(b => b.WithLabel("Assume Direct Control").WithOnClick(startControl));
+        column.AddButton(b => b.WithLabel("Assume Direct Control").WithOnClick(startControl).WithEnabled(canControl));
         Height = column.Height;
     }
 
@@ -33,6 +36,7 @@ sealed class ManualControlReportControl : ReportControl
 
     public override void Update()
     {
+        canControl.SetFromSource(report.CanBeControlledBy(game.Me.Faction));
     }
 
     public override void Dispose()

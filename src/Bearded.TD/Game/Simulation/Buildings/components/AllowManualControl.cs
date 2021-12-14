@@ -1,6 +1,8 @@
 using System;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -13,15 +15,22 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
 {
     private CrossHair? crossHair;
     private Overdrive<T>? overdrive;
+    private IFactionProvider? factionProvider;
     public ReportType Type => ReportType.ManualControl;
 
     protected override void OnAdded()
     {
         ReportAggregator.Register(Events, this);
+        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
+    }
+
+    public bool CanBeControlledBy(Faction faction)
+    {
+        return factionProvider != null && factionProvider.Faction.SharesBehaviorWith<FactionResources>(faction);
     }
 
     public Position2 SubjectPosition => Owner.Position.XY();

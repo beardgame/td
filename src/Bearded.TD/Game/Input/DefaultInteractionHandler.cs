@@ -76,7 +76,7 @@ sealed class DefaultInteractionHandler : InteractionHandler
     {
         var manualControl = selectable.Subject.Reports.OfType<IManualControlReport>().FirstOrDefault();
 
-        if (manualControl == null)
+        if (manualControl == null || !manualControl.CanBeControlledBy(Game.Me.Faction))
             return false;
 
         Game.SelectionManager.ResetSelection();
