@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Components;
 
