@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bearded.TD.Testing\Bearded.TD.Testing.csproj" />
     <ProjectReference Include="..\Bearded.TD\Bearded.TD.csproj" />
   </ItemGroup>
 
