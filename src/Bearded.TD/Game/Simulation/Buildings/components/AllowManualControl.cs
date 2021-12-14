@@ -16,12 +16,14 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
     private CrossHair? crossHair;
     private Overdrive<T>? overdrive;
     private IFactionProvider? factionProvider;
+    private IBuildingStateProvider? buildingState;
     public ReportType Type => ReportType.ManualControl;
 
     protected override void OnAdded()
     {
         ReportAggregator.Register(Events, this);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
+        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, provider => buildingState = provider);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -30,6 +32,9 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
 
     public bool CanBeControlledBy(Faction faction)
     {
+        if (buildingState is { State.IsFunctional: false })
+            return false;
+
         return factionProvider != null && factionProvider.Faction.SharesBehaviorWith<FactionResources>(faction);
     }
 
@@ -69,6 +74,5 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
         {
             turret.StopTargetOverride();
         }
-
     }
 }
