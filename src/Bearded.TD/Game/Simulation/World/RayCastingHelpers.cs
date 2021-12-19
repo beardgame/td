@@ -16,30 +16,7 @@ enum RayCastResultType
     HitEnemy = 4
 }
 
-struct RayCastResult
-{
-    public RayCastResultType Type { get; }
-    public float RayFactor { get; }
-    public Position2 Point { get; }
-    public Maybe<EnemyUnit> Enemy { get; }
-
-    public RayCastResult(RayCastResultType type, float rayFactor, Position2 point, Maybe<EnemyUnit> enemy)
-    {
-        Type = type;
-        RayFactor = rayFactor;
-        Point = point;
-        Enemy = enemy;
-    }
-
-    public void Deconstruct(
-        out RayCastResultType type, out float rayFactor, out Position2 point, out Maybe<EnemyUnit> enemy)
-    {
-        type = Type;
-        rayFactor = RayFactor;
-        point = Point;
-        enemy = Enemy;
-    }
-}
+readonly record struct RayCastResult(RayCastResultType Type, float RayFactor, Position2 Point, EnemyUnit? Enemy);
 
 static class RayCastingHelpers
 {
@@ -53,7 +30,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
             {
                 var factor = rayCaster.CurrentRayFactor;
-                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), Maybe.Nothing);
+                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null);
                 yield break;
             }
 
@@ -71,11 +48,11 @@ static class RayCastingHelpers
             hits.Sort((left, right) => left.factor.CompareTo(right.factor));
             foreach (var (unit, factor, point) in hits)
             {
-                yield return new RayCastResult(HitEnemy, factor, point, Maybe.Just(unit));
+                yield return new RayCastResult(HitEnemy, factor, point, unit);
             }
         }
 
-        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, Maybe.Nothing);
+        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null);
     }
 
     public static RayCastResult CastRayAgainstEnemies(
@@ -88,7 +65,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
             {
                 var factor = rayCaster.CurrentRayFactor;
-                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), Maybe.Nothing);
+                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null);
             }
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
@@ -107,10 +84,10 @@ static class RayCastingHelpers
             if (closestHit.unit != null)
             {
                 return new RayCastResult(
-                    HitEnemy, closestHit.factor, closestHit.point, Maybe.Just(closestHit.unit));
+                    HitEnemy, closestHit.factor, closestHit.point, closestHit.unit);
             }
         }
 
-        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, Maybe.Nothing);
+        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null);
     }
 }

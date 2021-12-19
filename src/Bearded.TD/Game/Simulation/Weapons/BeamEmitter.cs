@@ -21,12 +21,14 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 [Component("beamEmitter")]
 sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawableComponent
 {
+    private readonly record struct BeamSegment(Position2 Start, Position2 End, float DamageFactor);
+
     private static readonly TimeSpan damageTimeSpan = 0.1.S();
     private const double minDamagePerSecond = .05;
 
     private Instant? lastDamageTime;
     private bool drawBeam;
-    private readonly List<(Position2 start, Position2 end, float damageFactor)> beamSegments = new();
+    private readonly List<BeamSegment> beamSegments = new();
 
     public BeamEmitter(IBeamEmitterParameters parameters)
         : base(parameters)
@@ -42,10 +44,9 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawable
     protected override void UpdateShooting(TimeSpan elapsedTime)
     {
         lastDamageTime ??= Game.Time;
+        drawBeam = true;
 
         emitBeam();
-
-        drawBeam = true;
     }
 
     private void emitBeam()
@@ -65,61 +66,52 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawable
         var lastEnd = Weapon.Position.XY();
         var damageFactor = 1.0f;
 
+        var timeSinceLastDamage = Game.Time - lastDamageTime;
+        var canDamageThisFrame = timeSinceLastDamage > damageTimeSpan;
+        var damagedThisFrame = false;
+
         foreach (var (type, _, point, enemy) in results)
         {
-            switch (type)
-            {
-                case RayCastResultType.HitNothing:
-                case RayCastResultType.HitLevel:
-                    beamSegments.Add((lastEnd, point, damageFactor));
-                    break;
-                case RayCastResultType.HitEnemy:
-                    if (damageFactor * Parameters.DamagePerSecond > minDamagePerSecond)
-                    {
-                        var damagePerSecond = damageFactor * Parameters.DamagePerSecond;
-                        enemy.Match(
-                            e => tryDamageTarget(e, damagePerSecond),
-                            () => throw new InvalidOperationException());
+            beamSegments.Add(new BeamSegment(lastEnd, point, damageFactor));
 
-                        beamSegments.Add((lastEnd, point, damageFactor));
-                        damageFactor *= Parameters.PiercingFactor;
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            if (!canDamageThisFrame)
+                continue;
+
+            if (type == RayCastResultType.HitEnemy)
+            {
+                _ = enemy ?? throw new InvalidOperationException();
+                damagedThisFrame |= tryDamage(enemy, damageFactor);
+                damageFactor *= Parameters.PiercingFactor;
             }
+        }
+
+        if (damagedThisFrame)
+        {
+            // TODO: strictly speaking this will lead to slightly too little damage, based on framerate
+            // it would be better to store the next time we are allowed to do damage, and add the interval to it
+            // accounting for periods where we don't hit anything correctly
+            lastDamageTime = Game.Time;
         }
     }
 
-    private void tryDamageTarget<T>(T target, double damagePerSecond)
-        where T : IComponentOwner, IDamageTarget
+    private bool tryDamage(IComponentOwner enemy, float damageFactor)
     {
-        if (lastDamageTime == null)
-        {
-            throw new InvalidOperationException();
-        }
+        var adjustedDamagePerSecond = damageFactor * Parameters.DamagePerSecond;
 
-        var timeSinceLastDamage = Game.Time - lastDamageTime.Value;
-        if (timeSinceLastDamage < damageTimeSpan)
-        {
-            return;
-        }
+        if (adjustedDamagePerSecond < minDamagePerSecond)
+            return false;
 
         var damage = new DamageInfo(
-            StaticRandom.Discretise((float)(damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
+            StaticRandom.Discretise((float)(adjustedDamagePerSecond * damageTimeSpan.NumericValue)).HitPoints(),
             DamageType.Energy);
-        if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage))
-        {
-            lastDamageTime = Game.Time;
-        }
+
+        return DamageExecutor.FromObject(Owner).TryDoDamage(enemy, damage);
     }
 
     public void Draw(IComponentDrawer drawer)
     {
         if (!drawBeam)
-        {
             return;
-        }
 
         var shapeDrawer = drawer.Core.ConsoleBackground;
         var baseAlpha = StaticRandom.Float(0.5f, 0.8f);

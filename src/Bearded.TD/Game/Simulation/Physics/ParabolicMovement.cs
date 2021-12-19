@@ -61,7 +61,8 @@ sealed class ParabolicMovement : Component<ComponentGameObject>, IDirected3
                 Owner.Delete();
                 break;
             case RayCastResultType.HitEnemy:
-                enemy.Match(e => Events.Send(new HitEnemy(e)), () => throw new InvalidOperationException());
+                _ = enemy ?? throw new InvalidOperationException();
+                Events.Send(new HitEnemy(enemy));
                 Owner.Delete();
                 break;
             default:
