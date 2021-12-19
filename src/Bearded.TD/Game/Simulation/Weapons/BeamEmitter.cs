@@ -52,7 +52,7 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawable
     {
         var ray = new Ray(
             Weapon.Position.XY(),
-            Weapon.CurrentDirection * Parameters.Range
+            Weapon.Direction * Parameters.Range
         );
 
         var results = Parameters.PiercingFactor > minDamagePerSecond

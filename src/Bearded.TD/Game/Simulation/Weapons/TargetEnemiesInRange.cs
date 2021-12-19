@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("targetEnemiesInRange")]
 sealed class TargetEnemiesInRange
-    : Component<Weapon, ITargetEnemiesInRange>,
+    : Component<ComponentGameObject, ITargetEnemiesInRange>,
         IWeaponRangeDrawer,
         ITargeter<IPositionable>,
         IWeaponAimer,
@@ -28,6 +28,7 @@ sealed class TargetEnemiesInRange
 {
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
+    private IWeaponState weapon = null!;
 
     // mutable state
     private Instant endOfIdleTime;
@@ -42,7 +43,7 @@ sealed class TargetEnemiesInRange
 
     private bool dontDrawThisFrame;
 
-    private GameState game => Owner.Owner.Game;
+    private GameState game => Owner.Game;
     private Position3 position => Owner.Position;
 
     public bool TriggerPulled { get; private set; }
@@ -56,9 +57,10 @@ sealed class TargetEnemiesInRange
 
     protected override void OnAdded()
     {
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
         passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
-            game, () => Owner.RangeDrawStyle, getTilesToDraw, Color.Green);
+            game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -68,7 +70,7 @@ sealed class TargetEnemiesInRange
 
     private void tryShootingAtTarget()
     {
-        if (!Owner.IsEnabled)
+        if (!weapon.IsEnabled)
         {
             turnOff();
             return;
@@ -97,8 +99,8 @@ sealed class TargetEnemiesInRange
 
     private void goIdle()
     {
-        if(Owner.MaximumTurningAngle != null)
-            AimDirection = Owner.NeutralDirection;
+        if(weapon.MaximumTurningAngle != null)
+            AimDirection = weapon.NeutralDirection;
         TriggerPulled = false;
 
         endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
@@ -112,7 +114,7 @@ sealed class TargetEnemiesInRange
     private void ensureTilesInRangeList()
     {
         if (currentRange == Parameters.Range
-            && currentMaxTurningAngle.Equals(Owner.MaximumTurningAngle)
+            && currentMaxTurningAngle.Equals(weapon.MaximumTurningAngle)
             && nextTileInRangeRecalculationTime > game.Time)
             return;
 
@@ -121,7 +123,7 @@ sealed class TargetEnemiesInRange
 
     private void recalculateTilesInRange()
     {
-        currentMaxTurningAngle = Owner.MaximumTurningAngle;
+        currentMaxTurningAngle = weapon.MaximumTurningAngle;
         currentRange = Parameters.Range;
         var rangeSquared = currentRange.Squared;
 
@@ -129,7 +131,7 @@ sealed class TargetEnemiesInRange
         var navigator = game.Navigator;
 
         var visibilityChecker = currentMaxTurningAngle is { } maxAngle
-            ? new LevelVisibilityChecker().InDirection(Owner.NeutralDirection, maxAngle)
+            ? new LevelVisibilityChecker().InDirection(weapon.NeutralDirection, maxAngle)
             : new LevelVisibilityChecker();
 
         tilesInRange = visibilityChecker.EnumerateVisibleTiles(
@@ -180,18 +182,12 @@ sealed class TargetEnemiesInRange
             return ImmutableHashSet<Tile>.Empty;
         }
 
-        if (Owner.Owner is IComponentOwner componentOwner)
-        {
-            var allTiles = ImmutableHashSet.CreateRange(componentOwner.GetComponents<ITurret>()
-                .Select(t => (IComponentOwner) t.Weapon)
-                .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
-                .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
-            dontDrawThisFrame = false;
-            return allTiles;
-        }
-
-        recalculateTilesInRange();
-        return ImmutableHashSet.CreateRange(tilesInRange);
+        var allTiles = ImmutableHashSet.CreateRange(Owner.GetComponents<ITurret>()
+            .Select(t => (IComponentOwner) t.Weapon)
+            .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
+            .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
+        dontDrawThisFrame = false;
+        return allTiles;
     }
 
     IEnumerable<Tile> IWeaponRangeDrawer.TakeOverDrawingThisFrame()

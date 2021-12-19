@@ -8,8 +8,9 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("linearAccelerationAim")]
-class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters>, IAngularAccelerator
+class LinearAccelerationAim : Component<ComponentGameObject, ILinearAccelerationAimParameters>, IAngularAccelerator
 {
+    private IWeaponState weapon = null!;
     private AngularVelocity angularVelocity;
     private IWeaponAimer? aimer;
 
@@ -22,12 +23,13 @@ class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters
 
     protected override void OnAdded()
     {
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
         ComponentDependencies.DependDynamic<IWeaponAimer>(Owner, Events, c => aimer = c);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (Owner.IsEnabled)
+        if (weapon.IsEnabled)
         {
             accelerateTowardsGoal(elapsedTime);
             applyVelocity(elapsedTime);
@@ -44,7 +46,7 @@ class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters
 
     private void aimIn(Direction2 aimDirection, TimeSpan elapsedTime)
     {
-        var angularDirection = Angle.Between(Owner.CurrentDirection, aimDirection).Sign();
+        var angularDirection = Angle.Between(weapon.Direction, aimDirection).Sign();
         var acceleration = Parameters.Acceleration * angularDirection;
 
         angularVelocity += acceleration * elapsedTime;
@@ -52,7 +54,7 @@ class LinearAccelerationAim : Component<Weapon, ILinearAccelerationAimParameters
 
     private void applyVelocity(TimeSpan elapsedTime)
     {
-        Owner.Turn(angularVelocity * elapsedTime);
+        weapon.Turn(angularVelocity * elapsedTime);
     }
 
     private void dampVelocity(TimeSpan elapsedTime)

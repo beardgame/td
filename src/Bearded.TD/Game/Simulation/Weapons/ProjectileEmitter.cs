@@ -64,7 +64,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters
     {
         var (direction, muzzleVelocity) = getMuzzleVelocity();
 
-        var position = Weapon.Position + (Weapon.CurrentDirection * Parameters.MuzzleOffset).WithZ();
+        var position = Weapon.Position + (Weapon.Direction * Parameters.MuzzleOffset).WithZ();
 
         var projectile = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             Game, Parameters.Projectile, Owner, position, direction);
@@ -78,7 +78,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters
 
     private void applyCurrentUpgradesTo(ComponentGameObject projectile)
     {
-        var upgrades = (Weapon.Owner as ComponentGameObject)
+        var upgrades = Owner.Parent
             ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
             ?.AppliedUpgrades
             .Where(u => u.CanApplyTo(projectile))
@@ -92,7 +92,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters
 
     private (Direction2, Velocity3) getMuzzleVelocity()
     {
-        var direction = Weapon.CurrentDirection + Parameters.Spread * StaticRandom.Float(-1, 1);
+        var direction = Weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;
 
         var velocityZ = targeter?.Target is { } target

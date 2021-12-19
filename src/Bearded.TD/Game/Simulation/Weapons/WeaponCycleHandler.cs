@@ -4,12 +4,12 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-abstract class WeaponCycleHandler<TParameters> : Component<Weapon, TParameters>
+abstract class WeaponCycleHandler<TParameters> : Component<ComponentGameObject, TParameters>
     where TParameters : IParametersTemplate<TParameters>
 {
     private IWeaponTrigger? trigger;
-    protected Weapon Weapon => Owner;
-    protected GameState Game => Owner.Owner.Game;
+    protected IWeaponState Weapon { get; private set; } = null!;
+    protected GameState Game => Owner.Game;
 
     protected WeaponCycleHandler(TParameters parameters) : base(parameters)
     {
@@ -17,6 +17,7 @@ abstract class WeaponCycleHandler<TParameters> : Component<Weapon, TParameters>
 
     protected override void OnAdded()
     {
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => Weapon = c);
         ComponentDependencies.DependDynamic<IWeaponTrigger>(Owner, Events, c => trigger = c);
     }
 

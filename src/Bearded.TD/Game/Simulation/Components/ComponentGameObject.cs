@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -11,7 +12,7 @@ sealed class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObje
 {
     public IComponentOwner? Parent { get; }
     public Position3 Position { get; set; }
-    public Direction2 Direction { get; private set; }
+    public Direction2 Direction { get; set; }
 
     private readonly ComponentCollection<ComponentGameObject> components;
     private readonly ComponentEvents events = new();
@@ -39,6 +40,13 @@ sealed class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObje
     {
         components.Draw(drawers);
     }
+
+    public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(this);
+
+    public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.ApplyTo(this);
+
+    public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(this);
+
 
     public void AddComponent(IComponent<ComponentGameObject> component) => components.Add(component);
 

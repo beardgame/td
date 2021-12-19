@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 interface ITurret : IPositionable
 {
-    Weapon Weapon { get; }
+    ComponentGameObject Weapon { get; }
     IGameObject Owner { get; }
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
@@ -24,7 +24,8 @@ interface ITurret : IPositionable
 sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedComponentOwner
     where T : IComponentOwner, IGameObject, IPositionable
 {
-    private Weapon weapon = null!;
+    public ComponentGameObject Weapon { get; private set; } = null!;
+    private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;
     private bool previouslyFunctional;
@@ -37,14 +38,15 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
-    public IComponentOwner NestedComponentOwner => weapon;
+    public IComponentOwner NestedComponentOwner => Weapon;
 
 
     public Turret(ITurretParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
-        weapon = new Weapon(Parameters.Weapon, this);
+        Weapon = WeaponFactory.Create(Owner.Game, this, Parameters.Weapon);
+        weaponState = Weapon.GetComponents<IWeaponState>().Single();
         transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         ComponentDependencies.Depend<IBuildingStateProvider>(
             Owner, Events, provider => BuildingState = provider.State);
@@ -54,7 +56,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     {
         updateFunctional();
 
-        weapon.Update(elapsedTime);
+        Weapon.Update(elapsedTime);
     }
 
     private void updateFunctional()
@@ -65,9 +67,9 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
             return;
 
         if (currentlyFunctional)
-            weapon.Enable();
+            weaponState.Enable();
         else
-            weapon.Disable();
+            weaponState.Disable();
 
         previouslyFunctional = currentlyFunctional;
     }
@@ -77,7 +79,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
         StopTargetOverride();
 
         targetOverride = new TargetOverride(target);
-        weapon.AddComponent(targetOverride);
+        Weapon.AddComponent(targetOverride);
     }
 
     public void StopTargetOverride()
@@ -85,33 +87,32 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
         if (targetOverride == null)
             return;
 
-        weapon.RemoveComponent(targetOverride);
+        Weapon.RemoveComponent(targetOverride);
         targetOverride = null;
     }
 
-    Weapon ITurret.Weapon => weapon;
     IGameObject ITurret.Owner => Owner;
 
     public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
     {
-        return base.CanApplyUpgradeEffect(effect) || weapon.CanApplyUpgradeEffect(effect);
+        return base.CanApplyUpgradeEffect(effect) || Weapon.CanApplyUpgradeEffect(effect);
     }
 
     public override void ApplyUpgradeEffect(IUpgradeEffect effect)
     {
         base.ApplyUpgradeEffect(effect);
-        weapon.ApplyUpgradeEffect(effect);
+        Weapon.ApplyUpgradeEffect(effect);
     }
 
     public override bool RemoveUpgradeEffect(IUpgradeEffect effect)
     {
         var removed = false;
         removed |= base.RemoveUpgradeEffect(effect);
-        removed |= weapon.RemoveUpgradeEffect(effect);
+        removed |= Weapon.RemoveUpgradeEffect(effect);
         return removed;
     }
 
-    private sealed class TargetOverride : Component<Weapon>,
+    private sealed class TargetOverride : Component<ComponentGameObject>,
         IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
     {
         private readonly IManualTarget3 target;
