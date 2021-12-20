@@ -1,6 +1,7 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -53,7 +54,7 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
     }
 
 
-    sealed class PersistentTrail : GameObject
+    sealed class PersistentTrail : GameObject, IRenderable
     {
         private readonly TrailDrawer drawer;
         private readonly ITrailParameters parameters;
@@ -73,6 +74,7 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
         protected override void OnAdded()
         {
             deleteAt = Game.Time + parameters.Timeout;
+            Game.ListAs<IRenderable>(this);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -83,7 +85,7 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
                 Delete();
         }
 
-        public override void Draw(CoreDrawers drawers)
+        public void Render(CoreDrawers drawers)
         {
             drawTrail(drawer, tracer, parameters, Game);
         }

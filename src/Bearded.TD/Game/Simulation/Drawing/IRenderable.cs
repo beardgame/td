@@ -1,8 +1,9 @@
 using Bearded.TD.Rendering;
+using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
-interface IComponentRenderer
+interface IRenderable : IDeletable
 {
     void Render(CoreDrawers drawers);
 }

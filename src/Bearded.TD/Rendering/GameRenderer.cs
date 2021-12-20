@@ -8,6 +8,7 @@ using Bearded.Graphics.Text;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Debug;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
@@ -81,9 +82,9 @@ sealed class GameRenderer
 
     private void drawGameObjects()
     {
-        foreach (var obj in game.State.GameObjects)
+        foreach (var renderable in game.State.Enumerate<IRenderable>())
         {
-            obj.Draw(drawers);
+            renderable.Render(drawers);
         }
     }
 

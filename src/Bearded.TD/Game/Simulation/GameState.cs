@@ -127,11 +127,6 @@ sealed class GameState
     public void ListAs<T>(T obj)
         where T : class, IDeletable
     {
-        if (obj != ObjectBeingAdded)
-        {
-            throw new Exception("Sad!");
-        }
-
         getList<T>().Add(obj);
     }
 

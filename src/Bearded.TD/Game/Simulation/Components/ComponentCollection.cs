@@ -89,23 +89,6 @@ sealed class ComponentCollection<TOwner>
         }
     }
 
-    public void Draw(CoreDrawers drawers)
-    {
-        drawRecursively(components, drawers);
-    }
-
-    private static void drawRecursively(IEnumerable<IComponent> components, CoreDrawers drawers)
-    {
-        foreach (var component in components)
-        {
-            if (component is IComponentRenderer renderer)
-                renderer.Render(drawers);
-
-            if (component is INestedComponentOwner nested)
-                drawRecursively(nested.NestedComponentOwner.GetComponents<IComponent>(), drawers);
-        }
-    }
-
     private readonly struct CollectionMutation
     {
         public static CollectionMutation Addition(IComponent<TOwner> component) =>

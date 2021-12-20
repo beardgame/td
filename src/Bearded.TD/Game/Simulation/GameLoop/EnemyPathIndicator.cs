@@ -11,7 +11,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
-sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
+sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner, IRenderable
 {
     private const float renderSize = .1f;
     private static readonly TimeSpan trailTimeout = 1.S();
@@ -41,6 +41,8 @@ sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
 
         var sprite = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("circle-soft");
         drawer = new TrailDrawer(Game, sprite);
+
+        Game.ListAs<IRenderable>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -59,11 +61,6 @@ sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
         trail.Update(Game.Time, position.WithZ(h + 0.1.U()), deleteAt != null);
     }
 
-    public override void Draw(CoreDrawers drawers)
-    {
-        drawer.DrawTrail(trail, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha());
-    }
-
     public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
     public Direction GetNextDirection()
@@ -80,5 +77,10 @@ sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
     private void deleteAfterTimeout()
     {
         deleteAt = Game.Time + trailTimeout;
+    }
+
+    public void Render(CoreDrawers drawers)
+    {
+        drawer.DrawTrail(trail, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha());
     }
 }

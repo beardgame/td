@@ -33,6 +33,11 @@ sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveE
         Game.Meta.Events.Subscribe(this);
     }
 
+    protected override void OnDelete()
+    {
+        Game.Meta.Events.Unsubscribe(this);
+    }
+
     public void WakeUp()
     {
         IsAwake = true;
@@ -56,10 +61,6 @@ sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveE
             Game.Add(new EnemyPathIndicator(Tile));
             nextIndicatorSpawn = Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
         }
-    }
-
-    public override void Draw(CoreDrawers drawers)
-    {
     }
 
     public void HandleEvent(WaveEnded @event)

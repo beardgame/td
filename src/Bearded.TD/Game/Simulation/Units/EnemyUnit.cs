@@ -73,6 +73,7 @@ sealed class EnemyUnit : GameObject,
     protected override void OnDelete()
     {
         base.OnDelete();
+        events.Send(new ObjectDeleting());
         Game.UnitLayer.RemoveEnemyFromTile(CurrentTile, this);
     }
 
@@ -84,11 +85,6 @@ sealed class EnemyUnit : GameObject,
         {
             this.Sync(KillUnit.Command, this, lastDamageSource);
         }
-    }
-
-    public override void Draw(CoreDrawers drawers)
-    {
-        components.Draw(drawers);
     }
 
     public bool CanApplyEffect(IUpgradeEffect effect) => effect.CanApplyTo(this);

@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering;
 using Bearded.TD.Tiles;
@@ -9,7 +10,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Workers;
 
-sealed class MiningTaskPlaceholder : GameObject
+sealed class MiningTaskPlaceholder : GameObject, IRenderable
 {
     private readonly Faction faction;
     private readonly Tile tile;
@@ -35,6 +36,7 @@ sealed class MiningTaskPlaceholder : GameObject
         }
         workers.RegisterTask(task);
         Game.MiningLayer.MarkTileForMining(tile);
+        Game.ListAs<IRenderable>(this);
     }
 
     protected override void OnDelete()
@@ -52,7 +54,7 @@ sealed class MiningTaskPlaceholder : GameObject
         Delete();
     }
 
-    public override void Draw(CoreDrawers drawers)
+    public void Render(CoreDrawers drawers)
     {
         var color = .5f * Color.MediumVioletRed;
         drawers.ConsoleBackground.FillCircle(

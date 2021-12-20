@@ -2,26 +2,36 @@ using Bearded.Graphics.Vertices;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Rendering;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
-class DefaultComponentRenderer<T> : Component<T>, IComponentRenderer, IComponentDrawer
+class DefaultComponentRenderer<T> : Component<T>, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
     where T : IGameObject, IComponentOwner
 {
     private IVisibility? visibility;
 
     public CoreDrawers Core { get; private set; } = null!;
 
+    public bool Deleted { get; private set; }
+
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v);
+
+        Events.Subscribe(this);
+        Owner.Game.ListAs<IRenderable>(this);
     }
+
+    public override void OnRemoved() => Deleted = true;
+    public void HandleEvent(ObjectDeleting @event) => Deleted = true;
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
+
 
     public void Render(CoreDrawers drawers)
     {

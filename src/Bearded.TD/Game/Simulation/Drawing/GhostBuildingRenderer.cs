@@ -19,14 +19,14 @@ sealed class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>, IListener<C
         base.OnAdded();
 
         shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("building-ghost")];
-        Events.Subscribe(this);
+        Events.Subscribe<ConstructionStarted>(this);
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
 
-        Events.Unsubscribe(this);
+        Events.Unsubscribe<ConstructionStarted>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -34,11 +33,6 @@ sealed class ComponentGameObject : GameObject, IComponentOwner<ComponentGameObje
     public override void Update(TimeSpan elapsedTime)
     {
         components.Update(elapsedTime);
-    }
-
-    public override void Draw(CoreDrawers drawers)
-    {
-        components.Draw(drawers);
     }
 
     public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(this);
