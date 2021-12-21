@@ -1,8 +1,7 @@
 {
     "id" : "fast02",
-    "name" : "Faster enemy",
-    "value" : 7,
     "components" : [
+        { "id" : "name", "parameters" : { "name" : "Faster enemy" } },
         {
             "id" : "sprite",
             "parameters" : {
@@ -12,6 +11,7 @@
             }
         },
         { "id" : "health", "parameters" : { "maxHealth" : 90 } },
+        { "id" : "threat", "parameters" :  { "threat" : 7 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 4, "attackRate" : 2.5 } },
         { "id" : "moveToBase", "parameters" : { "movementSpeed" : 4 } }

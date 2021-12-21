@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
@@ -20,10 +21,10 @@ sealed class WaveScriptSerializer
     private double spawnStart;
     private double spawnDuration;
     private int resourcesAwardedBySpawnPhase;
-    private Id<SpawnLocation>[] spawnLocations = {};
+    private Id<SpawnLocation>[] spawnLocations = System.Array.Empty<Id<SpawnLocation>>();
     private int unitsPerSpawnLocation;
     private ModAwareId unitBlueprint;
-    private Id<EnemyUnit>[] spawnedUnitIds = {};
+    private Id<ComponentGameObject>[] spawnedUnitIds = System.Array.Empty<Id<ComponentGameObject>>();
 
     [UsedImplicitly]
     public WaveScriptSerializer() {}
@@ -53,7 +54,7 @@ sealed class WaveScriptSerializer
             new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
             unitsPerSpawnLocation,
-            game.Blueprints.Units[unitBlueprint],
+            game.Blueprints.ComponentOwners[unitBlueprint],
             spawnedUnitIds.ToImmutableArray());
     }
 

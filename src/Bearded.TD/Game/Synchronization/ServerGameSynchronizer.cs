@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -24,8 +23,7 @@ sealed class ServerGameSynchronizer : IGameSynchronizer
         this.commandDispatcher = commandDispatcher;
 
         synchronizers.Add(
-            typeof(ComponentGameObject), new Synchronizer<ComponentGameObject>(SyncBuildings.Command));
-        synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncEnemies.Command));
+            typeof(ComponentGameObject), new Synchronizer<ComponentGameObject>(SyncGameObjects.Command));
     }
 
     public void RegisterSyncable<T>(T syncable)

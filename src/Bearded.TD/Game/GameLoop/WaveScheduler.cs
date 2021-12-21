@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.GameLoop;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
@@ -81,10 +82,10 @@ sealed class WaveScheduler : IListener<WaveEnded>
             spawnLocations,
             enemiesPerSpawn,
             blueprint,
-            game.Meta.Ids.GetBatch<EnemyUnit>(spawnLocations.Length * enemiesPerSpawn));
+            game.Meta.Ids.GetBatch<ComponentGameObject>(spawnLocations.Length * enemiesPerSpawn));
     }
 
-    private (IUnitBlueprint blueprint, int enemiesPerSpawn, ImmutableArray<SpawnLocation> spawnLocations, TimeSpan spawnDuration)
+    private (IComponentOwnerBlueprint blueprint, int enemiesPerSpawn, ImmutableArray<SpawnLocation> spawnLocations, TimeSpan spawnDuration)
         generateWaveParameters(WaveRequirements requirements)
     {
         var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
@@ -92,14 +93,16 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var maxWaveValue = requirements.WaveValue + allowedValueError;
 
         var tries = 0;
-        IUnitBlueprint blueprint;
+        IComponentOwnerBlueprint blueprint;
+        float blueprintThreat;
         do
         {
             blueprint = selectBlueprint();
-        } while (blueprint.Value > maxWaveValue && tries++ < 5);
+            blueprintThreat = blueprint.GetThreat();
+        } while (blueprintThreat > maxWaveValue && tries++ < 5);
 
-        var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprint.Value);
-        var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprint.Value);
+        var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
+        var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
         var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
 
         var activeSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
@@ -117,11 +120,11 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var spawnLocations = activeSpawnLocations.RandomSubset(numSpawnPoints, random).ToImmutableArray();
 
         var enemiesPerSpawn = MoreMath.CeilToInt((double) numEnemies / numSpawnPoints);
-        var actualValue = enemiesPerSpawn * numSpawnPoints * blueprint.Value;
+        var actualValue = enemiesPerSpawn * numSpawnPoints * blueprintThreat;
         var actualError = Math.Abs(actualValue - requirements.WaveValue);
 
         // Try spawning one less enemy per spawn. If that ends up being closer to our desired value, do that.
-        var candidateValue = (enemiesPerSpawn - 1) * numSpawnPoints * blueprint.Value;
+        var candidateValue = (enemiesPerSpawn - 1) * numSpawnPoints * blueprintThreat;
         var candidateError = Math.Abs(candidateValue - requirements.WaveValue);
         if (candidateValue > 0 && candidateError < actualError)
         {
@@ -133,7 +136,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         return (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
     }
 
-    private IUnitBlueprint selectBlueprint()
+    private IComponentOwnerBlueprint selectBlueprint()
     {
         var enemies = EnemySpawnDefinition.All;
         var probabilities = new double[enemies.Count + 1];
@@ -145,7 +148,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var result = Array.BinarySearch(probabilities, t);
 
         var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-        return game.Meta.Blueprints.Units[definition.BlueprintId];
+        return game.Meta.Blueprints.ComponentOwners[definition.BlueprintId];
     }
 
     public sealed class WaveRequirements

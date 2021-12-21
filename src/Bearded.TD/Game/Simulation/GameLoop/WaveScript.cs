@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -16,8 +17,8 @@ sealed record WaveScript(
     ResourceAmount ResourcesAwardedBySpawnPhase,
     ImmutableArray<SpawnLocation> SpawnLocations,
     int UnitsPerSpawnLocation,
-    IUnitBlueprint UnitBlueprint,
-    ImmutableArray<Id<EnemyUnit>> SpawnedUnitIds)
+    IComponentOwnerBlueprint UnitBlueprint,
+    ImmutableArray<Id<ComponentGameObject>> SpawnedUnitIds)
 {
     public Instant SpawnEnd => SpawnStart + SpawnDuration;
 

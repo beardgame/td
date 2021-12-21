@@ -5,8 +5,8 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -38,7 +38,7 @@ sealed class TargetEnemiesInRange
     private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-    private EnemyUnit? target;
+    private ComponentGameObject? target;
     public IPositionable? Target => target;
 
     private bool dontDrawThisFrame;
@@ -153,7 +153,8 @@ sealed class TargetEnemiesInRange
         if (target?.Deleted == true)
             target = null;
 
-        if (target != null && !tilesInRange.Contains(target.CurrentTile))
+        // TODO: accumulating tiles each frame is expensive, can we somehow cache this?
+        if (target != null && !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(target)))
             target = null;
 
         if (target != null)

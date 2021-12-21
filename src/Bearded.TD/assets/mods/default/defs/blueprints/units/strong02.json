@@ -1,8 +1,7 @@
 {
     "id" : "strong02",
-    "name" : "Stronger enemy",
-    "value" : 9,
     "components" : [
+        { "id" : "name", "parameters" : { "name" : "Stronger enemy" } },
         {
             "id" : "sprite",
             "parameters" : {
@@ -12,6 +11,7 @@
             }
         },
         { "id" : "health", "parameters" : { "maxHealth" : 500 } },
+        { "id" : "threat", "parameters" :  { "threat" : 9 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 25, "attackRate" : 0.67 } },
         { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1.2 } }

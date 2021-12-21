@@ -4,11 +4,9 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 
@@ -20,7 +18,6 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<Material> Materials { get; }
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
-    public ReadonlyBlueprintCollection<IUnitBlueprint> Units { get; }
     public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
     public ReadonlyBlueprintCollection<IUpgradeBlueprint> Upgrades { get; }
     public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
@@ -31,7 +28,6 @@ sealed class Blueprints
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
-        ReadonlyBlueprintCollection<IUnitBlueprint> units,
         ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
         ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
@@ -42,7 +38,6 @@ sealed class Blueprints
         Materials = materials;
         Sprites = sprites;
         Footprints = footprints;
-        Units = units;
         ComponentOwners = componentOwners;
         Upgrades = upgrades;
         Technologies = technologies;
@@ -58,7 +53,6 @@ sealed class Blueprints
             flatten(list, b => b.Materials),
             flatten(list, b => b.Sprites),
             flatten(list, b => b.Footprints),
-            flatten(list, b => b.Units),
             flatten(list, b => b.ComponentOwners),
             flatten(list, b => b.Upgrades),
             flatten(list, b => b.Technologies),

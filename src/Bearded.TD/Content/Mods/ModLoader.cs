@@ -59,7 +59,6 @@ static class ModLoader
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
             var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
-            var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
             var technologies = new TechnologyBlueprintLoader(loadingContext, componentOwners, upgrades).LoadBlueprints();
             var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
@@ -76,7 +75,6 @@ static class ModLoader
                 materials,
                 sprites,
                 footprints,
-                units,
                 componentOwners,
                 upgrades,
                 technologies,

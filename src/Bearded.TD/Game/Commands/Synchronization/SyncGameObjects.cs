@@ -9,10 +9,10 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Commands.Synchronization;
 
-static class SyncBuildings
+static class SyncGameObjects
 {
-    public static ISerializableCommand<GameInstance> Command(IEnumerable<ComponentGameObject> buildings)
-        => new Implementation(buildings
+    public static ISerializableCommand<GameInstance> Command(IEnumerable<ComponentGameObject> gameObjects)
+        => new Implementation(gameObjects
             .Select(b => b.GetComponents<ISyncer<ComponentGameObject>>().Single())
             .Select(syncer => (syncer, syncer.GetCurrentStateToSync()))
             .ToImmutableArray());

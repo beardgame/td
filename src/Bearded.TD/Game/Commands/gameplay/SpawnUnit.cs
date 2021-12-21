@@ -2,6 +2,7 @@
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -13,17 +14,18 @@ namespace Bearded.TD.Game.Commands.Gameplay;
 static class SpawnUnit
 {
     public static ISerializableCommand<GameInstance> Command(
-        GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
+        GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<ComponentGameObject> unitId)
         => new Implementation(game, tile, blueprint, unitId);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
         private readonly GameState game;
         private readonly Tile tile;
-        private readonly IUnitBlueprint blueprint;
-        private readonly Id<EnemyUnit> unitId;
+        private readonly IComponentOwnerBlueprint blueprint;
+        private readonly Id<ComponentGameObject> unitId;
 
-        public Implementation(GameState game, Tile tile, IUnitBlueprint blueprint, Id<EnemyUnit> unitId)
+        public Implementation(
+            GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<ComponentGameObject> unitId)
         {
             this.game = game;
             this.tile = tile;
@@ -33,7 +35,8 @@ static class SpawnUnit
 
         public void Execute() => EnemyUnitFactory.Create(game, unitId, blueprint, tile);
 
-        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, tile, unitId);
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+            new Serializer(blueprint, tile, unitId);
     }
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
@@ -41,14 +44,14 @@ static class SpawnUnit
         private ModAwareId blueprint;
         private int x;
         private int y;
-        private Id<EnemyUnit> unitId;
+        private Id<ComponentGameObject> unitId;
 
         [UsedImplicitly]
         public Serializer()
         {
         }
 
-        public Serializer(IBlueprint blueprint, Tile tile, Id<EnemyUnit> unitId)
+        public Serializer(IBlueprint blueprint, Tile tile, Id<ComponentGameObject> unitId)
         {
             this.blueprint = blueprint.Id;
             x = tile.X;
@@ -59,7 +62,7 @@ static class SpawnUnit
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => new Implementation(
             game.State,
             new Tile(x, y),
-            game.Blueprints.Units[blueprint],
+            game.Blueprints.ComponentOwners[blueprint],
             unitId);
 
         public void Serialize(INetBufferStream stream)

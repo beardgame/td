@@ -6,6 +6,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
@@ -16,18 +17,17 @@ using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Simulation.StatusEffects;
+
 /*
  * Open questions:
  * 1) Do we take into account tile visibility? (Does not right now)
  * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
  */
-
 [Component("statusEffectEmitter")]
 sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>, IDrawableComponent
     where T : IComponentOwner, IGameObject, IPositionable
 {
-    // TODO: allow this to affect other things than enemies as well
-    private readonly HashSet<EnemyUnit> affectedUnits = new();
+    private readonly HashSet<ComponentGameObject> affectedObjects = new();
 
     private IBuildingState? buildingState;
     private TileRangeDrawer? tileRangeDrawer;
@@ -72,14 +72,14 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
 
     private void removeModificationsFromAllUnits()
     {
-        if (affectedUnits.Count == 0)
+        if (affectedObjects.Count == 0)
             return;
 
         var upgradeEffect = createUpgradeEffect();
 
-        foreach (var unit in affectedUnits)
+        foreach (var unit in affectedObjects)
         {
-            unit.RemoveEffect(upgradeEffect);
+            unit.RemoveUpgradeEffect(upgradeEffect);
         }
     }
 
@@ -92,12 +92,14 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
 
     private void removeModificationsFromUnitsOutOfRange()
     {
-        var unitsOutOfRange = affectedUnits.Where(unit => !tilesInRange.Contains(unit.CurrentTile));
+        var unitsOutOfRange =
+            affectedObjects.Where(unit =>
+                !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(unit)));
         var upgradeEffect = createUpgradeEffect();
 
         foreach (var unit in unitsOutOfRange)
         {
-            unit.RemoveEffect(upgradeEffect);
+            unit.RemoveUpgradeEffect(upgradeEffect);
         }
     }
 
@@ -114,13 +116,13 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
     {
         foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
         {
-            if (affectedUnits.Contains(unit)) continue;
+            if (affectedObjects.Contains(unit)) continue;
 
             var upgradeEffect = createUpgradeEffect();
-            if (!unit.CanApplyEffect(upgradeEffect)) continue;
+            if (!unit.CanApplyUpgradeEffect(upgradeEffect)) continue;
 
-            unit.ApplyEffect(upgradeEffect);
-            affectedUnits.Add(unit);
+            unit.ApplyUpgradeEffect(upgradeEffect);
+            affectedObjects.Add(unit);
         }
     }
 

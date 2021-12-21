@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Simulation.World.RayCastResultType;
 
@@ -16,7 +16,8 @@ enum RayCastResultType
     HitEnemy = 4
 }
 
-readonly record struct RayCastResult(RayCastResultType Type, float RayFactor, Position2 Point, EnemyUnit? Enemy);
+readonly record struct RayCastResult(
+    RayCastResultType Type, float RayFactor, Position2 Point, ComponentGameObject? Enemy);
 
 static class RayCastingHelpers
 {
@@ -35,11 +36,12 @@ static class RayCastingHelpers
             }
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
-            var hits = new List<(EnemyUnit unit, float factor, Position2 point)>();
+            var hits = new List<(ComponentGameObject unit, float factor, Position2 point)>();
 
             foreach (var enemy in enemies)
             {
-                if (enemy.CollisionCircle.TryHit(ray, out var f, out var point, out _))
+                if (enemy.TryGetSingleComponent<ICollider>(out var collider)
+                    && collider.TryHit(ray, out var f, out var point, out _))
                 {
                     hits.Add((enemy, f, point));
                 }
@@ -70,12 +72,13 @@ static class RayCastingHelpers
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
 
-            var closestHit = default((EnemyUnit unit, float factor, Position2 point));
+            var closestHit = default((ComponentGameObject unit, float factor, Position2 point));
             closestHit.factor = float.PositiveInfinity;
 
             foreach (var enemy in enemies)
             {
-                if (enemy.CollisionCircle.TryHit(ray, out var f, out var point, out _) && f < closestHit.factor)
+                if (enemy.TryGetSingleComponent<ICollider>(out var collider)
+                    && collider.TryHit(ray, out var f, out var point, out _) && f < closestHit.factor)
                 {
                     closestHit = (enemy, f, point);
                 }

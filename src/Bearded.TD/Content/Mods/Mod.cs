@@ -2,11 +2,9 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
 
@@ -26,7 +24,6 @@ sealed class Mod
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
-        ReadonlyBlueprintCollection<IUnitBlueprint> units,
         ReadonlyBlueprintCollection<IComponentOwnerBlueprint> weapons,
         ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
@@ -41,7 +38,6 @@ sealed class Mod
             materials,
             sprites,
             footprints,
-            units,
             weapons,
             upgrades,
             technologies,

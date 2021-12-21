@@ -13,7 +13,6 @@ sealed class DamageSourceSerializer
     {
         None,
         GameObject,
-        Enemy,
         DivineIntervention,
     }
 
@@ -31,10 +30,6 @@ sealed class DamageSourceSerializer
                 type = (byte) SupportedImplementation.GameObject;
                 id = b.Id.Value;
                 break;
-            case DamageSource<EnemyUnit> e:
-                type = (byte) SupportedImplementation.Enemy;
-                id = e.Id.Value;
-                break;
             case DivineIntervention:
                 type = (byte) SupportedImplementation.DivineIntervention;
                 break;
@@ -47,7 +42,6 @@ sealed class DamageSourceSerializer
         {
             (byte) SupportedImplementation.None => null,
             (byte) SupportedImplementation.GameObject => instance.State.Find(new Id<ComponentGameObject>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
-            (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
             (byte) SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
             _ => throw new IndexOutOfRangeException()
         };

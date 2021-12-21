@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.GameLoop;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
@@ -55,7 +56,7 @@ sealed class WaveDirector
         private readonly GameState game;
         private readonly WaveScript script;
         private readonly Queue<EnemySpawn> spawnQueue = new();
-        private readonly HashSet<EnemyUnit> spawnedUnits = new();
+        private readonly HashSet<ComponentGameObject> spawnedUnits = new();
         private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
 
         private Phase phase;
@@ -239,5 +240,8 @@ sealed class WaveDirector
     }
 
     private sealed record EnemySpawn(
-        Id<EnemyUnit> UnitId, IUnitBlueprint UnitBlueprint, SpawnLocation SpawnLocation, Instant Time);
+        Id<ComponentGameObject> UnitId,
+        IComponentOwnerBlueprint UnitBlueprint,
+        SpawnLocation SpawnLocation,
+        Instant Time);
 }
