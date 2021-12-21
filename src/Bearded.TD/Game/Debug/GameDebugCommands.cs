@@ -60,7 +60,7 @@ static class GameDebugCommands
         //       less pollution of objects escaping their respective abstraction layer.
         foreach (var gameObj in gameInstance.State.GameObjects)
         {
-            if (gameObj is SpawnLocation or ComponentGameObject)
+            if (gameObj is ComponentGameObject)
             {
                 gameObj.Delete();
             }

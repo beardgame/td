@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Rendering;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;

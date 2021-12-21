@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Bearded.TD.Rendering;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -9,7 +9,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
-sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveEnded>
+sealed class SpawnLocation : Component<ComponentGameObject>, IIdable<SpawnLocation>, IListener<WaveEnded>, IDeletable
 {
     private readonly HashSet<Id<WaveScript>> assignedWaves = new();
     private Instant nextIndicatorSpawn;
@@ -17,6 +17,8 @@ sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveE
     public Id<SpawnLocation> Id { get; }
     public Tile Tile { get; }
     public bool IsAwake { get; private set; }
+
+    public bool Deleted => Owner.Deleted;
 
     public SpawnLocation(Id<SpawnLocation> id, Tile tile)
     {
@@ -26,16 +28,15 @@ sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveE
 
     protected override void OnAdded()
     {
-        base.OnAdded();
-
-        Game.IdAs(this);
-        Game.ListAs(this);
-        Game.Meta.Events.Subscribe(this);
+        Owner.Game.IdAs(Id, this);
+        Owner.Game.ListAs(this);
+        Owner.Game.Meta.Events.Subscribe(this);
     }
 
-    protected override void OnDelete()
+    public override void OnRemoved()
     {
-        Game.Meta.Events.Unsubscribe(this);
+        Owner.Game.Meta.Events.Unsubscribe(this);
+        Owner.Game.DeleteId(Id);
     }
 
     public void WakeUp()
@@ -56,10 +57,10 @@ sealed class SpawnLocation : GameObject, IIdable<SpawnLocation>, IListener<WaveE
             return;
         }
 
-        if (Game.Time >= nextIndicatorSpawn)
+        if (Owner.Game.Time >= nextIndicatorSpawn)
         {
-            Game.Add(new EnemyPathIndicator(Tile));
-            nextIndicatorSpawn = Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
+            GameLoopObjectFactory.CreateEnemyPathIndicator(Owner.Game, Tile);
+            nextIndicatorSpawn = Owner.Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
         }
     }
 
