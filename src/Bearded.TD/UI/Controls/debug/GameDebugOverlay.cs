@@ -51,6 +51,7 @@ sealed class GameDebugOverlay : NavigationNode<Void>
             "game.resources 1000",
             "game.killall",
             "game.repairall",
+            "game.revealmap",
             "game.die",
             "debug.ui"
         );
