@@ -73,7 +73,6 @@ sealed class GameInstance
         }
     }
 
-    public event GenericEventHandler<GameState>? GameStateInitialized;
     public event GenericEventHandler<GameStatus>? GameStatusChanged;
     public event GenericEventHandler<GameSettings>? GameSettingsChanged;
     public event GenericEventHandler<Player>? PlayerAdded;
@@ -99,9 +98,13 @@ sealed class GameInstance
 
         PlayerCursors = new PlayerCursors(this);
         playerManager = context.PlayerManagerFactory(this);
-        Meta = new GameMeta(context.Logger, context.Dispatcher, context.GameSynchronizer, ids,
+        Meta = new GameMeta(
+            context.Logger,
+            context.Dispatcher,
+            context.GameSynchronizer,
+            ids,
             // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
-            new SpriteRenderers(renderContext), me);
+            new SpriteRenderers(renderContext));
     }
 
     public void SetGameSettings(GameSettings gameSettings)
@@ -179,7 +182,6 @@ sealed class GameInstance
         gatherBlueprints();
 
         this.state = state;
-        GameStateInitialized?.Invoke(State);
     }
 
     public void PrepareUI()

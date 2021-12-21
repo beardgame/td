@@ -1,3 +1,5 @@
+using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Shared.Events;
@@ -13,9 +15,9 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     {
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
-            var waveScheduler = new WaveScheduler(context.GameState, commandDispatcher);
+            var (targetFaction, chaptersPerGame, wavesPerChapter) = Parameters;
+            var waveScheduler = new WaveScheduler(context.GameState, context.Factions.Find(targetFaction), commandDispatcher);
             var chapterScheduler = new ChapterScheduler(waveScheduler);
-            var (chaptersPerGame, wavesPerChapter) = Parameters;
             var gameScheduler = new GameScheduler(
                 context.GameState,
                 commandDispatcher,
@@ -25,7 +27,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         });
     }
 
-    public sealed record RuleParameters(int ChaptersPerGame, int WavesPerChapter);
+    public sealed record RuleParameters(ExternalId<Faction> TargetFaction, int ChaptersPerGame, int WavesPerChapter);
 
     private sealed class Listener : IListener<GameStarted>
     {

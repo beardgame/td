@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands.GameLoop;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -22,14 +23,16 @@ sealed class WaveScheduler : IListener<WaveEnded>
 {
     private readonly Random random = new();
     private readonly GameState game;
+    private readonly Faction targetFaction;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     public event VoidEventHandler? WaveEnded;
 
     private Id<WaveScript>? activeWave;
 
-    public WaveScheduler(GameState game, ICommandDispatcher<GameInstance> commandDispatcher)
+    public WaveScheduler(GameState game, Faction targetFaction, ICommandDispatcher<GameInstance> commandDispatcher)
     {
         this.game = game;
+        this.targetFaction = targetFaction;
         this.commandDispatcher = commandDispatcher;
     }
 
@@ -71,7 +74,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         return new WaveScript(
             game.Meta.Ids.GetNext<WaveScript>(),
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
-            game.Meta.Me.Faction,
+            targetFaction,
             game.Time + requirements.DowntimeDuration,
             spawnDuration,
             requirements.Resources,

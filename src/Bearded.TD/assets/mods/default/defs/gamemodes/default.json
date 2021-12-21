@@ -60,6 +60,7 @@
         {
             "id" : "scheduleGame",
             "parameters" : {
+                "targetFaction" : "players",
                 "chaptersPerGame" : 5,
                 "wavesPerChapter" : 5
             }

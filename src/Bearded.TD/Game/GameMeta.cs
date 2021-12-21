@@ -1,6 +1,5 @@
 ﻿using System;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Synchronization;
@@ -19,22 +18,23 @@ sealed class GameMeta
     public IdManager Ids { get; }
     public Logger Logger { get; }
     public bool GameOver { get; private set; }
-    public GlobalGameEvents Events { get; } = new GlobalGameEvents();
+    public GlobalGameEvents Events { get; } = new();
     public Blueprints Blueprints => blueprints!;
 
     public SpriteRenderers SpriteRenderers { get; }
-    public Player Me { get; }
 
     public GameMeta(
-        Logger logger, IDispatcher<GameInstance> dispatcher, IGameSynchronizer synchronizer, IdManager ids,
-        SpriteRenderers spriteRenderers, Player me)
+        Logger logger,
+        IDispatcher<GameInstance> dispatcher,
+        IGameSynchronizer synchronizer,
+        IdManager ids,
+        SpriteRenderers spriteRenderers)
     {
         Logger = logger;
         Synchronizer = synchronizer;
         Dispatcher = dispatcher;
         Ids = ids;
         SpriteRenderers = spriteRenderers;
-        Me = me;
     }
 
     public void SetBlueprints(Blueprints blueprints)
