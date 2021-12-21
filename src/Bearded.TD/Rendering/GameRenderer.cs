@@ -168,7 +168,7 @@ sealed class GameRenderer
     private void drawDebugZones()
     {
         var zoneLayer = game.State.ZoneLayer;
-        var visibilityLayer = game.State.VisibilityLayer;
+        var visibilityLayer = game.State.FactionVisibility;
 
         foreach (var zone in zoneLayer.AllZones)
         {
@@ -187,7 +187,7 @@ sealed class GameRenderer
     {
         const float a = 0.1f;
 
-        var visibilityLayer = game.State.VisibilityLayer;
+        var visibilityLayer = game.State.FactionVisibility;
 
         foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
         {

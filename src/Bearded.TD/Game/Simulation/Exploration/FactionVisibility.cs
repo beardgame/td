@@ -1,20 +1,23 @@
 using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class VisibilityLayer
+sealed class FactionVisibility : FactionBehavior<Faction>
 {
-    private readonly GlobalGameEvents events;
     private readonly ZoneLayer zoneLayer;
     private readonly HashSet<Zone> revealedZones = new();
 
-    public VisibilityLayer(GlobalGameEvents events, ZoneLayer zoneLayer)
+    public FactionVisibility(ZoneLayer zoneLayer)
     {
-        this.events = events;
         this.zoneLayer = zoneLayer;
+    }
+
+    protected override void Execute()
+    {
+        throw new System.NotImplementedException();
     }
 
     public void RevealAllZones()
@@ -32,9 +35,8 @@ sealed class VisibilityLayer
             return false;
         }
 
-        events.Send(new ZoneRevealed(zone));
+        Events.Send(new ZoneRevealed(zone));
         return true;
-
     }
 
     public ZoneVisibility this[Zone zone] =>

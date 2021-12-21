@@ -1,25 +1,31 @@
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.Events;
 using static Bearded.TD.Utilities.DebugAssert;
+using Faction = Bearded.TD.Game.Simulation.Factions.Faction;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class ExplorationManager : IListener<ZoneRevealed>
+sealed class FactionExploration : FactionBehavior<Faction>, IListener<ZoneRevealed>
 {
-    private readonly GameState gameState;
+    // private readonly GameState gameState;
 
     private ZoneLayer zoneLayer => gameState.ZoneLayer;
-    private VisibilityLayer visibilityLayer => gameState.VisibilityLayer;
+    private FactionVisibility factionVisibility => gameState.VisibilityLayer;
 
     public ImmutableArray<Zone> ExplorableZones { get; private set; }
     public bool HasExplorationToken { get; private set; }
 
-    public ExplorationManager(GameState gameState)
+    public FactionExploration(GameState gameState)
     {
         this.gameState = gameState;
-        gameState.Meta.Events.Subscribe(this);
+    }
+
+    protected override void Execute()
+    {
+        Events.Subscribe(this);
         recalculateExplorableZones();
     }
 
@@ -32,10 +38,10 @@ sealed class ExplorationManager : IListener<ZoneRevealed>
     {
         ExplorableZones = zoneLayer.AllZones.Where(
                 zone =>
-                    !visibilityLayer[zone].IsRevealed() &&
-                    zoneLayer.AdjacentZones(zone).Any(adjZone => visibilityLayer[adjZone].IsRevealed()))
+                    !factionVisibility[zone].IsRevealed() &&
+                    zoneLayer.AdjacentZones(zone).Any(adjZone => factionVisibility[adjZone].IsRevealed()))
             .ToImmutableArray();
-        gameState.Meta.Events.Send(new ExplorableZonesChanged(ExplorableZones));
+        Events.Send(new ExplorableZonesChanged(ExplorableZones));
     }
 
     public void ConsumeExplorationToken()

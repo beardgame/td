@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -55,12 +54,8 @@ sealed class GameState
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
     public ZoneLayer ZoneLayer { get; }
-    public VisibilityLayer VisibilityLayer { get; }
 
     public WaveDirector WaveDirector { get; }
-
-    // TODO: this should be something managed per faction
-    public ExplorationManager ExplorationManager { get; }
 
     private bool finishedLoading;
 
@@ -83,12 +78,10 @@ sealed class GameState
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
-        VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
         Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
         WaveDirector = new WaveDirector(this);
-        ExplorationManager = new ExplorationManager(this);
     }
 
     public void FinishLoading()

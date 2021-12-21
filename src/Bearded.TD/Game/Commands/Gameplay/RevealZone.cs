@@ -1,6 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -10,48 +11,56 @@ namespace Bearded.TD.Game.Commands.Gameplay;
 
 static class RevealZone
 {
-    public static IRequest<Player, GameInstance> Request(GameInstance game, Zone zone)
-        => new Implementation(game, zone);
+    public static IRequest<Player, GameInstance> Request(Faction faction, Zone zone)
+        => new Implementation(faction, zone);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
-        private readonly GameInstance game;
+        private readonly Faction faction;
         private readonly Zone zone;
 
-        public Implementation(GameInstance game, Zone zone)
+        public Implementation(Faction faction, Zone zone)
         {
-            this.game = game;
+            this.faction = faction;
             this.zone = zone;
         }
 
         public override bool CheckPreconditions(Player actor) =>
-            game.State.ExplorationManager.HasExplorationToken && !game.State.VisibilityLayer[zone].IsRevealed();
+            actor.Faction.TryGetBehaviorIncludingAncestors<FactionVisibility>(out var visibility) &&
+            actor.Faction.TryGetBehaviorIncludingAncestors<FactionExploration>(out var exploration) &&
+            exploration.HasExplorationToken &&
+            !visibility[zone].IsRevealed();
 
         public override void Execute()
         {
-            game.State.VisibilityLayer.RevealZone(zone);
-            game.State.ExplorationManager.ConsumeExplorationToken();
+            faction.TryGetBehaviorIncludingAncestors<FactionVisibility>(out var visibility);
+            faction.TryGetBehaviorIncludingAncestors<FactionExploration>(out var exploration);
+            visibility!.RevealZone(zone);
+            exploration!.ConsumeExplorationToken();
         }
 
-        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(zone);
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, zone);
     }
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
+        private Id<Faction> faction;
         private Id<Zone> zone;
 
         [UsedImplicitly] public Serializer() { }
 
-        public Serializer(Zone zone)
+        public Serializer(Faction faction, Zone zone)
         {
+            this.faction = faction.Id;
             this.zone = zone.Id;
         }
 
         protected override UnifiedRequestCommand GetSerialized(GameInstance game) =>
-            new Implementation(game, game.State.ZoneLayer.FindZone(zone));
+            new Implementation(game.State.Factions.Resolve(faction), game.State.ZoneLayer.FindZone(zone));
 
         public override void Serialize(INetBufferStream stream)
         {
+            stream.Serialize(ref faction);
             stream.Serialize(ref zone);
         }
     }

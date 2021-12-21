@@ -26,12 +26,14 @@ sealed class ZoneRevealer<T> : Component<T> where T : IGameObject
         private readonly ZoneRevealer<T> zoneRevealer;
 
         public Zone Zone => zoneRevealer.zone;
-        public bool CanRevealNow => zoneRevealer.Owner.Game.ExplorationManager.HasExplorationToken;
+
         public ReportType Type => ReportType.EntityActions;
 
         public ZoneRevealReport(ZoneRevealer<T> zoneRevealer)
         {
             this.zoneRevealer = zoneRevealer;
         }
+
+        public bool CanRevealNow(FactionExploration exploration) => exploration.HasExplorationToken;
     }
 }

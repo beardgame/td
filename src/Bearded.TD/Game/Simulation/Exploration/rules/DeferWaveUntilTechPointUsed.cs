@@ -13,37 +13,44 @@ sealed class DeferWaveUntilExplorationTokenUsed : GameRule<DeferWaveUntilExplora
 
     public override void Execute(GameRuleContext context)
     {
-        // TODO: use the faction from the parameters
-        context.Events.Subscribe(new Listener(context.GameState.ExplorationManager));
+        var faction = context.Factions.Find(Parameters.Faction);
+        if (!faction.TryGetBehavior<FactionExploration>(out var factionExploration))
+        {
+            context.Logger.Warning?.Log(
+                $"Cannot apply defer wave until exploration token use to faction {faction} because it does not " +
+                "support exploration.");
+            return;
+        }
+        context.Events.Subscribe(new Listener(factionExploration));
     }
 
     private sealed class Listener : IListener<WaveScheduled>
     {
-        private readonly ExplorationManager explorationManager;
+        private readonly FactionExploration factionExploration;
 
-        public Listener(ExplorationManager explorationManager)
+        public Listener(FactionExploration factionExploration)
         {
-            this.explorationManager = explorationManager;
+            this.factionExploration = factionExploration;
         }
 
         public void HandleEvent(WaveScheduled @event)
         {
-            if (explorationManager.ExplorableZones.Length > 0)
+            if (factionExploration.ExplorableZones.Length > 0)
             {
-                @event.SpawnStartRequirementConsumer(new ExplorationTokenSpawnStartRequirement(explorationManager));
+                @event.SpawnStartRequirementConsumer(new ExplorationTokenSpawnStartRequirement(factionExploration));
             }
         }
     }
 
     private sealed class ExplorationTokenSpawnStartRequirement : ISpawnStartRequirement
     {
-        private readonly ExplorationManager explorationManager;
+        private readonly FactionExploration factionExploration;
 
-        public bool Satisfied => !explorationManager.HasExplorationToken;
+        public bool Satisfied => !factionExploration.HasExplorationToken;
 
-        public ExplorationTokenSpawnStartRequirement(ExplorationManager explorationManager)
+        public ExplorationTokenSpawnStartRequirement(FactionExploration factionExploration)
         {
-            this.explorationManager = explorationManager;
+            this.factionExploration = factionExploration;
         }
     }
 

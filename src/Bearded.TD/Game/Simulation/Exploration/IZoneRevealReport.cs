@@ -6,5 +6,5 @@ namespace Bearded.TD.Game.Simulation.Exploration;
 interface IZoneRevealReport : IReport
 {
     Zone Zone { get; }
-    bool CanRevealNow { get; }
+    bool CanRevealNow(FactionExploration exploration);
 }

@@ -11,7 +11,7 @@ sealed class TileBasedVisibility<T> : Component<T>, IVisibility
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
     public ObjectVisibility Visibility =>
-        occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsVisible())
+        occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.FactionVisibility[t].IsVisible())
             ? ObjectVisibility.Visible
             : ObjectVisibility.Invisible;
 

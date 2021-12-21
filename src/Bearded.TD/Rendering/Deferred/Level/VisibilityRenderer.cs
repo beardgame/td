@@ -18,7 +18,7 @@ using static Pipeline<Void>;
 sealed class VisibilityRenderer : IDisposable
 {
     private readonly Tiles.Level level;
-    private readonly VisibilityLayer visibilityLayer;
+    private readonly FactionVisibility factionVisibility;
 
     private readonly IPipeline<Void> renderToHeightmap;
 
@@ -31,7 +31,7 @@ sealed class VisibilityRenderer : IDisposable
     public VisibilityRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
     {
         level = game.State.Level;
-        visibilityLayer = game.State.VisibilityLayer;
+        factionVisibility = game.State.FactionVisibility;
 
         heightmap.ResolutionChanged += () => needsFullRedraw = true;
 
@@ -74,7 +74,7 @@ sealed class VisibilityRenderer : IDisposable
     {
         var visibleTiles = Tilemap
             .EnumerateTilemapWith(level.Radius)
-            .Where(t => visibilityLayer[t].IsVisible());
+            .Where(t => factionVisibility[t].IsVisible());
 
         var count = 0;
         foreach (var tile in visibleTiles)

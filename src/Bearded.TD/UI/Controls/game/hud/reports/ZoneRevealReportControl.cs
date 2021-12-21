@@ -11,6 +11,7 @@ sealed class ZoneRevealReportControl : ReportControl
 {
     private readonly GameInstance game;
     private readonly IZoneRevealReport report;
+    private readonly FactionExploration? exploration;
     private readonly Binding<bool> canReveal = new();
 
     public override double Height { get; }
@@ -19,6 +20,7 @@ sealed class ZoneRevealReportControl : ReportControl
     {
         this.game = game;
         this.report = report;
+        game.Me.Faction.TryGetBehaviorIncludingAncestors(out exploration);
 
         var column = this.BuildFixedColumn();
         column.AddButton(
@@ -28,15 +30,12 @@ sealed class ZoneRevealReportControl : ReportControl
 
     private void revealZone()
     {
-        game.Request(RevealZone.Request, report.Zone);
+        game.Request(RevealZone.Request, game.Me.Faction, report.Zone);
     }
 
     public override void Update()
     {
-        if (report.CanRevealNow != canReveal.Value)
-        {
-            canReveal.SetFromSource(report.CanRevealNow);
-        }
+        canReveal.SetFromSource(exploration != null && report.CanRevealNow(exploration));
     }
 
     public override void Dispose() {}
