@@ -31,7 +31,10 @@ sealed class VisibilityRenderer : IDisposable
     public VisibilityRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
     {
         level = game.State.Level;
-        factionVisibility = game.State.FactionVisibility;
+        if (!game.Me.Faction.TryGetBehaviorIncludingAncestors(out factionVisibility))
+        {
+            throw new InvalidOperationException("Cannot render visibility if visibility isn't set for my faction.");
+        }
 
         heightmap.ResolutionChanged += () => needsFullRedraw = true;
 

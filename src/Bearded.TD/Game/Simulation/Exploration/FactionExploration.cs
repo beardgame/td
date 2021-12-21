@@ -8,6 +8,7 @@ using Faction = Bearded.TD.Game.Simulation.Factions.Faction;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
+[FactionBehavior("exploration")]
 sealed class FactionExploration : FactionBehavior<Faction>, IListener<ZoneRevealed>
 {
     // private readonly GameState gameState;
@@ -41,7 +42,7 @@ sealed class FactionExploration : FactionBehavior<Faction>, IListener<ZoneReveal
                     !factionVisibility[zone].IsRevealed() &&
                     zoneLayer.AdjacentZones(zone).Any(adjZone => factionVisibility[adjZone].IsRevealed()))
             .ToImmutableArray();
-        Events.Send(new ExplorableZonesChanged(ExplorableZones));
+        Events.Send(new ExplorableZonesChanged(Owner, ExplorableZones));
     }
 
     public void ConsumeExplorationToken()

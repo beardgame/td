@@ -5,6 +5,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
+[FactionBehavior("visibility")]
 sealed class FactionVisibility : FactionBehavior<Faction>
 {
     private readonly ZoneLayer zoneLayer;

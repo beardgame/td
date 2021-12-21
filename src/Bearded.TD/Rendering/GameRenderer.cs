@@ -168,14 +168,15 @@ sealed class GameRenderer
     private void drawDebugZones()
     {
         var zoneLayer = game.State.ZoneLayer;
-        var visibilityLayer = game.State.FactionVisibility;
+        game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionVisibility>(out var visibility);
 
         foreach (var zone in zoneLayer.AllZones)
         {
-            var color = visibilityLayer[zone] switch
+            var color = visibility?[zone] switch
             {
                 ZoneVisibility.Invisible => Color.DarkOrange,
                 ZoneVisibility.Revealed => Color.LightGreen,
+                null => Color.Orange,
                 _ => throw new ArgumentOutOfRangeException(),
             };
 
@@ -187,11 +188,14 @@ sealed class GameRenderer
     {
         const float a = 0.1f;
 
-        var visibilityLayer = game.State.FactionVisibility;
+        if (!game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionVisibility>(out var visibility))
+        {
+            return;
+        }
 
         foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
         {
-            var color = visibilityLayer[tile] switch
+            var color = visibility[tile] switch
             {
                 TileVisibility.Invisible => Color.DarkOrange,
                 TileVisibility.Revealed => Color.YellowGreen,
