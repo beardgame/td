@@ -1,9 +1,8 @@
 ﻿using Bearded.TD.Commands.Serialization;
 
-namespace Bearded.TD.Commands
+namespace Bearded.TD.Commands;
+
+interface ISerializableCommand<TObject> : ICommand
 {
-    interface ISerializableCommand<TObject> : ICommand
-    {
-        ICommandSerializer<TObject> Serializer { get; }
-    }
+    ICommandSerializer<TObject> Serializer { get; }
 }

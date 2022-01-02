@@ -3,71 +3,70 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Utilities;
 
-namespace Bearded.TD.Content.Mods
+namespace Bearded.TD.Content.Mods;
+
+sealed class ModForLoading
 {
-    sealed class ModForLoading
+    private readonly ModMetadata modMetadata;
+    private Mod mod;
+    private bool isLoading;
+    private ModLoadingContext context;
+    private Exception exception;
+    private ReadOnlyCollection<Mod> loadedDependencies;
+
+    public bool IsDone { get; private set; }
+    public bool DidLoadSuccessfully => IsDone && exception == null;
+
+    public ModForLoading(ModMetadata modMetadata)
     {
-        private readonly ModMetadata modMetadata;
-        private Mod mod;
-        private bool isLoading;
-        private ModLoadingContext context;
-        private Exception exception;
-        private ReadOnlyCollection<Mod> loadedDependencies;
+        this.modMetadata = modMetadata;
+    }
 
-        public bool IsDone { get; private set; }
-        public bool DidLoadSuccessfully => IsDone && exception == null;
+    public void StartLoading(ModLoadingContext context, ReadOnlyCollection<Mod> loadedDependencies)
+    {
+        if (isLoading)
+            throw new InvalidOperationException("Cannot load mod more than once.");
 
-        public ModForLoading(ModMetadata modMetadata)
+        isLoading = true;
+        this.context = context;
+        this.loadedDependencies = loadedDependencies;
+
+        Task.Run(load);
+    }
+
+    private async Task<Mod> load()
+    {
+        try
         {
-            this.modMetadata = modMetadata;
+            mod = await ModLoader.Load(context, modMetadata, loadedDependencies);
         }
-
-        public void StartLoading(ModLoadingContext context, ReadOnlyCollection<Mod> loadedDependencies)
+        catch (Exception e)
         {
-            if (isLoading)
-                throw new InvalidOperationException("Cannot load mod more than once.");
-
-            isLoading = true;
-            this.context = context;
-            this.loadedDependencies = loadedDependencies;
-
-            Task.Run(load);
+            exception = e;
+            context.Logger.Error?.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
         }
-
-        private async Task<Mod> load()
+        finally
         {
-            try
-            {
-                mod = await ModLoader.Load(context, modMetadata, loadedDependencies);
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                context.Logger.Error?.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
-            }
-            finally
-            {
-                IsDone = true;
-            }
-            return mod;
+            IsDone = true;
         }
+        return mod;
+    }
 
-        public Mod GetLoadedMod()
-        {
-            if (!IsDone)
-                throw new InvalidOperationException("Must finish loading mod.");
+    public Mod GetLoadedMod()
+    {
+        if (!IsDone)
+            throw new InvalidOperationException("Must finish loading mod.");
 
-            if (exception != null)
-                throw new Exception($"Something went wrong loading mod '{modMetadata.Id}'", exception);
+        if (exception != null)
+            throw new Exception($"Something went wrong loading mod '{modMetadata.Id}'", exception);
 
-            return mod;
-        }
+        return mod;
+    }
 
-        public void Rethrow()
-        {
-            DebugAssert.State.Satisfies(exception != null);
-            // ReSharper disable once PossibleNullReferenceException
-            throw exception;
-        }
+    public void Rethrow()
+    {
+        DebugAssert.State.Satisfies(exception != null);
+        // ReSharper disable once PossibleNullReferenceException
+        throw exception;
     }
 }

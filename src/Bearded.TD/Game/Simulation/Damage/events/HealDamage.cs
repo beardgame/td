@@ -1,14 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Damage
-{
-    readonly struct HealDamage : IComponentEvent
-    {
-        public HitPoints Amount { get; }
+namespace Bearded.TD.Game.Simulation.Damage;
 
-        public HealDamage(HitPoints amount)
-        {
-            Amount = amount;
-        }
-    }
-}
+readonly record struct HealDamage(HealResult Heal) : IComponentEvent;

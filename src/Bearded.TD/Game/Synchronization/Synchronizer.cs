@@ -1,32 +1,31 @@
 using Bearded.TD.Networking.Serialization;
 
-namespace Bearded.TD.Game.Synchronization
+namespace Bearded.TD.Game.Synchronization;
+
+interface IStateToSync
 {
-    interface IStateToSync
+    void Serialize(INetBufferStream stream);
+    void Apply();
+}
+
+sealed class StateToSync<TSubject> : IStateToSync where TSubject : ISyncable
+{
+    private readonly TSubject subject;
+    private readonly ISynchronizedState<TSubject> state;
+
+    public StateToSync(TSubject subject, ISynchronizedState<TSubject> state)
     {
-        void Serialize(INetBufferStream stream);
-        void Apply();
+        this.subject = subject;
+        this.state = state;
     }
 
-    sealed class StateToSync<TSubject> : IStateToSync where TSubject : ISyncable
+    public void Serialize(INetBufferStream stream)
     {
-        private readonly TSubject subject;
-        private readonly ISynchronizedState<TSubject> state;
+        state.Serialize(stream);
+    }
 
-        public StateToSync(TSubject subject, ISynchronizedState<TSubject> state)
-        {
-            this.subject = subject;
-            this.state = state;
-        }
-
-        public void Serialize(INetBufferStream stream)
-        {
-            state.Serialize(stream);
-        }
-
-        public void Apply()
-        {
-            state.ApplyTo(subject);
-        }
+    public void Apply()
+    {
+        state.ApplyTo(subject);
     }
 }

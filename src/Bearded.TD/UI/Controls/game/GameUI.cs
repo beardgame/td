@@ -13,174 +13,175 @@ using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class GameUI :
+    UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+    IListener<GameOverTriggered>,
+    IListener<GameVictoryTriggered>
 {
-    sealed class GameUI :
-        UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
-        IListener<GameOverTriggered>,
-        IListener<GameVictoryTriggered>
+    private readonly UIUpdater uiUpdater = new();
+
+    public GameInstance Game { get; private set; } = null!;
+    private GameRunner runner = null!;
+    private InputManager inputManager = null!;
+    private FocusManager focusManager = null!;
+
+    public GameNotificationsUI NotificationsUI { get; }
+    public ActionBar ActionBar { get; }
+    public GameStatusUI GameStatusUI { get; }
+    public PlayerStatusUI PlayerStatusUI { get; }
+    public TechnologyUI TechnologyUI { get; }
+
+    public event VoidEventHandler? FocusReset;
+    public event GenericEventHandler<IReportSubject>? EntityStatusOpened;
+    public event VoidEventHandler? EntityStatusClosed;
+    public event VoidEventHandler? GameVictoryTriggered;
+    public event VoidEventHandler? GameOverTriggered;
+    public event VoidEventHandler? GameLeft;
+
+    public readonly Binding<bool> ShowDiegeticUI = new(true);
+
+    private NavigationController? entityStatusNavigation;
+
+    private GameDebugOverlay? debugOverlay;
+
+    public GameUI()
     {
-        private readonly UIUpdater uiUpdater = new();
+        NotificationsUI = new GameNotificationsUI();
+        ActionBar = new ActionBar();
+        GameStatusUI = new GameStatusUI();
+        PlayerStatusUI = new PlayerStatusUI();
+        TechnologyUI = new TechnologyUI();
+    }
 
-        public GameInstance Game { get; private set; } = null!;
-        private GameRunner runner = null!;
-        private InputManager inputManager = null!;
-        private FocusManager focusManager = null!;
+    protected override void Initialize(
+        DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
+    {
+        base.Initialize(dependencies, parameters);
 
-        public GameNotificationsUI NotificationsUI { get; }
-        public ActionBar ActionBar { get; }
-        public GameStatusUI GameStatusUI { get; }
-        public PlayerStatusUI PlayerStatusUI { get; }
-        public TechnologyUI TechnologyUI { get; }
+        Game = parameters.game;
+        runner = parameters.runner;
 
-        public event VoidEventHandler? FocusReset;
-        public event GenericEventHandler<IReportSubject>? EntityStatusOpened;
-        public event VoidEventHandler? EntityStatusClosed;
-        public event VoidEventHandler? GameVictoryTriggered;
-        public event VoidEventHandler? GameOverTriggered;
-        public event VoidEventHandler? GameLeft;
+        inputManager = dependencies.Resolve<InputManager>();
+        focusManager = dependencies.Resolve<FocusManager>();
 
-        private NavigationController? entityStatusNavigation;
+        NotificationsUI.Initialize(Game);
+        ActionBar.Initialize(Game);
+        GameStatusUI.Initialize(Game);
+        PlayerStatusUI.Initialize(Game);
+        TechnologyUI.Initialize(Game);
 
-        private GameDebugOverlay? debugOverlay;
+        Game.SelectionManager.ObjectSelected += onObjectSelected;
+        Game.SelectionManager.ObjectDeselected += onObjectDeselected;
+        Game.Meta.Events.Subscribe<GameOverTriggered>(this);
 
-        public GameUI()
+        FocusReset?.Invoke();
+    }
+
+    public override void Terminate()
+    {
+        NotificationsUI.Terminate();
+        ActionBar.Terminate();
+        TechnologyUI.Terminate();
+        updateOverlayState(false, ref debugOverlay);
+        base.Terminate();
+    }
+
+    public override void Update(UpdateEventArgs args)
+    {
+        if (focusManager.FocusedControl == null)
         {
-            NotificationsUI = new GameNotificationsUI();
-            ActionBar = new ActionBar();
-            GameStatusUI = new GameStatusUI();
-            PlayerStatusUI = new PlayerStatusUI();
-            TechnologyUI = new TechnologyUI();
-        }
-
-        protected override void Initialize(
-            DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
-        {
-            base.Initialize(dependencies, parameters);
-
-            Game = parameters.game;
-            runner = parameters.runner;
-
-            inputManager = dependencies.Resolve<InputManager>();
-            focusManager = dependencies.Resolve<FocusManager>();
-
-            NotificationsUI.Initialize(Game);
-            ActionBar.Initialize(Game);
-            GameStatusUI.Initialize(Game);
-            PlayerStatusUI.Initialize(Game);
-            TechnologyUI.Initialize(Game);
-
-            Game.SelectionManager.ObjectSelected += onObjectSelected;
-            Game.SelectionManager.ObjectDeselected += onObjectDeselected;
-            Game.Meta.Events.Subscribe<GameOverTriggered>(this);
-
             FocusReset?.Invoke();
         }
 
-        public override void Terminate()
-        {
-            NotificationsUI.Terminate();
-            ActionBar.Terminate();
-            TechnologyUI.Terminate();
-            updateOverlayState(false, ref debugOverlay);
-            base.Terminate();
-        }
+        var inputState = new InputState(inputManager);
 
-        public override void Update(UpdateEventArgs args)
+        runner.HandleInput(inputState);
+        runner.Update(args);
+
+        uiUpdater.Update(args);
+        NotificationsUI.Update();
+        GameStatusUI.Update();
+        PlayerStatusUI.Update();
+        TechnologyUI.Update();
+
+        updateGameDebugOverlayState();
+    }
+
+    [Conditional("DEBUG")]
+    private void updateGameDebugOverlayState()
+    {
+        updateOverlayState(UserSettings.Instance.Debug.GameDebugScreen, ref debugOverlay);
+    }
+
+    private void updateOverlayState<TOverlay>(bool showOverlay, ref TOverlay? overlay)
+        where TOverlay : NavigationNode<Void>
+    {
+        switch (showOverlay)
         {
-            if (focusManager.FocusedControl == null)
+            case true when overlay == null:
             {
-                FocusReset?.Invoke();
+                overlay = Navigation.Push<TOverlay>();
+                break;
             }
-
-            var inputState = new InputState(inputManager);
-
-            runner.HandleInput(inputState);
-            runner.Update(args);
-
-            uiUpdater.Update(args);
-            NotificationsUI.Update();
-            GameStatusUI.Update();
-            PlayerStatusUI.Update();
-            TechnologyUI.Update();
-
-            updateGameDebugOverlayState();
-        }
-
-        [Conditional("DEBUG")]
-        private void updateGameDebugOverlayState()
-        {
-            updateOverlayState(UserSettings.Instance.Debug.GameDebugScreen, ref debugOverlay);
-        }
-
-        private void updateOverlayState<TOverlay>(bool showOverlay, ref TOverlay? overlay)
-            where TOverlay : NavigationNode<Void>
-        {
-            switch (showOverlay)
+            case false when overlay != null:
             {
-                case true when overlay == null:
-                {
-                    overlay = Navigation.Push<TOverlay>();
-                    break;
-                }
-                case false when overlay != null:
-                {
-                    overlay.Terminate();
-                    Navigation.Close(overlay);
-                    overlay = null;
-                    break;
-                }
+                overlay.Terminate();
+                Navigation.Close(overlay);
+                overlay = null;
+                break;
             }
         }
+    }
 
-        public void SetOverlayControl(IControlParent overlay)
-        {
-            DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
+    public void SetOverlayControl(IControlParent overlay)
+    {
+        DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
 
-            var dependencies = new DependencyResolver();
-            dependencies.Add(Game);
-            dependencies.Add(uiUpdater);
+        var dependencies = new DependencyResolver();
+        dependencies.Add(Game);
+        dependencies.Add(uiUpdater);
 
-            var (models, views) = NavigationFactories.ForBoth()
-                .Add<ReportSubjectOverlay, IReportSubject>(m => new ReportSubjectOverlayControl(m))
-                .ToDictionaries();
+        var (models, views) = NavigationFactories.ForBoth()
+            .Add<ReportSubjectOverlay, IReportSubject>(m => new ReportSubjectOverlayControl(m))
+            .ToDictionaries();
 
-            entityStatusNavigation = new NavigationController(
-                overlay,
-                dependencies,
-                models,
-                views);
-            entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
-        }
+        entityStatusNavigation = new NavigationController(
+            overlay,
+            dependencies,
+            models,
+            views);
+        entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
+    }
 
-        private void onObjectSelected(ISelectable selectedObject)
-        {
-            var subject = selectedObject.Subject;
-            entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
-            EntityStatusOpened?.Invoke(subject);
-        }
+    private void onObjectSelected(ISelectable selectedObject)
+    {
+        var subject = selectedObject.Subject;
+        entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
+        EntityStatusOpened?.Invoke(subject);
+    }
 
-        private void onObjectDeselected(ISelectable t)
-        {
-            entityStatusNavigation?.CloseAll();
-            EntityStatusClosed?.Invoke();
-        }
+    private void onObjectDeselected(ISelectable t)
+    {
+        entityStatusNavigation?.CloseAll();
+        EntityStatusClosed?.Invoke();
+    }
 
-        public void HandleEvent(GameOverTriggered @event)
-        {
-            GameOverTriggered?.Invoke();
-        }
+    public void HandleEvent(GameOverTriggered @event)
+    {
+        GameOverTriggered?.Invoke();
+    }
 
-        public void HandleEvent(GameVictoryTriggered @event)
-        {
-            GameVictoryTriggered?.Invoke();
-        }
+    public void HandleEvent(GameVictoryTriggered @event)
+    {
+        GameVictoryTriggered?.Invoke();
+    }
 
-        public void OnReturnToMainMenuButtonClicked()
-        {
-            runner.Shutdown();
-            Navigation.Replace<MainMenu>(this);
-            GameLeft?.Invoke();
-        }
+    public void OnReturnToMainMenuButtonClicked()
+    {
+        runner.Shutdown();
+        Navigation.Replace<MainMenu>(this);
+        GameLeft?.Invoke();
     }
 }

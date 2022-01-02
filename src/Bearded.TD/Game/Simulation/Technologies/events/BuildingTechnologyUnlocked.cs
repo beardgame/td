@@ -1,17 +1,16 @@
-﻿using Bearded.TD.Game.Simulation.Buildings;
+﻿using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 
-namespace Bearded.TD.Game.Simulation.Technologies
-{
-    readonly struct BuildingTechnologyUnlocked : IGlobalEvent
-    {
-        public FactionTechnology FactionTechnology { get; }
-        public IBuildingBlueprint Blueprint { get; }
+namespace Bearded.TD.Game.Simulation.Technologies;
 
-        public BuildingTechnologyUnlocked(FactionTechnology factionTechnology, IBuildingBlueprint blueprint)
-        {
-            FactionTechnology = factionTechnology;
-            Blueprint = blueprint;
-        }
+readonly struct BuildingTechnologyUnlocked : IGlobalEvent
+{
+    public FactionTechnology FactionTechnology { get; }
+    public IComponentOwnerBlueprint Blueprint { get; }
+
+    public BuildingTechnologyUnlocked(FactionTechnology factionTechnology, IComponentOwnerBlueprint blueprint)
+    {
+        FactionTechnology = factionTechnology;
+        Blueprint = blueprint;
     }
 }

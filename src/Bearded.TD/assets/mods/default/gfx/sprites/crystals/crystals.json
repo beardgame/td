@@ -1,7 +1,5 @@
 ﻿{
   "id" : "crystals",
-  "drawGroup" : "leveldetail",
-  "shader" : "building",
   "pixelate" : true,
   "textureSamplers" :
   [

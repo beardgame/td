@@ -1,10 +1,9 @@
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.TechEffects;
 
-namespace Bearded.TD.Content.Models
+namespace Bearded.TD.Content.Models;
+
+interface IRuinedParameters : IParametersTemplate<IRuinedParameters>
 {
-    interface IRuinedParameters : IParametersTemplate<IRuinedParameters>
-    {
-        ResourceAmount? RepairCost { get; }
-    }
+    ResourceAmount? RepairCost { get; }
 }

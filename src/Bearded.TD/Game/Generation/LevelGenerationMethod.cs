@@ -1,13 +1,12 @@
-namespace Bearded.TD.Game.Generation
-{
-    enum LevelGenerationMethod : byte
-    {
-        // When adding values, make sure to support them in TilemapGenerator
-        Legacy,
-        Perlin,
-        Empty,
-        Semantic,
+namespace Bearded.TD.Game.Generation;
 
-        Default = Semantic
-    }
+enum LevelGenerationMethod : byte
+{
+    // When adding values, make sure to support them in TilemapGenerator
+    Legacy,
+    Perlin,
+    Empty,
+    Semantic,
+
+    Default = Semantic
 }

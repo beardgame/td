@@ -5,50 +5,48 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.GameLoop
+namespace Bearded.TD.Game.Commands.GameLoop;
+
+static class WakeUpSpawnLocation
 {
-    static class WakeUpSpawnLocation
+    public static ISerializableCommand<GameInstance> Command(SpawnLocation spawnLocation)
+        => new Implementation(spawnLocation);
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(SpawnLocation spawnLocation)
-            => new Implementation(spawnLocation);
+        private readonly SpawnLocation spawnLocation;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(SpawnLocation spawnLocation)
         {
-            private readonly SpawnLocation spawnLocation;
-
-            public Implementation(SpawnLocation spawnLocation)
-            {
-                this.spawnLocation = spawnLocation;
-            }
-
-            public void Execute()
-            {
-                spawnLocation.WakeUp();
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(spawnLocation);
+            this.spawnLocation = spawnLocation;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private Id<SpawnLocation> spawnLocation;
+            spawnLocation.WakeUp();
+        }
 
-            [UsedImplicitly]
-            public Serializer() { }
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(spawnLocation);
+    }
 
-            public Serializer(SpawnLocation spawnLocation)
-            {
-                this.spawnLocation = spawnLocation.Id;
-            }
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private Id<SpawnLocation> spawnLocation;
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(game.State.Find(spawnLocation));
+        [UsedImplicitly]
+        public Serializer() { }
 
-            public void Serialize(INetBufferStream stream)
-            {
-                stream.Serialize(ref spawnLocation);
-            }
+        public Serializer(SpawnLocation spawnLocation)
+        {
+            this.spawnLocation = spawnLocation.Id;
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(game.State.Find(spawnLocation));
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref spawnLocation);
         }
     }
 }
-

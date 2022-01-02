@@ -1,7 +1,6 @@
-namespace Bearded.TD.Utilities.SpaceTime
+namespace Bearded.TD.Utilities.SpaceTime;
+
+interface IDiscreteMeasure1
 {
-    interface IDiscreteMeasure1
-    {
-        int NumericValue { get; }
-    }
+    int NumericValue { get; }
 }

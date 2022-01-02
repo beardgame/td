@@ -1,30 +1,24 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Elements
+namespace Bearded.TD.Game.Simulation.Elements;
+
+[Component("deleteOnExtinguish")]
+class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
+    where T : GameObject
 {
-    [Component("deleteOnExtinguish")]
-    class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
-        where T : GameObject
+    protected override void OnAdded()
     {
-        protected override void OnAdded()
-        {
-            Events.Subscribe(this);
-        }
+        Events.Subscribe(this);
+    }
 
-        public void HandleEvent(FireExtinguished @event)
-        {
-            Owner.Delete();
-        }
+    public void HandleEvent(FireExtinguished @event)
+    {
+        Owner.Delete();
+    }
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
+    public override void Update(TimeSpan elapsedTime)
+    {
     }
 }

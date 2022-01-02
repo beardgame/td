@@ -2,8 +2,15 @@
     "id" : "tank02",
     "name" : "A tank vroom vroom",
     "value" : 25,
-    "color" : "SandyBrown",
     "components" : [
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "particle.orb-soft",
+                "color" : "SandyBrown",
+                "size" : 1.6
+            }
+        },
         { "id" : "health", "parameters" : { "maxHealth" : 2500 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 100, "attackRate" : 0.45 } },

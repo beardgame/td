@@ -3,78 +3,140 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+interface ITurret : IPositionable
 {
-    interface ITurret : IPositionable
+    ComponentGameObject Weapon { get; }
+    IGameObject Owner { get; }
+    IBuildingState? BuildingState { get; }
+    Direction2 NeutralDirection { get; }
+    Angle? MaximumTurningAngle { get; }
+    void OverrideTargeting(IManualTarget3 target);
+    void StopTargetOverride();
+}
+
+[Component("turret")]
+sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedComponentOwner
+    where T : IComponentOwner, IGameObject, IPositionable
+{
+    public ComponentGameObject Weapon { get; private set; } = null!;
+    private IWeaponState weaponState = null!;
+    private ITransformable transform = null!;
+    private TargetOverride? targetOverride;
+    private bool previouslyFunctional;
+
+    public IBuildingState? BuildingState { get; private set; }
+    public Position3 Position =>
+        (Owner.Position.XY() + transform.LocalCoordinateTransform.Transform(Parameters.Offset))
+        .WithZ(Owner.Position.Z + Parameters.Height);
+
+    public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
+    public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
+
+    public IComponentOwner NestedComponentOwner => Weapon;
+
+
+    public Turret(ITurretParameters parameters) : base(parameters) { }
+
+    protected override void OnAdded()
     {
-        Weapon Weapon { get; }
-        IGameObject Owner { get; }
-        IBuildingState? BuildingState { get; }
-        Direction2 NeutralDirection { get; }
-        Maybe<Angle> MaximumTurningAngle { get; }
+        Weapon = WeaponFactory.Create(Owner.Game, this, Parameters.Weapon);
+        weaponState = Weapon.GetComponents<IWeaponState>().Single();
+        transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
+        ComponentDependencies.Depend<IBuildingStateProvider>(
+            Owner, Events, provider => BuildingState = provider.State);
     }
 
-    [Component("turret")]
-    sealed class Turret<T> : Component<T, ITurretParameters>, ITurret
-        where T : IComponentOwner, IGameObject, IPositionable
+    public override void Update(TimeSpan elapsedTime)
     {
-        private Weapon weapon = null!;
-        private ITransformable transform = null!;
+        updateFunctional();
 
-        public IBuildingState? BuildingState { get; private set; }
-        public Position3 Position =>
-            (Owner.Position.XY() + transform.LocalCoordinateTransform.Transform(Parameters.Offset))
-            .WithZ(Owner.Position.Z + Parameters.Height);
+        Weapon.Update(elapsedTime);
+    }
 
-        public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
-        public Maybe<Angle> MaximumTurningAngle => Maybe.FromNullable(Parameters.MaximumTurningAngle);
+    private void updateFunctional()
+    {
+        var currentlyFunctional = BuildingState?.IsFunctional ?? true;
 
-        public Turret(ITurretParameters parameters) : base(parameters) { }
+        if (currentlyFunctional == previouslyFunctional)
+            return;
+
+        if (currentlyFunctional)
+            weaponState.Enable();
+        else
+            weaponState.Disable();
+
+        previouslyFunctional = currentlyFunctional;
+    }
+
+    public void OverrideTargeting(IManualTarget3 target)
+    {
+        StopTargetOverride();
+
+        targetOverride = new TargetOverride(target);
+        Weapon.AddComponent(targetOverride);
+    }
+
+    public void StopTargetOverride()
+    {
+        if (targetOverride == null)
+            return;
+
+        Weapon.RemoveComponent(targetOverride);
+        targetOverride = null;
+    }
+
+    IGameObject ITurret.Owner => Owner;
+
+    public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+    {
+        return base.CanApplyUpgradeEffect(effect) || Weapon.CanApplyUpgradeEffect(effect);
+    }
+
+    public override void ApplyUpgradeEffect(IUpgradeEffect effect)
+    {
+        base.ApplyUpgradeEffect(effect);
+        Weapon.ApplyUpgradeEffect(effect);
+    }
+
+    public override bool RemoveUpgradeEffect(IUpgradeEffect effect)
+    {
+        var removed = false;
+        removed |= base.RemoveUpgradeEffect(effect);
+        removed |= Weapon.RemoveUpgradeEffect(effect);
+        return removed;
+    }
+
+    private sealed class TargetOverride : Component<ComponentGameObject>,
+        IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
+    {
+        private readonly IManualTarget3 target;
+
+        IPositionable? ITargeter<IPositionable>.Target => this;
+
+        public Direction2 AimDirection { get; private set; }
+        public Position3 Position { get; private set; }
+        public bool TriggerPulled { get; private set; }
+
+        public TargetOverride(IManualTarget3 target)
+        {
+            this.target = target;
+        }
 
         protected override void OnAdded()
         {
-            weapon = new Weapon(Parameters.Weapon, this);
-            transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
-            ComponentDependencies.Depend<IBuildingStateProvider>(
-                Owner, Events, provider => BuildingState = provider.State);
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            weapon.Update(elapsedTime);
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-            weapon.Draw(drawers);
-        }
-
-        Weapon ITurret.Weapon => weapon;
-        IGameObject ITurret.Owner => Owner;
-
-        public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-        {
-            return base.CanApplyUpgradeEffect(effect) || weapon.CanApplyUpgradeEffect(effect);
-        }
-
-        public override void ApplyUpgradeEffect(IUpgradeEffect effect)
-        {
-            base.ApplyUpgradeEffect(effect);
-            weapon.ApplyUpgradeEffect(effect);
-        }
-
-        public override bool RemoveUpgradeEffect(IUpgradeEffect effect)
-        {
-            var removed = false;
-            removed |= base.RemoveUpgradeEffect(effect);
-            removed |= weapon.RemoveUpgradeEffect(effect);
-            return removed;
+            Position = target.Target;
+            AimDirection = Direction2.Between(Owner.Position.NumericValue.Xy, Position.NumericValue.Xy);
+            TriggerPulled = target.TriggerPulled;
         }
     }
 }

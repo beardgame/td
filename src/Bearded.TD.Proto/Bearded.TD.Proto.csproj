@@ -2,12 +2,13 @@
   <PropertyGroup>
     <RootNamespace>Bearded.TD.Proto</RootNamespace>
     <AssemblyName>Bearded.TD.Proto</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="proto\" />

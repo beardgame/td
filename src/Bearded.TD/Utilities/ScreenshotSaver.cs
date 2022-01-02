@@ -9,113 +9,112 @@ using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
-namespace Bearded.TD.Utilities
+namespace Bearded.TD.Utilities;
+
+sealed class ScreenshotSaver
 {
-    sealed class ScreenshotSaver
+    private readonly Logger logger;
+    private readonly IActionQueue glActions;
+
+    public ScreenshotSaver(Logger logger, IActionQueue glActions)
     {
-        private readonly Logger logger;
-        private readonly IActionQueue glActions;
+        this.logger = logger;
+        this.glActions = glActions;
+    }
 
-        public ScreenshotSaver(Logger logger, IActionQueue glActions)
+    public Task SendScreenshotToDiscordAsync(ViewportSize viewport)
+    {
+        logger.Info?.Log($"Trying to send screenshot ({viewport.Width}x{viewport.Height}) to Discord...");
+
+        // ReSharper disable once AsyncVoidLambda
+        return tryTaskRun("Sending screenshot to Discord", async () =>
         {
-            this.logger = logger;
-            this.glActions = glActions;
-        }
-
-        public Task SendScreenshotToDiscordAsync(ViewportSize viewport)
-        {
-            logger.Info?.Log($"Trying to send screenshot ({viewport.Width}x{viewport.Height}) to Discord...");
-
-            // ReSharper disable once AsyncVoidLambda
-            return tryTaskRun("Sending screenshot to Discord", async () =>
+            var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
+            if (string.IsNullOrEmpty(webhookToken))
             {
-                var webhookToken = UserSettings.Instance.Debug.DiscordScreenshotWebhookToken;
-                if (string.IsNullOrEmpty(webhookToken))
-                {
-                    logger.Warning?.Log("Set webhook token to send screenshot to discord");
-                    return;
-                }
+                logger.Warning?.Log("Set webhook token to send screenshot to discord");
+                return;
+            }
 
-                await using var stream = new MemoryStream();
+            await using var stream = new MemoryStream();
 
-                using(var bitmap = await makeScreenshotAsync(viewport))
-                {
-                    bitmap.Save(stream, ImageFormat.Png);
-                }
-
-                var filename = getScreenshotFileName();
-
-                var webhook = new DiscordWebhook(webhookToken);
-                await webhook.SendFileAsync(stream, filename);
-
-                logger.Info?.Log($"Sent screenshot to Discord as {filename}");
-            });
-        }
-
-        public Task SaveScreenShotAsync(ViewportSize viewport)
-        {
-            logger.Info?.Log($"Trying to save screenshot ({viewport.Width}x{viewport.Height}) to disk...");
-
-            // ReSharper disable once AsyncVoidLambda
-            return tryTaskRun("Saving screenshot", async () =>
+            using(var bitmap = await makeScreenshotAsync(viewport))
             {
-                var bitmap = await makeScreenshotAsync(viewport);
+                bitmap.Save(stream, ImageFormat.Png);
+            }
 
-                var path = UserSettings.Instance.Misc.ScreenshotPath;
+            var filename = getScreenshotFileName();
 
-                if (string.IsNullOrEmpty(path))
-                    path = Path.Combine(Microsoft.VisualBasic.FileIO.SpecialDirectories.MyPictures, "Bearded.TD");
+            var webhook = new DiscordWebhook(webhookToken);
+            await webhook.SendFileAsync(stream, filename);
 
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
+            logger.Info?.Log($"Sent screenshot to Discord as {filename}");
+        });
+    }
 
-                var completePath = Path.Combine(path, getScreenshotFileName());
+    public Task SaveScreenShotAsync(ViewportSize viewport)
+    {
+        logger.Info?.Log($"Trying to save screenshot ({viewport.Width}x{viewport.Height}) to disk...");
 
-                bitmap.Save(completePath, ImageFormat.Png);
-
-                bitmap.Dispose();
-
-                logger.Info?.Log($"Saved screenshot to {completePath}");
-            });
-        }
-
-        private Task<Bitmap> makeScreenshotAsync(ViewportSize viewport)
+        // ReSharper disable once AsyncVoidLambda
+        return tryTaskRun("Saving screenshot", async () =>
         {
-            var (width, height) = (viewport.Width, viewport.Height);
+            var bitmap = await makeScreenshotAsync(viewport);
 
-            return glActions.Run(() =>
+            var path = UserSettings.Instance.Misc.ScreenshotPath;
+
+            if (string.IsNullOrEmpty(path))
+                path = Path.Combine(Microsoft.VisualBasic.FileIO.SpecialDirectories.MyPictures, "Bearded.TD");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var completePath = Path.Combine(path, getScreenshotFileName());
+
+            bitmap.Save(completePath, ImageFormat.Png);
+
+            bitmap.Dispose();
+
+            logger.Info?.Log($"Saved screenshot to {completePath}");
+        });
+    }
+
+    private Task<Bitmap> makeScreenshotAsync(ViewportSize viewport)
+    {
+        var (width, height) = (viewport.Width, viewport.Height);
+
+        return glActions.Run(() =>
+        {
+            var bmp = new Bitmap(width, height);
+            var data = bmp.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            bmp.UnlockBits(data);
+
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            return bmp;
+        });
+    }
+
+    private static string getScreenshotFileName()
+    {
+        return $"screenshot-{DateTime.Now:yyyy-MM-ddTHHmmss.FFFF}.png";
+    }
+
+    private Task tryTaskRun(string actionDescription, Action action)
+    {
+        return Task.Run(() =>
+        {
+            try
             {
-                var bmp = new Bitmap(width, height);
-                var data = bmp.LockBits(
-                    new Rectangle(0, 0, width, height),
-                    ImageLockMode.WriteOnly,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                bmp.UnlockBits(data);
-
-                bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                return bmp;
-            });
-        }
-
-        private static string getScreenshotFileName()
-        {
-            return $"screenshot-{DateTime.Now:yyyy-MM-ddTHHmmss.FFFF}.png";
-        }
-
-        private Task tryTaskRun(string actionDescription, Action action)
-        {
-            return Task.Run(() =>
+                action();
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    logger.Error?.Log($"{actionDescription} failed: {e}");
-                }
-            });
-        }
+                logger.Error?.Log($"{actionDescription} failed: {e}");
+            }
+        });
     }
 }

@@ -1,7 +1,5 @@
 ﻿{
   "id" : "buildings",
-  "drawGroup" : "building",
-  "shader" : "building",
   "pixelate" : true,
   "textureSamplers" :
   [

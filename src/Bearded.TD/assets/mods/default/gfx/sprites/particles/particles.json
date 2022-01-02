@@ -1,6 +1,4 @@
 ﻿{
     "id" : "particle",
-    "drawGroup" : "particle",
-    "shader" : "default-sprite",
     "defaultTextureSampler" : "diffuse"
 }

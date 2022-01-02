@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation.Reports
+namespace Bearded.TD.Game.Simulation.Reports;
+
+interface IReport
 {
-    interface IReport
-    {
-        ReportType Type { get; }
-    }
+    ReportType Type { get; }
 }

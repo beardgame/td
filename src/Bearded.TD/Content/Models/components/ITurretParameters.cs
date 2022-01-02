@@ -3,17 +3,16 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Content.Models
+namespace Bearded.TD.Content.Models;
+
+interface ITurretParameters : IParametersTemplate<ITurretParameters>
 {
-    interface ITurretParameters : IParametersTemplate<ITurretParameters>
-    {
-        IComponentOwnerBlueprint Weapon { get; }
-        Difference2 Offset { get; }
+    IComponentOwnerBlueprint Weapon { get; }
+    Difference2 Offset { get; }
 
-        [Modifiable(0.25)]
-        Unit Height { get; }
+    [Modifiable(0.25)]
+    Unit Height { get; }
 
-        Direction2 NeutralDirection { get; }
-        Angle? MaximumTurningAngle { get; }
-    }
+    Direction2 NeutralDirection { get; }
+    Angle? MaximumTurningAngle { get; }
 }

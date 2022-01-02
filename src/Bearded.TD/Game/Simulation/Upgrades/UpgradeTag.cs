@@ -1,4 +1,3 @@
-﻿namespace Bearded.TD.Game.Simulation.Upgrades
-{
-    sealed class UpgradeTag {}
-}
+﻿namespace Bearded.TD.Game.Simulation.Upgrades;
+
+sealed class UpgradeTag {}

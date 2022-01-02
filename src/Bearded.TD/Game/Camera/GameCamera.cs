@@ -4,87 +4,86 @@ using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
-namespace Bearded.TD.Game.Camera
+namespace Bearded.TD.Game.Camera;
+
+abstract class GameCamera
 {
-    abstract class GameCamera
+    private const float lowestZToRender = -5;
+    private const float highestZToRender = 5;
+
+    private Position2 position;
+    private float distance;
+
+    public ViewportSize ViewportSize { get; private set; }
+
+    public Position2 Position
     {
-        private const float lowestZToRender = -5;
-        private const float highestZToRender = 5;
-
-        private Position2 position;
-        private float distance;
-
-        protected ViewportSize ViewportSize { get; private set; }
-
-        public Position2 Position
+        get => position;
+        set
         {
-            get => position;
-            set
-            {
-                position = value;
-                recalculateMatrices();
-            }
-        }
-
-        public float Distance
-        {
-            get => distance;
-            set
-            {
-                distance = value;
-                recalculateMatrices();
-            }
-        }
-
-        protected float NearPlaneDistance => Math.Max(Distance - highestZToRender, 0.1f);
-        public float FarPlaneDistance => Distance - lowestZToRender;
-        public Matrix4 ViewMatrix { get; private set; }
-        public Matrix4 ProjectionMatrix { get; private set; }
-
-        protected GameCamera()
-        {
-            ViewportSize = new ViewportSize(1280, 720);
-            resetCameraPosition();
-        }
-
-        private void resetCameraPosition()
-        {
-            position = Position2.Zero;
-            distance = Constants.Camera.ZDefault;
+            position = value;
             recalculateMatrices();
         }
+    }
 
-        private void recalculateMatrices()
+    public float Distance
+    {
+        get => distance;
+        set
         {
-            ViewMatrix = calculateViewMatrix();
-            ProjectionMatrix = CalculateProjectionMatrix();
+            distance = value;
+            recalculateMatrices();
         }
+    }
 
-        private Matrix4 calculateViewMatrix()
-        {
-            var p = position.NumericValue;
-            var eye = p.WithZ(distance);
-            var target = p.WithZ();
-            return Matrix4.LookAt(eye, target, Vector3.UnitY);
-        }
+    protected float NearPlaneDistance => Math.Max(Distance - highestZToRender, 0.1f);
+    public float FarPlaneDistance => Distance - lowestZToRender;
+    public Matrix4 ViewMatrix { get; private set; }
+    public Matrix4 ProjectionMatrix { get; private set; }
 
-        protected abstract Matrix4 CalculateProjectionMatrix();
+    protected GameCamera()
+    {
+        ViewportSize = new ViewportSize(1280, 720);
+        resetCameraPosition();
+    }
 
-        public void OnViewportSizeChanged(ViewportSize viewportSize)
-        {
-            ViewportSize = viewportSize;
-        }
+    private void resetCameraPosition()
+    {
+        position = Position2.Zero;
+        distance = Constants.Camera.ZDefault;
+        recalculateMatrices();
+    }
 
-        public abstract Position2 TransformScreenToWorldPos(Vector2 screenPos);
+    private void recalculateMatrices()
+    {
+        ViewMatrix = calculateViewMatrix();
+        ProjectionMatrix = CalculateProjectionMatrix();
+    }
 
-        protected Difference2 GetNormalizedScreenPosition(Vector2 screenPos)
-        {
-            var ret = new Vector2(
-                2 * screenPos.X / ViewportSize.Width - 1,
-                1 - 2 * screenPos.Y / ViewportSize.Height
-            );
-            ret.X *= ViewportSize.AspectRatio;
-            return new Difference2(ret);
-        }
+    private Matrix4 calculateViewMatrix()
+    {
+        var p = position.NumericValue;
+        var eye = p.WithZ(distance);
+        var target = p.WithZ();
+        return Matrix4.LookAt(eye, target, Vector3.UnitY);
+    }
+
+    protected abstract Matrix4 CalculateProjectionMatrix();
+
+    public void OnViewportSizeChanged(ViewportSize viewportSize)
+    {
+        ViewportSize = viewportSize;
+    }
+
+    public abstract Position2 TransformScreenToWorldPos(Vector2 screenPos);
+
+    protected Difference2 GetNormalizedScreenPosition(Vector2 screenPos)
+    {
+        var ret = new Vector2(
+            2 * screenPos.X / ViewportSize.Width - 1,
+            1 - 2 * screenPos.Y / ViewportSize.Height
+        );
+        ret.X *= ViewportSize.AspectRatio;
+        return new Difference2(ret);
     }
 }

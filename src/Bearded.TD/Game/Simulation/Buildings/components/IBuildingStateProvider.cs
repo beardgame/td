@@ -1,7 +1,6 @@
-﻿namespace Bearded.TD.Game.Simulation.Buildings
+﻿namespace Bearded.TD.Game.Simulation.Buildings;
+
+interface IBuildingStateProvider
 {
-    interface IBuildingStateProvider
-    {
-        IBuildingState State { get; }
-    }
+    IBuildingState State { get; }
 }

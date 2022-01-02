@@ -10,14 +10,9 @@ namespace Bearded.TD.Tests.Game.Generation
 {
     public sealed class AreaTagsTests
     {
-        public AreaTagsTests()
-        {
-            Arb.Register<TileGenerator>();
-        }
-
         private static AreaTags tagsWithTiles(params Tile[] tiles) => new (Area.From(tiles));
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void CanGetLayerWithAnyName(NonNull<string> name)
         {
             var tags = tagsWithTiles();
@@ -37,7 +32,7 @@ namespace Bearded.TD.Tests.Game.Generation
             getLayerWithNullName.Should().Throw<ArgumentException>();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void LayersIncludeTilesInGivenArea(NonNull<string> name, Tile tile, Tile otherTile)
         {
             var tags = tagsWithTiles(tile, otherTile);
@@ -53,7 +48,7 @@ namespace Bearded.TD.Tests.Game.Generation
             settingTilesInKnownTiles.Should().NotThrow();
         }
 
-        [Property]
+        [Property(Arbitrary = new[] { typeof(TileGenerator) })]
         public void LayersExcludeSettingTilesInGivenArea(NonNull<string> name, Tile tile, Tile otherTile)
         {
             var tags = tagsWithTiles(tile);

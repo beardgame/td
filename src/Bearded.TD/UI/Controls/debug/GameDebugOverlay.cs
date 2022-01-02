@@ -13,237 +13,236 @@ using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using Void = Bearded.Utilities.Void;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed class GameDebugOverlay : NavigationNode<Void>
 {
-    sealed class GameDebugOverlay : NavigationNode<Void>
+    private readonly LocalBool randomiseTilemapGenerationSeed = new("randomise seed");
+    private Logger logger;
+    private readonly List<Item> items = new();
+
+    public ReadOnlyCollection<Item> Items { get; }
+
+    public event VoidEventHandler? ItemsChanged;
+
+    public GameDebugOverlay()
     {
-        private readonly LocalBool randomiseTilemapGenerationSeed = new("randomise seed");
-        private Logger logger;
-        private readonly List<Item> items = new();
+        Items = items.AsReadOnly();
+    }
 
-        public ReadOnlyCollection<Item> Items { get; }
+    protected override void Initialize(DependencyResolver dependencies, Void parameters)
+    {
+        logger = dependencies.Resolve<Logger>();
+        randomiseTilemapGenerationSeed.ValueChanged += onItemsChanged;
 
-        public event VoidEventHandler? ItemsChanged;
+        UserSettings.SettingsChanged += resetItems;
 
-        public GameDebugOverlay()
+        resetItems();
+    }
+
+    private void resetItems()
+    {
+        items.Clear();
+
+        items.Add(new Header("COMMANDS"));
+
+        addCommands(
+            "game.techpoints 1000",
+            "game.resources 1000",
+            "game.killall",
+            "game.repairall",
+            "game.die",
+            "debug.ui"
+        );
+
+        items.Add(new Header("LEVEL GENERATION"));
+
+        items.Add(randomiseTilemapGenerationSeed);
+
+        items.AddRange(
+            Enum.GetNames<LevelGenerationMethod>()
+                .Select(m => new ParameterisedCommand($"game.generateterrain {m}", logger,
+                    () => randomiseTilemapGenerationSeed.Value ? "random" : ""))
+                .ToArray()
+        );
+
+        items.Add(new Header("SETTINGS"));
+
+        items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(
+                field =>
+                {
+                    if (field.Name == nameof(UserSettings.DebugSettings.GameDebugScreen))
+                        return (Item)null;
+
+                    if (field.FieldType == typeof(bool))
+                        return new BoolSetting(field.Name, logger);
+
+                    if (field.GetCustomAttributes(typeof(SettingOptionsAttribute), false).FirstOrDefault()
+                        is SettingOptionsAttribute attribute)
+                        return new OptionsSetting(field.Name, attribute.Options, logger);
+
+                    return null;
+                }
+            ).NotNull()
+        );
+
+
+        ItemsChanged?.Invoke();
+
+        void addCommands(params string[] commands)
         {
-            Items = items.AsReadOnly();
+            items.AddRange(commands.Select(c => new Command(c, logger)));
+        }
+    }
+
+    public void Close(Button.ClickEventArgs _)
+    {
+        UserSettings.Instance.Debug.GameDebugScreen = false;
+        UserSettings.Save(logger);
+    }
+
+    public override void Terminate()
+    {
+        base.Terminate();
+
+        UserSettings.SettingsChanged -= resetItems;
+    }
+
+    private void onItemsChanged()
+    {
+        ItemsChanged?.Invoke();
+    }
+
+    public abstract class Item
+    {
+        protected void RunCommand(string command, Logger logger)
+        {
+            logger.Debug!.Log($"Debug UI runs: {command}");
+            var splitCommand = command.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            ConsoleCommands.TryRun(splitCommand[0], logger,
+                new CommandParameters(splitCommand.Skip(1).ToImmutableArray()));
+        }
+    }
+
+    public sealed class Header : Item
+    {
+        public string Name { get; }
+
+        public Header(string name)
+        {
+            Name = name;
+        }
+    }
+
+    public class Command : Item
+    {
+        protected Logger Logger { get; }
+        protected string CommandName { get; }
+
+        public string Name => CommandName;
+
+        public Command(string command, Logger logger)
+        {
+            Logger = logger;
+            CommandName = command;
         }
 
-        protected override void Initialize(DependencyResolver dependencies, Void parameters)
+        public virtual void Call()
         {
-            logger = dependencies.Resolve<Logger>();
-            randomiseTilemapGenerationSeed.ValueChanged += onItemsChanged;
+            RunCommand(CommandName, Logger);
+        }
+    }
 
-            UserSettings.SettingsChanged += resetItems;
+    public sealed class ParameterisedCommand : Command
+    {
+        private readonly Func<string> getParameters;
 
-            resetItems();
+        public ParameterisedCommand(string command, Logger logger, Func<string> getParameters)
+            : base(command, logger)
+        {
+            this.getParameters = getParameters;
         }
 
-        private void resetItems()
+        public override void Call()
         {
-            items.Clear();
+            RunCommand($"{CommandName} {getParameters()}", Logger);
+        }
+    }
 
-            items.Add(new Header("COMMANDS"));
+    public abstract class Setting<T> : Item
+    {
+        private readonly Logger logger;
+        private readonly string setting;
 
-            addCommands(
-                "game.techpoints 1000",
-                "game.resources 1000",
-                "game.killall",
-                "game.repairall",
-                "game.die",
-                "debug.ui"
-            );
+        public string Name => setting;
+        public T Value { get; }
 
-            items.Add(new Header("LEVEL GENERATION"));
+        protected Setting(string setting, Logger logger)
+        {
+            this.setting = setting;
+            this.logger = logger;
 
-            items.Add(randomiseTilemapGenerationSeed);
-
-            items.AddRange(
-                Enum.GetNames<LevelGenerationMethod>()
-                    .Select(m => new ParameterisedCommand($"game.generateterrain {m}", logger,
-                        () => randomiseTilemapGenerationSeed.Value ? "random" : ""))
-                    .ToArray()
-                );
-
-            items.Add(new Header("SETTINGS"));
-
-            items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(
-                    field =>
-                    {
-                        if (field.Name == nameof(UserSettings.DebugSettings.GameDebugScreen))
-                            return (Item)null;
-
-                        if (field.FieldType == typeof(bool))
-                            return new BoolSetting(field.Name, logger);
-
-                        if (field.GetCustomAttributes(typeof(SettingOptionsAttribute), false).FirstOrDefault()
-                            is SettingOptionsAttribute attribute)
-                            return new OptionsSetting(field.Name, attribute.Options, logger);
-
-                        return null;
-                    }
-                ).NotNull()
-            );
-
-
-            ItemsChanged?.Invoke();
-
-            void addCommands(params string[] commands)
-            {
-                items.AddRange(commands.Select(c => new Command(c, logger)));
-            }
+            Value = (T)
+                typeof(UserSettings.DebugSettings)
+                    .GetField(setting)
+                    ?.GetValue(UserSettings.Instance.Debug);
         }
 
-        public void Close(Button.ClickEventArgs _)
+        protected void Set(T value)
         {
-            UserSettings.Instance.Debug.GameDebugScreen = false;
-            UserSettings.Save(logger);
+            RunCommand($"setting debug.{setting} {value?.ToString()?.ToLower()}", logger);
+        }
+    }
+
+    sealed class BoolSetting : Setting<bool>, IBoolSetting
+    {
+        public BoolSetting(string setting, Logger logger) : base(setting, logger)
+        {
         }
 
-        public override void Terminate()
+        public void Toggle()
         {
-            base.Terminate();
+            Set(!Value);
+        }
+    }
 
-            UserSettings.SettingsChanged -= resetItems;
+    public sealed class OptionsSetting : Setting<object>
+    {
+        public ImmutableArray<object> Options { get; }
+
+        public OptionsSetting(string setting, object[] options, Logger logger) : base(setting, logger)
+        {
+            Options = ImmutableArray.Create(options);
         }
 
-        private void onItemsChanged()
+        public void Set(int index)
         {
-            ItemsChanged?.Invoke();
+            Set(Options[index]);
+        }
+    }
+    sealed class LocalBool : Item, IBoolSetting
+    {
+        public string Name { get; }
+        public bool Value { get; private set; }
+
+        public event VoidEventHandler ValueChanged;
+
+        public LocalBool(string name)
+        {
+            Name = name;
         }
 
-        public abstract class Item
+        public void Toggle()
         {
-            protected void RunCommand(string command, Logger logger)
-            {
-                logger.Debug!.Log($"Debug UI runs: {command}");
-                var splitCommand = command.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                ConsoleCommands.TryRun(splitCommand[0], logger,
-                    new CommandParameters(splitCommand.Skip(1).ToImmutableArray()));
-            }
+            Value = !Value;
+            ValueChanged?.Invoke();
         }
+    }
 
-        public sealed class Header : Item
-        {
-            public string Name { get; }
-
-            public Header(string name)
-            {
-                Name = name;
-            }
-        }
-
-        public class Command : Item
-        {
-            protected Logger Logger { get; }
-            protected string CommandName { get; }
-
-            public string Name => CommandName;
-
-            public Command(string command, Logger logger)
-            {
-                Logger = logger;
-                CommandName = command;
-            }
-
-            public virtual void Call()
-            {
-                RunCommand(CommandName, Logger);
-            }
-        }
-
-        public sealed class ParameterisedCommand : Command
-        {
-            private readonly Func<string> getParameters;
-
-            public ParameterisedCommand(string command, Logger logger, Func<string> getParameters)
-                : base(command, logger)
-            {
-                this.getParameters = getParameters;
-            }
-
-            public override void Call()
-            {
-                RunCommand($"{CommandName} {getParameters()}", Logger);
-            }
-        }
-
-        public abstract class Setting<T> : Item
-        {
-            private readonly Logger logger;
-            private readonly string setting;
-
-            public string Name => setting;
-            public T Value { get; }
-
-            protected Setting(string setting, Logger logger)
-            {
-                this.setting = setting;
-                this.logger = logger;
-
-                Value = (T)
-                    typeof(UserSettings.DebugSettings)
-                        .GetField(setting)
-                        ?.GetValue(UserSettings.Instance.Debug);
-            }
-
-            protected void Set(T value)
-            {
-                RunCommand($"setting debug.{setting} {value?.ToString()?.ToLower()}", logger);
-            }
-        }
-
-        sealed class BoolSetting : Setting<bool>, IBoolSetting
-        {
-            public BoolSetting(string setting, Logger logger) : base(setting, logger)
-            {
-            }
-
-            public void Toggle()
-            {
-                Set(!Value);
-            }
-        }
-
-        public sealed class OptionsSetting : Setting<object>
-        {
-            public ImmutableArray<object> Options { get; }
-
-            public OptionsSetting(string setting, object[] options, Logger logger) : base(setting, logger)
-            {
-                Options = ImmutableArray.Create(options);
-            }
-
-            public void Set(int index)
-            {
-                Set(Options[index]);
-            }
-        }
-        sealed class LocalBool : Item, IBoolSetting
-        {
-            public string Name { get; }
-            public bool Value { get; private set; }
-
-            public event VoidEventHandler ValueChanged;
-
-            public LocalBool(string name)
-            {
-                Name = name;
-            }
-
-            public void Toggle()
-            {
-                Value = !Value;
-                ValueChanged?.Invoke();
-            }
-        }
-
-        public interface IBoolSetting
-        {
-            string Name { get; }
-            bool Value { get; }
-            void Toggle();
-        }
+    public interface IBoolSetting
+    {
+        string Name { get; }
+        bool Value { get; }
+        void Toggle();
     }
 }

@@ -7,56 +7,55 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Synchronization
+namespace Bearded.TD.Game.Commands.Synchronization;
+
+static class SyncPlayers
 {
-    static class SyncPlayers
+    public static ISerializableCommand<GameInstance> Command(GameInstance game)
+        => new Implementation(game.Players.Select(p => (p, p.GetCurrentState())).ToList());
+
+    private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        public static ISerializableCommand<GameInstance> Command(GameInstance game)
-            => new Implementation(game.Players.Select(p => (p, p.GetCurrentState())).ToList());
+        private readonly IList<(Player, PlayerState)> players;
 
-        private sealed class Implementation : ISerializableCommand<GameInstance>
+        public Implementation(IList<(Player, PlayerState)> players)
         {
-            private readonly IList<(Player, PlayerState)> players;
-
-            public Implementation(IList<(Player, PlayerState)> players)
-            {
-                this.players = players;
-            }
-
-            public void Execute()
-            {
-                foreach (var (player, state) in players)
-                {
-                    player.SyncFrom(state);
-                }
-            }
-
-            ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(players);
+            this.players = players;
         }
 
-        private sealed class Serializer : ICommandSerializer<GameInstance>
+        public void Execute()
         {
-            private (Id<Player> id, PlayerState state)[] players = {};
-
-            [UsedImplicitly]
-            public Serializer() { }
-
-            public Serializer(IEnumerable<(Player player, PlayerState state)> players)
+            foreach (var (player, state) in players)
             {
-                this.players = players.Select(tuple => (tuple.player.Id, tuple.state)).ToArray();
+                player.SyncFrom(state);
             }
+        }
 
-            public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-                => new Implementation(players.Select(tuple => (game.PlayerFor(tuple.id), tuple.state)).ToList());
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(players);
+    }
 
-            public void Serialize(INetBufferStream stream)
+    private sealed class Serializer : ICommandSerializer<GameInstance>
+    {
+        private (Id<Player> id, PlayerState state)[] players = {};
+
+        [UsedImplicitly]
+        public Serializer() { }
+
+        public Serializer(IEnumerable<(Player player, PlayerState state)> players)
+        {
+            this.players = players.Select(tuple => (tuple.player.Id, tuple.state)).ToArray();
+        }
+
+        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
+            => new Implementation(players.Select(tuple => (game.PlayerFor(tuple.id), tuple.state)).ToList());
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.SerializeArrayCount(ref players);
+            for (var i = 0; i < players.Length; i++)
             {
-                stream.SerializeArrayCount(ref players);
-                for (var i = 0; i < players.Length; i++)
-                {
-                    stream.Serialize(ref players[i].id);
-                    stream.Serialize(ref players[i].state);
-                }
+                stream.Serialize(ref players[i].id);
+                stream.Serialize(ref players[i].state);
             }
         }
     }

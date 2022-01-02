@@ -1,4 +1,3 @@
-namespace Bearded.TD.Game.Simulation.Damage
-{
-    interface IDamageTarget {}
-}
+namespace Bearded.TD.Game.Simulation.Damage;
+
+interface IDamageTarget {}

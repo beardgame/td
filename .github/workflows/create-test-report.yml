@@ -27,9 +27,19 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
+          status: ${{ github.event.workflow_run.conclusion || 'success' }}
           description: |
             **Test summary**
             ✔️ Passed: ${{ steps.test-reporter.outputs.passed }}
             ❌ Failed: ${{ steps.test-reporter.outputs.failed }}
             ⚠️ Skipped: ${{ steps.test-reporter.outputs.skipped }}
+            [Test report](${{ github.event.workflow_run.html_url }})
+      
+      - name: Send fallback webhook
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: https://discordapp.com/api/webhooks/${{ secrets.WEBHOOK_ID }}/${{ secrets.WEBHOOK_TOKEN }}
+          description: |
+            **Test report creation failed for unknown reason**
             [Test report](${{ github.event.workflow_run.html_url }})

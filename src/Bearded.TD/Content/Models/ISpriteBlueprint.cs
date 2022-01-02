@@ -2,15 +2,14 @@
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 
-namespace Bearded.TD.Content.Models
-{
-    interface ISpriteBlueprint
-    {
-        SpriteParameters SpriteParameters { get; }
+namespace Bearded.TD.Content.Models;
 
-        IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-            SpriteRenderers spriteRenderers,
-            DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
-            where TVertex : struct, IVertexData;
-    }
+interface ISpriteBlueprint
+{
+    SpriteParameters SpriteParameters { get; }
+
+    IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+        SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
+        where TVertex : struct, IVertexData;
 }

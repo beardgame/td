@@ -1,13 +1,12 @@
 ﻿using Bearded.TD.Commands.Serialization;
 
-namespace Bearded.TD.Commands
+namespace Bearded.TD.Commands;
+
+interface IRequest<TActor, TObject>
 {
-    interface IRequest<TActor, TObject>
-    {
-        bool CheckPreconditions(TActor actor);
+    bool CheckPreconditions(TActor actor);
 
-        ISerializableCommand<TObject>? ToCommand();
+    ISerializableCommand<TObject>? ToCommand();
 
-        IRequestSerializer<TActor, TObject> Serializer { get; }
-    }
+    IRequestSerializer<TActor, TObject> Serializer { get; }
 }

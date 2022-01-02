@@ -1,12 +1,3 @@
-﻿namespace Bearded.TD.Game.Simulation.Components
-{
-    readonly struct ComponentAdded : IComponentEvent
-    {
-        public IComponent Component { get; }
+﻿namespace Bearded.TD.Game.Simulation.Components;
 
-        public ComponentAdded(IComponent component)
-        {
-            Component = component;
-        }
-    }
-}
+readonly record struct ComponentAdded(IComponent Component) : IComponentEvent;

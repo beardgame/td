@@ -2,19 +2,18 @@ using Bearded.Graphics;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+class UIDebugOverlay : UpdateableNavigationNode<Void>
 {
-    class UIDebugOverlay : UpdateableNavigationNode<Void>
+
+    public override void Update(UpdateEventArgs args)
     {
 
-        public override void Update(UpdateEventArgs args)
-        {
+    }
 
-        }
-
-        public void Close(Button.ClickEventArgs t)
-        {
-            Navigation.Close(this);
-        }
+    public void Close(Button.ClickEventArgs t)
+    {
+        Navigation.Close(this);
     }
 }

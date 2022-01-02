@@ -1,81 +1,92 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
+using static Bearded.TD.Utilities.DebugAssert;
 
-namespace Bearded.TD.Game.Simulation.Buildings
+namespace Bearded.TD.Game.Simulation.Buildings;
+
+sealed class BuildingLayer
 {
-    sealed class BuildingLayer
+    public enum Occupation
     {
-        public enum Occupation
+        None,
+        ReservedForBuilding, // a building is scheduled to be built in this tile, but hasn't yet
+        MaterializedBuilding
+    }
+
+    private readonly GlobalGameEvents events;
+    private readonly Dictionary<Tile, ComponentGameObject> buildingLookup = new();
+
+    public BuildingLayer(GlobalGameEvents events)
+    {
+        this.events = events;
+    }
+
+    public void AddBuilding(ComponentGameObject building)
+    {
+        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
         {
-            None,
-            ReservedForBuilding, // a building is scheduled to be built in this tile, but hasn't yet
-            MaterializedBuilding
+            State.Satisfies(!buildingLookup.ContainsKey(tile));
+            buildingLookup.Add(tile, building);
+        }
+    }
+
+    public void RemoveBuilding(ComponentGameObject building)
+    {
+        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
+        {
+            State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
+            buildingLookup.Remove(tile);
         }
 
-        private readonly GlobalGameEvents events;
-        private readonly Dictionary<Tile, IBuilding> buildingLookup = new();
-
-        public BuildingLayer(GlobalGameEvents events)
+        if (building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State is { IsMaterialized: true })
         {
-            this.events = events;
+            events.Send(new BuildingDestroyed(building));
+        }
+    }
+
+    public Occupation GetOccupationFor(Tile tile)
+    {
+        var state = getBuildingStateFor(tile);
+        return state switch
+        {
+            null => Occupation.None,
+            {IsMaterialized: true} => Occupation.MaterializedBuilding,
+            _ => Occupation.ReservedForBuilding
+        };
+    }
+
+    public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out ComponentGameObject? building)
+    {
+        if (GetBuildingFor(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
+        {
+            building = candidate;
+            return true;
         }
 
-        public void AddBuilding(IBuilding building)
-        {
-            foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
-            {
-                DebugAssert.State.Satisfies(!buildingLookup.ContainsKey(tile));
-                buildingLookup.Add(tile, building);
-            }
-        }
+        building = null;
+        return false;
+    }
 
-        public void RemoveBuilding(IBuilding building)
-        {
-            foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
-            {
-                DebugAssert.State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
-                buildingLookup.Remove(tile);
-            }
+    private IBuildingState? getBuildingStateFor(Tile tile)
+    {
+        return GetBuildingFor(tile) is { } building ? getStateFor(building) : null;
+    }
 
-            if (building is Building finishedBuilding)
-            {
-                events.Send(new BuildingDestroyed(finishedBuilding));
-            }
-        }
+    public ComponentGameObject? GetBuildingFor(Tile tile)
+    {
+        buildingLookup.TryGetValue(tile, out var building);
+        return building;
+    }
 
-        private IBuildingState? getBuildingStateFor(Tile tile)
-        {
-            return GetBuildingFor(tile)?.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
-        }
+    public ComponentGameObject? this[Tile tile] => GetBuildingFor(tile);
 
-        public IBuilding? GetBuildingFor(Tile tile)
-        {
-            buildingLookup.TryGetValue(tile, out var building);
-            return building;
-        }
-
-        public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out IBuilding? building)
-        {
-            building = GetBuildingFor(tile);
-            return getBuildingStateFor(tile)?.IsMaterialized ?? false;
-        }
-
-        public Occupation GetOccupationFor(Tile tile)
-        {
-            var state = getBuildingStateFor(tile);
-            return state switch
-            {
-                null => Occupation.None,
-                {IsMaterialized: true} => Occupation.MaterializedBuilding,
-                _ => Occupation.ReservedForBuilding
-            };
-        }
-
-        public IBuilding? this[Tile tile] => GetBuildingFor(tile);
+    private static IBuildingState? getStateFor(IComponentOwner building)
+    {
+        return building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
     }
 }

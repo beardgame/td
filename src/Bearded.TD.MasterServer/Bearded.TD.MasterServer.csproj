@@ -3,9 +3,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD.MasterServer/Debug/</OutputPath>
@@ -16,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Bearded.Utilities" Version="0.2.0.395-dev" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>

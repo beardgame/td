@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
@@ -17,135 +16,119 @@ using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Rendering;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+[Component("beamEmitter")]
+sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawableComponent
 {
-    [Component("beamEmitter")]
-    sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>
+    private readonly record struct BeamSegment(Position2 Start, Position2 End, float DamageFactor);
+
+    private static readonly TimeSpan damageTimeSpan = 0.1.S();
+    private const double minDamagePerSecond = .05;
+
+    private Instant? lastDamageTime;
+    private bool drawBeam;
+    private readonly List<BeamSegment> beamSegments = new();
+
+    public BeamEmitter(IBeamEmitterParameters parameters)
+        : base(parameters)
     {
-        private static readonly TimeSpan damageTimeSpan = 0.1.S();
-        private const double minDamagePerSecond = .05;
+    }
 
-        private Instant? lastDamageTime;
-        private bool drawBeam;
-        private readonly List<(Position2 start, Position2 end, float damageFactor)> beamSegments = new();
+    protected override void UpdateIdle(TimeSpan elapsedTime)
+    {
+        lastDamageTime = null;
+        drawBeam = false;
+    }
 
-        public BeamEmitter(IBeamEmitterParameters parameters)
-            : base(parameters)
+    protected override void UpdateShooting(TimeSpan elapsedTime)
+    {
+        lastDamageTime ??= Game.Time;
+        drawBeam = true;
+
+        emitBeam();
+    }
+
+    private void emitBeam()
+    {
+        var ray = new Ray(
+            Weapon.Position.XY(),
+            Weapon.Direction * Parameters.Range
+        );
+
+        var results = Parameters.PiercingFactor > minDamagePerSecond
+            ? Game.Level.CastPiercingRayAgainstEnemies(
+                ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile))
+            : Game.Level.CastRayAgainstEnemies(
+                ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile)).Yield();
+
+        beamSegments.Clear();
+        var lastEnd = Weapon.Position.XY();
+        var damageFactor = 1.0f;
+
+        var timeSinceLastDamage = Game.Time - lastDamageTime;
+        var canDamageThisFrame = timeSinceLastDamage > damageTimeSpan;
+        var damagedThisFrame = false;
+
+        foreach (var (type, _, point, enemy) in results)
         {
-        }
+            beamSegments.Add(new BeamSegment(lastEnd, point, damageFactor));
 
-        protected override void UpdateIdle(TimeSpan elapsedTime)
-        {
-            lastDamageTime = null;
-            drawBeam = false;
-        }
+            if (!canDamageThisFrame)
+                continue;
 
-        protected override void UpdateShooting(TimeSpan elapsedTime)
-        {
-            lastDamageTime ??= Game.Time;
-
-            emitBeam();
-
-            drawBeam = true;
-        }
-
-        private void emitBeam()
-        {
-            var ray = new Ray(
-                Weapon.Position.XY(),
-                Weapon.CurrentDirection * Parameters.Range
-            );
-
-            var results = Parameters.PiercingFactor > minDamagePerSecond
-                ? Game.Level.CastPiercingRayAgainstEnemies(
-                    ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile))
-                : Game.Level.CastRayAgainstEnemies(
-                    ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile)).Yield();
-
-            beamSegments.Clear();
-            var lastEnd = Weapon.Position.XY();
-            var damageFactor = 1.0f;
-
-            foreach (var (type, _, point, enemy) in results)
+            if (type == RayCastResultType.HitEnemy)
             {
-                switch (type)
-                {
-                    case RayCastResultType.HitNothing:
-                    case RayCastResultType.HitLevel:
-                        beamSegments.Add((lastEnd, point, damageFactor));
-                        break;
-                    case RayCastResultType.HitEnemy:
-                        if (damageFactor * Parameters.DamagePerSecond > minDamagePerSecond)
-                        {
-                            var damagePerSecond = damageFactor * Parameters.DamagePerSecond;
-                            enemy.Match(
-                                e => tryDamageTarget(e, damagePerSecond),
-                                () => throw new InvalidOperationException());
-
-                            beamSegments.Add((lastEnd, point, damageFactor));
-                            damageFactor *= Parameters.PiercingFactor;
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                _ = enemy ?? throw new InvalidOperationException();
+                damagedThisFrame |= tryDamage(enemy, damageFactor);
+                damageFactor *= Parameters.PiercingFactor;
             }
         }
 
-        private void tryDamageTarget<T>(T target, double damagePerSecond)
-            where T : IComponentOwner, IDamageTarget
+        if (damagedThisFrame)
         {
-            if (lastDamageTime == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            var timeSinceLastDamage = Game.Time - lastDamageTime.Value;
-            if (timeSinceLastDamage < damageTimeSpan)
-            {
-                return;
-            }
-
-            if (!target.TryGetSingleComponent<IDamageReceiver>(out var damageReceiver))
-            {
-                return;
-            }
-
-            Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
-
-            var result = damageReceiver.Damage(new DamageInfo(
-                StaticRandom.Discretise((float) (damagePerSecond * timeSinceLastDamage.NumericValue)).HitPoints(),
-                DamageType.Energy,
-                damageSource
-            ));
+            // TODO: strictly speaking this will lead to slightly too little damage, based on framerate
+            // it would be better to store the next time we are allowed to do damage, and add the interval to it
+            // accounting for periods where we don't hit anything correctly
             lastDamageTime = Game.Time;
-            Events.Send(new CausedDamage(result));
         }
+    }
 
-        public override void Draw(CoreDrawers drawers)
+    private bool tryDamage(IComponentOwner enemy, float damageFactor)
+    {
+        var adjustedDamagePerSecond = damageFactor * Parameters.DamagePerSecond;
+
+        if (adjustedDamagePerSecond < minDamagePerSecond)
+            return false;
+
+        var damage = new DamageInfo(
+            StaticRandom.Discretise((float)(adjustedDamagePerSecond * damageTimeSpan.NumericValue)).HitPoints(),
+            DamageType.Energy);
+
+        return DamageExecutor.FromObject(Owner).TryDoDamage(enemy, damage);
+    }
+
+    public void Draw(IComponentDrawer drawer)
+    {
+        if (!drawBeam)
+            return;
+
+        var shapeDrawer = drawer.Core.ConsoleBackground;
+        var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
+
+        foreach (var (start, end, factor) in beamSegments)
         {
-            if (!drawBeam)
-            {
-                return;
-            }
+            shapeDrawer.DrawLine(
+                start.WithZ(Weapon.Position.Z).NumericValue,
+                end.WithZ(Weapon.Position.Z).NumericValue,
+                Parameters.Width.NumericValue * PixelSize * 0.5f,
+                Parameters.Color.WithAlpha() * baseAlpha * factor);
 
-            var shapeDrawer = drawers.ConsoleBackground;
-            var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
-
-            foreach (var (start, end, factor) in beamSegments)
-            {
-                shapeDrawer.DrawLine(
-                    start.WithZ(Weapon.Position.Z).NumericValue,
-                    end.WithZ(Weapon.Position.Z).NumericValue,
-                    Parameters.Width.NumericValue * PixelSize * 0.5f,
-                    Parameters.Color.WithAlpha() * baseAlpha * factor);
-
-                shapeDrawer.DrawLine(
-                    start.WithZ(Weapon.Position.Z).NumericValue,
-                    end.WithZ(Weapon.Position.Z).NumericValue,
-                    Parameters.CoreWidth.NumericValue * PixelSize * 0.5f,
-                    Color.White.WithAlpha() * baseAlpha * factor);
-            }
+            shapeDrawer.DrawLine(
+                start.WithZ(Weapon.Position.Z).NumericValue,
+                end.WithZ(Weapon.Position.Z).NumericValue,
+                Parameters.CoreWidth.NumericValue * PixelSize * 0.5f,
+                Color.White.WithAlpha() * baseAlpha * factor);
         }
     }
 }

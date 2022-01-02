@@ -9,57 +9,56 @@ using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Bearded.TD.Content.Serialization.Converters
+namespace Bearded.TD.Content.Serialization.Converters;
+
+static class BehaviorConverterFactory
 {
-    static class BehaviorConverterFactory
+    public static BehaviorConverter<IBuildingComponent> ForBuildingComponents()
+        => new(ComponentFactories.ParameterTypesForComponentsById
+            .ToDictionary(t => t.Key, t => typeof(BuildingComponent<>).MakeGenericType(t.Value)));
+
+    public static BehaviorConverter<IComponent> ForBaseComponents()
+        => new(ComponentFactories.ParameterTypesForComponentsById
+            .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));
+
+    public static BehaviorConverter<IFactionBehavior> ForFactionBehaviors()
+        => new(FactionBehaviorFactories.ParameterTypesForComponentsById
+            .ToDictionary(t => t.Key, t => typeof(Models.FactionBehavior<>).MakeGenericType(t.Value)));
+
+    public static BehaviorConverter<IGameRule> ForGameRules()
+        => new(GameRuleFactories.ParameterTypesForComponentsById
+            .ToDictionary(t => t.Key, t => typeof(Models.GameRule<>).MakeGenericType(t.Value)));
+
+    public static BehaviorConverter<INodeBehavior> ForNodeBehaviors()
+        => new(NodeBehaviorFactories.ParameterTypesForComponentsById
+            .ToDictionary(t => t.Key, t => typeof(Models.NodeBehavior<>).MakeGenericType(t.Value)));
+}
+
+sealed class BehaviorConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
+{
+    private readonly Dictionary<string, Type> behaviorTypes;
+
+    public BehaviorConverter(Dictionary<string, Type> behaviorTypes)
     {
-        public static BehaviorConverter<IBuildingComponent> ForBuildingComponents()
-            => new(ComponentFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(BuildingComponent<>).MakeGenericType(t.Value)));
-
-        public static BehaviorConverter<IComponent> ForBaseComponents()
-            => new(ComponentFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));
-
-        public static BehaviorConverter<IFactionBehavior> ForFactionBehaviors()
-            => new(FactionBehaviorFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(Models.FactionBehavior<>).MakeGenericType(t.Value)));
-
-        public static BehaviorConverter<IGameRule> ForGameRules()
-            => new(GameRuleFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(Models.GameRule<>).MakeGenericType(t.Value)));
-
-        public static BehaviorConverter<INodeBehavior> ForNodeBehaviors()
-            => new(NodeBehaviorFactories.ParameterTypesForComponentsById
-                .ToDictionary(t => t.Key, t => typeof(Models.NodeBehavior<>).MakeGenericType(t.Value)));
+        this.behaviorTypes = behaviorTypes;
     }
 
-    sealed class BehaviorConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
+    protected override TComponentInterface ReadJson(JsonReader reader, JsonSerializer serializer)
     {
-        private readonly Dictionary<string, Type> behaviorTypes;
+        var json = JObject.Load(reader);
 
-        public BehaviorConverter(Dictionary<string, Type> behaviorTypes)
-        {
-            this.behaviorTypes = behaviorTypes;
-        }
+        var id = json
+            .GetValue("id", StringComparison.OrdinalIgnoreCase)
+            ?.Value<string>();
 
-        protected override TComponentInterface ReadJson(JsonReader reader, JsonSerializer serializer)
-        {
-            var json = JObject.Load(reader);
+        if (id == null)
+            throw new InvalidDataException("Behavior must have an id.");
 
-            var id = json
-                .GetValue("id", StringComparison.OrdinalIgnoreCase)
-                ?.Value<string>();
+        if (!behaviorTypes.TryGetValue(id, out var behaviorType))
+            throw new InvalidDataException($"Unknown Behavior id '{id}'.");
 
-            if (id == null)
-                throw new InvalidDataException("Behavior must have an id.");
-
-            if (!behaviorTypes.TryGetValue(id, out var behaviorType))
-                throw new InvalidDataException($"Unknown Behavior id '{id}'.");
-
-            var behavior = Activator.CreateInstance(behaviorType);
-            serializer.Populate(json.CreateReader(), behavior);
-            return (TComponentInterface) behavior;
-        }
+        var behavior = Activator.CreateInstance(behaviorType);
+        serializer.Populate(json.CreateReader(), behavior);
+        return (TComponentInterface) behavior;
     }
 }

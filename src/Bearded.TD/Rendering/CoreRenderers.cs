@@ -7,76 +7,75 @@ using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 using Font = Bearded.Graphics.Text.Font;
 
-namespace Bearded.TD.Rendering
+namespace Bearded.TD.Rendering;
+
+sealed class CoreRenderers
 {
-    sealed class CoreRenderers
+    public Font ConsoleFont { get; }
+    public Font UIFont { get; }
+
+    public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; } = new();
+    public IRenderer PrimitivesRenderer { get; }
+
+    public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; } = new();
+    public IRenderer ConsoleBackgroundRenderer { get; }
+
+    public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> ConsoleFontMeshBuilder { get; }
+    public IRenderer ConsoleFontRenderer { get; }
+
+    public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> UIFontMeshBuilder { get; }
+    public IRenderer UIFontRenderer { get; }
+
+
+    public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings)
     {
-        public Font ConsoleFont { get; }
-        public Font UIFont { get; }
+        var primitiveShader = shaders.GetShaderProgram("geometry");
+        var uvColorShader = shaders.GetShaderProgram("uvcolor");
 
-        public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; } = new();
-        public IRenderer PrimitivesRenderer { get; }
+        PrimitivesRenderer = BatchedRenderer.From(
+            Primitives.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
+        primitiveShader!.UseOnRenderer(PrimitivesRenderer);
 
-        public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; } = new();
-        public IRenderer ConsoleBackgroundRenderer { get; }
+        ConsoleBackgroundRenderer = BatchedRenderer.From(
+            ConsoleBackground.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
+        primitiveShader!.UseOnRenderer(ConsoleBackgroundRenderer);
 
-        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> ConsoleFontMeshBuilder { get; }
-        public IRenderer ConsoleFontRenderer { get; }
-
-        public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> UIFontMeshBuilder { get; }
-        public IRenderer UIFontRenderer { get; }
-
-
-        public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings)
+        var (consoleFontTextureData, consoleFont) = // used to be inconsolata
+            FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), 2);
+        // TODO: premultiply console font texture data!
+        var consoleFontTexture = consoleFontTextureData.ToTexture(t =>
         {
-            var primitiveShader = shaders.GetShaderProgram("geometry");
-            var uvColorShader = shaders.GetShaderProgram("uvcolor");
+            t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
+            t.GenerateMipmap();
+        });
 
-            PrimitivesRenderer = BatchedRenderer.From(
-                Primitives.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
-            primitiveShader!.UseOnRenderer(PrimitivesRenderer);
+        ConsoleFont = consoleFont;
+        ConsoleFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
+        ConsoleFontRenderer = BatchedRenderer.From(ConsoleFontMeshBuilder.ToRenderable(),
+            settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, consoleFontTexture));
+        uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
 
-            ConsoleBackgroundRenderer = BatchedRenderer.From(
-                ConsoleBackground.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
-            primitiveShader!.UseOnRenderer(ConsoleBackgroundRenderer);
-
-            var (consoleFontTextureData, consoleFont) = // used to be inconsolata
-                FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), 2);
-            // TODO: premultiply console font texture data!
-            var consoleFontTexture = consoleFontTextureData.ToTexture(t =>
-            {
-                t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
-                t.GenerateMipmap();
-            });
-
-            ConsoleFont = consoleFont;
-            ConsoleFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
-            ConsoleFontRenderer = BatchedRenderer.From(ConsoleFontMeshBuilder.ToRenderable(),
-                settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, consoleFontTexture));
-            uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
-
-            var (uiFontTextureData, uiFont) = // used to be helveticaneue
-                FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), 2);
-            // TODO: premultiply console font texture data!
-            var uiFontTexture = uiFontTextureData.ToTexture(t =>
-            {
-                t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
-                t.GenerateMipmap();
-            });
-
-            UIFont = uiFont;
-            UIFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
-            UIFontRenderer = BatchedRenderer.From(UIFontMeshBuilder.ToRenderable(),
-                settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, uiFontTexture));
-            uvColorShader!.UseOnRenderer(UIFontRenderer);
-        }
-
-        public void ClearAll()
+        var (uiFontTextureData, uiFont) = // used to be helveticaneue
+            FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), 2);
+        // TODO: premultiply console font texture data!
+        var uiFontTexture = uiFontTextureData.ToTexture(t =>
         {
-            Primitives.Clear();
-            ConsoleBackground.Clear();
-            ConsoleFontMeshBuilder.Clear();
-            UIFontMeshBuilder.Clear();
-        }
+            t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
+            t.GenerateMipmap();
+        });
+
+        UIFont = uiFont;
+        UIFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
+        UIFontRenderer = BatchedRenderer.From(UIFontMeshBuilder.ToRenderable(),
+            settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, uiFontTexture));
+        uvColorShader!.UseOnRenderer(UIFontRenderer);
+    }
+
+    public void ClearAll()
+    {
+        Primitives.Clear();
+        ConsoleBackground.Clear();
+        ConsoleFontMeshBuilder.Clear();
+        UIFontMeshBuilder.Clear();
     }
 }

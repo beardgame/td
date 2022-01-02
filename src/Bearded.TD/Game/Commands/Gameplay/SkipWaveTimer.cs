@@ -3,52 +3,51 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Gameplay
+namespace Bearded.TD.Game.Commands.Gameplay;
+
+static class SkipWaveTimer
 {
-    static class SkipWaveTimer
+    public static IRequest<Player, GameInstance> Request(GameInstance game)
+        => new Implementation(game);
+
+    private sealed class Implementation : UnifiedRequestCommand
     {
-        public static IRequest<Player, GameInstance> Request(GameInstance game)
-            => new Implementation(game);
+        private readonly GameInstance game;
 
-        private sealed class Implementation : UnifiedRequestCommand
+        public Implementation(GameInstance game)
         {
-            private readonly GameInstance game;
-
-            public Implementation(GameInstance game)
-            {
-                this.game = game;
-            }
-
-            public override bool CheckPreconditions(Player actor)
-            {
-                return true;
-            }
-
-            public override ISerializableCommand<GameInstance> ToCommand() => this;
-
-            public override void Execute()
-            {
-                game.Meta.Events.Send(new Game.GameLoop.SkipWaveTimer());
-            }
-
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+            this.game = game;
         }
 
-        private sealed class Serializer : UnifiedRequestCommandSerializer
+        public override bool CheckPreconditions(Player actor)
         {
-            [UsedImplicitly]
-            public Serializer()
-            {
-            }
+            return true;
+        }
 
-            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-            {
-                return new Implementation(game);
-            }
+        public override ISerializableCommand<GameInstance> ToCommand() => this;
 
-            public override void Serialize(INetBufferStream stream)
-            {
-            }
+        public override void Execute()
+        {
+            game.Meta.Events.Send(new Game.GameLoop.SkipWaveTimer());
+        }
+
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+    }
+
+    private sealed class Serializer : UnifiedRequestCommandSerializer
+    {
+        [UsedImplicitly]
+        public Serializer()
+        {
+        }
+
+        protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+        {
+            return new Implementation(game);
+        }
+
+        public override void Serialize(INetBufferStream stream)
+        {
         }
     }
 }

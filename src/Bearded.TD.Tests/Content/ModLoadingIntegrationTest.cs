@@ -59,7 +59,6 @@ namespace Bearded.TD.Tests.Content
             public ISpriteSetImplementation CreateSpriteSet(
                 IEnumerable<string> samplers,
                 IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
-                Shader shader,
                 bool pixelate,
                 string id) => new MockSpriteSetImplementation();
 
@@ -79,12 +78,16 @@ namespace Bearded.TD.Tests.Content
             public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
                 SpriteSet spriteSet,
                 SpriteRenderers spriteRenderers,
-                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+                SpriteDrawGroup drawGroup,
+                int drawGroupOrderKey,
+                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+                Shader shader)
                 where TVertex : struct, IVertexData => default!;
 
             public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
                 SpriteRenderers spriteRenderers,
                 DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+                Shader shader,
                 params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
         }
 

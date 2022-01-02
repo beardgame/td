@@ -1,7 +1,6 @@
-namespace Bearded.TD.Game.Simulation
+namespace Bearded.TD.Game.Simulation;
+
+interface IGameObject
 {
-    interface IGameObject
-    {
-        GameState Game { get; }
-    }
+    GameState Game { get; }
 }

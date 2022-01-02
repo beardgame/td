@@ -1,7 +1,5 @@
 ﻿{
   "id" : "foundations",
-  "drawGroup" : "LowResLevelDetail",
-  "shader" : "deferred-sprite-3d",
   "pixelate" : true,
   "textureSamplers" :
   [

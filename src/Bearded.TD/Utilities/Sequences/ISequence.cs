@@ -1,7 +1,6 @@
-namespace Bearded.TD.Utilities.Sequences
+namespace Bearded.TD.Utilities.Sequences;
+
+interface ISequence<out T>
 {
-    interface ISequence<out T>
-    {
-        T GetElementAtPosition(int index);
-    }
+    T GetElementAtPosition(int index);
 }

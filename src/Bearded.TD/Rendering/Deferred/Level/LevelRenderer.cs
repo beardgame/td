@@ -1,55 +1,67 @@
 ﻿using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
 
-namespace Bearded.TD.Rendering.Deferred.Level
+namespace Bearded.TD.Rendering.Deferred.Level;
+
+sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
 {
-    sealed class LevelRenderer : IListener<TileDrawInfoChanged>
+    public Heightmap Heightmap { get; }
+    private readonly HeightRenderer heightRenderer;
+    private readonly VisibilityRenderer visibilityRenderer;
+    private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
+
+    public LevelRenderer(
+        GameInstance game, RenderContext context, Material material)
     {
-        private readonly HeightmapRenderer heightmapRenderer;
-        private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
+        Heightmap = new Heightmap(game);
+        heightRenderer = new HeightRenderer(game, context, Heightmap);
+        visibilityRenderer = new VisibilityRenderer(game, context, Heightmap);
+        heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
 
-        public LevelRenderer(
-            GameInstance game, RenderContext context, Material material)
-        {
-            heightmapRenderer = new HeightmapRenderer(game, context);
-            heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, heightmapRenderer);
+        resizeIfNeeded();
+        game.Meta.Events.Subscribe<TileDrawInfoChanged>(this);
+        game.Meta.Events.Subscribe<ZoneRevealed>(this);
+    }
 
-            resizeIfNeeded();
-            game.Meta.Events.Subscribe(this);
-        }
+    public void HandleEvent(TileDrawInfoChanged @event)
+    {
+        heightRenderer.TileChanged(@event.Tile);
+    }
 
-        public void HandleEvent(TileDrawInfoChanged @event)
-        {
-            heightmapRenderer.TileChanged(@event.Tile);
-        }
+    public void HandleEvent(ZoneRevealed @event)
+    {
+        visibilityRenderer.ZoneChanged(@event.Zone);
+    }
 
-        public void PrepareForRender()
-        {
-            heightmapRenderer.EnsureHeightmapIsUpToDate();
-        }
+    public void PrepareForRender()
+    {
+        resizeIfNeeded();
+        heightRenderer.Render();
+        visibilityRenderer.Render();
+    }
 
-        public void RenderAll()
-        {
-            resizeIfNeeded();
+    private void resizeIfNeeded()
+    {
+        var settings = UserSettings.Instance.Graphics;
 
-            heightmapToLevelRenderer.RenderAll();
-        }
+        Heightmap.SetScale(settings.TerrainHeightmapResolution);
+        heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
+    }
 
-        private void resizeIfNeeded()
-        {
-            var settings = UserSettings.Instance.Graphics;
+    public void Render()
+    {
+        heightmapToLevelRenderer.RenderAll();
+    }
 
-            heightmapRenderer.SetScale(settings.TerrainHeightmapResolution);
-            heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
-        }
-
-        public void CleanUp()
-        {
-            heightmapRenderer.CleanUp();
-            heightmapToLevelRenderer.CleanUp();
-        }
+    public void CleanUp()
+    {
+        Heightmap.Dispose();
+        heightRenderer.CleanUp();
+        visibilityRenderer.Dispose();
+        heightmapToLevelRenderer.CleanUp();
     }
 }

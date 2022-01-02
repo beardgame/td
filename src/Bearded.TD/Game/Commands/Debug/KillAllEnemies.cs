@@ -6,53 +6,52 @@ using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Debug
+namespace Bearded.TD.Game.Commands.Debug;
+
+static class KillAllEnemies
 {
-    static class KillAllEnemies
+    public static IRequest<Player, GameInstance> Request(GameInstance game, IDamageSource? damageSource)
+        => new Implementation(game, damageSource);
+
+    private sealed class Implementation : UnifiedDebugRequestCommand
     {
-        public static IRequest<Player, GameInstance> Request(GameInstance game, IDamageSource? damageSource)
-            => new Implementation(game, damageSource);
+        private readonly GameInstance game;
+        private readonly IDamageSource? damageSource;
 
-        private sealed class Implementation : UnifiedDebugRequestCommand
+        public Implementation(GameInstance game, IDamageSource? damageSource)
         {
-            private readonly GameInstance game;
-            private readonly IDamageSource? damageSource;
+            this.game = game;
+            this.damageSource = damageSource;
+        }
 
-            public Implementation(GameInstance game, IDamageSource? damageSource)
+        public override void Execute()
+        {
+            foreach (var enemy in game.State.GameObjects.OfType<EnemyUnit>())
             {
-                this.game = game;
-                this.damageSource = damageSource;
+                enemy.Kill(damageSource);
+            }
+        }
+
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(damageSource);
+
+        private sealed class Serializer : UnifiedRequestCommandSerializer
+        {
+            private readonly DamageSourceSerializer damageSourceSerializer = new();
+
+            [UsedImplicitly]
+            public Serializer() { }
+
+            public Serializer(IDamageSource? damageSource)
+            {
+                damageSourceSerializer.Populate(damageSource);
             }
 
-            public override void Execute()
+            protected override UnifiedRequestCommand GetSerialized(GameInstance game)
+                => new Implementation(game, damageSourceSerializer.ToDamageSource(game));
+
+            public override void Serialize(INetBufferStream stream)
             {
-                foreach (var enemy in game.State.GameObjects.OfType<EnemyUnit>())
-                {
-                    enemy.Kill(damageSource);
-                }
-            }
-
-            protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(damageSource);
-
-            private sealed class Serializer : UnifiedRequestCommandSerializer
-            {
-                private readonly DamageSourceSerializer damageSourceSerializer = new();
-
-                [UsedImplicitly]
-                public Serializer() { }
-
-                public Serializer(IDamageSource? damageSource)
-                {
-                    damageSourceSerializer.Populate(damageSource);
-                }
-
-                protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-                    => new Implementation(game, damageSourceSerializer.ToDamageSource(game));
-
-                public override void Serialize(INetBufferStream stream)
-                {
-                    damageSourceSerializer.Serialize(stream);
-                }
+                damageSourceSerializer.Serialize(stream);
             }
         }
     }

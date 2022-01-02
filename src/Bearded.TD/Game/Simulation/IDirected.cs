@@ -1,9 +1,14 @@
 using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation
+namespace Bearded.TD.Game.Simulation;
+
+interface IDirected
 {
-    interface IDirected
-    {
-        Direction2 Direction { get; }
-    }
+    Direction2 Direction { get; }
+}
+
+interface IDirected3
+{
+    Difference3 Direction { get; }
 }

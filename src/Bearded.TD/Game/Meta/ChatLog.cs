@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Bearded.TD.Game.Meta
+namespace Bearded.TD.Game.Meta;
+
+sealed class ChatLog
 {
-    sealed class ChatLog
+    private readonly List<ChatMessage> messages = new List<ChatMessage>();
+    public ReadOnlyCollection<ChatMessage> Messages { get; }
+
+    public ChatLog()
     {
-        private readonly List<ChatMessage> messages = new List<ChatMessage>();
-        public ReadOnlyCollection<ChatMessage> Messages { get; }
+        Messages = messages.AsReadOnly();
+    }
 
-        public ChatLog()
-        {
-            Messages = messages.AsReadOnly();
-        }
-
-        public void Add(ChatMessage message)
-        {
-            messages.Add(message);
-        }
+    public void Add(ChatMessage message)
+    {
+        messages.Add(message);
     }
 }

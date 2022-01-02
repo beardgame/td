@@ -4,53 +4,52 @@ using Bearded.TD.Shared.Events;
 using Bearded.Utilities.IO;
 using Newtonsoft.Json;
 
-namespace Bearded.TD.Game.Simulation.Rules.Technologies
+namespace Bearded.TD.Game.Simulation.Rules.Technologies;
+
+[GameRule("grantTechPointsOnWaveEnd")]
+sealed class GrantTechPointsOnWaveEnd : GameRule<GrantTechPointsOnWaveEnd.RuleParameters>
 {
-    [GameRule("grantTechPointsOnWaveEnd")]
-    sealed class GrantTechPointsOnWaveEnd : GameRule<GrantTechPointsOnWaveEnd.RuleParameters>
+    public GrantTechPointsOnWaveEnd(RuleParameters parameters) : base(parameters) { }
+
+    public override void Execute(GameRuleContext context)
     {
-        public GrantTechPointsOnWaveEnd(RuleParameters parameters) : base(parameters) { }
+        context.Events.Subscribe(new Listener(context.Logger, Parameters.Amount));
+    }
 
-        public override void Execute(GameRuleContext context)
+    private sealed class Listener : IListener<WaveEnded>
+    {
+        private readonly Logger logger;
+        private readonly int amount;
+
+        public Listener(Logger logger, int amount)
         {
-            context.Events.Subscribe(new Listener(context.Logger, Parameters.Amount));
+            this.logger = logger;
+            this.amount = amount;
         }
 
-        private sealed class Listener : IListener<WaveEnded>
+        public void HandleEvent(WaveEnded @event)
         {
-            private readonly Logger logger;
-            private readonly int amount;
-
-            public Listener(Logger logger, int amount)
+            if (@event.TargetFaction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
             {
-                this.logger = logger;
-                this.amount = amount;
+                technology.AddTechPoints(amount);
             }
-
-            public void HandleEvent(WaveEnded @event)
+            else
             {
-                if (@event.TargetFaction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
-                {
-                    technology.AddTechPoints(amount);
-                }
-                else
-                {
-                    logger.Debug?.Log(
-                        $"Tried awarding tech points after wave end to {@event.TargetFaction.ExternalId}, " +
-                        "but it doesn't have technology.");
-                }
+                logger.Debug?.Log(
+                    $"Tried awarding tech points after wave end to {@event.TargetFaction.ExternalId}, " +
+                    "but it doesn't have technology.");
             }
         }
+    }
 
-        public readonly struct RuleParameters
+    public readonly struct RuleParameters
+    {
+        public int Amount { get; }
+
+        [JsonConstructor]
+        public RuleParameters(int? amount = null)
         {
-            public int Amount { get; }
-
-            [JsonConstructor]
-            public RuleParameters(int? amount = null)
-            {
-                Amount = amount ?? 1;
-            }
+            Amount = amount ?? 1;
         }
     }
 }

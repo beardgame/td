@@ -6,89 +6,88 @@ using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 
-namespace Bearded.TD.UI.Controls
+namespace Bearded.TD.UI.Controls;
+
+sealed partial class UpgradeReportControl
 {
-    sealed partial class UpgradeReportControl
+    private sealed class UpgradeListItems : IListItemSource
     {
-        private sealed class UpgradeListItems : IListItemSource
+        private readonly Dictionary<int, Binding<double>> progressBindings = new();
+        public ImmutableArray<IUpgradeReportInstance.IUpgradeModel> AppliedUpgrades { get; }
+        private readonly bool canUpgrade;
+
+        public int ItemCount => AppliedUpgrades.Length + 1;
+
+        public event VoidEventHandler? ChooseUpgradeButtonClicked;
+
+        public UpgradeListItems(
+            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades, bool canUpgrade)
         {
-            private readonly Dictionary<int, Binding<double>> progressBindings = new();
-            public ImmutableArray<IUpgradeReportInstance.IUpgradeModel> AppliedUpgrades { get; }
-            private readonly bool canUpgrade;
+            AppliedUpgrades = upgrades;
+            this.canUpgrade = canUpgrade;
+        }
 
-            public int ItemCount => AppliedUpgrades.Length + 1;
+        public double HeightOfItemAt(int index) => Constants.UI.Button.Height;
 
-            public event VoidEventHandler? ChooseUpgradeButtonClicked;
-
-            public UpgradeListItems(
-                ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades, bool canUpgrade)
+        public Control CreateItemControlFor(int index)
+        {
+            if (index == AppliedUpgrades.Length)
             {
-                AppliedUpgrades = upgrades;
-                this.canUpgrade = canUpgrade;
-            }
-
-            public double HeightOfItemAt(int index) => Constants.UI.Button.Height;
-
-            public Control CreateItemControlFor(int index)
-            {
-                if (index == AppliedUpgrades.Length)
-                {
-                    return ButtonFactories.Button(b =>
-                    {
-                        b.WithLabel("Choose upgrade");
-                        if (canUpgrade)
-                        {
-                            b.WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
-                        }
-                        else
-                        {
-                            b.MakeDisabled();
-                        }
-
-                        return b;
-                    });
-                }
-
-                var model = AppliedUpgrades[index];
-                var progressBinding = model.IsFinished ? null : Binding.Create(model.Progress);
-                if (progressBinding != null)
-                {
-                    progressBindings[index] = progressBinding;
-                }
-
                 return ButtonFactories.Button(b =>
                 {
-                    b.WithLabel(model.Blueprint.Name);
-                    if (progressBinding == null)
+                    b.WithLabel("Choose upgrade");
+                    if (canUpgrade)
                     {
-                        b.MakeDisabled();
+                        b.WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
                     }
                     else
                     {
-                        b.WithProgressBar(progressBinding);
+                        b.MakeDisabled();
                     }
 
                     return b;
                 });
             }
 
-            public void UpdateProgress()
+            var model = AppliedUpgrades[index];
+            var progressBinding = model.IsFinished ? null : Binding.Create(model.Progress);
+            if (progressBinding != null)
             {
-                foreach (var (i, binding) in progressBindings)
+                progressBindings[index] = progressBinding;
+            }
+
+            return ButtonFactories.Button(b =>
+            {
+                b.WithLabel(model.Blueprint.Name);
+                if (progressBinding == null)
                 {
-                    binding.SetFromSource(AppliedUpgrades[i].Progress);
+                    b.MakeDisabled();
                 }
-            }
+                else
+                {
+                    b.WithProgressBar(progressBinding);
+                }
 
-            public void DestroyAll()
-            {
-                progressBindings.Clear();
-            }
+                return b;
+            });
+        }
 
-            public void DestroyItemControlAt(int index, Control control)
+        public void UpdateProgress()
+        {
+            foreach (var (i, binding) in progressBindings)
             {
-                progressBindings.Remove(index);
+                binding.SetFromSource(AppliedUpgrades[i].Progress);
             }
+        }
+
+        public void DestroyAll()
+        {
+            progressBindings.Clear();
+        }
+
+        public void DestroyItemControlAt(int index, Control control)
+        {
+            progressBindings.Remove(index);
         }
     }
 }

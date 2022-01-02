@@ -2,8 +2,15 @@
     "id" : "fast03",
     "name" : "Fastest enemy",
     "value" : 10,
-    "color" : "CornflowerBlue",
     "components" : [
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "particle.orb-soft",
+                "color" : "CornflowerBlue",
+                "size" : 0.8
+            }
+        },
         { "id" : "health", "parameters" : { "maxHealth" : 140 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 5, "attackRate" : 3.33 } },

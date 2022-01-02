@@ -52,7 +52,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
                 new (AttributeType Type, Func<MyParametersModifiable, IAttributeWithModifications> Getter)[]{
                     (AttributeType.None, instance => instance.rawTypeWithDefault),
                     ((AttributeType) 2, instance => instance.modifiableRawType),
-                    ((AttributeType) 10, instance => instance.modifiableWrappedType)
+                    ((AttributeType) 11, instance => instance.modifiableWrappedType)
                 }.ToLookup(tuple => tuple.Type, tuple => tuple.Getter));
         }
 

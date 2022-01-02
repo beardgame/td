@@ -1,10 +1,9 @@
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.TechEffects;
 
-namespace Bearded.TD.Content.Models
+namespace Bearded.TD.Content.Models;
+
+interface IFootprintGroup : IParametersTemplate<IFootprintGroup>
 {
-    interface IFootprintGroup : IParametersTemplate<IFootprintGroup>
-    {
-        public FootprintGroup Group { get; }
-    }
+    public FootprintGroup Group { get; }
 }

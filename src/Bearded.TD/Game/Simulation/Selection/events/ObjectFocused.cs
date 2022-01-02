@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
 
-namespace Bearded.TD.Game.Simulation.Selection
-{
-    struct ObjectFocused : IComponentEvent {}
-}
+namespace Bearded.TD.Game.Simulation.Selection;
+
+record struct ObjectFocused : IComponentEvent;

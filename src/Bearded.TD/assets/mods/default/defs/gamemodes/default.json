@@ -55,6 +55,8 @@
             }
         },
         { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
+        { "id" : "deferWaveUntilTechPointUsed", "parameters" : { "faction" : "players" } },
+        { "id" : "grantExplorationTokenOnWaveEnd" },
         {
             "id" : "scheduleGame",
             "parameters" : {
@@ -62,6 +64,8 @@
                 "wavesPerChapter" : 5
             }
         },
+        { "id" : "deferWaveUntilExplorationTokenUsed", "parameters" :  { "faction" : "players" } },
+        { "id" : "spawnExplorationBeacons", "parameters" : { "blueprint" : "explorationBeacon" } },
         {
             "id" : "contributeNodes",
             "parameters" : {
@@ -74,7 +78,8 @@
                         { "id" : "default.pits", "weight" : 1, "minNumber" : 1 },
                         { "id" : "default.pits-and-pillars", "weight" : 0.5, "minNumber" : 1 },
                         { "id" : "default.thin-path", "weight" : 0.5, "minNumber" : 1 },
-                        { "id" : "default.maze", "weight" : 0.5, "minNumber" : 1 }
+                        { "id" : "default.maze", "weight" : 0.5, "minNumber" : 1 },
+                        { "id" : "default.ruined-tower", "weight" : 0.2, "minNumber" : 1 }
                     ], "weight" : 1 },
                     { "id" : "spawner", "weight" : 1 }
                 ]

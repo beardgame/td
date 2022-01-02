@@ -1,22 +1,21 @@
 using System;
 using Bearded.TD.Shared.Events;
 
-namespace Bearded.TD.Game.Simulation.Events
+namespace Bearded.TD.Game.Simulation.Events;
+
+static class Listener
 {
-    static class Listener
+    public static IListener<T> ForEvent<T>(Action<T> onEvent) where T : IEvent => new LambdaListener<T>(onEvent);
+
+    private sealed class LambdaListener<T> : IListener<T> where T : IEvent
     {
-        public static IListener<T> ForEvent<T>(Action<T> onEvent) where T : IEvent => new LambdaListener<T>(onEvent);
+        private readonly Action<T> onEvent;
 
-        private sealed class LambdaListener<T> : IListener<T> where T : IEvent
+        public LambdaListener(Action<T> onEvent)
         {
-            private readonly Action<T> onEvent;
-
-            public LambdaListener(Action<T> onEvent)
-            {
-                this.onEvent = onEvent;
-            }
-
-            public void HandleEvent(T @event) => onEvent(@event);
+            this.onEvent = onEvent;
         }
+
+        public void HandleEvent(T @event) => onEvent(@event);
     }
 }

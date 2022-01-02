@@ -10,8 +10,14 @@
         {
             "id" : "linearAccelerationAim",
             "parameters" : {
-                "acceleration" : 360,
-                "dragInverse" : 0.5
+                "acceleration" : 720,
+                "dragInverse" : 0.2
+            }
+        },
+        {
+            "id" : "recoil",
+            "parameters" : {
+                "impulse" : 100
             }
         },
         {
@@ -19,7 +25,17 @@
             "parameters" : {
                 "projectile" : "boringProjectile",
                 "muzzleSpeed" : 30,
-                "fireRate" : 2
+                "fireRate" : 2,
+                "muzzleOffset" : 0.3
+            }
+        },
+        {
+            "id" : "muzzleFlash",
+            "parameters" : {
+                "sprite" : "particle.muzzleflash",
+                "color" : "00EED7D0",
+                "size" : 1.5,
+                "offset" : 0.5
             }
         },
         {
@@ -34,7 +50,9 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.gun-turret",
-                "color": "White"
+                "color": "White",
+                "shader" : "building",
+                "drawGroup" : "building"
             }
         }
     ]

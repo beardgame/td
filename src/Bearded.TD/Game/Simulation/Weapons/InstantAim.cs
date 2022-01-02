@@ -1,29 +1,29 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Weapons
+namespace Bearded.TD.Game.Simulation.Weapons;
+
+[Component("instantAim")]
+class InstantAim : Component<ComponentGameObject>
 {
-    [Component("instantAim")]
-    class InstantAim : Component<Weapon>
+    private IWeaponState weapon = null!;
+    private IWeaponAimer? aimer;
+
+    protected override void OnAdded()
     {
-        protected override void OnAdded()
-        {
-        }
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
+        ComponentDependencies.DependDynamic<IWeaponAimer>(Owner, Events, c => aimer = c);
+    }
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            Owner.AimDirection.Match(aimIn);
-        }
+    public override void Update(TimeSpan elapsedTime)
+    {
+        if (weapon.IsEnabled && aimer != null)
+            aimIn(aimer.AimDirection);
+    }
 
-        private void aimIn(Direction2 direction)
-        {
-            Owner.Turn(direction - Owner.CurrentDirection);
-        }
-
-        public override void Draw(CoreDrawers drawers)
-        {
-        }
+    private void aimIn(Direction2 direction)
+    {
+        weapon.Turn(direction - weapon.Direction);
     }
 }

@@ -9,156 +9,155 @@ using Bearded.TD.Utilities;
 using Newtonsoft.Json;
 using Void = Bearded.Utilities.Void;
 
-namespace Bearded.TD.Content.Mods.BlueprintLoaders
+namespace Bearded.TD.Content.Mods.BlueprintLoaders;
+
+abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
+    where TBlueprint : IBlueprint
+    where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
 {
-    abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
-        where TBlueprint : IBlueprint
-        where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
+    protected delegate ReadonlyBlueprintCollection<TBlueprint> DependencySelector(Mod mod);
+
+    protected BlueprintLoadingContext Context { get; }
+
+    protected abstract string RelativePath { get; }
+
+    protected virtual DependencySelector? SelectDependency { get; } = null;
+
+    protected BaseBlueprintLoader(BlueprintLoadingContext context)
     {
-        protected delegate ReadonlyBlueprintCollection<TBlueprint> DependencySelector(Mod mod);
+        Context = context;
+    }
 
-        protected BlueprintLoadingContext Context { get; }
+    public virtual ReadonlyBlueprintCollection<TBlueprint> LoadBlueprints()
+    {
+        var files = GetJsonFiles();
 
-        protected abstract string RelativePath { get; }
+        var blueprints = LoadBlueprintsFromFiles(files);
 
-        protected virtual DependencySelector? SelectDependency { get; } = null;
+        var blueprintCollection = new ReadonlyBlueprintCollection<TBlueprint>(blueprints);
 
-        protected BaseBlueprintLoader(BlueprintLoadingContext context)
-        {
-            Context = context;
-        }
+        SetupDependencyResolver(blueprintCollection);
 
-        public virtual ReadonlyBlueprintCollection<TBlueprint> LoadBlueprints()
-        {
-            var files = GetJsonFiles();
+        return blueprintCollection;
+    }
 
-            var blueprints = LoadBlueprintsFromFiles(files);
+    protected virtual void SetupDependencyResolver(ReadonlyBlueprintCollection<TBlueprint> blueprintCollection)
+    {
+        var selector = SelectDependency;
 
-            var blueprintCollection = new ReadonlyBlueprintCollection<TBlueprint>(blueprints);
+        if (selector == null)
+            return;
 
-            SetupDependencyResolver(blueprintCollection);
+        Context.AddDependencyResolver(new BlueprintDependencyResolver<TBlueprint>(
+            Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m)));
+    }
 
-            return blueprintCollection;
-        }
+    protected virtual FileInfo[] GetJsonFiles()
+    {
+        var totalPath = Path.Combine(Context.Meta.Directory.FullName, RelativePath);
 
-        protected virtual void SetupDependencyResolver(ReadonlyBlueprintCollection<TBlueprint> blueprintCollection)
-        {
-            var selector = SelectDependency;
+        if (!Directory.Exists(totalPath))
+            return Array.Empty<FileInfo>();
 
-            if (selector == null)
-                return;
-
-            Context.AddDependencyResolver(new BlueprintDependencyResolver<TBlueprint>(
-                Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m)));
-        }
-
-        protected virtual FileInfo[] GetJsonFiles()
-        {
-            var totalPath = Path.Combine(Context.Meta.Directory.FullName, RelativePath);
-
-            if (!Directory.Exists(totalPath))
-                return Array.Empty<FileInfo>();
-
-            return Context.Meta
+        return Context.Meta
                 .Directory
                 .GetDirectories(RelativePath, SearchOption.TopDirectoryOnly)
                 .SingleOrDefault()
                 ?.GetFiles("*.json", SearchOption.AllDirectories)
-                ?? Array.Empty<FileInfo>();
-        }
+            ?? Array.Empty<FileInfo>();
+    }
 
-        protected virtual List<TBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
+    protected virtual List<TBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
+    {
+        var blueprints = new List<TBlueprint>();
+
+        foreach (var file in files)
         {
-            var blueprints = new List<TBlueprint>();
-
-            foreach (var file in files)
+            try
             {
-                try
-                {
-                    var blueprint = LoadBlueprint(file);
+                var blueprint = LoadBlueprint(file);
 
-                    blueprints.Add(blueprint);
-                }
-                catch (Exception e)
-                {
-                    LogException(e, $"Error loading '{Context.Meta.Id}/{RelativePath}/../{file.Name}': {e.Message}");
-                }
-                finally
-                {
-                    Context.Context.Profiler.CleanUpLoadingBlueprint(path(file));
-                }
+                blueprints.Add(blueprint);
             }
-
-            return blueprints;
-        }
-
-        protected virtual TBlueprint LoadBlueprint(FileInfo file)
-        {
-            var filePath = path(file);
-            Context.Context.Profiler.StartLoadingBlueprint(filePath);
-            var hasWarnings = false;
-
-            var jsonBlueprint = ParseJsonModel(file);
-            var dependencyResolvers = GetDependencyResolvers(file);
-            var blueprint = jsonBlueprint.ToGameModel(Context.Meta, dependencyResolvers);
-
-            if (Path.GetFileNameWithoutExtension(file.FullName) != blueprint.Id.Id)
+            catch (Exception e)
             {
-                LogWarning($"Loaded blueprint {Context.Meta.Id}.{blueprint.Id} with mismatching filename {file.Name}");
-                hasWarnings = true;
+                LogException(e, $"Error loading '{Context.Meta.Id}/{RelativePath}/../{file.Name}': {e.Message}");
             }
-
-            if (hasWarnings)
+            finally
             {
-                Context.Context.Profiler.FinishLoadingBlueprintWithWarnings(filePath);
+                Context.Context.Profiler.CleanUpLoadingBlueprint(path(file));
             }
-            else
-            {
-                Context.Context.Profiler.FinishLoadingBlueprintSuccessfully(filePath);
-            }
-
-            return blueprint;
         }
 
-        private string path(FileSystemInfo file) => $"{Context.Meta.Id}/{RelativePath}/../{file.Name}";
+        return blueprints;
+    }
 
-        protected TJsonModel ParseJsonModel(FileInfo file)
+    protected virtual TBlueprint LoadBlueprint(FileInfo file)
+    {
+        var filePath = path(file);
+        Context.Context.Profiler.StartLoadingBlueprint(filePath);
+        var hasWarnings = false;
+
+        var jsonBlueprint = ParseJsonModel(file);
+        var dependencyResolvers = GetDependencyResolvers(file);
+        var blueprint = jsonBlueprint.ToGameModel(Context.Meta, dependencyResolvers);
+
+        if (Path.GetFileNameWithoutExtension(file.FullName) != blueprint.Id.Id)
         {
-            var text = file.OpenText();
-            var reader = new JsonTextReader(text);
-            return Context.Serializer.Deserialize<TJsonModel>(reader);
+            LogWarning($"Loaded blueprint {Context.Meta.Id}.{blueprint.Id} with mismatching filename {file.Name}");
+            hasWarnings = true;
         }
 
-        protected virtual TResolvers GetDependencyResolvers(FileInfo file)
+        if (hasWarnings)
         {
-            DebugAssert.State.Satisfies(typeof(TResolvers) == typeof(Void), "Override GetDependencyResolver!");
-
-            return default;
+            Context.Context.Profiler.FinishLoadingBlueprintWithWarnings(filePath);
         }
-
-        protected void LogException(Exception exception, string customMessage)
+        else
         {
-            LogError(customMessage);
-
-            if (exception.StackTrace == null)
-                return;
-
-            LogDebug(exception.StackTrace);
+            Context.Context.Profiler.FinishLoadingBlueprintSuccessfully(filePath);
         }
 
-        protected void LogError(string message)
-        {
-            Context.Context.Logger.Error?.Log(message);
-        }
+        return blueprint;
+    }
 
-        protected void LogWarning(string message)
-        {
-            Context.Context.Logger.Warning?.Log(message);
-        }
+    private string path(FileSystemInfo file) => $"{Context.Meta.Id}/{RelativePath}/../{file.Name}";
 
-        protected void LogDebug(string message)
-        {
-            Context.Context.Logger.Debug?.Log(message);
-        }
+    protected TJsonModel ParseJsonModel(FileInfo file)
+    {
+        var text = file.OpenText();
+        var reader = new JsonTextReader(text);
+        return Context.Serializer.Deserialize<TJsonModel>(reader);
+    }
+
+    protected virtual TResolvers GetDependencyResolvers(FileInfo file)
+    {
+        DebugAssert.State.Satisfies(typeof(TResolvers) == typeof(Void), "Override GetDependencyResolver!");
+
+        return default;
+    }
+
+    protected void LogException(Exception exception, string customMessage)
+    {
+        LogError(customMessage);
+
+        if (exception.StackTrace == null)
+            return;
+
+        LogDebug(exception.StackTrace);
+    }
+
+    protected void LogError(string message)
+    {
+        Context.Context.Logger.Error?.Log(message);
+    }
+
+    protected void LogWarning(string message)
+    {
+        Context.Context.Logger.Warning?.Log(message);
+    }
+
+    protected void LogDebug(string message)
+    {
+        Context.Context.Logger.Debug?.Log(message);
     }
 }

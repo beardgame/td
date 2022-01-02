@@ -1,18 +1,18 @@
-namespace Bearded.TD.Game.Simulation.Damage
+using static Bearded.TD.Utilities.DebugAssert;
+
+namespace Bearded.TD.Game.Simulation.Damage;
+
+readonly struct DamageInfo
 {
-    readonly struct DamageInfo
+    public HitPoints Amount { get; }
+    public DamageType Type { get; }
+
+    public DamageInfo(HitPoints amount, DamageType type)
     {
-        public HitPoints Amount { get; }
-        public DamageType Type { get; }
-        public IDamageSource? Source { get; }
-
-        public DamageInfo(HitPoints amount, DamageType type, IDamageSource? source)
-        {
-            Amount = amount;
-            Type = type;
-            Source = source;
-        }
-
-        public DamageInfo WithAdjustedAmount(HitPoints newAmount) => new(newAmount, Type, Source);
+        Argument.Satisfies(amount >= HitPoints.Zero);
+        Amount = amount;
+        Type = type;
     }
+
+    public DamageInfo WithAdjustedAmount(HitPoints newAmount) => new(newAmount, Type);
 }

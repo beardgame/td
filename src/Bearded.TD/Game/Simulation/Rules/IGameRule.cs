@@ -1,8 +1,7 @@
-namespace Bearded.TD.Game.Simulation.Rules
+namespace Bearded.TD.Game.Simulation.Rules;
+
+// ReSharper disable once UnusedTypeParameter
+interface IGameRule<in TOwner>
 {
-    // ReSharper disable once UnusedTypeParameter
-    interface IGameRule<in TOwner>
-    {
-        void Execute(GameRuleContext context);
-    }
+    void Execute(GameRuleContext context);
 }

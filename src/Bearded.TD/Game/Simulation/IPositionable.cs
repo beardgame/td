@@ -1,9 +1,8 @@
 ﻿using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation
+namespace Bearded.TD.Game.Simulation;
+
+interface IPositionable
 {
-    interface IPositionable
-    {
-        Position3 Position { get; }
-    }
+    Position3 Position { get; }
 }

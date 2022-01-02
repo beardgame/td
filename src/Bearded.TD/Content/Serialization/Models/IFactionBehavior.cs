@@ -1,6 +1,5 @@
 using Bearded.TD.Content.Behaviors;
 
-namespace Bearded.TD.Content.Serialization.Models
-{
-    interface IFactionBehavior : IBehaviorTemplate {}
-}
+namespace Bearded.TD.Content.Serialization.Models;
+
+interface IFactionBehavior : IBehaviorTemplate {}

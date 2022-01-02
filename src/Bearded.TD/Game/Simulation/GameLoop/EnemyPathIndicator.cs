@@ -9,77 +9,78 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.GameLoop
+namespace Bearded.TD.Game.Simulation.GameLoop;
+
+sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner, IRenderable
 {
-    sealed class EnemyPathIndicator : GameObject, ITileWalkerOwner
+    private const float renderSize = .1f;
+    private static readonly TimeSpan trailTimeout = 1.S();
+
+    private readonly Tile startTile;
+    private TileWalker? tileWalker;
+    private PassabilityLayer passabilityLayer = null!;
+    private readonly TrailTracer trail = new(trailTimeout, newPartDistanceThreshold: 2.U());
+
+    private Position2 position => tileWalker?.Position ?? Level.GetPosition(currentTile);
+    private Tile currentTile => tileWalker?.CurrentTile ?? startTile;
+
+    private Instant? deleteAt;
+    private TrailDrawer drawer = null!;
+
+    public EnemyPathIndicator(Tile currentTile)
     {
-        private const float renderSize = .1f;
-        private static readonly TimeSpan trailTimeout = 1.S();
+        startTile = currentTile;
+    }
 
-        private readonly Tile startTile;
-        private TileWalker? tileWalker;
-        private PassabilityLayer passabilityLayer = null!;
-        private readonly TrailTracer trail = new(trailTimeout, newPartDistanceThreshold: 2.U());
+    protected override void OnAdded()
+    {
+        base.OnAdded();
 
-        private Position2 position => tileWalker?.Position ?? Level.GetPosition(currentTile);
-        private Tile currentTile => tileWalker?.CurrentTile ?? startTile;
+        tileWalker = new TileWalker(this, Game.Level, startTile);
+        passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
 
-        private Instant? deleteAt;
-        private TrailDrawer drawer = null!;
+        var sprite = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("circle-soft");
+        drawer = new TrailDrawer(Game, sprite);
 
-        public EnemyPathIndicator(Tile currentTile)
+        Game.ListAs<IRenderable>(this);
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
+        if (deleteAt == null)
         {
-            startTile = currentTile;
+            tileWalker!.Update(elapsedTime, Constants.Game.Enemy.PathIndicatorSpeed);
+        }
+        else if (Game.Time > deleteAt)
+        {
+            Delete();
         }
 
-        protected override void OnAdded()
-        {
-            base.OnAdded();
+        var h = Game.GeometryLayer[currentTile].DrawInfo.Height;
 
-            tileWalker = new TileWalker(this, Game.Level, startTile);
-            passabilityLayer = Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
+        trail.Update(Game.Time, position.WithZ(h + 0.1.U()), deleteAt != null);
+    }
 
-            var sprite = Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("circle-soft");
-            drawer = new TrailDrawer(Game, sprite);
-        }
+    public void OnTileChanged(Tile oldTile, Tile newTile) { }
 
-        public override void Update(TimeSpan elapsedTime)
-        {
-            if (deleteAt == null)
-            {
-                tileWalker!.Update(elapsedTime, Constants.Game.Enemy.PathIndicatorSpeed);
-            }
-            else if (Game.Time > deleteAt)
-            {
-                Delete();
-            }
+    public Direction GetNextDirection()
+    {
+        var desiredDirection = Game.Navigator.GetDirections(currentTile);
+        var isPassable = passabilityLayer[currentTile.Neighbor(desiredDirection)].IsPassable;
 
-            var h = Game.GeometryLayer[currentTile].DrawInfo.Height;
+        if (!isPassable)
+            deleteAfterTimeout();
 
-            trail.Update(Game.Time, position.WithZ(h + 0.1.U()), deleteAt != null);
-        }
+        return isPassable ? desiredDirection : Direction.Unknown;
+    }
 
-        public override void Draw(CoreDrawers drawers)
-        {
-            drawer.DrawTrail(trail, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha());
-        }
+    private void deleteAfterTimeout()
+    {
+        deleteAt = Game.Time + trailTimeout;
+    }
 
-        public void OnTileChanged(Tile oldTile, Tile newTile) { }
-
-        public Direction GetNextDirection()
-        {
-            var desiredDirection = Game.Navigator.GetDirections(currentTile);
-            var isPassable = passabilityLayer[currentTile.Neighbor(desiredDirection)].IsPassable;
-
-            if (!isPassable)
-                deleteAfterTimeout();
-
-            return isPassable ? desiredDirection : Direction.Unknown;
-        }
-
-        private void deleteAfterTimeout()
-        {
-            deleteAt = Game.Time + trailTimeout;
-        }
+    public void Render(CoreDrawers drawers)
+    {
+        drawer.DrawTrail(trail, renderSize, Game.Time, trailTimeout, Color.Orange.WithAlpha());
     }
 }
