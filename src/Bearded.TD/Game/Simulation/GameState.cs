@@ -77,13 +77,13 @@ sealed class GameState
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
         UnitLayer = new UnitLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
-        BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
-            new Lazy<PassabilityLayer>(() => PassabilityManager!.GetLayer(Passability.WalkingUnit)));
         MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
         VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
+        BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer, VisibilityLayer,
+            new Lazy<PassabilityLayer>(() => PassabilityManager!.GetLayer(Passability.WalkingUnit)));
         Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
