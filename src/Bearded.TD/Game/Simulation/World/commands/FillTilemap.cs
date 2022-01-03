@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+#if !DEBUG
+using Bearded.TD.Game.Commands;
+#endif
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
