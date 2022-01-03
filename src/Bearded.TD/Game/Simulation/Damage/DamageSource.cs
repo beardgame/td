@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;

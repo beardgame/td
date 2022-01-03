@@ -57,17 +57,17 @@ sealed class TechnologyUIModel
 
     public void ReplaceTechnologyQueue(ITechnologyBlueprint tech)
     {
-        game.Request(Game.Commands.Gameplay.ReplaceTechnologyQueue.Request(faction, tech));
+        game.Request(Game.Simulation.Technologies.ReplaceTechnologyQueue.Request(faction, tech));
     }
 
     public void AddToTechnologyQueue(ITechnologyBlueprint tech)
     {
-        game.Request(Game.Commands.Gameplay.AddToTechnologyQueue.Request(faction, tech));
+        game.Request(Game.Simulation.Technologies.AddToTechnologyQueue.Request(faction, tech));
     }
 
     public void ClearTechnologyQueue()
     {
-        game.Request(Game.Commands.Gameplay.ClearTechnologyQueue.Request(faction));
+        game.Request(Game.Simulation.Technologies.ClearTechnologyQueue.Request(faction));
     }
 
     public TechnologyStatus StatusFor(ITechnologyBlueprint tech) => technologyStatuses[tech];

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;

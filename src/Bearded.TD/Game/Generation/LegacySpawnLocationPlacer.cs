@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Commands.LevelGeneration;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Tiles;

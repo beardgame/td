@@ -16,7 +16,7 @@ class GameOverOnDestroy<T> : Component<T>
 
     private void onDeleting()
     {
-        Owner.Sync(GameOver.Command);
+        Owner.Sync(LoseGame.Command);
     }
 
     public override void Update(TimeSpan elapsedTime) { }

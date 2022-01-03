@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Deferred.Level;

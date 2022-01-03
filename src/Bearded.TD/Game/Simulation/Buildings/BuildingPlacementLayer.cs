@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -12,18 +13,21 @@ sealed class BuildingPlacementLayer
     private readonly Level level;
     private readonly GeometryLayer geometryLayer;
     private readonly BuildingLayer buildingLayer;
+    private readonly VisibilityLayer visibilityLayer;
     private readonly Lazy<PassabilityLayer> walkablePassability;
-    private readonly HashSet<Tile> blockedTiles = new HashSet<Tile>();
+    private readonly HashSet<Tile> blockedTiles = new();
 
     public BuildingPlacementLayer(
         Level level,
         GeometryLayer geometryLayer,
         BuildingLayer buildingLayer,
+        VisibilityLayer visibilityLayer,
         Lazy<PassabilityLayer> walkablePassability)
     {
         this.level = level;
         this.geometryLayer = geometryLayer;
         this.buildingLayer = buildingLayer;
+        this.visibilityLayer = visibilityLayer;
         this.walkablePassability = walkablePassability;
     }
 
@@ -37,7 +41,8 @@ sealed class BuildingPlacementLayer
         return level.IsValid(tile)
             && !blockedTiles.Contains(tile)
             && geometryLayer[tile].Type == TileType.Floor
-            && buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None;
+            && buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None
+            && visibilityLayer[tile].IsRevealed();
     }
 
     private bool allAdjacentTilesAreWalkable(IEnumerable<Tile> tiles)

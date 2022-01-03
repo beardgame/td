@@ -87,6 +87,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
 
     public void SkipWaveTimer()
     {
-        game.Request(Game.Commands.Gameplay.SkipWaveTimer.Request);
+        game.Request(Game.Simulation.GameLoop.SkipWaveTimer.Request);
     }
 }

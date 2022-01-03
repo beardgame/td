@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -41,7 +40,7 @@ sealed class WaveDirector
         }
     }
 
-    private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<SkipWaveTimer>, IDeletable
+    private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<WaveTimerSkipRequested>, IDeletable
     {
         private enum Phase
         {
@@ -79,7 +78,7 @@ sealed class WaveDirector
         {
             fillSpawnQueue();
             game.Meta.Events.Subscribe<EnemyKilled>(this);
-            game.Meta.Events.Subscribe<SkipWaveTimer>(this);
+            game.Meta.Events.Subscribe<WaveTimerSkipRequested>(this);
             game.Meta.Events.Send(
                 new WaveScheduled(
                     script.Id,
@@ -151,7 +150,7 @@ sealed class WaveDirector
                     {
                         game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
                         game.Meta.Events.Unsubscribe<EnemyKilled>(this);
-                        game.Meta.Events.Unsubscribe<SkipWaveTimer>(this);
+                        game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
                         phase = Phase.Completed;
                     }
                     break;
@@ -211,7 +210,7 @@ sealed class WaveDirector
             spawnedUnits.Remove(@event.Unit);
         }
 
-        public void HandleEvent(SkipWaveTimer @event)
+        public void HandleEvent(WaveTimerSkipRequested @event)
         {
             if (phase != Phase.Downtime)
                 return;

@@ -1,6 +1,7 @@
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;

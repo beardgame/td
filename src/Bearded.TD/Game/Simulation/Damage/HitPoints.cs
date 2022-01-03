@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;

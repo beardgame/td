@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
