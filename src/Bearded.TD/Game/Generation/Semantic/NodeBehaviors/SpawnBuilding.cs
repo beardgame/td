@@ -1,7 +1,6 @@
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Tiles;

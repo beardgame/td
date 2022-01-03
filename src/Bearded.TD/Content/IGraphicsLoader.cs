@@ -5,7 +5,6 @@ using Bearded.Graphics.ShaderManagement;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
-using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Content;
 

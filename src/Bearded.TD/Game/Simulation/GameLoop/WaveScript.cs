@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

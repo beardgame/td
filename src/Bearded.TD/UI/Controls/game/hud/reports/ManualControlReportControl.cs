@@ -1,11 +1,8 @@
 using Bearded.TD.Game;
-using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Input;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Controls;
 

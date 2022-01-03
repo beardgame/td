@@ -1,7 +1,6 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Utilities;
