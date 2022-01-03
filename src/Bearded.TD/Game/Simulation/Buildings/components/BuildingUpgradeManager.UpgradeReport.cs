@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;

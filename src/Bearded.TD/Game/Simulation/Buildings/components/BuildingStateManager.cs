@@ -1,6 +1,4 @@
 ﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;

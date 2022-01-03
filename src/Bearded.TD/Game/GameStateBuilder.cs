@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Commands.Loading;
 using Bearded.TD.Game.Generation;
+using Bearded.TD.Game.Loading;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game;

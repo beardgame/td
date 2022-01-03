@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;

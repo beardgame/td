@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.TD.Game.Commands.LevelGeneration;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Utilities.Collections;

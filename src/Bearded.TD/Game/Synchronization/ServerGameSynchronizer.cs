@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands.Synchronization;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;

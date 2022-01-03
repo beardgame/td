@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Game.Input;

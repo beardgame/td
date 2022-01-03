@@ -1,6 +1,6 @@
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands.GameLoop;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.GameLoop;
 using static Bearded.TD.Game.GameLoop.ChapterScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
 
