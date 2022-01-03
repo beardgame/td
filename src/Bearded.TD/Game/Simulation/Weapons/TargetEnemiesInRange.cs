@@ -191,7 +191,8 @@ sealed class TargetEnemiesInRange
             return ImmutableHashSet<Tile>.Empty;
         }
 
-        var allTiles = ImmutableHashSet.CreateRange(Owner.GetComponents<ITurret>()
+        var allTiles = ImmutableHashSet.CreateRange(
+            (Owner.Parent?.GetComponents<ITurret>() ?? Enumerable.Empty<ITurret>())
             .Select(t => (IComponentOwner) t.Weapon)
             .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
             .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
