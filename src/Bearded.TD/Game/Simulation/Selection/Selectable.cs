@@ -4,6 +4,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;

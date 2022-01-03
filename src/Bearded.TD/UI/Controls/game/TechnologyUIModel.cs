@@ -62,7 +62,7 @@ sealed class TechnologyUIModel
 
     public void AddToTechnologyQueue(ITechnologyBlueprint tech)
     {
-        game.Request(Game.Simulation.Technologies.commands.AddToTechnologyQueue.Request(faction, tech));
+        game.Request(Game.Simulation.Technologies.AddToTechnologyQueue.Request(faction, tech));
     }
 
     public void ClearTechnologyQueue()

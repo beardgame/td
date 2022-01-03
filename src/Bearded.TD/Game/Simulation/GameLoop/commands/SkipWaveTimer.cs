@@ -29,7 +29,7 @@ static class SkipWaveTimer
 
         public override void Execute()
         {
-            game.Meta.Events.Send(new Game.GameLoop.SkipWaveTimer());
+            game.Meta.Events.Send(new WaveTimerSkipRequested());
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
