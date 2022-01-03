@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -29,7 +30,7 @@ interface IFoundation
 }
 
 [Component("foundation")]
-sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, IDrawableComponent
+sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
@@ -63,22 +64,25 @@ sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, I
         Sprite sprite(string name) => SpriteDrawInfo
             .From(Parameters.Sprites.GetSprite(name),
                 DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.LowResLevelDetail);
+
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
     {
         occupiedTilesTracker.Dispose(Events);
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         foreach (var tile in occupiedTilesTracker.OccupiedTiles)
         {
-            drawTile(drawer, tile, BaseHeight, TopHeight);
+            drawTile(e.Drawer, tile, BaseHeight, TopHeight);
         }
     }
 

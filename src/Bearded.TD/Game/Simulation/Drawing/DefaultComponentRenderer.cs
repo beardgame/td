@@ -8,12 +8,12 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
+readonly record struct DrawComponents(CoreDrawers Core, IComponentDrawer Drawer) : IComponentEvent;
+
 class DefaultComponentRenderer<T> : Component<T>, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
     where T : IGameObject, IComponentOwner
 {
     private IVisibility? visibility;
-
-    public CoreDrawers Core { get; private set; } = null!;
 
     public bool Deleted { get; private set; }
 
@@ -35,28 +35,11 @@ class DefaultComponentRenderer<T> : Component<T>, IComponentDrawer, IRenderable,
 
     public void Render(CoreDrawers drawers)
     {
-        Core = drawers;
+        if (visibility?.Visibility.IsVisible() == false)
+            return;
 
-        if (visibility?.Visibility.IsVisible() ?? true)
-        {
-            drawRecursively(Owner);
-        }
+        Events.Send(new DrawComponents(drawers, this));
     }
-
-    private void drawRecursively(IComponentOwner owner)
-    {
-        var components = owner.GetComponents<IComponent>();
-
-        foreach (var component in components)
-        {
-            if (component is IDrawableComponent drawable)
-                drawable.Draw(this);
-
-            if (component is INestedComponentOwner nested)
-                drawRecursively(nested.NestedComponentOwner);
-        }
-    }
-
 
     public void DrawSprite<TVertex, TVertexData>(
         SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, float angle, TVertexData data)

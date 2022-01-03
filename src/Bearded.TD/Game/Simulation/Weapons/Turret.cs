@@ -2,7 +2,9 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -21,7 +23,7 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedComponentOwner
+sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     public ComponentGameObject Weapon { get; private set; } = null!;
@@ -38,9 +40,6 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
-    public IComponentOwner NestedComponentOwner => Weapon;
-
-
     public Turret(ITurretParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
@@ -50,6 +49,18 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
         transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         ComponentDependencies.Depend<IBuildingStateProvider>(
             Owner, Events, provider => BuildingState = provider.State);
+
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
+    }
+
+    public void HandleEvent(DrawComponents e)
+    {
+        weaponState.InjectEvent(e);
     }
 
     public override void Update(TimeSpan elapsedTime)

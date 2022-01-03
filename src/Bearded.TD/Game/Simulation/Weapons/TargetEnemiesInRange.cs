@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -24,7 +25,7 @@ sealed class TargetEnemiesInRange
         IWeaponAimer,
         IWeaponTrigger,
         IWeaponRange,
-        IDrawableComponent
+        IListener<DrawComponents>
 {
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
@@ -61,6 +62,13 @@ sealed class TargetEnemiesInRange
         passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
             game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
+
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -170,7 +178,7 @@ sealed class TargetEnemiesInRange
             .FirstOrDefault();
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         tileRangeDrawer.Draw();
     }

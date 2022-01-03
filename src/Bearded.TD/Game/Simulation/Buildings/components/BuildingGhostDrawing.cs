@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.InGameUI;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -15,7 +16,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingGhostDrawing<T> : Component<T>, IDrawableComponent
+sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
@@ -25,19 +26,20 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IDrawableComponent
     {
         occupiedTilesTracker.Initialize(Owner, Events);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
     {
         occupiedTilesTracker.Dispose(Events);
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime) {}
 
-
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
-        var primitiveDrawer = drawer.Core.Primitives;
+        var primitiveDrawer = e.Core.Primitives;
         var anyTileOutsideWorkerNetwork = false;
 
         WorkerNetwork workerNetwork = null;
@@ -61,7 +63,7 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IDrawableComponent
             }
 
             var color = baseColor * 0.2f;
-            drawTile(drawer.Core, color, tile);
+            drawTile(e.Core, color, tile);
 
             if (!isTileValidForBuilding)
                 continue;

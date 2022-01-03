@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -24,7 +25,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects;
  * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
  */
 [Component("statusEffectEmitter")]
-sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>, IDrawableComponent
+sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     private readonly HashSet<ComponentGameObject> affectedObjects = new();
@@ -54,6 +55,13 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
             tileRangeDrawer = new TileRangeDrawer(
                 Owner.Game, () => buildingState.RangeDrawing, () => tilesInRange, Color.Green);
         });
+
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -126,7 +134,7 @@ sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameter
         }
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         tileRangeDrawer?.Draw();
     }

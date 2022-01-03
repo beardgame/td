@@ -15,7 +15,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("burnable")]
-sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>, IDrawableComponent
+sealed class Burnable<T> : Component<T, IBurnableParameters>,
+    IListener<TakeDamage>, IListener<Spark>, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     private IDamageSource? lastFireHitOwner;
@@ -43,12 +44,14 @@ sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDama
         damagePerFuel = Parameters.DamagePerFuel ?? 1;
         Events.Subscribe<TakeDamage>(this);
         Events.Subscribe<Spark>(this);
+        Events.Subscribe<DrawComponents>(this);
     }
 
     public override void OnRemoved()
     {
         Events.Unsubscribe<TakeDamage>(this);
         Events.Unsubscribe<Spark>(this);
+        Events.Unsubscribe<DrawComponents>(this);
     }
 
     private void onExtinguished()
@@ -117,11 +120,11 @@ sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDama
         fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         if (!combustable.IsOnFire) return;
 
-        drawer.Core.PointLight.Draw(
+        e.Core.PointLight.Draw(
             Owner.Position.NumericValue,
             1.5f * fireRenderStrength,
             Color.OrangeRed * fireRenderStrength

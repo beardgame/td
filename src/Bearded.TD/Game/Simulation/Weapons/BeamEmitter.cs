@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
@@ -19,7 +20,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("beamEmitter")]
-sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawableComponent
+sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IListener<DrawComponents>
 {
     private readonly record struct BeamSegment(Position2 Start, Position2 End, float DamageFactor);
 
@@ -33,6 +34,18 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawable
     public BeamEmitter(IBeamEmitterParameters parameters)
         : base(parameters)
     {
+    }
+
+    protected override void OnAdded()
+    {
+        base.OnAdded();
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        base.OnRemoved();
+        Events.Unsubscribe(this);
     }
 
     protected override void UpdateIdle(TimeSpan elapsedTime)
@@ -108,12 +121,12 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IDrawable
         return DamageExecutor.FromObject(Owner).TryDoDamage(enemy, damage);
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         if (!drawBeam)
             return;
 
-        var shapeDrawer = drawer.Core.ConsoleBackground;
+        var shapeDrawer = e.Core.ConsoleBackground;
         var baseAlpha = StaticRandom.Float(0.5f, 0.8f);
 
         foreach (var (start, end, factor) in beamSegments)

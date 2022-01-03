@@ -1,9 +1,9 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -14,7 +14,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("particleSystem")]
-sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawableComponent
+sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListener<DrawComponents>
     where T : IPositionable, IGameObject, IComponentOwner
 {
     private readonly Particle[] particles;
@@ -52,6 +52,12 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
     {
         initializeSprite();
         initializeParticles();
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     private void initializeSprite()
@@ -101,7 +107,7 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
         }
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         var now = Owner.Game.Time;
         foreach (var p in particles)
@@ -115,7 +121,7 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
             switch (Parameters.DrawMode)
             {
                 case ParticleDrawMode.Sprite:
-                    drawer.DrawSprite(
+                    e.Drawer.DrawSprite(
                         sprite,
                         p.Position.NumericValue,
                         Parameters.Size,
@@ -133,7 +139,7 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
                     var p2 = c + v - w;
                     var p3 = c - v - w;
 
-                    drawer.DrawQuad(sprite, p0, p1, p2, p3, argb);
+                    e.Drawer.DrawQuad(sprite, p0, p1, p2, p3, argb);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

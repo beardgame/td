@@ -8,7 +8,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("trail")]
-sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
+sealed class Trail<T> : Component<T, ITrailParameters>, IListener<DrawComponents>
     where T : GameObject, IPositionable
 {
     private readonly TrailTracer tracer;
@@ -27,6 +27,8 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
         }
 
         drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
+
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
@@ -35,6 +37,8 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
         {
             Owner.Deleting -= persistTrail;
         }
+
+        Events.Unsubscribe(this);
     }
 
     private void persistTrail()
@@ -48,7 +52,7 @@ sealed class Trail<T> : Component<T, ITrailParameters>, IDrawableComponent
         tracer.Update(Owner.Game.Time, Owner.Position);
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         drawTrail(this.drawer, tracer, Parameters, Owner.Game);
     }

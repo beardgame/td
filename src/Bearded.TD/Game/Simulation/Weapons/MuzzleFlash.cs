@@ -25,7 +25,8 @@ interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
 }
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableComponent, IListener<ShotProjectile>
+sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>,
+    IListener<DrawComponents>, IListener<ShotProjectile>
     where T : IGameObject, IPositionable, IDirected
 {
     private readonly struct Flash
@@ -56,7 +57,14 @@ sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableCom
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
 
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<ShotProjectile>(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<ShotProjectile>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -73,19 +81,19 @@ sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableCom
         );
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         if (currentFlash is not { } flash)
             return;
 
-        drawer.DrawSprite(
+        e.Drawer.DrawSprite(
             sprite,
             flash.Position.NumericValue,
             flash.Size,
             flash.Direction.Radians,
             Parameters.Color);
 
-        drawer.Core.PointLight.Draw(
+        e.Core.PointLight.Draw(
             flash.Position.NumericValue,
             2 * flash.Size,
             Parameters.Color.WithAlpha(255) * 0.5f);

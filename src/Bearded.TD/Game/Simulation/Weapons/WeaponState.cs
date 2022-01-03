@@ -15,6 +15,8 @@ interface IWeaponState : IPositionable, IDirected
     void Turn(Angle angle);
     void Enable();
     void Disable();
+    void InjectEvent<T>(T e)
+        where T : struct, IComponentEvent;
 }
 
 sealed class WeaponState : Component<ComponentGameObject>, IWeaponState
@@ -67,5 +69,10 @@ sealed class WeaponState : Component<ComponentGameObject>, IWeaponState
     public void Disable()
     {
         IsEnabled = false;
+    }
+
+    public void InjectEvent<T>(T e) where T : struct, IComponentEvent
+    {
+        Events.Send(e);
     }
 }
