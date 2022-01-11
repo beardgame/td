@@ -121,10 +121,11 @@ class DeferredRenderer
                     WithContext(
                         c => c.SetDebugName("Composite light buffer and g-buffers"),
                         PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
-                            // TODO: it should be much easier to quickly pass in a couple of textures
-                            new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
-                            new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
-                            new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
+                            TextureUniforms(
+                                (textures.Diffuse, "albedoTexture"),
+                                (textures.LightAccum, "lightTexture"),
+                                (textures.Depth, "depthBuffer")
+                                ),
                             heightmapTexture, heightmapRadius, heightmapPixelSizeUV,
                             settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
                             settings.CameraPosition,
