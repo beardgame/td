@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Bearded.UI" Version="0.1.53-dev" />
     <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.2" />
-    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.19.2" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTK.Graphics" Version="4.4.0" />
