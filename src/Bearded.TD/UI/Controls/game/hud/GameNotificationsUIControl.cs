@@ -1,7 +1,4 @@
 using System.Collections.ObjectModel;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation;
-using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
@@ -44,7 +41,7 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
 
     public double HeightOfItemAt(int index) => notificationHeight;
 
-    public Control CreateItemControlFor(int index) => new NotificationControl(model.Game, notifications[index]);
+    public Control CreateItemControlFor(int index) => new NotificationControl(notifications[index]);
 
     public void DestroyItemControlAt(int index, Control control) {}
 
@@ -52,12 +49,10 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
     {
         private const double margin = 2;
 
-        private readonly GameInstance game;
         private readonly GameNotificationsUI.Notification notification;
 
-        public NotificationControl(GameInstance game, GameNotificationsUI.Notification notification)
+        public NotificationControl(GameNotificationsUI.Notification notification)
         {
-            this.game = game;
             this.notification = notification;
 
             Add(new BackgroundBox(notification.Background ?? BackgroundBox.DefaultColor)
@@ -70,10 +65,7 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
         {
             if (eventArgs.MouseButton == MouseButton.Left)
             {
-                if (notification.Subject is IPositionable positionable)
-                {
-                    game.CameraController.ScrollToWorldPos(positionable.Position.XY());
-                }
+                notification.OnClick();
                 eventArgs.Handled = true;
                 return;
             }

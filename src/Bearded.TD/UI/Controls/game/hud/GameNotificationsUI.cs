@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -20,7 +21,7 @@ sealed class GameNotificationsUI
     private readonly ImmutableArray<INotificationListener> notificationListeners;
     private readonly List<Notification> notifications = new();
 
-    public GameInstance Game { get; private set; } = null!;
+    private GameInstance game = null!;
     public ReadOnlyCollection<Notification> Notifications { get; }
 
     public event VoidEventHandler? NotificationsChanged;
@@ -35,19 +36,19 @@ sealed class GameNotificationsUI
         ImmutableArray.Create<INotificationListener>(
             textAndGameObjectEventListener<BuildingConstructionFinished>(
                 @event => $"Constructed {@event.Name}",
-                @event => @event.GameObject),
+                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
             textAndGameObjectEventListener<BuildingRepairFinished>(
                 @event => $"Repaired {@event.Name}",
-                @event => @event.GameObject),
+                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
             textAndGameObjectEventListener<BuildingUpgradeFinished>(
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
-                @event => @event.GameObject),
+                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
             textOnlyEventListener<TechnologyUnlocked>(
                 @event => $"Unlocked {@event.Technology.Name}"));
 
     public void Initialize(GameInstance game)
     {
-        Game = game;
+        this.game = game;
 
         var events = game.Meta.Events;
         foreach (var notificationListener in notificationListeners)
@@ -58,7 +59,7 @@ sealed class GameNotificationsUI
 
     public void Terminate()
     {
-        var events = Game.Meta.Events;
+        var events = game.Meta.Events;
         foreach (var notificationListener in notificationListeners)
         {
             notificationListener.Unsubscribe(events);
@@ -69,7 +70,7 @@ sealed class GameNotificationsUI
     {
         var notificationsChanged = false;
 
-        while (notifications.Count > 0 && notifications[0].ExpirationTime < Game.State.Time)
+        while (notifications.Count > 0 && notifications[0].ExpirationTime < game.State.Time)
         {
             notifications.RemoveAt(0);
             notificationsChanged = true;
@@ -92,13 +93,13 @@ sealed class GameNotificationsUI
                 isSevere ? null : Color.DarkRed));
 
     private NotificationListener<T> textAndGameObjectEventListener<T>(
-        Func<T, string> textExtractor, Func<T, IGameObject> gameObjectExtractor)
+        Func<T, string> textExtractor, Func<T, NotificationClickAction?> clickActionExtractor)
         where T : struct, IGlobalEvent =>
         new(
             this,
             @event => new Notification(
                 textExtractor(@event),
-                gameObjectExtractor(@event),
+                clickActionExtractor(@event),
                 expirationTimeForNotification(),
                 null));
 
@@ -114,12 +115,20 @@ sealed class GameNotificationsUI
     }
 
     private Instant expirationTimeForNotification(bool isSevere = false) =>
-        Game.State.Time + (isSevere
+        game.State.Time + (isSevere
             ? Constants.Game.GameUI.SevereNotificationDuration
             : Constants.Game.GameUI.NotificationDuration);
 
-    public record struct Notification(
-        string Text, IGameObject? Subject, Instant ExpirationTime, Color? Background);
+    public readonly record struct Notification(
+        string Text, NotificationClickAction? ClickAction, Instant ExpirationTime, Color? Background)
+    {
+        public void OnClick() => ClickAction?.Invoke();
+    }
+
+    public delegate void NotificationClickAction();
+
+    private NotificationClickAction scrollTo(IPositionable positionable) =>
+        () => game.CameraController.ScrollToWorldPos(positionable.Position.XY());
 
     private interface INotificationListener
     {
