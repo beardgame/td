@@ -7,8 +7,6 @@ static partial class Constants
     {
         private const float pixelsPerTileSpriteResolution = 44;
 
-        public const float PixelsPerTileCompositeResolution = 10000;
-
         public const float PixelSize = Game.World.HexagonWidth / pixelsPerTileSpriteResolution;
 
         public const float WallHeight = 1;

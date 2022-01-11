@@ -198,7 +198,7 @@ class DeferredRenderer
 
     public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
     {
-        var resolution = calculateResolution(deferredLayer.CameraDistance, Constants.Rendering.PixelsPerTileCompositeResolution);
+        var resolution = calculateResolution();
         gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
         hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
 
@@ -225,16 +225,12 @@ class DeferredRenderer
         viewport = newViewport;
     }
 
-    private Vector2i calculateResolution(float cameraDistance, float pixelsPerTile)
+    private Vector2i calculateResolution()
     {
-        var screenPixelsPerTile = viewport.Height * 0.5f / cameraDistance;
-
-        var scale = Math.Min(1, pixelsPerTile / screenPixelsPerTile);
-
         var bufferSizeFactor = UserSettings.Instance.Graphics.SuperSample;
 
-        var w = (int)(viewport.Width * bufferSizeFactor * scale);
-        var h = (int)(viewport.Height * bufferSizeFactor * scale);
+        var w = (int)(viewport.Width * bufferSizeFactor);
+        var h = (int)(viewport.Height * bufferSizeFactor);
 
         return (w, h);
     }
