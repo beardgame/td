@@ -1,10 +1,6 @@
 using System.Collections.ObjectModel;
-using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation;
-using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
@@ -14,6 +10,7 @@ namespace Bearded.TD.UI.Controls;
 sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
 {
     private const int notificationHeight = 24;
+    private const int maxNotifications = 6;
 
     private ReadOnlyCollection<GameNotificationsUI.Notification> notifications;
     private readonly GameNotificationsUI model;
@@ -25,48 +22,40 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
     {
         this.model = model;
 
-        list = new ListControl {ItemSource = this};
+        IsClickThrough = true;
+        this.Anchor(a => a.Top(margin: 0, height: maxNotifications * notificationHeight));
+        list = new ListControl(listContainer: CreateClickThrough()) {ItemSource = this};
         Add(list);
 
         model.NotificationsChanged += updateList;
-        updateNotifications();
+        notifications = model.Notifications;
     }
 
     private void updateList()
     {
-        updateNotifications();
-        list.Reload();
-    }
-
-    private void updateNotifications()
-    {
         notifications = model.Notifications;
-        new AnchorTemplate(this)
-            .Top(margin: 0, height: notifications.Count * notificationHeight)
-            .ApplyTo(this);
+        list.Reload();
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
     public double HeightOfItemAt(int index) => notificationHeight;
 
-    public Control CreateItemControlFor(int index) => new NotificationControl(model.Game, notifications[index]);
+    public Control CreateItemControlFor(int index) => new NotificationControl(notifications[index]);
 
     public void DestroyItemControlAt(int index, Control control) {}
 
-    private class NotificationControl : CompositeControl
+    private sealed class NotificationControl : CompositeControl
     {
         private const double margin = 2;
 
-        private readonly GameInstance game;
         private readonly GameNotificationsUI.Notification notification;
 
-        public NotificationControl(GameInstance game, GameNotificationsUI.Notification notification)
+        public NotificationControl(GameNotificationsUI.Notification notification)
         {
-            this.game = game;
             this.notification = notification;
 
-            Add(new BackgroundBox(notification.Background.ValueOrDefault(BackgroundBox.DefaultColor))
+            Add(new BackgroundBox(notification.Background ?? BackgroundBox.DefaultColor)
                 .Anchor(a => a.MarginAllSides(margin)));
             Add(new Label { Text = notification.Text, TextAnchor = new Vector2d(0, .5), FontSize = 14 }
                 .Anchor(a => a.MarginAllSides(margin * 2)));
@@ -76,9 +65,7 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
         {
             if (eventArgs.MouseButton == MouseButton.Left)
             {
-                notification.Subject
-                    .SelectMany(gameObject => Maybe.FromNullable(gameObject as IPositionable))
-                    .Match(positionable => game.CameraController.ScrollToWorldPos(positionable.Position.XY()));
+                notification.OnClick();
                 eventArgs.Handled = true;
                 return;
             }
