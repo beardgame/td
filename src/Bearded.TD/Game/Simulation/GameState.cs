@@ -10,7 +10,6 @@ using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.World.Fluids;
 using Bearded.TD.Game.Simulation.Zones;
@@ -51,7 +50,6 @@ sealed class GameState
     public UnitLayer UnitLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public BuildingPlacementLayer BuildingPlacementLayer { get; }
-    public MiningLayer MiningLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
     public ZoneLayer ZoneLayer { get; }
@@ -77,7 +75,6 @@ sealed class GameState
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
         UnitLayer = new UnitLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
-        MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);

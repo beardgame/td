@@ -22,9 +22,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     {
         this.game = game;
 
-        handlers[Constants.Game.GameUI.ActionBarSize - 1] = new MiningInteractionHandler(game, game.Me.Faction);
-        labels[Constants.Game.GameUI.ActionBarSize - 1] = ("Mine tile", null);
-
         if (game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
         {
             foreach (var b in technology.UnlockedBuildings)
