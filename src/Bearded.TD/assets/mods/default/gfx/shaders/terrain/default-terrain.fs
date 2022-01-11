@@ -6,7 +6,7 @@ uniform sampler2DArray normalTextures;
 uniform float farPlaneDistance;
 uniform vec3 cameraPosition;
 
-uniform mat4 viewLevel;
+uniform mat4 view;
 
 uniform float heightScale;
 
@@ -39,7 +39,7 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 n = textureNormal.x * xTransform
            + textureNormal.y * yTransform
            + textureNormal.z * zTransform;
-    
+
     wallColor = rgb;
     wallNormal = n;
 }
@@ -64,7 +64,7 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 n = textureNormal.x * xTransform
            + textureNormal.y * yTransform
            + textureNormal.z * zTransform;
-    
+
     wallColor = rgb;
     wallNormal = n;
 }
@@ -155,7 +155,7 @@ void main()
                 // discard excessive height of upside down terrain
                 discard;
             }
-        } 
+        }
     }
 
     vec3 fPosition = fragmentPosition;
@@ -182,7 +182,7 @@ void main()
         fPosition = camPosition + camToFragment * f;
         fNormal = -cutoutCenterToFragmentNormalised;
         fColor = vec4(fColor.rgb * 0.75, fColor.a);
-    
+
         if (heightScale < 0 && fragmentPosition.z > limit)
         {
             float d = dither(gl_FragCoord.xy);
@@ -199,7 +199,7 @@ void main()
 
     vec3 floorColor, floorNormal;
     getFloorColor(fPosition, fNormal, floorColor, floorNormal);
-    
+
     float flatness = smoothstep(0.75, 1, fNormal.z);
 
     vec3 diffuse, normal;
@@ -214,7 +214,7 @@ void main()
         diffuse = mix(wallColor, floorColor, flatness);
         normal = mix(wallNormal, floorNormal, flatness);
     }
-    
+
     vec4 rgba = vec4(diffuse, 1) * fColor;
 
     outRGBA = rgba;
@@ -222,6 +222,6 @@ void main()
 
     // check if this is actually in 0-1 space between camera and far plane
     // it probably is not because we don't take near distance into account properly
-    float depth = -(viewLevel * vec4(fPosition, 1)).z / farPlaneDistance;
+    float depth = -(view * vec4(fPosition, 1)).z / farPlaneDistance;
     outDepth = vec4(depth, 0, 0, rgba.a);
 }
