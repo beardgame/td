@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -10,14 +10,14 @@ namespace Bearded.TD.Game.Simulation.Zones;
 sealed class ZoneLayer
 {
     private readonly IdDictionary<Zone> zonesById = new();
-    private readonly Tilemap<Zone?> zonesByTile;
+    private readonly Tilemap<ImmutableArray<Zone>> zonesByTile;
     private readonly MultiDictionary<Zone, Zone> adjacentZones = new();
 
     public IEnumerable<Zone> AllZones => zonesById.Values;
 
     public ZoneLayer(int radius)
     {
-        zonesByTile = new Tilemap<Zone>(radius);
+        zonesByTile = new Tilemap<ImmutableArray<Zone>>(radius, _ => ImmutableArray<Zone>.Empty);
     }
 
     public void AddZone(Zone zone)
@@ -25,8 +25,7 @@ sealed class ZoneLayer
         zonesById.Add(zone);
         foreach (var tile in zone.Tiles)
         {
-            DebugAssert.State.Satisfies(() => zonesByTile[tile] == null);
-            zonesByTile[tile] = zone;
+            zonesByTile[tile] = zonesByTile[tile].Add(zone);
         }
     }
 
@@ -38,7 +37,7 @@ sealed class ZoneLayer
 
     public Zone FindZone(Id<Zone> id) => zonesById[id];
 
-    public Zone? ZoneForTile(Tile tile) => zonesByTile[tile];
+    public IEnumerable<Zone> ZonesForTile(Tile tile) => zonesByTile[tile];
 
     public IEnumerable<Zone> AdjacentZones(Zone zone) => adjacentZones[zone];
 }
