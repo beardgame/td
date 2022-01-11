@@ -45,7 +45,6 @@ sealed class SpriteRenderers
             context.Settings.ProjectionMatrix,
             context.Settings.ViewMatrix,
             context.Settings.FarPlaneDistance,
-            context.Settings.ViewMatrixLevel,
             context.Settings.CameraPosition,
             context.Settings.FarPlaneBaseCorner,
             context.Settings.FarPlaneUnitX,

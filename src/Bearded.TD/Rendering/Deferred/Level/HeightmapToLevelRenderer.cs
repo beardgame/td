@@ -229,7 +229,7 @@ sealed class HeightmapToLevelRenderer
         var renderer = Renderer.From(mesh.ToRenderable(),
             new IRenderSetting[]
             {
-                context.Settings.ViewMatrixLevel,
+                context.Settings.ViewMatrix,
                 context.Settings.ProjectionMatrix,
                 context.Settings.FarPlaneDistance,
                 heightmap.RadiusUniform,
