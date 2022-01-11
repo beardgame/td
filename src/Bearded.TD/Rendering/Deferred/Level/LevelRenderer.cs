@@ -19,7 +19,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
     {
         Heightmap = new Heightmap(game);
         heightRenderer = new HeightRenderer(game, context, Heightmap);
-        visibilityRenderer = new VisibilityRenderer(game, context, Heightmap);
+        visibilityRenderer = new VisibilityRenderer(game, Heightmap);
         heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
 
         resizeIfNeeded();

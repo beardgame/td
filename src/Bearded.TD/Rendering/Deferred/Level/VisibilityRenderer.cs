@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
-using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
+using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Rendering;
-using Bearded.Graphics.Shapes;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Zones;
+using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Void = Bearded.Utilities.Void;
@@ -22,13 +24,12 @@ sealed class VisibilityRenderer : IDisposable
 
     private readonly IPipeline<Void> renderToHeightmap;
 
-    private readonly IndexedTrianglesMeshBuilder<ColorVertexData> meshBuilder;
-    private readonly Renderer renderer;
-    private readonly ShapeDrawer2<ColorVertexData, Void> drawer;
+    private readonly DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)> splats;
+    private readonly IRenderer splatRenderer;
 
     private bool needsFullRedraw = true;
 
-    public VisibilityRenderer(GameInstance game, RenderContext context, Heightmap heightmap)
+    public VisibilityRenderer(GameInstance game, Heightmap heightmap)
     {
         level = game.State.Level;
         visibilityLayer = game.State.VisibilityLayer;
@@ -36,22 +37,32 @@ sealed class VisibilityRenderer : IDisposable
         heightmap.ResolutionChanged += () => needsFullRedraw = true;
 
         renderToHeightmap = heightmap.DrawVisibility(
-            InOrder(
-                ClearColor(0, 0, 0, 0),
-                Do(renderVisibility)
-            ));
+            WithContext(
+                c => c.SetBlendMode(BlendMode.Max),
+                InOrder(
+                    ClearColor(0, 0, 0, 0),
+                    Do(renderVisibility)
+                )));
 
-        meshBuilder = new IndexedTrianglesMeshBuilder<ColorVertexData>();
-        renderer = Renderer.From(meshBuilder.ToRenderable(), heightmap.RadiusUniform);
-        drawer = new ShapeDrawer2<ColorVertexData, Void>(meshBuilder, (p, _) => new ColorVertexData(p, default));
+        (splats, splatRenderer) = findHeightmapSplats(game, heightmap);
+    }
 
-        context.Shaders.GetShaderProgram("terrain-base").UseOnRenderer(renderer);
+    private static (DrawableSpriteSet<HeightmapSplatVertex, (float MinH, float MaxH)>, IRenderer)
+        findHeightmapSplats(GameInstance game, Heightmap heightmap)
+    {
+        return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")]
+            .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
+                game.Meta.SpriteRenderers,
+                HeightmapSplatVertex.Create,
+                game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("heightmap-splatter")],
+                heightmap.RadiusUniform
+            );
     }
 
     public void Dispose()
     {
-        meshBuilder.Dispose();
-        renderer.Dispose();
+        splats.Dispose();
+        splatRenderer.Dispose();
     }
 
     public void ZoneChanged(Zone zone)
@@ -76,24 +87,18 @@ sealed class VisibilityRenderer : IDisposable
             .EnumerateTilemapWith(level.Radius)
             .Where(t => visibilityLayer[t].IsVisible());
 
-        var count = 0;
+        var splat = splats.GetSprite("visibility-hex");
+
         foreach (var tile in visibleTiles)
         {
-            var p = Tiles.Level.GetPosition(tile).NumericValue.WithZ(1);
+            var p = Tiles.Level.GetPosition(tile).NumericValue.WithZ(0);
 
-            drawer.FillCircle(p, Constants.Game.World.HexagonSide * 2, default, 6);
+            var angle = tile.X * 1.3f + tile.Y * 2.9f;
 
-            count++;
-
-            if (count > 10000)
-            {
-                renderer.Render();
-                meshBuilder.Clear();
-                count = 0;
-            }
+            splat.Draw(p, Constants.Game.World.HexagonSide * 0.75f, angle, (0, 1));
         }
 
-        renderer.Render();
-        meshBuilder.Clear();
+        splatRenderer.Render();
+        splats.Clear();
     }
 }
