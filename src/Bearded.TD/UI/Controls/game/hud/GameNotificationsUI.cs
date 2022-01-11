@@ -87,9 +87,9 @@ sealed class GameNotificationsUI
             this,
             @event => new Notification(
                 textExtractor(@event),
-                Maybe.Nothing,
+                null,
                 expirationTimeForNotification(),
-                isSevere ? Maybe.Nothing : Maybe.Just(Color.DarkRed)));
+                isSevere ? null : Color.DarkRed));
 
     private NotificationListener<T> textAndGameObjectEventListener<T>(
         Func<T, string> textExtractor, Func<T, IGameObject> gameObjectExtractor)
@@ -98,9 +98,9 @@ sealed class GameNotificationsUI
             this,
             @event => new Notification(
                 textExtractor(@event),
-                Maybe.Just(gameObjectExtractor(@event)),
+                gameObjectExtractor(@event),
                 expirationTimeForNotification(),
-                Maybe.Nothing));
+                null));
 
     private void addNotification(Notification notification)
     {
@@ -118,8 +118,8 @@ sealed class GameNotificationsUI
             ? Constants.Game.GameUI.SevereNotificationDuration
             : Constants.Game.GameUI.NotificationDuration);
 
-    public sealed record Notification(
-        string Text, Maybe<IGameObject> Subject, Instant ExpirationTime, Maybe<Color> Background);
+    public record struct Notification(
+        string Text, IGameObject? Subject, Instant ExpirationTime, Color? Background);
 
     private interface INotificationListener
     {
