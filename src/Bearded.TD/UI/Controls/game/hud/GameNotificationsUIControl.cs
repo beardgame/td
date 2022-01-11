@@ -24,7 +24,8 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
 
         IsClickThrough = true;
         this.Anchor(a => a.Top(margin: 0, height: maxNotifications * notificationHeight));
-        list = new ListControl(listContainer: CreateClickThrough()) {ItemSource = this};
+        list = ListControl.CreateClickThrough();
+        list.ItemSource = this;
         Add(list);
 
         model.NotificationsChanged += updateList;
