@@ -34,9 +34,9 @@ sealed class PhysicalTilemapGenerator
 
         var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
-        var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles);
-
         var (tilemap, levelCommands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
+
+        var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles, tilemap);
 
         addFeatureAreaMetadata(arrangedFeaturesWithAreas);
         addFeatureTileMetadata(featuresWithTiles);

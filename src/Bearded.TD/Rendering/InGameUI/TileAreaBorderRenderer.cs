@@ -26,7 +26,7 @@ static class TileAreaBorderRenderer
         // TODO: This should not be hard coded
         var sprites = game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")];
         var sprite = sprites.GetSprite("halo").MakeConcreteWith(
-            game.Meta.SpriteRenderers, SpriteDrawGroup.Particle, 0, UVColorVertex.Create,
+            game.Meta.SpriteRenderers, SpriteDrawGroup.IgnoreDepth, 0, UVColorVertex.Create,
             game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
 
         Render(border, sprite, getLineColor, lineWidth);
