@@ -159,8 +159,7 @@ class DeferredRenderer
                 c => c.SetDebugName("Copy/scale image to output render target")
                     .BindRenderTarget(s => s.FinalRenderTarget),
                 PostProcess(shaders.GetShaderProgram("deferred/copy"), out _,
-                    new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture),
-                    new Vector2Uniform("uvOffset", Vector2.Zero)
+                    new TextureUniform("inputTexture", TextureUnit.Texture0, textures.Composition.Texture)
                 )
             )
         );
