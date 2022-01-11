@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -64,9 +65,12 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
 
         private Tile determineCenter(Zone zone)
         {
+            var floorTiles = zone.Tiles
+                .Where(tile => gameState.GeometryLayer[tile].Type == TileType.Floor)
+                .ToImmutableArray();
             var centroid = new Position2(
-                zone.Tiles
-                    .Select(tile => Level.GetPosition(tile).NumericValue / zone.Tiles.Length)
+                floorTiles
+                    .Select(tile => Level.GetPosition(tile).NumericValue / floorTiles.Length)
                     .Aggregate((v1, v2) => v1 + v2));
             // TODO: remove the NumericValue once we can use the System.Linq MinBy.
             var closestToCentroid =
