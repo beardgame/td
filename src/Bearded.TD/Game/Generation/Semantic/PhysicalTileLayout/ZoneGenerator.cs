@@ -42,10 +42,12 @@ sealed class ZoneGenerator
             // count connection tiles between different zones.
             adjacentUnassignedTiles(startingTiles, TileType.Floor).ForEach(t => tiles.Add(t));
             adjacentUnassignedTiles(startingTiles, TileType.Crevice).ForEach(t => tiles.Add(t));
+            adjacentUnassignedTiles(tiles.ToImmutableArray(), TileType.Wall, recurse: false).ForEach(t => tiles.Add(t));
             return tiles.ToImmutableArray();
         }
 
-        IEnumerable<Tile> adjacentUnassignedTiles(ImmutableArray<Tile> startingTiles, TileType tileType)
+        IEnumerable<Tile> adjacentUnassignedTiles(
+            ImmutableArray<Tile> startingTiles, TileType tileType, bool recurse = true)
         {
             var queue = new Queue<Tile>(startingTiles);
             var seen = new HashSet<Tile>(startingTiles);
@@ -58,7 +60,10 @@ sealed class ZoneGenerator
                 foreach (var n in unassignedFloorNeighbors)
                 {
                     yield return n;
-                    queue.Enqueue(n);
+                    if (recurse)
+                    {
+                        queue.Enqueue(n);
+                    }
                     seen.Add(n);
                 }
             }
