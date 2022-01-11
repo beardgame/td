@@ -62,7 +62,7 @@ sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, I
 
         Sprite sprite(string name) => SpriteDrawInfo
             .From(Parameters.Sprites.GetSprite(name),
-                DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.LowResLevelDetail);
+                DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.SolidLevelDetails);
 
         Events.Subscribe(this);
     }

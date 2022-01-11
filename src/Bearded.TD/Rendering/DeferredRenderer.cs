@@ -25,9 +25,10 @@ using static Pipeline<DeferredRenderer.RenderState>;
 
 class DeferredRenderer
 {
-    private static readonly SpriteDrawGroup[] worldLowResDrawGroups = { LowResLevelDetail };
+    private static readonly SpriteDrawGroup[] solidLevelDrawGroups = { SolidLevelDetails };
     private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
     private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
+    private static readonly SpriteDrawGroup[] ignoreDepthGroup = { IgnoreDepth };
 
     public sealed record RenderState(Vector2i Resolution, RenderTarget FinalRenderTarget, ContentRenderers Content);
 
@@ -96,7 +97,7 @@ class DeferredRenderer
                     ClearColor(),
                     ClearDepth(),
                     Do(s => s.Content.LevelRenderer.Render()),
-                    Do(s => worldLowResDrawGroups.ForEach(s.Content.RenderDrawGroup)),
+                    Do(s => solidLevelDrawGroups.ForEach(s.Content.RenderDrawGroup)),
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
                         Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
@@ -138,7 +139,12 @@ class DeferredRenderer
                         InOrder(
                             Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
                             Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
-                        ))
+                        )),
+                    WithContext(
+                        c => c.SetDebugName("Render depth ignoring groups")
+                            .SetBlendMode(Premultiplied),
+                        Do(s => ignoreDepthGroup.ForEach(s.Content.RenderDrawGroup))
+                        )
                 ))
         ));
 
