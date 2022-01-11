@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
@@ -12,7 +11,6 @@ using Bearded.TD.Rendering.Deferred.Level;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Pipelines.Context.CullMode;
@@ -39,7 +37,7 @@ class DeferredRenderer
     private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
     private readonly IPipeline<RenderState> pipeline;
 
-    private readonly TextureUniform heightmap = new("heightmap", TextureUnit.Texture3, null!);
+    private readonly TextureUniform heightmapTexture = new("heightmap", TextureUnit.Texture3, null!);
     private readonly FloatUniform heightmapRadius = new("heightmapRadius");
     private readonly FloatUniform heightmapPixelSizeUV = new("heightmapPixelSizeUV");
 
@@ -56,12 +54,6 @@ class DeferredRenderer
     {
         this.settings = settings;
         shaders = coreShaders;
-
-        void upscaleNearest(Texture.Target t)
-        {
-            t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
-            t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-        }
 
         var textures = new
         {
@@ -133,7 +125,7 @@ class DeferredRenderer
                             new TextureUniform("albedoTexture", TextureUnit.Texture0, textures.Diffuse.Texture),
                             new TextureUniform("lightTexture", TextureUnit.Texture1, textures.LightAccum.Texture),
                             new TextureUniform("depthBuffer", TextureUnit.Texture2, textures.Depth.Texture),
-                            heightmap, heightmapRadius, heightmapPixelSizeUV,
+                            heightmapTexture, heightmapRadius, heightmapPixelSizeUV,
                             settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
                             settings.CameraPosition,
                             hexagonalFallOffDistance
@@ -199,25 +191,31 @@ class DeferredRenderer
     public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
     {
         var resolution = calculateResolution();
-        gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
-        hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
+        prepareForRendering(deferredLayer, resolution);
+        render(deferredLayer, target, resolution);
+    }
 
-        prepareLevel(deferredLayer.ContentRenderers.LevelRenderer);
-
+    private void render(IDeferredRenderLayer deferredLayer, RenderTarget target, Vector2i resolution)
+    {
         var state = new RenderState(resolution, target, deferredLayer.ContentRenderers);
 
         pipeline.Execute(state);
-
-        // cleaning of mesh builders will happen in game renderer
     }
 
-    private void prepareLevel(LevelRenderer renderer)
+    private void prepareForRendering(IDeferredRenderLayer deferredLayer, Vector2i resolution)
     {
-        renderer.PrepareForRender();
-        var hmap = renderer.Heightmap;
-        heightmap.Value = hmap.Texture;
-        heightmapRadius.Value = hmap.RadiusUniform.Value;
-        heightmapPixelSizeUV.Value = hmap.PixelSizeUVUniform.Value;
+        var levelRenderer = deferredLayer.ContentRenderers.LevelRenderer;
+        levelRenderer.PrepareForRender();
+        prepareUniforms(deferredLayer, resolution, levelRenderer.Heightmap);
+    }
+
+    private void prepareUniforms(IDeferredRenderLayer deferredLayer, Vector2i resolution, Heightmap heightmap)
+    {
+        heightmapTexture.Value = heightmap.Texture;
+        heightmapRadius.Value = heightmap.RadiusUniform.Value;
+        heightmapPixelSizeUV.Value = heightmap.PixelSizeUVUniform.Value;
+        gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
+        hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
     }
 
     public void OnResize(ViewportSize newViewport)
