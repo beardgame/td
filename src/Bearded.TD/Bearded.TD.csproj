@@ -36,6 +36,9 @@
     <None Update="assets\shaders\terrain-base.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="assets\mods\default\gfx\sprites\terrain-splats\visibility-hex.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">

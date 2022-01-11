@@ -14,8 +14,9 @@ void main()
 
 	float r = c.a == 0 ? 0 : (c.r / c.a);
 
+	float value = mix(fragmentMinHeight, fragmentMaxHeight, r) * c.a;
+
     fragColor = vec4(
-    	mix(fragmentMinHeight, fragmentMaxHeight, r) * c.a,
-    	0, 0, c.a
+    	value, value, value, c.a
     	);
 }
