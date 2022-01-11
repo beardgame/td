@@ -16,7 +16,7 @@ class PointLight<T> : Component<T, IPointLightParameters>, IListener<DrawCompone
 
     protected override void OnAdded()
     {
-        Events.Unsubscribe(this);
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
