@@ -39,10 +39,6 @@ void main()
 
     float height = heightMapValue.x;
 
-    float visibility = heightMapValue.y;
-
-    height = mix(1, height, visibility);
-
     height = height * heightScale + heightOffset;
 
     p.z += height;
