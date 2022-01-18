@@ -104,11 +104,6 @@ sealed class GameNotificationsUI
 
     private void addNotification(Notification notification)
     {
-        if (notifications.Count == Constants.Game.GameUI.MaxNotifications)
-        {
-            notifications.RemoveAt(0);
-        }
-
         notifications.Add(notification);
         NotificationsChanged?.Invoke();
     }

@@ -10,7 +10,7 @@ namespace Bearded.TD.UI.Controls;
 sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
 {
     private const int notificationHeight = 24;
-    private const int maxNotifications = 6;
+    private const int shownNotifications = 6;
 
     private ReadOnlyCollection<Notification> notifications;
     private readonly GameNotificationsUI model;
@@ -23,7 +23,7 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
         this.model = model;
 
         IsClickThrough = true;
-        this.Anchor(a => a.Top(margin: 0, height: maxNotifications * notificationHeight));
+        this.Anchor(a => a.Top(margin: 0, height: shownNotifications * notificationHeight));
         list = ListControl.CreateClickThrough();
         list.ItemSource = this;
         Add(list);

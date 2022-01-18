@@ -35,7 +35,6 @@ static partial class Constants
             public static readonly TimeSpan NotificationDuration = 5.S();
             public static TimeSpan SevereNotificationDuration = 20.S();
             public static readonly TimeSpan NotificationFadeOutTime = 1.S();
-            public const int MaxNotifications = 4;
 
             public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
             public static readonly Color TechPointsColor = Color.Turquoise;
