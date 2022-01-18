@@ -69,11 +69,6 @@ static partial class Constants
             public static readonly TimeSpan MiningDuration = 8.S();
         }
 
-        public static class Technology
-        {
-            public const double TechCostMultiplicationFactor = 1;
-        }
-
         public static class Enemy
         {
             public static readonly Speed PathIndicatorSpeed = 10.UnitsPerSecond();

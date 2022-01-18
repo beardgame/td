@@ -103,6 +103,13 @@ sealed class GameNotificationsUI
         NotificationsChanged?.Invoke();
     }
 
+    private void replaceNotification(Notification oldNotification, Notification newNotification)
+    {
+        var index = notifications.IndexOf(oldNotification);
+        notifications[index] = newNotification;
+        NotificationsChanged?.Invoke();
+    }
+
     private void removeNotification(Notification notification)
     {
         notifications.Remove(notification);

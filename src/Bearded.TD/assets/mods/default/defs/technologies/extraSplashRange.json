@@ -1,7 +1,6 @@
 {
     "id" : "extraSplashRange",
     "name" : "A wider boom",
-    "cost" : 1,
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraSplashRange" }
     ]

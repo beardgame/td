@@ -1,7 +1,6 @@
 {
     "id" : "extraDamage100",
     "name" : "The infinite boom",
-    "cost" : 10,
     "requiredTechs" : [ "default.extraDamage3" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage100" }

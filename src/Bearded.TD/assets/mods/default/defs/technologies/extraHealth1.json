@@ -1,7 +1,6 @@
 {
     "id" : "extraHealth1",
     "name" : "Constitution I",
-    "cost" : 1,
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraHealth1" }
     ]

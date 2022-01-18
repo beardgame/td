@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities.Collections;
-using static Bearded.TD.Constants.Game.Technology;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Technologies;
@@ -13,14 +11,12 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 [FactionBehavior("technology")]
 sealed class FactionTechnology : FactionBehavior<Faction>
 {
-    private readonly Dictionary<ITechnologyBlueprint, long> unlockedTechnologies = new();
+    private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new();
     private readonly HashSet<IComponentOwnerBlueprint> unlockedBuildings = new();
     private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new();
     private readonly List<ITechnologyBlueprint> queuedTechnologies = new();
 
     public long TechPoints { get; private set; }
-
-    private double techCostMultiplier = 1;
 
     public IEnumerable<IComponentOwnerBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
@@ -62,7 +58,7 @@ sealed class FactionTechnology : FactionBehavior<Faction>
             queueTechnologyAndMissingDependencies(dependency);
         }
 
-        if (queuedTechnologies.Count == 0 && canAffordNow(technology))
+        if (queuedTechnologies.Count == 0 && canAffordNow())
         {
             unlockTechnology(technology);
         }
@@ -90,68 +86,21 @@ sealed class FactionTechnology : FactionBehavior<Faction>
         }
     }
 
-    public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.ContainsKey(technology);
+    public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.Contains(technology);
 
     public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
         IsTechnologyLocked(technology)
-        && canAffordNow(technology)
+        && canAffordNow()
         && HasAllRequiredTechs(technology);
 
-    private bool canAffordNow(ITechnologyBlueprint technology) => TechPoints >= costIfUnlockedNow(technology);
-
-    private long costIfUnlockedNow(ITechnologyBlueprint technology) =>
-        costAtPositionInQueue(technology, 0);
-
-    private long costAtPositionInQueue(ITechnologyBlueprint technology, int position)
-    {
-        var multiplier = techCostMultiplier * Math.Pow(TechCostMultiplicationFactor, position);
-        return (long) (technology.Cost * multiplier);
-    }
-
-    public long ExpectedCost(ITechnologyBlueprint technology)
-    {
-        // ReSharper disable once CompareOfFloatsByEqualityOperator
-        if (techCostMultiplier == 1)
-        {
-            return technology.Cost;
-        }
-
-        if (unlockedTechnologies.ContainsKey(technology))
-        {
-            return unlockedTechnologies[technology];
-        }
-
-        if (IsTechnologyQueued(technology))
-        {
-            return costAtPositionInQueue(technology, QueuePositionFor(technology));
-        }
-
-        return costAtPositionInQueue(
-            technology, queuedTechnologies.Count + countLockedAndNotQueuedDependencies(technology));
-    }
-
-    private int countLockedAndNotQueuedDependencies(ITechnologyBlueprint technology)
-    {
-        var seen = new HashSet<ITechnologyBlueprint>();
-        return countInternal(technology) - 1; // Since we include the current technology in the count.
-
-        int countInternal(ITechnologyBlueprint tech)
-        {
-            seen.Add(tech);
-            return 1 + tech.RequiredTechs
-                .Where(dependency => !seen.Contains(dependency)
-                    && IsTechnologyLocked(dependency)
-                    && !IsTechnologyQueued(dependency))
-                .Sum(countInternal);
-        }
-    }
+    private bool canAffordNow() => TechPoints >= 1;
 
     public bool HasAllRequiredTechs(ITechnologyBlueprint technology) =>
-        technology.RequiredTechs.All(unlockedTechnologies.ContainsKey);
+        technology.RequiredTechs.All(unlockedTechnologies.Contains);
 
     private void tryUnlockQueuedTechnologies()
     {
-        while (queuedTechnologies.Count > 0 && canAffordNow(queuedTechnologies[0]))
+        while (queuedTechnologies.Count > 0 && canAffordNow())
         {
             unlockFirstQueuedTechnology();
         }
@@ -171,10 +120,8 @@ sealed class FactionTechnology : FactionBehavior<Faction>
     {
         Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
-        var cost = costIfUnlockedNow(technology);
-        TechPoints -= cost;
-        techCostMultiplier *= TechCostMultiplicationFactor;
-        unlockedTechnologies.Add(technology, cost);
+        TechPoints--;
+        unlockedTechnologies.Add(technology);
         technology.Unlocks.ForEach(unlock => unlock.Apply(this));
         Events.Send(new TechnologyUnlocked(this, technology));
     }

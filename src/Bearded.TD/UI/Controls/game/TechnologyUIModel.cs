@@ -48,8 +48,6 @@ sealed class TechnologyUIModel
         }
     }
 
-    public long CostFor(ITechnologyBlueprint tech) => factionTechnology.ExpectedCost(tech);
-
     public void UpdateTechnology(ITechnologyBlueprint tech)
     {
         technologyStatuses[tech] = evaluateStatusForTech(tech);

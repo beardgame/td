@@ -1,7 +1,6 @@
 {
     "id" : "unlockWorkerAntenna",
     "name" : "Where no one has gone before",
-    "cost" : 1,
     "unlocks": [
         { "type" : "building", "blueprint" : "workerAntenna" }
     ]

@@ -128,11 +128,6 @@ sealed class TechnologyUIControl : CompositeControl
             FontSize = 32, TextAnchor = Label.TextAnchorLeft
         };
 
-        private readonly Label costLabel = new Label
-        {
-            Color = Constants.Game.GameUI.TechPointsColor, FontSize = 18, TextAnchor = Label.TextAnchorLeft
-        };
-
         private string unlockButtonLabel = "";
         private readonly Button unlockButton;
 
@@ -146,7 +141,6 @@ sealed class TechnologyUIControl : CompositeControl
             this.model = model;
 
             Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
-            Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
             Add(new Label("Unlocks:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
                 .Anchor(a => a.Top(margin: 80, height: 32)));
             Add(new Label("Required technologies:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
@@ -193,7 +187,6 @@ sealed class TechnologyUIControl : CompositeControl
                 onValue: tech =>
                 {
                     headerLabel.Text = tech.Name;
-                    costLabel.Text = $"{model.CostFor(tech)} tech points";
                     unlockButton.IsVisible = true;
                     unlocksList.ItemSource =
                         new TechnologyUnlocksListItemSource(tech.Unlocks, model.DependentsFor(tech));
@@ -203,7 +196,6 @@ sealed class TechnologyUIControl : CompositeControl
                 onNothing: () =>
                 {
                     headerLabel.Text = "Select a technology from the list";
-                    costLabel.Text = "";
                     unlockButton.IsVisible = false;
                     unlocksList.ItemSource =
                         new TechnologyUnlocksListItemSource(
