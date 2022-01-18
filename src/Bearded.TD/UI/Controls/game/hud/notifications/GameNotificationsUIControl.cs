@@ -50,14 +50,16 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
     {
         private const double margin = 2;
 
+        private readonly BackgroundBox backgroundBox;
+
         private readonly Notification notification;
 
         public NotificationControl(Notification notification)
         {
             this.notification = notification;
 
-            Add(new BackgroundBox(notification.Style.Background)
-                .Anchor(a => a.MarginAllSides(margin)));
+            backgroundBox = new BackgroundBox().Anchor(a => a.MarginAllSides(margin));
+            Add(backgroundBox);
             Add(new Label { Text = notification.Text, TextAnchor = new Vector2d(0, .5), FontSize = 14 }
                 .Anchor(a => a.MarginAllSides(margin * 2)));
         }
@@ -71,6 +73,12 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
                 return;
             }
             base.MouseButtonHit(eventArgs);
+        }
+
+        public override void Render(IRendererRouter r)
+        {
+            backgroundBox.Color = notification.Style.Background();
+            base.Render(r);
         }
     }
 }
