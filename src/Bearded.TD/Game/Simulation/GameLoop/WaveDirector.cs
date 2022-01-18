@@ -171,6 +171,7 @@ sealed class WaveDirector
             }
 
             game.GameTime.PauseUntil(PauseCondition.UntilTrue(() => outstandingSpawnStartRequirements.Count == 0));
+            game.Meta.Events.Send(new WaveDeferred());
             phase = Phase.AwaitingSpawnStartRequirements;
         }
 

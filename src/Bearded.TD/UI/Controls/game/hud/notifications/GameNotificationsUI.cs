@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
@@ -154,14 +155,15 @@ sealed class GameNotificationsUI
         }
     }
 
-    private abstract class TokenListener<TAwardEvent, TConsumeEvent> : INotificationListener
-        where TAwardEvent : struct, IGlobalEvent
-        where TConsumeEvent : struct, IGlobalEvent
+    private abstract class TokenListener<TAwardedEvent, TConsumedEvent> : INotificationListener
+        where TAwardedEvent : struct, IGlobalEvent
+        where TConsumedEvent : struct, IGlobalEvent
     {
         private readonly GameNotificationsUI parent;
 
-        private readonly IListener<TAwardEvent> awardListener;
-        private readonly IListener<TConsumeEvent> consumeListener;
+        private readonly IListener<TAwardedEvent> awardedListener;
+        private readonly IListener<TConsumedEvent> consumedListener;
+        private readonly IListener<WaveDeferred> deferredListener;
 
         protected abstract string NotificationText { get; }
 
@@ -171,23 +173,26 @@ sealed class GameNotificationsUI
         {
             this.parent = parent;
 
-            awardListener = Listener.ForEvent<TAwardEvent>(_ => onAward());
-            consumeListener = Listener.ForEvent<TConsumeEvent>(_ => onConsume());
+            awardedListener = Listener.ForEvent<TAwardedEvent>(_ => onAwarded());
+            consumedListener = Listener.ForEvent<TConsumedEvent>(_ => onConsumed());
+            deferredListener = Listener.ForEvent<WaveDeferred>(_ => onDeferred());
         }
 
         public void Subscribe(GlobalGameEvents events)
         {
-            events.Subscribe(awardListener);
-            events.Subscribe(consumeListener);
+            events.Subscribe(awardedListener);
+            events.Subscribe(consumedListener);
+            events.Subscribe(deferredListener);
         }
 
         public void Unsubscribe(GlobalGameEvents events)
         {
-            events.Unsubscribe(awardListener);
-            events.Unsubscribe(consumeListener);
+            events.Unsubscribe(awardedListener);
+            events.Unsubscribe(consumedListener);
+            events.Unsubscribe(deferredListener);
         }
 
-        private void onAward()
+        private void onAwarded()
         {
             DebugAssert.State.Satisfies(!notification.HasValue);
             notification = new Notification(
@@ -198,7 +203,7 @@ sealed class GameNotificationsUI
             parent.addNotification(notification.Value);
         }
 
-        private void onConsume()
+        private void onConsumed()
         {
             DebugAssert.State.Satisfies(notification.HasValue);
             if (!notification.HasValue)
@@ -209,8 +214,25 @@ sealed class GameNotificationsUI
             parent.removeNotification(notification.Value);
             notification = null;
         }
+
+        private void onDeferred()
+        {
+            if (!notification.HasValue)
+            {
+                return;
+            }
+
+            var oldNotification = notification.Value;
+            var newNotification = oldNotification with
+            {
+                Style = NotificationStyle.ImmediateAction(parent.game.State.GameTime)
+            };
+            parent.replaceNotification(oldNotification, newNotification);
+            notification = newNotification;
+        }
     }
 
+    // TODO: make clicking notification zoom out
     private sealed class ExplorationTokenListener : TokenListener<ExplorationTokenAwarded, ExplorationTokenConsumed>
     {
         protected override string NotificationText => "Exploration token available";
@@ -218,6 +240,7 @@ sealed class GameNotificationsUI
         public ExplorationTokenListener(GameNotificationsUI parent) : base(parent) {}
     }
 
+    // TODO: make clicking notification open tech screen
     private sealed class TechnologyTokenListener : TokenListener<TechnologyTokenAwarded, TechnologyTokenConsumed>
     {
         protected override string NotificationText => "Technology token available";
