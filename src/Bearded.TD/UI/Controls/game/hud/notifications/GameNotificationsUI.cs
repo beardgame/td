@@ -67,15 +67,7 @@ sealed class GameNotificationsUI
 
     public void Update()
     {
-        var notificationsChanged = false;
-
-        while (notifications.Count > 0 && notifications[0].ExpirationTime < game.State.Time)
-        {
-            notifications.RemoveAt(0);
-            notificationsChanged = true;
-        }
-
-        if (notificationsChanged)
+        if (notifications.RemoveAll(n => n.ExpirationTime.HasValue && n.ExpirationTime.Value <= game.State.Time) > 0)
         {
             NotificationsChanged?.Invoke();
         }
