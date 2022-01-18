@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -10,9 +9,9 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.UI.Controls.NotificationClickActionFactory;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -36,13 +35,13 @@ sealed class GameNotificationsUI
         ImmutableArray.Create<INotificationListener>(
             textAndGameObjectEventListener<BuildingConstructionFinished>(
                 @event => $"Constructed {@event.Name}",
-                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
+                @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textAndGameObjectEventListener<BuildingRepairFinished>(
                 @event => $"Repaired {@event.Name}",
-                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
+                @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textAndGameObjectEventListener<BuildingUpgradeFinished>(
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
-                @event => @event.GameObject is IPositionable positionable ? scrollTo(positionable) : null),
+                @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textOnlyEventListener<TechnologyUnlocked>(
                 @event => $"Unlocked {@event.Technology.Name}"));
 
@@ -82,7 +81,7 @@ sealed class GameNotificationsUI
         }
     }
 
-    private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor, bool isSevere = false)
+    private NotificationListener<T> textOnlyEventListener<T>(Func<T, string> textExtractor)
         where T : struct, IGlobalEvent =>
         new(
             this,
@@ -90,7 +89,7 @@ sealed class GameNotificationsUI
                 textExtractor(@event),
                 null,
                 expirationTimeForNotification(),
-                isSevere ? null : Color.DarkRed));
+                NotificationStyle.Default));
 
     private NotificationListener<T> textAndGameObjectEventListener<T>(
         Func<T, string> textExtractor, Func<T, NotificationClickAction?> clickActionExtractor)
@@ -101,7 +100,7 @@ sealed class GameNotificationsUI
                 textExtractor(@event),
                 clickActionExtractor(@event),
                 expirationTimeForNotification(),
-                null));
+                NotificationStyle.Default));
 
     private void addNotification(Notification notification)
     {
@@ -114,21 +113,7 @@ sealed class GameNotificationsUI
         NotificationsChanged?.Invoke();
     }
 
-    private Instant expirationTimeForNotification(bool isSevere = false) =>
-        game.State.Time + (isSevere
-            ? Constants.Game.GameUI.SevereNotificationDuration
-            : Constants.Game.GameUI.NotificationDuration);
-
-    public readonly record struct Notification(
-        string Text, NotificationClickAction? ClickAction, Instant ExpirationTime, Color? Background)
-    {
-        public void OnClick() => ClickAction?.Invoke();
-    }
-
-    public delegate void NotificationClickAction();
-
-    private NotificationClickAction scrollTo(IPositionable positionable) =>
-        () => game.CameraController.ScrollToWorldPos(positionable.Position.XY());
+    private Instant expirationTimeForNotification() => game.State.Time + Constants.Game.GameUI.NotificationDuration;
 
     private interface INotificationListener
     {

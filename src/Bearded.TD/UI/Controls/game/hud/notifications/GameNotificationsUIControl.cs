@@ -12,7 +12,7 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
     private const int notificationHeight = 24;
     private const int maxNotifications = 6;
 
-    private ReadOnlyCollection<GameNotificationsUI.Notification> notifications;
+    private ReadOnlyCollection<Notification> notifications;
     private readonly GameNotificationsUI model;
     private readonly ListControl list;
 
@@ -50,13 +50,13 @@ sealed class GameNotificationsUIControl : CompositeControl, IListItemSource
     {
         private const double margin = 2;
 
-        private readonly GameNotificationsUI.Notification notification;
+        private readonly Notification notification;
 
-        public NotificationControl(GameNotificationsUI.Notification notification)
+        public NotificationControl(Notification notification)
         {
             this.notification = notification;
 
-            Add(new BackgroundBox(notification.Background ?? BackgroundBox.DefaultColor)
+            Add(new BackgroundBox(notification.Style.Background)
                 .Anchor(a => a.MarginAllSides(margin)));
             Add(new Label { Text = notification.Text, TextAnchor = new Vector2d(0, .5), FontSize = 14 }
                 .Anchor(a => a.MarginAllSides(margin * 2)));
