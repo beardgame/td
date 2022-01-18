@@ -15,11 +15,16 @@ record struct NotificationStyle(NotificationStyle.NotificationBackgroundColor Ba
         Background = () => BackgroundBox.DefaultColor
     };
 
+    public static readonly NotificationStyle Action = Default with
+    {
+        Background = () => Constants.Game.GameUI.ActionBackgroundColor
+    };
+
     public static NotificationStyle ImmediateAction(ITimeSource timeSource) => Default with
     {
         Background = flashingBackground(
-            BackgroundBox.DefaultColor,
-            new Color(246, 190, 0) * .75f, // dark yellow
+            Constants.Game.GameUI.ActionBackgroundColor,
+            Constants.Game.GameUI.UrgentBackgroundColor,
             1.S(),
             timeSource)
     };

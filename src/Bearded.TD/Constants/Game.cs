@@ -33,8 +33,9 @@ static partial class Constants
         {
             public const int ActionBarSize = 10;
             public static readonly TimeSpan NotificationDuration = 5.S();
-            public static TimeSpan SevereNotificationDuration = 20.S();
-            public static readonly TimeSpan NotificationFadeOutTime = 1.S();
+
+            public static Color ActionBackgroundColor = new Color(27, 81, 156) * 0.75f;
+            public static Color UrgentBackgroundColor = new Color(246, 190, 0) * 0.75f;
 
             public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
             public static readonly Color TechPointsColor = Color.Turquoise;

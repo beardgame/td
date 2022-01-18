@@ -42,10 +42,12 @@ sealed class ExplorationManager : IListener<ZoneRevealed>
     {
         State.Satisfies(HasExplorationToken);
         HasExplorationToken = false;
+        gameState.Meta.Events.Send(new ExplorationTokenConsumed());
     }
 
     public void AwardExplorationToken()
     {
         HasExplorationToken = true;
+        gameState.Meta.Events.Send(new ExplorationTokenAwarded());
     }
 }

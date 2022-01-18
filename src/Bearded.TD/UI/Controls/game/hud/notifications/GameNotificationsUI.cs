@@ -6,9 +6,11 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.UI.Controls.NotificationClickActionFactory;
@@ -43,7 +45,8 @@ sealed class GameNotificationsUI
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
                 @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textOnlyEventListener<TechnologyUnlocked>(
-                @event => $"Unlocked {@event.Technology.Name}"));
+                @event => $"Unlocked {@event.Technology.Name}"),
+            new ExplorationTokenListener(this));
 
     public void Initialize(GameInstance game)
     {
@@ -100,6 +103,12 @@ sealed class GameNotificationsUI
         NotificationsChanged?.Invoke();
     }
 
+    private void removeNotification(Notification notification)
+    {
+        notifications.Remove(notification);
+        NotificationsChanged?.Invoke();
+    }
+
     private Instant expirationTimeForNotification() => game.State.Time + Constants.Game.GameUI.NotificationDuration;
 
     private interface INotificationListener
@@ -134,6 +143,54 @@ sealed class GameNotificationsUI
         public void HandleEvent(T @event)
         {
             parent.addNotification(eventTransformer(@event));
+        }
+    }
+
+    private sealed class ExplorationTokenListener
+        : IListener<ExplorationTokenAwarded>, IListener<ExplorationTokenConsumed>, INotificationListener
+    {
+        private readonly GameNotificationsUI parent;
+
+        private Notification? notification;
+
+        public ExplorationTokenListener(GameNotificationsUI parent)
+        {
+            this.parent = parent;
+        }
+
+        public void Subscribe(GlobalGameEvents events)
+        {
+            events.Subscribe<ExplorationTokenAwarded>(this);
+            events.Subscribe<ExplorationTokenConsumed>(this);
+        }
+
+        public void Unsubscribe(GlobalGameEvents events)
+        {
+            events.Unsubscribe<ExplorationTokenAwarded>(this);
+            events.Unsubscribe<ExplorationTokenConsumed>(this);
+        }
+
+        public void HandleEvent(ExplorationTokenAwarded @event)
+        {
+            DebugAssert.State.Satisfies(!notification.HasValue);
+            notification = new Notification(
+                "Exploration token available",
+                null,
+                null,
+                NotificationStyle.Action);
+            parent.addNotification(notification.Value);
+        }
+
+        public void HandleEvent(ExplorationTokenConsumed @event)
+        {
+            DebugAssert.State.Satisfies(notification.HasValue);
+            if (!notification.HasValue)
+            {
+                return;
+            }
+
+            parent.removeNotification(notification.Value);
+            notification = null;
         }
     }
 }
