@@ -10,7 +10,6 @@ sealed class GameStatusUIControl : CompositeControl
 {
     private readonly GameStatusUI model;
     private readonly Binding<string> resourcesAmount = new();
-    private readonly Binding<string> techPointsAmount = new();
     private readonly Binding<string> waveNumber = new();
     private readonly Binding<string> timeUntilSpawn = new();
     private readonly Binding<string> waveResources = new();
@@ -29,8 +28,6 @@ sealed class GameStatusUIControl : CompositeControl
             .AddHeader($"{model.FactionName}", model.FactionColor)
             .AddValueLabel(
                 "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor))
-            .AddValueLabel(
-                "Tech points:", techPointsAmount, rightColor: Binding.Create(Constants.Game.GameUI.TechPointsColor))
             .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
             .AddValueLabel("Wave:", waveNumber)
             .AddValueLabel("Next spawn:", timeUntilSpawn)
@@ -60,7 +57,6 @@ sealed class GameStatusUIControl : CompositeControl
                 $"{model.FactionResourcesAfterReservation.NumericValue}");
         }
 
-        techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
         waveNumber.SetFromSource(model.WaveName ?? "-");
         timeUntilSpawn.SetFromSource(
             model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());

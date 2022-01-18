@@ -4,7 +4,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -18,7 +17,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
     private GameInstance game = null!;
     private Faction faction = null!;
     private FactionResources? resources;
-    private FactionTechnology? technology;
 
     private Id<WaveScript> currentWave;
     private Instant? waveSpawnStart;
@@ -30,7 +28,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
     public Color FactionColor => faction.Color;
     public ResourceAmount FactionResources => resources?.CurrentResources ?? ResourceAmount.Zero;
     public ResourceAmount FactionResourcesAfterReservation => resources?.ResourcesAfterQueue ?? ResourceAmount.Zero;
-    public long FactionTechPoints => technology?.TechPoints ?? 0;
     public TimeSpan? TimeUntilWaveSpawn =>
         waveSpawnStart == null
             ? null
@@ -42,7 +39,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
 
         faction = game.Me.Faction;
         faction.TryGetBehaviorIncludingAncestors(out resources);
-        faction.TryGetBehaviorIncludingAncestors(out technology);
 
         game.Meta.Events.Subscribe<WaveScheduled>(this);
         game.Meta.Events.Subscribe<WaveStarted>(this);

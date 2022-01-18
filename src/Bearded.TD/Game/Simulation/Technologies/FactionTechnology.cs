@@ -17,6 +17,7 @@ sealed class FactionTechnology : FactionBehavior<Faction>
     private readonly List<ITechnologyBlueprint> queuedTechnologies = new();
 
     public long TechPoints { get; private set; }
+    public bool HasTechnologyToken { get; private set; }
 
     public IEnumerable<IComponentOwnerBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
@@ -93,7 +94,7 @@ sealed class FactionTechnology : FactionBehavior<Faction>
         && canAffordNow()
         && HasAllRequiredTechs(technology);
 
-    private bool canAffordNow() => TechPoints >= 1;
+    private bool canAffordNow() => HasTechnologyToken || TechPoints >= 1;
 
     public bool HasAllRequiredTechs(ITechnologyBlueprint technology) =>
         technology.RequiredTechs.All(unlockedTechnologies.Contains);
@@ -120,7 +121,15 @@ sealed class FactionTechnology : FactionBehavior<Faction>
     {
         Argument.Satisfies(() => !IsTechnologyQueued(technology));
 
-        TechPoints--;
+        if (HasTechnologyToken)
+        {
+            consumeTechnologyToken();
+        }
+        else
+        {
+            TechPoints--;
+        }
+
         unlockedTechnologies.Add(technology);
         technology.Unlocks.ForEach(unlock => unlock.Apply(this));
         Events.Send(new TechnologyUnlocked(this, technology));
@@ -147,6 +156,19 @@ sealed class FactionTechnology : FactionBehavior<Faction>
         {
             Events.Send(new UpgradeTechnologyUnlocked(this, blueprint));
         }
+    }
+
+    public void consumeTechnologyToken()
+    {
+        State.Satisfies(HasTechnologyToken);
+        HasTechnologyToken = false;
+        Events.Send(new TechnologyTokenConsumed());
+    }
+
+    public void AwardTechnologyToken()
+    {
+        HasTechnologyToken = true;
+        Events.Send(new TechnologyTokenAwarded());
     }
 
     public void AddTechPoints(long number)

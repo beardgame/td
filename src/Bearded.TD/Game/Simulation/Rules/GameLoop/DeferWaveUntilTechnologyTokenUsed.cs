@@ -9,16 +9,17 @@ using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.Simulation.Rules.GameLoop;
 
-[GameRule("deferWaveUntilTechPointUsed")]
-sealed class DeferWaveUntilTechPointUsed : GameRule<DeferWaveUntilTechPointUsed.RuleParameters> {
+[GameRule("deferWaveUntilTechnologyTokenUsed")]
+sealed class DeferWaveUntilTechnologyTokenUsed : GameRule<DeferWaveUntilTechnologyTokenUsed.RuleParameters> {
 
-    public DeferWaveUntilTechPointUsed(RuleParameters parameters) : base(parameters) { }
+    public DeferWaveUntilTechnologyTokenUsed(RuleParameters parameters) : base(parameters) { }
 
     public override void Execute(GameRuleContext context)
     {
         if (!context.Factions.Find(Parameters.Faction).TryGetBehavior<FactionTechnology>(out var technology))
         {
-            context.Logger.Warning?.Log("Pause until tech point used rule defined for faction without technology.");
+            context.Logger.Warning?.Log(
+                "Pause until technology token used rule defined for faction without technology.");
             return;
         }
         context.Events.Subscribe(new Listener(technology, context.Blueprints.Technologies.All));
@@ -48,7 +49,7 @@ sealed class DeferWaveUntilTechPointUsed : GameRule<DeferWaveUntilTechPointUsed.
     {
         private readonly FactionTechnology factionTechnology;
 
-        public bool Satisfied => factionTechnology.TechPoints == 0;
+        public bool Satisfied => !factionTechnology.HasTechnologyToken;
 
         public TechPointSpawnStartRequirement(FactionTechnology factionTechnology)
         {

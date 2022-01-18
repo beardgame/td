@@ -46,7 +46,8 @@ sealed class GameNotificationsUI
                 @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textOnlyEventListener<TechnologyUnlocked>(
                 @event => $"Unlocked {@event.Technology.Name}"),
-            new ExplorationTokenListener(this));
+            new ExplorationTokenListener(this),
+            new TechnologyTokenListener(this));
 
     public void Initialize(GameInstance game)
     {
@@ -153,42 +154,51 @@ sealed class GameNotificationsUI
         }
     }
 
-    private sealed class ExplorationTokenListener
-        : IListener<ExplorationTokenAwarded>, IListener<ExplorationTokenConsumed>, INotificationListener
+    private abstract class TokenListener<TAwardEvent, TConsumeEvent> : INotificationListener
+        where TAwardEvent : struct, IGlobalEvent
+        where TConsumeEvent : struct, IGlobalEvent
     {
         private readonly GameNotificationsUI parent;
 
+        private readonly IListener<TAwardEvent> awardListener;
+        private readonly IListener<TConsumeEvent> consumeListener;
+
+        protected abstract string NotificationText { get; }
+
         private Notification? notification;
 
-        public ExplorationTokenListener(GameNotificationsUI parent)
+        protected TokenListener(GameNotificationsUI parent)
         {
             this.parent = parent;
+
+            awardListener = Listener.ForEvent<TAwardEvent>(_ => onAward());
+            consumeListener = Listener.ForEvent<TConsumeEvent>(_ => onConsume());
         }
 
         public void Subscribe(GlobalGameEvents events)
         {
-            events.Subscribe<ExplorationTokenAwarded>(this);
-            events.Subscribe<ExplorationTokenConsumed>(this);
+            events.Subscribe(awardListener);
+            events.Subscribe(consumeListener);
         }
 
         public void Unsubscribe(GlobalGameEvents events)
         {
-            events.Unsubscribe<ExplorationTokenAwarded>(this);
-            events.Unsubscribe<ExplorationTokenConsumed>(this);
+            events.Unsubscribe(awardListener);
+            events.Unsubscribe(consumeListener);
         }
 
-        public void HandleEvent(ExplorationTokenAwarded @event)
+        private void onAward()
         {
             DebugAssert.State.Satisfies(!notification.HasValue);
             notification = new Notification(
-                "Exploration token available",
+                NotificationText,
                 null,
                 null,
                 NotificationStyle.Action);
             parent.addNotification(notification.Value);
         }
 
-        public void HandleEvent(ExplorationTokenConsumed @event)
+        private void onConsume()
         {
             DebugAssert.State.Satisfies(notification.HasValue);
             if (!notification.HasValue)
@@ -199,5 +209,19 @@ sealed class GameNotificationsUI
             parent.removeNotification(notification.Value);
             notification = null;
         }
+    }
+
+    private sealed class ExplorationTokenListener : TokenListener<ExplorationTokenAwarded, ExplorationTokenConsumed>
+    {
+        protected override string NotificationText => "Exploration token available";
+
+        public ExplorationTokenListener(GameNotificationsUI parent) : base(parent) {}
+    }
+
+    private sealed class TechnologyTokenListener : TokenListener<TechnologyTokenAwarded, TechnologyTokenConsumed>
+    {
+        protected override string NotificationText => "Technology token available";
+
+        public TechnologyTokenListener(GameNotificationsUI parent) : base(parent) {}
     }
 }
