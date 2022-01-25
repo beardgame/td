@@ -161,19 +161,20 @@ sealed class GameNotificationsUI
         where TAwardedEvent : struct, IGlobalEvent
         where TConsumedEvent : struct, IGlobalEvent
     {
-        private readonly GameNotificationsUI parent;
+        protected GameNotificationsUI Parent { get; }
 
         private readonly IListener<TAwardedEvent> awardedListener;
         private readonly IListener<TConsumedEvent> consumedListener;
         private readonly IListener<WaveDeferred> deferredListener;
 
         protected abstract string NotificationText { get; }
+        protected virtual NotificationClickAction? NotificationClickAction => null;
 
         private Notification? notification;
 
         protected TokenListener(GameNotificationsUI parent)
         {
-            this.parent = parent;
+            Parent = parent;
 
             awardedListener = Listener.ForEvent<TAwardedEvent>(_ => onAwarded());
             consumedListener = Listener.ForEvent<TConsumedEvent>(_ => onConsumed());
@@ -199,10 +200,10 @@ sealed class GameNotificationsUI
             DebugAssert.State.Satisfies(!notification.HasValue);
             notification = new Notification(
                 NotificationText,
-                null,
+                NotificationClickAction,
                 null,
                 NotificationStyle.Action);
-            parent.addNotification(notification.Value);
+            Parent.addNotification(notification.Value);
         }
 
         private void onConsumed()
@@ -213,7 +214,7 @@ sealed class GameNotificationsUI
                 return;
             }
 
-            parent.removeNotification(notification.Value);
+            Parent.removeNotification(notification.Value);
             notification = null;
         }
 
@@ -227,17 +228,19 @@ sealed class GameNotificationsUI
             var oldNotification = notification.Value;
             var newNotification = oldNotification with
             {
-                Style = NotificationStyle.ImmediateAction(parent.timeSource)
+                Style = NotificationStyle.ImmediateAction(Parent.timeSource)
             };
-            parent.replaceNotification(oldNotification, newNotification);
+            Parent.replaceNotification(oldNotification, newNotification);
             notification = newNotification;
         }
     }
 
-    // TODO: make clicking notification zoom out
     private sealed class ExplorationTokenListener : TokenListener<ExplorationTokenAwarded, ExplorationTokenConsumed>
     {
         protected override string NotificationText => "Exploration token available";
+
+        protected override NotificationClickAction? NotificationClickAction =>
+            ScrollToContain(Parent.game, Parent.game.State.Enumerate<IZoneRevealer>());
 
         public ExplorationTokenListener(GameNotificationsUI parent) : base(parent) {}
     }

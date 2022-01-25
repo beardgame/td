@@ -1,11 +1,12 @@
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Zones;
+using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class ZoneRevealer<T> : Component<T> where T : IGameObject
+sealed class ZoneRevealer<T> : Component<T> where T : IDeletable, IGameObject, IPositionable
 {
     private readonly Zone zone;
 
@@ -17,6 +18,7 @@ sealed class ZoneRevealer<T> : Component<T> where T : IGameObject
     protected override void OnAdded()
     {
         ReportAggregator.Register(Events, new ZoneRevealReport(this));
+        Owner.Game.ListAs<IZoneRevealer>(new ZoneRevealerProxy(Owner));
     }
 
     public override void Update(TimeSpan elapsedTime) {}
@@ -34,4 +36,19 @@ sealed class ZoneRevealer<T> : Component<T> where T : IGameObject
             this.zoneRevealer = zoneRevealer;
         }
     }
+
+    sealed class ZoneRevealerProxy : IZoneRevealer
+    {
+        private readonly T owner;
+
+        public Position3 Position => owner.Position;
+        public bool Deleted => owner.Deleted;
+
+        public ZoneRevealerProxy(T owner)
+        {
+            this.owner = owner;
+        }
+    }
 }
+
+interface IZoneRevealer : IPositionable, IDeletable {}
