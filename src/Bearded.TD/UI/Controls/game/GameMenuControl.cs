@@ -5,12 +5,12 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class GamePausedControl : CompositeControl
+sealed class GameMenuControl : CompositeControl
 {
     public event VoidEventHandler? ResumeGameButtonClicked;
     public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
-    public GamePausedControl()
+    public GameMenuControl()
     {
         IsClickThrough = true;
         this.BuildLayout()

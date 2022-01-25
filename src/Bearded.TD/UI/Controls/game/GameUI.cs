@@ -28,6 +28,8 @@ sealed class GameUI :
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
 
+    public GameUIController GameUIController { get; }
+
     public GameNotificationsUI NotificationsUI { get; }
     public ActionBar ActionBar { get; }
     public GameStatusUI GameStatusUI { get; }
@@ -35,13 +37,9 @@ sealed class GameUI :
     public TechnologyUI TechnologyUI { get; }
 
     public event VoidEventHandler? FocusReset;
-    public event GenericEventHandler<IReportSubject>? EntityStatusOpened;
-    public event VoidEventHandler? EntityStatusClosed;
     public event VoidEventHandler? GameVictoryTriggered;
     public event VoidEventHandler? GameOverTriggered;
     public event VoidEventHandler? GameLeft;
-
-    public readonly Binding<bool> ShowDiegeticUI = new(true);
 
     private NavigationController? entityStatusNavigation;
 
@@ -49,6 +47,8 @@ sealed class GameUI :
 
     public GameUI()
     {
+        GameUIController = new GameUIController();
+
         NotificationsUI = new GameNotificationsUI();
         ActionBar = new ActionBar();
         GameStatusUI = new GameStatusUI();
@@ -162,13 +162,13 @@ sealed class GameUI :
     {
         var subject = selectedObject.Subject;
         entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
-        EntityStatusOpened?.Invoke(subject);
+        GameUIController.ShowEntityStatus(new GameUIController.OpenEntityStatus(Game.SelectionManager.ResetSelection));
     }
 
     private void onObjectDeselected(ISelectable t)
     {
         entityStatusNavigation?.CloseAll();
-        EntityStatusClosed?.Invoke();
+        GameUIController.HideEntityStatus();
     }
 
     public void HandleEvent(GameOverTriggered @event)

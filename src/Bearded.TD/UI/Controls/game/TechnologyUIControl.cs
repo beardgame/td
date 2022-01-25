@@ -17,12 +17,10 @@ sealed class TechnologyUIControl : CompositeControl
 {
     private readonly TechnologyUI model;
 
-    private readonly ListControl technologyList = new ListControl(new ViewportClippingLayerControl());
+    private readonly ListControl technologyList = new(new ViewportClippingLayerControl());
     private readonly TechnologyDetailsControl technologyDetails;
 
-    public event VoidEventHandler? CloseButtonClicked;
-
-    public TechnologyUIControl(TechnologyUI model)
+    public TechnologyUIControl(GameUIController gameUIController, TechnologyUI model)
     {
         this.model = model;
 
@@ -32,7 +30,7 @@ sealed class TechnologyUIControl : CompositeControl
         Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
         Add(ButtonFactories.Button("close")
             .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
-            .Subscribe(btn => btn.Clicked += _ => CloseButtonClicked?.Invoke()));
+            .Subscribe(btn => btn.Clicked += _ => gameUIController.HideTechnologyModal()));
 
         Add(technologyList.Anchor(a =>
             a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));

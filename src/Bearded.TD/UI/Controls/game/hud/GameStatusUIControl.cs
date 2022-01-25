@@ -2,7 +2,6 @@
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -15,9 +14,7 @@ sealed class GameStatusUIControl : CompositeControl
     private readonly Binding<string> waveResources = new();
     private readonly Binding<bool> canSkipWaveTimer = new();
 
-    public event VoidEventHandler? TechnologyButtonClicked;
-
-    public GameStatusUIControl(GameStatusUI model)
+    public GameStatusUIControl(GameUIController gameUIController, GameStatusUI model)
     {
         this.model = model;
 
@@ -28,7 +25,7 @@ sealed class GameStatusUIControl : CompositeControl
             .AddHeader($"{model.FactionName}", model.FactionColor)
             .AddValueLabel(
                 "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor))
-            .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
+            .AddButton(b => b.WithLabel("Research").WithOnClick(gameUIController.ShowTechnologyModal))
             .AddValueLabel("Wave:", waveNumber)
             .AddValueLabel("Next spawn:", timeUntilSpawn)
             .AddButton(

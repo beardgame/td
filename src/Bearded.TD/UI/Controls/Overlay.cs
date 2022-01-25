@@ -2,7 +2,7 @@ using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
 
-class Overlay : CompositeControl
+sealed class Overlay : CompositeControl
 {
     public Overlay()
     {
