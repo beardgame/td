@@ -49,7 +49,7 @@ sealed class GameUI :
     {
         GameUIController = new GameUIController();
 
-        NotificationsUI = new GameNotificationsUI();
+        NotificationsUI = new GameNotificationsUI(GameUIController);
         ActionBar = new ActionBar();
         GameStatusUI = new GameStatusUI();
         PlayerStatusUI = new PlayerStatusUI();

@@ -20,6 +20,7 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class GameNotificationsUI
 {
+    private readonly GameUIController gameUIController;
     private readonly ImmutableArray<INotificationListener> notificationListeners;
     private readonly List<Notification> notifications = new();
 
@@ -29,8 +30,9 @@ sealed class GameNotificationsUI
 
     public event VoidEventHandler? NotificationsChanged;
 
-    public GameNotificationsUI()
+    public GameNotificationsUI(GameUIController gameUIController)
     {
+        this.gameUIController = gameUIController;
         notificationListeners = createNotificationListeners();
         Notifications = notifications.AsReadOnly();
     }
@@ -245,10 +247,12 @@ sealed class GameNotificationsUI
         public ExplorationTokenListener(GameNotificationsUI parent) : base(parent) {}
     }
 
-    // TODO: make clicking notification open tech screen
     private sealed class TechnologyTokenListener : TokenListener<TechnologyTokenAwarded, TechnologyTokenConsumed>
     {
         protected override string NotificationText => "Technology token available";
+
+        protected override NotificationClickAction? NotificationClickAction =>
+            Parent.gameUIController.ShowTechnologyModal;
 
         public TechnologyTokenListener(GameNotificationsUI parent) : base(parent) {}
     }
