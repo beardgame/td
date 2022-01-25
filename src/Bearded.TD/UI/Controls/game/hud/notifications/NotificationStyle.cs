@@ -20,7 +20,6 @@ record struct NotificationStyle(NotificationStyle.NotificationBackgroundColor Ba
         Background = () => Constants.Game.GameUI.ActionBackgroundColor
     };
 
-    // TODO: this cannot depend on game time
     public static NotificationStyle ImmediateAction(ITimeSource timeSource) => Default with
     {
         Background = flashingBackground(

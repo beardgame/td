@@ -24,6 +24,7 @@ sealed class GameNotificationsUI
     private readonly List<Notification> notifications = new();
 
     private GameInstance game = null!;
+    private ITimeSource timeSource = null!;
     public ReadOnlyCollection<Notification> Notifications { get; }
 
     public event VoidEventHandler? NotificationsChanged;
@@ -50,9 +51,10 @@ sealed class GameNotificationsUI
             new ExplorationTokenListener(this),
             new TechnologyTokenListener(this));
 
-    public void Initialize(GameInstance game)
+    public void Initialize(GameInstance game, ITimeSource timeSource)
     {
         this.game = game;
+        this.timeSource = timeSource;
 
         var events = game.Meta.Events;
         foreach (var notificationListener in notificationListeners)
@@ -225,7 +227,7 @@ sealed class GameNotificationsUI
             var oldNotification = notification.Value;
             var newNotification = oldNotification with
             {
-                Style = NotificationStyle.ImmediateAction(parent.game.State.GameTime)
+                Style = NotificationStyle.ImmediateAction(parent.timeSource)
             };
             parent.replaceNotification(oldNotification, newNotification);
             notification = newNotification;

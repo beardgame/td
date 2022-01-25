@@ -23,6 +23,7 @@ sealed class GameUI :
     private readonly UIUpdater uiUpdater = new();
 
     public GameInstance Game { get; private set; } = null!;
+    public TimeSource TimeSource { get; private set; } = null!;
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
@@ -61,12 +62,13 @@ sealed class GameUI :
         base.Initialize(dependencies, parameters);
 
         Game = parameters.game;
+        TimeSource = new TimeSource();
         runner = parameters.runner;
 
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
 
-        NotificationsUI.Initialize(Game);
+        NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
@@ -100,6 +102,7 @@ sealed class GameUI :
         runner.HandleInput(inputState);
         runner.Update(args);
 
+        TimeSource.Update(args);
         uiUpdater.Update(args);
         NotificationsUI.Update();
         GameStatusUI.Update();
