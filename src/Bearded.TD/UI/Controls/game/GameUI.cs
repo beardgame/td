@@ -125,13 +125,13 @@ sealed class GameUI :
         {
             case true when overlay == null:
             {
-                overlay = Navigation.Push<TOverlay>();
+                overlay = Navigation!.Push<TOverlay>();
                 break;
             }
             case false when overlay != null:
             {
                 overlay.Terminate();
-                Navigation.Close(overlay);
+                Navigation!.Close(overlay);
                 overlay = null;
                 break;
             }
