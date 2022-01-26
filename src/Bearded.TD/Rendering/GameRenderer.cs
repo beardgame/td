@@ -17,6 +17,7 @@ using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Deferred.Level;
 using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -45,7 +46,7 @@ sealed class GameRenderer
 
     public ContentRenderers ContentRenderers { get; }
 
-    public GameRenderer(GameInstance game, RenderContext renderContext)
+    public GameRenderer(GameInstance game, RenderContext renderContext, ITimeSource time)
     {
         this.game = game;
         drawers = renderContext.Drawers;
@@ -54,7 +55,7 @@ sealed class GameRenderer
         var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];
         var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
-        levelRenderer = new LevelRenderer(game, renderContext, levelMaterial);
+        levelRenderer = new LevelRenderer(game, renderContext, levelMaterial, time);
 
         waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 

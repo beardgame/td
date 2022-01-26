@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 
@@ -15,7 +16,7 @@ sealed class GameUIControl : CompositeControl
 
         CanBeFocused = true;
 
-        Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext));
+        Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource));
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);

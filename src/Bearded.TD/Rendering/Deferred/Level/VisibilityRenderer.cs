@@ -6,7 +6,6 @@ using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Rendering;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
@@ -27,7 +26,7 @@ sealed class VisibilityRenderer : IDisposable
 {
     private record struct FadingTile(Tile Tile, Instant Start, Instant Stop);
 
-    private readonly GameState gameState;
+    private readonly ITimeSource time;
     private readonly Tiles.Level level;
     private readonly VisibilityLayer visibilityLayer;
     private readonly GeometryLayer geometryLayer;
@@ -42,9 +41,9 @@ sealed class VisibilityRenderer : IDisposable
     private readonly List<FadingTile> tilesFadingIn = new();
     private readonly HashSet<Tile> knownVisibleTiles = new();
 
-    public VisibilityRenderer(GameInstance game, Heightmap heightmap)
+    public VisibilityRenderer(GameInstance game, Heightmap heightmap, ITimeSource timeSource)
     {
-        gameState = game.State;
+        time = timeSource;
         level = game.State.Level;
         visibilityLayer = game.State.VisibilityLayer;
         geometryLayer = game.State.GeometryLayer;
@@ -81,7 +80,7 @@ sealed class VisibilityRenderer : IDisposable
 
     public void ZoneChanged(Zone zone)
     {
-        var now = gameState.Time;
+        var now = time.Time;
 
         var seedTiles = getSeedTilesForZoneFadeIn(zone);
 
@@ -135,7 +134,7 @@ sealed class VisibilityRenderer : IDisposable
             .EnumerateTilemapWith(level.Radius)
             .Where(t => visibilityLayer[t].IsVisible());
 
-        var now = gameState.Time;
+        var now = time.Time;
 
         foreach (var tile in visibleTiles)
         {
@@ -151,7 +150,7 @@ sealed class VisibilityRenderer : IDisposable
     {
         var splat = splats.GetSprite("visibility-hex");
 
-        var now = gameState.Time;
+        var now = time.Time;
 
         foreach (var (tile, start, stop) in tilesFadingIn)
         {
