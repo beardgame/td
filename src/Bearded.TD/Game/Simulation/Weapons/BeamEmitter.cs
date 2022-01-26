@@ -83,7 +83,7 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IListener
         var canDamageThisFrame = timeSinceLastDamage > damageTimeSpan;
         var damagedThisFrame = false;
 
-        foreach (var (type, _, point, enemy) in results)
+        foreach (var (type, _, point, enemy, _) in results)
         {
             beamSegments.Add(new BeamSegment(lastEnd, point, damageFactor));
 

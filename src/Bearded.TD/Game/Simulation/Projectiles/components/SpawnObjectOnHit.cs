@@ -1,5 +1,6 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -41,19 +42,21 @@ sealed class SpawnObjectOnHit<T>
         }
     }
 
-    public void HandleEvent(HitLevel @event)
+    public void HandleEvent(HitLevel e)
     {
-        onHit();
+        onHit(e.Info);
     }
 
-    public void HandleEvent(HitEnemy @event)
+    public void HandleEvent(HitEnemy e)
     {
-        onHit();
+        onHit(e.Info);
     }
 
-    private void onHit()
+    private void onHit(HitInfo hit)
     {
-        ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(Owner.Game, Parameters.Object, Owner, Owner.Position, Direction2.Zero);
+        var obj = ComponentGameObjectFactory
+            .CreateFromBlueprintWithDefaultRenderer(Owner.Game, Parameters.Object, Owner, Owner.Position, Direction2.Zero);
+        obj.AddComponent(new Property<HitInfo,ComponentGameObject>(hit));
     }
 
     public override void Update(TimeSpan elapsedTime)

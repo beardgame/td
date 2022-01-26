@@ -21,11 +21,13 @@ struct LevelRayCaster
     private float currentRayFactor;
     private Tile tile;
     private bool firstMove;
+    private Direction? lastStep;
 
     private bool reachedFinalTile => nextCenterIntersection > 1 && nextLeftIntersection > 1 && nextRightIntersection > 1;
 
     public Tile Current => tile;
     public float CurrentRayFactor => currentRayFactor;
+    public Direction? LastStep => lastStep;
 
     public void StartEnumeratingTiles(Ray ray)
     {
@@ -110,6 +112,7 @@ struct LevelRayCaster
         nextLeftIntersection += leftHalfStep;
         nextRightIntersection += rightHalfStep;
         tile = tile.Neighbor(centerDirection);
+        lastStep = centerDirection;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -120,6 +123,7 @@ struct LevelRayCaster
         nextLeftIntersection += leftFullStep;
         nextRightIntersection -= rightHalfStep;
         tile = tile.Neighbor(leftDirection);
+        lastStep = leftDirection;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,6 +134,7 @@ struct LevelRayCaster
         nextLeftIntersection -= leftHalfStep;
         nextRightIntersection += rightFullStep;
         tile = tile.Neighbor(rightDirection);
+        lastStep = rightDirection;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

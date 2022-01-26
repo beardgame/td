@@ -2,6 +2,8 @@ using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
@@ -17,6 +19,7 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListener<DrawComponents>
     where T : IPositionable, IGameObject, IComponentOwner
 {
+    private bool initialized;
     private readonly Particle[] particles;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
@@ -51,7 +54,6 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListe
     protected override void OnAdded()
     {
         initializeSprite();
-        initializeParticles();
         Events.Subscribe(this);
     }
 
@@ -67,17 +69,28 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListe
 
     private void initializeParticles()
     {
+        var hitInfo = Owner.TryGetSingleComponent<IProperty<HitInfo>>(out var h) ? h : null;
+
+        var reflectionVelocity = hitInfo != null
+            ? hitInfo.Value.GetReflection().NumericValue * Parameters.ReflectionVelocity
+            : Velocity3.Zero;
+
         var vectorVelocity = Owner.TryGetSingleComponent<IDirected3>(out var directed)
             ? directed.Direction.NumericValue.NormalizedSafe() * Parameters.VectorVelocity
             : Velocity3.Zero;
+
+        var baseVelocity = reflectionVelocity + vectorVelocity;
+
         var position = Owner.Position;
         var now = Owner.Game.Time;
         for (var i = 0; i < particles.Length; i++)
         {
-            var velocity = vectorVelocity + getRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
+            var velocity = baseVelocity + getRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
             var timeOfDeath = now + Parameters.LifeTime * StaticRandom.Float(0.5f, 1f);
             particles[i] = new Particle(position, velocity, timeOfDeath);
         }
+
+        initialized = true;
     }
 
     private static Vector3 getRandomUnitVector3()
@@ -94,6 +107,9 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListe
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (!initialized)
+            initializeParticles();
+
         var gravity = Constants.Game.Physics.Gravity3;
         for (var i = 0; i < particles.Length; i++)
         {

@@ -12,7 +12,7 @@
         "lineWidth" : 0.1,
         "lifetime" : 0.75,
         "randomVelocity" : 3,
-        "vectorVelocity" : -4,
+        "reflectionVelocity" : 4,
         "drawMode" : "line"
       }
     },

@@ -17,7 +17,7 @@ enum RayCastResultType
 }
 
 readonly record struct RayCastResult(
-    RayCastResultType Type, float RayFactor, Position2 Point, ComponentGameObject? Enemy);
+    RayCastResultType Type, float RayFactor, Position2 Point, ComponentGameObject? Enemy, Direction? LastTileStep);
 
 static class RayCastingHelpers
 {
@@ -31,7 +31,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
             {
                 var factor = rayCaster.CurrentRayFactor;
-                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null);
+                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep);
                 yield break;
             }
 
@@ -50,11 +50,11 @@ static class RayCastingHelpers
             hits.Sort((left, right) => left.factor.CompareTo(right.factor));
             foreach (var (unit, factor, point) in hits)
             {
-                yield return new RayCastResult(HitEnemy, factor, point, unit);
+                yield return new RayCastResult(HitEnemy, factor, point, unit, rayCaster.LastStep);
             }
         }
 
-        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null);
+        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep);
     }
 
     public static RayCastResult CastRayAgainstEnemies(
@@ -67,7 +67,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
             {
                 var factor = rayCaster.CurrentRayFactor;
-                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null);
+                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep);
             }
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
@@ -87,10 +87,10 @@ static class RayCastingHelpers
             if (closestHit.unit != null)
             {
                 return new RayCastResult(
-                    HitEnemy, closestHit.factor, closestHit.point, closestHit.unit);
+                    HitEnemy, closestHit.factor, closestHit.point, closestHit.unit, rayCaster.LastStep);
             }
         }
 
-        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null);
+        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep);
     }
 }

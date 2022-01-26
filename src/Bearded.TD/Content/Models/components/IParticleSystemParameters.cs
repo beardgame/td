@@ -21,5 +21,6 @@ interface IParticleSystemParameters : IParametersTemplate<IParticleSystemParamet
     TimeSpan LifeTime { get; }
     Speed RandomVelocity { get; }
     Speed VectorVelocity { get; }
+    Speed ReflectionVelocity { get; }
     ParticleDrawMode DrawMode { get; }
 }
