@@ -86,10 +86,12 @@ static class DefineZones
             // ReSharper disable once InlineOutVariableDeclaration
             var id = Id<Zone>.Invalid;
             var tiles = ImmutableArray<Tile>.Empty;
-            zone?.Deconstruct(out id, out tiles);
+            var visibilityTiles = ImmutableArray<Tile>.Empty;
+            zone?.Deconstruct(out id, out tiles, out visibilityTiles);
             stream.Serialize(ref id);
             serializeTiles(stream, ref tiles);
-            zone = new Zone(id, tiles);
+            serializeTiles(stream, ref visibilityTiles);
+            zone = new Zone(id, tiles, visibilityTiles);
         }
 
         private void serializeTiles(INetBufferStream stream, ref ImmutableArray<Tile> tiles)

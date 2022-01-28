@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
@@ -84,7 +85,7 @@ sealed class VisibilityRenderer : IDisposable
 
         var seedTiles = getSeedTilesForZoneFadeIn(zone);
 
-        foreach (var tile in zone.Tiles)
+        foreach (var tile in zone.VisibilityTiles)
         {
             var distanceToSeedTile = seedTiles.Min(t => t.DistanceTo(tile));
             var delay = distanceToSeedTile * 0.1.S();
@@ -97,7 +98,8 @@ sealed class VisibilityRenderer : IDisposable
 
     private List<Tile> getSeedTilesForZoneFadeIn(Zone zone)
     {
-        var seedTiles = zone.Tiles
+        var zoneVisibilityTiles = zone.VisibilityTiles.ToImmutableArray();
+        var seedTiles = zoneVisibilityTiles
             .Where(knownVisibleTiles.Contains)
             .Where(t => geometryLayer[t].Geometry.Type == TileType.Floor)
             .ToList();
@@ -105,10 +107,10 @@ sealed class VisibilityRenderer : IDisposable
         if (seedTiles.Count > 0)
             return seedTiles;
 
-        var averageTilePosition = zone.Tiles
+        var averageTilePosition = zoneVisibilityTiles
                 .Select(t => Tiles.Level.GetPosition(t).NumericValue)
                 .Aggregate(Vector2.Zero, (a, b) => a + b)
-            / zone.Tiles.Length;
+            / zoneVisibilityTiles.Length;
         seedTiles.Add(Tiles.Level.GetTile(new Position2(averageTilePosition)));
 
         return seedTiles;

@@ -65,16 +65,13 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
 
         private Tile determineCenter(Zone zone)
         {
-            var floorTiles = zone.Tiles
-                .Where(tile => gameState.GeometryLayer[tile].Type == TileType.Floor)
-                .ToImmutableArray();
             var centroid = new Position2(
-                floorTiles
-                    .Select(tile => Level.GetPosition(tile).NumericValue / floorTiles.Length)
+                zone.CoreTiles
+                    .Select(tile => Level.GetPosition(tile).NumericValue / zone.CoreTiles.Length)
                     .Aggregate((v1, v2) => v1 + v2));
             // TODO: remove the NumericValue once we can use the System.Linq MinBy.
             var closestToCentroid =
-                zone.Tiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
+                zone.CoreTiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
             return closestToCentroid;
         }
     }

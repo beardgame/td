@@ -20,8 +20,7 @@ sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesPar
 
     private void onTileAdded(Tile t)
     {
-        var zones = Owner.Game.ZoneLayer.ZonesForTile(t);
-        foreach (var zone in zones)
+        if (Owner.Game.ZoneLayer.ZoneForTile(t) is { } zone)
         {
             recursivelyRevealZones(zone, Parameters.Steps);
         }

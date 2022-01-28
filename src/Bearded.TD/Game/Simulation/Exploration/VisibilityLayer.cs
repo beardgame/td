@@ -45,7 +45,7 @@ sealed class VisibilityLayer
     {
         get
         {
-            var zones = zoneLayer.ZonesForTile(tile);
+            var zones = zoneLayer.ZonesForVisibilityForTile(tile);
             return zones.Any(revealedZones.Contains) ? TileVisibility.Visible : TileVisibility.Invisible;
         }
     }

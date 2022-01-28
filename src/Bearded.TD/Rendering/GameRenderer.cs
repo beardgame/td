@@ -180,7 +180,7 @@ sealed class GameRenderer
                 _ => throw new ArgumentOutOfRangeException(),
             };
 
-            TileAreaBorderRenderer.Render(TileAreaBorder.From(zone.Tiles), game.State, color);
+            TileAreaBorderRenderer.Render(TileAreaBorder.From(zone.CoreTiles), game.State, color);
         }
     }
 

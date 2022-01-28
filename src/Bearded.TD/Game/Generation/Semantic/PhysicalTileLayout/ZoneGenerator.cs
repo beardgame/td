@@ -33,16 +33,21 @@ sealed class ZoneGenerator
 
         return nodes.ToImmutableDictionary(
                 node => node.NodeFeature,
-                node => new Zone(Id<Zone>.Invalid, generateTilesForZone(node.Tiles.ToImmutableArray())));
+                node =>
+                {
+                    var tilesInNode = node.Tiles.ToImmutableArray();
+                    return new Zone(Id<Zone>.Invalid, tilesInNode, generateVisibilityTilesForZone(tilesInNode));
+                });
 
-        ImmutableArray<Tile> generateTilesForZone(ImmutableArray<Tile> startingTiles)
+        ImmutableArray<Tile> generateVisibilityTilesForZone(ImmutableArray<Tile> startingTiles)
         {
-            var tiles = new HashSet<Tile>(startingTiles);
+            var tiles = new HashSet<Tile>();
             // Add the adjacent unassigned tiles type by type, since we want to avoid having situations where we also
             // count connection tiles between different zones.
             adjacentUnassignedTiles(startingTiles, TileType.Floor).ForEach(t => tiles.Add(t));
             adjacentUnassignedTiles(startingTiles, TileType.Crevice).ForEach(t => tiles.Add(t));
-            adjacentUnassignedTiles(tiles.ToImmutableArray(), TileType.Wall, recurse: false).ForEach(t => tiles.Add(t));
+            var allTiles = startingTiles.Concat(tiles).ToImmutableArray();
+            adjacentUnassignedTiles(allTiles, TileType.Wall, recurse: false).ForEach(t => tiles.Add(t));
             return tiles.ToImmutableArray();
         }
 
