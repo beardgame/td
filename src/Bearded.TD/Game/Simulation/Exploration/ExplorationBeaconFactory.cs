@@ -19,6 +19,7 @@ static class ExplorationBeaconFactory
             game, blueprint, null, Level.GetPosition(tile).WithZ(0));
 
         obj.AddComponent(new AlwaysVisibleVisibility<ComponentGameObject>());
+        obj.AddComponent(new DrawZoneOnSelect<ComponentGameObject>());
         obj.AddComponent(new ReportSubject<ComponentGameObject>());
         obj.AddComponent(new Selectable<ComponentGameObject>());
         obj.AddComponent(

@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 sealed class BuildingState : IBuildingState
 {
     // Derived properties (IBuildingState implementation)
-    public TileRangeDrawer.RangeDrawStyle RangeDrawing => toRangeDrawType(SelectionState);
+    public TileRangeDrawer.RangeDrawStyle RangeDrawing => TileRangeDrawStyle.FromSelectionState(SelectionState);
     public bool IsMaterialized { get; set; }
     public bool IsFunctional => IsCompleted && !IsRuined && !IsDead;
     public bool CanApplyUpgrades => IsCompleted && !IsRuined && !IsDead;
@@ -19,15 +19,4 @@ sealed class BuildingState : IBuildingState
     public bool IsDead { get; set; }
 
     public IBuildingState CreateProxy() => new BuildingStateProxy(this);
-
-    private static TileRangeDrawer.RangeDrawStyle toRangeDrawType(SelectionState selectionState)
-    {
-        return selectionState switch
-        {
-            SelectionState.Default => TileRangeDrawer.RangeDrawStyle.DoNotDraw,
-            SelectionState.Focused => TileRangeDrawer.RangeDrawStyle.DrawMinimally,
-            SelectionState.Selected => TileRangeDrawer.RangeDrawStyle.DrawFull,
-            _ => throw new ArgumentOutOfRangeException(nameof(selectionState), selectionState, null)
-        };
-    }
 }
