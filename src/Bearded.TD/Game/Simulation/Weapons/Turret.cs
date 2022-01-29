@@ -30,7 +30,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<Dra
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;
-    private bool previouslyFunctional;
+    private bool? previouslyFunctional;
 
     public IBuildingState? BuildingState { get; private set; }
     public Position3 Position =>

@@ -50,6 +50,10 @@ sealed class BuildingStateManager<T>
 
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
         ComponentDependencies.Depend<ICost>(Owner, Events, c => cost = c);
+
+        var ruinState = new FindObjectRuinState(false);
+        Events.Preview(ref ruinState);
+        state.IsRuined = ruinState.IsRuined;
     }
 
     public override void OnRemoved()

@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Drawing;
 

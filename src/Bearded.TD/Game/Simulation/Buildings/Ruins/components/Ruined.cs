@@ -18,7 +18,8 @@ sealed class Ruined<T>
     : Component<T, IRuinedParameters>,
         IRuined,
         IListener<RepairCancelled>,
-        IListener<RepairFinished>
+        IListener<RepairFinished>,
+        IPreviewListener<FindObjectRuinState>
     where T : IComponentOwner<T>, IGameObject
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
@@ -36,6 +37,7 @@ sealed class Ruined<T>
         Events.Send(new ObjectRuined());
         Events.Subscribe<RepairCancelled>(this);
         Events.Subscribe<RepairFinished>(this);
+        Events.Subscribe(this);
         if (canBeRepaired)
         {
             reportHandle = ReportAggregator.Register(Events, new RuinedReport(this));
@@ -48,6 +50,7 @@ sealed class Ruined<T>
         Events.Send(new ObjectRepaired());
         Events.Unsubscribe<RepairCancelled>(this);
         Events.Unsubscribe<RepairFinished>(this);
+        Events.Unsubscribe(this);
         reportHandle?.Unregister();
         reportHandle = null;
         if (incompleteRepair != null)
@@ -100,6 +103,11 @@ sealed class Ruined<T>
         Events.Send(new ConvertToFaction(@event.RepairingFaction));
         // We need to defer deletion because we want to unsubscribe from this event.
         deleteNextFrame = true;
+    }
+
+    public void PreviewEvent(ref FindObjectRuinState @event)
+    {
+        @event = @event with { IsRuined = true };
     }
 
     public override void Update(TimeSpan elapsedTime)
