@@ -23,7 +23,7 @@
     <PackageReference Include="Google.Protobuf" Version="3.19.4" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="OpenTK.Graphics" Version="4.4.0" />
+    <PackageReference Include="OpenTK.Graphics" Version="4.6.7" />
     <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
