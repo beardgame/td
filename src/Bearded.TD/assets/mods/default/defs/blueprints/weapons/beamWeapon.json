@@ -28,7 +28,7 @@
             "id" : "sprite",
             "parameters": {
                 "sprite": "buildings.laser-turret",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

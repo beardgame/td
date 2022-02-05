@@ -35,7 +35,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.flamer",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

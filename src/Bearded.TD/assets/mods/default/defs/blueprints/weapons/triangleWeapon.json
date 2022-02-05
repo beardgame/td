@@ -50,7 +50,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.gun-turret",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

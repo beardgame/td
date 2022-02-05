@@ -15,7 +15,7 @@ out vec4 outDepth;
 
 void main()
 {
-	vec4 rgba = fragmentColor * texture(diffuse, fragmentUV);
+	vec4 rgba = texture(diffuse, fragmentUV);
 
 	if (rgba.a < 0.01)
 		discard;

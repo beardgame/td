@@ -26,7 +26,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.rocket-turret",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }
