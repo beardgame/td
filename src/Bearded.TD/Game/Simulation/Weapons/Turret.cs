@@ -66,8 +66,6 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<Dra
     public override void Update(TimeSpan elapsedTime)
     {
         updateFunctional();
-
-        Weapon.Update(elapsedTime);
     }
 
     private void updateFunctional()
