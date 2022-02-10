@@ -9,8 +9,7 @@
                     "id": "players",
                     "behaviors": [
                         { "id" : "resources" },
-                        { "id" : "technology" },
-                        { "id" : "workerNetwork" }
+                        { "id" : "technology" }
                     ]
                 }
             }

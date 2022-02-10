@@ -2,15 +2,10 @@ using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
-using Bearded.TD.Game.Simulation.Workers;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.InGameUI;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -20,12 +15,10 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
-    private IFactionProvider? factionProvider;
 
     protected override void OnAdded()
     {
         occupiedTilesTracker.Initialize(Owner, Events);
-        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         Events.Subscribe(this);
     }
 
@@ -40,26 +33,16 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
     public void HandleEvent(DrawComponents e)
     {
         var primitiveDrawer = e.Core.Primitives;
-        var anyTileOutsideWorkerNetwork = false;
 
-        WorkerNetwork workerNetwork = null;
-        factionProvider?.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
         foreach (var tile in occupiedTilesTracker.OccupiedTiles)
         {
             var baseColor = Color.Green;
-
-            var tileIsOutsideWorkerNetwork = Owner.Game.Level.IsValid(tile) && !(workerNetwork?.IsInRange(tile) ?? false);
-            anyTileOutsideWorkerNetwork |= tileIsOutsideWorkerNetwork;
 
             var isTileValidForBuilding = Owner.Game.BuildingPlacementLayer.IsTileValidForBuilding(tile);
 
             if (!isTileValidForBuilding)
             {
                 baseColor = Color.Red;
-            }
-            else if (tileIsOutsideWorkerNetwork)
-            {
-                baseColor = Color.Orange;
             }
 
             var color = baseColor * 0.2f;
@@ -87,15 +70,6 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
                 primitiveDrawer.DrawLine(p + p0.WithZ(), p + p1.WithZ(), .1f, Color.Red);
             }
         }
-
-        if (anyTileOutsideWorkerNetwork)
-        {
-            renderWorkerNetworkBorderCloseBy(new Unit(10), Color.OrangeRed);
-        }
-        else
-        {
-            renderWorkerNetworkBorderCloseBy(new Unit(5), Color.DodgerBlue);
-        }
     }
 
     private void drawTile(CoreDrawers drawers, Color color, Tile tile)
@@ -105,23 +79,5 @@ sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
             Constants.Game.World.HexagonSide,
             color,
             6);
-    }
-
-    private void renderWorkerNetworkBorderCloseBy(Unit maxDistance, Color baseColor)
-    {
-        var maxDistanceSquared = maxDistance.Squared;
-
-        WorkerNetwork? workerNetwork = null;
-        factionProvider?.Faction.TryGetBehaviorIncludingAncestors(out workerNetwork);
-        var networkBorder = TileAreaBorder.From(Owner.Game.Level, t => workerNetwork?.IsInRange(t) ?? false);
-
-        TileAreaBorderRenderer.Render(networkBorder, Owner.Game, getLineColor);
-
-        Color? getLineColor(Position2 point)
-        {
-            var alpha = 1 - (point - Owner.Position.XY()).LengthSquared / maxDistanceSquared;
-
-            return alpha < 0 ? null : baseColor * alpha;
-        }
     }
 }

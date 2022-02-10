@@ -1,7 +1,0 @@
-{
-    "id" : "unlockWorkerAntenna",
-    "name" : "Where no one has gone before",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "workerAntenna" }
-    ]
-}
