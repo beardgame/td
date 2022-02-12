@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Shared.Events;
 
@@ -20,7 +21,7 @@ sealed class AssignWorkerRule : GameRule, IListener<WorkerAdded>
         context.Events.Subscribe(this);
 
         var factionsByParent = context.Factions.All.ToLookup(f => f.Parent);
-        foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<WorkerNetwork>(out _)))
+        foreach (var faction in context.Factions.All.Where(f => f.TryGetBehavior<FactionResources>(out _)))
         {
             childFactions[faction] = new Queue<Faction>(factionsByParent[faction]);
         }

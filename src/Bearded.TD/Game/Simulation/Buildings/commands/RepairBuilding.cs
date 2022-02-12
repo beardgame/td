@@ -41,7 +41,6 @@ static class RepairBuilding
         {
             return faction.SharesBehaviorWith<FactionResources>(actor.Faction) &&
                 faction.SharesBehaviorWith<WorkerTaskManager>(actor.Faction) &&
-                faction.SharesBehaviorWith<WorkerNetwork>(actor.Faction) &&
                 building.TryGetSingleComponent<IRuined>(out var ruined) &&
                 ruined.CanBeRepairedBy(faction);
         }
