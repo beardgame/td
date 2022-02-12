@@ -15,7 +15,6 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.IO;
-using OpenTK.Graphics.OpenGL;
 using Xunit;
 
 namespace Bearded.TD.Tests.Content
@@ -63,7 +62,7 @@ namespace Bearded.TD.Tests.Content
                 string id) => new MockSpriteSetImplementation();
 
             public IRendererShader CreateRendererShader(
-                IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders,
+                IList<ModShaderFile> shaders,
                 string shaderProgramName) => new MockRendererShader();
 
             public ArrayTexture CreateArrayTexture(List<Bitmap> layers) => default!;

@@ -12,7 +12,6 @@ uniform float heightScale;
 
 in vec3 fragmentPosition;
 in vec3 fragmentNormal;
-//in vec2 fragmentUV;
 in vec4 fragmentColor;
 
 out vec4 outRGBA;
@@ -149,7 +148,7 @@ void main()
         if (distanceToCutoutCenter < cutoutRadius)
         {
 
-            // uncoming for much more dithered fading
+            // uncomment for much more dithered fading
             //if (gl_FrontFacing)
             {
                 // discard excessive height of upside down terrain

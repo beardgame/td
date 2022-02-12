@@ -93,7 +93,7 @@ class GraphicsLoader : IGraphicsLoader
         }
     }
 
-    public IRendererShader CreateRendererShader(IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName)
+    public IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName)
     {
         // TODO: use mod specific shader managers (tricky bit: hot reload)
         var shaderManager = context.Shaders.ShaderManager;
@@ -123,11 +123,9 @@ class GraphicsLoader : IGraphicsLoader
             }, shaderProgramName);
         }
 
-        ShaderFile shaderFile((ShaderType, string, string) data)
+        ShaderFile shaderFile(ModShaderFile data)
         {
-            var (type, file, name) = data;
-
-            return new ShaderFile(type, file, name);
+            return new ShaderFile(data.Type, data.Filepath, data.FriendlyName);
         }
     }
 
