@@ -16,6 +16,7 @@ sealed class BuildingState : IBuildingState
     public bool IsCompleted { get; set; }
     public bool IsRuined { get; set; }
     public bool IsDead { get; set; }
+    public bool AcceptsPlayerHealthChanges { get; set; }
 
     public IBuildingState CreateProxy() => new BuildingStateProxy(this);
 }

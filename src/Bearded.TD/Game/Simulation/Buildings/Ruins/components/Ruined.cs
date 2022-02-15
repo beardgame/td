@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
@@ -22,23 +23,29 @@ sealed class Ruined<T>
         IPreviewListener<FindObjectRuinState>
     where T : IComponentOwner<T>, IGameObject
 {
+    private readonly Disposer disposer = new();
+
+    private IBuildingStateProvider? buildingStateProvider;
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private ReportAggregator.IReportHandle? reportHandle;
     private IncompleteRepair<T>? incompleteRepair;
 
-    private bool canBeRepaired => Parameters.RepairCost.HasValue;
+    private bool hasRepairCost => Parameters.RepairCost.HasValue;
     private bool deleteNextFrame;
 
     public Ruined(IRuinedParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
+        disposer.AddDisposable(
+            ComponentDependencies.Depend<IBuildingStateProvider>(
+                Owner, Events, provider => buildingStateProvider = provider));
         occupiedTilesTracker.Initialize(Owner, Events);
         Events.Send(new ObjectRuined());
         Events.Subscribe<RepairCancelled>(this);
         Events.Subscribe<RepairFinished>(this);
         Events.Subscribe(this);
-        if (canBeRepaired)
+        if (hasRepairCost)
         {
             reportHandle = ReportAggregator.Register(Events, new RuinedReport(this));
         }
@@ -46,6 +53,7 @@ sealed class Ruined<T>
 
     public override void OnRemoved()
     {
+        disposer.Dispose();
         occupiedTilesTracker.Dispose(Events);
         Events.Send(new ObjectRepaired());
         Events.Unsubscribe<RepairCancelled>(this);
@@ -66,7 +74,7 @@ sealed class Ruined<T>
         {
             throw new InvalidOperationException("Only one repair attempt can be in progress at a time.");
         }
-        if (!canBeRepaired)
+        if (!hasRepairCost)
         {
             throw new NotSupportedException();
         }
@@ -83,7 +91,8 @@ sealed class Ruined<T>
         // repair already exists, we disable any new repair attempts. Cancelling a repair will remove the incomplete
         // repair component, resetting this state.
         return incompleteRepair == null &&
-            canBeRepaired &&
+            hasRepairCost &&
+            (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
             faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out _) &&
             faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) &&

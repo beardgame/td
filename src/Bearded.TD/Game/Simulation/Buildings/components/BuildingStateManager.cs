@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Shared.Events;

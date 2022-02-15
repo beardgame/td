@@ -8,4 +8,5 @@ sealed class GhostBuildingState : IBuildingState
     public bool IsMaterialized => false;
     public bool IsFunctional => false;
     public bool CanApplyUpgrades => false;
+    public bool AcceptsPlayerHealthChanges => false;
 }
