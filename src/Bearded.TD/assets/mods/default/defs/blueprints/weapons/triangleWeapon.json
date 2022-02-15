@@ -8,10 +8,10 @@
             }
         },
         {
-            "id" : "linearAccelerationAim",
+            "id" : "pidAim",
             "parameters" : {
-                "acceleration" : 720,
-                "dragInverse" : 0.2
+                "proportionalCorrection" : 80,
+                "derivativeCorrection" : 5
             }
         },
         {
