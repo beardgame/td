@@ -97,8 +97,7 @@ sealed class ProgressTracker
         {
             progressStage = ProgressStage.Completed;
         }
-
-        // TODO: catch up remaining progress
+        subject.OnProgressSet(1);
 
         syncedProgressStage = ProgressStage.Completed;
         subject.OnComplete();
