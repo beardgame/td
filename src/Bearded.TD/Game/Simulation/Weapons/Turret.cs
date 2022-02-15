@@ -3,6 +3,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
@@ -23,7 +24,7 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<DrawComponents>
+sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
     where T : IComponentOwner, IGameObject, IPositionable
 {
     public ComponentGameObject Weapon { get; private set; } = null!;
@@ -50,17 +51,24 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<Dra
         ComponentDependencies.Depend<IBuildingStateProvider>(
             Owner, Events, provider => BuildingState = provider.State);
 
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<ObjectDeleting>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe(this);
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<ObjectDeleting>(this);
     }
 
     public void HandleEvent(DrawComponents e)
     {
         weaponState.InjectEvent(e);
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        Weapon.Delete();
     }
 
     public override void Update(TimeSpan elapsedTime)
