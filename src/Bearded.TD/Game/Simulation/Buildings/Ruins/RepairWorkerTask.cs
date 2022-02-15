@@ -26,6 +26,5 @@ sealed class RepairWorkerTask : WorkerTaskBase
 
     protected override void Start() => incompleteRepair.StartRepair();
     protected override void Complete() => incompleteRepair.CompleteRepair();
-    protected override void Cancel() => incompleteRepair.CancelRepair();
     protected override void UpdateToMatch() => incompleteRepair.SetRepairProgress(PercentCompleted);
 }

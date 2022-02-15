@@ -22,13 +22,15 @@ sealed class BuildingStateControl : ReportControl
         var column = this.BuildFixedColumn();
         column
             .AddButton(b => b
-                .WithLabel("Delete (no refund)")
+                .WithLabel(label)
                 .WithOnClick(deleteBuilding)
                 .WithEnabled(buttonEnabled));
         Height = column.Height;
 
         Update();
     }
+
+    private string label() => report.IsMaterialized ? "Delete (no refund)" : "Cancel";
 
     private void deleteBuilding()
     {

@@ -35,15 +35,12 @@ abstract class WorkerTaskBase : IWorkerTask
     {
         if (IsCompleted)
         {
-            resourceConsumer.CompleteIfNeeded();
+            complete();
+            return;
         }
         if (IsCancelled)
         {
-            resourceConsumer.Abort();
-        }
-        if (IsCompleted || IsCancelled)
-        {
-            Finished = true;
+            Abort();
             return;
         }
 
@@ -75,14 +72,19 @@ abstract class WorkerTaskBase : IWorkerTask
         }
     }
 
-    public void OnAbort()
+    private void complete()
+    {
+        resourceConsumer.CompleteIfNeeded();
+        Finished = true;
+    }
+
+    protected void Abort()
     {
         resourceConsumer.Abort();
-        Cancel();
+        Finished = true;
     }
 
     protected abstract void Start();
     protected abstract void Complete();
-    protected abstract void Cancel();
     protected abstract void UpdateToMatch();
 }

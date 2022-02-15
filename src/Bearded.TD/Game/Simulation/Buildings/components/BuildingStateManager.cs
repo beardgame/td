@@ -51,6 +51,8 @@ sealed class BuildingStateManager<T>
         Events.Subscribe<ObjectRuined>(this);
         Events.Subscribe<PreventPlayerHealthChanges>(this);
 
+        ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
+
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
         ComponentDependencies.Depend<ICost>(Owner, Events, c => cost = c);
 
@@ -99,7 +101,6 @@ sealed class BuildingStateManager<T>
         Owner.AddComponent(new Syncer<T>());
         state.IsMaterialized = true;
         Events.Send(new Materialized());
-        ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -127,8 +128,9 @@ sealed class BuildingStateManager<T>
 
         public ComponentGameObject Building => (owner as ComponentGameObject)!;
 
-        public bool CanBeDeleted => buildingStateProvider.State.IsMaterialized &&
-            buildingStateProvider.State.AcceptsPlayerHealthChanges;
+        public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
+
+        public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
 
         public BuildingStateReport(T owner, IBuildingStateProvider buildingStateProvider)
         {
@@ -142,5 +144,6 @@ interface IBuildingStateReport : IReport
 {
     // TODO(building): cast needed to get the ID
     ComponentGameObject Building { get; }
+    bool IsMaterialized { get; }
     bool CanBeDeleted { get; }
 }

@@ -15,5 +15,4 @@ interface IWorkerTask : IIdable<IWorkerTask>
     bool Finished { get; }
 
     void Progress(TimeSpan elapsedTime, IWorkerParameters workerParameters);
-    void OnAbort();
 }

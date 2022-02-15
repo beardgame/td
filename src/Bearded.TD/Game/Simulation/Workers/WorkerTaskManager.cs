@@ -113,12 +113,12 @@ sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetwo
         worker.SuspendCurrentTask();
     }
 
+    // TODO: delete
     public void AbortTask(IWorkerTask task)
     {
         var deletedFromList = tasks.Remove(task);
         tasksById.Remove(task);
         State.Satisfies(deletedFromList);
-        task.OnAbort();
 
         if (workerAssignments.TryGetValue(task, out var worker))
         {

@@ -30,6 +30,8 @@ sealed class IncompleteBuilding<T>
 
     public double PercentageComplete { get; private set; }
 
+    public event VoidEventHandler? Deleted;
+
     public IncompleteBuilding()
     {
         progressTracker = new ProgressTracker(this);
@@ -95,7 +97,7 @@ sealed class IncompleteBuilding<T>
 
     public void OnCancel()
     {
-        Owner.Delete();
+        State.IsInvalid("Progress is only cancelled by deleting the building.");
     }
 
     public void HandleEvent(ObjectDeleting @event)
@@ -105,6 +107,7 @@ sealed class IncompleteBuilding<T>
         {
             progressTracker.SetCancelled();
         }
+        Deleted?.Invoke();
     }
 
     public bool IsCompleted => progressTracker.IsCompleted;
@@ -112,7 +115,6 @@ sealed class IncompleteBuilding<T>
     public void StartBuild() => progressTracker.Start();
     public void SetBuildProgress(double percentage) => progressTracker.SetProgress(percentage);
     public void CompleteBuild() => progressTracker.Complete();
-    public void CancelBuild() => progressTracker.Cancel();
 
     public void SyncStartBuild() => progressTracker.SyncStart();
     public void SyncCompleteBuild() => progressTracker.SyncComplete();
@@ -123,12 +125,12 @@ interface IIncompleteBuilding
     bool IsCompleted { get; }
     bool IsCancelled { get; }
     string StructureName { get; }
-    double PercentageComplete { get; }
+
+    event VoidEventHandler? Deleted;
 
     public void StartBuild();
     public void SetBuildProgress(double percentage);
     public void CompleteBuild();
-    public void CancelBuild();
 }
 
 interface IBuildingConstructionSyncer
