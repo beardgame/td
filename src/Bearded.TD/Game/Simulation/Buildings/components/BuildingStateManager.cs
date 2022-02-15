@@ -99,6 +99,7 @@ sealed class BuildingStateManager<T>
         Owner.AddComponent(new Syncer<T>());
         state.IsMaterialized = true;
         Events.Send(new Materialized());
+        ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -116,4 +117,30 @@ sealed class BuildingStateManager<T>
             (Owner as ComponentGameObject).Sync(DeleteGameObject.Command);
         }
     }
+
+    private sealed class BuildingStateReport : IBuildingStateReport
+    {
+        private readonly T owner;
+        private readonly IBuildingStateProvider buildingStateProvider;
+
+        public ReportType Type => ReportType.EntityActions;
+
+        public ComponentGameObject Building => (owner as ComponentGameObject)!;
+
+        public bool CanBeDeleted => buildingStateProvider.State.IsMaterialized &&
+            buildingStateProvider.State.AcceptsPlayerHealthChanges;
+
+        public BuildingStateReport(T owner, IBuildingStateProvider buildingStateProvider)
+        {
+            this.owner = owner;
+            this.buildingStateProvider = buildingStateProvider;
+        }
+    }
+}
+
+interface IBuildingStateReport : IReport
+{
+    // TODO(building): cast needed to get the ID
+    ComponentGameObject Building { get; }
+    bool CanBeDeleted { get; }
 }
