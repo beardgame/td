@@ -22,7 +22,8 @@ sealed class BuildingStateManager<T>
         IListener<ConstructionStarted>,
         IListener<EnactDeath>,
         IListener<ObjectRepaired>,
-        IListener<ObjectRuined>
+        IListener<ObjectRuined>,
+        IListener<PreventPlayerHealthChanges>
     where T : IComponentOwner<T>, IDeletable, IGameObject
 {
     private readonly BuildingState state = new();
@@ -48,6 +49,7 @@ sealed class BuildingStateManager<T>
         Events.Subscribe<EnactDeath>(this);
         Events.Subscribe<ObjectRepaired>(this);
         Events.Subscribe<ObjectRuined>(this);
+        Events.Subscribe<PreventPlayerHealthChanges>(this);
 
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
         ComponentDependencies.Depend<ICost>(Owner, Events, c => cost = c);
@@ -85,6 +87,11 @@ sealed class BuildingStateManager<T>
     public void HandleEvent(ObjectRuined @event)
     {
         state.IsRuined = true;
+    }
+
+    public void HandleEvent(PreventPlayerHealthChanges @event)
+    {
+        state.AcceptsPlayerHealthChanges = false;
     }
 
     private void materialize()
