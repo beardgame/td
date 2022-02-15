@@ -37,6 +37,10 @@ abstract class WorkerTaskBase : IWorkerTask
         {
             resourceConsumer.CompleteIfNeeded();
         }
+        if (IsCancelled)
+        {
+            resourceConsumer.Abort();
+        }
         if (IsCompleted || IsCancelled)
         {
             Finished = true;

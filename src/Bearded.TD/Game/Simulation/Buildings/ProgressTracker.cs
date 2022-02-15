@@ -105,7 +105,12 @@ sealed class ProgressTracker
 
     public void Cancel()
     {
-        State.Satisfies(progressStage == ProgressStage.NotStarted);
+        SetCancelled();
         subject.OnCancel();
+    }
+
+    public void SetCancelled()
+    {
+        progressStage = ProgressStage.Cancelled;
     }
 }

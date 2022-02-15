@@ -41,6 +41,7 @@ sealed class IncompleteBuilding<T>
         ComponentDependencies.Depend<IHealthEventReceiver>(Owner, Events, r => receiver = r);
         healthGiven = 1.HitPoints();
         maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
+        Events.Subscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime) {}
@@ -99,7 +100,11 @@ sealed class IncompleteBuilding<T>
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        progressTracker.Cancel();
+        // If the deletion comes from an external event, make sure the progress tracker is caught up.
+        if (!progressTracker.IsCancelled)
+        {
+            progressTracker.SetCancelled();
+        }
     }
 
     public bool IsCompleted => progressTracker.IsCompleted;
