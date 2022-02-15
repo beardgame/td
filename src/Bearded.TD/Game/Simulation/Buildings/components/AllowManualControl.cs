@@ -44,7 +44,7 @@ sealed partial class AllowManualControl<T> : Component<T>, IManualControlReport
         if (buildingState is { State.IsFunctional: false })
             return false;
 
-        return factionProvider != null && factionProvider.Faction.SharesBehaviorWith<FactionResources>(faction);
+        return factionProvider != null && factionProvider.Faction.OwnedBuildingsCanBeManuallyControlledBy(faction);
     }
 
     public Position2 SubjectPosition => Owner.Position.XY();

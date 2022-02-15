@@ -61,7 +61,7 @@ sealed partial class BuildingUpgradeManager<T>
     }
 
     public bool CanBeUpgradedBy(Faction faction) =>
-        factionProvider?.Faction.SharesBehaviorWith<FactionResources>(faction) ?? false;
+        factionProvider?.Faction.OwnedBuildingsCanBeUpgradedBy(faction) ?? false;
 
     public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
     {
