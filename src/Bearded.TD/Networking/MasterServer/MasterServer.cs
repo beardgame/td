@@ -8,7 +8,9 @@ namespace Bearded.TD.Networking.MasterServer;
 abstract class MasterServer
 {
     private readonly NetPeer peer;
-    private readonly IPEndPoint masterServerEndPoint;
+    private readonly IPEndPoint? masterServerEndPoint;
+
+    protected bool IsMasterServerResolved => masterServerEndPoint != null;
 
     protected MasterServer(NetPeer peer)
     {
@@ -32,5 +34,5 @@ abstract class MasterServer
         peer.SendUnconnectedMessage(msg, masterServerEndPoint);
     }
 
-    private Proto.GameInfo gameInfo => new Proto.GameInfo();
+    private Proto.GameInfo gameInfo => new();
 }
