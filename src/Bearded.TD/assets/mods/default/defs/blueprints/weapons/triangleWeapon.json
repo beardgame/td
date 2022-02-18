@@ -4,14 +4,15 @@
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
-                "range" : 5
+                "range" : 5,
+                "coneOfFire" : 5
             }
         },
         {
-            "id" : "linearAccelerationAim",
+            "id" : "pidAim",
             "parameters" : {
-                "acceleration" : 720,
-                "dragInverse" : 0.2
+                "proportionalCorrection" : 80,
+                "derivativeCorrection" : 5
             }
         },
         {
@@ -50,7 +51,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.gun-turret",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

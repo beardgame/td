@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.Reports;
@@ -95,8 +96,7 @@ sealed class Ruined<T>
             (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
             faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out _) &&
-            faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) &&
-            occupiedTilesTracker.OccupiedTiles.Any(network.IsInRange);
+            occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsRevealed());
     }
 
     public void HandleEvent(RepairCancelled @event)

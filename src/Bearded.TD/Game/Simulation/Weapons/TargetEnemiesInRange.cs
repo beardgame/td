@@ -102,7 +102,18 @@ sealed class TargetEnemiesInRange
     private void shootAt(Position3 targetPosition)
     {
         AimDirection = (targetPosition - position).XY().Direction;
-        TriggerPulled = true;
+
+        if (Parameters.ConeOfFire == null)
+        {
+            TriggerPulled = true;
+            return;
+        }
+        var angleError = Angle.Between(AimDirection, weapon.Direction).Abs();
+        var inConeOfFire = angleError < Parameters.ConeOfFire;
+        if (inConeOfFire)
+        {
+            TriggerPulled = true;
+        }
     }
 
     private void goIdle()

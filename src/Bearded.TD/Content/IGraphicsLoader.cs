@@ -8,14 +8,15 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Content;
 
+readonly record struct ModShaderFile(ShaderType Type, string Filepath, string FriendlyName);
+
 interface IGraphicsLoader
 {
     ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
         IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
         bool pixelate, string id);
 
-    IRendererShader CreateRendererShader(
-        IList<(ShaderType Type, string Filepath, string FriendlyName)> shaders, string shaderProgramName);
+    IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
 
     ArrayTexture CreateArrayTexture(List<Bitmap> layers);
 }

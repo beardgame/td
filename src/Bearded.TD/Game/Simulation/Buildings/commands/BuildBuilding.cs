@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
@@ -58,7 +59,7 @@ static class BuildBuilding
             return blueprint.GetFootprintGroup() == footprint.Footprint
                 && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
                 && factionTechnology.IsBuildingUnlocked(blueprint)
-                && faction.SharesBehaviorWith<WorkerNetwork>(actor.Faction);
+                && faction.SharesBehaviorWith<FactionResources>(actor.Faction);
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(

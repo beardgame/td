@@ -4,14 +4,15 @@
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
-                "range" : 5
+                "range" : 5,
+                "coneOfFire" : 5
             }
         },
         {
-            "id" : "linearAccelerationAim",
+            "id" : "pidAim",
             "parameters" : {
-                "acceleration" : 360,
-                "dragInverse" : 0.3
+                "proportionalCorrection" : 50,
+                "derivativeCorrection" : 2
             }
         },
         {
@@ -35,7 +36,7 @@
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings.flamer",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

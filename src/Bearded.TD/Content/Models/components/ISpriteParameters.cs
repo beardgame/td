@@ -4,9 +4,18 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Content.Models;
 
+enum SpriteColorMode
+{
+    Default = 0,
+    Faction
+}
+
 interface ISpriteParameters : IParametersTemplate<ISpriteParameters>
 {
+
     Color Color { get; }
+
+    SpriteColorMode ColorMode { get;  }
 
     ISpriteBlueprint Sprite { get; }
 

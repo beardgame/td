@@ -1,6 +1,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("sprite")]
 class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
-    where T : IGameObject, IPositionable
+    where T : IGameObject, IComponentOwner, IPositionable
 {
     private IDirected? ownerAsDirected;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
@@ -40,6 +41,14 @@ class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
+        var color = Parameters.ColorMode switch
+        {
+            SpriteColorMode.Faction when
+                Owner.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider)
+                => factionProvider.Faction.Color,
+            _ => Parameters.Color,
+        };
+
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
 
@@ -47,6 +56,6 @@ class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
             ? (ownerAsDirected.Direction - 90.Degrees()).Radians
             : 0f;
 
-        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, Parameters.Color);
+        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, color);
     }
 }
