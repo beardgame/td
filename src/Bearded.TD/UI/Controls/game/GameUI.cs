@@ -17,7 +17,7 @@ using Bearded.Utilities.Input;
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUI :
-    UpdateableNavigationNode<(GameInstance Game, NetworkInterface Network)>,
+    UpdateableNavigationNode<GameUI.Parameters>,
     IListener<GameOverTriggered>,
     IListener<GameVictoryTriggered>
 {
@@ -57,8 +57,7 @@ sealed class GameUI :
         TechnologyUI = new TechnologyUI();
     }
 
-    protected override void Initialize(
-        DependencyResolver dependencies, (GameInstance Game, NetworkInterface Network) parameters)
+    protected override void Initialize(DependencyResolver dependencies, Parameters parameters)
     {
         base.Initialize(dependencies, parameters);
 
@@ -185,7 +184,9 @@ sealed class GameUI :
     public void OnReturnToMainMenuButtonClicked()
     {
         runner.Shutdown();
-        Navigation.Replace<MainMenu>(this);
+        Navigation!.Replace<MainMenu>(this);
         GameLeft?.Invoke();
     }
+
+    public record struct Parameters(GameInstance Game, NetworkInterface Network);
 }
