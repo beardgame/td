@@ -39,7 +39,7 @@ namespace Bearded.TD.Generators.TechEffects
         {
             foreach (var p in properties)
             {
-                sb.Append(Templates.ImmutableProperty(p.Type, p.Name));
+                sb.Append(Templates.ImmutableProperty(p.Type.TypeName, p.Name));
             }
 
             return this;
@@ -49,7 +49,7 @@ namespace Bearded.TD.Generators.TechEffects
         {
             foreach (var p in properties)
             {
-                sb.Append(Templates.ModifiableProperty(p.Type, p.Name));
+                sb.Append(Templates.ModifiableProperty(p.Type.TypeName, p.Name));
             }
 
             return this;
@@ -132,7 +132,7 @@ namespace {@namespace}
                 IEnumerable<ParametersPropertyDefinition> modifiableParameters)
             {
                 var assignments = string.Join(Environment.NewLine,
-                    modifiableParameters.Select(p => constructorAssignment(p.Type, p.Name, p.Converter)));
+                    modifiableParameters.Select(p => constructorAssignment(p.Type, p.Name)));
                 return $@"
         public {className}({interfaceName} template)
         {{
@@ -142,19 +142,15 @@ namespace {@namespace}
 ";
             }
 
-            private static string constructorAssignment(string type, string name, string? converter)
+            private static string constructorAssignment(IParameterType type, string name)
             {
                 var initialValue = $"template.{name}";
-                if (converter != null)
-                {
-                    initialValue = $"{converter}.ToRaw({initialValue})";
-                }
-
-                var fromRawConverter = converter == null ? $"x => ({type}) x" : $"{converter}.ToWrapped";
+                initialValue = type.ToRaw(initialValue);
+                var fromRawConverter = type.FromRawConverter;
                 var fieldName = ToCamelCase(name);
 
                 return $@"
-            {fieldName} = new AttributeWithModifications<{type}>(
+            {fieldName} = new AttributeWithModifications<{type.TypeName}>(
                 {initialValue},
                 {fromRawConverter});";
             }

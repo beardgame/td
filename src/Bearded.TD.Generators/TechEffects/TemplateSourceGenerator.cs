@@ -34,7 +34,7 @@ namespace Bearded.TD.Generators.TechEffects
         {
             foreach (var p in properties)
             {
-                sb.Append(Templates.Property(p.Type, p.Name));
+                sb.Append(Templates.Property(p.Type.TypeName, p.Name));
             }
             sb.Append(Environment.NewLine);
             return this;
@@ -98,9 +98,9 @@ namespace {@namespace}
             {
                 var parametersList = parameters.ToList();
                 var parametersString = string.Join(",",
-                    parametersList.Select(p => constructorParameter(p.Type, p.Name, p.DefaultValue != null)));
+                    parametersList.Select(p => constructorParameter(p.Type.TypeName, p.Name, p.DefaultValue != null)));
                 var bodyString = string.Join("",
-                    parametersList.Select(p => constructorAssignment(p.Name, p.DefaultValueInstantiation)));
+                    parametersList.Select(p => constructorAssignment(p.Name, p.Type, p.DefaultValue)));
 
                 return $@"
         [JsonConstructor]
@@ -117,12 +117,12 @@ namespace {@namespace}
             {parameterType} {ToCamelCase(name)}";
             }
 
-            private static string constructorAssignment(string name, string? defaultValue)
+            private static string constructorAssignment(string name, IParameterType type, object? defaultValue)
             {
                 var val = ToCamelCase(name);
                 if (defaultValue != null)
                 {
-                    val += $".GetValueOrDefault({defaultValue})";
+                    val += $".GetValueOrDefault({type.Instantiation(defaultValue)})";
                 }
 
                 return $@"
