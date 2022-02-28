@@ -2,15 +2,12 @@
 using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.UI.Navigation;
-using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
 {
     private LoadingManager loadingManager = null!;
-
-    public event VoidEventHandler? ModLoadingUpdated;
 
     protected override void Initialize(DependencyResolver dependencies, LoadingManager loadingManager)
     {
@@ -30,7 +27,6 @@ sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
     public override void Update(UpdateEventArgs args)
     {
         loadingManager.Update(args);
-        ModLoadingUpdated?.Invoke();
     }
 
     private void onGameStatusChanged(GameStatus gameStatus)
