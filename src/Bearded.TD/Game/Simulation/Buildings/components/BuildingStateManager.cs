@@ -109,7 +109,7 @@ sealed class BuildingStateManager<T>
             !state.IsRuined &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
-            Owner.AddComponent(new Ruined<T>(new RuinedParametersTemplate(cost?.Resources / 2)));
+            Owner.AddComponent(new Ruined<T>(new RuinedParametersTemplate(null)));
         }
 
         if (state.IsDead)

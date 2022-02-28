@@ -3,7 +3,6 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -22,14 +21,12 @@ sealed class IncompleteRepair<T>
     private IHealth? health;
     private IHealthEventReceiver? healthEventReceiver;
 
-    public ResourceAmount Cost { get; }
     public double PercentageComplete { get; private set; }
     private HitPoints hitPointsHealed = HitPoints.Zero;
     private HitPoints? hitPointsToHeal;
 
-    public IncompleteRepair(ResourceAmount cost, Faction repairingFaction)
+    public IncompleteRepair(Faction repairingFaction)
     {
-        Cost = cost;
         this.repairingFaction = repairingFaction;
         progressTracker = new ProgressTracker(this);
     }
@@ -107,6 +104,7 @@ sealed class IncompleteRepair<T>
         Events.Send(new RepairCancelled());
     }
 
+    public bool IsStarted => progressTracker.IsStarted;
     public bool IsCompleted => progressTracker.IsCompleted;
     public bool IsCancelled => progressTracker.IsCancelled;
     public string StructureName => nameProvider.NameOrDefault();
@@ -121,11 +119,11 @@ sealed class IncompleteRepair<T>
 
 interface IIncompleteRepair
 {
+    bool IsStarted { get; }
     bool IsCompleted { get; }
     bool IsCancelled { get; }
     string StructureName { get; }
     double PercentageComplete { get; }
-    ResourceAmount Cost { get; }
 
     public void StartRepair();
     public void SetRepairProgress(double percentage);

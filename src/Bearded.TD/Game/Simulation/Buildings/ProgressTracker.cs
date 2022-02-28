@@ -26,6 +26,7 @@ sealed class ProgressTracker
     private ProgressStage progressStage = ProgressStage.NotStarted;
     private ProgressStage syncedProgressStage = ProgressStage.NotStarted;
 
+    public bool IsStarted => progressStage > ProgressStage.NotStarted;
     public bool IsCompleted => progressStage == ProgressStage.Completed;
     public bool IsCancelled => progressStage == ProgressStage.Cancelled;
 
@@ -39,7 +40,7 @@ sealed class ProgressTracker
     public void Start()
     {
         // Avoid duplicate requests.
-        if (progressStage > ProgressStage.NotStarted)
+        if (IsStarted)
         {
             return;
         }

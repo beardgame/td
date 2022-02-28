@@ -34,6 +34,8 @@ sealed class Ruined<T>
     private bool hasRepairCost => Parameters.RepairCost.HasValue;
     private bool deleteNextFrame;
 
+    public ResourceAmount? RepairCost => Parameters.RepairCost;
+
     public Ruined(IRuinedParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
@@ -75,13 +77,8 @@ sealed class Ruined<T>
         {
             throw new InvalidOperationException("Only one repair attempt can be in progress at a time.");
         }
-        if (!hasRepairCost)
-        {
-            throw new NotSupportedException();
-        }
 
-        incompleteRepair =
-            new IncompleteRepair<T>(Parameters.RepairCost ?? throw new InvalidOperationException(), repairingFaction);
+        incompleteRepair = new IncompleteRepair<T>(repairingFaction);
         Owner.AddComponent(incompleteRepair);
         return incompleteRepair;
     }
@@ -92,7 +89,6 @@ sealed class Ruined<T>
         // repair already exists, we disable any new repair attempts. Cancelling a repair will remove the incomplete
         // repair component, resetting this state.
         return incompleteRepair == null &&
-            hasRepairCost &&
             (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
             faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out _) &&
@@ -151,6 +147,7 @@ sealed class Ruined<T>
 
 interface IRuined
 {
+    ResourceAmount? RepairCost { get; }
     bool CanBeRepairedBy(Faction faction);
     IIncompleteRepair StartRepair(Faction repairingFaction);
 }

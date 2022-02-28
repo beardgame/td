@@ -42,6 +42,7 @@ static class RepairBuilding
             return faction.SharesBehaviorWith<FactionResources>(actor.Faction) &&
                 faction.SharesBehaviorWith<WorkerTaskManager>(actor.Faction) &&
                 building.TryGetSingleComponent<IRuined>(out var ruined) &&
+                ruined.RepairCost != null &&
                 ruined.CanBeRepairedBy(faction);
         }
 
@@ -72,7 +73,7 @@ static class RepairBuilding
                     incompleteRepair,
                     OccupiedTileAccumulator.AccumulateOccupiedTiles(building),
                     game.State,
-                    resources.ReserveResources(new FactionResources.ResourceRequest(incompleteRepair.Cost))));
+                    resources.ReserveResources(new FactionResources.ResourceRequest(ruined.RepairCost!.Value))));
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, building, taskId);
