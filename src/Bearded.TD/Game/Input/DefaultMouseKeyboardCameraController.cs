@@ -11,14 +11,14 @@ namespace Bearded.TD.Game.Input;
 
 sealed class DefaultMouseKeyboardCameraController : ICameraController
 {
-    private readonly GameCameraController cameraController;
+    private readonly IGameCameraController cameraController;
 
     private readonly Dictionary<Func<InputState, ActionState>, Difference2> scrollActions;
     private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
 
     private bool isDragging;
 
-    public DefaultMouseKeyboardCameraController(GameCameraController cameraController)
+    public DefaultMouseKeyboardCameraController(IGameCameraController cameraController)
     {
         this.cameraController = cameraController;
 

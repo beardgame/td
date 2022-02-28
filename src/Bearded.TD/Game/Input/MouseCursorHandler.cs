@@ -18,7 +18,7 @@ sealed class MouseCursorHandler : ICursorHandler
 
     public PositionedFootprint CurrentFootprint { get; private set; }
 
-    public MouseCursorHandler(GameCamera camera, GameCameraController cameraController)
+    public MouseCursorHandler(GameCamera camera, IGameCameraController cameraController)
     {
         this.camera = camera;
         defaultCameraController = new DefaultMouseKeyboardCameraController(cameraController);

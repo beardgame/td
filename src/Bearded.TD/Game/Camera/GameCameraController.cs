@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Camera;
 
-sealed class GameCameraController
+sealed class GameCameraController : IGameCameraController
 {
     private readonly GameCamera camera;
     private readonly float levelRadius;

@@ -41,8 +41,8 @@ sealed class GameInstance
     private PlayerInput? playerInput;
     public PlayerInput PlayerInput => playerInput!;
 
-    private GameCameraController? cameraController;
-    public GameCameraController CameraController => cameraController!;
+    private IGameCameraController? cameraController;
+    public IGameCameraController CameraController => cameraController!;
 
     private SelectionManager? selectionManager;
     public SelectionManager SelectionManager => selectionManager!;

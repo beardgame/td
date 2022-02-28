@@ -49,15 +49,15 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
         }
     }
 
-    private class CameraController : ICameraController
+    private sealed class CameraController : ICameraController
     {
-        private readonly GameCameraController controller;
+        private readonly IGameCameraController controller;
         private readonly IManualControlReport report;
         private readonly IManualTarget2 target;
 
         private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
 
-        public CameraController(GameCameraController controller, IManualControlReport report, IManualTarget2 target)
+        public CameraController(IGameCameraController controller, IManualControlReport report, IManualTarget2 target)
         {
             this.controller = controller;
             this.report = report;
