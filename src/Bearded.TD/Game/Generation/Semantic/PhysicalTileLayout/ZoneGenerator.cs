@@ -61,6 +61,7 @@ sealed class ZoneGenerator
                 var unassignedFloorNeighbors = t.PossibleNeighbours()
                     .Where(n => !seen.Contains(n)
                         && !nodeTiles.Contains(n)
+                        && tilemap.IsValidTile(n)
                         && tilemap[n].Type == tileType);
                 foreach (var n in unassignedFloorNeighbors)
                 {
