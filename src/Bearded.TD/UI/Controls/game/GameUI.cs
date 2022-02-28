@@ -5,6 +5,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Meta;
+using Bearded.TD.Networking;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
@@ -16,7 +17,7 @@ using Bearded.Utilities.Input;
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUI :
-    UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+    UpdateableNavigationNode<(GameInstance Game, NetworkInterface Network)>,
     IListener<GameOverTriggered>,
     IListener<GameVictoryTriggered>
 {
@@ -57,13 +58,13 @@ sealed class GameUI :
     }
 
     protected override void Initialize(
-        DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
+        DependencyResolver dependencies, (GameInstance Game, NetworkInterface Network) parameters)
     {
         base.Initialize(dependencies, parameters);
 
-        Game = parameters.game;
+        Game = parameters.Game;
         TimeSource = new TimeSource();
-        runner = parameters.runner;
+        runner = new GameRunner(parameters.Game, parameters.Network, TimeSource);
 
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();

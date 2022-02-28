@@ -32,16 +32,16 @@ sealed class ServerGameSynchronizer : IGameSynchronizer
         getSynchronizer<T>().Register(syncable);
     }
 
-    public void Synchronize(GameInstance game)
+    public void Synchronize(ITimeSource timeSource)
     {
-        if (game.State.Time >= nextSync)
+        if (timeSource.Time >= nextSync)
         {
             foreach (var (_, synchronizer) in synchronizers)
             {
                 ((ISynchronizer)synchronizer).SendBatch(commandDispatcher);
             }
 
-            nextSync = game.State.Time + timeBetweenSyncs;
+            nextSync = timeSource.Time + timeBetweenSyncs;
         }
     }
 

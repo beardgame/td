@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.Graphics;
 using Bearded.TD.Game;
+using Bearded.TD.Networking;
 using Bearded.UI.Navigation;
 
 namespace Bearded.TD.UI.Controls;
@@ -38,8 +39,8 @@ sealed class LoadingScreen : UpdateableNavigationNode<LoadingManager>
     private void startGame()
     {
         loadingManager.PrepareUI();
-        Navigation.Replace<GameUI, (GameInstance, GameRunner)>(
-            (loadingManager.Game, new GameRunner(loadingManager.Game, loadingManager.Network)), this);
+        Navigation!.Replace<GameUI, (GameInstance, NetworkInterface)>(
+            (loadingManager.Game, loadingManager.Network), this);
         loadingManager.FinalizeUI();
     }
 }

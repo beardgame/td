@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Game;
+using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.UI.Navigation;
 using Void = Bearded.Utilities.Void;
 
@@ -16,8 +16,7 @@ static class UILibrary
         return NavigationFactories.ForBoth()
             .Add<DebugConsole, Void>(m => new DebugConsoleControl(m))
             .Add<GameDebugOverlay, Void>(m => new GameDebugOverlayControl(m))
-            .Add<GameUI, (GameInstance, GameRunner)>(
-                m => new GameUIControl(m, renderContext))
+            .Add<GameUI, (GameInstance, NetworkInterface)>(m => new GameUIControl(m, renderContext))
             .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))
             .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
             .Add<LobbyList, Void>(m => new LobbyListControl(m))
