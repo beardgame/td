@@ -64,7 +64,7 @@ sealed class GameCameraController
 
     private void moveToCinematicGoalPosition(UpdateEventArgs args, Position2 goalPos)
     {
-        var maxEpsilonSquared = .01f.U().Squared;
+        var maxEpsilonSquared = 0.01f.U().Squared;
 
         var error = camera.Position - goalPos;
         var distanceSquared = error.LengthSquared;
@@ -158,7 +158,7 @@ sealed class GameCameraController
         var oldZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
         camera.Distance -= error * snapFactor;
 
-        if (cinematicGoalPosition != null)
+        if (cinematicGoalPosition == null)
         {
             var newZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
             var positionError = newZoomAnchorWorldPosition - oldZoomAnchorWorldPosition;
@@ -292,7 +292,6 @@ sealed class GameCameraController
         isGrabbed = false;
     }
 
-
     public void OverrideMaxCameraDistance(float maxDistance)
     {
         maxCameraDistanceOverride = maxDistance;
@@ -302,5 +301,4 @@ sealed class GameCameraController
     {
         maxCameraDistanceOverride = null;
     }
-
 }
