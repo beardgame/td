@@ -6,8 +6,7 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "tuesday"
+      interval: "daily"
     commit-message:
       prefix: "⬆"
 
@@ -16,7 +15,6 @@ updates:
     # default location of `.github/workflows`
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "tuesday"
+      interval: "daily"
     commit-message:
       prefix: "⬆"
