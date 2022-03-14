@@ -1,7 +1,0 @@
-{
-    "id" : "extraHealth1",
-    "name" : "Constitution I",
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraHealth1" }
-    ]
-}

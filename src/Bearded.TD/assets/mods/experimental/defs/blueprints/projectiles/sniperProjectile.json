@@ -1,0 +1,44 @@
+{
+    "id" : "sniperProjectile",
+    "components" : [
+        {
+            "id" : "damageOnHit",
+            "parameters" : {
+                "damage" : 100
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "color" : "LightBlue",
+                "sprite" : "default.particle.star",
+                "size" : 0.2
+            }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "DodgerBlue",
+                "radius" : 3
+            }
+        },
+        {
+            "id" : "trail",
+            "parameters" : {
+                "color" : "006666AA",
+                "sprite" : "default.particle.orb-soft",
+                "width" : 0.05,
+                "timeout" : 0.5,
+                "surviveObjectDeletion" : true
+            }
+        },
+        {
+            "id": "spawnObjectOnHit",
+            "parameters": {
+                "object": "sparkExplosion",
+                "onHitLevel": true,
+                "onHitEnemy": false
+            }
+        }
+    ]
+}

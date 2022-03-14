@@ -1,0 +1,7 @@
+{
+    "id" : "unlockFountain",
+    "name" : "Flow Like Water",
+    "unlocks": [
+        { "type" : "building", "blueprint" : "fountain" }
+    ]
+}

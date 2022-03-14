@@ -1,8 +1,0 @@
-{
-  "id" : "addPiercingBeam",
-  "name" : "Out on the other side",
-  "requiredTechs" : [ "unlockBeamTurret" ],
-  "unlocks": [
-    { "type" : "upgrade", "blueprint" : "addPiercingBeam" }
-  ]
-}

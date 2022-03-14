@@ -1,0 +1,7 @@
+{
+  "id" : "addPiercingBeam",
+  "name" : "Out on the other side",
+  "unlocks": [
+    { "type" : "upgrade", "blueprint" : "addPiercingBeam" }
+  ]
+}

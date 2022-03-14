@@ -1,0 +1,19 @@
+{
+  "id" : "rocketTower",
+  "components" : [
+    { "id" : "name", "parameters" : { "name" : "Rocket Tower" } },
+    { "id" : "cost", "parameters" : { "resources" : 100 } },
+    { "id" : "footprint", "parameters" : { "group" : "default.triangle" } },
+    { "id" : "foundation", "parameters" : { "sprites" : "default.foundations" } },
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
+    { "id" : "autoRepair", "parameters" : { } },
+    {
+      "id" : "turret",
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "rocketLauncher",
+        "height" : 0.2
+      }
+    }
+  ]
+}

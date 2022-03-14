@@ -1,8 +1,0 @@
-{
-    "id" : "extraHealth3",
-    "name" : "Constitution III",
-    "requiredTechs" : [ "extraHealth2" ],
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraHealth3" }
-    ]
-}
