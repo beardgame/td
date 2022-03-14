@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -98,14 +99,17 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var minWaveValue = requirements.WaveValue - allowedValueError;
         var maxWaveValue = requirements.WaveValue + allowedValueError;
 
-        var tries = 0;
-        IComponentOwnerBlueprint blueprint;
-        float blueprintThreat;
-        do
+        var eligibleEnemies = EnemySpawnDefinition.All.Where(def =>
         {
-            blueprint = selectBlueprint();
-            blueprintThreat = blueprint.GetThreat();
-        } while (6 * blueprintThreat > maxWaveValue && tries++ < 10);
+            var threat = game.Meta.Blueprints.ComponentOwners[def.BlueprintId].GetThreat();
+            return 6 * threat < maxWaveValue;
+        }).ToList();
+        if (eligibleEnemies.Count == 0)
+        {
+            throw new InvalidOperationException();
+        }
+        var blueprint = selectBlueprint(eligibleEnemies);
+        var blueprintThreat = blueprint.GetThreat();
 
         var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
         var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
@@ -144,7 +148,8 @@ sealed class WaveScheduler : IListener<WaveEnded>
             MinTimeBetweenSpawns * (enemiesPerSpawn - 1));
 
         logger.Debug?.Log(
-            "Generated wave parameters for a total of " +
+            $"Generated wave parameters with {enemiesPerSpawn} enemies of threat {blueprintThreat} at " +
+            $"{spawnLocations.Length} spawn locations for a total of " +
             $"{enemiesPerSpawn * spawnLocations.Length * blueprintThreat} threat in {sw.Elapsed.TotalSeconds}s");
 
         return new WaveParameters(blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
@@ -156,14 +161,14 @@ sealed class WaveScheduler : IListener<WaveEnded>
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);
 
-    private IComponentOwnerBlueprint selectBlueprint()
+    private IComponentOwnerBlueprint selectBlueprint(IReadOnlyList<EnemySpawnDefinition> enemies)
     {
-        var enemies = EnemySpawnDefinition.All;
         var probabilities = new double[enemies.Count + 1];
         foreach (var (enemy, i) in enemies.Indexed())
         {
             probabilities[i + 1] = enemy.Probability + probabilities[i];
         }
+
         var t = random.NextDouble(probabilities[^1]);
         var result = Array.BinarySearch(probabilities, t);
 
