@@ -23,14 +23,11 @@ sealed class EnemySpawnDefinition
                 new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard01"), 8),
                 new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard02"), 8),
                 new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard03"), 8),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast01"), 2),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast02"), 2),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("fast03"), 2),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong01"), 1),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong02"), 1),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("strong03"), 1),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank01"), .125),
-                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("tank02"), .125),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard04"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard05"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard06"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard07"), 8),
+                new EnemySpawnDefinition(ModAwareId.ForDefaultMod("standard08"), 8),
             };
         }
     }

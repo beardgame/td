@@ -1,6 +1,6 @@
 {
     "id" : "extraDamage2",
-    "name" : "A bigger boom",
+    "name" : "Multi Kill",
     "requiredTechs" : [ "extraDamage1" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage2" }

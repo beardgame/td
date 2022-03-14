@@ -1,11 +1,11 @@
 {
     "id" : "extraDamage1",
-    "name" : "+25% damage",
+    "name" : "2x damage",
     "cost" : 50,
     "effects": [
         {
             "type" : "modification",
-            "parameters" : { "attributeType" : "damage", "mode" : "fractionOfBase", "value" : 0.25 }
+            "parameters" : { "attributeType" : "damage", "mode" : "fractionOfBase", "value" : 1 }
         }
     ]
 }
