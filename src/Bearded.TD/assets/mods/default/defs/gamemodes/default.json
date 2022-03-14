@@ -40,7 +40,7 @@
             "id" : "grantResourcesOnStart",
             "parameters" : {
                 "faction" : "players",
-                "amount" : 240
+                "amount" : 150
             }
         },
         {
