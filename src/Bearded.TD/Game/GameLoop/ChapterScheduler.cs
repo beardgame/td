@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Game.WaveGeneration;
@@ -11,9 +12,9 @@ sealed class ChapterScheduler
     private readonly WaveScheduler waveScheduler;
 
     private ChapterScript? currentChapter;
+    private int wavesSpawnedTotal;
     private int wavesSpawnedThisChapter;
 
-    private double nextWaveValue = FirstWaveValue;
     private ResourceAmount nextWaveResources = FirstWaveResources;
 
     public event VoidEventHandler? ChapterEnded;
@@ -55,14 +56,16 @@ sealed class ChapterScheduler
         State.Satisfies(currentChapter != null);
         State.Satisfies(wavesSpawnedThisChapter < currentChapter!.WaveCount);
         var waveNumber = ++wavesSpawnedThisChapter;
+        var waveValue = FirstWaveValue +
+            WaveValueLinearGrowth * wavesSpawnedTotal * Math.Pow(WaveValueExponentialGrowth, waveNumber);
+        wavesSpawnedTotal++;
         waveScheduler.StartWave(new WaveRequirements(
             currentChapter.ChapterNumber,
             waveNumber,
-            nextWaveValue,
+            waveValue,
             nextWaveResources,
             waveNumber == 1 ? FirstDownTimeDuration : DownTimeDuration));
 
-        nextWaveValue *= WaveValueMultiplier;
         nextWaveResources = new ResourceAmount((int) (nextWaveResources.NumericValue * WaveResourcesMultiplier));
     }
 
@@ -85,15 +88,5 @@ sealed class ChapterScheduler
         }
     }
 
-    private sealed record ChapterScript
-    {
-        public int ChapterNumber { get; }
-        public int WaveCount { get; }
-
-        public ChapterScript(int chapterNumber, int waveCount)
-        {
-            ChapterNumber = chapterNumber;
-            WaveCount = waveCount;
-        }
-    }
+    private sealed record ChapterScript(int ChapterNumber, int WaveCount);
 }

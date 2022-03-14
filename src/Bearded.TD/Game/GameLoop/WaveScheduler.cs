@@ -84,8 +84,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
             game.Meta.Ids.GetBatch<ComponentGameObject>(spawnLocations.Length * enemiesPerSpawn));
     }
 
-    private (IComponentOwnerBlueprint blueprint, int enemiesPerSpawn, ImmutableArray<SpawnLocation> spawnLocations, TimeSpan spawnDuration)
-        generateWaveParameters(WaveRequirements requirements)
+    private WaveParameters generateWaveParameters(WaveRequirements requirements)
     {
         var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
         var minWaveValue = requirements.WaveValue - allowedValueError;
@@ -98,7 +97,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         {
             blueprint = selectBlueprint();
             blueprintThreat = blueprint.GetThreat();
-        } while (blueprintThreat > maxWaveValue && tries++ < 5);
+        } while (blueprintThreat > maxWaveValue && tries++ < 10);
 
         var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
         var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
@@ -108,7 +107,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         State.Satisfies(activeSpawnLocations.Count > 0);
 
         var minSequentialSpawnTime = numEnemies * MinTimeBetweenSpawns;
-        var minSpawnPoints = MoreMath.CeilToInt(MaxSpawnTimeDuration / (minSequentialSpawnTime * numEnemies));
+        var minSpawnPoints = MoreMath.CeilToInt(EnemyTrainLength / (minSequentialSpawnTime * numEnemies));
         var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
             ? minSpawnPoints
             : random.Next(minSpawnPoints, activeSpawnLocations.Count);
@@ -130,10 +129,20 @@ sealed class WaveScheduler : IListener<WaveEnded>
             enemiesPerSpawn--;
         }
 
-        var spawnDuration = TimeSpan.Min(PreferredTimeBetweenSpawns * (enemiesPerSpawn - 1), MaxSpawnTimeDuration);
+        var spawnDuration = TimeSpan.Max(
+            TimeSpan.Min(
+                EnemyTrainLength,
+                MaxTimeBetweenSpawns * (enemiesPerSpawn - 1)),
+            MinTimeBetweenSpawns * (enemiesPerSpawn - 1));
 
-        return (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
+        return new WaveParameters(blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
     }
+
+    private record struct WaveParameters(
+        IComponentOwnerBlueprint UnitBlueprint,
+        int EnemiesPerSpawn,
+        ImmutableArray<SpawnLocation> SpawnLocations,
+        TimeSpan SpawnDuration);
 
     private IComponentOwnerBlueprint selectBlueprint()
     {
