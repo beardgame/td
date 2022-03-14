@@ -2,14 +2,14 @@
   "id": "wall",
   "components": [
     { "id" : "name", "parameters" : { "name" : "Wall" } },
-    { "id" : "cost", "parameters" : { "resources" : 15 } },
+    { "id" : "cost", "parameters" : { "resources" : 10 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     {
       "id": "health",
       "parameters": {
         "initialHealth": 1,
-        "maxHealth": 100
+        "maxHealth": 50
       }
     }
   ]
