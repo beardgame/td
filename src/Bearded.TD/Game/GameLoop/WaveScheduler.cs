@@ -105,7 +105,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         {
             blueprint = selectBlueprint();
             blueprintThreat = blueprint.GetThreat();
-        } while (blueprintThreat > maxWaveValue && tries++ < 10);
+        } while (6 * blueprintThreat > maxWaveValue && tries++ < 10);
 
         var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
         var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
@@ -119,9 +119,9 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
             ? minSpawnPoints
             : random.Next(minSpawnPoints, activeSpawnLocations.Count);
-        if (numSpawnPoints >= numEnemies)
+        if (numSpawnPoints >= numEnemies / 3)
         {
-            numSpawnPoints = numEnemies;
+            numSpawnPoints = Math.Max(1, numEnemies / 3);
         }
         var spawnLocations = activeSpawnLocations.RandomSubset(numSpawnPoints, random).ToImmutableArray();
 
