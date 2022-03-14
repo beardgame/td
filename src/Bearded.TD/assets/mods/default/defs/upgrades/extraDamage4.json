@@ -1,6 +1,6 @@
 {
-    "id" : "extraDamage2",
-    "name" : "3x damage",
+    "id" : "extraDamage4",
+    "name" : "5x damage",
     "cost" : 50,
     "effects": [
         {
