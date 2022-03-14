@@ -5,7 +5,7 @@
         {
             "id" : "sprite",
             "parameters" : {
-                "sprite" : "particle.orb-soft",
+                "sprite" : "default.particle.orb-soft",
                 "color" : "SandyBrown",
                 "size" : 1.4
             }
