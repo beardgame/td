@@ -5,7 +5,7 @@
     "effects": [
         {
             "type" : "modification",
-            "parameters" : { "attributeType" : "damage", "mode" : "fractionOfBase", "value" : 1 }
+            "parameters" : { "attributeType" : "damageOverTime", "mode" : "fractionOfBase", "value" : 1 }
         }
     ]
 }
