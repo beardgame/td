@@ -57,7 +57,7 @@ sealed class ChapterScheduler
         State.Satisfies(wavesSpawnedThisChapter < currentChapter!.WaveCount);
         var waveNumber = ++wavesSpawnedThisChapter;
         var waveValue = FirstWaveValue +
-            WaveValueLinearGrowth * wavesSpawnedTotal * Math.Pow(WaveValueExponentialGrowth, waveNumber);
+            WaveValueLinearGrowth * wavesSpawnedTotal * Math.Pow(WaveValueExponentialGrowth, wavesSpawnedTotal);
         wavesSpawnedTotal++;
         waveScheduler.StartWave(new WaveRequirements(
             currentChapter.ChapterNumber,
