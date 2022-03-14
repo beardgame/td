@@ -6,14 +6,14 @@
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "particle.orb-soft",
-                "color" : "DarkRed",
-                "size" : 0.6
+                "color" : "bca900",
+                "size" : 0.5
             }
         },
-        { "id" : "health", "parameters" : { "maxHealth" : 250 } },
-        { "id" : "threat", "parameters" :  { "threat" : 7 } },
+        { "id" : "health", "parameters" : { "maxHealth" : 960 } },
+        { "id" : "threat", "parameters" :  { "threat" : 960 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
-        { "id" : "damageBuildings", "parameters" : { "damage" : 20, "attackRate" : 0.83 } },
-        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1.8 } }
+        { "id" : "damageBuildings", "parameters" : { "damage" : 24, "attackRate" : 0.5 } },
+        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1 } }
     ]
 }
