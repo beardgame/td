@@ -1,19 +1,19 @@
 {
-    "id" : "standard01",
+    "id" : "standard06",
     "components" : [
         { "id" : "name", "parameters" : { "name" : "Standard enemy" } },
         {
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "particle.orb-soft",
-                "color" : "39d140",
-                "size" : 0.4
+                "color" : "ff504f",
+                "size" : 0.65
             }
         },
-        { "id" : "health", "parameters" : { "maxHealth" : 240 } },
-        { "id" : "threat", "parameters" :  { "threat" : 240 } },
+        { "id" : "health", "parameters" : { "maxHealth" : 7680 } },
+        { "id" : "threat", "parameters" :  { "threat" : 7680 } },
         { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
-        { "id" : "damageBuildings", "parameters" : { "damage" : 6, "attackRate" : 0.5 } },
+        { "id" : "damageBuildings", "parameters" : { "damage" : 192, "attackRate" : 0.5 } },
         { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1 } }
     ]
 }
