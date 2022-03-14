@@ -1,8 +1,0 @@
-{
-    "id" : "extraSpeed1",
-    "name" : "Faster everything",
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraFireRate1" },
-        { "type" : "upgrade", "blueprint" : "extraRotationSpeed1" }
-    ]
-}

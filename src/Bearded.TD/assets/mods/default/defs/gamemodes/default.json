@@ -49,7 +49,7 @@
                 "faction" : "players",
                 "unlocks" : [
                     { "type" : "building", "blueprint" : "wall" },
-                    { "type" : "building", "blueprint" : "triangleTurret" }
+                    { "type" : "building", "blueprint" : "beamTurret" }
                 ]
             }
         },

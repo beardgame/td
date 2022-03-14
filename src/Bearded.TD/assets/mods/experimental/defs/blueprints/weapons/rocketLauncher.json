@@ -1,0 +1,36 @@
+{
+    "id": "rocketLauncher",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 6,
+                "coneOfFire" : 5
+            }
+        },
+        {
+            "id" : "pidAim",
+            "parameters" : {
+                "proportionalCorrection" : 60,
+                "derivativeCorrection" : 7
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "rocket",
+                "muzzleSpeed" : 8,
+                "fireRate" : 1
+            }
+        },
+        {
+            "id": "sprite",
+            "parameters": {
+                "sprite": "default.buildings.rocket-turret",
+                "colorMode" : "faction",
+                "shader" : "default.building",
+                "drawGroup" : "building"
+            }
+        }
+    ]
+}

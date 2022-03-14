@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
@@ -9,14 +9,14 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD/Debug/</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Bearded.UI" Version="0.2.0-dev.1" />
     <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.3" />
@@ -30,17 +30,8 @@
 
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="assets\shaders\terrain-base.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="assets\shaders\terrain-base.vs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="assets\mods\default\gfx\sprites\terrain-splats\visibility-hex.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
-  
+
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <None Include="assets\**\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
