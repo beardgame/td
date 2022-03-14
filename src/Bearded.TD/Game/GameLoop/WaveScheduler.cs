@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation;
@@ -12,6 +13,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
+using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -25,15 +27,18 @@ sealed class WaveScheduler : IListener<WaveEnded>
     private readonly GameState game;
     private readonly Faction targetFaction;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
+    private readonly Logger logger;
     public event VoidEventHandler? WaveEnded;
 
     private Id<WaveScript>? activeWave;
 
-    public WaveScheduler(GameState game, Faction targetFaction, ICommandDispatcher<GameInstance> commandDispatcher)
+    public WaveScheduler(
+        GameState game, Faction targetFaction, ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
     {
         this.game = game;
         this.targetFaction = targetFaction;
         this.commandDispatcher = commandDispatcher;
+        this.logger = logger;
     }
 
     public void OnGameStart()
@@ -86,6 +91,9 @@ sealed class WaveScheduler : IListener<WaveEnded>
 
     private WaveParameters generateWaveParameters(WaveRequirements requirements)
     {
+        logger.Debug?.Log($"Wave parameters requested with threat {requirements.WaveValue}");
+        var sw = Stopwatch.StartNew();
+
         var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
         var minWaveValue = requirements.WaveValue - allowedValueError;
         var maxWaveValue = requirements.WaveValue + allowedValueError;
@@ -134,6 +142,10 @@ sealed class WaveScheduler : IListener<WaveEnded>
                 EnemyTrainLength,
                 MaxTimeBetweenSpawns * (enemiesPerSpawn - 1)),
             MinTimeBetweenSpawns * (enemiesPerSpawn - 1));
+
+        logger.Debug?.Log(
+            "Generated wave parameters for a total of " +
+            $"{enemiesPerSpawn * spawnLocations.Length * blueprintThreat} threat in {sw.Elapsed.TotalSeconds}s");
 
         return new WaveParameters(blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
     }
