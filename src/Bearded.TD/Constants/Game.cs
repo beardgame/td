@@ -50,10 +50,10 @@ static partial class Constants
             public static readonly TimeSpan MaxTimeBetweenSpawns = 3.S(); // Overrides enemy train length.
             public static readonly TimeSpan MinTimeBetweenSpawns = 0.3.S();
 
-            public const double FirstWaveValue = 2400;
+            public const double FirstWaveValue = 2000;
             public const double WaveValueErrorFactor = 0.1;
-            public const double WaveValueLinearGrowth = 4500;
-            public const double WaveValueExponentialGrowth = 1.02;
+            public const double WaveValueLinearGrowth = 2500;
+            public const double WaveValueExponentialGrowth = 1.05;
 
             public static readonly ResourceAmount FirstWaveResources = 150.Resources();
             public static readonly double WaveResourcesMultiplier = 1;
