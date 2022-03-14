@@ -44,18 +44,19 @@ static partial class Constants
         public static class WaveGeneration
         {
             public static readonly TimeSpan FirstDownTimeDuration = 40.S();
-            public static readonly TimeSpan DownTimeDuration = 20.S();
+            public static readonly TimeSpan DownTimeDuration = 30.S();
 
             public static readonly TimeSpan MaxSpawnTimeDuration = 12.S();
             public static readonly TimeSpan PreferredTimeBetweenSpawns = 1.S();
             public static readonly TimeSpan MinTimeBetweenSpawns = 0.1.S();
 
-            public const double FirstWaveValue = 30;
+            public const double FirstWaveValue = 2400;
             public const double WaveValueErrorFactor = 0.1;
-            public const double WaveValueMultiplier = 1.3;
+            public const double WaveValueLinearGrowth = 4500;
+            public const double WaveValueExponentialGrowth = 1.02;
 
-            public static readonly ResourceAmount FirstWaveResources = 200.Resources();
-            public static readonly double WaveResourcesMultiplier = 1.2;
+            public static readonly ResourceAmount FirstWaveResources = 150.Resources();
+            public static readonly double WaveResourcesMultiplier = 1;
         }
 
         public static class Building
@@ -66,7 +67,6 @@ static partial class Constants
         public static class Worker
         {
             public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
-            public static readonly TimeSpan MiningDuration = 8.S();
         }
 
         public static class Enemy
