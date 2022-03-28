@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
-sealed class FootprintPosition : Component<ComponentGameObject>, IListener<FootprintChanged>
+sealed class FootprintPosition : Component, IListener<FootprintChanged>
 {
     protected override void OnAdded()
     {

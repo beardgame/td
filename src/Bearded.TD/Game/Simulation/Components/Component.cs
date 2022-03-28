@@ -5,7 +5,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components;
 
-abstract class Component<TOwner, TParameters> : IComponent<TOwner>
+abstract class Component<TParameters> : IComponent
     where TParameters : IParametersTemplate<TParameters>
 {
     protected TParameters Parameters { get; }
@@ -15,11 +15,11 @@ abstract class Component<TOwner, TParameters> : IComponent<TOwner>
         Parameters = parameters.CreateModifiableInstance();
     }
 
-    protected TOwner Owner { get; private set; }
+    protected ComponentGameObject Owner { get; private set; }
 
     protected ComponentEvents Events { get; private set; }
 
-    public void OnAdded(TOwner owner, ComponentEvents events)
+    public void OnAdded(ComponentGameObject owner, ComponentEvents events)
     {
         Owner = owner;
         Events = events;
@@ -39,13 +39,13 @@ abstract class Component<TOwner, TParameters> : IComponent<TOwner>
     public virtual bool RemoveUpgradeEffect(IUpgradeEffect effect) => effect.RemoveFrom(Parameters);
 }
 
-abstract class Component<TOwner> : IComponent<TOwner>
+abstract class Component : IComponent
 {
-    protected TOwner Owner { get; private set; }
+    protected ComponentGameObject Owner { get; private set; }
 
     protected ComponentEvents Events { get; private set; } = null!;
 
-    public void OnAdded(TOwner owner, ComponentEvents events)
+    public void OnAdded(ComponentGameObject owner, ComponentEvents events)
     {
         Owner = owner;
         Events = events;

@@ -7,8 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("waterGenerator")]
-class WaterGenerator<T> : Component<T, IWaterGeneratorParameters>
-    where T : GameObject, IPositionable
+class WaterGenerator : Component<IWaterGeneratorParameters>
 {
     public WaterGenerator(IWaterGeneratorParameters parameters) : base(parameters)
     {

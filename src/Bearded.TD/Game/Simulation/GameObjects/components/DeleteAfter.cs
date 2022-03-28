@@ -5,8 +5,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
 [Component("deleteAfter")]
-sealed class DeleteAfter<T> : Component<T, IDeleteAfterParameters>
-    where T : GameObject
+sealed class DeleteAfter : Component<IDeleteAfterParameters>
 {
     private TimeSpan timeAlive = TimeSpan.Zero;
 

@@ -12,9 +12,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("autoRepair")]
-sealed class AutoRepair<T>
-    : Component<T, IAutoRepairParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
-    where T : IComponentOwner, IGameObject
+sealed class AutoRepair
+    : Component<IAutoRepairParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
 {
     private IFactionProvider? factionProvider;
 

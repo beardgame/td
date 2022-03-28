@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("instantAim")]
-class InstantAim : Component<ComponentGameObject>
+class InstantAim : Component
 {
     private IWeaponState weapon = null!;
     private IWeaponAimer? aimer;

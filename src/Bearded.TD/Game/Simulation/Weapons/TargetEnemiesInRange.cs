@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("targetEnemiesInRange")]
 sealed class TargetEnemiesInRange
-    : Component<ComponentGameObject, ITargetEnemiesInRange>,
+    : Component<ITargetEnemiesInRange>,
         IWeaponRangeDrawer,
         ITargeter<IPositionable>,
         IWeaponAimer,

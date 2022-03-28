@@ -7,8 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
 [Component("gameOverOnDestroy")]
-sealed class GameOverOnDestroy<T> : Component<T>
-    where T : GameObject
+sealed class GameOverOnDestroy : Component
 {
     private bool eventSent;
 

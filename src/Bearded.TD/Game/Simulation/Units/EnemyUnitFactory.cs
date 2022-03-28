@@ -25,15 +25,15 @@ static class EnemyUnitFactory
         }
         var radius =
             ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
-        unit.AddComponent(new CircleCollider<ComponentGameObject>(radius));
+        unit.AddComponent(new CircleCollider(radius));
 
         unit.AddComponent(new EnemyLifeCycle());
-        unit.AddComponent(new HealthBar<ComponentGameObject>());
-        unit.AddComponent(new HealthEventReceiver<ComponentGameObject>());
-        unit.AddComponent(new DamageSource<ComponentGameObject>());
-        unit.AddComponent(new IdProvider<ComponentGameObject>(id));
-        unit.AddComponent(new Syncer<ComponentGameObject>());
-        unit.AddComponent(new TileBasedVisibility<ComponentGameObject>());
+        unit.AddComponent(new HealthBar());
+        unit.AddComponent(new HealthEventReceiver());
+        unit.AddComponent(new DamageSource());
+        unit.AddComponent(new IdProvider(id));
+        unit.AddComponent(new Syncer());
+        unit.AddComponent(new TileBasedVisibility());
         return unit;
     }
 }

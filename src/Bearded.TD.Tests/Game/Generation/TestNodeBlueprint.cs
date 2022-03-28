@@ -7,6 +7,6 @@ namespace Bearded.TD.Tests.Game.Generation
     sealed class TestNodeBlueprint : INodeBlueprint
     {
         public ModAwareId Id => ModAwareId.Invalid;
-        public ImmutableArray<INodeBehaviorFactory<Node>> Behaviors => ImmutableArray<INodeBehaviorFactory<Node>>.Empty;
+        public ImmutableArray<INodeBehaviorFactory> Behaviors => ImmutableArray<INodeBehaviorFactory>.Empty;
     }
 }

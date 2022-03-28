@@ -1,10 +1,8 @@
-﻿using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Tiles;
+﻿using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BackupSink<T> : EnemySinkBase<T>
-    where T : IComponentOwner, IGameObject
+sealed class BackupSink : EnemySinkBase
 {
     protected override void AddSink(Tile t)
     {

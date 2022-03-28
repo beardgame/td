@@ -8,8 +8,7 @@ using static Bearded.TD.Constants.Game.World;
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("damageOverTimeArea")]
-sealed class DamageOverTimeArea<T> : Component<T, IDamageOverTimeAreaParameters>
-    where T : GameObject, IPositionable, IComponentOwner
+sealed class DamageOverTimeArea : Component<IDamageOverTimeAreaParameters>
 {
     private IDamageSource? damageSource;
 

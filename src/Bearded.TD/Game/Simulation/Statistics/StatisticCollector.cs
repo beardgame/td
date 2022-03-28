@@ -9,7 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
 
-sealed class StatisticCollector<T> : Component<T>, ISyncable where T : GameObject
+sealed class StatisticCollector : Component, ISyncable
 {
     private long totalDamage;
     private long totalKills;
@@ -46,11 +46,11 @@ sealed class StatisticCollector<T> : Component<T>, ISyncable where T : GameObjec
 
     private sealed class StatisticCollectorStateToSync : IStateToSync
     {
-        private readonly StatisticCollector<T> source;
+        private readonly StatisticCollector source;
         private long totalDamage;
         private long totalKills;
 
-        public StatisticCollectorStateToSync(StatisticCollector<T> source)
+        public StatisticCollectorStateToSync(StatisticCollector source)
         {
             this.source = source;
             totalDamage = source.totalDamage;
@@ -81,9 +81,9 @@ sealed class StatisticCollector<T> : Component<T>, ISyncable where T : GameObjec
         public long PreviousWaveDamage => source.previousWaveDamage;
         public long PreviousWaveKills => source.previousWaveKills;
 
-        private readonly StatisticCollector<T> source;
+        private readonly StatisticCollector source;
 
-        public StatisticsReport(StatisticCollector<T> source)
+        public StatisticsReport(StatisticCollector source)
         {
             this.source = source;
         }

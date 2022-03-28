@@ -17,9 +17,9 @@ sealed class ComponentTestBed
         obj.AddComponent(internals);
     }
 
-    public void AddComponent(IComponent<ComponentGameObject> component) => obj.AddComponent(component);
+    public void AddComponent(IComponent component) => obj.AddComponent(component);
 
-    public void RemoveComponent(IComponent<ComponentGameObject> component) => obj.RemoveComponent(component);
+    public void RemoveComponent(IComponent component) => obj.RemoveComponent(component);
 
     public IEnumerable<TComponent> GetComponents<TComponent>() => obj.GetComponents<TComponent>();
 
@@ -38,7 +38,7 @@ sealed class ComponentTestBed
         obj.Update(frameTime);
     }
 
-    private sealed class ComponentInternals : Component<ComponentGameObject>
+    private sealed class ComponentInternals : Component
     {
         protected override void OnAdded() {}
         public override void Update(TimeSpan elapsedTime) {}

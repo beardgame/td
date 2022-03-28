@@ -17,7 +17,7 @@ interface IPidAimParameters : IParametersTemplate<IPidAimParameters>
 }
 
 [Component("pidAim")]
-class PidAim : Component<ComponentGameObject, IPidAimParameters>, IAngularAccelerator
+class PidAim : Component<IPidAimParameters>, IAngularAccelerator
 {
     private IWeaponState weapon = null!;
     private AngularVelocity angularVelocity;

@@ -4,8 +4,7 @@ using Bearded.TD.Tiles;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("sink")]
-sealed class EnemySink<T> : EnemySinkBase<T>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class EnemySink : EnemySinkBase
 {
     protected override void AddSink(Tile t)
     {

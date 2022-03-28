@@ -12,7 +12,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
-sealed class EnemyPathIndicator : Component<ComponentGameObject>, ITileWalkerOwner, IRenderable
+sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
 {
     private const float renderSize = .1f;
     private static readonly TimeSpan trailTimeout = 1.S();

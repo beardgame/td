@@ -9,7 +9,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectRandomSubsetTests
     {
-        private static INodeBehavior<Node> behaviorWithParameters(int numTiles)
+        private static INodeBehavior behaviorWithParameters(int numTiles)
             => new SelectRandomSubset(new SelectRandomSubset.BehaviorParameters(numTiles));
 
         [Fact]

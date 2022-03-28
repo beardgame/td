@@ -9,8 +9,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class HealthBar<T> : Component<T>, IListener<DrawComponents>
-    where T : IPositionable, IComponentOwner
+sealed class HealthBar : Component, IListener<DrawComponents>
 {
     private IHealth health = null!;
 

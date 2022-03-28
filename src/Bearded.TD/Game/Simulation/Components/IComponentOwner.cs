@@ -11,7 +11,7 @@ interface IComponentOwner
 
 interface IComponentOwner<out T> : IComponentOwner where T : IComponentOwner<T>
 {
-    void AddComponent(IComponent<T> component);
-    void RemoveComponent(IComponent<T> component);
-    new IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent<T>;
+    void AddComponent(IComponent component);
+    void RemoveComponent(IComponent component);
+    new IEnumerable<TComponent> GetComponents<TComponent>() where TComponent : IComponent;
 }

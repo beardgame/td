@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Units;
 
 [Component("threat")]
-sealed class Threat<T> : Component<T, Content.Models.IThreat>, IThreat
+sealed class Threat : Component<Content.Models.IThreat>, IThreat
 {
     public float ThreatCost => Parameters.Threat;
 

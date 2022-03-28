@@ -9,8 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("workerHub")]
-sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class WorkerHub : Component<IWorkerHubParameters>
 {
     private IBuildingState? state;
     private IFactionProvider? factionProvider;
@@ -52,7 +51,7 @@ sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
         State.Satisfies(faction != null);
         var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             Owner.Game, Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
-        obj.AddComponent(new FactionProvider<ComponentGameObject>(faction!));
+        obj.AddComponent(new FactionProvider(faction!));
 
         numWorkersActive++;
     }

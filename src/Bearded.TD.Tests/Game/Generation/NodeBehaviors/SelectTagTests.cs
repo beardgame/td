@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectTagTests
     {
-        private static INodeBehavior<Node> behaviourWithParameters(
+        private static INodeBehavior behaviourWithParameters(
             double threshold = default, string? tag = default, SelectTag.CompareMode mode = default)
             => new SelectTag(new SelectTag.BehaviorParameters(
                 threshold, tag, mode));

@@ -1,13 +1,12 @@
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
 [Component("footprint")]
-sealed class FootprintGroup<T> : Component<T, Content.Models.IFootprintGroup>, IFootprintGroup
+sealed class FootprintGroup : Component<Content.Models.IFootprintGroup>, IFootprintGroup
 {
-    FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
+    World.FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
 
     public FootprintGroup(Content.Models.IFootprintGroup parameters) : base(parameters) { }
 
@@ -17,5 +16,5 @@ sealed class FootprintGroup<T> : Component<T, Content.Models.IFootprintGroup>, I
 
 interface IFootprintGroup
 {
-    FootprintGroup FootprintGroup { get; }
+    World.FootprintGroup FootprintGroup { get; }
 }

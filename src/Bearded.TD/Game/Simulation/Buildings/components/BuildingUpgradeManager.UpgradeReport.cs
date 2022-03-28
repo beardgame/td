@@ -15,23 +15,22 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class BuildingUpgradeManager<T>
+sealed partial class BuildingUpgradeManager
 {
     private sealed class UpgradeReport : IUpgradeReport
     {
         public ReportType Type => ReportType.Upgrades;
 
-        private readonly BuildingUpgradeManager<T> source;
+        private readonly BuildingUpgradeManager source;
 
-        public UpgradeReport(BuildingUpgradeManager<T> source)
+        public UpgradeReport(BuildingUpgradeManager source)
         {
             this.source = source;
         }
 
         public IUpgradeReportInstance CreateInstance(GameInstance game)
         {
-            // TODO(building): the cast below should really not exist
-            return new UpgradeReportInstance((source.Owner as ComponentGameObject)!, source, game);
+            return new UpgradeReportInstance(source.Owner, source, game);
         }
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>

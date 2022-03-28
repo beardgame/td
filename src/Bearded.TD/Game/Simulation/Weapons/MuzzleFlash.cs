@@ -25,9 +25,8 @@ interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
 }
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>,
+sealed class MuzzleFlash : Component<IMuzzleFlashParameters>,
     IListener<DrawComponents>, IListener<ShotProjectile>
-    where T : IGameObject, IPositionable, IDirected
 {
     private readonly struct Flash
     {

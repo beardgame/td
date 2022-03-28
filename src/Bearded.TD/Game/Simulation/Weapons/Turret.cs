@@ -24,8 +24,7 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Turret : Component<ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
     public ComponentGameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
@@ -129,7 +128,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<Dra
         return removed;
     }
 
-    private sealed class TargetOverride : Component<ComponentGameObject>,
+    private sealed class TargetOverride : Component,
         IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
     {
         private readonly IManualTarget3 target;

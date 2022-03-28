@@ -9,8 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class Overdrive<T> : Component<T>
-    where T : IComponentOwner<T>, IGameObject
+sealed class Overdrive : Component
 {
     private static readonly TimeSpan damageInterval = 0.5.S();
     private static float damagePercentile = 0.025f;

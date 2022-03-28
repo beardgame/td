@@ -19,8 +19,8 @@ interface IHealth
 }
 
 [Component("health")]
-sealed class Health<T> :
-    Component<T, IHealthComponentParameter>,
+sealed class Health :
+    Component<IHealthComponentParameter>,
     IHealth,
     ISyncable,
     IPreviewListener<PreviewHealDamage>,
@@ -122,10 +122,10 @@ sealed class Health<T> :
 
     private sealed class HealthSynchronizedState : IStateToSync
     {
-        private readonly Health<T> source;
+        private readonly Health source;
         private int currentHealth;
 
-        public HealthSynchronizedState(Health<T> source)
+        public HealthSynchronizedState(Health source)
         {
             this.source = source;
             currentHealth = source.CurrentHealth.NumericValue;
@@ -149,9 +149,9 @@ sealed class Health<T> :
         public HitPoints CurrentHealth => source.CurrentHealth;
         public HitPoints MaxHealth => source.MaxHealth;
 
-        private readonly Health<T> source;
+        private readonly Health source;
 
-        public HealthReport(Health<T> source)
+        public HealthReport(Health source)
         {
             this.source = source;
         }

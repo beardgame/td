@@ -5,8 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class TileBasedVisibility<T> : Component<T>, IVisibility
-    where T : GameObject, IComponentOwner<T>
+sealed class TileBasedVisibility : Component, IVisibility
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

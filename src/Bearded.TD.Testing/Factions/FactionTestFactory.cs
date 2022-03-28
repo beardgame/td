@@ -13,6 +13,6 @@ static class FactionTestFactory
         NextUniqueId<Faction>(),
         null,
         new FactionBlueprint(
-            NextUniqueExternalId<Faction>("faction"), null, null, Enumerable.Empty<IFactionBehaviorFactory<Faction>>()),
+            NextUniqueExternalId<Faction>("faction"), null, null, Enumerable.Empty<IFactionBehaviorFactory>()),
         events);
 }

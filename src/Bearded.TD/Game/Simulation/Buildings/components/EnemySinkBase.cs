@@ -6,8 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-abstract class EnemySinkBase<T> : Component<T>, IEnemySink, IListener<Materialized>
-    where T : IComponentOwner
+abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

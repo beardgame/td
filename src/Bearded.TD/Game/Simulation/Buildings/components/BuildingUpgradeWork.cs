@@ -7,8 +7,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingUpgradeWork<T> : Component<T>
-    where T : IComponentOwner<T>, IGameObject
+sealed class BuildingUpgradeWork : Component
 {
     private readonly IIncompleteUpgrade incompleteUpgrade;
     private IBuildingState? state;

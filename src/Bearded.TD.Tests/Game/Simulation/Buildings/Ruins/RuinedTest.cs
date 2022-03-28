@@ -18,7 +18,7 @@ public sealed class RuinedTest
     public RuinedTest()
     {
         testBed = new ComponentTestBed();
-        var stateManager = new BuildingStateManager<ComponentGameObject>();
+        var stateManager = new BuildingStateManager();
         testBed.AddComponent(stateManager);
         testBed.SendEvent(new ConstructionFinished());
         buildingState = stateManager.State;
@@ -33,7 +33,7 @@ public sealed class RuinedTest
     [Fact]
     public void AddingRuinedComponentMakesBuildingNonFunctional()
     {
-        testBed.AddComponent(new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
 
         buildingState.IsFunctional.Should().BeFalse();
     }
@@ -41,7 +41,7 @@ public sealed class RuinedTest
     [Fact]
     public void RemovingRuinedComponentMakesBuildingFunctional()
     {
-        var ruined = new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null));
+        var ruined = new Ruined(new RuinedParametersTemplate(null));
         testBed.AddComponent(ruined);
 
         testBed.RemoveComponent(ruined);
@@ -53,7 +53,7 @@ public sealed class RuinedTest
     public void RepairFinishedEventRestoresBuildingToFunctional()
     {
         var faction = FactionTestFactory.CreateFaction();
-        testBed.AddComponent(new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
 
         testBed.SendEvent(new RepairFinished(faction));
         testBed.AdvanceSingleFrame();
@@ -65,9 +65,9 @@ public sealed class RuinedTest
     public void RepairFinishedEventConvertsFactionToRepairingFaction()
     {
         var originalFaction = FactionTestFactory.CreateFaction();
-        var factionProvider = new FactionProvider<ComponentGameObject>(originalFaction);
+        var factionProvider = new FactionProvider(originalFaction);
         testBed.AddComponent(factionProvider);
-        testBed.AddComponent(new Ruined<ComponentGameObject>(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
         var repairingFaction = FactionTestFactory.CreateFaction();
 
         testBed.SendEvent(new RepairFinished(repairingFaction));

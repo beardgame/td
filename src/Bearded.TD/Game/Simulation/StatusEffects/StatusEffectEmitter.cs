@@ -25,8 +25,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects;
  * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
  */
 [Component("statusEffectEmitter")]
-sealed class StatusEffectEmitter<T> : Component<T, IStatusEffectEmitterParameters>, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class StatusEffectEmitter : Component<IStatusEffectEmitterParameters>, IListener<DrawComponents>
 {
     private readonly HashSet<ComponentGameObject> affectedObjects = new();
 

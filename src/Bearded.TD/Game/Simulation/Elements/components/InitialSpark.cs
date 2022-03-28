@@ -4,7 +4,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("initialSpark")]
-class InitialSpark<T> : Component<T>
+class InitialSpark : Component
 {
     private bool sparked;
 

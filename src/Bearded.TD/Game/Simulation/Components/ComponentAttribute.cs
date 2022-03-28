@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Simulation.Components;
 
 [AttributeUsage(AttributeTargets.Class)]
-[BaseTypeRequired(typeof(IComponent<>))]
+[BaseTypeRequired(typeof(IComponent))]
 [MeansImplicitUse]
-class ComponentAttribute : Attribute, IBehaviorAttribute
+sealed class ComponentAttribute : Attribute, IBehaviorAttribute
 {
     public string Id { get; }
 

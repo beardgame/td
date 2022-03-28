@@ -19,8 +19,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("worker")]
-// TODO: make generic
-sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent,
+sealed class WorkerComponent : Component<IWorkerParameters>, ITileWalkerOwner, IWorkerComponent,
     IListener<DrawComponents>
 {
     private IFactionProvider? factionProvider;

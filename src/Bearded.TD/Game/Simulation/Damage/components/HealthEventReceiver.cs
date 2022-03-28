@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class HealthEventReceiver<T> : Component<T>, IHealthEventReceiver
+sealed class HealthEventReceiver : Component, IHealthEventReceiver
 {
     public void Damage(DamageInfo damageInfo, IDamageSource? source)
     {

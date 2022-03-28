@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class GhostBuildingStateProvider<T> : Component<T>, IBuildingStateProvider
+sealed class GhostBuildingStateProvider : Component, IBuildingStateProvider
 {
     public IBuildingState State { get; } = new GhostBuildingState();
 

@@ -51,7 +51,7 @@ static class UpgradeBuilding
         {
             var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
             var incompleteUpgrade = upgradeManager.QueueUpgrade(upgrade);
-            building.AddComponent(new BuildingUpgradeWork<ComponentGameObject>(incompleteUpgrade));
+            building.AddComponent(new BuildingUpgradeWork(incompleteUpgrade));
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() =>

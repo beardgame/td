@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class ResetTagSelectedTests
     {
-        private static INodeBehavior<Node> behaviorWithParameters(string? tag = null, double value = 0)
+        private static INodeBehavior behaviorWithParameters(string? tag = null, double value = 0)
         {
             return new ResetTagSelected(new ResetTagSelected.BehaviorParameters(tag, value));
         }

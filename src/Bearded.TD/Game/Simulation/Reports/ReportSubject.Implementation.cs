@@ -8,8 +8,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Reports;
 
-sealed class ReportSubject<T> : Component<T>, IReportSubject, ReportAggregator.IReportConsumer
-    where T : IComponentOwner
+sealed class ReportSubject : Component, IReportSubject, ReportAggregator.IReportConsumer
 {
     private readonly SortedSet<IReport> reports =
         new(Utilities.Comparer<IReport>.Comparing<IReport, byte>(r => (byte) r.Type));

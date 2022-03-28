@@ -5,13 +5,13 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 interface IUpgradeEffect
 {
-    bool CanApplyTo<T>(T subject) where T : IComponentOwner;
+    bool CanApplyTo(ComponentGameObject subject);
     bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
-    bool CanApplyToComponentCollectionForType<T>();
+    bool CanApplyToComponentCollectionForType();
 
-    void ApplyTo<T>(T subject) where T : IComponentOwner<T>;
+    void ApplyTo(ComponentGameObject subject);
     void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
 
-    bool RemoveFrom(IComponentOwner subject);
+    bool RemoveFrom(ComponentGameObject subject);
     bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
 }

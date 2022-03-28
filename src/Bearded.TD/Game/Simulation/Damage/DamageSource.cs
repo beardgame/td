@@ -11,15 +11,14 @@ interface IDamageSource
     void AttributeKill(IDamageTarget target);
 }
 
-sealed class DamageSource<T> : Component<T>, IDamageSource
-    where T : IComponentOwner
+sealed class DamageSource : Component, IDamageSource
 {
-    private IIdProvider<T>? idProvider;
-    public Id<T> Id => idProvider?.Id ?? Id<T>.Invalid;
+    private IIdProvider? idProvider;
+    public Id<ComponentGameObject> Id => idProvider?.Id ?? Id<ComponentGameObject>.Invalid;
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IIdProvider<T>>(Owner, Events, provider => idProvider = provider);
+        ComponentDependencies.Depend<IIdProvider>(Owner, Events, provider => idProvider = provider);
     }
 
     public void AttributeDamage(DamageResult damageResult)

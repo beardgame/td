@@ -5,19 +5,17 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class IncompleteBuilding<T>
-    : Component<T>,
+sealed class IncompleteBuilding
+    : Component,
         IBuildingConstructionSyncer,
         IIncompleteBuilding,
         IListener<ObjectDeleting>,
         ProgressTracker.IProgressSubject
-    where T : GameObject, IComponentOwner, IDeletable
 {
     private readonly ProgressTracker progressTracker;
 
@@ -50,14 +48,12 @@ sealed class IncompleteBuilding<T>
 
     public void SendSyncStart()
     {
-        // TODO(building): currently cast needed to get the ID
-        (Owner as ComponentGameObject)?.Sync(SyncBuildingConstructionStart.Command);
+        Owner.Sync(SyncBuildingConstructionStart.Command);
     }
 
     public void SendSyncComplete()
     {
-        // TODO(building): currently cast needed to get the ID
-        (Owner as ComponentGameObject)?.Sync(SyncBuildingConstructionCompletion.Command);
+        Owner.Sync(SyncBuildingConstructionCompletion.Command);
     }
 
     public void OnStart()

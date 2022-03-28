@@ -11,8 +11,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

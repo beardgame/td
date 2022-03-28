@@ -16,8 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("particleSystem")]
-sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IListener<DrawComponents>
-    where T : IPositionable, IGameObject, IComponentOwner
+sealed class ParticleSystem : Component<IParticleSystemParameters>, IListener<DrawComponents>
 {
     private bool initialized;
     private readonly Particle[] particles;

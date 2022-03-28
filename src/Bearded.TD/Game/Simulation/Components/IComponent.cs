@@ -5,15 +5,11 @@ namespace Bearded.TD.Game.Simulation.Components;
 
 interface IComponent
 {
+    void OnAdded(ComponentGameObject owner, ComponentEvents events);
+    void OnRemoved();
     void Update(TimeSpan elapsedTime);
 
     bool CanApplyUpgradeEffect(IUpgradeEffect effect);
     void ApplyUpgradeEffect(IUpgradeEffect effect);
     bool RemoveUpgradeEffect(IUpgradeEffect effect);
-}
-
-interface IComponent<in TOwner> : IComponent
-{
-    void OnAdded(TOwner owner, ComponentEvents events);
-    void OnRemoved();
 }

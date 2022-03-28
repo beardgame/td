@@ -17,7 +17,7 @@ namespace Bearded.TD.Game.Simulation.Units;
 // TODO: split out tile presence management
 [Component("moveToBase")]
 sealed class MoveToBase
-    : Component<ComponentGameObject, IMoveToBaseParameters>,
+    : Component<IMoveToBaseParameters>,
         IEnemyMovement,
         IListener<ObjectDeleting>,
         ITileWalkerOwner,

@@ -13,7 +13,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly IComponentOwnerBlueprint blueprint;
     protected override TileSelection TileSelection { get; }
     private ComponentGameObject? ghost;
-    private MovableTileOccupation<ComponentGameObject>? ghostTileOccupation;
+    private MovableTileOccupation? ghostTileOccupation;
 
     public BuildingInteractionHandler(GameInstance game, Faction faction, IComponentOwnerBlueprint blueprint) : base(game)
     {

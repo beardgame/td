@@ -5,22 +5,22 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Components;
 
-sealed class ComponentCollection<TOwner>
+sealed class ComponentCollection
 {
-    private readonly TOwner owner;
+    private readonly ComponentGameObject owner;
     private readonly ComponentEvents events;
-    private readonly List<IComponent<TOwner>> components = new();
+    private readonly List<IComponent> components = new();
 
     private bool deferComponentCollectionMutations;
     private readonly Queue<CollectionMutation> queuedMutations = new();
 
-    public ComponentCollection(TOwner owner, ComponentEvents events)
+    public ComponentCollection(ComponentGameObject owner, ComponentEvents events)
     {
         this.owner = owner;
         this.events = events;
     }
 
-    public void Add(IEnumerable<IComponent<TOwner>> newComponents)
+    public void Add(IEnumerable<IComponent> newComponents)
     {
         foreach (var component in newComponents)
         {
@@ -28,7 +28,7 @@ sealed class ComponentCollection<TOwner>
         }
     }
 
-    public void Add(IComponent<TOwner> component)
+    public void Add(IComponent component)
     {
         if (deferComponentCollectionMutations)
         {
@@ -40,7 +40,7 @@ sealed class ComponentCollection<TOwner>
         events.Send(new ComponentAdded(component));
     }
 
-    public void Remove(IComponent<TOwner> component)
+    public void Remove(IComponent component)
     {
         if (deferComponentCollectionMutations)
         {
@@ -89,16 +89,16 @@ sealed class ComponentCollection<TOwner>
 
     private readonly struct CollectionMutation
     {
-        public static CollectionMutation Addition(IComponent<TOwner> component) =>
+        public static CollectionMutation Addition(IComponent component) =>
             new(CollectionMutationType.Addition, component);
 
-        public static CollectionMutation Removal(IComponent<TOwner> component) =>
+        public static CollectionMutation Removal(IComponent component) =>
             new(CollectionMutationType.Removal, component);
 
         public CollectionMutationType Type { get; }
-        public IComponent<TOwner> Component { get; }
+        public IComponent Component { get; }
 
-        private CollectionMutation(CollectionMutationType type, IComponent<TOwner> component)
+        private CollectionMutation(CollectionMutationType type, IComponent component)
         {
             Type = type;
             Component = component;

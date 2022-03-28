@@ -14,7 +14,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class DrawZoneOnSelect<T> : Component<T>, IListener<DrawComponents> where T : IGameObject, IComponentOwner
+sealed class DrawZoneOnSelect : Component, IListener<DrawComponents>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private TileRangeDrawer tileRangeDrawer = null!;

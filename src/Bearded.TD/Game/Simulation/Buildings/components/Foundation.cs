@@ -30,8 +30,7 @@ interface IFoundation
 }
 
 [Component("foundation")]
-sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Foundation : Component<IFoundationParameters>, IFoundation, IListener<DrawComponents>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

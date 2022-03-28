@@ -218,5 +218,5 @@ sealed class PlayerCursors
     private sealed record InstantiatedGhost(
         ComponentGameObject Ghost,
         TileSelection Selection,
-        MovableTileOccupation<ComponentGameObject> TileOccupation);
+        MovableTileOccupation TileOccupation);
 }

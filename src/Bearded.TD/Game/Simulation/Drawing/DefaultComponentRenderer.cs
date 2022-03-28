@@ -11,8 +11,7 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 
 readonly record struct DrawComponents(CoreDrawers Core, IComponentDrawer Drawer) : IComponentEvent;
 
-class DefaultComponentRenderer<T> : Component<T>, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
-    where T : IGameObject, IComponentOwner
+class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
 {
     private IVisibility? visibility;
 

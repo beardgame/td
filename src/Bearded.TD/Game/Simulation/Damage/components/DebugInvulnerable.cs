@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DebugInvulnerable<T> : Component<T>, IPreviewListener<PreviewTakeDamage>
+sealed class DebugInvulnerable : Component, IPreviewListener<PreviewTakeDamage>
 {
     protected override void OnAdded()
     {

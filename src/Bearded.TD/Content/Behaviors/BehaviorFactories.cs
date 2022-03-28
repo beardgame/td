@@ -8,17 +8,15 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Content.Behaviors;
 
-sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttribute, TEmptyConstructorParameters>
+sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyConstructorParameters>
     where TBehaviorTemplate : IBehaviorTemplate
     where TBehaviorAttribute : Attribute, IBehaviorAttribute
-    where TOwnerAttribute : Attribute
 {
     #region Public interface
 
     public IDictionary<string, Type> ParameterTypesById { get; private set; }
 
-    public object CreateBehaviorFactory<TOwner>(TBehaviorTemplate template)
-        => tryMakeBehaviorFactory<TOwner>(template);
+    public object CreateBehaviorFactory(TBehaviorTemplate template) => tryMakeBehaviorFactory(template);
 
     public BehaviorFactories(Type behaviorInterface, MethodInfo factoryFactoryMethodInfo)
     {
@@ -30,10 +28,9 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
 
     #region Private permanent storage
 
-    private static Type thisType => typeof(BehaviorFactories<,,,>).MakeGenericType(
+    private static Type thisType => typeof(BehaviorFactories<,,>).MakeGenericType(
         typeof(TBehaviorTemplate),
         typeof(TBehaviorAttribute),
-        typeof(TOwnerAttribute),
         typeof(TEmptyConstructorParameters));
 
     private readonly Type behaviorInterface;
@@ -42,11 +39,11 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
 
     private bool initialized;
 
-    private readonly Dictionary<string /* id */, Type /* parameter */> parametersById
-        = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string /* id */, Type /* parameter */> parametersById =
+        new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly Dictionary<string /* id */, Dictionary<Type /* owner */, object /* factoryFactory */>>
-        factoryFactoriesById = new Dictionary<string, Dictionary<Type, object>>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string /* id */, object /* factoryFactory */> factoryFactoriesById =
+        new(StringComparer.OrdinalIgnoreCase);
 
     #endregion
 
@@ -69,32 +66,20 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
             .Select(t => (t.attribute.Id, t.type))
             .ToList();
 
-        var knownOwners = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.GetCustomAttribute<TOwnerAttribute>() != null)
-            .ToList();
-
         foreach (var subject in knownBehaviors)
-            register(subject, knownOwners);
+            register(subject);
 
         ParameterTypesById = ImmutableDictionary.CreateRange(parametersById);
     }
 
-    private void register((string id, Type type) behavior, List<Type> knownOwners)
-        => register(behavior.id, behavior.type, knownOwners);
+    private void register((string id, Type type) behavior)
+        => register(behavior.id, behavior.type);
 
-    private void register(string id, Type behaviorType, List<Type> knownOwners)
+    private void register(string id, Type behaviorType)
     {
         var parameterType = constructorParameterTypeOf(behaviorType);
 
-        var tryRegister = behaviorType.IsGenericType
-            ? (Func<string, Type, Type, Type, bool>) tryRegisterGenericBehavior
-            : tryRegisterBehavior;
-
-        var registeredBehavior = false;
-        foreach (var owner in knownOwners)
-        {
-            registeredBehavior = tryRegister(id, behaviorType, owner, parameterType) || registeredBehavior;
-        }
+        var registeredBehavior = tryRegisterBehavior(id, behaviorType, parameterType);
 
         if (!registeredBehavior)
         {
@@ -102,52 +87,29 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
         }
     }
 
-    private bool tryRegisterGenericBehavior(string id, Type behavior, Type owner, Type parameters)
+    private bool tryRegisterBehavior(string id, Type behavior, Type parameters)
     {
-        Type typedBehavior = null;
-
-        try
-        {
-            typedBehavior = behavior.MakeGenericType(owner);
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return typedBehavior != null && tryRegisterBehavior(id, typedBehavior, owner, parameters);
-    }
-
-    private bool tryRegisterBehavior(string id, Type behavior, Type owner, Type parameters)
-    {
-        var concreteInterface = behaviorInterface.MakeGenericType(owner);
-
-        if (!concreteInterface.IsAssignableFrom(behavior))
+        if (!behaviorInterface.IsAssignableFrom(behavior))
         {
             return false;
         }
 
-        registerFactoryFactory(id, behavior, owner, parameters);
+        registerFactoryFactory(id, behavior, parameters);
         return true;
     }
 
     private void registerFactoryFactory(
-        string id, Type behavior, Type owner, Type parameters)
+        string id, Type behavior, Type parameters)
     {
-        var factoryFactory = makeFactoryFactory(behavior, owner, parameters);
+        var factoryFactory = makeFactoryFactory(behavior, parameters);
 
+        factoryFactoriesById[id] = factoryFactory;
         parametersById[id] = parameters; // will write multiple times for multi-use behaviours ¯\_(ツ)_/¯
-        if (!factoryFactoriesById.TryGetValue(id, out var factoryFactoriesByOwnerForId))
-        {
-            factoryFactoriesByOwnerForId = new Dictionary<Type, object>();
-            factoryFactoriesById.Add(id, factoryFactoriesByOwnerForId);
-        }
-
-        factoryFactoriesByOwnerForId.Add(owner, factoryFactory);
     }
 
-    private object makeFactoryFactory(Type behavior, Type owner, Type parameters)
+    private object makeFactoryFactory(Type behavior, Type parameters)
     {
-        var typedMaker = factoryFactoryMethodInfo.MakeGenericMethod(owner, parameters);
+        var typedMaker = factoryFactoryMethodInfo.MakeGenericMethod(parameters);
 
         var parameter = Expression.Parameter(parameters);
 
@@ -191,7 +153,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
     private readonly MethodInfo tryMakeBehaviorFactoryMethodInfo = thisType
         .GetMethod(nameof(tryMakeBehaviorFactoryGeneric), BindingFlags.Instance | BindingFlags.NonPublic);
 
-    private object tryMakeBehaviorFactory<TOwner>(TBehaviorTemplate template)
+    private object tryMakeBehaviorFactory(TBehaviorTemplate template)
     {
         var id = template.Id;
         var parameterData = template.Parameters;
@@ -209,16 +171,14 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TOwnerAttr
                 $"[{id}] Expected instance of {parameterData}, but {parameterType} is not.");
         }
 
-        var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(typeof(TOwner), parameterType);
+        var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(parameterType);
 
         return tryMakeFactory.Invoke(this, new[] { id, parameterData });
     }
 
-    private object tryMakeBehaviorFactoryGeneric<TOwner, TParameters>(string id, TParameters parameters)
+    private object tryMakeBehaviorFactoryGeneric<TParameters>(string id, TParameters parameters)
     {
-        var factoryFactories = factoryFactoriesById[id];
-
-        factoryFactories.TryGetValue(typeof(TOwner), out var factoryFactory);
+        var factoryFactory = factoryFactoriesById[id];
 
         var typedFactoryFactory = (Func<TParameters, object>) factoryFactory;
 

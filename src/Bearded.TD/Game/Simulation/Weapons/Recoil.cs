@@ -12,8 +12,7 @@ interface IRecoilParameters : IParametersTemplate<IRecoilParameters>
 }
 
 [Component("recoil")]
-sealed class Recoil<T> : Component<T, IRecoilParameters>, IListener<ShotProjectile>
-    where T : IComponentOwner
+sealed class Recoil : Component<IRecoilParameters>, IListener<ShotProjectile>
 {
     private IAngularAccelerator? accelerator;
 

@@ -10,9 +10,9 @@ sealed class GameModeBlueprint : IGameModeBlueprint
 {
     public ModAwareId Id { get; }
     public string Name { get; }
-    public ImmutableArray<IGameRuleFactory<GameState>> Rules { get; }
+    public ImmutableArray<IGameRuleFactory> Rules { get; }
 
-    public GameModeBlueprint(ModAwareId id, string name, IEnumerable<IGameRuleFactory<GameState>> rules)
+    public GameModeBlueprint(ModAwareId id, string name, IEnumerable<IGameRuleFactory> rules)
     {
         Id = id;
         Name = name;

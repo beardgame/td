@@ -19,7 +19,7 @@ interface IWeaponState : IPositionable, IDirected
         where T : struct, IComponentEvent;
 }
 
-sealed class WeaponState : Component<ComponentGameObject>, IWeaponState
+sealed class WeaponState : Component, IWeaponState
 {
     private readonly ITurret turret;
 

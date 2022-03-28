@@ -8,8 +8,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Exploration;
 
 [Component("revealSurroundingZones")]
-sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesParameters>
-    where T : IGameObject, IComponentOwner<T>
+sealed class RevealSurroundingZones : Component<IRevealSurroundingZonesParameters>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

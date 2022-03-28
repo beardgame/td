@@ -7,8 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Lights;
 
 [Component("pointlight")]
-class PointLight<T> : Component<T, IPointLightParameters>, IListener<DrawComponents>
-    where T : IPositionable
+class PointLight : Component<IPointLightParameters>, IListener<DrawComponents>
 {
     public PointLight(IPointLightParameters parameters) : base(parameters)
     {

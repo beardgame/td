@@ -27,7 +27,7 @@ static class ComponentGameObjectFactory
         Direction2? direction = null)
     {
         var obj = CreateWithoutRenderer(game, parent, position, direction);
-        blueprint.GetComponents<ComponentGameObject>().ForEach(obj.AddComponent);
+        blueprint.GetComponents().ForEach(obj.AddComponent);
         return obj;
     }
 
@@ -49,6 +49,6 @@ static class ComponentGameObjectFactory
 
     private static void addDefaultRenderer(ComponentGameObject obj)
     {
-        obj.AddComponent(new DefaultComponentRenderer<ComponentGameObject>());
+        obj.AddComponent(new DefaultComponentRenderer());
     }
 }

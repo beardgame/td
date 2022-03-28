@@ -12,23 +12,20 @@ static class NodeBehaviorFactories
         .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static)!;
 
     private static readonly
-        BehaviorFactories<Template, NodeBehaviorAttribute, NodeBehaviorOwnerAttribute, VoidParameters>
+        BehaviorFactories<Template, NodeBehaviorAttribute, VoidParameters>
         factories =
-            new(typeof(INodeBehavior<>), makeFactoryFactoryMethodInfo);
+            new(typeof(INodeBehavior), makeFactoryFactoryMethodInfo);
 
     public static void Initialize() => factories.Initialize();
 
     public static IDictionary<string, Type> ParameterTypesForComponentsById => factories.ParameterTypesById;
 
-    public static INodeBehaviorFactory<Node> CreateNodeBehaviorFactory(Template template) =>
-        CreateNodeBehaviorFactory<Node>(template);
+    public static INodeBehaviorFactory CreateNodeBehaviorFactory(Template template) =>
+        (factories.CreateBehaviorFactory(template) as INodeBehaviorFactory)!;
 
-    public static INodeBehaviorFactory<TOwner> CreateNodeBehaviorFactory<TOwner>(Template template) =>
-        (factories.CreateBehaviorFactory<Node>(template) as INodeBehaviorFactory<TOwner>)!;
-
-    private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
-        Func<TParameters, INodeBehavior<TOwner>> constructor)
+    private static object makeFactoryFactoryGeneric<TParameters>(
+        Func<TParameters, INodeBehavior> constructor)
     {
-        return (Func<TParameters, object>) (p => new NodeBehaviorFactory<TOwner, TParameters>(p, constructor));
+        return (Func<TParameters, object>) (p => new NodeBehaviorFactory<TParameters>(p, constructor));
     }
 }

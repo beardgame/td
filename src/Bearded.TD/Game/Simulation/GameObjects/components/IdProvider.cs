@@ -4,12 +4,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class IdProvider<T> : Component<T>, IIdProvider<T>
-    where T : IGameObject
+sealed class IdProvider : Component, IIdProvider
 {
-    public Id<T> Id { get; }
+    public Id<ComponentGameObject> Id { get; }
 
-    public IdProvider(Id<T> id)
+    public IdProvider(Id<ComponentGameObject> id)
     {
         Id = id;
     }
@@ -28,7 +27,7 @@ sealed class IdProvider<T> : Component<T>, IIdProvider<T>
     public override void Update(TimeSpan elapsedTime) {}
 }
 
-interface IIdProvider<T>
+interface IIdProvider
 {
-    Id<T> Id { get; }
+    Id<ComponentGameObject> Id { get; }
 }

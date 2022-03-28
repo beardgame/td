@@ -7,8 +7,7 @@ using OpenTK.Mathematics;
 namespace Bearded.TD.Game.Simulation.Footprints;
 
 [Component("footprintTransformation")]
-sealed class FootprintTransformation<T> : Component<T>, ITransformable, IListener<FootprintChanged>
-    where T : IComponentOwner, IPositionable
+sealed class FootprintTransformation : Component, ITransformable, IListener<FootprintChanged>
 {
     public Matrix2 LocalCoordinateTransform { get; private set; }
     public Angle LocalOrientationTransform { get; private set; }

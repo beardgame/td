@@ -7,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Units;
 
-sealed class EnemyLifeCycle : Component<ComponentGameObject>,
+sealed class EnemyLifeCycle : Component,
     IDamageTarget,
     IEnemyLife,
     IListener<EnactDeath>,

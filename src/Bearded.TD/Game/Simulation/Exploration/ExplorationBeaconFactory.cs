@@ -18,13 +18,12 @@ static class ExplorationBeaconFactory
         var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             game, blueprint, null, Level.GetPosition(tile).WithZ(0));
 
-        obj.AddComponent(new AlwaysVisibleVisibility<ComponentGameObject>());
-        obj.AddComponent(new DrawZoneOnSelect<ComponentGameObject>());
-        obj.AddComponent(new ReportSubject<ComponentGameObject>());
-        obj.AddComponent(new Selectable<ComponentGameObject>());
-        obj.AddComponent(
-            new StaticTileOccupation<ComponentGameObject>(blueprint.GetFootprintGroup().Positioned(0, tile)));
-        obj.AddComponent(new ZoneRevealer<ComponentGameObject>(zone));
+        obj.AddComponent(new AlwaysVisibleVisibility());
+        obj.AddComponent(new DrawZoneOnSelect());
+        obj.AddComponent(new ReportSubject());
+        obj.AddComponent(new Selectable());
+        obj.AddComponent(new StaticTileOccupation(blueprint.GetFootprintGroup().Positioned(0, tile)));
+        obj.AddComponent(new ZoneRevealer(zone));
 
         return obj;
     }

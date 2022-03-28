@@ -7,22 +7,20 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 abstract class UpgradeEffectBase : IUpgradeEffect
 {
-    public bool CanApplyTo<T>(T subject)
-        where T : IComponentOwner
-        => CanApplyToComponentCollectionForType<T>()
+    public bool CanApplyTo(ComponentGameObject subject)
+        => CanApplyToComponentCollectionForType()
             || subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
 
     public virtual bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;
 
-    public virtual bool CanApplyToComponentCollectionForType<T>() => false;
+    public virtual bool CanApplyToComponentCollectionForType() => false;
 
-    public virtual void ApplyTo<T>(T subject)
-        where T : IComponentOwner<T>
-        => subject.GetComponents<IComponent<T>>().ForEach(c => c.ApplyUpgradeEffect(this));
+    public virtual void ApplyTo(ComponentGameObject subject)
+        => subject.GetComponents<IComponent>().ForEach(c => c.ApplyUpgradeEffect(this));
 
     public virtual void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> {}
 
-    public virtual bool RemoveFrom(IComponentOwner subject)
+    public virtual bool RemoveFrom(ComponentGameObject subject)
         => subject.GetComponents<IComponent>().Aggregate(false, (b, c) => c.RemoveUpgradeEffect(this) || b);
 
     public virtual bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;

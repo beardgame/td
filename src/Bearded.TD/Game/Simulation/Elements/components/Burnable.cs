@@ -15,9 +15,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("burnable")]
-sealed class Burnable<T> : Component<T, IBurnableParameters>,
+sealed class Burnable : Component<IBurnableParameters>,
     IListener<TakeDamage>, IListener<Spark>, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
 {
     private IDamageSource? lastFireHitOwner;
     private IDamageSource? damageSource;

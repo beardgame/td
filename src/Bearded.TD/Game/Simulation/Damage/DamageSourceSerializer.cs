@@ -24,7 +24,7 @@ sealed class DamageSourceSerializer
             case null:
                 type = (byte) SupportedImplementation.None;
                 break;
-            case DamageSource<ComponentGameObject> b:
+            case DamageSource b:
                 type = (byte) SupportedImplementation.GameObject;
                 id = b.Id.Value;
                 break;

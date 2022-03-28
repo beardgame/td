@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
@@ -23,7 +22,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation;
 
-[GameRuleOwner]
 sealed class GameState
 {
     private readonly Stack<GameObject> objectsBeingAdded = new();

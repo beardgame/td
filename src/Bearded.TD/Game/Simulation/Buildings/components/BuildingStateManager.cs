@@ -10,13 +10,11 @@ using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingStateManager<T>
-    : Component<T>,
+sealed class BuildingStateManager : Component,
         IBuildingStateProvider,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
@@ -24,7 +22,6 @@ sealed class BuildingStateManager<T>
         IListener<ObjectRepaired>,
         IListener<ObjectRuined>,
         IListener<PreventPlayerHealthChanges>
-    where T : IComponentOwner<T>, IDeletable, IGameObject
 {
     private readonly BuildingState state = new();
     private IHealth? health;
@@ -98,7 +95,7 @@ sealed class BuildingStateManager<T>
 
     private void materialize()
     {
-        Owner.AddComponent(new Syncer<T>());
+        Owner.AddComponent(new Syncer());
         state.IsMaterialized = true;
         Events.Send(new Materialized());
     }
@@ -109,32 +106,30 @@ sealed class BuildingStateManager<T>
             !state.IsRuined &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
-            Owner.AddComponent(new Ruined<T>(new RuinedParametersTemplate(null)));
+            Owner.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
         }
 
         if (state.IsDead)
         {
-            // TODO(building): cast necessary right now
-            (Owner as ComponentGameObject).Sync(DeleteGameObject.Command);
+            Owner.Sync(DeleteGameObject.Command);
         }
     }
 
     private sealed class BuildingStateReport : IBuildingStateReport
     {
-        private readonly T owner;
         private readonly IBuildingStateProvider buildingStateProvider;
 
         public ReportType Type => ReportType.EntityActions;
 
-        public ComponentGameObject Building => (owner as ComponentGameObject)!;
+        public ComponentGameObject Building { get; }
 
         public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
 
         public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
 
-        public BuildingStateReport(T owner, IBuildingStateProvider buildingStateProvider)
+        public BuildingStateReport(ComponentGameObject owner, IBuildingStateProvider buildingStateProvider)
         {
-            this.owner = owner;
+            Building = owner;
             this.buildingStateProvider = buildingStateProvider;
         }
     }

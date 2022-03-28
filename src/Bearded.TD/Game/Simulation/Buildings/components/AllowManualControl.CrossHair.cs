@@ -13,9 +13,9 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class AllowManualControl<T>
+sealed partial class AllowManualControl
 {
-    private sealed class CrossHair : Component<T>, IManualTarget3, IListener<DrawComponents>
+    private sealed class CrossHair : Component, IManualTarget3, IListener<DrawComponents>
     {
         private readonly IManualTarget2 target;
         private IFactionProvider? faction;
@@ -31,7 +31,7 @@ sealed partial class AllowManualControl<T>
 
         protected override void OnAdded()
         {
-            faction = (Owner as IComponentOwner).GetComponents<IFactionProvider>().FirstOrDefault();
+            faction = Owner.GetComponents<IFactionProvider>().FirstOrDefault();
 
             var spriteBlueprint = Owner.Game.Meta.Blueprints
                 .Sprites[ModAwareId.ForDefaultMod("particle")]

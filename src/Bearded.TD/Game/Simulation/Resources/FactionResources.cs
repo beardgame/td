@@ -8,7 +8,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 namespace Bearded.TD.Game.Simulation.Resources;
 
 [FactionBehavior("resources")]
-sealed class FactionResources : FactionBehavior<Faction>, IListener<FrameUpdateStarting>
+sealed class FactionResources : FactionBehavior, IListener<FrameUpdateStarting>
 {
     private readonly HashSet<ResourceReservation> outstandingReservations = new();
     private readonly List<ResourceReservation> reservationQueue = new();

@@ -11,7 +11,7 @@ static class WeaponFactory
         var obj = new ComponentGameObject((IComponentOwner)turret.Owner, new Position3(), new Direction2());
         game.Add(obj);
         obj.AddComponent(new WeaponState(turret));
-        foreach (var component in blueprint.GetComponents<ComponentGameObject>())
+        foreach (var component in blueprint.GetComponents())
         {
             obj.AddComponent(component);
         }

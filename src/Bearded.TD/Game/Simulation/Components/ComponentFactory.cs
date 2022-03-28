@@ -4,25 +4,25 @@ using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Components;
 
-sealed class ComponentFactory<TOwner, TComponentParameters> : IComponentFactory<TOwner>
+sealed class ComponentFactory<TComponentParameters> : IComponentFactory
     where TComponentParameters : IParametersTemplate<TComponentParameters>
 {
     private readonly TComponentParameters parameters;
-    private readonly Func<TComponentParameters, IComponent<TOwner>> factory;
+    private readonly Func<TComponentParameters, IComponent> factory;
 
-    public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent<TOwner>> factory)
+    public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent> factory)
     {
         this.parameters = parameters;
         this.factory = factory;
     }
 
-    public IComponent<TOwner> Create() => factory(parameters);
+    public IComponent Create() => factory(parameters);
 
     public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(parameters);
 }
 
-interface IComponentFactory<in TOwner>
+interface IComponentFactory
 {
-    IComponent<TOwner> Create();
+    IComponent Create();
     bool CanApplyUpgradeEffect(IUpgradeEffect effect);
 }

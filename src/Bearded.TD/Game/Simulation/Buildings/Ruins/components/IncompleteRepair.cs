@@ -8,12 +8,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
-sealed class IncompleteRepair<T>
-    : Component<T>,
+sealed class IncompleteRepair
+    : Component,
         IIncompleteRepair,
         IRepairSyncer,
         ProgressTracker.IProgressSubject
-    where T : IComponentOwner<T>, IGameObject
 {
     private readonly Faction repairingFaction;
     private readonly ProgressTracker progressTracker;
@@ -43,14 +42,12 @@ sealed class IncompleteRepair<T>
 
     public void SendSyncStart()
     {
-        // TODO(building): currently cast needed to get the ID
-        (Owner as ComponentGameObject)?.Sync(SyncBuildingRepairStart.Command);
+        Owner.Sync(SyncBuildingRepairStart.Command);
     }
 
     public void SendSyncComplete()
     {
-        // TODO(building): currently cast needed to get the ID
-        (Owner as ComponentGameObject)?.Sync(SyncBuildingRepairCompletion.Command);
+        Owner.Sync(SyncBuildingRepairCompletion.Command);
     }
 
     public void OnStart()

@@ -8,9 +8,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("spawnObjectOnHit")]
-sealed class SpawnObjectOnHit<T>
-    : Component<T, ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
-    where T : GameObject, IPositionable, IComponentOwner
+sealed class SpawnObjectOnHit
+    : Component<ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
 {
     public SpawnObjectOnHit(ISpawnObjectOnHitParameters parameters) : base(parameters)
     {
@@ -56,7 +55,7 @@ sealed class SpawnObjectOnHit<T>
     {
         var obj = ComponentGameObjectFactory
             .CreateFromBlueprintWithDefaultRenderer(Owner.Game, Parameters.Object, Owner, Owner.Position, Direction2.Zero);
-        obj.AddComponent(new Property<HitInfo,ComponentGameObject>(hit));
+        obj.AddComponent(new Property<HitInfo>(hit));
     }
 
     public override void Update(TimeSpan elapsedTime)

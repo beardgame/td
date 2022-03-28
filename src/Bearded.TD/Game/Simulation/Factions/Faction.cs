@@ -9,11 +9,10 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Factions;
 
-[FactionBehaviorOwner]
 sealed class Faction : IIdable<Faction>
 {
     private readonly IFactionBlueprint blueprint;
-    private readonly List<IFactionBehavior<Faction>> behaviors = new();
+    private readonly List<IFactionBehavior> behaviors = new();
 
     public Id<Faction> Id { get; }
     public ExternalId<Faction> ExternalId => blueprint.Id;
@@ -40,7 +39,7 @@ sealed class Faction : IIdable<Faction>
         this.blueprint = blueprint;
     }
 
-    private void addBehaviorRange(IEnumerable<IFactionBehavior<Faction>> behaviorsToAdd, GlobalGameEvents events)
+    private void addBehaviorRange(IEnumerable<IFactionBehavior> behaviorsToAdd, GlobalGameEvents events)
     {
         var factionBehaviors = behaviorsToAdd.ToList();
         factionBehaviors.ForEach(behaviors.Add);
