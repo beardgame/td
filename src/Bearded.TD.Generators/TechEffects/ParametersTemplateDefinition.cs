@@ -8,19 +8,28 @@ namespace Bearded.TD.Generators.TechEffects
     sealed class ParametersTemplateDefinition
     {
         public string Namespace { get; }
-        public string InterfaceName { get; }
+        private readonly string interfaceName;
+        public ImmutableArray<INamedTypeSymbol> ContainingTypes { get; }
         public ImmutableArray<ParametersPropertyDefinition> Properties { get; }
 
         public string TemplateName => baseName + "Template";
         public string ModifiableName => baseName + "Modifiable";
-        private string baseName => getInterfaceBaseName(InterfaceName);
+        private string baseName => getInterfaceBaseName(interfaceName);
+
+        public string FullInterfaceName { get; }
 
         private ParametersTemplateDefinition(
-            string @namespace, string interfaceName, ImmutableArray<ParametersPropertyDefinition> properties)
+            string @namespace,
+            string interfaceName,
+            ImmutableArray<INamedTypeSymbol> containingTypes,
+            ImmutableArray<ParametersPropertyDefinition> properties)
         {
             Namespace = @namespace;
-            InterfaceName = interfaceName;
+            this.interfaceName = interfaceName;
+            ContainingTypes = containingTypes;
             Properties = properties;
+
+            FullInterfaceName = string.Join('.', ContainingTypes.Select(t => t.Name).Append(interfaceName));
         }
 
         public override string ToString()
@@ -28,7 +37,7 @@ namespace Bearded.TD.Generators.TechEffects
             var properties = string.Join(", ", Properties);
             return
                 $"{nameof(Namespace)}: {Namespace}, " +
-                $"{nameof(InterfaceName)}: {InterfaceName}, " +
+                $"{nameof(interfaceName)}: {interfaceName}, " +
                 $"{nameof(Properties)}: {properties}, " +
                 $"{nameof(TemplateName)}: {TemplateName}, " +
                 $"{nameof(ModifiableName)}: {ModifiableName}";
@@ -42,7 +51,21 @@ namespace Bearded.TD.Generators.TechEffects
             var properties =
                 extractProperties(symbol, modifiableAttributeSymbol, attributeConverters).ToImmutableArray();
 
-            return new ParametersTemplateDefinition($"{symbol.ContainingNamespace}", symbol.Name, properties);
+            return new ParametersTemplateDefinition(
+                $"{symbol.ContainingNamespace}", symbol.Name, getContainingTypes(symbol), properties);
+        }
+
+        private static ImmutableArray<INamedTypeSymbol> getContainingTypes(INamedTypeSymbol symbol)
+        {
+            var nestedTypeStack = new List<INamedTypeSymbol>();
+            var containingType = symbol.ContainingType;
+            while (containingType != null)
+            {
+                nestedTypeStack.Add(containingType);
+                containingType = containingType.ContainingType;
+            }
+
+            return Enumerable.Reverse(nestedTypeStack).ToImmutableArray();
         }
 
         private static string getInterfaceBaseName(string interfaceName)
