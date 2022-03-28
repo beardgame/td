@@ -1,6 +1,5 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -42,8 +41,8 @@ sealed class Trail : Component<ITrailParameters>, IListener<DrawComponents>
 
     private void persistTrail()
     {
-        var obj = new PersistentTrail(drawer, Parameters, tracer, Owner.Position);
-        Owner.Game.Add(obj);
+        var obj = ComponentGameObjectFactory.CreateWithDefaultRenderer(Owner.Game, null, Owner.Position);
+        obj.AddComponent(new PersistentTrail(drawer, Parameters, tracer));
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -53,44 +52,40 @@ sealed class Trail : Component<ITrailParameters>, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
-        drawTrail(this.drawer, tracer, Parameters, Owner.Game);
+        drawTrail(drawer, tracer, Parameters, Owner.Game);
     }
 
-
-    sealed class PersistentTrail : GameObject, IRenderable
+    private sealed class PersistentTrail : Component, IListener<DrawComponents>
     {
         private readonly TrailDrawer drawer;
         private readonly ITrailParameters parameters;
         private readonly TrailTracer tracer;
-        private readonly Position3 position;
         private Instant deleteAt;
 
-        public PersistentTrail(TrailDrawer drawer, ITrailParameters parameters, TrailTracer tracer,
-            Position3 position)
+        public PersistentTrail(TrailDrawer drawer, ITrailParameters parameters, TrailTracer tracer)
         {
             this.drawer = drawer;
             this.parameters = parameters;
             this.tracer = tracer;
-            this.position = position;
         }
 
         protected override void OnAdded()
         {
-            deleteAt = Game.Time + parameters.Timeout;
-            Game.ListAs<IRenderable>(this);
+            deleteAt = Owner.Game.Time + parameters.Timeout;
+            Events.Subscribe(this);
         }
 
         public override void Update(TimeSpan elapsedTime)
         {
-            tracer.Update(Game.Time, position, true);
+            tracer.Update(Owner.Game.Time, Owner.Position, true);
 
-            if (deleteAt <= Game.Time)
-                Delete();
+            if (deleteAt <= Owner.Game.Time)
+                Owner.Delete();
         }
 
-        public void Render(CoreDrawers drawers)
+        public void HandleEvent(DrawComponents e)
         {
-            drawTrail(drawer, tracer, parameters, Game);
+            drawTrail(drawer, tracer, parameters, Owner.Game);
         }
     }
 
