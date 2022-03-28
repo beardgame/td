@@ -6,17 +6,18 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-interface IRecoilParameters : IParametersTemplate<IRecoilParameters>
-{
-    AngularVelocity Impulse { get; }
-}
 
 [Component("recoil")]
-sealed class Recoil : Component<IRecoilParameters>, IListener<ShotProjectile>
+sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
 {
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        AngularVelocity Impulse { get; }
+    }
+
     private IAngularAccelerator? accelerator;
 
-    public Recoil(IRecoilParameters parameters) : base(parameters)
+    public Recoil(IParameters parameters) : base(parameters)
     {
     }
 

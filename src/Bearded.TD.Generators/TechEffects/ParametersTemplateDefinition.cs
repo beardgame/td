@@ -9,12 +9,11 @@ namespace Bearded.TD.Generators.TechEffects
     {
         public string Namespace { get; }
         private readonly string interfaceName;
-        public ImmutableArray<INamedTypeSymbol> ContainingTypes { get; }
         public ImmutableArray<ParametersPropertyDefinition> Properties { get; }
 
         public string TemplateName => baseName + "Template";
         public string ModifiableName => baseName + "Modifiable";
-        private string baseName => getInterfaceBaseName(interfaceName);
+        private readonly string baseName;
 
         public string FullInterfaceName { get; }
 
@@ -26,10 +25,10 @@ namespace Bearded.TD.Generators.TechEffects
         {
             Namespace = @namespace;
             this.interfaceName = interfaceName;
-            ContainingTypes = containingTypes;
             Properties = properties;
 
-            FullInterfaceName = string.Join('.', ContainingTypes.Select(t => t.Name).Append(interfaceName));
+            baseName = getInterfaceBaseName(interfaceName, containingTypes);
+            FullInterfaceName = string.Join('.', containingTypes.Select(t => t.Name).Append(interfaceName));
         }
 
         public override string ToString()
@@ -68,10 +67,12 @@ namespace Bearded.TD.Generators.TechEffects
             return Enumerable.Reverse(nestedTypeStack).ToImmutableArray();
         }
 
-        private static string getInterfaceBaseName(string interfaceName)
+        private static string getInterfaceBaseName(
+            string interfaceName, ImmutableArray<INamedTypeSymbol> containingTypes)
         {
             if (interfaceName.EndsWith("Template")) interfaceName = interfaceName.Replace("Template", "");
-            return NameFactory.FromInterfaceName(interfaceName).ClassName();
+            var rawBaseName = NameFactory.FromInterfaceName(interfaceName).ClassName();
+            return string.Join("", containingTypes.Select(t => t.Name).Append(rawBaseName));
         }
 
         private static IEnumerable<ParametersPropertyDefinition> extractProperties(
