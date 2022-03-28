@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentOwnerExtensions
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 interface IComponentOwner
 {

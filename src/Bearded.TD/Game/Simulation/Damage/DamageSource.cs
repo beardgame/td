@@ -14,7 +14,7 @@ interface IDamageSource
 sealed class DamageSource : Component, IDamageSource
 {
     private IIdProvider? idProvider;
-    public Id<ComponentGameObject> Id => idProvider?.Id ?? Id<ComponentGameObject>.Invalid;
+    public Id<GameObject> Id => idProvider?.Id ?? Id<GameObject>.Invalid;
 
     protected override void OnAdded()
     {

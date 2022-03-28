@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 

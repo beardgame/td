@@ -2,7 +2,7 @@
 using Bearded.TD.Content.Behaviors;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 [AttributeUsage(AttributeTargets.Class)]
 [BaseTypeRequired(typeof(IComponent))]

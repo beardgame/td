@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
@@ -27,7 +28,7 @@ namespace Bearded.TD.Game.Simulation.StatusEffects;
 [Component("statusEffectEmitter")]
 sealed class StatusEffectEmitter : Component<IStatusEffectEmitterParameters>, IListener<DrawComponents>
 {
-    private readonly HashSet<ComponentGameObject> affectedObjects = new();
+    private readonly HashSet<GameObject> affectedObjects = new();
 
     private IBuildingState? buildingState;
     private TileRangeDrawer? tileRangeDrawer;

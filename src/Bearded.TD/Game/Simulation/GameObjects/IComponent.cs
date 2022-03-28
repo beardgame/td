@@ -1,11 +1,11 @@
 ﻿using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 interface IComponent
 {
-    void OnAdded(ComponentGameObject owner, ComponentEvents events);
+    void OnAdded(GameObject owner, ComponentEvents events);
     void OnRemoved();
     void Update(TimeSpan elapsedTime);
 

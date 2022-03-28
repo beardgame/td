@@ -121,13 +121,13 @@ sealed class BuildingStateManager : Component,
 
         public ReportType Type => ReportType.EntityActions;
 
-        public ComponentGameObject Building { get; }
+        public GameObject Building { get; }
 
         public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
 
         public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
 
-        public BuildingStateReport(ComponentGameObject owner, IBuildingStateProvider buildingStateProvider)
+        public BuildingStateReport(GameObject owner, IBuildingStateProvider buildingStateProvider)
         {
             Building = owner;
             this.buildingStateProvider = buildingStateProvider;
@@ -138,7 +138,7 @@ sealed class BuildingStateManager : Component,
 interface IBuildingStateReport : IReport
 {
     // TODO(building): cast needed to get the ID
-    ComponentGameObject Building { get; }
+    GameObject Building { get; }
     bool IsMaterialized { get; }
     bool CanBeDeleted { get; }
 }

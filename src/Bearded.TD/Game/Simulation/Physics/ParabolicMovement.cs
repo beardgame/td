@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
@@ -67,7 +68,7 @@ sealed class ParabolicMovement : Component, IDirected3
         }
     }
 
-    private void hitEnemy(Position3 position, ComponentGameObject enemy)
+    private void hitEnemy(Position3 position, GameObject enemy)
     {
         var normal = new Difference3((position - enemy.Position).NumericValue.NormalizedSafe());
         var info = new HitInfo(position, normal, velocityVector());

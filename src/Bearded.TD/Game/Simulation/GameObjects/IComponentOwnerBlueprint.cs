@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Upgrades;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 interface IComponentOwnerBlueprint : IBlueprint
 {

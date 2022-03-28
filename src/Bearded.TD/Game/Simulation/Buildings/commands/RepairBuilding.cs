@@ -18,18 +18,18 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 static class RepairBuilding
 {
     public static IRequest<Player, GameInstance> Request(
-        GameInstance game, Faction faction, ComponentGameObject building)
+        GameInstance game, Faction faction, GameObject building)
         => new Implementation(game, faction, building, Id<IWorkerTask>.Invalid);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
         private readonly GameInstance game;
         private readonly Faction faction;
-        private readonly ComponentGameObject building;
+        private readonly GameObject building;
         private readonly Id<IWorkerTask> taskId;
 
         public Implementation(
-            GameInstance game, Faction faction, ComponentGameObject building, Id<IWorkerTask> taskId)
+            GameInstance game, Faction faction, GameObject building, Id<IWorkerTask> taskId)
         {
             this.game = game;
             this.faction = faction;
@@ -82,13 +82,13 @@ static class RepairBuilding
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
         private Id<Faction> faction;
-        private Id<ComponentGameObject> building;
+        private Id<GameObject> building;
         private Id<IWorkerTask> taskId;
 
         [UsedImplicitly]
         public Serializer() { }
 
-        public Serializer(Faction faction, ComponentGameObject building, Id<IWorkerTask> taskId)
+        public Serializer(Faction faction, GameObject building, Id<IWorkerTask> taskId)
         {
             this.faction = faction.Id;
             this.building = building.FindId();

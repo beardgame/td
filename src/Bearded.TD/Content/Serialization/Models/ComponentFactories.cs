@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Bearded.TD.Content.Behaviors;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
-using ISimulationComponent = Bearded.TD.Game.Simulation.Components.IComponent;
+using ISimulationComponent = Bearded.TD.Game.Simulation.GameObjects.IComponent;
 
 namespace Bearded.TD.Content.Serialization.Models;
 

@@ -8,6 +8,7 @@ using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -216,7 +217,7 @@ sealed class PlayerCursors
     }
 
     private sealed record InstantiatedGhost(
-        ComponentGameObject Ghost,
+        GameObject Ghost,
         TileSelection Selection,
         MovableTileOccupation TileOccupation);
 }

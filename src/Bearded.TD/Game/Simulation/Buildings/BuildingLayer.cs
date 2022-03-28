@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Utilities.DebugAssert;
 
@@ -19,14 +20,14 @@ sealed class BuildingLayer
     }
 
     private readonly GlobalGameEvents events;
-    private readonly Dictionary<Tile, ComponentGameObject> buildingLookup = new();
+    private readonly Dictionary<Tile, GameObject> buildingLookup = new();
 
     public BuildingLayer(GlobalGameEvents events)
     {
         this.events = events;
     }
 
-    public void AddBuilding(ComponentGameObject building)
+    public void AddBuilding(GameObject building)
     {
         foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
         {
@@ -35,7 +36,7 @@ sealed class BuildingLayer
         }
     }
 
-    public void RemoveBuilding(ComponentGameObject building)
+    public void RemoveBuilding(GameObject building)
     {
         foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
         {
@@ -60,7 +61,7 @@ sealed class BuildingLayer
         };
     }
 
-    public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out ComponentGameObject? building)
+    public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out GameObject? building)
     {
         if (GetBuildingFor(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
         {
@@ -77,13 +78,13 @@ sealed class BuildingLayer
         return GetBuildingFor(tile) is { } building ? getStateFor(building) : null;
     }
 
-    public ComponentGameObject? GetBuildingFor(Tile tile)
+    public GameObject? GetBuildingFor(Tile tile)
     {
         buildingLookup.TryGetValue(tile, out var building);
         return building;
     }
 
-    public ComponentGameObject? this[Tile tile] => GetBuildingFor(tile);
+    public GameObject? this[Tile tile] => GetBuildingFor(tile);
 
     private static IBuildingState? getStateFor(IComponentOwner building)
     {

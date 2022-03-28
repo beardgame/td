@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
@@ -137,7 +138,7 @@ sealed class Ruined
             throw new InvalidDataException(
                 "Ruined reports should not exist for ruined components without repair cost.");
 
-        public ComponentGameObject Building => instance.Owner;
+        public GameObject Building => instance.Owner;
         public bool RepairInProgress => instance.incompleteRepair != null;
         public double PercentageComplete => instance.incompleteRepair?.PercentageComplete ?? 0;
         public bool CanBeRepairedBy(Faction faction) => instance.CanBeRepairedBy(faction);
@@ -154,7 +155,7 @@ interface IRuined
 interface IRuinedReport : IReport
 {
     // TODO(building): cast needed to get the ID
-    ComponentGameObject Building { get; }
+    GameObject Building { get; }
     ResourceAmount RepairCost { get; }
     bool RepairInProgress { get; }
     double PercentageComplete { get; }

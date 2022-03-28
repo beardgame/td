@@ -2,6 +2,7 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
@@ -76,7 +77,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<IProjectileEmitterParameters
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }
 
-    private void applyCurrentUpgradesTo(ComponentGameObject projectile)
+    private void applyCurrentUpgradesTo(GameObject projectile)
     {
         var upgrades = Owner.Parent
             ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()

@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Workers;
@@ -23,13 +24,13 @@ static class BuildBuilding
         IComponentOwnerBlueprint blueprint,
         PositionedFootprint footprint) =>
         new Implementation(
-            game, faction, Id<ComponentGameObject>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
+            game, faction, Id<GameObject>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
         private readonly GameInstance game;
         private readonly Faction faction;
-        private readonly Id<ComponentGameObject> id;
+        private readonly Id<GameObject> id;
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly PositionedFootprint footprint;
         private readonly Id<IWorkerTask> taskId;
@@ -37,7 +38,7 @@ static class BuildBuilding
         public Implementation(
             GameInstance game,
             Faction faction,
-            Id<ComponentGameObject> id,
+            Id<GameObject> id,
             IComponentOwnerBlueprint blueprint,
             PositionedFootprint footprint,
             Id<IWorkerTask> taskId)
@@ -65,7 +66,7 @@ static class BuildBuilding
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
             game,
             faction,
-            game.Meta.Ids.GetNext<ComponentGameObject>(),
+            game.Meta.Ids.GetNext<GameObject>(),
             blueprint,
             footprint,
             game.Meta.Ids.GetNext<IWorkerTask>());
@@ -73,7 +74,7 @@ static class BuildBuilding
         public override void Execute()
         {
             var building = new BuildingFactory(game.State).Create(id, blueprint, faction, footprint);
-            building.AddComponent(new BuildingConstructionWork<ComponentGameObject>(taskId));
+            building.AddComponent(new BuildingConstructionWork<GameObject>(taskId));
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() =>
@@ -86,7 +87,7 @@ static class BuildBuilding
         private ModAwareId blueprint;
         private ModAwareId footprint;
         private int footprintIndex;
-        private Id<ComponentGameObject> id;
+        private Id<GameObject> id;
         private int footprintX;
         private int footprintY;
         private Id<IWorkerTask> taskId;
@@ -96,7 +97,7 @@ static class BuildBuilding
 
         public Serializer(
             Faction faction,
-            Id<ComponentGameObject> id,
+            Id<GameObject> id,
             IBlueprint blueprint,
             PositionedFootprint footprint,
             Id<IWorkerTask> taskId)

@@ -9,14 +9,14 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class DeleteGameObject
 {
-    public static ISerializableCommand<GameInstance> Command(ComponentGameObject gameObject) =>
+    public static ISerializableCommand<GameInstance> Command(GameObject gameObject) =>
         new Implementation(gameObject);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        private readonly ComponentGameObject gameObject;
+        private readonly GameObject gameObject;
 
-        public Implementation(ComponentGameObject gameObject)
+        public Implementation(GameObject gameObject)
         {
             this.gameObject = gameObject;
         }
@@ -28,12 +28,12 @@ static class DeleteGameObject
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<ComponentGameObject> gameObject;
+        private Id<GameObject> gameObject;
 
         [UsedImplicitly]
         public Serializer() {}
 
-        public Serializer(ComponentGameObject gameObject)
+        public Serializer(GameObject gameObject)
         {
             this.gameObject = gameObject.FindId();
         }

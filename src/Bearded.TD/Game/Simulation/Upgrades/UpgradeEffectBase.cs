@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.Collections;
 
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 abstract class UpgradeEffectBase : IUpgradeEffect
 {
-    public bool CanApplyTo(ComponentGameObject subject)
+    public bool CanApplyTo(GameObject subject)
         => CanApplyToComponentCollectionForType()
             || subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
 
@@ -15,12 +16,12 @@ abstract class UpgradeEffectBase : IUpgradeEffect
 
     public virtual bool CanApplyToComponentCollectionForType() => false;
 
-    public virtual void ApplyTo(ComponentGameObject subject)
+    public virtual void ApplyTo(GameObject subject)
         => subject.GetComponents<IComponent>().ForEach(c => c.ApplyUpgradeEffect(this));
 
     public virtual void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> {}
 
-    public virtual bool RemoveFrom(ComponentGameObject subject)
+    public virtual bool RemoveFrom(GameObject subject)
         => subject.GetComponents<IComponent>().Aggregate(false, (b, c) => c.RemoveUpgradeEffect(this) || b);
 
     public virtual bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;

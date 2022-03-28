@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
@@ -62,7 +63,7 @@ static class GameDebugCommands
         //       less pollution of objects escaping their respective abstraction layer.
         foreach (var gameObj in gameInstance.State.GameObjects)
         {
-            if (gameObj is ComponentGameObject)
+            if (gameObj is GameObject)
             {
                 gameObj.Delete();
             }

@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
@@ -27,7 +28,7 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
         private readonly GameState gameState;
         private readonly ComponentOwnerBlueprint blueprint;
 
-        private readonly Dictionary<Zone, ComponentGameObject> beaconsByZone = new();
+        private readonly Dictionary<Zone, GameObject> beaconsByZone = new();
 
         public Listener(GameState gameState, ComponentOwnerBlueprint blueprint)
         {

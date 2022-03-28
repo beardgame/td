@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -23,7 +24,7 @@ sealed class WaveScriptSerializer
     private Id<SpawnLocation>[] spawnLocations = System.Array.Empty<Id<SpawnLocation>>();
     private int unitsPerSpawnLocation;
     private ModAwareId unitBlueprint;
-    private Id<ComponentGameObject>[] spawnedUnitIds = System.Array.Empty<Id<ComponentGameObject>>();
+    private Id<GameObject>[] spawnedUnitIds = System.Array.Empty<Id<GameObject>>();
 
     [UsedImplicitly]
     public WaveScriptSerializer() {}

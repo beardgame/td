@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 sealed class ComponentCollection
 {
-    private readonly ComponentGameObject owner;
+    private readonly GameObject owner;
     private readonly ComponentEvents events;
     private readonly List<IComponent> components = new();
 
     private bool deferComponentCollectionMutations;
     private readonly Queue<CollectionMutation> queuedMutations = new();
 
-    public ComponentCollection(ComponentGameObject owner, ComponentEvents events)
+    public ComponentCollection(GameObject owner, ComponentEvents events)
     {
         this.owner = owner;
         this.events = events;

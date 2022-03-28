@@ -16,16 +16,16 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 static class UpgradeBuilding
 {
     public static IRequest<Player, GameInstance> Request(
-        GameInstance game, ComponentGameObject building, IUpgradeBlueprint upgrade)
+        GameInstance game, GameObject building, IUpgradeBlueprint upgrade)
         => new Implementation(game, building, upgrade);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
         private readonly GameInstance game;
-        private readonly ComponentGameObject building;
+        private readonly GameObject building;
         private readonly IUpgradeBlueprint upgrade;
 
-        public Implementation(GameInstance game, ComponentGameObject building, IUpgradeBlueprint upgrade)
+        public Implementation(GameInstance game, GameObject building, IUpgradeBlueprint upgrade)
         {
             this.game = game;
             this.building = building;
@@ -62,13 +62,13 @@ static class UpgradeBuilding
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
-        private Id<ComponentGameObject> building;
+        private Id<GameObject> building;
         private ModAwareId upgrade;
 
         [UsedImplicitly]
         public Serializer() { }
 
-        public Serializer(ComponentGameObject building, IUpgradeBlueprint upgrade)
+        public Serializer(GameObject building, IUpgradeBlueprint upgrade)
         {
             this.building = building.FindId();
             this.upgrade = upgrade.Id;

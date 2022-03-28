@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Synchronization;
 using JetBrains.Annotations;
 
@@ -11,30 +12,30 @@ namespace Bearded.TD.Game.Simulation.Synchronization;
 
 static class SyncGameObjects
 {
-    public static ISerializableCommand<GameInstance> Command(IEnumerable<ComponentGameObject> gameObjects)
+    public static ISerializableCommand<GameInstance> Command(IEnumerable<GameObject> gameObjects)
         => new Implementation(gameObjects
-            .Select(b => b.GetComponents<ISyncer<ComponentGameObject>>().Single())
+            .Select(b => b.GetComponents<ISyncer<GameObject>>().Single())
             .Select(syncer => (syncer, syncer.GetCurrentStateToSync()))
             .ToImmutableArray());
 
-    private sealed class Implementation : SyncEntities.Implementation<ComponentGameObject>
+    private sealed class Implementation : SyncEntities.Implementation<GameObject>
     {
-        public Implementation(IList<(ISyncer<ComponentGameObject>, IStateToSync)> syncers) : base(syncers) { }
+        public Implementation(IList<(ISyncer<GameObject>, IStateToSync)> syncers) : base(syncers) { }
 
         protected override ICommandSerializer<GameInstance> ToSerializer(
-            IEnumerable<(ISyncer<ComponentGameObject>, IStateToSync)> syncedObjects) =>
+            IEnumerable<(ISyncer<GameObject>, IStateToSync)> syncedObjects) =>
             new Serializer(syncedObjects);
     }
 
-    private sealed class Serializer : SyncEntities.Serializer<ComponentGameObject>
+    private sealed class Serializer : SyncEntities.Serializer<GameObject>
     {
         [UsedImplicitly]
         public Serializer() { }
 
-        public Serializer(IEnumerable<(ISyncer<ComponentGameObject>, IStateToSync)> syncers) : base(syncers) { }
+        public Serializer(IEnumerable<(ISyncer<GameObject>, IStateToSync)> syncers) : base(syncers) { }
 
         protected override ISerializableCommand<GameInstance> ToImplementation(
-            ImmutableArray<(ISyncer<ComponentGameObject>, IStateToSync)> syncedObjects) =>
+            ImmutableArray<(ISyncer<GameObject>, IStateToSync)> syncedObjects) =>
             new Implementation(syncedObjects);
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentDependencies
 {

@@ -6,9 +6,9 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 sealed class IdProvider : Component, IIdProvider
 {
-    public Id<ComponentGameObject> Id { get; }
+    public Id<GameObject> Id { get; }
 
-    public IdProvider(Id<ComponentGameObject> id)
+    public IdProvider(Id<GameObject> id)
     {
         Id = id;
     }
@@ -29,5 +29,5 @@ sealed class IdProvider : Component, IIdProvider
 
 interface IIdProvider
 {
-    Id<ComponentGameObject> Id { get; }
+    Id<GameObject> Id { get; }
 }

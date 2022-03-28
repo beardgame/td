@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.Utilities.Collections;
@@ -39,12 +40,12 @@ sealed class ZoneRevealer : Component
 
     sealed class ZoneRevealerProxy : IZoneRevealer
     {
-        private readonly ComponentGameObject owner;
+        private readonly GameObject owner;
 
         public Position3 Position => owner.Position;
         public bool Deleted => owner.Deleted;
 
-        public ZoneRevealerProxy(ComponentGameObject owner)
+        public ZoneRevealerProxy(GameObject owner)
         {
             this.owner = owner;
         }

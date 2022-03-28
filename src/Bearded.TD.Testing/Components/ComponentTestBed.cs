@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -10,7 +11,7 @@ sealed class ComponentTestBed
     private static readonly TimeSpan frameTime = TimeSpan.One / 60f;
 
     private readonly ComponentInternals internals = new();
-    private readonly ComponentGameObject obj = new(null, Position3.Zero, Direction2.Zero);
+    private readonly GameObject obj = new(null, Position3.Zero, Direction2.Zero);
 
     public ComponentTestBed()
     {

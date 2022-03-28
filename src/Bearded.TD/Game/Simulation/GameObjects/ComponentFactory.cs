@@ -2,7 +2,7 @@
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 sealed class ComponentFactory<TComponentParameters> : IComponentFactory
     where TComponentParameters : IParametersTemplate<TComponentParameters>

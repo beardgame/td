@@ -5,6 +5,7 @@ using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;

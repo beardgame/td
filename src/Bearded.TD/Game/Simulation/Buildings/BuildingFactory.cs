@@ -25,8 +25,8 @@ sealed class BuildingFactory
         this.gameState = gameState;
     }
 
-    public ComponentGameObject Create(
-        Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
+    public GameObject Create(
+        Id<GameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
         PositionedFootprint footprint)
     {
         var building = ComponentGameObjectFactory.CreateFromBlueprintWithoutRenderer(
@@ -58,7 +58,7 @@ sealed class BuildingFactory
         return building;
     }
 
-    public ComponentGameObject CreateGhost(
+    public GameObject CreateGhost(
         IComponentOwnerBlueprint blueprint, Faction faction,
         out MovableTileOccupation tileOccupation)
     {

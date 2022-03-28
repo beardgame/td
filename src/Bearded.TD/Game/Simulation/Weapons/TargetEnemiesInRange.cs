@@ -6,6 +6,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
@@ -39,7 +40,7 @@ sealed class TargetEnemiesInRange
     private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-    private ComponentGameObject? target;
+    private GameObject? target;
     public IPositionable? Target => target;
 
     private bool dontDrawThisFrame;

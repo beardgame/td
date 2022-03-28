@@ -11,14 +11,14 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 static class DeleteBuilding
 {
-    public static IRequest<Player, GameInstance> Request(ComponentGameObject building)
+    public static IRequest<Player, GameInstance> Request(GameObject building)
         => new Implementation(building);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
-        private readonly ComponentGameObject building;
+        private readonly GameObject building;
 
-        public Implementation(ComponentGameObject building)
+        public Implementation(GameObject building)
         {
             this.building = building;
         }
@@ -37,11 +37,11 @@ static class DeleteBuilding
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
-        private Id<ComponentGameObject> building;
+        private Id<GameObject> building;
 
         [UsedImplicitly] public Serializer() { }
 
-        public Serializer(ComponentGameObject building)
+        public Serializer(GameObject building)
         {
             this.building = building.FindId();
         }

@@ -4,11 +4,11 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-static class ComponentGameObjectProperties
+static class GameObjectProperties
 {
-    public static Id<ComponentGameObject> FindId(this ComponentGameObject componentOwner)
+    public static Id<GameObject> FindId(this GameObject owner)
     {
-        if (!componentOwner.TryGetSingleComponent<IIdProvider>(out var idProvider))
+        if (!owner.TryGetSingleComponent<IIdProvider>(out var idProvider))
         {
             throw new InvalidOperationException("Cannot get the ID of a component owner without ID.");
         }

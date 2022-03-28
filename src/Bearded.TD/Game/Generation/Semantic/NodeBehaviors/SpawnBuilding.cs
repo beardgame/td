@@ -3,6 +3,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using JetBrains.Annotations;
 

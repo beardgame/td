@@ -5,6 +5,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -35,7 +36,7 @@ sealed partial class BuildingUpgradeManager
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
         {
-            private readonly ComponentGameObject subject;
+            private readonly GameObject subject;
             private readonly IBuildingUpgradeManager upgradeManager;
             private readonly GameInstance game;
             private readonly GlobalGameEvents events;
@@ -52,7 +53,7 @@ sealed partial class BuildingUpgradeManager
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;
 
-            public UpgradeReportInstance(ComponentGameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
+            public UpgradeReportInstance(GameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
             {
                 this.subject = subject;
                 this.upgradeManager = upgradeManager;

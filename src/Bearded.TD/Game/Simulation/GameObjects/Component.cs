@@ -3,7 +3,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 abstract class Component<TParameters> : IComponent
     where TParameters : IParametersTemplate<TParameters>
@@ -15,11 +15,11 @@ abstract class Component<TParameters> : IComponent
         Parameters = parameters.CreateModifiableInstance();
     }
 
-    protected ComponentGameObject Owner { get; private set; }
+    protected GameObject Owner { get; private set; }
 
     protected ComponentEvents Events { get; private set; }
 
-    public void OnAdded(ComponentGameObject owner, ComponentEvents events)
+    public void OnAdded(GameObject owner, ComponentEvents events)
     {
         Owner = owner;
         Events = events;
@@ -41,11 +41,11 @@ abstract class Component<TParameters> : IComponent
 
 abstract class Component : IComponent
 {
-    protected ComponentGameObject Owner { get; private set; }
+    protected GameObject Owner { get; private set; }
 
     protected ComponentEvents Events { get; private set; } = null!;
 
-    public void OnAdded(ComponentGameObject owner, ComponentEvents events)
+    public void OnAdded(GameObject owner, ComponentEvents events)
     {
         Owner = owner;
         Events = events;

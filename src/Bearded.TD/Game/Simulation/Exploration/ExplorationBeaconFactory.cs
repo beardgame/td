@@ -2,6 +2,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Zones;
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Exploration;
 
 static class ExplorationBeaconFactory
 {
-    public static ComponentGameObject CreateExplorationBeacon(
+    public static GameObject CreateExplorationBeacon(
         GameState game, ComponentOwnerBlueprint blueprint, Tile tile, Zone zone)
     {
         var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(

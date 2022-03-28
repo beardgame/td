@@ -13,15 +13,15 @@ namespace Bearded.TD.Game.Commands.Gameplay;
 
 static class KillUnit
 {
-    public static ISerializableCommand<GameInstance> Command(ComponentGameObject unit, IDamageSource? damageSource) =>
+    public static ISerializableCommand<GameInstance> Command(GameObject unit, IDamageSource? damageSource) =>
         new Implementation(unit, damageSource);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        private readonly ComponentGameObject unit;
+        private readonly GameObject unit;
         private readonly IDamageSource? damageSource;
 
-        public Implementation(ComponentGameObject unit, IDamageSource? damageSource)
+        public Implementation(GameObject unit, IDamageSource? damageSource)
         {
             this.unit = unit;
             this.damageSource = damageSource;
@@ -34,12 +34,12 @@ static class KillUnit
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<ComponentGameObject> unit;
+        private Id<GameObject> unit;
         private readonly DamageSourceSerializer damageSourceSerializer = new();
 
         [UsedImplicitly] public Serializer() { }
 
-        public Serializer(ComponentGameObject unit, IDamageSource? damageSource)
+        public Serializer(GameObject unit, IDamageSource? damageSource)
         {
             this.unit = unit.FindId();
             damageSourceSerializer.Populate(damageSource);

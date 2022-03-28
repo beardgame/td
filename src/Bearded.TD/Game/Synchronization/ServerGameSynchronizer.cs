@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
@@ -23,7 +24,7 @@ sealed class ServerGameSynchronizer : IGameSynchronizer
         this.commandDispatcher = commandDispatcher;
 
         synchronizers.Add(
-            typeof(ComponentGameObject), new Synchronizer<ComponentGameObject>(SyncGameObjects.Command));
+            typeof(GameObject), new Synchronizer<GameObject>(SyncGameObjects.Command));
     }
 
     public void RegisterSyncable<T>(T syncable)

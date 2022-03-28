@@ -1,5 +1,6 @@
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
@@ -15,7 +16,7 @@ sealed class ComponentModifiable : UpgradeEffectBase
 
     public override bool CanApplyToComponentCollectionForType() => tryCreateComponentFactory() != null;
 
-    public override void ApplyTo(ComponentGameObject subject)
+    public override void ApplyTo(GameObject subject)
     {
         var factory = tryCreateComponentFactory();
         if (factory != null)

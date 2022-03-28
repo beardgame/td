@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 interface ITurret : IPositionable
 {
-    ComponentGameObject Weapon { get; }
+    GameObject Weapon { get; }
     IGameObject Owner { get; }
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
@@ -26,7 +26,7 @@ interface ITurret : IPositionable
 [Component("turret")]
 sealed class Turret : Component<ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
-    public ComponentGameObject Weapon { get; private set; } = null!;
+    public GameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;

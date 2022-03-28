@@ -3,11 +3,11 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentGameObjectFactory
 {
-    public static ComponentGameObject CreateFromBlueprintWithDefaultRenderer(
+    public static GameObject CreateFromBlueprintWithDefaultRenderer(
         GameState game,
         IComponentOwnerBlueprint blueprint,
         IComponentOwner? parent,
@@ -19,7 +19,7 @@ static class ComponentGameObjectFactory
         return obj;
     }
 
-    public static ComponentGameObject CreateFromBlueprintWithoutRenderer(
+    public static GameObject CreateFromBlueprintWithoutRenderer(
         GameState game,
         IComponentOwnerBlueprint blueprint,
         IComponentOwner? parent,
@@ -31,7 +31,7 @@ static class ComponentGameObjectFactory
         return obj;
     }
 
-    public static ComponentGameObject CreateWithDefaultRenderer(
+    public static GameObject CreateWithDefaultRenderer(
         GameState game, IComponentOwner? parent, Position3 position, Direction2? direction = null)
     {
         var obj = CreateWithoutRenderer(game, parent, position, direction);
@@ -39,15 +39,15 @@ static class ComponentGameObjectFactory
         return obj;
     }
 
-    public static ComponentGameObject CreateWithoutRenderer(
+    public static GameObject CreateWithoutRenderer(
         GameState game, IComponentOwner? parent, Position3 position, Direction2? direction = null)
     {
-        var obj = new ComponentGameObject(parent, position, direction ?? Direction2.Zero);
+        var obj = new GameObject(parent, position, direction ?? Direction2.Zero);
         game.Add(obj);
         return obj;
     }
 
-    private static void addDefaultRenderer(ComponentGameObject obj)
+    private static void addDefaultRenderer(GameObject obj)
     {
         obj.AddComponent(new DefaultComponentRenderer());
     }

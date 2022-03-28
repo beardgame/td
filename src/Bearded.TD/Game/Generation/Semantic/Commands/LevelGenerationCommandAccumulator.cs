@@ -29,7 +29,7 @@ sealed class LevelGenerationCommandAccumulator
         commands.Add(gameInstance => PlopBuilding.Command(
             gameInstance.State,
             gameInstance.State.Factions.Find(externalId),
-            gameInstance.Ids.GetNext<ComponentGameObject>(),
+            gameInstance.Ids.GetNext<GameObject>(),
             blueprint,
             footprint));
     }

@@ -12,14 +12,14 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 static class SyncBuildingRepairCompletion
 {
-    public static ISerializableCommand<GameInstance> Command(ComponentGameObject building)
+    public static ISerializableCommand<GameInstance> Command(GameObject building)
         => new Implementation(building);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        private readonly ComponentGameObject building;
+        private readonly GameObject building;
 
-        public Implementation(ComponentGameObject building)
+        public Implementation(GameObject building)
         {
             this.building = building;
         }
@@ -39,9 +39,9 @@ static class SyncBuildingRepairCompletion
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<ComponentGameObject> building;
+        private Id<GameObject> building;
 
-        public Serializer(ComponentGameObject building)
+        public Serializer(GameObject building)
         {
             this.building = building.FindId();
         }
