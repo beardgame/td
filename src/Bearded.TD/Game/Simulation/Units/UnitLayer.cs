@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;

@@ -1,5 +1,4 @@
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 

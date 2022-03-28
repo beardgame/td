@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;

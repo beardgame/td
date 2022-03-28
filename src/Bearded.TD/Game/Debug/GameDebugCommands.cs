@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameLoop;

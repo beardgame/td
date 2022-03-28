@@ -1,7 +1,6 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.Collections;

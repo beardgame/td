@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

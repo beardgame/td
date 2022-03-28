@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;

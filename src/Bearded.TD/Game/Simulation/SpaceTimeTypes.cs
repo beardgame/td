@@ -6,7 +6,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Components;
+namespace Bearded.TD.Game.Simulation;
 
 static class SpaceTimeTypes
 {

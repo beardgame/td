@@ -1,5 +1,4 @@
 using System;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;

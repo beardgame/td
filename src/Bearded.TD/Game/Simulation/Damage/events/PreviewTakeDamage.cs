@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using static Bearded.TD.Utilities.DebugAssert;
 

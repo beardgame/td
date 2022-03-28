@@ -1,6 +1,5 @@
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
