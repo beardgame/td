@@ -5,6 +5,7 @@
     { "id" : "cost", "parameters" : { "resources" : 10 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
+    { "id" : "defaultTileOccupancy" },
     {
       "id": "health",
       "parameters": {

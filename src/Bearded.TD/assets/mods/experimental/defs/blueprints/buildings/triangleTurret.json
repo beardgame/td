@@ -5,6 +5,7 @@
     { "id" : "cost", "parameters" : { "resources" : 75 } },
     { "id" : "footprint", "parameters" : { "group" : "default.triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "default.foundations" } },
+    { "id" : "defaultTileOccupancy" },
     { "id" :  "footprintTransformation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     { "id" : "autoRepair", "parameters" : { } },
