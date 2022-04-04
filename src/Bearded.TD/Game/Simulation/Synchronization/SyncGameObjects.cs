@@ -38,7 +38,7 @@ static class SyncGameObjects
             }
         }
 
-        public ICommandSerializer<GameInstance> Serializer => new Serializer(syncers);
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(syncers);
     }
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
