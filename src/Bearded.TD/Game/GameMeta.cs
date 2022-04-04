@@ -21,14 +21,14 @@ sealed class GameMeta
     public GlobalGameEvents Events { get; } = new();
     public Blueprints Blueprints => blueprints!;
 
-    public SpriteRenderers SpriteRenderers { get; }
+    public ISpriteRenderers SpriteRenderers { get; }
 
     public GameMeta(
         Logger logger,
         IDispatcher<GameInstance> dispatcher,
         IGameSynchronizer synchronizer,
         IdManager ids,
-        SpriteRenderers spriteRenderers)
+        ISpriteRenderers spriteRenderers)
     {
         Logger = logger;
         Synchronizer = synchronizer;

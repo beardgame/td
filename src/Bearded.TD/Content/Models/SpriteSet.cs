@@ -38,7 +38,7 @@ sealed class SpriteSet : IBlueprint, IDisposable
     }
 
     public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-        SpriteRenderers spriteRenderers,
+        ISpriteRenderers spriteRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData
@@ -47,7 +47,7 @@ sealed class SpriteSet : IBlueprint, IDisposable
     }
 
     public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-        SpriteRenderers spriteRenderers,
+        ISpriteRenderers spriteRenderers,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader,
         params IRenderSetting[] customRenderSettings)
