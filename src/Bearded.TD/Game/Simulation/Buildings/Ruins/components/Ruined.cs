@@ -99,6 +99,7 @@ sealed class Ruined
         if (incompleteRepair != null)
         {
             Owner.RemoveComponent(incompleteRepair);
+            incompleteRepair = null;
         }
     }
 

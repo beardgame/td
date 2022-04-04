@@ -141,6 +141,7 @@ sealed class AutoRepair
         public void CancelIfStarted()
         {
             incompleteRepair?.CancelRepair();
+            incompleteRepair = null;
         }
     }
 }
