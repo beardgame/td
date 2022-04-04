@@ -1,4 +1,6 @@
-﻿using Bearded.Graphics;
+﻿using System.Collections.Immutable;
+using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -62,6 +64,9 @@ static partial class Constants
         public static class Building
         {
             public const double RuinedPercentage = 0.5;
+
+            public static readonly ImmutableArray<Experience> VeterancyThresholds =
+                ImmutableArray.Create(2500.Xp(), 10000.Xp(), 22500.Xp(), 40000.Xp(), 62500.Xp(), 90000.Xp());
         }
 
         public static class Worker

@@ -1,4 +1,6 @@
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Testing.GameStates;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -35,6 +37,13 @@ sealed class ComponentTestBed
         internals.PreviewEvent(ref @event);
     }
 
+    public Queue<T> CollectEvents<T>() where T : struct, IComponentEvent
+    {
+        var q = new Queue<T>();
+        internals.Subscribe(Listener.ForEvent<T>(q.Enqueue));
+        return q;
+    }
+
     public void AdvanceSingleFrame()
     {
         gameTestBed.AdvanceSingleFrame();
@@ -53,6 +62,11 @@ sealed class ComponentTestBed
         public void PreviewEvent<T>(ref T @event) where T : struct, IComponentPreviewEvent
         {
             Events.Preview(ref @event);
+        }
+
+        public void Subscribe<T>(IListener<T> listener) where T : struct, IComponentEvent
+        {
+            Events.Subscribe(listener);
         }
     }
 }
