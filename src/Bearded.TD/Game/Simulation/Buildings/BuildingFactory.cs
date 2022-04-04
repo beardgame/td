@@ -1,5 +1,6 @@
 using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
@@ -52,6 +53,9 @@ sealed class BuildingFactory
         building.AddComponent(new StaticTileOccupation(footprint));
         building.AddComponent(new StatisticCollector());
         building.AddComponent(new TileBasedVisibility());
+#if DEBUG
+        building.AddComponent(new DebugReporter());
+#endif
         gameState.BuildingLayer.AddBuilding(building);
         building.Deleting += () => gameState.BuildingLayer.RemoveBuilding(building);
         return building;

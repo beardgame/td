@@ -3,6 +3,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
@@ -46,6 +47,9 @@ sealed class ReportControlFactory : IReportControlFactory
             IUpgradeReport upgradeReport =>
                 new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
             IZoneRevealReport zoneRevealReport => new ZoneRevealReportControl(game, zoneRevealReport),
+#if DEBUG
+            IDebugReport debugReport => new DebugReportControl(debugReport),
+#endif
 
             _ => throw new InvalidOperationException($"Cannot create control for report {report}")
         };
