@@ -1,67 +1,76 @@
+using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>
+sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>, IListener<FootprintChanged>
     where T : IComponentOwner, IGameObject, IPositionable
 {
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+    private PositionedFootprint footprint;
 
     protected override void OnAdded()
     {
-        occupiedTilesTracker.Initialize(Owner, Events);
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<FootprintChanged>(this);
     }
 
     public override void OnRemoved()
     {
-        occupiedTilesTracker.Dispose(Events);
-        Events.Unsubscribe(this);
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<FootprintChanged>(this);
     }
 
     public override void Update(TimeSpan elapsedTime) {}
+
+    public void HandleEvent(FootprintChanged @event)
+    {
+        footprint = @event.NewFootprint;
+    }
 
     public void HandleEvent(DrawComponents e)
     {
         var primitiveDrawer = e.Core.Primitives;
 
-        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        var preconditions = Owner.GetComponents<IBuildBuildingPrecondition>();
+
+        var preconditionParameters = new Parameters(Owner.Game, footprint);
+
+        var result = preconditions
+            .Select(c => c.CanBuild(preconditionParameters))
+            .Aggregate(Result.Valid, Result.And);
+
+        foreach (var tile in footprint.OccupiedTiles)
         {
-            var baseColor = Color.Green;
+            var isBadTile = result.BadTiles.Contains(tile);
 
-            var isTileValidForBuilding = Owner.Game.BuildingPlacementLayer.IsTileValidForBuilding(tile);
-
-            if (!isTileValidForBuilding)
-            {
-                baseColor = Color.Red;
-            }
-
-            var color = baseColor * 0.2f;
+            var color = isBadTile ? Color.Red : Color.Green * 0.2f;
             drawTile(e.Core, color, tile);
 
-            if (!isTileValidForBuilding)
+            if (isBadTile)
                 continue;
 
             foreach (var direction in Directions.All.Enumerate())
             {
                 var neighbor = tile.Neighbor(direction);
 
-                if (!occupiedTilesTracker.OccupiedTiles.Contains(neighbor))
+                if (!footprint.OccupiedTiles.Contains(neighbor))
                     continue;
 
-                if (!Owner.Game.BuildingPlacementLayer.IsTileValidForBuilding(neighbor))
+                if (result.BadTiles.Contains(neighbor))
                     continue;
 
-                if (Owner.Game.BuildingPlacementLayer.IsTileCombinationValidForBuilding(tile, neighbor))
+                if (!result.BadEdges.Contains(TileEdge.From(tile, direction)))
                     continue;
 
                 var p = Level.GetPosition(tile).WithZ(Owner.Position.Z).NumericValue;

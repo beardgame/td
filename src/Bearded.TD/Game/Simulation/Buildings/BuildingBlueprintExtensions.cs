@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -19,4 +20,8 @@ static class BuildingBlueprintExtensions
 
     public static ResourceAmount GetResourceCost(this IComponentOwnerBlueprint blueprint) =>
         blueprint.GetComponents<ComponentGameObject>().OfType<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
+
+    public static IEnumerable<IBuildBuildingPrecondition> GetBuildBuildingPreconditions(
+        this IComponentOwnerBlueprint blueprint) =>
+        blueprint.GetComponents<ComponentGameObject>().OfType<IBuildBuildingPrecondition>();
 }

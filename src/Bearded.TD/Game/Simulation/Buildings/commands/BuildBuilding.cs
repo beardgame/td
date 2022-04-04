@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Commands;
+﻿using System.Linq;
+using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
@@ -56,10 +57,19 @@ static class BuildBuilding
             {
                 return false;
             }
-            return blueprint.GetFootprintGroup() == footprint.Footprint
-                && game.State.BuildingPlacementLayer.IsFootprintValidForBuilding(footprint)
-                && factionTechnology.IsBuildingUnlocked(blueprint)
-                && faction.SharesBehaviorWith<FactionResources>(actor.Faction);
+
+            return factionTechnology.IsBuildingUnlocked(blueprint)
+                && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
+                && componentPreconditionsAreMet();
+        }
+
+        private bool componentPreconditionsAreMet()
+        {
+            var preconditionParameters = new IBuildBuildingPrecondition.Parameters(
+                game.State, footprint);
+
+            return blueprint.GetBuildBuildingPreconditions()
+                .All(c => c.CanBuild(preconditionParameters).IsValid);
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(

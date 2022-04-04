@@ -49,7 +49,6 @@ sealed class GameState
     public FluidLayer FluidLayer { get; }
     public UnitLayer UnitLayer { get; }
     public BuildingLayer BuildingLayer { get; }
-    public BuildingPlacementLayer BuildingPlacementLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
     public ZoneLayer ZoneLayer { get; }
@@ -79,8 +78,6 @@ sealed class GameState
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
         VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
-        BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer, VisibilityLayer,
-            new Lazy<PassabilityLayer>(() => PassabilityManager!.GetLayer(Passability.WalkingUnit)));
         Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
