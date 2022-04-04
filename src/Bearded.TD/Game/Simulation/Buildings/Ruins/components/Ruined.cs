@@ -154,7 +154,6 @@ interface IRuined
 
 interface IRuinedReport : IReport
 {
-    // TODO(building): cast needed to get the ID
     GameObject Building { get; }
     ResourceAmount RepairCost { get; }
     bool RepairInProgress { get; }
