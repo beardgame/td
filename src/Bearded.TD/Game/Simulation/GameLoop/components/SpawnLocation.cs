@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -9,7 +9,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
-sealed class SpawnLocation : Component<ComponentGameObject>, IIdable<SpawnLocation>, IListener<WaveEnded>, IDeletable
+sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEnded>, IDeletable
 {
     private readonly HashSet<Id<WaveScript>> assignedWaves = new();
     private Instant nextIndicatorSpawn;

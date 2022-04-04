@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -14,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 interface ITurret : IPositionable
 {
-    ComponentGameObject Weapon { get; }
+    GameObject Weapon { get; }
     IGameObject Owner { get; }
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
@@ -24,10 +23,9 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Turret : Component<ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
-    public ComponentGameObject Weapon { get; private set; } = null!;
+    public GameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;
@@ -129,7 +127,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, IListener<Dra
         return removed;
     }
 
-    private sealed class TargetOverride : Component<ComponentGameObject>,
+    private sealed class TargetOverride : Component,
         IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
     {
         private readonly IManualTarget3 target;

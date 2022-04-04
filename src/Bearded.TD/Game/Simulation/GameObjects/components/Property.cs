@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
@@ -8,7 +7,7 @@ interface IProperty<out T>
     T Value { get; }
 }
 
-sealed class Property<TValue, T> : Component<T>, IProperty<TValue>
+sealed class Property<TValue> : Component, IProperty<TValue>
 {
     public TValue Value { get; }
 

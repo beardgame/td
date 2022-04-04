@@ -1,10 +1,10 @@
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -14,8 +14,7 @@ using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingGhostDrawing<T> : Component<T>, IListener<DrawComponents>, IListener<FootprintChanged>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>, IListener<FootprintChanged>
 {
     private PositionedFootprint footprint;
 

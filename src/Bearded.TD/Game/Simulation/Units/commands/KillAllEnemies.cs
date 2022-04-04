@@ -2,8 +2,8 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities.Linq;
 using JetBrains.Annotations;
@@ -29,7 +29,7 @@ static class KillAllEnemies
         public override void Execute()
         {
             var enemyLives = game.State.GameObjects
-                .OfType<ComponentGameObject>()
+                .OfType<GameObject>()
                 .Select(obj => obj.GetComponents<IEnemyLife>().SingleOrDefault())
                 .NotNull();
             foreach (var enemy in enemyLives)

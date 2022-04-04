@@ -10,5 +10,5 @@ interface IFactionBlueprint : IBlueprint
     string? Name { get; }
     Color? Color { get; }
 
-    IEnumerable<IFactionBehavior<Faction>> GetBehaviors();
+    IEnumerable<IFactionBehavior> GetBehaviors();
 }

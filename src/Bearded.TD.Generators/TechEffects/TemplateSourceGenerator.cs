@@ -12,11 +12,11 @@ namespace Bearded.TD.Generators.TechEffects
         public static string GenerateFor(ParametersTemplateDefinition definition)
         {
             return new TemplateSourceGenerator()
-                .addFileTop(definition.Namespace, definition.TemplateName, definition.InterfaceName)
+                .addFileTop(definition.Namespace, definition.TemplateName, definition.FullInterfaceName)
                 .addProperties(definition.Properties)
                 .addConstructor(definition.TemplateName, definition.Properties)
                 .addHasAttributeOfTypeMethod(definition.ModifiableName)
-                .addCreateModifiableInstanceMethod(definition.InterfaceName, definition.ModifiableName)
+                .addCreateModifiableInstanceMethod(definition.FullInterfaceName, definition.ModifiableName)
                 .addFileBottom()
                 .build();
         }

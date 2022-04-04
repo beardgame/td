@@ -5,7 +5,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;

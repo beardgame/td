@@ -15,12 +15,12 @@ namespace Bearded.TD.Generators.TechEffects
             var modifiableProperties = definition.Properties.Where(property => property.IsModifiable).ToList();
 
             return new ModifiableSourceGenerator()
-                .addFileTop(definition.Namespace, definition.ModifiableName, definition.InterfaceName)
+                .addFileTop(definition.Namespace, definition.ModifiableName, definition.FullInterfaceName)
                 .addImmutableProperties(immutableProperties)
                 .addModifiableProperties(modifiableProperties)
-                .addConstructor(definition.InterfaceName, definition.ModifiableName, modifiableProperties)
+                .addConstructor(definition.FullInterfaceName, definition.ModifiableName, modifiableProperties)
                 .addStaticConstructor(definition.ModifiableName, modifiableProperties)
-                .addCreateModifiableInstanceMethod(definition.InterfaceName, definition.ModifiableName)
+                .addCreateModifiableInstanceMethod(definition.FullInterfaceName, definition.ModifiableName)
                 .addFileBottom()
                 .build();
         }

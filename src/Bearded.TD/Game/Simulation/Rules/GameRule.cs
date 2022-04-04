@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game.Simulation.Rules;
 
-abstract class GameRule<TParameters> : IGameRule<GameState>
+abstract class GameRule<TParameters> : IGameRule
 {
     protected TParameters Parameters { get; }
 

@@ -2,26 +2,25 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
 interface IFootprintGroup
 {
-    FootprintGroup FootprintGroup { get; }
+    World.FootprintGroup FootprintGroup { get; }
 }
 
 [Component("footprint")]
-sealed class FootprintGroup<T> : Component<T, Content.Models.IFootprintGroup>, IFootprintGroup,
-    IBuildBuildingPrecondition
+sealed class FootprintGroup : Component<Content.Models.IFootprintGroup>, IFootprintGroup, IBuildBuildingPrecondition
 {
-    FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
+    World.FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
 
     public FootprintGroup(Content.Models.IFootprintGroup parameters) : base(parameters)
     {
@@ -48,12 +47,14 @@ sealed class FootprintGroup<T> : Component<T, Content.Models.IFootprintGroup>, I
 
         var canBuild = invalidTiles.Length == 0 && invalidEdges.Length == 0;
 
-        return canBuild ? Result.Valid : Result.InValid
-            with
-            {
-                BadTiles = invalidTiles,
-                BadEdges = invalidEdges
-            };
+        return canBuild
+            ? Result.Valid
+            : Result.InValid
+                with
+                {
+                    BadTiles = invalidTiles,
+                    BadEdges = invalidEdges
+                };
     }
 
     private static bool isTileValidForBuilding(GameState game, Tile tile)

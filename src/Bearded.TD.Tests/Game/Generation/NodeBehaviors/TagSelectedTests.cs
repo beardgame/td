@@ -11,7 +11,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class TagSelectedTests
     {
-        private static INodeBehavior<Node> behaviorWithParameters(double value = 0, string? tag = null)
+        private static INodeBehavior behaviorWithParameters(double value = 0, string? tag = null)
         {
             return new TagSelected(new TagSelected.BehaviorParameters(tag, value));
         }

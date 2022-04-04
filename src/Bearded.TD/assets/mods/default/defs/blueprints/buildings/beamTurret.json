@@ -7,6 +7,7 @@
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
     { "id" : "autoRepair", "parameters" : { } },
+    { "id" : "veterancy" },
     {
       "id" : "turret",
       "onGhost": true,

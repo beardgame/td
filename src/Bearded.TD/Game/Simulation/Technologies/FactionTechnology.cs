@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -9,7 +9,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 namespace Bearded.TD.Game.Simulation.Technologies;
 
 [FactionBehavior("technology")]
-sealed class FactionTechnology : FactionBehavior<Faction>
+sealed class FactionTechnology : FactionBehavior
 {
     private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new();
     private readonly HashSet<IComponentOwnerBlueprint> unlockedBuildings = new();

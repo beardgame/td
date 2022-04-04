@@ -7,6 +7,7 @@
     { "id" : "footprintTransformation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     { "id" : "ruined", "parameters" : { "repairCost" :  120 } },
+    { "id" : "veterancy" },
     {
       "id" : "turret",
       "onGhost": true,

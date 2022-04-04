@@ -1,5 +1,4 @@
 using Bearded.Graphics.Vertices;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
@@ -11,8 +10,7 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 
 readonly record struct DrawComponents(CoreDrawers Core, IComponentDrawer Drawer) : IComponentEvent;
 
-class DefaultComponentRenderer<T> : Component<T>, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
-    where T : IGameObject, IComponentOwner
+class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IListener<ObjectDeleting>
 {
     private IVisibility? visibility;
 

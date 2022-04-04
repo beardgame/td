@@ -12,7 +12,7 @@ namespace Bearded.TD.Rendering;
 
 using Renderers = List<(int DrawOrderKey, IRenderer Renderer)>;
 
-sealed class SpriteRenderers
+sealed class SpriteRenderers : ISpriteRenderers
 {
     private sealed class DrawOrderKeyComparer : IComparer<(int DrawOrderKey, IRenderer)>
     {

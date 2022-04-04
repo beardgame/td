@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -17,7 +16,7 @@ namespace Bearded.TD.Game.Simulation.Units;
 // TODO: split out tile presence management
 [Component("moveToBase")]
 sealed class MoveToBase
-    : Component<ComponentGameObject, IMoveToBaseParameters>,
+    : Component<IMoveToBaseParameters>,
         IEnemyMovement,
         IListener<ObjectDeleting>,
         ITileWalkerOwner,

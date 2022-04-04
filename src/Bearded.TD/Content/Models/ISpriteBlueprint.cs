@@ -8,7 +8,7 @@ interface ISpriteBlueprint
 {
     SpriteParameters SpriteParameters { get; }
 
-    IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+    IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(ISpriteRenderers spriteRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData;

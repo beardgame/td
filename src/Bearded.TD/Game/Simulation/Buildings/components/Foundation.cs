@@ -4,10 +4,10 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -30,8 +30,7 @@ interface IFoundation
 }
 
 [Component("foundation")]
-sealed class Foundation<T> : Component<T, IFoundationParameters>, IFoundation, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Foundation : Component<IFoundationParameters>, IFoundation, IListener<DrawComponents>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

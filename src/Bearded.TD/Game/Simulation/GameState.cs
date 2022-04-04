@@ -5,8 +5,8 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
@@ -23,7 +23,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation;
 
-[GameRuleOwner]
 sealed class GameState
 {
     private readonly Stack<GameObject> objectsBeingAdded = new();
@@ -127,13 +126,6 @@ sealed class GameState
     public EnumerableProxy<T> Enumerate<T>()
         where T : class, IDeletable
         => getList<T>().AsReadOnlyEnumerable();
-
-    public void IdAs<T>(T obj)
-        where T : GameObject, IIdable<T>
-    {
-        IdAs(obj.Id, obj);
-        obj.Deleting += () => DeleteId(obj.Id);
-    }
 
     public void IdAs<T>(Id<T> id, T obj)
     {

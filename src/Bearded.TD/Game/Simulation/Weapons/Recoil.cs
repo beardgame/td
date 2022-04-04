@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
@@ -6,18 +6,18 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-interface IRecoilParameters : IParametersTemplate<IRecoilParameters>
-{
-    AngularVelocity Impulse { get; }
-}
 
 [Component("recoil")]
-sealed class Recoil<T> : Component<T, IRecoilParameters>, IListener<ShotProjectile>
-    where T : IComponentOwner
+sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
 {
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        AngularVelocity Impulse { get; }
+    }
+
     private IAngularAccelerator? accelerator;
 
-    public Recoil(IRecoilParameters parameters) : base(parameters)
+    public Recoil(IParameters parameters) : base(parameters)
     {
     }
 

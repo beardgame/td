@@ -48,7 +48,7 @@ sealed class AddPlayerFactions : GameRule<AddPlayerFactions.RuleParameters>
             Color = color;
         }
 
-        public IEnumerable<IFactionBehavior<Faction>> GetBehaviors() => inner.GetBehaviors();
+        public IEnumerable<IFactionBehavior> GetBehaviors() => inner.GetBehaviors();
 
         ModAwareId IBlueprint.Id => ModAwareId.Invalid;
     }

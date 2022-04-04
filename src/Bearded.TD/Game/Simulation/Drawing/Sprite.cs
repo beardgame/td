@@ -1,7 +1,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
@@ -10,10 +10,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("sprite")]
-class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
-    where T : IGameObject, IComponentOwner, IPositionable
+class Sprite : Component<ISpriteParameters>, IListener<DrawComponents>
 {
-    private IDirected? ownerAsDirected;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
     public Sprite(ISpriteParameters parameters) : base(parameters)
@@ -24,8 +22,6 @@ class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
-
-        ownerAsDirected = Owner as IDirected;
 
         Events.Subscribe(this);
     }
@@ -52,9 +48,7 @@ class Sprite<T> : Component<T, ISpriteParameters>, IListener<DrawComponents>
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
 
-        var angle = ownerAsDirected != null
-            ? (ownerAsDirected.Direction - 90.Degrees()).Radians
-            : 0f;
+        var angle = (Owner.Direction - 90.Degrees()).Radians;
 
         e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, color);
     }

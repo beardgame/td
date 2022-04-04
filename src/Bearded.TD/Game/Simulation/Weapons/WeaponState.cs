@@ -1,5 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Drawing;
+﻿using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -19,7 +19,7 @@ interface IWeaponState : IPositionable, IDirected
         where T : struct, IComponentEvent;
 }
 
-sealed class WeaponState : Component<ComponentGameObject>, IWeaponState
+sealed class WeaponState : Component, IWeaponState
 {
     private readonly ITurret turret;
 

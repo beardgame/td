@@ -2,7 +2,7 @@
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Commands.Gameplay;
 static class SpawnUnit
 {
     public static ISerializableCommand<GameInstance> Command(
-        GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<ComponentGameObject> unitId)
+        GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<GameObject> unitId)
         => new Implementation(game, tile, blueprint, unitId);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
@@ -22,10 +22,10 @@ static class SpawnUnit
         private readonly GameState game;
         private readonly Tile tile;
         private readonly IComponentOwnerBlueprint blueprint;
-        private readonly Id<ComponentGameObject> unitId;
+        private readonly Id<GameObject> unitId;
 
         public Implementation(
-            GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<ComponentGameObject> unitId)
+            GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<GameObject> unitId)
         {
             this.game = game;
             this.tile = tile;
@@ -44,14 +44,14 @@ static class SpawnUnit
         private ModAwareId blueprint;
         private int x;
         private int y;
-        private Id<ComponentGameObject> unitId;
+        private Id<GameObject> unitId;
 
         [UsedImplicitly]
         public Serializer()
         {
         }
 
-        public Serializer(IBlueprint blueprint, Tile tile, Id<ComponentGameObject> unitId)
+        public Serializer(IBlueprint blueprint, Tile tile, Id<GameObject> unitId)
         {
             this.blueprint = blueprint.Id;
             x = tile.X;

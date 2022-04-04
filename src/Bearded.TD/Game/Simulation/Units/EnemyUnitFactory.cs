@@ -1,5 +1,4 @@
 using System;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -13,8 +12,8 @@ namespace Bearded.TD.Game.Simulation.Units;
 
 static class EnemyUnitFactory
 {
-    public static ComponentGameObject Create(
-        GameState game, Id<ComponentGameObject> id, IComponentOwnerBlueprint blueprint, Tile tile)
+    public static GameObject Create(
+        GameState game, Id<GameObject> id, IComponentOwnerBlueprint blueprint, Tile tile)
     {
         var unit = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             game, blueprint, null, Level.GetPosition(tile).WithZ(0));
@@ -25,15 +24,15 @@ static class EnemyUnitFactory
         }
         var radius =
             ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
-        unit.AddComponent(new CircleCollider<ComponentGameObject>(radius));
+        unit.AddComponent(new CircleCollider(radius));
 
         unit.AddComponent(new EnemyLifeCycle());
-        unit.AddComponent(new HealthBar<ComponentGameObject>());
-        unit.AddComponent(new HealthEventReceiver<ComponentGameObject>());
-        unit.AddComponent(new DamageSource<ComponentGameObject>());
-        unit.AddComponent(new IdProvider<ComponentGameObject>(id));
-        unit.AddComponent(new Syncer<ComponentGameObject>());
-        unit.AddComponent(new TileBasedVisibility<ComponentGameObject>());
+        unit.AddComponent(new HealthBar());
+        unit.AddComponent(new HealthEventReceiver());
+        unit.AddComponent(new DamageSource());
+        unit.AddComponent(new IdProvider(id));
+        unit.AddComponent(new Syncer());
+        unit.AddComponent(new TileBasedVisibility());
         return unit;
     }
 }

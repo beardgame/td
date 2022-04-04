@@ -1,8 +1,8 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Input;
 
@@ -12,8 +12,8 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly Faction faction;
     private readonly IComponentOwnerBlueprint blueprint;
     protected override TileSelection TileSelection { get; }
-    private ComponentGameObject? ghost;
-    private MovableTileOccupation<ComponentGameObject>? ghostTileOccupation;
+    private GameObject? ghost;
+    private MovableTileOccupation? ghostTileOccupation;
 
     public BuildingInteractionHandler(GameInstance game, Faction faction, IComponentOwnerBlueprint blueprint) : base(game)
     {

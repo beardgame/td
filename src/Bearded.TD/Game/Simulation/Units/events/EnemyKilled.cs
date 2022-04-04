@@ -1,15 +1,15 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Units;
 
 readonly struct EnemyKilled : IGlobalEvent
 {
-    public ComponentGameObject Unit { get; }
+    public GameObject Unit { get; }
     public IDamageSource? DamageSource { get; }
 
-    public EnemyKilled(ComponentGameObject unit, IDamageSource? damageSource)
+    public EnemyKilled(GameObject unit, IDamageSource? damageSource)
     {
         Unit = unit;
         DamageSource = damageSource;

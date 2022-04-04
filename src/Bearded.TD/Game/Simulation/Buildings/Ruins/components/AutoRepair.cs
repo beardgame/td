@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
@@ -12,9 +12,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("autoRepair")]
-sealed class AutoRepair<T>
-    : Component<T, IAutoRepairParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
-    where T : IComponentOwner, IGameObject
+sealed class AutoRepair
+    : Component<IAutoRepairParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
 {
     private IFactionProvider? factionProvider;
 
@@ -142,6 +141,7 @@ sealed class AutoRepair<T>
         public void CancelIfStarted()
         {
             incompleteRepair?.CancelRepair();
+            incompleteRepair = null;
         }
     }
 }

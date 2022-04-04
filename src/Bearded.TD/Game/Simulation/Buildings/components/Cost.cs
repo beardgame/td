@@ -1,11 +1,11 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("cost")]
-sealed class Cost<T> : Component<T, Content.Models.ICost>, ICost
+sealed class Cost : Component<Content.Models.ICost>, ICost
 {
     public ResourceAmount Resources => Parameters.Resources;
 

@@ -1,7 +1,7 @@
 using System;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Newtonsoft.Json;

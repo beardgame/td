@@ -9,4 +9,5 @@ enum ReportType : byte
     Effectivity,
     ManualControl,
     Upgrades,
+    Debug,
 }

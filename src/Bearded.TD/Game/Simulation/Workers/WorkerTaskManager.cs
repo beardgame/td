@@ -11,7 +11,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [FactionBehavior("workers")]
-sealed class WorkerTaskManager : FactionBehavior<Faction>
+sealed class WorkerTaskManager : FactionBehavior
 {
     private readonly List<IWorkerComponent> allWorkers = new();
     private readonly Queue<IWorkerComponent> idleWorkers = new();

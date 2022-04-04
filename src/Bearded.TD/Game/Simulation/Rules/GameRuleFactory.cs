@@ -2,21 +2,21 @@ using System;
 
 namespace Bearded.TD.Game.Simulation.Rules;
 
-interface IGameRuleFactory<in TOwner>
+interface IGameRuleFactory
 {
-    IGameRule<TOwner> Create();
+    IGameRule Create();
 }
 
-sealed class GameRuleFactory<TOwner, TParameters> : IGameRuleFactory<TOwner>
+sealed class GameRuleFactory<TParameters> : IGameRuleFactory
 {
     private readonly TParameters parameters;
-    private readonly Func<TParameters, IGameRule<TOwner>> factory;
+    private readonly Func<TParameters, IGameRule> factory;
 
-    public GameRuleFactory(TParameters parameters, Func<TParameters, IGameRule<TOwner>> factory)
+    public GameRuleFactory(TParameters parameters, Func<TParameters, IGameRule> factory)
     {
         this.parameters = parameters;
         this.factory = factory;
     }
 
-    public IGameRule<TOwner> Create() => factory(parameters);
+    public IGameRule Create() => factory(parameters);
 }

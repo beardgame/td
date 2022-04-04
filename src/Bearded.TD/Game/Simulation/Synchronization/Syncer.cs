@@ -1,24 +1,22 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Synchronization;
 using Bearded.Utilities;
-using Bearded.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Synchronization;
 
-sealed class Syncer<T> : Component<T>, ISyncer<T>
-    where T : IComponentOwner, IDeletable, IGameObject
+sealed class Syncer : Component, ISyncer
 {
-    private IIdProvider<T>? idProvider;
-    public Id<T> EntityId =>
+    private IIdProvider? idProvider;
+    public Id<GameObject> GameObjectId =>
         idProvider?.Id ?? throw new InvalidOperationException("Synced object must have an ID.");
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IIdProvider<T>>(Owner, Events, provider => idProvider = provider);
+        ComponentDependencies.Depend<IIdProvider>(Owner, Events, provider => idProvider = provider);
         Owner.Game.Meta.Synchronizer.RegisterSyncable(Owner);
     }
 
@@ -26,6 +24,7 @@ sealed class Syncer<T> : Component<T>, ISyncer<T>
 
     public IStateToSync GetCurrentStateToSync()
     {
-        return new CompositeStateToSync(Owner.GetComponents<ISyncable>().Select(s => s.GetCurrentStateToSync()));
+        return new CompositeStateToSync(
+            Owner.GetComponents<ISyncable>().Select(s => s.GetCurrentStateToSync()).ToImmutableArray());
     }
 }

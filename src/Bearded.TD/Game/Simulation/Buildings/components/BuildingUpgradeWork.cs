@@ -1,14 +1,13 @@
 using System;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingUpgradeWork<T> : Component<T>
-    where T : IComponentOwner<T>, IGameObject
+sealed class BuildingUpgradeWork : Component
 {
     private readonly IIncompleteUpgrade incompleteUpgrade;
     private IBuildingState? state;

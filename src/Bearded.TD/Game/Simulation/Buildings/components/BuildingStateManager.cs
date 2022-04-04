@@ -1,8 +1,6 @@
-﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Commands;
+﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
@@ -10,13 +8,11 @@ using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
-using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingStateManager<T>
-    : Component<T>,
+sealed class BuildingStateManager : Component,
         IBuildingStateProvider,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
@@ -24,11 +20,9 @@ sealed class BuildingStateManager<T>
         IListener<ObjectRepaired>,
         IListener<ObjectRuined>,
         IListener<PreventPlayerHealthChanges>
-    where T : IComponentOwner<T>, IDeletable, IGameObject
 {
     private readonly BuildingState state = new();
     private IHealth? health;
-    private ICost? cost;
 
     public IBuildingState State { get; }
 
@@ -54,7 +48,6 @@ sealed class BuildingStateManager<T>
         ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
 
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
-        ComponentDependencies.Depend<ICost>(Owner, Events, c => cost = c);
 
         var ruinState = new FindObjectRuinState(false);
         Events.Preview(ref ruinState);
@@ -98,7 +91,7 @@ sealed class BuildingStateManager<T>
 
     private void materialize()
     {
-        Owner.AddComponent(new Syncer<T>());
+        Owner.AddComponent(new Syncer());
         state.IsMaterialized = true;
         Events.Send(new Materialized());
     }
@@ -109,32 +102,30 @@ sealed class BuildingStateManager<T>
             !state.IsRuined &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
-            Owner.AddComponent(new Ruined<T>(new RuinedParametersTemplate(null)));
+            Owner.Sync(RuinBuilding.Command);
         }
 
         if (state.IsDead)
         {
-            // TODO(building): cast necessary right now
-            (Owner as ComponentGameObject).Sync(DeleteGameObject.Command);
+            Owner.Sync(DeleteGameObject.Command);
         }
     }
 
     private sealed class BuildingStateReport : IBuildingStateReport
     {
-        private readonly T owner;
         private readonly IBuildingStateProvider buildingStateProvider;
 
         public ReportType Type => ReportType.EntityActions;
 
-        public ComponentGameObject Building => (owner as ComponentGameObject)!;
+        public GameObject Building { get; }
 
         public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
 
         public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
 
-        public BuildingStateReport(T owner, IBuildingStateProvider buildingStateProvider)
+        public BuildingStateReport(GameObject owner, IBuildingStateProvider buildingStateProvider)
         {
-            this.owner = owner;
+            Building = owner;
             this.buildingStateProvider = buildingStateProvider;
         }
     }
@@ -142,8 +133,7 @@ sealed class BuildingStateManager<T>
 
 interface IBuildingStateReport : IReport
 {
-    // TODO(building): cast needed to get the ID
-    ComponentGameObject Building { get; }
+    GameObject Building { get; }
     bool IsMaterialized { get; }
     bool CanBeDeleted { get; }
 }

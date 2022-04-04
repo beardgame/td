@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.Utilities.Collections;
@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class ZoneRevealer<T> : Component<T> where T : IDeletable, IGameObject, IPositionable
+sealed class ZoneRevealer : Component
 {
     private readonly Zone zone;
 
@@ -25,13 +25,13 @@ sealed class ZoneRevealer<T> : Component<T> where T : IDeletable, IGameObject, I
 
     private sealed class ZoneRevealReport : IZoneRevealReport
     {
-        private readonly ZoneRevealer<T> zoneRevealer;
+        private readonly ZoneRevealer zoneRevealer;
 
         public Zone Zone => zoneRevealer.zone;
         public bool CanRevealNow => zoneRevealer.Owner.Game.ExplorationManager.HasExplorationToken;
         public ReportType Type => ReportType.EntityActions;
 
-        public ZoneRevealReport(ZoneRevealer<T> zoneRevealer)
+        public ZoneRevealReport(ZoneRevealer zoneRevealer)
         {
             this.zoneRevealer = zoneRevealer;
         }
@@ -39,12 +39,12 @@ sealed class ZoneRevealer<T> : Component<T> where T : IDeletable, IGameObject, I
 
     sealed class ZoneRevealerProxy : IZoneRevealer
     {
-        private readonly T owner;
+        private readonly GameObject owner;
 
         public Position3 Position => owner.Position;
         public bool Deleted => owner.Deleted;
 
-        public ZoneRevealerProxy(T owner)
+        public ZoneRevealerProxy(GameObject owner)
         {
             this.owner = owner;
         }

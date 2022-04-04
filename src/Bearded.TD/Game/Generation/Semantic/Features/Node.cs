@@ -4,8 +4,7 @@ using Bearded.TD.Content.Mods;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features;
 
-[NodeBehaviorOwner]
-sealed record Node(ModAwareId Id, ImmutableArray<INodeBehavior<Node>> Behaviors)
+sealed record Node(ModAwareId Id, ImmutableArray<INodeBehavior> Behaviors)
 {
     private ImmutableHashSet<NodeTag>? memoizedTags;
 

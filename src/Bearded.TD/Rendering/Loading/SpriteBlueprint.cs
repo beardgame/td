@@ -19,7 +19,7 @@ sealed class SpriteBlueprint : ISpriteBlueprint
         this.spriteSet = spriteSet;
     }
 
-    public IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(SpriteRenderers spriteRenderers,
+    public IDrawableSprite<TVertexData> MakeConcreteWith<TVertex, TVertexData>(ISpriteRenderers spriteRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData

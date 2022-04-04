@@ -1,7 +1,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -25,9 +25,8 @@ interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
 }
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>,
+sealed class MuzzleFlash : Component<IMuzzleFlashParameters>,
     IListener<DrawComponents>, IListener<ShotProjectile>
-    where T : IGameObject, IPositionable, IDirected
 {
     private readonly struct Flash
     {

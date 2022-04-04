@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Tiles;
@@ -17,7 +17,7 @@ enum RayCastResultType
 }
 
 readonly record struct RayCastResult(
-    RayCastResultType Type, float RayFactor, Position2 Point, ComponentGameObject? Enemy, Direction? LastTileStep);
+    RayCastResultType Type, float RayFactor, Position2 Point, GameObject? Enemy, Direction? LastTileStep);
 
 static class RayCastingHelpers
 {
@@ -36,7 +36,7 @@ static class RayCastingHelpers
             }
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
-            var hits = new List<(ComponentGameObject unit, float factor, Position2 point)>();
+            var hits = new List<(GameObject unit, float factor, Position2 point)>();
 
             foreach (var enemy in enemies)
             {
@@ -72,7 +72,7 @@ static class RayCastingHelpers
 
             var enemies = unitLayer.GetUnitsOnTile(tile);
 
-            var closestHit = default((ComponentGameObject unit, float factor, Position2 point));
+            var closestHit = default((GameObject unit, float factor, Position2 point));
             closestHit.factor = float.PositiveInfinity;
 
             foreach (var enemy in enemies)

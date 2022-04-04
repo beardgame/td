@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -7,23 +7,23 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-interface IPidAimParameters : IParametersTemplate<IPidAimParameters>
-{
-    [Modifiable(100, Type = AttributeType.TurnSpeed)]
-    float ProportionalCorrection { get; }
-
-    [Modifiable(10, Type = AttributeType.TurnSpeed)]
-    float DerivativeCorrection { get; }
-}
-
 [Component("pidAim")]
-class PidAim : Component<ComponentGameObject, IPidAimParameters>, IAngularAccelerator
+sealed class PidAim : Component<PidAim.IParameters>, IAngularAccelerator
 {
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(100, Type = AttributeType.TurnSpeed)]
+        float ProportionalCorrection { get; }
+
+        [Modifiable(10, Type = AttributeType.TurnSpeed)]
+        float DerivativeCorrection { get; }
+    }
+
     private IWeaponState weapon = null!;
     private AngularVelocity angularVelocity;
     private IWeaponAimer? aimer;
 
-    public PidAim(IPidAimParameters parameters) : base(parameters)
+    public PidAim(IParameters parameters) : base(parameters)
     {
     }
 

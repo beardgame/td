@@ -1,10 +1,10 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-abstract class WeaponCycleHandler<TParameters> : Component<ComponentGameObject, TParameters>
+abstract class WeaponCycleHandler<TParameters> : Component<TParameters>
     where TParameters : IParametersTemplate<TParameters>
 {
     private IWeaponTrigger? trigger;

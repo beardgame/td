@@ -1,10 +1,10 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Factions;
 
-sealed class FactionProvider<T> : Component<T>, IListener<ConvertToFaction>, IFactionProvider
+sealed class FactionProvider : Component, IListener<ConvertToFaction>, IFactionProvider
 {
     public Faction Faction { get; private set; }
 

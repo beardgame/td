@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Bearded.TD.Content.Behaviors;
-using Bearded.TD.Content.Serialization.Models;
+using IGameRuleModel = Bearded.TD.Content.Serialization.Models.IGameRule;
 
 namespace Bearded.TD.Game.Simulation.Rules;
 
@@ -11,19 +11,19 @@ static class GameRuleFactories
     private static readonly MethodInfo makeFactoryFactoryMethodInfo = typeof(GameRuleFactories)
         .GetMethod(nameof(makeFactoryFactoryGeneric), BindingFlags.NonPublic | BindingFlags.Static)!;
 
-    private static readonly BehaviorFactories<IGameRule, GameRuleAttribute, GameRuleOwnerAttribute, VoidParameters> factories =
-        new(typeof(IGameRule<>), makeFactoryFactoryMethodInfo);
+    private static readonly BehaviorFactories<IGameRuleModel, GameRuleAttribute, VoidParameters> factories =
+        new(typeof(IGameRule), makeFactoryFactoryMethodInfo);
 
     public static void Initialize() => factories.Initialize();
 
     public static IDictionary<string, Type> ParameterTypesForComponentsById => factories.ParameterTypesById;
 
-    public static IGameRuleFactory<TOwner> CreateGameRuleFactory<TOwner>(IGameRule template) =>
-        (factories.CreateBehaviorFactory<GameState>(template) as IGameRuleFactory<TOwner>)!;
+    public static IGameRuleFactory CreateGameRuleFactory(IGameRuleModel template) =>
+        (factories.CreateBehaviorFactory(template) as IGameRuleFactory)!;
 
-    private static object makeFactoryFactoryGeneric<TOwner, TParameters>(
-        Func<TParameters, IGameRule<TOwner>> constructor)
+    private static object makeFactoryFactoryGeneric<TParameters>(
+        Func<TParameters, IGameRule> constructor)
     {
-        return (Func<TParameters, object>) (p => new GameRuleFactory<TOwner, TParameters>(p, constructor));
+        return (Func<TParameters, object>) (p => new GameRuleFactory<TParameters>(p, constructor));
     }
 }

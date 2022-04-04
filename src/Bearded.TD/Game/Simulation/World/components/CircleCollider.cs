@@ -1,11 +1,11 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
-sealed class CircleCollider<T> : Component<T>, ICollider where T : IPositionable
+sealed class CircleCollider : Component, ICollider
 {
     private readonly Unit radius;
     private Circle collisionCircle => new(Owner.Position.XY(), radius);

@@ -4,9 +4,9 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
@@ -19,8 +19,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("worker")]
-// TODO: make generic
-sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent,
+sealed class WorkerComponent : Component<IWorkerParameters>, ITileWalkerOwner, IWorkerComponent,
     IListener<DrawComponents>
 {
     private IFactionProvider? factionProvider;

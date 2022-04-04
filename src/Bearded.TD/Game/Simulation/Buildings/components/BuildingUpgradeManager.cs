@@ -3,11 +3,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities;
@@ -16,12 +14,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class BuildingUpgradeManager<T>
-    : Component<T>,
+sealed partial class BuildingUpgradeManager
+    : Component,
         IBuildingUpgradeManager,
         IBuildingUpgradeSyncer,
         IUpgradable
-    where T : IComponentOwner<T>, IGameObject
 {
     private INameProvider? nameProvider;
     private IFactionProvider? factionProvider;
@@ -131,14 +128,12 @@ sealed partial class BuildingUpgradeManager<T>
 
     private void sendSyncUpgradeStart(IIncompleteUpgrade incompleteUpgrade)
     {
-        // TODO(building): currently cast needed to get the building ID
-        Owner.Sync(SyncUpgradeStart.Command, Owner as ComponentGameObject, incompleteUpgrade.Upgrade.Id);
+        Owner.Sync(SyncUpgradeStart.Command, Owner, incompleteUpgrade.Upgrade.Id);
     }
 
     private void sendSyncUpgradeCompletion(IIncompleteUpgrade incompleteUpgrade)
     {
-        // TODO(building): currently cast needed to get the building ID
-        Owner.Sync(SyncUpgradeCompletion.Command, Owner as ComponentGameObject, incompleteUpgrade.Upgrade.Id);
+        Owner.Sync(SyncUpgradeCompletion.Command, Owner, incompleteUpgrade.Upgrade.Id);
     }
 
     public override void Update(TimeSpan elapsedTime) {}

@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Shared.Events;
@@ -87,7 +87,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
             spawnLocations,
             enemiesPerSpawn,
             blueprint,
-            game.Meta.Ids.GetBatch<ComponentGameObject>(spawnLocations.Length * enemiesPerSpawn));
+            game.Meta.Ids.GetBatch<GameObject>(spawnLocations.Length * enemiesPerSpawn));
     }
 
     private WaveParameters generateWaveParameters(WaveRequirements requirements)

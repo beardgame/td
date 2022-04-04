@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Bearded.TD.Game.Meta;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -15,11 +14,10 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Selection;
 
 [Component("selectable")]
-sealed class Selectable<T> :
-    Component<T>,
+sealed class Selectable :
+    Component,
     ISelectable,
     IListener<ObjectDeleting>
-    where T : IComponentOwner, IGameObject
 {
     private readonly Disposer disposer = new();
     private IVisibility? visibility;

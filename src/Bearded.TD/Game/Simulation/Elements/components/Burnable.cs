@@ -1,9 +1,9 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -15,9 +15,8 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("burnable")]
-sealed class Burnable<T> : Component<T, IBurnableParameters>,
+sealed class Burnable : Component<IBurnableParameters>,
     IListener<TakeDamage>, IListener<Spark>, IListener<DrawComponents>
-    where T : IComponentOwner, IGameObject, IPositionable
 {
     private IDamageSource? lastFireHitOwner;
     private IDamageSource? damageSource;

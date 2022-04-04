@@ -1,5 +1,5 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
@@ -8,8 +8,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Exploration;
 
 [Component("revealSurroundingZones")]
-sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesParameters>
-    where T : IGameObject, IComponentOwner<T>
+sealed class RevealSurroundingZones : Component<IRevealSurroundingZonesParameters>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 

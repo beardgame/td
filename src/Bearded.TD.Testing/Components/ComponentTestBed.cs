@@ -1,4 +1,7 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Testing.GameStates;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -7,19 +10,20 @@ namespace Bearded.TD.Testing.Components;
 
 sealed class ComponentTestBed
 {
-    private static readonly TimeSpan frameTime = TimeSpan.One / 60f;
-
+    private readonly GameTestBed gameTestBed;
     private readonly ComponentInternals internals = new();
-    private readonly ComponentGameObject obj = new(null, Position3.Zero, Direction2.Zero);
+    private readonly GameObject obj = new(null, Position3.Zero, Direction2.Zero);
 
-    public ComponentTestBed()
+    public ComponentTestBed(GameTestBed? gameTestBed = null)
     {
+        this.gameTestBed = gameTestBed ?? GameTestBed.Create();
         obj.AddComponent(internals);
+        this.gameTestBed.State.Add(obj);
     }
 
-    public void AddComponent(IComponent<ComponentGameObject> component) => obj.AddComponent(component);
+    public void AddComponent(IComponent component) => obj.AddComponent(component);
 
-    public void RemoveComponent(IComponent<ComponentGameObject> component) => obj.RemoveComponent(component);
+    public void RemoveComponent(IComponent component) => obj.RemoveComponent(component);
 
     public IEnumerable<TComponent> GetComponents<TComponent>() => obj.GetComponents<TComponent>();
 
@@ -33,12 +37,19 @@ sealed class ComponentTestBed
         internals.PreviewEvent(ref @event);
     }
 
-    public void AdvanceSingleFrame()
+    public Queue<T> CollectEvents<T>() where T : struct, IComponentEvent
     {
-        obj.Update(frameTime);
+        var q = new Queue<T>();
+        internals.Subscribe(Listener.ForEvent<T>(q.Enqueue));
+        return q;
     }
 
-    private sealed class ComponentInternals : Component<ComponentGameObject>
+    public void AdvanceSingleFrame()
+    {
+        gameTestBed.AdvanceSingleFrame();
+    }
+
+    private sealed class ComponentInternals : Component
     {
         protected override void OnAdded() {}
         public override void Update(TimeSpan elapsedTime) {}
@@ -51,6 +62,11 @@ sealed class ComponentTestBed
         public void PreviewEvent<T>(ref T @event) where T : struct, IComponentPreviewEvent
         {
             Events.Preview(ref @event);
+        }
+
+        public void Subscribe<T>(IListener<T> listener) where T : struct, IComponentEvent
+        {
+            Events.Subscribe(listener);
         }
     }
 }

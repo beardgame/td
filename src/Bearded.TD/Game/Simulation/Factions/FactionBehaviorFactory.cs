@@ -2,21 +2,21 @@ using System;
 
 namespace Bearded.TD.Game.Simulation.Factions;
 
-interface IFactionBehaviorFactory<in TOwner>
+interface IFactionBehaviorFactory
 {
-    IFactionBehavior<TOwner> Create();
+    IFactionBehavior Create();
 }
 
-sealed class FactionBehaviorFactory<TOwner, TParameters> : IFactionBehaviorFactory<TOwner>
+sealed class FactionBehaviorFactory<TParameters> : IFactionBehaviorFactory
 {
     private readonly TParameters parameters;
-    private readonly Func<TParameters, IFactionBehavior<TOwner>> factory;
+    private readonly Func<TParameters, IFactionBehavior> factory;
 
-    public FactionBehaviorFactory(TParameters parameters, Func<TParameters, IFactionBehavior<TOwner>> factory)
+    public FactionBehaviorFactory(TParameters parameters, Func<TParameters, IFactionBehavior> factory)
     {
         this.parameters = parameters;
         this.factory = factory;
     }
 
-    public IFactionBehavior<TOwner> Create() => factory(parameters);
+    public IFactionBehavior Create() => factory(parameters);
 }

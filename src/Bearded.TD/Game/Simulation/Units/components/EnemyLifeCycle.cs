@@ -1,13 +1,13 @@
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Units;
 
-sealed class EnemyLifeCycle : Component<ComponentGameObject>,
+sealed class EnemyLifeCycle : Component,
     IDamageTarget,
     IEnemyLife,
     IListener<EnactDeath>,

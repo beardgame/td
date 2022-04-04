@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
@@ -16,20 +16,19 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("ruined")]
-sealed class Ruined<T>
-    : Component<T, IRuinedParameters>,
+sealed class Ruined
+    : Component<IRuinedParameters>,
         IRuined,
         IListener<RepairCancelled>,
         IListener<RepairFinished>,
         IPreviewListener<FindObjectRuinState>
-    where T : IComponentOwner<T>, IGameObject
 {
     private readonly Disposer disposer = new();
 
     private IBuildingStateProvider? buildingStateProvider;
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private ReportAggregator.IReportHandle? reportHandle;
-    private IncompleteRepair<T>? incompleteRepair;
+    private IncompleteRepair? incompleteRepair;
 
     private bool hasRepairCost => Parameters.RepairCost.HasValue;
     private bool deleteNextFrame;
@@ -78,7 +77,7 @@ sealed class Ruined<T>
             throw new InvalidOperationException("Only one repair attempt can be in progress at a time.");
         }
 
-        incompleteRepair = new IncompleteRepair<T>(repairingFaction);
+        incompleteRepair = new IncompleteRepair(repairingFaction);
         Owner.AddComponent(incompleteRepair);
         return incompleteRepair;
     }
@@ -100,6 +99,7 @@ sealed class Ruined<T>
         if (incompleteRepair != null)
         {
             Owner.RemoveComponent(incompleteRepair);
+            incompleteRepair = null;
         }
     }
 
@@ -125,11 +125,11 @@ sealed class Ruined<T>
 
     private sealed class RuinedReport : IRuinedReport
     {
-        private readonly Ruined<T> instance;
+        private readonly Ruined instance;
 
         public ReportType Type => ReportType.EntityActions;
 
-        public RuinedReport(Ruined<T> instance)
+        public RuinedReport(Ruined instance)
         {
             this.instance = instance;
         }
@@ -138,7 +138,7 @@ sealed class Ruined<T>
             throw new InvalidDataException(
                 "Ruined reports should not exist for ruined components without repair cost.");
 
-        public ComponentGameObject Building => (instance.Owner as ComponentGameObject)!;
+        public GameObject Building => instance.Owner;
         public bool RepairInProgress => instance.incompleteRepair != null;
         public double PercentageComplete => instance.incompleteRepair?.PercentageComplete ?? 0;
         public bool CanBeRepairedBy(Faction faction) => instance.CanBeRepairedBy(faction);
@@ -154,8 +154,7 @@ interface IRuined
 
 interface IRuinedReport : IReport
 {
-    // TODO(building): cast needed to get the ID
-    ComponentGameObject Building { get; }
+    GameObject Building { get; }
     ResourceAmount RepairCost { get; }
     bool RepairInProgress { get; }
     double PercentageComplete { get; }

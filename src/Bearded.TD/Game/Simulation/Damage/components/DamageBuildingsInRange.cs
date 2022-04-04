@@ -1,14 +1,14 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("damageBuildings")]
-sealed class DamageBuildingsInRange : Component<ComponentGameObject, IDamageBuildingsInRangeParameters>
+sealed class DamageBuildingsInRange : Component<IDamageBuildingsInRangeParameters>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private IEnemyMovement? movement;

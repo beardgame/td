@@ -2,8 +2,8 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -17,7 +17,7 @@ static class PlopBuilding
     public static ISerializableCommand<GameInstance> Command(
         GameState gameState,
         Faction faction,
-        Id<ComponentGameObject> id,
+        Id<GameObject> id,
         IComponentOwnerBlueprint blueprint,
         PositionedFootprint footprint)
         => new Implementation(gameState, faction, id, blueprint, footprint);
@@ -26,14 +26,14 @@ static class PlopBuilding
     {
         private readonly GameState gameState;
         private readonly Faction faction;
-        private readonly Id<ComponentGameObject> id;
+        private readonly Id<GameObject> id;
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly PositionedFootprint footprint;
 
         public Implementation(
             GameState gameState,
             Faction faction,
-            Id<ComponentGameObject> id,
+            Id<GameObject> id,
             IComponentOwnerBlueprint blueprint,
             PositionedFootprint footprint)
         {
@@ -58,7 +58,7 @@ static class PlopBuilding
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<ComponentGameObject> id;
+        private Id<GameObject> id;
         private Id<Faction> faction;
         private ModAwareId blueprint;
         private ModAwareId footprint;
@@ -69,7 +69,7 @@ static class PlopBuilding
         [UsedImplicitly]
         public Serializer() {}
 
-        public Serializer(Faction faction, Id<ComponentGameObject> id, IBlueprint blueprint, PositionedFootprint footprint)
+        public Serializer(Faction faction, Id<GameObject> id, IBlueprint blueprint, PositionedFootprint footprint)
         {
             this.id = id;
             this.faction = faction.Id;

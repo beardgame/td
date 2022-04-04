@@ -10,14 +10,14 @@ namespace Bearded.TD.Rendering;
 // TODO: this class is very small, review if we need it?
 sealed class ContentRenderers : IDisposable
 {
-    private readonly SpriteRenderers spriteRenderers;
+    private readonly ISpriteRenderers spriteRenderers;
     public LevelRenderer LevelRenderer { get; }
     public ImmutableArray<FluidGeometry> FluidGeometries { get; }
 
     public ContentRenderers(
         LevelRenderer levelRenderer,
         IEnumerable<FluidGeometry> fluidGeometries,
-        SpriteRenderers spriteRenderers)
+        ISpriteRenderers spriteRenderers)
     {
         this.spriteRenderers = spriteRenderers;
         LevelRenderer = levelRenderer;

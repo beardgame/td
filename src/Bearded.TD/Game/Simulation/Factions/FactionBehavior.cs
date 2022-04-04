@@ -2,12 +2,12 @@ using Bearded.TD.Game.Simulation.Events;
 
 namespace Bearded.TD.Game.Simulation.Factions;
 
-abstract class FactionBehavior<TOwner> : IFactionBehavior<TOwner>
+abstract class FactionBehavior : IFactionBehavior
 {
-    protected TOwner Owner { get; private set; }
+    protected Faction Owner { get; private set; }
     protected GlobalGameEvents Events { get; private set; } = null!;
 
-    public void OnAdded(TOwner owner, GlobalGameEvents events)
+    public void OnAdded(Faction owner, GlobalGameEvents events)
     {
         Owner = owner;
         Events = events;
@@ -17,7 +17,7 @@ abstract class FactionBehavior<TOwner> : IFactionBehavior<TOwner>
     protected abstract void Execute();
 }
 
-abstract class FactionBehavior<TOwner, TParameters> : FactionBehavior<TOwner>
+abstract class FactionBehavior<TParameters> : FactionBehavior
 {
     protected TParameters Parameters { get; }
 

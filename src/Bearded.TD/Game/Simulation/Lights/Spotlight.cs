@@ -1,6 +1,6 @@
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -8,8 +8,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Lights;
 
 [Component("spotlight")]
-class Spotlight<T> : Component<T, ISpotlightParameters>, IListener<DrawComponents>
-    where T : IPositionable, IDirected
+class Spotlight : Component<ISpotlightParameters>, IListener<DrawComponents>
 {
     public Spotlight(ISpotlightParameters parameters) : base(parameters)
     {

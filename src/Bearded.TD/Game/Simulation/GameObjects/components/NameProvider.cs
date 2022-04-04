@@ -1,11 +1,10 @@
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
 [Component("name")]
-sealed class NameProvider<T> : Component<T, IName>, INameProvider
+sealed class NameProvider : Component<IName>, INameProvider
 {
     public string Name => Parameters.Name;
 

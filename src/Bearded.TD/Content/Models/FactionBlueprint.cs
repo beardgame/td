@@ -14,15 +14,15 @@ sealed class FactionBlueprint : IFactionBlueprint
     public string? Name { get; }
     public Color? Color { get; }
 
-    private readonly ImmutableArray<IFactionBehaviorFactory<Faction>> behaviorParameters;
+    private readonly ImmutableArray<IFactionBehaviorFactory> behaviorParameters;
 
-    public IEnumerable<IFactionBehavior<Faction>> GetBehaviors() => behaviorParameters.Select(f => f.Create());
+    public IEnumerable<IFactionBehavior> GetBehaviors() => behaviorParameters.Select(f => f.Create());
 
     public FactionBlueprint(
         ExternalId<Faction> id,
         string? name,
         Color? color,
-        IEnumerable<IFactionBehaviorFactory<Faction>> behaviorParameters)
+        IEnumerable<IFactionBehaviorFactory> behaviorParameters)
     {
         Id = id;
         Name = name;
