@@ -1,5 +1,3 @@
-#if DEBUG
-
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.UI.Factories;
@@ -33,5 +31,3 @@ sealed class DebugReportControl : ReportControl
 
     public override void Dispose() {}
 }
-
-#endif

@@ -47,9 +47,7 @@ sealed class ReportControlFactory : IReportControlFactory
             IUpgradeReport upgradeReport =>
                 new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
             IZoneRevealReport zoneRevealReport => new ZoneRevealReportControl(game, zoneRevealReport),
-#if DEBUG
             IDebugReport debugReport => new DebugReportControl(debugReport),
-#endif
 
             _ => throw new InvalidOperationException($"Cannot create control for report {report}")
         };

@@ -1,5 +1,3 @@
-#if DEBUG
-
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.Utilities.SpaceTime;
@@ -38,5 +36,3 @@ interface IDebugReport : IReport
 {
     public string Id { get; }
 }
-
-#endif
