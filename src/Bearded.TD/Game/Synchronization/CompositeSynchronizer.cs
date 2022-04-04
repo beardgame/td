@@ -7,7 +7,7 @@ sealed class CompositeStateToSync : IStateToSync
 {
     private readonly IEnumerable<IStateToSync> statesToSync;
 
-    public CompositeStateToSync(IEnumerable<IStateToSync> statesToSync)
+    public CompositeStateToSync(ICollection<IStateToSync> statesToSync)
     {
         this.statesToSync = statesToSync;
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Synchronization;
@@ -23,6 +24,7 @@ sealed class Syncer : Component, ISyncer
 
     public IStateToSync GetCurrentStateToSync()
     {
-        return new CompositeStateToSync(Owner.GetComponents<ISyncable>().Select(s => s.GetCurrentStateToSync()));
+        return new CompositeStateToSync(
+            Owner.GetComponents<ISyncable>().Select(s => s.GetCurrentStateToSync()).ToImmutableArray());
     }
 }
