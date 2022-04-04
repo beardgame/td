@@ -65,6 +65,9 @@ sealed class ProgressTracker
 
     public void SetProgress(double progress)
     {
+        // We may have been completed remotely already.
+        if (progressStage > ProgressStage.InProgress) return;
+
         Argument.Satisfies(progress is >= 0 and <= 1);
         State.Satisfies(progressStage == ProgressStage.InProgress);
 

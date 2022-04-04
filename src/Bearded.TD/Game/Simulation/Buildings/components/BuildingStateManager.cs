@@ -1,5 +1,4 @@
-﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Commands;
+﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Damage;
@@ -103,7 +102,7 @@ sealed class BuildingStateManager : Component,
             !state.IsRuined &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
-            Owner.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+            Owner.Sync(RuinBuilding.Command);
         }
 
         if (state.IsDead)
