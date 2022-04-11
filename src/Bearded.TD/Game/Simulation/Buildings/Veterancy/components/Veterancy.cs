@@ -62,10 +62,20 @@ sealed class Veterancy : Component, IListener<GainXp>
         public ReportType Type => ReportType.EntityProgression;
 
         public int CurrentVeterancyLevel => subject.level;
+
         public Experience CurrentExperience => subject.experience;
-        public Experience? NextLevelThreshold => subject.level >= subject.levelThresholds.Length
-            ? null
-            : subject.levelThresholds[subject.level];
+
+        public Experience? NextLevelThreshold => subject.level < subject.levelThresholds.Length
+            ? subject.levelThresholds[subject.level]
+            : null;
+
+        private Experience previousLevelThreshold => subject.level > 0
+            ? subject.levelThresholds[subject.level - 1]
+            : Experience.Zero;
+
+        public double PercentageToNextLevel => NextLevelThreshold.HasValue
+            ? (CurrentExperience - previousLevelThreshold) / (NextLevelThreshold.Value - previousLevelThreshold)
+            : 1;
 
         private readonly Veterancy subject;
 
@@ -81,4 +91,5 @@ interface IVeterancyReport : IReport
     public int CurrentVeterancyLevel { get; }
     public Experience CurrentExperience { get; }
     public Experience? NextLevelThreshold { get; }
+    public double PercentageToNextLevel { get; }
 }

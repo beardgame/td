@@ -76,30 +76,33 @@ sealed class ReportControlFactory : IReportControlFactory
 
 sealed class VeterancyReportControl : ReportControl
 {
-    private readonly IVeterancyReport veterancyReport;
+    private readonly IVeterancyReport report;
 
     private readonly Binding<string> currentLevel = new();
     private readonly Binding<string> nextLevel = new();
+    private readonly Binding<double> levelProgress = new();
 
     public override double Height { get; }
 
-    public VeterancyReportControl(IVeterancyReport veterancyReport)
+    public VeterancyReportControl(IVeterancyReport report)
     {
-        this.veterancyReport = veterancyReport;
+        this.report = report;
         var column = this.BuildFixedColumn();
         column
             .AddValueLabel("Current level", currentLevel)
-            .AddValueLabel("Next level", nextLevel);
+            .AddValueLabel("Next level", nextLevel)
+            .AddProgressBar(levelProgress);
         Height = column.Height;
         Update();
     }
 
     public override void Update()
     {
-        currentLevel.SetFromSource(veterancyReport.CurrentVeterancyLevel.ToString());
-        nextLevel.SetFromSource(veterancyReport.NextLevelThreshold == null
+        currentLevel.SetFromSource(report.CurrentVeterancyLevel.ToString());
+        nextLevel.SetFromSource(report.NextLevelThreshold == null
             ? "max!"
-            : $"{veterancyReport.CurrentExperience} / {veterancyReport.NextLevelThreshold.Value}");
+            : $"{report.CurrentExperience} / {report.NextLevelThreshold.Value}");
+        levelProgress.SetFromSource(report.PercentageToNextLevel);
     }
 
     public override void Dispose() {}
