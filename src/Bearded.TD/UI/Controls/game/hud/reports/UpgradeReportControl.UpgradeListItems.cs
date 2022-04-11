@@ -14,14 +14,14 @@ sealed partial class UpgradeReportControl
     {
         private readonly Dictionary<int, Binding<double>> progressBindings = new();
         public ImmutableArray<IUpgradeReportInstance.IUpgradeModel> AppliedUpgrades { get; }
-        private readonly bool canUpgrade;
+        private readonly Binding<bool> canUpgrade;
 
         public int ItemCount => AppliedUpgrades.Length + 1;
 
         public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
         public UpgradeListItems(
-            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades, bool canUpgrade)
+            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades, Binding<bool> canUpgrade)
         {
             AppliedUpgrades = upgrades;
             this.canUpgrade = canUpgrade;
@@ -35,17 +35,10 @@ sealed partial class UpgradeReportControl
             {
                 return ButtonFactories.Button(b =>
                 {
-                    b.WithLabel("Choose upgrade");
-                    if (canUpgrade)
-                    {
-                        b.WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
-                    }
-                    else
-                    {
-                        b.MakeDisabled();
-                    }
-
-                    return b;
+                    return b
+                        .WithLabel("Choose upgrade")
+                        .WithEnabled(canUpgrade)
+                        .WithOnClick(() => ChooseUpgradeButtonClicked?.Invoke());
                 });
             }
 

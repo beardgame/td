@@ -66,7 +66,7 @@ static partial class Constants
             public const double RuinedPercentage = 0.5;
 
             public static readonly ImmutableArray<Experience> VeterancyThresholds =
-                ImmutableArray.Create(2500.Xp(), 10000.Xp(), 22500.Xp(), 40000.Xp(), 62500.Xp(), 90000.Xp());
+                ImmutableArray.Create(100.Xp(), 2500.Xp(), 10000.Xp(), 22500.Xp(), 40000.Xp(), 62500.Xp(), 90000.Xp());
         }
 
         public static class Worker

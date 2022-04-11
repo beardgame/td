@@ -1,13 +1,14 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed partial class UpgradeReportControl : ReportControl
 {
-    public override double Height { get; } = 200;
+    public override double Height => 200;
 
     private readonly IUpgradeReportInstance reportInstance;
     private readonly ControlContainer controlContainer;
@@ -17,6 +18,8 @@ sealed partial class UpgradeReportControl : ReportControl
     private bool isDetailsOpen;
     private bool isAddedToParent;
 
+    private readonly Binding<bool> canUpgrade = new();
+
     public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
     {
         this.reportInstance = reportInstance;
@@ -25,7 +28,7 @@ sealed partial class UpgradeReportControl : ReportControl
 
         list = new ListControl(new ViewportClippingLayerControl());
         listItems = new UpgradeListItems(
-            reportInstance.Upgrades.ToImmutableArray(), reportInstance.CanPlayerUpgradeBuilding);
+            reportInstance.Upgrades.ToImmutableArray(), canUpgrade);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
         list.ItemSource = listItems;
         Add(list);
@@ -53,13 +56,16 @@ sealed partial class UpgradeReportControl : ReportControl
 
         listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
         listItems.DestroyAll();
-        listItems = new UpgradeListItems(newUpgrades, reportInstance.CanPlayerUpgradeBuilding);
+        listItems = new UpgradeListItems(newUpgrades, canUpgrade);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
         list.ItemSource = listItems;
+
+        Update();
     }
 
     public override void Update()
     {
+        canUpgrade.SetFromSource(reportInstance.CanPlayerUpgradeBuilding);
         listItems.UpdateProgress();
     }
 
@@ -80,7 +86,7 @@ sealed partial class UpgradeReportControl : ReportControl
             return;
         }
 
-        var details = new UpgradeDetailsControl(reportInstance);
+        var details = new UpgradeDetailsControl(reportInstance, canUpgrade);
         controlContainer.SetControl(details, () =>
         {
             details.Dispose();

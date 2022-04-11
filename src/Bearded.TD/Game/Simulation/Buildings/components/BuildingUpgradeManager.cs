@@ -3,11 +3,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,15 +20,19 @@ sealed partial class BuildingUpgradeManager
     : Component,
         IBuildingUpgradeManager,
         IBuildingUpgradeSyncer,
-        IUpgradable
+        IUpgradable,
+        IListener<GainLevel>
 {
     private INameProvider? nameProvider;
     private IFactionProvider? factionProvider;
+    private int upgradeSlotsUnlocked;
     private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
     public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
     private readonly Dictionary<ModAwareId, IncompleteUpgrade> upgradesInProgress = new();
     public IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress =>
         upgradesInProgress.Values.ToImmutableArray();
+
+    private int upgradeSlotsOccupied => appliedUpgrades.Count + upgradesInProgress.Count;
 
     public IEnumerable<IUpgradeBlueprint> ApplicableUpgrades
     {
@@ -55,7 +61,10 @@ sealed partial class BuildingUpgradeManager
         ReportAggregator.Register(Events, new UpgradeReport(this));
         ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
+        Events.Subscribe(this);
     }
+
+    public bool HasAvailableSlot => upgradeSlotsOccupied < upgradeSlotsUnlocked;
 
     public bool CanBeUpgradedBy(Faction faction) =>
         factionProvider?.Faction.OwnedBuildingsCanBeUpgradedBy(faction) ?? false;
@@ -137,6 +146,8 @@ sealed partial class BuildingUpgradeManager
     }
 
     public override void Update(TimeSpan elapsedTime) {}
+
+    public void HandleEvent(GainLevel @event) => upgradeSlotsUnlocked++;
 }
 
 interface IBuildingUpgradeManager
@@ -144,6 +155,7 @@ interface IBuildingUpgradeManager
     IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
     IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress { get; }
     IEnumerable<IUpgradeBlueprint> ApplicableUpgrades { get; }
+    bool HasAvailableSlot { get; }
 
     event GenericEventHandler<IIncompleteUpgrade> UpgradeQueued;
     event GenericEventHandler<IUpgradeBlueprint> UpgradeCompleted;
