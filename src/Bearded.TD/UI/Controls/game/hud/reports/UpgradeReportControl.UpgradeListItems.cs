@@ -15,23 +15,31 @@ sealed partial class UpgradeReportControl
         private readonly Dictionary<int, Binding<double>> progressBindings = new();
         public ImmutableArray<IUpgradeReportInstance.IUpgradeModel> AppliedUpgrades { get; }
         private readonly Binding<bool> canUpgrade;
+        private readonly Binding<string> slots;
 
-        public int ItemCount => AppliedUpgrades.Length + 1;
+        public int ItemCount => AppliedUpgrades.Length + 2;
 
         public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
         public UpgradeListItems(
-            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades, Binding<bool> canUpgrade)
+            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades,
+            Binding<bool> canUpgrade,
+            Binding<string> slots)
         {
             AppliedUpgrades = upgrades;
             this.canUpgrade = canUpgrade;
+            this.slots = slots;
         }
 
-        public double HeightOfItemAt(int index) => Constants.UI.Button.Height;
+        public double HeightOfItemAt(int index) => index == 0 ? Constants.UI.Text.LineHeight : Constants.UI.Button.Height;
 
         public Control CreateItemControlFor(int index)
         {
-            if (index == AppliedUpgrades.Length)
+            if (index == 0)
+            {
+                return TextFactories.ValueLabel("Slots used", slots);
+            }
+            if (index == AppliedUpgrades.Length + 1)
             {
                 return ButtonFactories.Button(b =>
                 {
@@ -42,11 +50,11 @@ sealed partial class UpgradeReportControl
                 });
             }
 
-            var model = AppliedUpgrades[index];
+            var model = AppliedUpgrades[index - 1];
             var progressBinding = model.IsFinished ? null : Binding.Create(model.Progress);
             if (progressBinding != null)
             {
-                progressBindings[index] = progressBinding;
+                progressBindings[index - 1] = progressBinding;
             }
 
             return ButtonFactories.Button(b =>

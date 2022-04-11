@@ -25,14 +25,14 @@ sealed partial class BuildingUpgradeManager
 {
     private INameProvider? nameProvider;
     private IFactionProvider? factionProvider;
-    private int upgradeSlotsUnlocked;
     private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
     public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
     private readonly Dictionary<ModAwareId, IncompleteUpgrade> upgradesInProgress = new();
     public IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress =>
         upgradesInProgress.Values.ToImmutableArray();
 
-    private int upgradeSlotsOccupied => appliedUpgrades.Count + upgradesInProgress.Count;
+    public int UpgradeSlotsUnlocked { get; private set; }
+    public int UpgradeSlotsOccupied => appliedUpgrades.Count + upgradesInProgress.Count;
 
     public IEnumerable<IUpgradeBlueprint> ApplicableUpgrades
     {
@@ -64,7 +64,7 @@ sealed partial class BuildingUpgradeManager
         Events.Subscribe(this);
     }
 
-    public bool HasAvailableSlot => upgradeSlotsOccupied < upgradeSlotsUnlocked;
+    public bool HasAvailableSlot => UpgradeSlotsOccupied < UpgradeSlotsUnlocked;
 
     public bool CanBeUpgradedBy(Faction faction) =>
         factionProvider?.Faction.OwnedBuildingsCanBeUpgradedBy(faction) ?? false;
@@ -147,7 +147,7 @@ sealed partial class BuildingUpgradeManager
 
     public override void Update(TimeSpan elapsedTime) {}
 
-    public void HandleEvent(GainLevel @event) => upgradeSlotsUnlocked++;
+    public void HandleEvent(GainLevel @event) => UpgradeSlotsUnlocked++;
 }
 
 interface IBuildingUpgradeManager
@@ -156,6 +156,8 @@ interface IBuildingUpgradeManager
     IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress { get; }
     IEnumerable<IUpgradeBlueprint> ApplicableUpgrades { get; }
     bool HasAvailableSlot { get; }
+    int UpgradeSlotsUnlocked { get; }
+    int UpgradeSlotsOccupied { get; }
 
     event GenericEventHandler<IIncompleteUpgrade> UpgradeQueued;
     event GenericEventHandler<IUpgradeBlueprint> UpgradeCompleted;

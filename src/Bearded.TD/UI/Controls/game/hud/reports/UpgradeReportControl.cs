@@ -18,6 +18,7 @@ sealed partial class UpgradeReportControl : ReportControl
     private bool isDetailsOpen;
     private bool isAddedToParent;
 
+    private readonly Binding<string> slots = new();
     private readonly Binding<bool> canUpgrade = new();
 
     public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
@@ -28,7 +29,7 @@ sealed partial class UpgradeReportControl : ReportControl
 
         list = new ListControl(new ViewportClippingLayerControl());
         listItems = new UpgradeListItems(
-            reportInstance.Upgrades.ToImmutableArray(), canUpgrade);
+            reportInstance.Upgrades.ToImmutableArray(), canUpgrade, slots);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
         list.ItemSource = listItems;
         Add(list);
@@ -56,7 +57,7 @@ sealed partial class UpgradeReportControl : ReportControl
 
         listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
         listItems.DestroyAll();
-        listItems = new UpgradeListItems(newUpgrades, canUpgrade);
+        listItems = new UpgradeListItems(newUpgrades, canUpgrade, slots);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
         list.ItemSource = listItems;
 
@@ -66,6 +67,7 @@ sealed partial class UpgradeReportControl : ReportControl
     public override void Update()
     {
         canUpgrade.SetFromSource(reportInstance.CanPlayerUpgradeBuilding);
+        slots.SetFromSource($"{reportInstance.OccupiedUpgradeSlots} / {reportInstance.UnlockedUpgradeSlots}");
         listItems.UpdateProgress();
     }
 
