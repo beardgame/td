@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
@@ -23,6 +24,7 @@ sealed class Veterancy : Component, IListener<GainXp>
     protected override void OnAdded()
     {
         Events.Subscribe(this);
+        ReportAggregator.Register(Events, new VeterancyReport(this));
     }
 
     public override void Update(TimeSpan elapsedTime) { }
@@ -54,4 +56,29 @@ sealed class Veterancy : Component, IListener<GainXp>
 
     public static Veterancy WithLevelThresholds(params Experience[] levelThresholds) =>
         new(levelThresholds.ToImmutableArray());
+
+    private sealed class VeterancyReport : IVeterancyReport
+    {
+        public ReportType Type => ReportType.EntityProgression;
+
+        public int CurrentVeterancyLevel => subject.level;
+        public Experience CurrentExperience => subject.experience;
+        public Experience? NextLevelThreshold => subject.level >= subject.levelThresholds.Length
+            ? null
+            : subject.levelThresholds[subject.level];
+
+        private readonly Veterancy subject;
+
+        public VeterancyReport(Veterancy subject)
+        {
+            this.subject = subject;
+        }
+    }
+}
+
+interface IVeterancyReport : IReport
+{
+    public int CurrentVeterancyLevel { get; }
+    public Experience CurrentExperience { get; }
+    public Experience? NextLevelThreshold { get; }
 }
