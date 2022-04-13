@@ -16,6 +16,7 @@ abstract class WorkerTaskBase : IWorkerTask
     public abstract string Name { get; }
     public IEnumerable<Tile> Tiles { get; }
     public double PercentCompleted => resourceConsumer.PercentageDone;
+    public ResourceAmount ResourcesConsumed => resourceConsumer.ResourcesClaimed;
     public bool CanAbort => !started;
     public bool Finished { get; private set; }
 

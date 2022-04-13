@@ -11,13 +11,15 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingConstructionWork<T> : Component
+sealed class BuildingConstructionWork : Component
 {
     private readonly Id<IWorkerTask> taskId;
 
     private IFactionProvider? factionProvider;
     private Faction? faction;
     private BuildingWorkerTask? workerTask;
+
+    public ResourceAmount? ResourcesInvestedSoFar => workerTask?.ResourcesConsumed;
 
     public BuildingConstructionWork(Id<IWorkerTask> taskId)
     {

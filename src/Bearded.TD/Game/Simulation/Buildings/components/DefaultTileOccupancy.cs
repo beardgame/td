@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
@@ -26,12 +27,12 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
         if (isGhost())
             return;
 
-        deleteBuildingsThatWeAreReplacing();
+        tryReplacingExistingBuildings();
 
         Owner.Game.BuildingLayer.AddBuilding(Owner);
     }
 
-    private void deleteBuildingsThatWeAreReplacing()
+    private void tryReplacingExistingBuildings()
     {
         foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner))
         {
@@ -42,8 +43,38 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
                 throw new InvalidOperationException(
                     "Should not be able to place building here - another one is in the way!");
 
-            building.Delete();
+            replaceBuilding(building);
         }
+    }
+
+    private void replaceBuilding(GameObject building)
+    {
+        tryRefund(building);
+        building.Delete();
+    }
+
+    private void tryRefund(GameObject building)
+    {
+        var state = building.GetComponents<IBuildingStateProvider>().Single().State;
+        if (!state.IsMaterialized)
+            return;
+
+        if (building.GetComponents<BuildingConstructionWork>().SingleOrDefault() is { } constructionWork)
+        {
+            refund(constructionWork.ResourcesInvestedSoFar ?? ResourceAmount.Zero);
+        }
+        else if(building.GetComponents<ICost>().SingleOrDefault() is { } cost)
+        {
+            refund(cost.Resources);
+        }
+    }
+
+    private void refund(ResourceAmount value)
+    {
+        var faction = Owner.FindFaction();
+        if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+            throw new InvalidOperationException();
+        resources.ProvideResources(value);
     }
 
     private void deleteFromBuildingLayerIfNotGhost()
