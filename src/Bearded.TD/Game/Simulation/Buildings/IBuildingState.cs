@@ -7,6 +7,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 interface IBuildingState
 {
     public TileRangeDrawer.RangeDrawStyle RangeDrawing { get; }
+    public bool IsGhost { get; }
     public bool IsMaterialized { get; }
     public bool IsFunctional { get; }
     public bool CanApplyUpgrades { get; }

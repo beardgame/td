@@ -1,12 +1,13 @@
-using System.Collections.Generic;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
@@ -15,29 +16,67 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
 {
     protected override void OnAdded()
     {
+        ComponentDependencies.Depend<IBuildingStateProvider, ITileOccupation>(Owner, Events,
+            (_, _) => addToBuildingLayerIfNotGhost());
+        Owner.Deleting += deleteFromBuildingLayerIfNotGhost;
+    }
+
+    private void addToBuildingLayerIfNotGhost()
+    {
+        if (isGhost())
+            return;
+
+        deleteBuildingsThatWeAreReplacing();
+
+        Owner.Game.BuildingLayer.AddBuilding(Owner);
+    }
+
+    private void deleteBuildingsThatWeAreReplacing()
+    {
+        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner))
+        {
+            if (Owner.Game.BuildingLayer[tile] is not { } building)
+                continue;
+
+            if (!building.GetComponents<CanBeBuiltOn>().Any())
+                throw new InvalidOperationException(
+                    "Should not be able to place building here - another one is in the way!");
+
+            building.Delete();
+        }
+    }
+
+    private void deleteFromBuildingLayerIfNotGhost()
+    {
+        if (isGhost())
+            return;
+
+        Owner.Game.BuildingLayer.RemoveBuilding(Owner);
+    }
+
+    private bool isGhost()
+    {
+        return Owner.GetComponents<IBuildingStateProvider>().Single().State.IsGhost;
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
-    public IBuildBuildingPrecondition.Result CanBuild(IBuildBuildingPrecondition.Parameters parameters)
+    public Result CanBuild(Parameters parameters)
     {
         var invalidTiles = parameters.Footprint.OccupiedTiles
             .Where(t => !isTileValidForBuilding(parameters.Game, t))
             .ToImmutableArray();
-        var invalidEdges = getUnwalkableEdges(parameters.Game, parameters.Footprint.OccupiedTiles)
-            .ToImmutableArray();
 
-        var canBuild = invalidTiles.Length == 0 && invalidEdges.Length == 0;
+        var canBuild = invalidTiles.Length == 0;
 
         return canBuild
-            ? IBuildBuildingPrecondition.Result.Valid
-            : IBuildBuildingPrecondition.Result.InValid
+            ? Result.Valid
+            : Result.InValid
                 with
                 {
                     BadTiles = invalidTiles,
-                    BadEdges = invalidEdges
                 };
     }
 
@@ -45,33 +84,13 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
     {
         return game.Level.IsValid(tile)
             && game.GeometryLayer[tile].Type == TileType.Floor
-            && game.BuildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None
-            && game.VisibilityLayer[tile].IsRevealed();
+            && game.VisibilityLayer[tile].IsRevealed()
+            && tileContainsNoBuildingOrReplaceableBuilding(game, tile);
     }
 
-    private static IEnumerable<TileEdge> getUnwalkableEdges(GameState game, IEnumerable<Tile> tiles)
+    private static bool tileContainsNoBuildingOrReplaceableBuilding(GameState game, Tile tile)
     {
-        var passability = game.PassabilityManager.GetLayer(Passability.WalkingUnit);
-        var tilesSet = new HashSet<Tile>(tiles);
-
-        foreach (var tile in tilesSet)
-        {
-            foreach (var direction in Directions.All.Enumerate())
-            {
-                if (!tilesSet.Contains(tile.Neighbor(direction)))
-                    continue;
-                if (isEdgeWalkable(passability, tile, direction))
-                    continue;
-                yield return TileEdge.From(tile, direction);
-            }
-        }
-    }
-
-    private static bool isEdgeWalkable(PassabilityLayer passability, Tile t0, Direction direction)
-    {
-        var t1 = t0.Neighbor(direction);
-
-        return passability[t0].PassableDirections.Includes(direction)
-            && passability[t1].PassableDirections.Includes(direction.Opposite());
+        return game.BuildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None
+            || game.BuildingLayer[tile]!.GetComponents<CanBeBuiltOn>().Any();
     }
 }

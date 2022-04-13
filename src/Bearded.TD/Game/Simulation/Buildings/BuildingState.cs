@@ -7,6 +7,7 @@ sealed class BuildingState : IBuildingState
 {
     // Derived properties (IBuildingState implementation)
     public TileRangeDrawer.RangeDrawStyle RangeDrawing => TileRangeDrawStyle.FromSelectionState(SelectionState);
+    public bool IsGhost => false;
     public bool IsMaterialized { get; set; }
     public bool IsFunctional => IsCompleted && !IsRuined && !IsDead;
     public bool CanApplyUpgrades => IsCompleted && !IsRuined && !IsDead;

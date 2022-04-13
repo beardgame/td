@@ -56,8 +56,6 @@ sealed class BuildingFactory
 #if DEBUG
         building.AddComponent(new DebugReporter());
 #endif
-        gameState.BuildingLayer.AddBuilding(building);
-        building.Deleting += () => gameState.BuildingLayer.RemoveBuilding(building);
         return building;
     }
 
