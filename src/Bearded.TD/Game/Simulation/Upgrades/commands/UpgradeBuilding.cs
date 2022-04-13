@@ -42,6 +42,7 @@ static class UpgradeBuilding
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
+                && upgradeManager.HasAvailableSlot
                 && upgradeManager.CanApplyUpgrade(upgrade)
                 && upgradeManager.CanBeUpgradedBy(actor.Faction);
         }

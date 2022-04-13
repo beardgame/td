@@ -44,6 +44,13 @@ static partial class Constants
             public const double Height = 48;
         }
 
+        public static class ProgressBar
+        {
+            public static readonly Color DefaultColor = Color.PaleGreen;
+            public const double Height = 8;
+            public const double Margin = 4;
+        }
+
         public static class Statistics
         {
             public static readonly TimeSpan TimeBetweenUIUpdates = 0.25.S();

@@ -46,8 +46,11 @@ sealed partial class BuildingUpgradeManager
 
             public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
             public IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
+            public int OccupiedUpgradeSlots => upgradeManager.UpgradeSlotsOccupied;
+            public int UnlockedUpgradeSlots => upgradeManager.UpgradeSlotsUnlocked;
 
-            public bool CanPlayerUpgradeBuilding => upgradeManager.CanBeUpgradedBy(playerFaction);
+            public bool CanPlayerUpgradeBuilding =>
+                upgradeManager.HasAvailableSlot && upgradeManager.CanBeUpgradedBy(playerFaction);
 
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;

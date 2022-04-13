@@ -8,6 +8,7 @@
     { "id" : "defaultTileOccupancy" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
     { "id" : "autoRepair", "parameters" : { } },
+    { "id" : "gainXpOnDamage" },
     { "id" : "veterancy" },
     {
       "id" : "turret",

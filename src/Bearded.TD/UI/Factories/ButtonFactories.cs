@@ -112,11 +112,7 @@ static class ButtonFactories
             if (progressBar.HasValue)
             {
                 var color = progressBar.Value.Color ?? Color.White * .25f;
-                var barControl = new BackgroundBox(color)
-                    .Anchor(a => a.Right(relativePercentage: progressBar.Value.Progress.Value));
-                button.Add(barControl);
-                progressBar.Value.Progress.SourceUpdated += progress =>
-                    barControl.Anchor(a => a.Left(relativePercentage: progress));
+                button.Add(ProgressBarFactories.BareProgressBar(progressBar.Value.Progress, color));
             }
             button.Add(new ButtonBackgroundEffect(() =>
                 button.IsEnabled && (progressBar?.Progress.Value ?? 0) == 0));
