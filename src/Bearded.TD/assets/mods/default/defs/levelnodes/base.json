@@ -12,6 +12,9 @@
         { "id" : "erodeSelection", "parameters" : { } },
         { "id" : "erodeSelection", "parameters" : { } },
         { "id" : "selectRandomSubset", "parameters" : { "numTiles" : 1 } },
-        { "id" : "spawnBuilding", "parameters" : { "building" : "base", "faction" : "players" } }
+        { "id" : "spawnBuilding", "parameters" : {
+            "building" : "base",
+            "faction" : "players",
+            "placement" : "awayFromConnections" } }
     ]
 }
