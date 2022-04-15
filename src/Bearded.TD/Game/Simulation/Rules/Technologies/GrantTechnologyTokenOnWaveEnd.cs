@@ -40,7 +40,7 @@ sealed class GrantTechnologyTokenOnWaveEnd : GameRule<GrantTechnologyTokenOnWave
             }
 
             var hasTokenAlready = technology.HasTechnologyToken;
-            var hasAvailableTech = technologies.Any(technology.CanUnlockTechnology);
+            var hasAvailableTech = technologies.Any(technology.CanQueueTechnology);
 
             if (hasAvailableTech && !hasTokenAlready)
             {
