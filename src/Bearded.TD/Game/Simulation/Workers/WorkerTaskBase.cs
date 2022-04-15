@@ -32,7 +32,7 @@ abstract class WorkerTaskBase : IWorkerTask
         resourceConsumer = new ResourceConsumer(gameState, resourceReservation, 0.ResourcesPerSecond());
     }
 
-    public void Progress(TimeSpan elapsedTime, IWorkerParameters workerParameters)
+    public void Progress(TimeSpan elapsedTime, WorkerComponent.IParameters workerParameters)
     {
         if (IsCompleted)
         {

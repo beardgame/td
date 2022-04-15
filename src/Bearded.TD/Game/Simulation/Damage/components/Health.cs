@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -20,7 +21,7 @@ interface IHealth
 
 [Component("health")]
 sealed class Health :
-    Component<IHealthComponentParameter>,
+    Component<Health.IParameters>,
     IHealth,
     ISyncable,
     IPreviewListener<PreviewHealDamage>,
@@ -28,10 +29,18 @@ sealed class Health :
     IPreviewListener<PreviewTakeDamage>,
     IListener<TakeDamage>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(1, Type = AttributeType.Health)]
+        HitPoints MaxHealth { get; }
+
+        HitPoints? InitialHealth { get; }
+    }
+
     public HitPoints CurrentHealth { get; private set; }
     public HitPoints MaxHealth { get; private set; }
 
-    public Health(IHealthComponentParameter parameters) : base(parameters)
+    public Health(IParameters parameters) : base(parameters)
     {
         CurrentHealth = parameters.InitialHealth ?? parameters.MaxHealth;
         MaxHealth = parameters.MaxHealth;

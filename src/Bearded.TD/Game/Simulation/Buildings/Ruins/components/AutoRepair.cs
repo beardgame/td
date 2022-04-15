@@ -13,14 +13,27 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("autoRepair")]
 sealed class AutoRepair
-    : Component<IAutoRepairParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
+    : Component<AutoRepair.IParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(4)]
+        TimeSpan TimeUntilRepairStart { get; }
+
+        [Modifiable(4)]
+        TimeSpan RepairDuration { get; }
+
+        [Modifiable(true, DefaultValueType = typeof(bool))]
+        bool ResetTimerOnDamage { get; }
+    }
+
+
     private IFactionProvider? factionProvider;
 
     private IRuined? ruined;
     private ScheduledRepair? repair;
 
-    public AutoRepair(IAutoRepairParameters parameters) : base(parameters) { }
+    public AutoRepair(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -146,14 +159,3 @@ sealed class AutoRepair
     }
 }
 
-public interface IAutoRepairParameters : IParametersTemplate<IAutoRepairParameters>
-{
-    [Modifiable(4)]
-    TimeSpan TimeUntilRepairStart { get; }
-
-    [Modifiable(4)]
-    TimeSpan RepairDuration { get; }
-
-    [Modifiable(true, DefaultValueType = typeof(bool))]
-    bool ResetTimerOnDamage { get; }
-}

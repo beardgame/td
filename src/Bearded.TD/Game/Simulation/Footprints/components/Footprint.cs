@@ -2,20 +2,27 @@ using Bearded.TD.Game.Simulation.Buildings;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
 interface IFootprintGroup
 {
-    World.FootprintGroup FootprintGroup { get; }
+    FootprintGroup FootprintGroup { get; }
 }
 
 [Component("footprint")]
-sealed class FootprintGroup : Component<Content.Models.IFootprintGroup>, IFootprintGroup, IBuildBuildingPrecondition
+sealed class Footprint : Component<Footprint.IParameters>, IFootprintGroup, IBuildBuildingPrecondition
 {
-    World.FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        public FootprintGroup Group { get; }
+    }
 
-    public FootprintGroup(Content.Models.IFootprintGroup parameters) : base(parameters)
+    FootprintGroup IFootprintGroup.FootprintGroup => Parameters.Group;
+
+    public Footprint(IParameters parameters) : base(parameters)
     {
     }
 

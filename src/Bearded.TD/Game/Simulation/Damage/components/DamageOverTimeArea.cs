@@ -1,5 +1,5 @@
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -8,11 +8,22 @@ using static Bearded.TD.Constants.Game.World;
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("damageOverTimeArea")]
-sealed class DamageOverTimeArea : Component<IDamageOverTimeAreaParameters>
+sealed class DamageOverTimeArea : Component<DamageOverTimeArea.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(10, Type = AttributeType.DamageOverTime)]
+        int DamagePerSecond { get; }
+
+        DamageType Type { get; }
+
+        [Modifiable(2, Type = AttributeType.Range)]
+        Unit Range { get; }
+    }
+
     private IDamageSource? damageSource;
 
-    public DamageOverTimeArea(IDamageOverTimeAreaParameters parameters) : base(parameters) {}
+    public DamageOverTimeArea(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {

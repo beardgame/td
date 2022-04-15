@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
@@ -16,12 +16,18 @@ namespace Bearded.TD.Game.Simulation.Units;
 // TODO: split out tile presence management
 [Component("moveToBase")]
 sealed class MoveToBase
-    : Component<IMoveToBaseParameters>,
+    : Component<MoveToBase.IParameters>,
         IEnemyMovement,
         IListener<ObjectDeleting>,
         ITileWalkerOwner,
         ISyncable
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.MovementSpeed)]
+        Speed MovementSpeed { get; }
+    }
+
     private TileWalker tileWalker = null!;
     private PassabilityLayer passabilityLayer = null!;
 
@@ -33,7 +39,7 @@ sealed class MoveToBase
 
     public IEnumerable<Tile> OccupiedTiles => currentTile.Yield();
 
-    public MoveToBase(IMoveToBaseParameters parameters) : base(parameters) { }
+    public MoveToBase(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

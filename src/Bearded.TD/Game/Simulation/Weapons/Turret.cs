@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -23,8 +23,21 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret : Component<ITurretParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
+sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        IComponentOwnerBlueprint Weapon { get; }
+        Difference2 Offset { get; }
+
+        [Modifiable(0.25)]
+        Unit Height { get; }
+
+        Direction2 NeutralDirection { get; }
+        Angle? MaximumTurningAngle { get; }
+    }
+
+
     public GameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
@@ -39,7 +52,7 @@ sealed class Turret : Component<ITurretParameters>, ITurret, IListener<DrawCompo
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
-    public Turret(ITurretParameters parameters) : base(parameters) { }
+    public Turret(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

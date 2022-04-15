@@ -1,14 +1,23 @@
-using Bearded.TD.Content.Models;
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Lights;
 
 [Component("pointlight")]
-class PointLight : Component<IPointLightParameters>, IListener<DrawComponents>
+class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawComponents>
 {
+    internal interface IPointLightParameters : IParametersTemplate<IPointLightParameters>
+    {
+        Color Color { get; }
+        Unit Radius { get; }
+
+        Unit Height { get; }
+    }
+
     public PointLight(IPointLightParameters parameters) : base(parameters)
     {
     }

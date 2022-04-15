@@ -1,16 +1,26 @@
+using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Lights;
 
 [Component("spotlight")]
-class Spotlight : Component<ISpotlightParameters>, IListener<DrawComponents>
+class Spotlight : Component<Spotlight.IParameters>, IListener<DrawComponents>
 {
-    public Spotlight(ISpotlightParameters parameters) : base(parameters)
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        Color Color { get; }
+        Unit Radius { get; }
+        Angle Angle { get; }
+    }
+
+    public Spotlight(IParameters parameters) : base(parameters)
     {
     }
 

@@ -1,6 +1,6 @@
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -8,9 +8,19 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("spawnObjectOnHit")]
 sealed class SpawnObjectOnHit
-    : Component<ISpawnObjectOnHitParameters>, IListener<HitLevel>, IListener<HitEnemy>
+    : Component<SpawnObjectOnHit.IParameters>, IListener<HitLevel>, IListener<HitEnemy>
 {
-    public SpawnObjectOnHit(ISpawnObjectOnHitParameters parameters) : base(parameters)
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        IComponentOwnerBlueprint Object { get; }
+
+        bool OnHitLevel { get; }
+
+        bool OnHitEnemy { get; }
+    }
+
+
+    public SpawnObjectOnHit(IParameters parameters) : base(parameters)
     {
     }
 

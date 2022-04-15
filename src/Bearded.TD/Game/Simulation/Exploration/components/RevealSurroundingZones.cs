@@ -8,11 +8,17 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Exploration;
 
 [Component("revealSurroundingZones")]
-sealed class RevealSurroundingZones : Component<IRevealSurroundingZonesParameters>
+sealed class RevealSurroundingZones : Component<RevealSurroundingZones.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(1)]
+        public int Steps { get; }
+    }
+
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-    public RevealSurroundingZones(IRevealSurroundingZonesParameters parameters) : base(parameters)
+    public RevealSurroundingZones(IParameters parameters) : base(parameters)
     {
         occupiedTilesTracker.TileAdded += onTileAdded;
     }
@@ -52,8 +58,3 @@ sealed class RevealSurroundingZones : Component<IRevealSurroundingZonesParameter
     public override void Update(TimeSpan elapsedTime) {}
 }
 
-interface IRevealSurroundingZonesParameters : IParametersTemplate<IRevealSurroundingZonesParameters>
-{
-    [Modifiable(1)]
-    public int Steps { get; }
-}

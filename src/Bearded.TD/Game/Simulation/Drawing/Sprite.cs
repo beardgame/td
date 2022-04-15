@@ -4,17 +4,46 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("sprite")]
-class Sprite : Component<ISpriteParameters>, IListener<DrawComponents>
+class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
 {
+    internal enum ColorMode
+    {
+        Default = 0,
+        Faction
+    }
+
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+
+        Color Color { get; }
+
+        ColorMode ColorMode { get;  }
+
+        ISpriteBlueprint Sprite { get; }
+
+        Shader? Shader { get; }
+
+        SpriteDrawGroup? DrawGroup { get; }
+
+        int DrawGroupOrderKey { get; }
+
+        [Modifiable(1)]
+        Unit Size { get; }
+
+        Unit HeightOffset { get; }
+    }
+
+
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
-    public Sprite(ISpriteParameters parameters) : base(parameters)
+    public Sprite(IParameters parameters) : base(parameters)
     {
     }
 
@@ -39,7 +68,7 @@ class Sprite : Component<ISpriteParameters>, IListener<DrawComponents>
     {
         var color = Parameters.ColorMode switch
         {
-            SpriteColorMode.Faction when
+            ColorMode.Faction when
                 Owner.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider)
                 => factionProvider.Faction.Color,
             _ => Parameters.Color,

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
@@ -20,8 +20,28 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("beamEmitter")]
-sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IListener<DrawComponents>
+sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(10, Type = AttributeType.DamageOverTime)]
+        int DamagePerSecond { get; }
+
+        [Modifiable(Type = AttributeType.Range)]
+        Unit Range { get; }
+
+        [Modifiable(0.0f, Type = AttributeType.PiercingFactor)]
+        float PiercingFactor { get; }
+
+        Color Color { get; }
+
+        [Modifiable(3)]
+        Unit Width { get; }
+
+        [Modifiable(1)]
+        Unit CoreWidth { get; }
+    }
+
     private readonly record struct BeamSegment(Position2 Start, Position2 End, float DamageFactor);
 
     private static readonly TimeSpan damageTimeSpan = 0.1.S();
@@ -31,7 +51,7 @@ sealed class BeamEmitter : WeaponCycleHandler<IBeamEmitterParameters>, IListener
     private bool drawBeam;
     private readonly List<BeamSegment> beamSegments = new();
 
-    public BeamEmitter(IBeamEmitterParameters parameters)
+    public BeamEmitter(IParameters parameters)
         : base(parameters)
     {
     }

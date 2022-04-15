@@ -12,22 +12,24 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
-{
-    ISpriteBlueprint Sprite { get; }
-    Color Color { get; }
-    Shader? Shader { get; }
-    float Size { get; }
-    Unit Offset { get; }
 
-    [Modifiable(0.03)]
-    TimeSpan MinDuration { get; }
-}
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash : Component<IMuzzleFlashParameters>,
+sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
     IListener<DrawComponents>, IListener<ShotProjectile>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        ISpriteBlueprint Sprite { get; }
+        Color Color { get; }
+        Shader? Shader { get; }
+        float Size { get; }
+        Unit Offset { get; }
+
+        [Modifiable(0.03)]
+        TimeSpan MinDuration { get; }
+    }
+
     private readonly struct Flash
     {
         public Position3 Position { get; }
@@ -48,7 +50,7 @@ sealed class MuzzleFlash : Component<IMuzzleFlashParameters>,
 
     private Flash? currentFlash;
 
-    public MuzzleFlash(IMuzzleFlashParameters parameters) : base(parameters)
+    public MuzzleFlash(IParameters parameters) : base(parameters)
     {
     }
 

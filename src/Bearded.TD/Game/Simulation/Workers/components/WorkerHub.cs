@@ -1,7 +1,7 @@
-﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
+﻿using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -9,14 +9,21 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("workerHub")]
-sealed class WorkerHub : Component<IWorkerHubParameters>
+sealed class WorkerHub : Component<WorkerHub.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.DroneCount)] int NumWorkers { get; }
+
+        IComponentOwnerBlueprint Drone { get; }
+    }
+
     private IBuildingState? state;
     private IFactionProvider? factionProvider;
     private Faction? faction;
     private int numWorkersActive;
 
-    public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
+    public WorkerHub(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

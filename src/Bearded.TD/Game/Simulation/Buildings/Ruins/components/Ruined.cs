@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -17,12 +18,18 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("ruined")]
 sealed class Ruined
-    : Component<IRuinedParameters>,
+    : Component<Ruined.IParameters>,
         IRuined,
         IListener<RepairCancelled>,
         IListener<RepairFinished>,
         IPreviewListener<FindObjectRuinState>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        ResourceAmount? RepairCost { get; }
+    }
+
+
     private readonly Disposer disposer = new();
 
     private IBuildingStateProvider? buildingStateProvider;
@@ -35,7 +42,7 @@ sealed class Ruined
 
     public ResourceAmount? RepairCost => Parameters.RepairCost;
 
-    public Ruined(IRuinedParameters parameters) : base(parameters) { }
+    public Ruined(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

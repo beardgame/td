@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -19,7 +20,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("targetEnemiesInRange")]
 sealed class TargetEnemiesInRange
-    : Component<ITargetEnemiesInRange>,
+    : Component<TargetEnemiesInRange.IParameters>,
         IWeaponRangeDrawer,
         ITargeter<IPositionable>,
         IWeaponAimer,
@@ -27,6 +28,16 @@ sealed class TargetEnemiesInRange
         IWeaponRange,
         IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.Range)] Unit Range { get; }
+        [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
+        [Modifiable(1)] TimeSpan ReCalculateTilesInRangeInterval { get; }
+
+        Angle? ConeOfFire { get; }
+    }
+
+
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
     private IWeaponState weapon = null!;
@@ -52,7 +63,7 @@ sealed class TargetEnemiesInRange
 
     public Unit Range => currentRange;
 
-    public TargetEnemiesInRange(ITargetEnemiesInRange parameters) : base(parameters)
+    public TargetEnemiesInRange(IParameters parameters) : base(parameters)
     {
     }
 

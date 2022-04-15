@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -14,14 +15,37 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
+
+
 [Component("particleSystem")]
-sealed class ParticleSystem : Component<IParticleSystemParameters>, IListener<DrawComponents>
+sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<DrawComponents>
 {
+    public enum DrawMode
+    {
+        Sprite,
+        Line
+    }
+
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        int Count { get; }
+        ISpriteBlueprint Sprite { get; }
+        Color Color { get; }
+        Shader? Shader { get; }
+        float Size { get; }
+        float LineWidth { get; }
+        TimeSpan LifeTime { get; }
+        Speed RandomVelocity { get; }
+        Speed VectorVelocity { get; }
+        Speed ReflectionVelocity { get; }
+        DrawMode DrawMode { get; }
+    }
+
     private bool initialized;
     private readonly Particle[] particles;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
-    public ParticleSystem(IParticleSystemParameters parameters) : base(parameters)
+    public ParticleSystem(IParameters parameters) : base(parameters)
     {
         particles = new Particle[parameters.Count];
     }
@@ -134,7 +158,7 @@ sealed class ParticleSystem : Component<IParticleSystemParameters>, IListener<Dr
 
             switch (Parameters.DrawMode)
             {
-                case ParticleDrawMode.Sprite:
+                case DrawMode.Sprite:
                     e.Drawer.DrawSprite(
                         sprite,
                         p.Position.NumericValue,
@@ -142,7 +166,7 @@ sealed class ParticleSystem : Component<IParticleSystemParameters>, IListener<Dr
                         p.Velocity.XY().Direction.Radians,
                         argb);
                     break;
-                case ParticleDrawMode.Line:
+                case DrawMode.Line:
 
                     var v = p.Velocity.NumericValue * Parameters.Size * 0.5f;
                     var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth * 0.5f;

@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -30,8 +31,16 @@ interface IFoundation
 }
 
 [Component("foundation")]
-sealed class Foundation : Component<IFoundationParameters>, IFoundation, IListener<DrawComponents>
+sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        SpriteSet Sprites { get; }
+
+        [Modifiable(0.15f)]
+        Unit Height { get; }
+    }
+
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
     private Sprite spriteSide;
@@ -41,7 +50,7 @@ sealed class Foundation : Component<IFoundationParameters>, IFoundation, IListen
     public Unit BaseHeight { get; private set; }
     public Unit TopHeight { get; private set; }
 
-    public Foundation(IFoundationParameters parameters) : base(parameters)
+    public Foundation(IParameters parameters) : base(parameters)
     {
     }
 

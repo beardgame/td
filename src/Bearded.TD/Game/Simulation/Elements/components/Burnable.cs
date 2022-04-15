@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -15,9 +16,18 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("burnable")]
-sealed class Burnable : Component<IBurnableParameters>,
+sealed class Burnable : Component<Burnable.IParameters>,
     IListener<TakeDamage>, IListener<Spark>, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        Energy FuelAmount { get; }
+        Energy FlashPointThreshold { get; }
+        EnergyConsumptionRate? BurnSpeed { get; }
+        double? DamagePerFuel { get; }
+        bool StartsOnFire { get; }
+    }
+
     private IDamageSource? lastFireHitOwner;
     private IDamageSource? damageSource;
 
@@ -28,7 +38,7 @@ sealed class Burnable : Component<IBurnableParameters>,
     private float fireRenderStrength;
     private bool dealingDamageToOwner;
 
-    public Burnable(IBurnableParameters parameters) : base(parameters) {}
+    public Burnable(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {

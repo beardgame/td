@@ -1,18 +1,33 @@
+using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("trail")]
-sealed class Trail : Component<ITrailParameters>, IListener<DrawComponents>
+sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        bool SurviveObjectDeletion { get; }
+
+        Unit Width { get; }
+
+        TimeSpan Timeout { get; }
+
+        ISpriteBlueprint Sprite { get; }
+
+        Color Color { get; }
+    }
+
     private readonly TrailTracer tracer;
     private TrailDrawer drawer = null!;
 
-    public Trail(ITrailParameters parameters) : base(parameters)
+    public Trail(IParameters parameters) : base(parameters)
     {
         tracer = new TrailTracer(parameters.Timeout);
     }
@@ -58,11 +73,11 @@ sealed class Trail : Component<ITrailParameters>, IListener<DrawComponents>
     private sealed class PersistentTrail : Component, IListener<DrawComponents>
     {
         private readonly TrailDrawer drawer;
-        private readonly ITrailParameters parameters;
+        private readonly IParameters parameters;
         private readonly TrailTracer tracer;
         private Instant deleteAt;
 
-        public PersistentTrail(TrailDrawer drawer, ITrailParameters parameters, TrailTracer tracer)
+        public PersistentTrail(TrailDrawer drawer, IParameters parameters, TrailTracer tracer)
         {
             this.drawer = drawer;
             this.parameters = parameters;
@@ -89,7 +104,7 @@ sealed class Trail : Component<ITrailParameters>, IListener<DrawComponents>
         }
     }
 
-    private static void drawTrail(TrailDrawer drawer, TrailTracer tracer, ITrailParameters parameters, GameState game)
+    private static void drawTrail(TrailDrawer drawer, TrailTracer tracer, IParameters parameters, GameState game)
     {
         drawer.DrawTrail(
             tracer, parameters.Width.NumericValue,

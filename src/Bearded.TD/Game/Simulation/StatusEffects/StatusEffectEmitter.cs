@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -25,8 +24,22 @@ namespace Bearded.TD.Game.Simulation.StatusEffects;
  * 2) If this tower gets upgraded to have a stronger effect, do we update the modifications currently applied?
  */
 [Component("statusEffectEmitter")]
-sealed class StatusEffectEmitter : Component<IStatusEffectEmitterParameters>, IListener<DrawComponents>
+sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        AttributeType AttributeAffected { get; }
+
+        // If true, the attribute will be multiplied by (1 - ModificationValue)
+        bool IsReduction { get; }
+
+        [Modifiable(Type = AttributeType.EffectStrength)]
+        double ModificationValue { get; }
+
+        [Modifiable(Type = AttributeType.Range)]
+        Unit Range { get; }
+    }
+
     private readonly HashSet<GameObject> affectedObjects = new();
 
     private IBuildingState? buildingState;
@@ -38,7 +51,7 @@ sealed class StatusEffectEmitter : Component<IStatusEffectEmitterParameters>, IL
     private Unit range;
     private ImmutableArray<Tile> tilesInRange;
 
-    public StatusEffectEmitter(IStatusEffectEmitterParameters parameters) : base(parameters) { }
+    public StatusEffectEmitter(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

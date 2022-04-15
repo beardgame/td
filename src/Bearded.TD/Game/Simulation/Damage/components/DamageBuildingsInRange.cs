@@ -1,20 +1,29 @@
 using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("damageBuildings")]
-sealed class DamageBuildingsInRange : Component<IDamageBuildingsInRangeParameters>
+sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.Damage)]
+        HitPoints Damage { get; }
+
+        [Modifiable(Type = AttributeType.FireRate)]
+        Frequency AttackRate { get; }
+    }
+
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private IEnemyMovement? movement;
     private Instant nextAttack;
 
-    public DamageBuildingsInRange(IDamageBuildingsInRangeParameters parameters) : base(parameters) { }
+    public DamageBuildingsInRange(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
