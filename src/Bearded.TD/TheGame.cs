@@ -147,7 +147,11 @@ sealed class TheGame : Window
 
     protected override void OnResize(ResizeEventArgs e)
     {
+        if (e.Height == 0 || e.Width == 0)
+            return;
+
         viewportSize = new ViewportSize(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
+
         renderContext.OnResize(viewportSize);
         rootControl.SetViewport(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
     }
