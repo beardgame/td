@@ -5,6 +5,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Loading;
 using Bearded.TD.Networking;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities.Collections;
 using Lidgren.Network;
 
 namespace Bearded.TD.Game.Players;
@@ -144,8 +145,7 @@ sealed class PlayerManager : INetworkMessageHandler
                 GetSender(msg).ConnectionState = PlayerConnectionState.LoadingMods;
 
                 sendCommandToConnection(msg.SenderConnection, SetGameSettings.Command(game, game.GameSettings));
-                sendCommandToConnection(
-                    msg.SenderConnection, SetEnabledMods.Command(game, game.ContentManager.EnabledMods));
+                game.Players.ForEach(p => p.ConnectionState = PlayerConnectionState.LoadingMods);
 
                 // Send the players after the game settings and enabled mods, to make sure to get their latest
                 // connection states.

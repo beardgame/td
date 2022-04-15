@@ -40,16 +40,6 @@ abstract class LobbyManager
         Game.Request(ChangePlayerState.Request(Game.Me, connectionState));
     }
 
-    public void UpdateModEnabled(ModMetadata mod, bool enabled)
-    {
-        DebugAssert.State.Satisfies(CanChangeGameSettings, "Should only set game settings on server.");
-
-        if (Game.ContentManager.EnabledMods.Contains(mod) != enabled)
-        {
-            Dispatcher.RunOnlyOnServer(SetModEnabled.Command, Game, mod, enabled);
-        }
-    }
-
     public void UpdateGameSettings(GameSettings gameSettings)
     {
         DebugAssert.State.Satisfies(CanChangeGameSettings, "Should only set game settings on server.");

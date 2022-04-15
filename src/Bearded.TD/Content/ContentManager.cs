@@ -6,6 +6,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
@@ -13,20 +14,17 @@ namespace Bearded.TD.Content;
 
 sealed class ContentManager
 {
-    private static readonly ModSorter sorter = new ModSorter();
-
     private readonly ModLoadingContext loadingContext;
     public ModLoadingProfiler LoadingProfiler => loadingContext.Profiler;
 
     private readonly ImmutableDictionary<string, ModMetadata> modsById;
     public ImmutableHashSet<ModMetadata> AvailableMods { get; }
 
-    private readonly HashSet<ModMetadata> enabledMods = new HashSet<ModMetadata>();
+    private readonly HashSet<ModMetadata> enabledMods = new();
     public ImmutableHashSet<ModMetadata> EnabledMods => enabledMods.ToImmutableHashSet();
 
-    private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading =
-        new Dictionary<ModMetadata, ModForLoading>();
-    private readonly Queue<ModMetadata> modLoadingQueue = new Queue<ModMetadata>();
+    private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading = new();
+    private readonly Queue<ModMetadata> modLoadingQueue = new();
 
     public Maybe<ModMetadata> CurrentlyLoading { get; private set; } = Maybe.Nothing;
     public bool IsFinishedLoading => CurrentlyLoading.Select(_ => false).ValueOrDefault(modLoadingQueue.Count == 0);
@@ -55,13 +53,18 @@ sealed class ContentManager
 
     public ModMetadata FindMod(string modId) => modsById[modId];
 
-    public void SetEnabledMods(IEnumerable<ModMetadata> mods)
+    public void SetEnabledModsById(IEnumerable<string> modIds)
     {
-        enabledMods.Clear();
-        sorter.SortByDependency(mods).ForEach(EnableMod);
+        setEnabledMods(modIds.Select(FindMod));
     }
 
-    public void EnableMod(ModMetadata mod)
+    private void setEnabledMods(IEnumerable<ModMetadata> mods)
+    {
+        enabledMods.Clear();
+        mods.ForEach(enableMod);
+    }
+
+    private void enableMod(ModMetadata mod)
     {
         if (enabledMods.Contains(mod))
         {
@@ -74,7 +77,7 @@ sealed class ContentManager
             var dependencyMod = modsById[dependency.Id];
             if (!enabledMods.Contains(dependencyMod))
             {
-                EnableMod(dependencyMod);
+                enableMod(dependencyMod);
             }
         }
 
@@ -88,15 +91,47 @@ sealed class ContentManager
         enabledMods.Add(mod);
     }
 
-    public void DisableMod(ModMetadata mod)
+    public HashSet<ModMetadata> PreviewEnableMod(ModMetadata modToEnable)
     {
-        if (!enabledMods.Remove(mod))
-        {
-            return;
-        }
+        var enabled = enabledMods.ToHashSet();
 
-        var dependents = enabledMods.Where(m => m.Dependencies.Any(d => d.Id == mod.Id)).ToList();
-        dependents.ForEach(DisableMod);
+        enable(modToEnable);
+
+        return enabled;
+
+        void enable(ModMetadata mod)
+        {
+            if (enabled.Contains(mod))
+                return;
+
+            foreach (var dependency in mod.Dependencies)
+            {
+                var dependencyMod = modsById[dependency.Id];
+                enable(dependencyMod);
+            }
+
+            enabled.Add(mod);
+        }
+    }
+
+    public HashSet<ModMetadata> PreviewDisableMod(ModMetadata modToDisable)
+    {
+        var enabled = enabledMods.ToHashSet();
+
+        disable(modToDisable);
+
+        return enabled;
+
+        void disable(ModMetadata mod)
+        {
+            if (!enabled.Contains(mod))
+                return;
+
+            var dependents = enabled.Where(m => m.Dependencies.Any(d => d.Id == mod.Id));
+            dependents.ForEach(disable);
+
+            enabled.Remove(mod);
+        }
     }
 
     public void Update(UpdateEventArgs args)

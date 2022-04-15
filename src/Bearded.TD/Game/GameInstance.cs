@@ -112,6 +112,7 @@ sealed class GameInstance
         if (Status != GameStatus.Lobby)
             throw new InvalidOperationException("Can only change game settings in the lobby.");
         GameSettings = gameSettings;
+        ContentManager.SetEnabledModsById(gameSettings.ActiveModIds);
         GameSettingsChanged?.Invoke(gameSettings);
     }
 

@@ -23,7 +23,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     private GameSettings.Builder gameSettings = null!;
     private ChatMessage? lastSeenChatMessage;
 
-    private ImmutableHashSet<ModMetadata> enabledMods = ImmutableHashSet<ModMetadata>.Empty;
+    private ImmutableHashSet<ModMetadata> enabledModsCache = ImmutableHashSet<ModMetadata>.Empty;
     public ImmutableArray<ModMetadata> AvailableMods { get; private set; } = ImmutableArray<ModMetadata>.Empty;
 
     public IList<Player> Players => lobbyManager.Game.Players;
@@ -34,7 +34,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
     public LevelGenerationMethod LevelGenerationMethod => gameSettings.LevelGenerationMethod;
 
-    public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading;
+    public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading && !enabledModsCache.IsEmpty;
     public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
 
     public event VoidEventHandler? LoadingUpdated;
@@ -86,9 +86,9 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
             LoadingUpdated?.Invoke();
         }
 
-        if (!lobbyManager.Game.ContentManager.EnabledMods.SetEquals(enabledMods))
+        if (!lobbyManager.Game.ContentManager.EnabledMods.SetEquals(enabledModsCache))
         {
-            enabledMods = lobbyManager.Game.ContentManager.EnabledMods;
+            enabledModsCache = lobbyManager.Game.ContentManager.EnabledMods;
             onModsChanged();
         }
 
@@ -130,7 +130,14 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
 
     public void OnSetModEnabled(ModMetadata mod, bool enabled)
     {
-        lobbyManager.UpdateModEnabled(mod, enabled);
+        var newEnabledMods = enabled
+            ? lobbyManager.Game.ContentManager.PreviewEnableMod(mod)
+            : lobbyManager.Game.ContentManager.PreviewDisableMod(mod);
+
+        gameSettings.ActiveModIds.Clear();
+        gameSettings.ActiveModIds.AddRange(newEnabledMods.Select(m => m.Id));
+
+        lobbyManager.UpdateGameSettings(gameSettings.Build());
     }
 
     public bool IsModEnabled(ModMetadata mod) => lobbyManager.Game.ContentManager.EnabledMods.Contains(mod);

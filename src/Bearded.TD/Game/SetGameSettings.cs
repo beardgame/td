@@ -47,6 +47,24 @@ static class SetGameSettings
             {
                 logSettingChange($"Worker distribution changed: {gameSettings.WorkerDistributionMethod}");
             }
+
+            logModChanges();
+        }
+
+        private void logModChanges()
+        {
+            foreach (var enabledMod in gameSettings.ActiveModIds
+                         .Where(id => game.ContentManager.EnabledMods.All(m => m.Id != id))
+                         .Select(game.ContentManager.FindMod))
+            {
+                logSettingChange($"Mod enabled: {enabledMod.Name}");
+            }
+
+            foreach (var disabledMod in game.ContentManager.EnabledMods
+                         .Where(m => gameSettings.ActiveModIds.All(id => m.Id != id)))
+            {
+                logSettingChange($"Mod disabled: {disabledMod.Name}");
+            }
         }
 
         private void logSettingChange(string message)
