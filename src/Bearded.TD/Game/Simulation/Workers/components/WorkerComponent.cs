@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -18,9 +20,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("worker")]
-// TODO: make generic
-sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>, ITileWalkerOwner, IWorkerComponent, IDrawableComponent
+sealed class WorkerComponent : Component<WorkerComponent.IParameters>, ITileWalkerOwner, IWorkerComponent,
+    IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(10, Type = AttributeType.MovementSpeed)]
+        Speed MovementSpeed { get; }
+
+        ResourceRate BuildingSpeed { get; }
+    }
+
     private IFactionProvider? factionProvider;
     private WorkerTaskManager? workerTaskManager;
     private WorkerState? currentState;
@@ -31,9 +41,9 @@ sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>
 
     public Faction? Faction { get; private set; }
     public Tile CurrentTile => tileWalker.CurrentTile;
-    public new IWorkerParameters Parameters => base.Parameters;
+    public new IParameters Parameters => base.Parameters;
 
-    public WorkerComponent(IWorkerParameters parameters) : base(parameters) { }
+    public WorkerComponent(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -47,7 +57,14 @@ sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>
         tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game,
-            Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"), null);
+            Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"));
+
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     private void onDelete()
@@ -70,9 +87,9 @@ sealed class WorkerComponent : Component<ComponentGameObject, IWorkerParameters>
         Owner.Deleting += onDelete;
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
-        drawer.DrawSprite(sprite, Owner.Position.NumericValue, 0.5f, 0,
+        e.Drawer.DrawSprite(sprite, Owner.Position.NumericValue, 0.5f, 0,
             workerTaskManager?.WorkerColor ?? Color.White);
     }
 
@@ -146,7 +163,7 @@ interface IWorkerComponent
 {
     Tile CurrentTile { get; }
     Faction Faction { get; }
-    IWorkerParameters Parameters { get; }
+    WorkerComponent.IParameters Parameters { get; }
     void AssignToTaskManager(WorkerTaskManager faction);
     void AssignTask(IWorkerTask task);
     void SuspendCurrentTask();

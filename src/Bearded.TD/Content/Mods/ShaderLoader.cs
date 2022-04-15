@@ -22,9 +22,13 @@ sealed class ShaderLoader
         // don't load same key/friendly name twice, just assume it's already there (keep local hashset?)
         // consider implementing IShaderReloader with a more lazy version that can load source on one thread and compile the shader on a different one
         //   - or actually only fetch shader file the first time it's used? no that's no good, we want shaders compiled during loading!
-        var shaderProgram = new ShaderCompiler(meta, file.Directory, jsonModel.Id)
-            .Add(ShaderType.VertexShader, jsonModel.VertexShader)
-            .Add(ShaderType.FragmentShader, jsonModel.FragmentShader)
+        var shaderProgram = new ShaderCompiler(meta, file.Directory!, jsonModel.Id!)
+            .TryAdd(ShaderType.VertexShader, jsonModel.VertexShader)
+            .TryAdd(ShaderType.FragmentShader, jsonModel.FragmentShader)
+            .TryAdd(ShaderType.TessControlShader, jsonModel.TessControlShader)
+            .TryAdd(ShaderType.TessEvaluationShader, jsonModel.TessEvaluationShader)
+            .TryAdd(ShaderType.GeometryShader, jsonModel.GeometryShader)
+            .TryAdd(ShaderType.ComputeShader, jsonModel.ComputeShader)
             .Compile(context);
 
         return new Shader(ModAwareId.FromNameInMod(jsonModel.Id, meta), shaderProgram);
@@ -35,8 +39,7 @@ sealed class ShaderLoader
         private readonly ModMetadata meta;
         private readonly DirectoryInfo directory;
         private readonly string shaderId;
-        private readonly List<(ShaderType Type, string Filepath, string FriendlyName)> shaders
-            = new List<(ShaderType, string, string)>();
+        private readonly List<ModShaderFile> shaders = new();
 
         public ShaderCompiler(ModMetadata meta, DirectoryInfo baseDirectory, string shaderId)
         {
@@ -45,20 +48,20 @@ sealed class ShaderLoader
             this.shaderId = shaderId;
         }
 
-        public ShaderCompiler Add(ShaderType type, string path)
+        public ShaderCompiler TryAdd(ShaderType type, string? path)
         {
-            shaders.Add(
-                (
-                    Type: type,
-                    Filepath: Path.Combine(directory.ToString(), path),
-                    FriendlyName: friendlyName(path)
-                )
-            );
+            if (path != null)
+                shaders.Add(new ModShaderFile(type, filepath(path), friendlyName(path)));
 
             return this;
         }
 
-        private string friendlyName(string path)
+        private string filepath(string path)
+        {
+            return Path.Combine(directory.ToString(), path);
+        }
+
+        private string friendlyName(string? path)
         {
             return $"{meta.Id}.{shaderId}.{path}";
         }

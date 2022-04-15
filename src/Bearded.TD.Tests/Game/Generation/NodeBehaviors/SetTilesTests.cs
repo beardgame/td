@@ -11,7 +11,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SetTilesTests
     {
-        private INodeBehavior<Node> behaviourWithParameters(TileType type)
+        private INodeBehavior behaviourWithParameters(TileType type)
             => new SetTiles(new SetTiles.BehaviorParameters(type));
 
         [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]

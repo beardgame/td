@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Game.Commands.LevelGeneration;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
@@ -35,9 +34,9 @@ sealed class PhysicalTilemapGenerator
 
         var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
-        var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles);
-
         var (tilemap, levelCommands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
+
+        var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles, tilemap);
 
         addFeatureAreaMetadata(arrangedFeaturesWithAreas);
         addFeatureTileMetadata(featuresWithTiles);

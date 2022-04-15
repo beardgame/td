@@ -1,10 +1,11 @@
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -12,9 +13,9 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class AllowManualControl<T>
+sealed partial class AllowManualControl
 {
-    private sealed class CrossHair : Component<T>, IManualTarget3, IDrawableComponent
+    private sealed class CrossHair : Component, IManualTarget3, IListener<DrawComponents>
     {
         private readonly IManualTarget2 target;
         private IFactionProvider? faction;
@@ -30,12 +31,19 @@ sealed partial class AllowManualControl<T>
 
         protected override void OnAdded()
         {
-            faction = (Owner as IComponentOwner).GetComponents<IFactionProvider>().FirstOrDefault();
+            faction = Owner.GetComponents<IFactionProvider>().FirstOrDefault();
 
             var spriteBlueprint = Owner.Game.Meta.Blueprints
                 .Sprites[ModAwareId.ForDefaultMod("particle")]
                 .GetSprite("plus");
-            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, spriteBlueprint, null);
+            sprite = SpriteDrawInfo.ForUVColor(Owner.Game, spriteBlueprint);
+
+            Events.Subscribe(this);
+        }
+
+        public override void OnRemoved()
+        {
+            Events.Unsubscribe(this);
         }
 
         public override void Update(TimeSpan elapsedTime)
@@ -51,9 +59,9 @@ sealed partial class AllowManualControl<T>
             TriggerPulled = target.TriggerDown;
         }
 
-        public void Draw(IComponentDrawer drawer)
+        public void HandleEvent(DrawComponents e)
         {
-            drawer.DrawSprite(
+            e.Drawer.DrawSprite(
                 sprite,
                 Target.NumericValue,
                 0.5f,

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Networking.Serialization;
@@ -7,6 +10,7 @@ namespace Bearded.TD.Game;
 interface IGameSettings
 {
     int Seed { get; }
+    public IReadOnlyList<string> ActiveModIds { get; }
     ModAwareId? GameMode { get; }
     int LevelSize { get; }
     WorkerDistributionMethod WorkerDistributionMethod { get; }
@@ -16,6 +20,7 @@ interface IGameSettings
 sealed class GameSettings : IGameSettings
 {
     public int Seed { get; }
+    public IReadOnlyList<string> ActiveModIds { get; }
     public ModAwareId? GameMode { get; }
     public int LevelSize { get; }
     public WorkerDistributionMethod WorkerDistributionMethod { get; }
@@ -24,6 +29,7 @@ sealed class GameSettings : IGameSettings
     private GameSettings(IGameSettings builder)
     {
         Seed = builder.Seed;
+        ActiveModIds = builder.ActiveModIds.ToImmutableArray();
         GameMode = builder.GameMode;
         LevelSize = builder.LevelSize;
         WorkerDistributionMethod = builder.WorkerDistributionMethod;
@@ -33,6 +39,8 @@ sealed class GameSettings : IGameSettings
     public sealed class Builder : IGameSettings
     {
         public int Seed { get; set; }
+        public List<string> ActiveModIds { get; } = new();
+        IReadOnlyList<string> IGameSettings.ActiveModIds => ActiveModIds;
         public ModAwareId? GameMode { get; set; }
         public int LevelSize { get; set; } = 32;
 
@@ -48,6 +56,7 @@ sealed class GameSettings : IGameSettings
         {
             // Copy values
             Seed = template.Seed;
+            ActiveModIds.AddRange(template.ActiveModIds);
             GameMode = template.GameMode;
             LevelSize = template.LevelSize;
             WorkerDistributionMethod = template.WorkerDistributionMethod;
@@ -60,6 +69,7 @@ sealed class GameSettings : IGameSettings
     public sealed class Serializer
     {
         private int seed;
+        private string[] activeModIds;
         private ModAwareId gameMode;
         private int levelSize;
         private byte workerDistributionMethod;
@@ -68,6 +78,7 @@ sealed class GameSettings : IGameSettings
         public Serializer(IGameSettings gameSettings)
         {
             seed = gameSettings.Seed;
+            activeModIds = gameSettings.ActiveModIds.ToArray();
             gameMode = gameSettings.GameMode ?? ModAwareId.Invalid;
             levelSize = gameSettings.LevelSize;
             workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
@@ -77,20 +88,30 @@ sealed class GameSettings : IGameSettings
         public void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref seed);
+            stream.SerializeArrayCount(ref activeModIds);
+            for (var i = 0; i < activeModIds.Length; i++)
+            {
+                stream.Serialize(ref activeModIds[i]);
+            }
             stream.Serialize(ref gameMode);
             stream.Serialize(ref levelSize);
             stream.Serialize(ref workerDistributionMethod);
             stream.Serialize(ref levelGenerationMethod);
         }
 
-        public Builder ToGameSettingsBuilder() => new()
+        public Builder ToGameSettingsBuilder()
         {
-            Seed = seed,
-            GameMode = gameMode.IsValid ? gameMode : null,
-            LevelSize = levelSize,
-            WorkerDistributionMethod = (WorkerDistributionMethod) workerDistributionMethod,
-            LevelGenerationMethod = (LevelGenerationMethod) levelGenerationMethod,
-        };
+            var b = new Builder
+            {
+                Seed = seed,
+                GameMode = gameMode.IsValid ? gameMode : null,
+                LevelSize = levelSize,
+                WorkerDistributionMethod = (WorkerDistributionMethod)workerDistributionMethod,
+                LevelGenerationMethod = (LevelGenerationMethod)levelGenerationMethod,
+            };
+            b.ActiveModIds.AddRange(activeModIds);
+            return b;
+        }
 
         public GameSettings ToGameSettings() => ToGameSettingsBuilder().Build();
     }

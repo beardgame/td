@@ -1,5 +1,5 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.TechEffects;
@@ -9,8 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class Overdrive<T> : Component<T>
-    where T : IComponentOwner<T>, IGameObject
+sealed class Overdrive : Component
 {
     private static readonly TimeSpan damageInterval = 0.5.S();
     private static float damagePercentile = 0.025f;

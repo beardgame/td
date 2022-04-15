@@ -1,0 +1,22 @@
+{
+  "id" : "slowEmitter",
+  "components" : [
+    { "id" : "name", "parameters" : { "name" : "Slow Field Emitter" } },
+    { "id" : "cost", "parameters" : { "resources" : 150 } },
+    { "id" : "footprint", "parameters" : { "group" : "default.triangle" } },
+    { "id" : "foundation", "parameters" : { "sprites" : "default.foundations" } },
+    { "id" : "defaultTileOccupancy" },
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 250 } },
+    { "id" : "autoRepair", "parameters" : { } },
+    {
+      "id" : "statusEffectEmitter",
+      "onGhost": true,
+      "parameters" : {
+        "attributeAffected" : "MovementSpeed",
+        "modificationValue" : 0.2,
+        "isReduction" : true,
+        "range" : 3
+      }
+    }
+  ]
+}

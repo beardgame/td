@@ -1,6 +1,5 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;

@@ -1,21 +1,49 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("sprite")]
-class Sprite<T> : Component<T, ISpriteParameters>, IDrawableComponent
-    where T : IGameObject, IPositionable
+class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
 {
-    private IDirected? ownerAsDirected;
+    internal enum ColorMode
+    {
+        Default = 0,
+        Faction
+    }
+
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+
+        Color Color { get; }
+
+        ColorMode ColorMode { get;  }
+
+        ISpriteBlueprint Sprite { get; }
+
+        Shader? Shader { get; }
+
+        SpriteDrawGroup? DrawGroup { get; }
+
+        int DrawGroupOrderKey { get; }
+
+        [Modifiable(1)]
+        Unit Size { get; }
+
+        Unit HeightOffset { get; }
+    }
+
+
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
-    public Sprite(ISpriteParameters parameters) : base(parameters)
+    public Sprite(IParameters parameters) : base(parameters)
     {
     }
 
@@ -24,22 +52,33 @@ class Sprite<T> : Component<T, ISpriteParameters>, IDrawableComponent
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
 
-        ownerAsDirected = Owner as IDirected;
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
+        var color = Parameters.ColorMode switch
+        {
+            ColorMode.Faction when
+                Owner.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider)
+                => factionProvider.Faction.Color,
+            _ => Parameters.Color,
+        };
+
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
 
-        var angle = ownerAsDirected != null
-            ? (ownerAsDirected.Direction - 90.Degrees()).Radians
-            : 0f;
+        var angle = (Owner.Direction - 90.Degrees()).Radians;
 
-        drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, Parameters.Color);
+        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, color);
     }
 }

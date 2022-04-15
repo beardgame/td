@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
@@ -40,7 +40,7 @@ sealed class WaveDirector
         }
     }
 
-    private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<SkipWaveTimer>, IDeletable
+    private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<WaveTimerSkipRequested>, IDeletable
     {
         private enum Phase
         {
@@ -55,7 +55,7 @@ sealed class WaveDirector
         private readonly GameState game;
         private readonly WaveScript script;
         private readonly Queue<EnemySpawn> spawnQueue = new();
-        private readonly HashSet<EnemyUnit> spawnedUnits = new();
+        private readonly HashSet<GameObject> spawnedUnits = new();
         private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
 
         private Phase phase;
@@ -78,7 +78,7 @@ sealed class WaveDirector
         {
             fillSpawnQueue();
             game.Meta.Events.Subscribe<EnemyKilled>(this);
-            game.Meta.Events.Subscribe<SkipWaveTimer>(this);
+            game.Meta.Events.Subscribe<WaveTimerSkipRequested>(this);
             game.Meta.Events.Send(
                 new WaveScheduled(
                     script.Id,
@@ -150,7 +150,7 @@ sealed class WaveDirector
                     {
                         game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
                         game.Meta.Events.Unsubscribe<EnemyKilled>(this);
-                        game.Meta.Events.Unsubscribe<SkipWaveTimer>(this);
+                        game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
                         phase = Phase.Completed;
                     }
                     break;
@@ -171,6 +171,7 @@ sealed class WaveDirector
             }
 
             game.GameTime.PauseUntil(PauseCondition.UntilTrue(() => outstandingSpawnStartRequirements.Count == 0));
+            game.Meta.Events.Send(new WaveDeferred());
             phase = Phase.AwaitingSpawnStartRequirements;
         }
 
@@ -210,7 +211,7 @@ sealed class WaveDirector
             spawnedUnits.Remove(@event.Unit);
         }
 
-        public void HandleEvent(SkipWaveTimer @event)
+        public void HandleEvent(WaveTimerSkipRequested @event)
         {
             if (phase != Phase.Downtime)
                 return;
@@ -239,5 +240,8 @@ sealed class WaveDirector
     }
 
     private sealed record EnemySpawn(
-        Id<EnemyUnit> UnitId, IUnitBlueprint UnitBlueprint, SpawnLocation SpawnLocation, Instant Time);
+        Id<GameObject> UnitId,
+        IComponentOwnerBlueprint UnitBlueprint,
+        SpawnLocation SpawnLocation,
+        Instant Time);
 }

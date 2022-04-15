@@ -9,8 +9,7 @@
                     "id": "players",
                     "behaviors": [
                         { "id" : "resources" },
-                        { "id" : "technology" },
-                        { "id" : "workerNetwork" }
+                        { "id" : "technology" }
                     ]
                 }
             }
@@ -41,7 +40,7 @@
             "id" : "grantResourcesOnStart",
             "parameters" : {
                 "faction" : "players",
-                "amount" : 240
+                "amount" : 150
             }
         },
         {
@@ -50,16 +49,17 @@
                 "faction" : "players",
                 "unlocks" : [
                     { "type" : "building", "blueprint" : "wall" },
-                    { "type" : "building", "blueprint" : "triangleTurret" }
+                    { "type" : "building", "blueprint" : "beamTurret" }
                 ]
             }
         },
-        { "id" : "grantTechPointsOnWaveEnd", "parameters" : {} },
-        { "id" : "deferWaveUntilTechPointUsed", "parameters" : { "faction" : "players" } },
+        { "id" : "grantTechnologyTokenOnWaveEnd", "parameters" : {} },
+        { "id" : "deferWaveUntilTechnologyTokenUsed", "parameters" : { "faction" : "players" } },
         { "id" : "grantExplorationTokenOnWaveEnd" },
         {
             "id" : "scheduleGame",
             "parameters" : {
+                "targetFaction" : "players",
                 "chaptersPerGame" : 5,
                 "wavesPerChapter" : 5
             }

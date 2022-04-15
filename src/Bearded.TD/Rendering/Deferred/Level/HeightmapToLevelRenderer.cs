@@ -60,6 +60,8 @@ sealed class HeightmapToLevelRenderer
 
     public void RenderAll()
     {
+        GL.PatchParameter(PatchParameterInt.PatchVertices, 3);
+
         if (UserSettings.Instance.Debug.WireframeLevel)
         {
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
@@ -129,11 +131,13 @@ sealed class HeightmapToLevelRenderer
 
         var scale = (tileMapWidth * 0.5f * HexagonDistanceX) / cellColumnsHalf / gridMeshBuilder.TilingX.X;
 
+        /*
         var gridSubdivision = getGridSubdivision(cameraFrustumBounds, scale);
 
         scale /= gridSubdivision;
         cellColumnsHalf *= gridSubdivision;
         cellRowsHalf *= gridSubdivision;
+        */
 
         return new GridDimensions
         {
@@ -229,7 +233,7 @@ sealed class HeightmapToLevelRenderer
         var renderer = Renderer.From(mesh.ToRenderable(),
             new IRenderSetting[]
             {
-                context.Settings.ViewMatrixLevel,
+                context.Settings.ViewMatrix,
                 context.Settings.ProjectionMatrix,
                 context.Settings.FarPlaneDistance,
                 heightmap.RadiusUniform,
@@ -253,7 +257,7 @@ sealed class HeightmapToLevelRenderer
 
 sealed class RhombusGridMesh : IDisposable
 {
-    private readonly IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder;
+    private readonly IndexedMeshBuilder<LevelVertex> meshBuilder;
 
     public Vector2 TilingX { get; }
     public Vector2 TilingY { get; }
@@ -266,7 +270,7 @@ sealed class RhombusGridMesh : IDisposable
     }
 
     private RhombusGridMesh(
-        IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+        IndexedMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
     {
         this.meshBuilder = meshBuilder;
         TilingX = tilingX;
@@ -277,7 +281,7 @@ sealed class RhombusGridMesh : IDisposable
 
     public void Dispose() => meshBuilder.Dispose();
 
-    private static (IndexedTrianglesMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+    private static (IndexedMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
         buildRhombusMesh()
     {
         /* Rhombus section (2x2 example)
@@ -303,7 +307,7 @@ sealed class RhombusGridMesh : IDisposable
         var triangleCount = rhombusSideLength * rhombusSideLength * 2;
         var indexCount = triangleCount * 3;
 
-        var meshBuilder = new IndexedTrianglesMeshBuilder<LevelVertex>();
+        var meshBuilder = new IndexedMeshBuilder<LevelVertex>(PrimitiveType.Patches);
         meshBuilder.Add(vertexCount, indexCount, out var vertices, out var indices, out var indexOffset);
 
         DebugAssert.State.Satisfies(indexOffset == 0);

@@ -2,17 +2,17 @@ using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class BuildingUpgradeManager<T>
+sealed partial class BuildingUpgradeManager
 {
     private sealed class IncompleteUpgrade : IIncompleteUpgrade, ProgressTracker.IProgressSubject
     {
-        private readonly BuildingUpgradeManager<T> manager;
+        private readonly BuildingUpgradeManager manager;
         private readonly ProgressTracker progressTracker;
 
         public IUpgradeBlueprint Upgrade { get; }
         public double PercentageComplete { get; private set; }
 
-        public IncompleteUpgrade(BuildingUpgradeManager<T> manager, IUpgradeBlueprint upgrade)
+        public IncompleteUpgrade(BuildingUpgradeManager manager, IUpgradeBlueprint upgrade)
         {
             this.manager = manager;
             progressTracker = new ProgressTracker(this);

@@ -47,10 +47,11 @@ sealed class GameDebugOverlay : NavigationNode<Void>
         items.Add(new Header("COMMANDS"));
 
         addCommands(
-            "game.techpoints 1000",
+            "game.techtoken",
             "game.resources 1000",
             "game.killall",
             "game.repairall",
+            "game.revealmap",
             "game.die",
             "debug.ui"
         );

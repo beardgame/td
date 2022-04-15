@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -27,7 +27,7 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
         private readonly GameState gameState;
         private readonly ComponentOwnerBlueprint blueprint;
 
-        private readonly Dictionary<Zone, ComponentGameObject> beaconsByZone = new();
+        private readonly Dictionary<Zone, GameObject> beaconsByZone = new();
 
         public Listener(GameState gameState, ComponentOwnerBlueprint blueprint)
         {
@@ -66,12 +66,12 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
         private Tile determineCenter(Zone zone)
         {
             var centroid = new Position2(
-                zone.Tiles
-                    .Select(tile => Level.GetPosition(tile).NumericValue / zone.Tiles.Length)
+                zone.CoreTiles
+                    .Select(tile => Level.GetPosition(tile).NumericValue / zone.CoreTiles.Length)
                     .Aggregate((v1, v2) => v1 + v2));
             // TODO: remove the NumericValue once we can use the System.Linq MinBy.
             var closestToCentroid =
-                zone.Tiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
+                zone.CoreTiles.MinBy(tile => (Level.GetPosition(tile) - centroid).LengthSquared.NumericValue);
             return closestToCentroid;
         }
     }

@@ -1,0 +1,45 @@
+{
+    "id": "flamer",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 5,
+                "coneOfFire" : 5
+            }
+        },
+        {
+            "id" : "pidAim",
+            "parameters" : {
+                "proportionalCorrection" : 50,
+                "derivativeCorrection" : 2
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "flameProjectile",
+                "muzzleSpeed" : 15,
+                "fireRate" : 100,
+                "spread" : 12
+            }
+        },
+        {
+            "id" : "spotlight",
+            "parameters" : {
+                "radius" : 3,
+                "color" : "OrangeRed",
+                "angle" : 20
+            }
+        },
+        {
+            "id": "sprite",
+            "parameters": {
+                "sprite": "default.buildings.flamer",
+                "colorMode" : "faction",
+                "shader" : "default.building",
+                "drawGroup" : "building"
+            }
+        }
+    ]
+}

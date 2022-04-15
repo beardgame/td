@@ -1,8 +1,10 @@
 ﻿using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -11,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 interface ITurret : IPositionable
 {
-    ComponentGameObject Weapon { get; }
+    GameObject Weapon { get; }
     IGameObject Owner { get; }
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
@@ -21,14 +23,26 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedComponentOwner
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
-    public ComponentGameObject Weapon { get; private set; } = null!;
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        IComponentOwnerBlueprint Weapon { get; }
+        Difference2 Offset { get; }
+
+        [Modifiable(0.25)]
+        Unit Height { get; }
+
+        Direction2 NeutralDirection { get; }
+        Angle? MaximumTurningAngle { get; }
+    }
+
+
+    public GameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
     private TargetOverride? targetOverride;
-    private bool previouslyFunctional;
+    private bool? previouslyFunctional;
 
     public IBuildingState? BuildingState { get; private set; }
     public Position3 Position =>
@@ -38,10 +52,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
 
-    public IComponentOwner NestedComponentOwner => Weapon;
-
-
-    public Turret(ITurretParameters parameters) : base(parameters) { }
+    public Turret(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -50,13 +61,30 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
         transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         ComponentDependencies.Depend<IBuildingStateProvider>(
             Owner, Events, provider => BuildingState = provider.State);
+
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<ObjectDeleting>(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<ObjectDeleting>(this);
+    }
+
+    public void HandleEvent(DrawComponents e)
+    {
+        weaponState.InjectEvent(e);
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        Weapon.Delete();
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
         updateFunctional();
-
-        Weapon.Update(elapsedTime);
     }
 
     private void updateFunctional()
@@ -112,7 +140,7 @@ sealed class Turret<T> : Component<T, ITurretParameters>, ITurret, INestedCompon
         return removed;
     }
 
-    private sealed class TargetOverride : Component<ComponentGameObject>,
+    private sealed class TargetOverride : Component,
         IPositionable, IWeaponAimer, ITargeter<IPositionable>, IWeaponTrigger
     {
         private readonly IManualTarget3 target;

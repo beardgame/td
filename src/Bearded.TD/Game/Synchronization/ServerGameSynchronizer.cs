@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Commands;
-using Bearded.TD.Game.Commands.Synchronization;
-using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -15,50 +14,30 @@ sealed class ServerGameSynchronizer : IGameSynchronizer
 {
     private static readonly TimeSpan timeBetweenSyncs = 0.5.S();
 
-    private readonly Dictionary<Type, object> synchronizers = new();
+    private readonly Synchronizer<GameObject> synchronizer = new(SyncGameObjects.Command);
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private Instant nextSync = Instant.Zero;
 
     public ServerGameSynchronizer(ICommandDispatcher<GameInstance> commandDispatcher)
     {
         this.commandDispatcher = commandDispatcher;
-
-        synchronizers.Add(
-            typeof(ComponentGameObject), new Synchronizer<ComponentGameObject>(SyncBuildings.Command));
-        synchronizers.Add(typeof(EnemyUnit), new Synchronizer<EnemyUnit>(SyncEnemies.Command));
     }
 
-    public void RegisterSyncable<T>(T syncable)
-        where T : IDeletable
+    public void RegisterSyncable(GameObject gameObject)
     {
-        getSynchronizer<T>().Register(syncable);
+        synchronizer.Register(gameObject);
     }
 
-    public void Synchronize(GameInstance game)
+    public void Synchronize(ITimeSource timeSource)
     {
-        if (game.State.Time >= nextSync)
+        if (timeSource.Time >= nextSync)
         {
-            foreach (var (_, synchronizer) in synchronizers)
-            {
-                ((ISynchronizer)synchronizer).SendBatch(commandDispatcher);
-            }
-
-            nextSync = game.State.Time + timeBetweenSyncs;
+            synchronizer.SendBatch(commandDispatcher);
+            nextSync = timeSource.Time + timeBetweenSyncs;
         }
     }
 
-    private Synchronizer<T> getSynchronizer<T>()
-        where T : IDeletable
-    {
-        return (Synchronizer<T>) synchronizers[typeof(T)];
-    }
-
-    private interface ISynchronizer
-    {
-        void SendBatch(ICommandDispatcher<GameInstance> commandDispatcher);
-    }
-
-    private sealed class Synchronizer<T> : ISynchronizer where T : IDeletable
+    private sealed class Synchronizer<T> where T : IDeletable
     {
         private readonly Queue<T> queue = new();
 
@@ -84,7 +63,7 @@ sealed class ServerGameSynchronizer : IGameSynchronizer
         private IEnumerable<T> getBatch()
         {
             var numToSend = Math.Min(batchSize, queue.Count);
-            for (int i = 0; i < numToSend; i++)
+            for (var i = 0; i < numToSend; i++)
             {
                 var obj = queue.Dequeue();
                 if (obj.Deleted) continue;

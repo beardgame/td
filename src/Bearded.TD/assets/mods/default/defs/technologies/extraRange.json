@@ -1,8 +1,0 @@
-{
-    "id" : "extraRange",
-    "name" : "Reach for the stars",
-    "cost" : 1,
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraRange" }
-    ]
-}

@@ -11,7 +11,6 @@ using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
-using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Loading;
 

@@ -4,9 +4,11 @@
     { "id" : "name", "parameters" : { "name" : "Super Beam Turret" } },
     { "id" : "footprint", "parameters" : { "group" : "triangle" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
+    { "id" : "defaultTileOccupancy" },
     { "id" : "footprintTransformation" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 300 } },
     { "id" : "ruined", "parameters" : { "repairCost" :  120 } },
+    { "id" : "veterancy" },
     {
       "id" : "turret",
       "onGhost": true,

@@ -15,9 +15,9 @@
     <OutputPath>../../bin/Bearded.TD.MasterServer/Release/</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Bearded.Utilities" Version="0.2.0.395-dev" />
+    <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.20.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>

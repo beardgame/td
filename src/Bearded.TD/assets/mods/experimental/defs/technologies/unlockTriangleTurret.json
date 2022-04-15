@@ -1,0 +1,7 @@
+{
+    "id" : "unlockTriangeTurret",
+    "name" : "Pew Pew Pew",
+    "unlocks": [
+        { "type" : "building", "blueprint" : "triangleTurret" }
+    ]
+}

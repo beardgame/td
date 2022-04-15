@@ -1,12 +1,11 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("deleteOnExtinguish")]
-class DeleteOnExtinguish<T> : Component<T>,  IListener<FireExtinguished>
-    where T : GameObject
+class DeleteOnExtinguish : Component,  IListener<FireExtinguished>
 {
     protected override void OnAdded()
     {

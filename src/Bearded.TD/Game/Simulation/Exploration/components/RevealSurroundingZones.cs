@@ -1,5 +1,5 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
@@ -8,20 +8,24 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Exploration;
 
 [Component("revealSurroundingZones")]
-sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesParameters>
-    where T : IGameObject, IComponentOwner<T>
+sealed class RevealSurroundingZones : Component<RevealSurroundingZones.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(1)]
+        public int Steps { get; }
+    }
+
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-    public RevealSurroundingZones(IRevealSurroundingZonesParameters parameters) : base(parameters)
+    public RevealSurroundingZones(IParameters parameters) : base(parameters)
     {
         occupiedTilesTracker.TileAdded += onTileAdded;
     }
 
     private void onTileAdded(Tile t)
     {
-        var zone = Owner.Game.ZoneLayer.ZoneForTile(t);
-        if (zone != null)
+        if (Owner.Game.ZoneLayer.ZoneForTile(t) is { } zone)
         {
             recursivelyRevealZones(zone, Parameters.Steps);
         }
@@ -54,8 +58,3 @@ sealed class RevealSurroundingZones<T> : Component<T, IRevealSurroundingZonesPar
     public override void Update(TimeSpan elapsedTime) {}
 }
 
-interface IRevealSurroundingZonesParameters : IParametersTemplate<IRevealSurroundingZonesParameters>
-{
-    [Modifiable(1)]
-    public int Steps { get; }
-}

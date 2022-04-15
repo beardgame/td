@@ -15,6 +15,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
         public int? NullableType { get; }
         public Unit WrappedType { get; }
         public double RawTypeWithDefault { get; }
+        public bool BoolTypeWithDefault { get; }
         public int ModifiableRawType { get; }
         public Unit ModifiableWrappedType { get; }
 
@@ -24,6 +25,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
             int? nullableType,
             Unit wrappedType,
             double? rawTypeWithDefault,
+            bool? boolTypeWithDefault,
             int? modifiableRawType,
             Unit? modifiableWrappedType)
         {
@@ -31,6 +33,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
             NullableType = nullableType;
             WrappedType = wrappedType;
             RawTypeWithDefault = rawTypeWithDefault.GetValueOrDefault(0.5);
+            BoolTypeWithDefault = boolTypeWithDefault.GetValueOrDefault(true);
             ModifiableRawType = modifiableRawType.GetValueOrDefault(10);
             ModifiableWrappedType = modifiableWrappedType.GetValueOrDefault(Bearded.TD.Generators.Tests.TechEffects.IMyParameters.UnitConverter.ToWrapped(5));
         }

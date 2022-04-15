@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD</RootNamespace>
@@ -9,18 +9,18 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD/Debug/</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="Bearded.UI" Version="0.1.53-dev" />
-    <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.2" />
-    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+    <PackageReference Include="Bearded.UI" Version="0.2.0-dev.1" />
+    <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.3" />
+    <PackageReference Include="Google.Protobuf" Version="3.20.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTK.Graphics" Version="4.4.0" />
@@ -30,14 +30,8 @@
 
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="assets\shaders\terrain-base.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="assets\shaders\terrain-base.vs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
-  
+
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <None Include="assets\**\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

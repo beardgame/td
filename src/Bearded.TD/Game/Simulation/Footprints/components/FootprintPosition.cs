@@ -1,11 +1,11 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
-sealed class FootprintPosition : Component<ComponentGameObject>, IListener<FootprintChanged>
+sealed class FootprintPosition : Component, IListener<FootprintChanged>
 {
     protected override void OnAdded()
     {

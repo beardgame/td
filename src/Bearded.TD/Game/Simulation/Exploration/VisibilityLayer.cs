@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
@@ -44,13 +45,8 @@ sealed class VisibilityLayer
     {
         get
         {
-            var zone = zoneLayer.ZoneForTile(tile);
-            if (zone == null)
-            {
-                return TileVisibility.Revealed;
-            }
-
-            return revealedZones.Contains(zone) ? TileVisibility.Visible : TileVisibility.Invisible;
+            var zones = zoneLayer.ZonesForVisibilityForTile(tile);
+            return zones.Any(revealedZones.Contains) ? TileVisibility.Visible : TileVisibility.Invisible;
         }
     }
 }

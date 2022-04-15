@@ -13,6 +13,8 @@ namespace Bearded.TD.Generators.Tests.TechEffects
 
         [Modifiable(0.5)]
         double RawTypeWithDefault { get; }
+        [Modifiable(true)]
+        bool BoolTypeWithDefault { get; }
 
         [Modifiable(10, Type = AttributeType.Damage)]
         int ModifiableRawType { get; }

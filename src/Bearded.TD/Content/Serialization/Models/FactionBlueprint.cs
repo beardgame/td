@@ -23,6 +23,6 @@ sealed class FactionBlueprint : IConvertsTo<IFactionBlueprint, Void>
             Name,
             Color,
             Behaviors?.Select(FactionBehaviorFactories.CreateFactionBehaviorFactory)
-            ?? Enumerable.Empty<IFactionBehaviorFactory<Faction>>());
+            ?? Enumerable.Empty<IFactionBehaviorFactory>());
     }
 }

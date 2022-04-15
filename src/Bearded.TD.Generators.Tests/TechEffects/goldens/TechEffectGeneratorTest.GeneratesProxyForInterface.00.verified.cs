@@ -23,6 +23,9 @@ namespace Bearded.TD.Generators.Tests.TechEffects
         private readonly AttributeWithModifications<double> rawTypeWithDefault;
         public double RawTypeWithDefault => rawTypeWithDefault.Value;
 
+        private readonly AttributeWithModifications<bool> boolTypeWithDefault;
+        public bool BoolTypeWithDefault => boolTypeWithDefault.Value;
+
         private readonly AttributeWithModifications<int> modifiableRawType;
         public int ModifiableRawType => modifiableRawType.Value;
 
@@ -35,7 +38,11 @@ namespace Bearded.TD.Generators.Tests.TechEffects
 
             rawTypeWithDefault = new AttributeWithModifications<double>(
                 template.RawTypeWithDefault,
-                x => (double) x);
+                x => x);
+
+            boolTypeWithDefault = new AttributeWithModifications<bool>(
+                Convert.ToDouble(template.BoolTypeWithDefault),
+                x => Convert.ToBoolean(x));
 
             modifiableRawType = new AttributeWithModifications<int>(
                 template.ModifiableRawType,
@@ -51,6 +58,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
             InitializeAttributes(
                 new (AttributeType Type, Func<MyParametersModifiable, IAttributeWithModifications> Getter)[]{
                     (AttributeType.None, instance => instance.rawTypeWithDefault),
+                    (AttributeType.None, instance => instance.boolTypeWithDefault),
                     ((AttributeType) 2, instance => instance.modifiableRawType),
                     ((AttributeType) 11, instance => instance.modifiableWrappedType)
                 }.ToLookup(tuple => tuple.Type, tuple => tuple.Getter));

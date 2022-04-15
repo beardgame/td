@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
@@ -15,11 +16,11 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
     private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
 
     public LevelRenderer(
-        GameInstance game, RenderContext context, Material material)
+        GameInstance game, RenderContext context, Material material, ITimeSource time)
     {
         Heightmap = new Heightmap(game);
         heightRenderer = new HeightRenderer(game, context, Heightmap);
-        visibilityRenderer = new VisibilityRenderer(game, context, Heightmap);
+        visibilityRenderer = new VisibilityRenderer(game, Heightmap, time);
         heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
 
         resizeIfNeeded();

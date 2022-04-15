@@ -4,8 +4,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features;
 
-// ReSharper disable once UnusedTypeParameter
-interface INodeBehavior<TOwner>
+interface INodeBehavior
 {
     string Name => Regex.Replace(GetType().Name, "(Node)?(Behaviou?r)?$", "");
     ImmutableArray<NodeTag> Tags { get; }

@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Commands.Gameplay;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -16,28 +15,27 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class BuildingUpgradeManager<T>
+sealed partial class BuildingUpgradeManager
 {
     private sealed class UpgradeReport : IUpgradeReport
     {
         public ReportType Type => ReportType.Upgrades;
 
-        private readonly BuildingUpgradeManager<T> source;
+        private readonly BuildingUpgradeManager source;
 
-        public UpgradeReport(BuildingUpgradeManager<T> source)
+        public UpgradeReport(BuildingUpgradeManager source)
         {
             this.source = source;
         }
 
         public IUpgradeReportInstance CreateInstance(GameInstance game)
         {
-            // TODO(building): the cast below should really not exist
-            return new UpgradeReportInstance((source.Owner as ComponentGameObject)!, source, game);
+            return new UpgradeReportInstance(source.Owner, source, game);
         }
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
         {
-            private readonly ComponentGameObject subject;
+            private readonly GameObject subject;
             private readonly IBuildingUpgradeManager upgradeManager;
             private readonly GameInstance game;
             private readonly GlobalGameEvents events;
@@ -48,13 +46,16 @@ sealed partial class BuildingUpgradeManager<T>
 
             public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
             public IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
+            public int OccupiedUpgradeSlots => upgradeManager.UpgradeSlotsOccupied;
+            public int UnlockedUpgradeSlots => upgradeManager.UpgradeSlotsUnlocked;
 
-            public bool CanPlayerUpgradeBuilding => upgradeManager.CanBeUpgradedBy(playerFaction);
+            public bool CanPlayerUpgradeBuilding =>
+                upgradeManager.HasAvailableSlot && upgradeManager.CanBeUpgradedBy(playerFaction);
 
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;
 
-            public UpgradeReportInstance(ComponentGameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
+            public UpgradeReportInstance(GameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
             {
                 this.subject = subject;
                 this.upgradeManager = upgradeManager;

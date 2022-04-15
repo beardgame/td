@@ -26,6 +26,7 @@ sealed class ProgressTracker
     private ProgressStage progressStage = ProgressStage.NotStarted;
     private ProgressStage syncedProgressStage = ProgressStage.NotStarted;
 
+    public bool IsStarted => progressStage > ProgressStage.NotStarted;
     public bool IsCompleted => progressStage == ProgressStage.Completed;
     public bool IsCancelled => progressStage == ProgressStage.Cancelled;
 
@@ -39,7 +40,7 @@ sealed class ProgressTracker
     public void Start()
     {
         // Avoid duplicate requests.
-        if (progressStage > ProgressStage.NotStarted)
+        if (IsStarted)
         {
             return;
         }
@@ -64,6 +65,9 @@ sealed class ProgressTracker
 
     public void SetProgress(double progress)
     {
+        // We may have been completed remotely already.
+        if (progressStage > ProgressStage.InProgress) return;
+
         Argument.Satisfies(progress is >= 0 and <= 1);
         State.Satisfies(progressStage == ProgressStage.InProgress);
 
@@ -97,8 +101,7 @@ sealed class ProgressTracker
         {
             progressStage = ProgressStage.Completed;
         }
-
-        // TODO: catch up remaining progress
+        subject.OnProgressSet(1);
 
         syncedProgressStage = ProgressStage.Completed;
         subject.OnComplete();
@@ -106,7 +109,12 @@ sealed class ProgressTracker
 
     public void Cancel()
     {
-        State.Satisfies(progressStage == ProgressStage.NotStarted);
+        SetCancelled();
         subject.OnCancel();
+    }
+
+    public void SetCancelled()
+    {
+        progressStage = ProgressStage.Cancelled;
     }
 }

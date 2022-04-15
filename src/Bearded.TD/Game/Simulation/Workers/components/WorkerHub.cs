@@ -1,8 +1,7 @@
-﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
+﻿using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Utilities;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -10,15 +9,21 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [Component("workerHub")]
-sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class WorkerHub : Component<WorkerHub.IParameters>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.DroneCount)] int NumWorkers { get; }
+
+        IComponentOwnerBlueprint Drone { get; }
+    }
+
     private IBuildingState? state;
     private IFactionProvider? factionProvider;
     private Faction? faction;
     private int numWorkersActive;
 
-    public WorkerHub(IWorkerHubParameters parameters) : base(parameters) { }
+    public WorkerHub(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -53,7 +58,7 @@ sealed class WorkerHub<T> : Component<T, IWorkerHubParameters>
         State.Satisfies(faction != null);
         var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             Owner.Game, Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
-        obj.AddComponent(new FactionProvider<ComponentGameObject>(faction!));
+        obj.AddComponent(new FactionProvider(faction!));
 
         numWorkersActive++;
     }

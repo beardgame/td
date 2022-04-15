@@ -22,10 +22,12 @@ sealed class BuildingWorkerTask : WorkerTaskBase
         FactionResources.IResourceReservation resourceReservation) : base(taskId, tiles, gameState, resourceReservation)
     {
         this.incompleteBuilding = incompleteBuilding;
+        incompleteBuilding.Deleted += Abort;
     }
 
     protected override void Start() => incompleteBuilding.StartBuild();
+
     protected override void Complete() => incompleteBuilding.CompleteBuild();
-    protected override void Cancel() => incompleteBuilding.CancelBuild();
+
     protected override void UpdateToMatch() => incompleteBuilding.SetBuildProgress(PercentCompleted);
 }

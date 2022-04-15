@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -12,7 +11,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 namespace Bearded.TD.Game.Simulation.Workers;
 
 [FactionBehavior("workers")]
-sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetworkChanged>
+sealed class WorkerTaskManager : FactionBehavior
 {
     private readonly List<IWorkerComponent> allWorkers = new();
     private readonly Queue<IWorkerComponent> idleWorkers = new();
@@ -24,37 +23,9 @@ sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetwo
 
     public Color WorkerColor => Owner.Color;
 
-    protected override void Execute()
-    {
-        Events.Subscribe(this);
-    }
-
-    public void HandleEvent(WorkerNetworkChanged @event)
-    {
-        if (Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) && network == @event.Network)
-        {
-            onNetworkChanged(network);
-        }
-    }
+    protected override void Execute() {}
 
     public IWorkerTask TaskFor(Id<IWorkerTask> id) => tasksById[id];
-
-    private void onNetworkChanged(WorkerNetwork network)
-    {
-        var tasksOutOfRange = workerAssignments.Keys.Where(task => !task.Tiles.Any(network.IsInRange)).ToList();
-        foreach (var task in tasksOutOfRange)
-        {
-            AbortTask(task);
-        }
-        if (idleWorkers.Count == 0)
-        {
-            return;
-        }
-        foreach (var task in tasks.Where(isUnassignedTaskInAntennaRange).Take(idleWorkers.Count))
-        {
-            assignTask(idleWorkers.Dequeue(), task);
-        }
-    }
 
     public void RegisterWorker(IWorkerComponent worker)
     {
@@ -83,14 +54,14 @@ sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetwo
     public void RequestTask(IWorkerComponent worker)
     {
         Argument.Satisfies(() => allWorkers.Contains(worker));
-        tasks.Where(isUnassignedTaskInAntennaRange).MaybeFirst().Match(
+        tasks.Where(isUnassignedTask).MaybeFirst().Match(
             task => assignTask(worker, task),
             () => idleWorkers.Enqueue(worker));
     }
 
     private void tryAssignTaskToFirstIdleWorker(IWorkerTask task)
     {
-        if (idleWorkers.Count > 0 && isTaskInAntennaRange(task))
+        if (idleWorkers.Count > 0)
         {
             assignTask(idleWorkers.Dequeue(), task);
         }
@@ -113,12 +84,12 @@ sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetwo
         worker.SuspendCurrentTask();
     }
 
+    // TODO: delete
     public void AbortTask(IWorkerTask task)
     {
         var deletedFromList = tasks.Remove(task);
         tasksById.Remove(task);
         State.Satisfies(deletedFromList);
-        task.OnAbort();
 
         if (workerAssignments.TryGetValue(task, out var worker))
         {
@@ -161,9 +132,5 @@ sealed class WorkerTaskManager : FactionBehavior<Faction>, IListener<WorkerNetwo
         }
     }
 
-    private bool isUnassignedTaskInAntennaRange(IWorkerTask task) =>
-        !workerAssignments.ContainsKey(task) && isTaskInAntennaRange(task);
-
-    private bool isTaskInAntennaRange(IWorkerTask task) =>
-        Owner.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) && task.Tiles.Any(network.IsInRange);
+    private bool isUnassignedTask(IWorkerTask task) => !workerAssignments.ContainsKey(task);
 }

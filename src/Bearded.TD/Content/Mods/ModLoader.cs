@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Factions;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -59,7 +59,6 @@ static class ModLoader
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
             var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
-            var units = new UnitBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
             var technologies = new TechnologyBlueprintLoader(loadingContext, componentOwners, upgrades).LoadBlueprints();
             var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
@@ -76,7 +75,6 @@ static class ModLoader
                 materials,
                 sprites,
                 footprints,
-                units,
                 componentOwners,
                 upgrades,
                 technologies,

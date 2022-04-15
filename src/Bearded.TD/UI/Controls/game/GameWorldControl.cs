@@ -26,10 +26,10 @@ class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLay
 
     public ContentRenderers ContentRenderers => renderer.ContentRenderers;
 
-    public GameWorldControl(GameInstance game, RenderContext renderContext)
+    public GameWorldControl(GameInstance game, RenderContext renderContext, ITimeSource time)
     {
         this.game = game;
-        renderer = new GameRenderer(game, renderContext);
+        renderer = new GameRenderer(game, renderContext, time);
     }
 
     public override void Draw()

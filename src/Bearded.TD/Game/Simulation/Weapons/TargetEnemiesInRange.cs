@@ -3,11 +3,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -18,14 +20,24 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("targetEnemiesInRange")]
 sealed class TargetEnemiesInRange
-    : Component<ComponentGameObject, ITargetEnemiesInRange>,
+    : Component<TargetEnemiesInRange.IParameters>,
         IWeaponRangeDrawer,
         ITargeter<IPositionable>,
         IWeaponAimer,
         IWeaponTrigger,
         IWeaponRange,
-        IDrawableComponent
+        IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.Range)] Unit Range { get; }
+        [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
+        [Modifiable(1)] TimeSpan ReCalculateTilesInRangeInterval { get; }
+
+        Angle? ConeOfFire { get; }
+    }
+
+
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
     private IWeaponState weapon = null!;
@@ -38,7 +50,7 @@ sealed class TargetEnemiesInRange
     private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-    private EnemyUnit? target;
+    private GameObject? target;
     public IPositionable? Target => target;
 
     private bool dontDrawThisFrame;
@@ -51,7 +63,7 @@ sealed class TargetEnemiesInRange
 
     public Unit Range => currentRange;
 
-    public TargetEnemiesInRange(ITargetEnemiesInRange parameters) : base(parameters)
+    public TargetEnemiesInRange(IParameters parameters) : base(parameters)
     {
     }
 
@@ -61,6 +73,13 @@ sealed class TargetEnemiesInRange
         passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
             game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
+
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -94,7 +113,18 @@ sealed class TargetEnemiesInRange
     private void shootAt(Position3 targetPosition)
     {
         AimDirection = (targetPosition - position).XY().Direction;
-        TriggerPulled = true;
+
+        if (Parameters.ConeOfFire == null)
+        {
+            TriggerPulled = true;
+            return;
+        }
+        var angleError = Angle.Between(AimDirection, weapon.Direction).Abs();
+        var inConeOfFire = angleError < Parameters.ConeOfFire;
+        if (inConeOfFire)
+        {
+            TriggerPulled = true;
+        }
     }
 
     private void goIdle()
@@ -153,7 +183,8 @@ sealed class TargetEnemiesInRange
         if (target?.Deleted == true)
             target = null;
 
-        if (target != null && !tilesInRange.Contains(target.CurrentTile))
+        // TODO: accumulating tiles each frame is expensive, can we somehow cache this?
+        if (target != null && !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(target)))
             target = null;
 
         if (target != null)
@@ -169,7 +200,7 @@ sealed class TargetEnemiesInRange
             .FirstOrDefault();
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         tileRangeDrawer.Draw();
     }
@@ -182,7 +213,8 @@ sealed class TargetEnemiesInRange
             return ImmutableHashSet<Tile>.Empty;
         }
 
-        var allTiles = ImmutableHashSet.CreateRange(Owner.GetComponents<ITurret>()
+        var allTiles = ImmutableHashSet.CreateRange(
+            (Owner.Parent?.GetComponents<ITurret>() ?? Enumerable.Empty<ITurret>())
             .Select(t => (IComponentOwner) t.Weapon)
             .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
             .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));

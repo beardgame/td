@@ -1,11 +1,9 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
 [Component("inheritDirection")]
-sealed class InheritDirection<T> : Component<T>, IDirected3
-    where T : IComponentOwner
+sealed class InheritDirection : Component, IDirected3
 {
     public Difference3 Direction { get; private set; }
 

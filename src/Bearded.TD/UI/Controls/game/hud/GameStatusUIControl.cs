@@ -2,7 +2,6 @@
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -10,15 +9,12 @@ sealed class GameStatusUIControl : CompositeControl
 {
     private readonly GameStatusUI model;
     private readonly Binding<string> resourcesAmount = new();
-    private readonly Binding<string> techPointsAmount = new();
     private readonly Binding<string> waveNumber = new();
     private readonly Binding<string> timeUntilSpawn = new();
     private readonly Binding<string> waveResources = new();
     private readonly Binding<bool> canSkipWaveTimer = new();
 
-    public event VoidEventHandler? TechnologyButtonClicked;
-
-    public GameStatusUIControl(GameStatusUI model)
+    public GameStatusUIControl(GameUIController gameUIController, GameStatusUI model)
     {
         this.model = model;
 
@@ -29,9 +25,7 @@ sealed class GameStatusUIControl : CompositeControl
             .AddHeader($"{model.FactionName}", model.FactionColor)
             .AddValueLabel(
                 "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor))
-            .AddValueLabel(
-                "Tech points:", techPointsAmount, rightColor: Binding.Create(Constants.Game.GameUI.TechPointsColor))
-            .AddButton(b => b.WithLabel("Research").WithOnClick(() => TechnologyButtonClicked?.Invoke()))
+            .AddButton(b => b.WithLabel("Research").WithOnClick(gameUIController.ShowTechnologyModal))
             .AddValueLabel("Wave:", waveNumber)
             .AddValueLabel("Next spawn:", timeUntilSpawn)
             .AddButton(
@@ -60,7 +54,6 @@ sealed class GameStatusUIControl : CompositeControl
                 $"{model.FactionResourcesAfterReservation.NumericValue}");
         }
 
-        techPointsAmount.SetFromSource($"{model.FactionTechPoints}");
         waveNumber.SetFromSource(model.WaveName ?? "-");
         timeUntilSpawn.SetFromSource(
             model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());

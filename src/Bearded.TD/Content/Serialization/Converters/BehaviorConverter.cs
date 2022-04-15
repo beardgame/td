@@ -8,6 +8,10 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using IComponentModel = Bearded.TD.Content.Serialization.Models.IComponent;
+using IFactionBehaviorModel = Bearded.TD.Content.Serialization.Models.IFactionBehavior;
+using IGameRuleModel = Bearded.TD.Content.Serialization.Models.IGameRule;
+using INodeBehaviorModel = Bearded.TD.Content.Serialization.Models.INodeBehavior;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
@@ -17,19 +21,19 @@ static class BehaviorConverterFactory
         => new(ComponentFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(BuildingComponent<>).MakeGenericType(t.Value)));
 
-    public static BehaviorConverter<IComponent> ForBaseComponents()
+    public static BehaviorConverter<IComponentModel> ForBaseComponents()
         => new(ComponentFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));
 
-    public static BehaviorConverter<IFactionBehavior> ForFactionBehaviors()
+    public static BehaviorConverter<IFactionBehaviorModel> ForFactionBehaviors()
         => new(FactionBehaviorFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(Models.FactionBehavior<>).MakeGenericType(t.Value)));
 
-    public static BehaviorConverter<IGameRule> ForGameRules()
+    public static BehaviorConverter<IGameRuleModel> ForGameRules()
         => new(GameRuleFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(Models.GameRule<>).MakeGenericType(t.Value)));
 
-    public static BehaviorConverter<INodeBehavior> ForNodeBehaviors()
+    public static BehaviorConverter<INodeBehaviorModel> ForNodeBehaviors()
         => new(NodeBehaviorFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(Models.NodeBehavior<>).MakeGenericType(t.Value)));
 }

@@ -17,12 +17,10 @@ sealed class TechnologyUIControl : CompositeControl
 {
     private readonly TechnologyUI model;
 
-    private readonly ListControl technologyList = new ListControl(new ViewportClippingLayerControl());
+    private readonly ListControl technologyList = new(new ViewportClippingLayerControl());
     private readonly TechnologyDetailsControl technologyDetails;
 
-    public event VoidEventHandler? CloseButtonClicked;
-
-    public TechnologyUIControl(TechnologyUI model)
+    public TechnologyUIControl(GameUIController gameUIController, TechnologyUI model)
     {
         this.model = model;
 
@@ -32,7 +30,7 @@ sealed class TechnologyUIControl : CompositeControl
         Add(new Label {FontSize = 36, Text = "Research"}.Anchor(a => a.Top(margin: 8, height: 40)));
         Add(ButtonFactories.Button("close")
             .Anchor(a => a.Top(margin: 16, height: 24).Right(margin: 16, width: 92))
-            .Subscribe(btn => btn.Clicked += _ => CloseButtonClicked?.Invoke()));
+            .Subscribe(btn => btn.Clicked += _ => gameUIController.HideTechnologyModal()));
 
         Add(technologyList.Anchor(a =>
             a.Top(margin: 56).Bottom(margin: 16).Left(margin: 16, width: 300)));
@@ -128,11 +126,6 @@ sealed class TechnologyUIControl : CompositeControl
             FontSize = 32, TextAnchor = Label.TextAnchorLeft
         };
 
-        private readonly Label costLabel = new Label
-        {
-            Color = Constants.Game.GameUI.TechPointsColor, FontSize = 18, TextAnchor = Label.TextAnchorLeft
-        };
-
         private string unlockButtonLabel = "";
         private readonly Button unlockButton;
 
@@ -146,7 +139,6 @@ sealed class TechnologyUIControl : CompositeControl
             this.model = model;
 
             Add(headerLabel.Anchor(a => a.Top(height: 40).Right(margin: 208)));
-            Add(costLabel.Anchor(a => a.Top(margin: 48, height: 24)));
             Add(new Label("Unlocks:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
                 .Anchor(a => a.Top(margin: 80, height: 32)));
             Add(new Label("Required technologies:") {FontSize = 24, TextAnchor = Label.TextAnchorLeft}
@@ -172,14 +164,11 @@ sealed class TechnologyUIControl : CompositeControl
             switch (techStatus)
             {
                 case TechnologyUIModel.TechnologyStatus.Unlocked:
-                    break;
-                case TechnologyUIModel.TechnologyStatus.Queued:
-                    model.ClearTechnologyQueue();
-                    break;
-                case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                 case TechnologyUIModel.TechnologyStatus.MissingResources:
                 case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                    model.ReplaceTechnologyQueue(tech);
+                    break;
+                case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                    model.UnlockTechnology(tech);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -193,7 +182,6 @@ sealed class TechnologyUIControl : CompositeControl
                 onValue: tech =>
                 {
                     headerLabel.Text = tech.Name;
-                    costLabel.Text = $"{model.CostFor(tech)} tech points";
                     unlockButton.IsVisible = true;
                     unlocksList.ItemSource =
                         new TechnologyUnlocksListItemSource(tech.Unlocks, model.DependentsFor(tech));
@@ -203,7 +191,6 @@ sealed class TechnologyUIControl : CompositeControl
                 onNothing: () =>
                 {
                     headerLabel.Text = "Select a technology from the list";
-                    costLabel.Text = "";
                     unlockButton.IsVisible = false;
                     unlocksList.ItemSource =
                         new TechnologyUnlocksListItemSource(
@@ -228,16 +215,16 @@ sealed class TechnologyUIControl : CompositeControl
             {
                 case TechnologyUIModel.TechnologyStatus.Unlocked:
                     unlockButtonLabel = "Unlocked";
-                    break;
-                case TechnologyUIModel.TechnologyStatus.Queued:
-                    unlockButtonLabel = $"Queued ({model.QueuePositionFor(tech)})";
+                    unlockButton.IsEnabled = false;
                     break;
                 case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                     unlockButtonLabel = "Unlock";
+                    unlockButton.IsEnabled = true;
                     break;
                 case TechnologyUIModel.TechnologyStatus.MissingResources:
                 case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                    unlockButtonLabel = "Queue";
+                    unlockButtonLabel = "Unlock";
+                    unlockButton.IsEnabled = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -313,8 +300,6 @@ sealed class TechnologyUIControl : CompositeControl
         {
             case TechnologyUIModel.TechnologyStatus.Unlocked:
                 return Color.Green;
-            case TechnologyUIModel.TechnologyStatus.Queued:
-                return Color.Aqua;
             case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                 return Color.Yellow;
             case TechnologyUIModel.TechnologyStatus.MissingResources:

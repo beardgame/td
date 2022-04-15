@@ -12,7 +12,7 @@ namespace Bearded.TD.Rendering;
 
 using Renderers = List<(int DrawOrderKey, IRenderer Renderer)>;
 
-sealed class SpriteRenderers
+sealed class SpriteRenderers : ISpriteRenderers
 {
     private sealed class DrawOrderKeyComparer : IComparer<(int DrawOrderKey, IRenderer)>
     {
@@ -45,7 +45,6 @@ sealed class SpriteRenderers
             context.Settings.ProjectionMatrix,
             context.Settings.ViewMatrix,
             context.Settings.FarPlaneDistance,
-            context.Settings.ViewMatrixLevel,
             context.Settings.CameraPosition,
             context.Settings.FarPlaneBaseCorner,
             context.Settings.FarPlaneUnitX,

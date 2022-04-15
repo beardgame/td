@@ -1,9 +1,11 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Rendering.Vertices;
+using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -13,14 +15,37 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
+
+
 [Component("particleSystem")]
-sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawableComponent
-    where T : IPositionable, IGameObject, IComponentOwner
+sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<DrawComponents>
 {
+    public enum DrawMode
+    {
+        Sprite,
+        Line
+    }
+
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        int Count { get; }
+        ISpriteBlueprint Sprite { get; }
+        Color Color { get; }
+        Shader? Shader { get; }
+        float Size { get; }
+        float LineWidth { get; }
+        TimeSpan LifeTime { get; }
+        Speed RandomVelocity { get; }
+        Speed VectorVelocity { get; }
+        Speed ReflectionVelocity { get; }
+        DrawMode DrawMode { get; }
+    }
+
+    private bool initialized;
     private readonly Particle[] particles;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
-    public ParticleSystem(IParticleSystemParameters parameters) : base(parameters)
+    public ParticleSystem(IParameters parameters) : base(parameters)
     {
         particles = new Particle[parameters.Count];
     }
@@ -51,7 +76,12 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
     protected override void OnAdded()
     {
         initializeSprite();
-        initializeParticles();
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     private void initializeSprite()
@@ -61,17 +91,28 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
 
     private void initializeParticles()
     {
+        var hitInfo = Owner.TryGetSingleComponent<IProperty<HitInfo>>(out var h) ? h : null;
+
+        var reflectionVelocity = hitInfo != null
+            ? hitInfo.Value.GetReflection().NumericValue * Parameters.ReflectionVelocity
+            : Velocity3.Zero;
+
         var vectorVelocity = Owner.TryGetSingleComponent<IDirected3>(out var directed)
             ? directed.Direction.NumericValue.NormalizedSafe() * Parameters.VectorVelocity
             : Velocity3.Zero;
+
+        var baseVelocity = reflectionVelocity + vectorVelocity;
+
         var position = Owner.Position;
         var now = Owner.Game.Time;
         for (var i = 0; i < particles.Length; i++)
         {
-            var velocity = vectorVelocity + getRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
+            var velocity = baseVelocity + getRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
             var timeOfDeath = now + Parameters.LifeTime * StaticRandom.Float(0.5f, 1f);
             particles[i] = new Particle(position, velocity, timeOfDeath);
         }
+
+        initialized = true;
     }
 
     private static Vector3 getRandomUnitVector3()
@@ -88,6 +129,9 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (!initialized)
+            initializeParticles();
+
         var gravity = Constants.Game.Physics.Gravity3;
         for (var i = 0; i < particles.Length; i++)
         {
@@ -101,7 +145,7 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
         }
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         var now = Owner.Game.Time;
         foreach (var p in particles)
@@ -114,15 +158,15 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
 
             switch (Parameters.DrawMode)
             {
-                case ParticleDrawMode.Sprite:
-                    drawer.DrawSprite(
+                case DrawMode.Sprite:
+                    e.Drawer.DrawSprite(
                         sprite,
                         p.Position.NumericValue,
                         Parameters.Size,
                         p.Velocity.XY().Direction.Radians,
                         argb);
                     break;
-                case ParticleDrawMode.Line:
+                case DrawMode.Line:
 
                     var v = p.Velocity.NumericValue * Parameters.Size * 0.5f;
                     var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth * 0.5f;
@@ -133,7 +177,7 @@ sealed class ParticleSystem<T> : Component<T, IParticleSystemParameters>, IDrawa
                     var p2 = c + v - w;
                     var p3 = c - v - w;
 
-                    drawer.DrawQuad(sprite, p0, p1, p2, p3, argb);
+                    e.Drawer.DrawQuad(sprite, p0, p1, p2, p3, argb);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -5,12 +5,11 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.World.Fluids;
 using Bearded.TD.Game.Simulation.Zones;
@@ -24,7 +23,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation;
 
-[GameRuleOwner]
 sealed class GameState
 {
     private readonly Stack<GameObject> objectsBeingAdded = new();
@@ -50,8 +48,6 @@ sealed class GameState
     public FluidLayer FluidLayer { get; }
     public UnitLayer UnitLayer { get; }
     public BuildingLayer BuildingLayer { get; }
-    public BuildingPlacementLayer BuildingPlacementLayer { get; }
-    public MiningLayer MiningLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
     public ZoneLayer ZoneLayer { get; }
@@ -77,9 +73,6 @@ sealed class GameState
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
         UnitLayer = new UnitLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
-        BuildingPlacementLayer = new BuildingPlacementLayer(Level, GeometryLayer, BuildingLayer,
-            new Lazy<PassabilityLayer>(() => PassabilityManager!.GetLayer(Passability.WalkingUnit)));
-        MiningLayer = new MiningLayer(Meta.Logger, Meta.Events, Level, GeometryLayer);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
@@ -133,13 +126,6 @@ sealed class GameState
     public EnumerableProxy<T> Enumerate<T>()
         where T : class, IDeletable
         => getList<T>().AsReadOnlyEnumerable();
-
-    public void IdAs<T>(T obj)
-        where T : GameObject, IIdable<T>
-    {
-        IdAs(obj.Id, obj);
-        obj.Deleting += () => DeleteId(obj.Id);
-    }
 
     public void IdAs<T>(Id<T> id, T obj)
     {

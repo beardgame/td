@@ -1,7 +1,6 @@
 {
     "id" : "extraDamage1",
-    "name" : "A big boom",
-    "cost" : 1,
+    "name" : "Double Kill",
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage1" }
     ]

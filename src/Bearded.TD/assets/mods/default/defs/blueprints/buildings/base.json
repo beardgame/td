@@ -7,6 +7,7 @@
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "health", "parameters" : { "maxHealth" : 1000 } },
     { "id" : "sink" },
+    { "id" : "defaultTileOccupancy" },
     { "id" : "gameOverOnDestroy" },
     {
       "id" : "workerHub",
@@ -14,11 +15,6 @@
         "numWorkers" : 2,
         "drone" : "worker"
       }
-    },
-    {
-      "id" : "workerAntenna",
-      "onGhost": true,
-      "parameters" : { "workerRange" : 12 }
     },
     { "id" : "revealSurroundingZones", "parameters" : { "steps" : 1 } }
   ]

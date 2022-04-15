@@ -1,19 +1,30 @@
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("splashDamageOnHit")]
-sealed class ProjectileSplashDamage : Component<ComponentGameObject, IProjectileSplashDamageComponentParameters>,
+sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParameters>,
     IListener<HitLevel>, IListener<HitEnemy>
 {
-    public ProjectileSplashDamage(IProjectileSplashDamageComponentParameters parameters) : base(parameters) {}
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.Damage)]
+        HitPoints Damage { get; }
+
+        [Modifiable(Type = AttributeType.SplashRange)]
+        Unit Range { get; }
+    }
+
+    public ProjectileSplashDamage(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {

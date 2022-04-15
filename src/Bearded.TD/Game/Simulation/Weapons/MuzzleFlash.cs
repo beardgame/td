@@ -1,7 +1,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -12,22 +12,24 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-interface IMuzzleFlashParameters : IParametersTemplate<IMuzzleFlashParameters>
-{
-    ISpriteBlueprint Sprite { get; }
-    Color Color { get; }
-    Shader? Shader { get; }
-    float Size { get; }
-    Unit Offset { get; }
 
-    [Modifiable(0.03)]
-    TimeSpan MinDuration { get; }
-}
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableComponent, IListener<ShotProjectile>
-    where T : IGameObject, IPositionable, IDirected
+sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
+    IListener<DrawComponents>, IListener<ShotProjectile>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        ISpriteBlueprint Sprite { get; }
+        Color Color { get; }
+        Shader? Shader { get; }
+        float Size { get; }
+        Unit Offset { get; }
+
+        [Modifiable(0.03)]
+        TimeSpan MinDuration { get; }
+    }
+
     private readonly struct Flash
     {
         public Position3 Position { get; }
@@ -48,7 +50,7 @@ sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableCom
 
     private Flash? currentFlash;
 
-    public MuzzleFlash(IMuzzleFlashParameters parameters) : base(parameters)
+    public MuzzleFlash(IParameters parameters) : base(parameters)
     {
     }
 
@@ -56,7 +58,14 @@ sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableCom
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
 
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<ShotProjectile>(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<ShotProjectile>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -73,19 +82,19 @@ sealed class MuzzleFlash<T> : Component<T, IMuzzleFlashParameters>, IDrawableCom
         );
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         if (currentFlash is not { } flash)
             return;
 
-        drawer.DrawSprite(
+        e.Drawer.DrawSprite(
             sprite,
             flash.Position.NumericValue,
             flash.Size,
             flash.Direction.Radians,
             Parameters.Color);
 
-        drawer.Core.PointLight.Draw(
+        e.Core.PointLight.Draw(
             flash.Position.NumericValue,
             2 * flash.Size,
             Parameters.Color.WithAlpha(255) * 0.5f);

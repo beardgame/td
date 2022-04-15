@@ -1,9 +1,10 @@
-﻿using Bearded.Utilities.Collections;
+﻿using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Synchronization;
 
 interface IGameSynchronizer
 {
-    void RegisterSyncable<T>(T syncable) where T : IDeletable;
-    void Synchronize(GameInstance game);
+    void RegisterSyncable(GameObject syncable);
+    void Synchronize(ITimeSource timeSource);
 }

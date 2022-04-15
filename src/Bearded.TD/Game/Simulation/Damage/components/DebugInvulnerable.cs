@@ -1,11 +1,11 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DebugInvulnerable<T> : Component<T>, IPreviewListener<PreviewTakeDamage>
+sealed class DebugInvulnerable : Component, IPreviewListener<PreviewTakeDamage>
 {
     protected override void OnAdded()
     {

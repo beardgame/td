@@ -16,6 +16,7 @@ abstract class WorkerTaskBase : IWorkerTask
     public abstract string Name { get; }
     public IEnumerable<Tile> Tiles { get; }
     public double PercentCompleted => resourceConsumer.PercentageDone;
+    public ResourceAmount ResourcesConsumed => resourceConsumer.ResourcesClaimed;
     public bool CanAbort => !started;
     public bool Finished { get; private set; }
 
@@ -31,15 +32,16 @@ abstract class WorkerTaskBase : IWorkerTask
         resourceConsumer = new ResourceConsumer(gameState, resourceReservation, 0.ResourcesPerSecond());
     }
 
-    public void Progress(TimeSpan elapsedTime, IWorkerParameters workerParameters)
+    public void Progress(TimeSpan elapsedTime, WorkerComponent.IParameters workerParameters)
     {
         if (IsCompleted)
         {
-            resourceConsumer.CompleteIfNeeded();
+            complete();
+            return;
         }
-        if (IsCompleted || IsCancelled)
+        if (IsCancelled)
         {
-            Finished = true;
+            Abort();
             return;
         }
 
@@ -71,14 +73,19 @@ abstract class WorkerTaskBase : IWorkerTask
         }
     }
 
-    public void OnAbort()
+    private void complete()
+    {
+        resourceConsumer.CompleteIfNeeded();
+        Finished = true;
+    }
+
+    protected void Abort()
     {
         resourceConsumer.Abort();
-        Cancel();
+        Finished = true;
     }
 
     protected abstract void Start();
     protected abstract void Complete();
-    protected abstract void Cancel();
     protected abstract void UpdateToMatch();
 }

@@ -1,9 +1,9 @@
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
-sealed class AlwaysVisibleVisibility<T> : Component<T>, IVisibility
+sealed class AlwaysVisibleVisibility : Component, IVisibility
 {
     public ObjectVisibility Visibility => ObjectVisibility.Visible;
 

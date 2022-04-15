@@ -8,7 +8,6 @@ sealed class CoreRenderSettings
 {
 
     public Matrix4Uniform ViewMatrix { get; } = new("view");
-    public Matrix4Uniform ViewMatrixLevel { get; } = new("viewLevel");
     public Matrix4Uniform ProjectionMatrix { get; } = new("projection");
     public FloatUniform FarPlaneDistance { get; } = new("farPlaneDistance");
 

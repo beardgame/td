@@ -1,16 +1,24 @@
-using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<IComponentOwner, IDamageOnHitComponentParameters>, IListener<HitEnemy>
+sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnemy>
 {
-    public DamageOnHit(IDamageOnHitComponentParameters parameters) : base(parameters) {}
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(Type = AttributeType.Damage)]
+        HitPoints Damage { get; }
+
+        DamageType? Type { get; }
+    }
+
+    public DamageOnHit(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {

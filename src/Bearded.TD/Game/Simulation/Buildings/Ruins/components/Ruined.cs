@@ -2,41 +2,59 @@ using System;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("ruined")]
-sealed class Ruined<T>
-    : Component<T, IRuinedParameters>,
+sealed class Ruined
+    : Component<Ruined.IParameters>,
         IRuined,
         IListener<RepairCancelled>,
-        IListener<RepairFinished>
-    where T : IComponentOwner<T>, IGameObject
+        IListener<RepairFinished>,
+        IPreviewListener<FindObjectRuinState>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        ResourceAmount? RepairCost { get; }
+    }
+
+
+    private readonly Disposer disposer = new();
+
+    private IBuildingStateProvider? buildingStateProvider;
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private ReportAggregator.IReportHandle? reportHandle;
-    private IncompleteRepair<T>? incompleteRepair;
+    private IncompleteRepair? incompleteRepair;
 
-    private bool canBeRepaired => Parameters.RepairCost.HasValue;
+    private bool hasRepairCost => Parameters.RepairCost.HasValue;
     private bool deleteNextFrame;
 
-    public Ruined(IRuinedParameters parameters) : base(parameters) { }
+    public ResourceAmount? RepairCost => Parameters.RepairCost;
+
+    public Ruined(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
+        disposer.AddDisposable(
+            ComponentDependencies.Depend<IBuildingStateProvider>(
+                Owner, Events, provider => buildingStateProvider = provider));
         occupiedTilesTracker.Initialize(Owner, Events);
         Events.Send(new ObjectRuined());
         Events.Subscribe<RepairCancelled>(this);
         Events.Subscribe<RepairFinished>(this);
-        if (canBeRepaired)
+        Events.Subscribe(this);
+        if (hasRepairCost)
         {
             reportHandle = ReportAggregator.Register(Events, new RuinedReport(this));
         }
@@ -44,10 +62,12 @@ sealed class Ruined<T>
 
     public override void OnRemoved()
     {
+        disposer.Dispose();
         occupiedTilesTracker.Dispose(Events);
         Events.Send(new ObjectRepaired());
         Events.Unsubscribe<RepairCancelled>(this);
         Events.Unsubscribe<RepairFinished>(this);
+        Events.Unsubscribe(this);
         reportHandle?.Unregister();
         reportHandle = null;
         if (incompleteRepair != null)
@@ -63,13 +83,8 @@ sealed class Ruined<T>
         {
             throw new InvalidOperationException("Only one repair attempt can be in progress at a time.");
         }
-        if (!canBeRepaired)
-        {
-            throw new NotSupportedException();
-        }
 
-        incompleteRepair =
-            new IncompleteRepair<T>(Parameters.RepairCost ?? throw new InvalidOperationException(), repairingFaction);
+        incompleteRepair = new IncompleteRepair(repairingFaction);
         Owner.AddComponent(incompleteRepair);
         return incompleteRepair;
     }
@@ -80,11 +95,10 @@ sealed class Ruined<T>
         // repair already exists, we disable any new repair attempts. Cancelling a repair will remove the incomplete
         // repair component, resetting this state.
         return incompleteRepair == null &&
-            canBeRepaired &&
+            (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
             faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out _) &&
-            faction.TryGetBehaviorIncludingAncestors<WorkerNetwork>(out var network) &&
-            occupiedTilesTracker.OccupiedTiles.Any(network.IsInRange);
+            occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsRevealed());
     }
 
     public void HandleEvent(RepairCancelled @event)
@@ -92,6 +106,7 @@ sealed class Ruined<T>
         if (incompleteRepair != null)
         {
             Owner.RemoveComponent(incompleteRepair);
+            incompleteRepair = null;
         }
     }
 
@@ -100,6 +115,11 @@ sealed class Ruined<T>
         Events.Send(new ConvertToFaction(@event.RepairingFaction));
         // We need to defer deletion because we want to unsubscribe from this event.
         deleteNextFrame = true;
+    }
+
+    public void PreviewEvent(ref FindObjectRuinState @event)
+    {
+        @event = @event with { IsRuined = true };
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -112,11 +132,11 @@ sealed class Ruined<T>
 
     private sealed class RuinedReport : IRuinedReport
     {
-        private readonly Ruined<T> instance;
+        private readonly Ruined instance;
 
         public ReportType Type => ReportType.EntityActions;
 
-        public RuinedReport(Ruined<T> instance)
+        public RuinedReport(Ruined instance)
         {
             this.instance = instance;
         }
@@ -125,7 +145,7 @@ sealed class Ruined<T>
             throw new InvalidDataException(
                 "Ruined reports should not exist for ruined components without repair cost.");
 
-        public ComponentGameObject Building => (instance.Owner as ComponentGameObject)!;
+        public GameObject Building => instance.Owner;
         public bool RepairInProgress => instance.incompleteRepair != null;
         public double PercentageComplete => instance.incompleteRepair?.PercentageComplete ?? 0;
         public bool CanBeRepairedBy(Faction faction) => instance.CanBeRepairedBy(faction);
@@ -134,14 +154,14 @@ sealed class Ruined<T>
 
 interface IRuined
 {
+    ResourceAmount? RepairCost { get; }
     bool CanBeRepairedBy(Faction faction);
     IIncompleteRepair StartRepair(Faction repairingFaction);
 }
 
 interface IRuinedReport : IReport
 {
-    // TODO(building): cast needed to get the ID
-    ComponentGameObject Building { get; }
+    GameObject Building { get; }
     ResourceAmount RepairCost { get; }
     bool RepairInProgress { get; }
     double PercentageComplete { get; }

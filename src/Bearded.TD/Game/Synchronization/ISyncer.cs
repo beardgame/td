@@ -1,9 +1,10 @@
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Synchronization;
 
-interface ISyncer<T>
+interface ISyncer
 {
-    Id<T> EntityId { get; }
+    Id<GameObject> GameObjectId { get; }
     IStateToSync GetCurrentStateToSync();
 }

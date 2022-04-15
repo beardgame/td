@@ -9,7 +9,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
     public sealed class SelectRandomTests
     {
-        private static INodeBehavior<Node> behaviourWithParameters(double percentage)
+        private static INodeBehavior behaviourWithParameters(double percentage)
             => new SelectRandom(new SelectRandom.BehaviourParameters(percentage));
 
         [Fact]

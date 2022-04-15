@@ -17,8 +17,9 @@ sealed class ResourceConsumer
     private Instant time => currentTimeProvider();
 
     public bool CanConsume => reservation.IsCommitted;
-    public double PercentageDone => (resourcesRequested - reservation.ResourcesLeftToClaim) / resourcesRequested;
+    public double PercentageDone => ResourcesClaimed / resourcesRequested;
     public bool IsDone => reservation.ResourcesLeftToClaim == ResourceAmount.Zero;
+    public ResourceAmount ResourcesClaimed => resourcesRequested - reservation.ResourcesLeftToClaim;
 
     public ResourceConsumer(GameState game, FactionResources.IResourceReservation reservation, ResourceRate consumptionRate)
         : this(() => game.Time, reservation, consumptionRate) { }

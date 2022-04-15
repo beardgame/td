@@ -1,8 +1,0 @@
-{
-    "id" : "unlockBeamTurret",
-    "name" : "IMMA Charging",
-    "cost" : 1,
-    "unlocks": [
-        { "type" : "building", "blueprint" : "beamTurret" }
-    ]
-}

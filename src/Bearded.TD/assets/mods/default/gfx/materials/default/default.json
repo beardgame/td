@@ -1,6 +1,6 @@
 {
   "id" : "default",
-  "shader" : "gpu-terrain",
+  "shader" : "gpu-terrain-tessellated",
   "textureArrays" : [
     {
       "name" : "diffuseTextures",

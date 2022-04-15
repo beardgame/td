@@ -4,21 +4,18 @@
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
-                "range" : 5
+                "range" : 5,
+                "coneOfFire" : 5
             }
         },
         {
-            "id" : "linearAccelerationAim",
-            "parameters" : {
-                "acceleration" : 900,
-                "dragInverse" : 0.01
-            }
+            "id" : "instantAim"
         },
         {
             "id" : "beamEmitter",
             "parameters" : {
                 "color" : "red",
-                "damagePerSecond" : 50,
+                "damagePerSecond" : 30,
                 "range" : 5,
                 "width" : 3,
                 "coreWidth" : 1
@@ -28,7 +25,7 @@
             "id" : "sprite",
             "parameters": {
                 "sprite": "buildings.laser-turret",
-                "color": "White",
+                "colorMode" : "faction",
                 "shader" : "building",
                 "drawGroup" : "building"
             }

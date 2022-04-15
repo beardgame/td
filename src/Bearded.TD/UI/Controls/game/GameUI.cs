@@ -5,6 +5,7 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Meta;
+using Bearded.TD.Networking;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
@@ -16,16 +17,19 @@ using Bearded.Utilities.Input;
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUI :
-    UpdateableNavigationNode<(GameInstance game, GameRunner runner)>,
+    UpdateableNavigationNode<GameUI.Parameters>,
     IListener<GameOverTriggered>,
     IListener<GameVictoryTriggered>
 {
     private readonly UIUpdater uiUpdater = new();
 
     public GameInstance Game { get; private set; } = null!;
+    public TimeSource TimeSource { get; private set; } = null!;
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
+
+    public GameUIController GameUIController { get; }
 
     public GameNotificationsUI NotificationsUI { get; }
     public ActionBar ActionBar { get; }
@@ -34,13 +38,9 @@ sealed class GameUI :
     public TechnologyUI TechnologyUI { get; }
 
     public event VoidEventHandler? FocusReset;
-    public event GenericEventHandler<IReportSubject>? EntityStatusOpened;
-    public event VoidEventHandler? EntityStatusClosed;
     public event VoidEventHandler? GameVictoryTriggered;
     public event VoidEventHandler? GameOverTriggered;
     public event VoidEventHandler? GameLeft;
-
-    public readonly Binding<bool> ShowDiegeticUI = new(true);
 
     private NavigationController? entityStatusNavigation;
 
@@ -48,25 +48,27 @@ sealed class GameUI :
 
     public GameUI()
     {
-        NotificationsUI = new GameNotificationsUI();
+        GameUIController = new GameUIController();
+
+        NotificationsUI = new GameNotificationsUI(GameUIController);
         ActionBar = new ActionBar();
         GameStatusUI = new GameStatusUI();
         PlayerStatusUI = new PlayerStatusUI();
         TechnologyUI = new TechnologyUI();
     }
 
-    protected override void Initialize(
-        DependencyResolver dependencies, (GameInstance game, GameRunner runner) parameters)
+    protected override void Initialize(DependencyResolver dependencies, Parameters parameters)
     {
         base.Initialize(dependencies, parameters);
 
-        Game = parameters.game;
-        runner = parameters.runner;
+        Game = parameters.Game;
+        TimeSource = new TimeSource();
+        runner = new GameRunner(parameters.Game, parameters.Network, TimeSource);
 
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
 
-        NotificationsUI.Initialize(Game);
+        NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
@@ -100,6 +102,7 @@ sealed class GameUI :
         runner.HandleInput(inputState);
         runner.Update(args);
 
+        TimeSource.Update(args);
         uiUpdater.Update(args);
         NotificationsUI.Update();
         GameStatusUI.Update();
@@ -122,13 +125,13 @@ sealed class GameUI :
         {
             case true when overlay == null:
             {
-                overlay = Navigation.Push<TOverlay>();
+                overlay = Navigation!.Push<TOverlay>();
                 break;
             }
             case false when overlay != null:
             {
                 overlay.Terminate();
-                Navigation.Close(overlay);
+                Navigation!.Close(overlay);
                 overlay = null;
                 break;
             }
@@ -159,13 +162,13 @@ sealed class GameUI :
     {
         var subject = selectedObject.Subject;
         entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
-        EntityStatusOpened?.Invoke(subject);
+        GameUIController.ShowEntityStatus(new GameUIController.OpenEntityStatus(Game.SelectionManager.ResetSelection));
     }
 
     private void onObjectDeselected(ISelectable t)
     {
         entityStatusNavigation?.CloseAll();
-        EntityStatusClosed?.Invoke();
+        GameUIController.HideEntityStatus();
     }
 
     public void HandleEvent(GameOverTriggered @event)
@@ -181,7 +184,9 @@ sealed class GameUI :
     public void OnReturnToMainMenuButtonClicked()
     {
         runner.Shutdown();
-        Navigation.Replace<MainMenu>(this);
+        Navigation!.Replace<MainMenu>(this);
         GameLeft?.Invoke();
     }
+
+    public record struct Parameters(GameInstance Game, NetworkInterface Network);
 }

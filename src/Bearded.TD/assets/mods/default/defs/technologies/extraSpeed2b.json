@@ -1,9 +1,0 @@
-{
-    "id" : "extraSpeed2b",
-    "name" : "Faster rotation speed",
-    "cost" : 1,
-    "requiredTechs" : [ "extraSpeed1" ],
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraRotationSpeed2" }
-    ]
-}

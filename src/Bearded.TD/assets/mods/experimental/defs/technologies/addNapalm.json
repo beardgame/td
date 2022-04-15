@@ -1,0 +1,7 @@
+{
+  "id" : "addNapalm",
+  "name" : "Burn some more!",
+  "unlocks": [
+    { "type" : "upgrade", "blueprint" : "addNapalm" }
+  ]
+}

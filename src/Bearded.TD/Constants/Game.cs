@@ -1,4 +1,6 @@
-﻿using Bearded.Graphics;
+﻿using System.Collections.Immutable;
+using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -33,9 +35,9 @@ static partial class Constants
         {
             public const int ActionBarSize = 10;
             public static readonly TimeSpan NotificationDuration = 5.S();
-            public static TimeSpan SevereNotificationDuration = 20.S();
-            public static readonly TimeSpan NotificationFadeOutTime = 1.S();
-            public const int MaxNotifications = 4;
+
+            public static Color ActionBackgroundColor = new Color(27, 81, 156) * 0.75f;
+            public static Color UrgentBackgroundColor = new Color(246, 190, 0) * 0.75f;
 
             public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
             public static readonly Color TechPointsColor = Color.Turquoise;
@@ -44,34 +46,32 @@ static partial class Constants
         public static class WaveGeneration
         {
             public static readonly TimeSpan FirstDownTimeDuration = 40.S();
-            public static readonly TimeSpan DownTimeDuration = 20.S();
+            public static readonly TimeSpan DownTimeDuration = 30.S();
 
-            public static readonly TimeSpan MaxSpawnTimeDuration = 12.S();
-            public static readonly TimeSpan PreferredTimeBetweenSpawns = 1.S();
-            public static readonly TimeSpan MinTimeBetweenSpawns = 0.1.S();
+            public static readonly TimeSpan EnemyTrainLength = 20.S();
+            public static readonly TimeSpan MaxTimeBetweenSpawns = 5.S(); // Overrides enemy train length.
+            public static readonly TimeSpan MinTimeBetweenSpawns = 0.3.S();
 
-            public const double FirstWaveValue = 30;
+            public const double FirstWaveValue = 2000;
             public const double WaveValueErrorFactor = 0.1;
-            public const double WaveValueMultiplier = 1.3;
+            public const double WaveValueLinearGrowth = 2500;
+            public const double WaveValueExponentialGrowth = 1.05;
 
-            public static readonly ResourceAmount FirstWaveResources = 200.Resources();
-            public static readonly double WaveResourcesMultiplier = 1.2;
+            public static readonly ResourceAmount FirstWaveResources = 150.Resources();
+            public static readonly double WaveResourcesMultiplier = 1;
         }
 
         public static class Building
         {
             public const double RuinedPercentage = 0.5;
+
+            public static readonly ImmutableArray<Experience> VeterancyThresholds =
+                ImmutableArray.Create(2500.Xp(), 10000.Xp(), 22500.Xp(), 40000.Xp(), 62500.Xp(), 90000.Xp());
         }
 
         public static class Worker
         {
             public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
-            public static readonly TimeSpan MiningDuration = 8.S();
-        }
-
-        public static class Technology
-        {
-            public const double TechCostMultiplicationFactor = 1;
         }
 
         public static class Enemy

@@ -17,7 +17,8 @@ sealed class GameCameraController
     private float zoomSpeed =>
         Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
 
-    private Position2? goalPosition;
+    private Position2? cinematicGoalPosition;
+    private float? cinematicGoalDistance;
     private float goalDistance;
     private Position2 scrollAnchor;
     private Vector2 zoomAnchor;
@@ -51,23 +52,27 @@ sealed class GameCameraController
     {
         if (isGrabbed) return;
 
-        if (goalPosition is { } position)
-            moveToGoalPosition(args, position);
+        if (cinematicGoalPosition is { } position)
+        {
+            moveToCinematicGoalPosition(args, position);
+        }
         else
+        {
             updatePositionFromAggregatedOffset(args);
+        }
     }
 
-    private void moveToGoalPosition(UpdateEventArgs args, Position2 goalPos)
+    private void moveToCinematicGoalPosition(UpdateEventArgs args, Position2 goalPos)
     {
-        var maxEpsilonSquared = .01f.U().Squared;
+        var maxEpsilonSquared = 0.01f.U().Squared;
 
-        var error = (camera.Position - goalPos);
+        var error = camera.Position - goalPos;
         var distanceSquared = error.LengthSquared;
 
         if (distanceSquared <= maxEpsilonSquared)
         {
             camera.Position = goalPos;
-            goalPosition = null;
+            cinematicGoalPosition = null;
         }
 
         var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
@@ -83,8 +88,33 @@ sealed class GameCameraController
 
     private void updateCameraDistance(UpdateEventArgs args)
     {
-        updateCameraGoalDistance(args);
+        if (cinematicGoalDistance is { } distance)
+        {
+            moveToCinematicGoalDistance(args, distance);
+        }
+        else
+        {
+            updateCameraGoalDistance(args);
+        }
+
         moveCameraDistanceToGoalDistance(args);
+    }
+
+    private void moveToCinematicGoalDistance(UpdateEventArgs args, float distance)
+    {
+        var maxEpsilonSquared = .01f.Squared();
+
+        var error = camera.Distance - distance;
+        var distanceSquared = error.Squared();
+
+        if (distanceSquared <= maxEpsilonSquared)
+        {
+            goalDistance = distance;
+            cinematicGoalDistance = null;
+        }
+
+        var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
+        goalDistance -= snapFactor * error;
     }
 
     private void updateCameraGoalDistance(UpdateEventArgs args)
@@ -128,9 +158,12 @@ sealed class GameCameraController
         var oldZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
         camera.Distance -= error * snapFactor;
 
-        var newZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
-        var positionError = newZoomAnchorWorldPosition - oldZoomAnchorWorldPosition;
-        camera.Position -= positionError;
+        if (cinematicGoalPosition == null)
+        {
+            var newZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
+            var positionError = newZoomAnchorWorldPosition - oldZoomAnchorWorldPosition;
+            camera.Position -= positionError;
+        }
     }
 
     private void constrictCameraToLevel(UpdateEventArgs args)
@@ -153,7 +186,21 @@ sealed class GameCameraController
     /// <remarks>Will be interrupted by other scrolling behaviours.</remarks>
     public void ScrollToWorldPos(Position2 worldPos)
     {
-        goalPosition = worldPos;
+        cinematicGoalPosition = worldPos;
+    }
+
+    /// <summary>
+    /// Automatically scrolls so the specified world position is in the center.
+    /// </summary>
+    /// <remarks>Will be interrupted by other scrolling behaviours.</remarks>
+    public void ScrollToBoundingBox(Position2 topLeft, Position2 bottomRight)
+    {
+        var size = bottomRight - topLeft;
+        cinematicGoalPosition = topLeft + size * 0.5f;
+
+        // TODO: This is all very wishy washy right now based on assumptions that may not hold forever.
+        var maxApproxTileRadius = Math.Max(size.Y.NumericValue, size.X.NumericValue);
+        goalDistance = maxApproxTileRadius.Clamped(Constants.Camera.ZMin, maxCameraDistance);
     }
 
     /// <summary>
@@ -184,7 +231,7 @@ sealed class GameCameraController
     public void Scroll(Difference2 velocity)
     {
         aggregatedPositionVelocity += velocity;
-        interruptScrollToPosition();
+        interruptCinematicMove();
     }
 
     public void CenterZoomAnchor()
@@ -207,7 +254,7 @@ sealed class GameCameraController
     public void ConstantZoom(float offset)
     {
         aggregatedDistanceOffset += offset;
-        interruptScrollToPosition();
+        interruptCinematicMove();
     }
 
     /// <summary>
@@ -217,12 +264,13 @@ sealed class GameCameraController
     public void Zoom(float velocity)
     {
         aggregatedDistanceVelocity += velocity;
-        interruptScrollToPosition();
+        interruptCinematicMove();
     }
 
-    private void interruptScrollToPosition()
+    private void interruptCinematicMove()
     {
-        goalPosition = null;
+        cinematicGoalPosition = null;
+        cinematicGoalDistance = null;
     }
 
     /// <summary>
@@ -232,7 +280,7 @@ sealed class GameCameraController
     {
         if (isGrabbed) throw new Exception("Camera can only be grabbed by one thing at the time.");
         isGrabbed = true;
-        interruptScrollToPosition();
+        interruptCinematicMove();
     }
 
     /// <summary>
@@ -244,7 +292,6 @@ sealed class GameCameraController
         isGrabbed = false;
     }
 
-
     public void OverrideMaxCameraDistance(float maxDistance)
     {
         maxCameraDistanceOverride = maxDistance;
@@ -254,5 +301,4 @@ sealed class GameCameraController
     {
         maxCameraDistanceOverride = null;
     }
-
 }

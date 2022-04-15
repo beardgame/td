@@ -3,7 +3,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Commands.Loading;
+using Bearded.TD.Game.Loading;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
@@ -76,7 +76,12 @@ sealed class ServerLobbyManager : LobbyManager
         RenderContext renderContext)
     {
         var m = Create(networkInterface, logger, graphicsLoader, renderContext);
-        m.forceReady = true;
+
+        if (!m.Game.ContentManager.EnabledMods.IsEmpty)
+        {
+            m.forceReady = true;
+        }
+
         return m;
     }
 
@@ -84,8 +89,7 @@ sealed class ServerLobbyManager : LobbyManager
         ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
     {
         var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
-        // TODO: move somewhere else/read from settings
-        contentManager.SetEnabledMods(contentManager.AvailableMods);
+        contentManager.SetEnabledModsById(UserSettings.Instance.LastGameSettings.ActiveModIds);
 
         var ids = new IdManager();
         var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)

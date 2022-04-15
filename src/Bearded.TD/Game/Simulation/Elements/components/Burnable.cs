@@ -1,10 +1,11 @@
 using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.SpaceTime;
@@ -15,9 +16,18 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("burnable")]
-sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDamage>, IListener<Spark>, IDrawableComponent
-    where T : IComponentOwner, IGameObject, IPositionable
+sealed class Burnable : Component<Burnable.IParameters>,
+    IListener<TakeDamage>, IListener<Spark>, IListener<DrawComponents>
 {
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        Energy FuelAmount { get; }
+        Energy FlashPointThreshold { get; }
+        EnergyConsumptionRate? BurnSpeed { get; }
+        double? DamagePerFuel { get; }
+        bool StartsOnFire { get; }
+    }
+
     private IDamageSource? lastFireHitOwner;
     private IDamageSource? damageSource;
 
@@ -28,7 +38,7 @@ sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDama
     private float fireRenderStrength;
     private bool dealingDamageToOwner;
 
-    public Burnable(IBurnableParameters parameters) : base(parameters) {}
+    public Burnable(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {
@@ -43,12 +53,14 @@ sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDama
         damagePerFuel = Parameters.DamagePerFuel ?? 1;
         Events.Subscribe<TakeDamage>(this);
         Events.Subscribe<Spark>(this);
+        Events.Subscribe<DrawComponents>(this);
     }
 
     public override void OnRemoved()
     {
         Events.Unsubscribe<TakeDamage>(this);
         Events.Unsubscribe<Spark>(this);
+        Events.Unsubscribe<DrawComponents>(this);
     }
 
     private void onExtinguished()
@@ -117,11 +129,11 @@ sealed class Burnable<T> : Component<T, IBurnableParameters>, IListener<TakeDama
         fireRenderStrength += (fireRenderStrengthGoal - fireRenderStrength) * (1 - (float)Math.Pow(0.001, elapsedTime.NumericValue));
     }
 
-    public void Draw(IComponentDrawer drawer)
+    public void HandleEvent(DrawComponents e)
     {
         if (!combustable.IsOnFire) return;
 
-        drawer.Core.PointLight.Draw(
+        e.Core.PointLight.Draw(
             Owner.Position.NumericValue,
             1.5f * fireRenderStrength,
             Color.OrangeRed * fireRenderStrength

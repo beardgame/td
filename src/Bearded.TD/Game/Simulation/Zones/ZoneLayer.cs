@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -11,6 +12,7 @@ sealed class ZoneLayer
 {
     private readonly IdDictionary<Zone> zonesById = new();
     private readonly Tilemap<Zone?> zonesByTile;
+    private readonly Tilemap<ImmutableArray<Zone>> zonesForVisibilityByTile;
     private readonly MultiDictionary<Zone, Zone> adjacentZones = new();
 
     public IEnumerable<Zone> AllZones => zonesById.Values;
@@ -18,15 +20,20 @@ sealed class ZoneLayer
     public ZoneLayer(int radius)
     {
         zonesByTile = new Tilemap<Zone>(radius);
+        zonesForVisibilityByTile = new Tilemap<ImmutableArray<Zone>>(radius, _ => ImmutableArray<Zone>.Empty);
     }
 
     public void AddZone(Zone zone)
     {
         zonesById.Add(zone);
-        foreach (var tile in zone.Tiles)
+        foreach (var tile in zone.CoreTiles)
         {
-            DebugAssert.State.Satisfies(() => zonesByTile[tile] == null);
-            zonesByTile[tile] = zone;
+            DebugAssert.State.Satisfies(zonesByTile[tile] == null);
+            zonesByTile[tile] = zonesByTile[tile] = zone;
+        }
+        foreach (var tile in zone.VisibilityTiles)
+        {
+            zonesForVisibilityByTile[tile] = zonesForVisibilityByTile[tile].Add(zone);
         }
     }
 
@@ -39,6 +46,8 @@ sealed class ZoneLayer
     public Zone FindZone(Id<Zone> id) => zonesById[id];
 
     public Zone? ZoneForTile(Tile tile) => zonesByTile[tile];
+
+    public ImmutableArray<Zone> ZonesForVisibilityForTile(Tile tile) => zonesForVisibilityByTile[tile];
 
     public IEnumerable<Zone> AdjacentZones(Zone zone) => adjacentZones[zone];
 }

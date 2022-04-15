@@ -3,7 +3,7 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features;
 
-abstract class NodeBehavior<TParameters> : INodeBehavior<Node>
+abstract class NodeBehavior<TParameters> : INodeBehavior
 {
     protected TParameters Parameters { get; }
 

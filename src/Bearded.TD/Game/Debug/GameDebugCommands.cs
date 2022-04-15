@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Bearded.TD.Game.Commands.Debug;
 using Bearded.TD.Game.Generation;
-using Bearded.TD.Game.Simulation.Components;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -60,7 +62,7 @@ static class GameDebugCommands
         //       less pollution of objects escaping their respective abstraction layer.
         foreach (var gameObj in gameInstance.State.GameObjects)
         {
-            if (gameObj is SpawnLocation or ComponentGameObject)
+            if (gameObj is GameObject)
             {
                 gameObj.Delete();
             }
@@ -137,18 +139,12 @@ static class GameDebugCommands
         gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Resources()));
     });
 
-    [DebugCommand("game.techpoints")]
-    private static void giveTechPoints(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    [DebugCommand("game.techtoken")]
+    private static void giveTechToken(Logger logger, CommandParameters p) => run(logger, gameInstance =>
     {
-        if (p.Args.Length != 1)
+        if (p.Args.Length != 0)
         {
-            logger.Warning?.Log("Usage: \"game.techpoints <amount>\"");
-            return;
-        }
-
-        if (!long.TryParse(p.Args[0], out var number))
-        {
-            logger.Warning?.Log($"Invalid number: {number}");
+            logger.Warning?.Log("Usage: \"game.techtoken\"");
             return;
         }
 
@@ -165,7 +161,7 @@ static class GameDebugCommands
             return;
         }
 
-        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechPoints.Request(faction, number));
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechToken.Request(faction));
     });
 
     private static void run(Logger logger, Action<GameInstance> command) =>

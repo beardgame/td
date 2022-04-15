@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands.Gameplay;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Input;
@@ -27,8 +27,8 @@ sealed class DebugSpawnEnemyInteractionHandler : InteractionHandler
                     SpawnUnit.Command,
                     Game.State,
                     tile,
-                    Game.Blueprints.Units[enemyBlueprintName],
-                    Game.Ids.GetNext<EnemyUnit>()));
+                    Game.Blueprints.ComponentOwners[enemyBlueprintName],
+                    Game.Ids.GetNext<GameObject>()));
         else if (cursor.Cancel.Hit)
             Game.PlayerInput.ResetInteractionHandler();
     }

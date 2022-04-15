@@ -1,8 +1,0 @@
-{
-    "id" : "extraWorker",
-    "name" : "The more the merrier",
-    "cost" : 1,
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraWorker" }
-    ]
-}

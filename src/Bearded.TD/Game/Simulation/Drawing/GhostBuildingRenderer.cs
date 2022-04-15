@@ -1,15 +1,13 @@
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
-sealed class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>, IListener<ConstructionStarted>
-    where T : IGameObject, IComponentOwner<T>
+sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<ConstructionStarted>
 {
     private Shader shader = null!;
     private bool switchToDefaultRenderer;
@@ -36,7 +34,7 @@ sealed class GhostBuildingRenderer<T> : DefaultComponentRenderer<T>, IListener<C
         if (switchToDefaultRenderer)
         {
             Owner.RemoveComponent(this);
-            Owner.AddComponent(new DefaultComponentRenderer<T>());
+            Owner.AddComponent(new DefaultComponentRenderer());
         }
     }
 

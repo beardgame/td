@@ -1,7 +1,5 @@
 using System;
-using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 
@@ -13,7 +11,6 @@ sealed class DamageSourceSerializer
     {
         None,
         GameObject,
-        Enemy,
         DivineIntervention,
     }
 
@@ -27,13 +24,9 @@ sealed class DamageSourceSerializer
             case null:
                 type = (byte) SupportedImplementation.None;
                 break;
-            case DamageSource<ComponentGameObject> b:
+            case DamageSource b:
                 type = (byte) SupportedImplementation.GameObject;
                 id = b.Id.Value;
-                break;
-            case DamageSource<EnemyUnit> e:
-                type = (byte) SupportedImplementation.Enemy;
-                id = e.Id.Value;
                 break;
             case DivineIntervention:
                 type = (byte) SupportedImplementation.DivineIntervention;
@@ -46,8 +39,7 @@ sealed class DamageSourceSerializer
         return type switch
         {
             (byte) SupportedImplementation.None => null,
-            (byte) SupportedImplementation.GameObject => instance.State.Find(new Id<ComponentGameObject>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
-            (byte) SupportedImplementation.Enemy => instance.State.Find(new Id<EnemyUnit>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
+            (byte) SupportedImplementation.GameObject => instance.State.Find(new Id<GameObject>(id)).TryGetSingleComponent<IDamageSource>(out var s) ? s : null,
             (byte) SupportedImplementation.DivineIntervention => DivineIntervention.DamageSource,
             _ => throw new IndexOutOfRangeException()
         };

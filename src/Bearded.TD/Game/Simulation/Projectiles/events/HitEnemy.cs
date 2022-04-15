@@ -1,6 +1,5 @@
-using Bearded.TD.Game.Simulation.Components;
-using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
-readonly record struct HitEnemy(EnemyUnit Enemy) : IComponentEvent;
+readonly record struct HitEnemy(GameObject Enemy, HitInfo Info) : IComponentEvent;

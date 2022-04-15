@@ -12,14 +12,14 @@ internal interface ISpriteSetImplementation : IDisposable
     SpriteParameters GetSpriteParameters(string name);
 
     DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-        SpriteSet spriteSet, SpriteRenderers spriteRenderers,
+        SpriteSet spriteSet, ISpriteRenderers spriteRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader)
         where TVertex : struct, IVertexData;
 
     (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-        SpriteRenderers spriteRenderers,
+        ISpriteRenderers spriteRenderers,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader,
         params IRenderSetting[] customRenderSettings)

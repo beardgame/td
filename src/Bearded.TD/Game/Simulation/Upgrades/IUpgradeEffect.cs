@@ -1,17 +1,17 @@
-﻿using Bearded.TD.Game.Simulation.Components;
+﻿using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
 interface IUpgradeEffect
 {
-    bool CanApplyTo<T>(T subject) where T : IComponentOwner;
+    bool CanApplyTo(GameObject subject);
     bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
-    bool CanApplyToComponentCollectionForType<T>();
+    bool CanApplyToComponentCollectionForType();
 
-    void ApplyTo<T>(T subject) where T : IComponentOwner<T>;
+    void ApplyTo(GameObject subject);
     void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
 
-    bool RemoveFrom(IComponentOwner subject);
+    bool RemoveFrom(GameObject subject);
     bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T>;
 }

@@ -1,15 +1,13 @@
-using Bearded.TD.Game.Simulation.Components;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class IdProvider<T> : Component<T>, IIdProvider<T>
-    where T : IGameObject
+sealed class IdProvider : Component, IIdProvider
 {
-    public Id<T> Id { get; }
+    public Id<GameObject> Id { get; }
 
-    public IdProvider(Id<T> id)
+    public IdProvider(Id<GameObject> id)
     {
         Id = id;
     }
@@ -28,7 +26,7 @@ sealed class IdProvider<T> : Component<T>, IIdProvider<T>
     public override void Update(TimeSpan elapsedTime) {}
 }
 
-interface IIdProvider<T>
+interface IIdProvider
 {
-    Id<T> Id { get; }
+    Id<GameObject> Id { get; }
 }

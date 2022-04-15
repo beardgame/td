@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Simulation.Rules;
 
 [AttributeUsage(AttributeTargets.Class)]
-[BaseTypeRequired(typeof(IGameRule<>))]
+[BaseTypeRequired(typeof(IGameRule))]
 [MeansImplicitUse]
 sealed class GameRuleAttribute : Attribute, IBehaviorAttribute
 {
