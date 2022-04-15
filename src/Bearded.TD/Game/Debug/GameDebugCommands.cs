@@ -139,18 +139,12 @@ static class GameDebugCommands
         gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Resources()));
     });
 
-    [DebugCommand("game.techpoints")]
-    private static void giveTechPoints(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    [DebugCommand("game.techtoken")]
+    private static void giveTechToken(Logger logger, CommandParameters p) => run(logger, gameInstance =>
     {
-        if (p.Args.Length != 1)
+        if (p.Args.Length != 0)
         {
-            logger.Warning?.Log("Usage: \"game.techpoints <amount>\"");
-            return;
-        }
-
-        if (!long.TryParse(p.Args[0], out var number))
-        {
-            logger.Warning?.Log($"Invalid number: {number}");
+            logger.Warning?.Log("Usage: \"game.techtoken\"");
             return;
         }
 
@@ -167,7 +161,7 @@ static class GameDebugCommands
             return;
         }
 
-        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechPoints.Request(faction, number));
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechToken.Request(faction));
     });
 
     private static void run(Logger logger, Action<GameInstance> command) =>

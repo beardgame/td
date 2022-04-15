@@ -164,14 +164,11 @@ sealed class TechnologyUIControl : CompositeControl
             switch (techStatus)
             {
                 case TechnologyUIModel.TechnologyStatus.Unlocked:
-                    break;
-                case TechnologyUIModel.TechnologyStatus.Queued:
-                    model.ClearTechnologyQueue();
-                    break;
-                case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                 case TechnologyUIModel.TechnologyStatus.MissingResources:
                 case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                    model.ReplaceTechnologyQueue(tech);
+                    break;
+                case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
+                    model.UnlockTechnology(tech);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -218,16 +215,16 @@ sealed class TechnologyUIControl : CompositeControl
             {
                 case TechnologyUIModel.TechnologyStatus.Unlocked:
                     unlockButtonLabel = "Unlocked";
-                    break;
-                case TechnologyUIModel.TechnologyStatus.Queued:
-                    unlockButtonLabel = $"Queued ({model.QueuePositionFor(tech)})";
+                    unlockButton.IsEnabled = false;
                     break;
                 case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                     unlockButtonLabel = "Unlock";
+                    unlockButton.IsEnabled = true;
                     break;
                 case TechnologyUIModel.TechnologyStatus.MissingResources:
                 case TechnologyUIModel.TechnologyStatus.MissingDependencies:
-                    unlockButtonLabel = "Queue";
+                    unlockButtonLabel = "Unlock";
+                    unlockButton.IsEnabled = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -303,8 +300,6 @@ sealed class TechnologyUIControl : CompositeControl
         {
             case TechnologyUIModel.TechnologyStatus.Unlocked:
                 return Color.Green;
-            case TechnologyUIModel.TechnologyStatus.Queued:
-                return Color.Aqua;
             case TechnologyUIModel.TechnologyStatus.CanBeUnlocked:
                 return Color.Yellow;
             case TechnologyUIModel.TechnologyStatus.MissingResources:

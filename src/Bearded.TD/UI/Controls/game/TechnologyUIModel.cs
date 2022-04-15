@@ -14,7 +14,6 @@ sealed class TechnologyUIModel
     public enum TechnologyStatus
     {
         Unlocked,
-        Queued,
         CanBeUnlocked,
         MissingResources,
         MissingDependencies
@@ -53,24 +52,12 @@ sealed class TechnologyUIModel
         technologyStatuses[tech] = evaluateStatusForTech(tech);
     }
 
-    public void ReplaceTechnologyQueue(ITechnologyBlueprint tech)
+    public void UnlockTechnology(ITechnologyBlueprint tech)
     {
-        game.Request(Game.Simulation.Technologies.ReplaceTechnologyQueue.Request(faction, tech));
-    }
-
-    public void AddToTechnologyQueue(ITechnologyBlueprint tech)
-    {
-        game.Request(Game.Simulation.Technologies.AddToTechnologyQueue.Request(faction, tech));
-    }
-
-    public void ClearTechnologyQueue()
-    {
-        game.Request(Game.Simulation.Technologies.ClearTechnologyQueue.Request(faction));
+        game.Request(Game.Simulation.Technologies.UnlockTechnology.Request(faction, tech));
     }
 
     public TechnologyStatus StatusFor(ITechnologyBlueprint tech) => technologyStatuses[tech];
-
-    public int QueuePositionFor(ITechnologyBlueprint tech) => factionTechnology.QueuePositionFor(tech);
 
     public IEnumerable<ITechnologyBlueprint> DependentsFor(ITechnologyBlueprint tech) =>
         technologyDependents.GetValueOrDefault(tech, ImmutableArray<ITechnologyBlueprint>.Empty);
@@ -82,14 +69,9 @@ sealed class TechnologyUIModel
             return TechnologyStatus.Unlocked;
         }
 
-        if (factionTechnology.CanUnlockTechnology(tech))
+        if (factionTechnology.CanUnlockTechnologyNow(tech))
         {
             return TechnologyStatus.CanBeUnlocked;
-        }
-
-        if (factionTechnology.IsTechnologyQueued(tech))
-        {
-            return TechnologyStatus.Queued;
         }
 
         return factionTechnology.HasAllRequiredTechs(tech)
