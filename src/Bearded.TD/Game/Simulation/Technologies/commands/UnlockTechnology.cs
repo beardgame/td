@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Technologies;
 
-static class ReplaceTechnologyQueue
+static class UnlockTechnology
 {
     public static IRequest<Player, GameInstance> Request(Faction faction, ITechnologyBlueprint technology)
         => new Implementation(faction, technology);
@@ -33,7 +33,7 @@ static class ReplaceTechnologyQueue
                 return false;
             }
             actor.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var actorTechnology);
-            return factionTechnology == actorTechnology && factionTechnology.CanQueueTechnology(technology);
+            return factionTechnology == actorTechnology && factionTechnology.CanUnlockTechnologyNow(technology);
         }
 
         public override void Execute()
@@ -44,7 +44,7 @@ static class ReplaceTechnologyQueue
                     "Cannot replace technology queue without technology for the faction. " +
                     "Precondition should have failed.");
             }
-            factionTechnology.ReplaceTechnologyQueue(technology);
+            factionTechnology.UnlockTechnology(technology);
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, technology);

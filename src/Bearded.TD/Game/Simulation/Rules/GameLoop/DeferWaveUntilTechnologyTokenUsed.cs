@@ -38,7 +38,7 @@ sealed class DeferWaveUntilTechnologyTokenUsed : GameRule<DeferWaveUntilTechnolo
 
         public void HandleEvent(WaveScheduled @event)
         {
-            if (technologyBlueprints.Any(factionTechnology.CanUnlockTechnology))
+            if (technologyBlueprints.Any(factionTechnology.CanUnlockTechnologyNow))
             {
                 @event.SpawnStartRequirementConsumer(new TechPointSpawnStartRequirement(factionTechnology));
             }
