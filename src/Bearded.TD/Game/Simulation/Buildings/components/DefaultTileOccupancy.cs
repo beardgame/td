@@ -39,42 +39,10 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
             if (Owner.Game.BuildingLayer[tile] is not { } building)
                 continue;
 
-            if (!building.GetComponents<CanBeBuiltOn>().Any())
-                throw new InvalidOperationException(
-                    "Should not be able to place building here - another one is in the way!");
+            var replacer = building.GetComponents<CanBeBuiltOn>().Single();
 
-            replaceBuilding(building);
+            replacer.Replace();
         }
-    }
-
-    private void replaceBuilding(GameObject building)
-    {
-        tryRefund(building);
-        building.Delete();
-    }
-
-    private void tryRefund(GameObject building)
-    {
-        var state = building.GetComponents<IBuildingStateProvider>().Single().State;
-        if (!state.IsMaterialized)
-            return;
-
-        if (building.GetComponents<BuildingConstructionWork>().SingleOrDefault() is { } constructionWork)
-        {
-            refund(constructionWork.ResourcesInvestedSoFar ?? ResourceAmount.Zero);
-        }
-        else if(building.GetComponents<ICost>().SingleOrDefault() is { } cost)
-        {
-            refund(cost.Resources);
-        }
-    }
-
-    private void refund(ResourceAmount value)
-    {
-        var faction = Owner.FindFaction();
-        if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
-            throw new InvalidOperationException();
-        resources.ProvideResources(value);
     }
 
     private void deleteFromBuildingLayerIfNotGhost()
