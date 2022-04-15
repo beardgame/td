@@ -18,6 +18,8 @@ out vec4 outRGB;
 
 vec3 getFragmentPositionFromDepth(vec2 uv)
 {
+    uv = clamp(uv, 0.001, 0.999);
+
     float depth = texture(depthBuffer, uv).x;
 
     vec3 pointOnFarPlane = farPlaneBaseCorner
@@ -38,7 +40,6 @@ float dither(vec2 xy)
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
-
 
     vec3 fragmentPosition = getFragmentPositionFromDepth(uv);
 

@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Camera;
 
 abstract class GameCamera
 {
-    private const float lowestZToRender = -5;
+    private const float lowestZToRender = -10;
     private const float highestZToRender = 5;
 
     private Position2 position;

@@ -41,6 +41,8 @@ float diffuseLightAmount(vec3 surfaceNormal, vec3 vectorToLight)
 
 vec3 getFragmentPositionFromDepth(vec2 uv)
 {
+    uv = clamp(uv, 0.001, 0.999);
+
     float depth = texture(depthBuffer, uv).x;
 
     vec3 pointOnFarPlane = farPlaneBaseCorner
