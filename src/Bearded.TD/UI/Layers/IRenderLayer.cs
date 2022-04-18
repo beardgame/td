@@ -13,7 +13,6 @@ interface IRenderLayer
 
 interface IDeferredRenderLayer : IRenderLayer
 {
-    float CameraDistance { get; }
     float FarPlaneDistance { get; }
     float Time { get; }
     float HexagonalFallOffDistance { get; }

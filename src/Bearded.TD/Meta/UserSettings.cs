@@ -52,6 +52,7 @@ sealed partial class UserSettings
 
         public float TerrainHeightmapResolution = 10;
         public float TerrainMeshResolution = 5;
+        public float FOV = 25;
     }
 
     public class DebugSettings

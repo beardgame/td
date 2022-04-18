@@ -9,7 +9,7 @@ static partial class Constants
         public const float ZoomSpeedFactor = .14f;
         public const float ScrollTickValue = .1f;
 
-        public const float ZDefault = 10;
-        public const float ZMin = 2;
+        public const float FieldOfViewRadiusDefault = 10;
+        public const float FieldOfViewRadiusMin = 2;
     }
 }

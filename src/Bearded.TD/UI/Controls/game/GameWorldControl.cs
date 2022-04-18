@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Game;
+using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -17,7 +18,6 @@ class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLay
     public override Matrix4 ProjectionMatrix => game.Camera.ProjectionMatrix;
     public override RenderOptions RenderOptions => RenderOptions.Default;
 
-    public float CameraDistance => game.Camera.Distance;
     public float FarPlaneDistance => game.Camera.FarPlaneDistance;
 
     public float Time => (float)game.State.Time.NumericValue;
@@ -30,6 +30,12 @@ class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLay
     {
         this.game = game;
         renderer = new GameRenderer(game, renderContext, time);
+        UserSettings.SettingsChanged += userSettingsChanged;
+    }
+
+    private void userSettingsChanged()
+    {
+        game.Camera.OnSettingsChanged();
     }
 
     public override void Draw()
@@ -58,5 +64,6 @@ class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLay
     public void CleanUp()
     {
         renderer.CleanUp();
+        UserSettings.SettingsChanged -= userSettingsChanged;
     }
 }

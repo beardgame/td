@@ -1,6 +1,4 @@
-using System;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
@@ -8,11 +6,8 @@ namespace Bearded.TD.Game.Camera;
 
 abstract class GameCamera
 {
-    private const float lowestZToRender = -10;
-    private const float highestZToRender = 5;
-
     private Position2 position;
-    private float distance;
+    private float visibleRadius;
 
     public ViewportSize ViewportSize { get; private set; }
 
@@ -22,24 +17,23 @@ abstract class GameCamera
         set
         {
             position = value;
-            recalculateMatrices();
+            RecalculateMatrices();
         }
     }
 
-    public float Distance
+    public float VisibleRadius
     {
-        get => distance;
+        get => visibleRadius;
         set
         {
-            distance = value;
-            recalculateMatrices();
+            visibleRadius = value;
+            RecalculateMatrices();
         }
     }
 
-    protected float NearPlaneDistance => Math.Max(Distance - highestZToRender, 0.1f);
-    public float FarPlaneDistance => Distance - lowestZToRender;
-    public Matrix4 ViewMatrix { get; private set; }
-    public Matrix4 ProjectionMatrix { get; private set; }
+    public abstract float FarPlaneDistance { get; }
+    public Matrix4 ViewMatrix { get; protected set; }
+    public Matrix4 ProjectionMatrix { get; protected set; }
 
     protected GameCamera()
     {
@@ -47,28 +41,19 @@ abstract class GameCamera
         resetCameraPosition();
     }
 
+    public void OnSettingsChanged()
+    {
+        RecalculateMatrices();
+    }
+
     private void resetCameraPosition()
     {
         position = Position2.Zero;
-        distance = Constants.Camera.ZDefault;
-        recalculateMatrices();
+        visibleRadius = Constants.Camera.FieldOfViewRadiusDefault;
+        RecalculateMatrices();
     }
 
-    private void recalculateMatrices()
-    {
-        ViewMatrix = calculateViewMatrix();
-        ProjectionMatrix = CalculateProjectionMatrix();
-    }
-
-    private Matrix4 calculateViewMatrix()
-    {
-        var p = position.NumericValue;
-        var eye = p.WithZ(distance);
-        var target = p.WithZ();
-        return Matrix4.LookAt(eye, target, Vector3.UnitY);
-    }
-
-    protected abstract Matrix4 CalculateProjectionMatrix();
+    protected abstract void RecalculateMatrices();
 
     public void OnViewportSizeChanged(ViewportSize viewportSize)
     {

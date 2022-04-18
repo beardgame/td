@@ -15,7 +15,7 @@ sealed class GameCameraController
     private float maxCameraDistance => maxCameraDistanceOverride ?? levelRadius;
 
     private float zoomSpeed =>
-        Constants.Camera.BaseZoomSpeed * (1 + camera.Distance * Constants.Camera.ZoomSpeedFactor);
+        Constants.Camera.BaseZoomSpeed * (1 + camera.VisibleRadius * Constants.Camera.ZoomSpeedFactor);
 
     private Position2? cinematicGoalPosition;
     private float? cinematicGoalDistance;
@@ -34,7 +34,7 @@ sealed class GameCameraController
     {
         this.camera = camera;
         this.levelRadius = levelRadius;
-        goalDistance = camera.Distance;
+        goalDistance = camera.VisibleRadius;
     }
 
     public void Update(UpdateEventArgs args)
@@ -81,7 +81,7 @@ sealed class GameCameraController
 
     private void updatePositionFromAggregatedOffset(UpdateEventArgs args)
     {
-        var scrollSpeed = Constants.Camera.BaseScrollSpeed * camera.Distance;
+        var scrollSpeed = Constants.Camera.BaseScrollSpeed * camera.VisibleRadius;
         camera.Position += args.ElapsedTimeInSf * aggregatedPositionVelocity * scrollSpeed;
         aggregatedPositionVelocity = Difference2.Zero;
     }
@@ -104,7 +104,7 @@ sealed class GameCameraController
     {
         var maxEpsilonSquared = .01f.Squared();
 
-        var error = camera.Distance - distance;
+        var error = camera.VisibleRadius - distance;
         var distanceSquared = error.Squared();
 
         if (distanceSquared <= maxEpsilonSquared)
@@ -123,14 +123,14 @@ sealed class GameCameraController
             + aggregatedDistanceOffset * zoomSpeed
             + aggregatedDistanceVelocity * zoomSpeed * args.ElapsedTimeInSf;
 
-        newGoalDistance = Math.Max(Constants.Camera.ZMin * 0.9f,
+        newGoalDistance = Math.Max(Constants.Camera.FieldOfViewRadiusMin * 0.9f,
             Math.Min(newGoalDistance, maxCameraDistance * 1.1f));
 
         float error = 0;
 
-        if (newGoalDistance < Constants.Camera.ZMin)
+        if (newGoalDistance < Constants.Camera.FieldOfViewRadiusMin)
         {
-            error = newGoalDistance - Constants.Camera.ZMin;
+            error = newGoalDistance - Constants.Camera.FieldOfViewRadiusMin;
         }
         else if (newGoalDistance > maxCameraDistance)
         {
@@ -149,14 +149,14 @@ sealed class GameCameraController
 
     private void moveCameraDistanceToGoalDistance(UpdateEventArgs args)
     {
-        var error = camera.Distance - goalDistance;
+        var error = camera.VisibleRadius - goalDistance;
         var snapFactor = 1 - MathF.Pow(1e-6f, args.ElapsedTimeInSf);
         if (Math.Abs(error) < 0.02f)
         {
             snapFactor = 1;
         }
         var oldZoomAnchorWorldPosition = camera.TransformScreenToWorldPos(zoomAnchor);
-        camera.Distance -= error * snapFactor;
+        camera.VisibleRadius -= error * snapFactor;
 
         if (cinematicGoalPosition == null)
         {
@@ -168,7 +168,7 @@ sealed class GameCameraController
 
     private void constrictCameraToLevel(UpdateEventArgs args)
     {
-        var currentMaxCameraRadiusNormalised = 1 - (camera.Distance / levelRadius).Squared().Clamped(0, 1);
+        var currentMaxCameraRadiusNormalised = 1 - (camera.VisibleRadius / levelRadius).Squared().Clamped(0, 1);
         var currentMaxCameraRadius = maxCameraRadius * currentMaxCameraRadiusNormalised;
 
         if (camera.Position.NumericValue.LengthSquared <= currentMaxCameraRadius.Squared())
@@ -200,7 +200,7 @@ sealed class GameCameraController
 
         // TODO: This is all very wishy washy right now based on assumptions that may not hold forever.
         var maxApproxTileRadius = Math.Max(size.Y.NumericValue, size.X.NumericValue);
-        goalDistance = maxApproxTileRadius.Clamped(Constants.Camera.ZMin, maxCameraDistance);
+        goalDistance = maxApproxTileRadius.Clamped(Constants.Camera.FieldOfViewRadiusMin, maxCameraDistance);
     }
 
     /// <summary>

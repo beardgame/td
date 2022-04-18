@@ -197,7 +197,6 @@ sealed class GameInstance
         }
 
         camera = new PerspectiveGameCamera();
-        //Camera = new OrthographicGameCamera();
         cameraController = new GameCameraController(Camera, State.Level.Radius);
         selectionManager = new SelectionManager();
         playerInput = new PlayerInput(this);
