@@ -28,6 +28,7 @@ static class DeleteBuilding
 
         public override void Execute()
         {
+            building.TryRefund();
             building.Delete();
         }
 
