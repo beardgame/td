@@ -30,7 +30,7 @@ sealed class BuildingStateControl : ReportControl
         Update();
     }
 
-    private string label() => report.IsMaterialized ? "Delete (full refund)" : "Cancel";
+    private string label() => report.IsMaterialized ? $"Delete (refund: {report.RefundValue})" : "Cancel";
 
     private void deleteBuilding()
     {

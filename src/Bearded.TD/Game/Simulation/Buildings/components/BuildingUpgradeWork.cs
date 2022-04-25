@@ -36,6 +36,7 @@ sealed class BuildingUpgradeWork : Component
                 throw new NotSupportedException("Cannot upgrade building without resources.");
             }
         });
+        Owner.Deleting += () => resourceConsumer?.Abort();
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -88,7 +89,7 @@ sealed class BuildingUpgradeWork : Component
         }
 
         resourceConsumer.Update();
-        incompleteUpgrade.SetUpgradeProgress(resourceConsumer.PercentageDone);
+        incompleteUpgrade.SetUpgradeProgress(resourceConsumer.PercentageDone, resourceConsumer.ResourcesClaimed);
 
         if (resourceConsumer.IsDone)
         {

@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
@@ -11,6 +12,7 @@ sealed partial class BuildingUpgradeManager
 
         public IUpgradeBlueprint Upgrade { get; }
         public double PercentageComplete { get; private set; }
+        public ResourceAmount ResourcesInvestedSoFar { get; private set; }
 
         public IncompleteUpgrade(BuildingUpgradeManager manager, IUpgradeBlueprint upgrade)
         {
@@ -49,7 +51,12 @@ sealed partial class BuildingUpgradeManager
         public bool IsCompleted => progressTracker.IsCompleted;
         public bool IsCancelled => progressTracker.IsCancelled;
         public void StartUpgrade() => progressTracker.Start();
-        public void SetUpgradeProgress(double percentage) => progressTracker.SetProgress(percentage);
+        public void SetUpgradeProgress(double percentage, ResourceAmount totalResourcesInvested)
+        {
+            progressTracker.SetProgress(percentage);
+            ResourcesInvestedSoFar = totalResourcesInvested;
+        }
+
         public void CompleteUpgrade() => progressTracker.Complete();
         public void CancelUpgrade() => progressTracker.Cancel();
 

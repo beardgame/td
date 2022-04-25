@@ -32,25 +32,43 @@ static class BuildingFactionExtensions
         if (!gameObj.TryFindFaction(out var faction))
             return;
 
+        if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+            return;
+
+        var resourcesToRefund = TotalResourcesInvested(gameObj);
+
+        if (!resourcesToRefund.HasValue)
+            return;
+
+        resources.ProvideResources(resourcesToRefund.Value);
+    }
+
+    public static ResourceAmount? TotalResourcesInvested(this GameObject gameObj)
+    {
         var state = gameObj.GetComponents<IBuildingStateProvider>().Single().State;
         if (!state.IsMaterialized)
-            return;
+            return null;
+
+        var resourcesToRefund = ResourceAmount.Zero;
 
         if (gameObj.GetComponents<BuildingConstructionWork>().SingleOrDefault() is { } constructionWork)
         {
-            refund(faction, constructionWork.ResourcesInvestedSoFar ?? ResourceAmount.Zero);
+            resourcesToRefund += constructionWork.ResourcesInvestedSoFar ?? ResourceAmount.Zero;
         }
         else if(gameObj.GetComponents<ICost>().SingleOrDefault() is { } cost)
         {
-            refund(faction, cost.Resources);
+            resourcesToRefund += cost.Resources;
         }
 
-        static void refund(Faction faction, ResourceAmount value)
+        if (gameObj.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is { } upgradeManager)
         {
-            if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
-                throw new InvalidOperationException();
-            resources.ProvideResources(value);
+            foreach (var upgrade in upgradeManager.AppliedUpgrades)
+                resourcesToRefund += upgrade.Cost;
+            foreach (var upgrade in upgradeManager.UpgradesInProgress)
+                resourcesToRefund += upgrade.ResourcesInvestedSoFar;
         }
+
+        return resourcesToRefund;
     }
 
     public static Faction FindFaction(this GameObject gameObj)

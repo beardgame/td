@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Shared.Events;
@@ -122,6 +123,7 @@ sealed class BuildingStateManager : Component,
         public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
 
         public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
+        public ResourceAmount RefundValue => Building.TotalResourcesInvested() ?? ResourceAmount.Zero;
 
         public BuildingStateReport(GameObject owner, IBuildingStateProvider buildingStateProvider)
         {
@@ -136,4 +138,5 @@ interface IBuildingStateReport : IReport
     GameObject Building { get; }
     bool IsMaterialized { get; }
     bool CanBeDeleted { get; }
+    ResourceAmount RefundValue { get; }
 }
