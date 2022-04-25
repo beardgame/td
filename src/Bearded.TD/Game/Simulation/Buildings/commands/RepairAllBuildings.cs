@@ -1,4 +1,3 @@
-using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
@@ -16,13 +15,14 @@ static class RepairAllBuildings
     {
         public override void Execute()
         {
-            foreach (var building in Game.State.GameObjects.OfType<GameObject>())
+            foreach (var building in Game.State.GameObjects)
             {
-                if (!building.TryGetSingleComponent<IBuildingState>(out _)
-                    || !building.TryGetSingleComponent<IHealthEventReceiver>(out var healthEventReceiver))
-                {
+                if (!building.TryGetSingleComponent<IBuildingStateProvider>(out _))
                     continue;
-                }
+
+                if (!building.TryGetSingleComponent<IHealthEventReceiver>(out var healthEventReceiver))
+                    continue;
+
                 healthEventReceiver.Heal(new HealInfo(HitPoints.Max));
             }
         }
