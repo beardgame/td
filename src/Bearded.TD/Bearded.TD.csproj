@@ -24,7 +24,7 @@
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OpenTK.Core" Version="4.7.2" />
-    <PackageReference Include="OpenTK.Graphics" Version="4.7.1" />
+    <PackageReference Include="OpenTK.Graphics" Version="4.7.2" />
     <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
