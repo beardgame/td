@@ -23,8 +23,13 @@ sealed class GrantExplorationTokenOnWaveEnd : GameRule
 
         public void HandleEvent(WaveEnded @event)
         {
-            explorationManager.AwardExplorationToken();
+            var hasTokenAlready = explorationManager.HasExplorationToken;
+            var hasAvailableAreaToExplore = !explorationManager.ExplorableZones.IsEmpty;
 
+            if (!hasTokenAlready && hasAvailableAreaToExplore)
+            {
+                explorationManager.AwardExplorationToken();
+            }
         }
     }
 }
