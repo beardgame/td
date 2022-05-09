@@ -1,4 +1,4 @@
-﻿#version 450
+﻿#version 150
 
 uniform sampler2D diffuse;
 uniform sampler2D normal;

@@ -10,8 +10,11 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Pipelines.Context.ColorMask;
 using static Bearded.Graphics.Pipelines.Pipeline;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
+
+using static Pipeline<Vector2i>;
 
 sealed class Heightmap : IDisposable
 {
@@ -19,6 +22,8 @@ sealed class Heightmap : IDisposable
 
     private readonly PipelineTexture texture; // H, V
     private readonly PipelineRenderTarget renderTarget;
+    private readonly IPipeline<Vector2i> resizeTexture;
+    
     public FloatUniform RadiusUniform { get; } = new("heightmapRadius");
     public FloatUniform PixelSizeUVUniform { get; } = new("heightmapPixelSizeUV");
     public Texture Texture => texture.Texture;
@@ -40,6 +45,11 @@ sealed class Heightmap : IDisposable
         });
 
         renderTarget = RenderTargetWithColors(texture);
+
+        resizeTexture = InOrder(
+            Resize(s => s, texture),
+            drawWithMask(ClearColor(0, 0, 0, 0), DrawAll)
+            );
     }
 
     public IPipeline<T> DrawHeights<T>(IPipeline<T> render)
@@ -71,7 +81,8 @@ sealed class Heightmap : IDisposable
 
         pixelsPerTile = scale;
         recalculateResolution();
-        texture.EnsureSize(new Vector2i(resolution, resolution));
+        resizeTexture.Execute(new Vector2i(resolution, resolution));
+        
         ResolutionChanged?.Invoke();
     }
 

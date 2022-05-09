@@ -72,8 +72,11 @@ sealed class TheGame : Window
         new()
         {
             Size = new Vector2i(1280, 720),
-            API = ContextAPI.OpenGL, APIVersion = new Version(4, 0),
-            WindowState = WindowState.Normal
+            API = ContextAPI.OpenGL,
+            APIVersion = new Version(4, 0),
+            WindowState = WindowState.Normal,
+            Profile = ContextProfile.Core,
+            Flags = ContextFlags.ForwardCompatible,
         };
 
     protected override void OnLoad()
