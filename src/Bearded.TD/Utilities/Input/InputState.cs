@@ -11,9 +11,9 @@ class InputState
     public MouseInputState Mouse { get; }
     public KeyboardInputState Keyboard { get; }
 
-    public InputState(InputManager inputManager)
+    public InputState(InputManager inputManager, float scale)
     {
-        Mouse = new MouseInputState(inputManager);
+        Mouse = new MouseInputState(inputManager, scale);
         Keyboard = new KeyboardInputState(inputManager);
     }
 
@@ -40,13 +40,13 @@ class InputState
         public Vector2 Position { get; }
         public float DeltaScroll { get; }
 
-        public MouseInputState(InputManager inputManager)
+        public MouseInputState(InputManager inputManager, float scale)
         {
             click = inputManager.Actions.Mouse.LeftButton;
             cancel = inputManager.Actions.Mouse.RightButton;
             drag = inputManager.Actions.Mouse.RightButton;
 
-            Position = inputManager.MousePosition;
+            Position = inputManager.MousePosition * scale;
             DeltaScroll = inputManager.DeltaScrollF;
         }
     }

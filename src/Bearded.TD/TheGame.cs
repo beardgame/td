@@ -36,7 +36,12 @@ using Window = Bearded.Graphics.Windowing.Window;
 
 namespace Bearded.TD;
 
-sealed class TheGame : Window
+interface IMouseScaleProvider
+{
+    float MouseScale { get; }
+}
+
+sealed class TheGame : Window, IMouseScaleProvider
 {
     private static TheGame? instance;
 
@@ -56,6 +61,7 @@ sealed class TheGame : Window
     private NavigationController navigationController = null!;
 
     private ViewportSize viewportSize;
+    public float MouseScale { get; private set; }
 
     public TheGame(Logger logger)
     {
@@ -88,6 +94,7 @@ sealed class TheGame : Window
         UserSettings.Save(logger);
 
         var dependencyResolver = new DependencyResolver();
+        dependencyResolver.Add((IMouseScaleProvider)this);
         dependencyResolver.Add(logger);
         dependencyResolver.Add(activityTimer);
         dependencyResolver.Add(
@@ -152,11 +159,14 @@ sealed class TheGame : Window
     {
         if (e.Height == 0 || e.Width == 0)
             return;
-
-        viewportSize = new ViewportSize(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
-
+        
+        var (w, h) = NativeWindow.ClientSize;
+        NativeWindow.TryGetCurrentMonitorScale(out var mouseScale, out _);
+        MouseScale = mouseScale;
+        
+        viewportSize = new ViewportSize(w, h, UserSettings.Instance.UI.UIScale);
         renderContext.OnResize(viewportSize);
-        rootControl.SetViewport(e.Width, e.Height, UserSettings.Instance.UI.UIScale);
+        rootControl.SetViewport(e.Width, e.Height, UserSettings.Instance.UI.UIScale / MouseScale);
     }
 
     protected override void OnUpdateUIThread()

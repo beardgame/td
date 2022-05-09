@@ -13,6 +13,7 @@ using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
+using OpenTK.Windowing.Desktop;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -28,6 +29,7 @@ sealed class GameUI :
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
+    private IMouseScaleProvider mouseScaleProvider = null!;
 
     public GameUIController GameUIController { get; }
 
@@ -67,6 +69,7 @@ sealed class GameUI :
 
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
+        mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
 
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
@@ -97,7 +100,7 @@ sealed class GameUI :
             FocusReset?.Invoke();
         }
 
-        var inputState = new InputState(inputManager);
+        var inputState = new InputState(inputManager, mouseScaleProvider.MouseScale);
 
         runner.HandleInput(inputState);
         runner.Update(args);
