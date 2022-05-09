@@ -22,7 +22,7 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
 {
     int textureIndex = 0;
 
-    vec2 uv = position.xz / 4;
+    vec2 uv = position.xz;
     uv.x = uv.x * -sign(surfaceNormal.y);
 
     vec3 zTransform = surfaceNormal;
@@ -47,7 +47,7 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
 {
     int textureIndex = 0;
 
-    vec2 uv = position.yz / 4;
+    vec2 uv = position.yz;
     uv.x = uv.x * sign(surfaceNormal.x);
 
     vec3 zTransform = surfaceNormal;
@@ -89,8 +89,8 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     int rockIndex = 1;
     int sandIndex = 2;
 
-    vec2 uvR = position.xy / 4;
-    vec2 uvS = position.xy / 3.4;
+    vec2 uvR = position.xy / 2;
+    vec2 uvS = position.xy / 1.4;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
 
