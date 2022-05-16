@@ -49,6 +49,8 @@ sealed class GameDebugOverlay : NavigationNode<Void>
         addCommands(
             "game.techtoken",
             "game.resources 1000",
+            "game.building.xp 2500",
+            "game.building.level",
             "game.killall",
             "game.repairall",
             "game.revealmap",
