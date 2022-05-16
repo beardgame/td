@@ -8,6 +8,7 @@
     <LangVersion>10</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>annotations</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>

@@ -42,18 +42,13 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Install dependencies
-        run: dotnet restore -r ${{matrix.runtime}}
-      - name: Build
-        run: dotnet build src/Bearded.TD -c Release -r ${{matrix.runtime}} --no-restore --self-contained
-
       # The version number can be extracted from the currently checked out tag,
       # which has the format 'refs/tags/v*'.
       - name: Extract version number
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Create self-contained package
-        run: dotnet publish src/Bearded.TD -c Release --no-build -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}}
+        run: dotnet publish src/Bearded.TD -c Release -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}} -p:DebugType=embedded
 
       - name: Create zip archive
         uses: thedoctor0/zip-release@0.6.2
