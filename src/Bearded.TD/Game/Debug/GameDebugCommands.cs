@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -88,6 +89,30 @@ static class GameDebugCommands
     private static void die(Logger logger, CommandParameters _) => run(logger, gameInstance =>
     {
         gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, DebugGameOver.Request(gameInstance.State));
+    });
+
+    [DebugCommand("game.building.xp")]
+    private static void buildingXp(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    {
+        if (p.Args.Length != 1)
+        {
+            logger.Warning?.Log("Usage: \"game.building.xp <amount>\"");
+            return;
+        }
+
+        if (!int.TryParse(p.Args[0], out var amount))
+        {
+            logger.Warning?.Log($"Invalid amount: {amount}");
+            return;
+        }
+
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GiveBuildingXp.Request(gameInstance, amount.Xp()));
+    });
+
+    [DebugCommand("game.building.level")]
+    private static void buildingLevel(Logger logger, CommandParameters _) => run(logger, gameInstance =>
+    {
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GiveBuildingLevel.Request(gameInstance));
     });
 
     [DebugCommand("game.killall")]

@@ -31,10 +31,10 @@ sealed class Veterancy : Component, IListener<GainXp>
 
     public void HandleEvent(GainXp @event)
     {
-        addXp(@event.Amount);
+        AddXp(@event.Amount);
     }
 
-    private void addXp(Experience amount)
+    public void AddXp(Experience amount)
     {
         experience += amount;
         checkForLevel();
@@ -46,6 +46,17 @@ sealed class Veterancy : Component, IListener<GainXp>
         {
             levelUp();
         }
+    }
+
+    public void ForceLevelUp()
+    {
+        if (level >= levelThresholds.Length)
+        {
+            return;
+        }
+
+        experience = levelThresholds[level];
+        levelUp();
     }
 
     private void levelUp()
