@@ -52,10 +52,10 @@ sealed partial class UserSettingsSchema
         public ImmutableArray<Option> Options { get; }
         private readonly ImmutableDictionary<object, Option> valueToOption;
 
-        public Option SelectedOption
+        public Option? SelectedOption
         {
-            get => valueToOption[Value];
-            set => Value = value.Value;
+            get => valueToOption.TryGetValue(Value, out var option) ? option : null;
+            set => Value = value?.Value;
         }
 
         public SelectSetting(
