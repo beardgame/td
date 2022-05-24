@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game;
 using Bearded.Utilities;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable ConvertToConstant.Global
@@ -21,7 +22,7 @@ sealed partial class UserSettings
     }
 
     [JsonIgnore]
-    // ReSharper disable once MemberCanBePrivate.Global
+    [UsedImplicitly]
     public UserSettings Dump;
 
     public MiscSettings Misc = new();
