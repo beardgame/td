@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.UI.Controls;
 using Bearded.UI;
 using Bearded.UI.Controls;
@@ -30,6 +31,11 @@ static class Layouts
 
     public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
         new ScrollableColumnLayout(parent);
+
+    public static FixedRowLayout BuildFixedRowLeftToRight(this IControlParent parent) =>
+        FixedRowLayout.LeftToRight(parent);
+    public static FixedRowLayout BuildFixedRowRightToLeft(this IControlParent parent) =>
+        FixedRowLayout.RightToLeft(parent);
 
     public sealed class PristineLayout : Layout
     {
@@ -228,5 +234,36 @@ static class Layouts
             container.Add(control, height);
             return this;
         }
+    }
+
+    public interface IRowLayout
+    {
+        IRowLayout Add(Control control, double width);
+    }
+
+    public sealed class FixedRowLayout : IRowLayout
+    {
+        private readonly IControlParent parent;
+        private readonly Func<AnchorTemplate, double, double, AnchorTemplate> append;
+
+        public double Width { get; private set; }
+
+        private FixedRowLayout(IControlParent parent, Func<AnchorTemplate, double, double, AnchorTemplate> append)
+        {
+            this.parent = parent;
+            this.append = append;
+        }
+
+        public IRowLayout Add(Control control, double width)
+        {
+            parent.Add(control.Anchor(a => append(a, Width, width)));
+            Width += width;
+            return this;
+        }
+
+        public static FixedRowLayout LeftToRight(IControlParent parent) =>
+            new(parent, (a, offset, w) => a.Left(offset, w));
+        public static FixedRowLayout RightToLeft(IControlParent parent) =>
+            new(parent, (a, offset, w) => a.Right(offset, w));
     }
 }

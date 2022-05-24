@@ -8,6 +8,9 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class SettingsEditorControl : CompositeControl
 {
+    private readonly Binding<UserSettingsSchema.SettingsGroup?> activeGroup =
+        Binding.Create<UserSettingsSchema.SettingsGroup?>(null);
+
     public SettingsEditorControl(SettingsEditor model)
     {
         var tabControl = new SettingsTabControl();
@@ -20,11 +23,20 @@ sealed class SettingsEditorControl : CompositeControl
             {
                 foreach (var group in model.SettingsGroups)
                 {
-                    t.AddButton(group.DisplayName, () => tabControl.Populate(group));
+                    t.AddButton(
+                        group.DisplayName,
+                        () => selectGroup(group),
+                        activeGroup.Transform(g => Equals(g, group)));
                 }
                 return t;
             })
             .FillContent(tabControl);
+
+        void selectGroup(UserSettingsSchema.SettingsGroup group)
+        {
+            tabControl.Populate(group);
+            activeGroup.SetFromSource(group);
+        }
     }
 
     private sealed class SettingsTabControl : CompositeControl
@@ -46,7 +58,7 @@ sealed class SettingsEditorControl : CompositeControl
                         case UserSettingsSchema.SelectSetting selectSetting:
                             var selectBinding = Binding.Create(
                                 selectSetting.SelectedOption, option => selectSetting.SelectedOption = option);
-                            form.AddDropdownSelectRow(selectSetting.DisplayName,
+                            form.AddButtonSelectRow(selectSetting.DisplayName,
                                 selectSetting.Options,
                                 option => option.DisplayName,
                                 selectBinding);

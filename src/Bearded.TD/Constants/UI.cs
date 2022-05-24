@@ -18,6 +18,9 @@ static partial class Constants
             public const double Height = 32;
             public const double Width = 160;
             public const double Margin = 4;
+
+            public static readonly Color ActiveColor = Color.White * 0.5f;
+            public static readonly Color HoverColor = Color.White * 0.25f;
         }
 
         public static class Checkbox

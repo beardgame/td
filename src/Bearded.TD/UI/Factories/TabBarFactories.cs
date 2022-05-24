@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 
@@ -15,14 +16,21 @@ static class TabBarFactories
         return layout;
     }
 
-    public class Builder
+    public sealed class Builder
     {
-        private readonly List<BuilderFunc<ButtonFactories.Builder>> buttonBuilderFunctions =
-            new List<BuilderFunc<ButtonFactories.Builder>>();
+        private readonly List<BuilderFunc<ButtonFactories.Builder>> buttonBuilderFunctions = new();
 
-        public Builder AddButton(string label, VoidEventHandler onClick)
+        public Builder AddButton(string label, VoidEventHandler onClick, Binding<bool>? isActive = null)
         {
-            buttonBuilderFunctions.Add(b => b.WithLabel(label).WithOnClick(onClick));
+            buttonBuilderFunctions.Add(b =>
+            {
+                b = b.WithLabel(label).WithOnClick(onClick);
+                if (isActive != null)
+                {
+                    b.WithActive(isActive);
+                }
+                return b;
+            });
             return this;
         }
 

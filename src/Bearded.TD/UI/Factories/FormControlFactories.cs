@@ -36,6 +36,23 @@ static class FormControlFactories
         }
     }
 
+    public static Control ButtonSelect<T>(
+        IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding, out double width)
+    {
+        var control = new CompositeControl();
+        var row = control.BuildFixedRowLeftToRight();
+        foreach (var o in options)
+        {
+            var button = ButtonFactories.Button(b => b
+                .WithLabel(renderer(o))
+                .WithActive(valueBinding.Transform(v => Equals(v, o)))
+                .WithOnClick(() => valueBinding.SetFromControl(o)));
+            row.Add(button, Constants.UI.Form.InputWidth);
+        }
+        width = row.Width;
+        return control;
+    }
+
     public static Control DropdownSelect<T>(
         IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding)
     {
@@ -104,6 +121,26 @@ static class FormControlFactories
         return builder.AddFormRow(null, layout => layout.DockFixedSizeToRight(
             ButtonFactories.Button(builderFunc).WrapVerticallyCentered(Constants.UI.Button.Height),
             Constants.UI.Button.Width));
+    }
+
+    public static FormFactories.Builder AddButtonSelectRow(
+        this FormFactories.Builder builder,
+        string label,
+        IEnumerable<string> options,
+        Binding<string> valueBinding) =>
+        AddButtonSelectRow(builder, label, options, s => s, valueBinding);
+
+    public static FormFactories.Builder AddButtonSelectRow<T>(
+        this FormFactories.Builder builder,
+        string label, IEnumerable<T> options,
+        Func<T, string> renderer,
+        Binding<T> valueBinding)
+    {
+        return builder.AddFormRow(
+            label,
+            layout => layout.DockFixedSizeToRight(
+                ButtonSelect(options, renderer, valueBinding, out var width).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                width));
     }
 
     public static FormFactories.Builder AddDropdownSelectRow(

@@ -35,8 +35,9 @@ static class ButtonFactories
         private Func<string>? labelProvider;
         private (int CostAmount, Color Color)? cost;
         private (Binding<double> Progress, Color? Color)? progressBar;
-        private Binding<bool>? isEnabled;
         private VoidEventHandler? onClick;
+        private Binding<bool>? isEnabled;
+        private Binding<bool>? isActive;
         private bool isDisabled;
 
         public Builder WithLabel(string label)
@@ -81,6 +82,12 @@ static class ButtonFactories
             return this;
         }
 
+        public Builder WithActive(Binding<bool> isActive)
+        {
+            this.isActive = isActive;
+            return this;
+        }
+
         public Builder MakeDisabled()
         {
             isDisabled = true;
@@ -114,8 +121,18 @@ static class ButtonFactories
                 var color = progressBar.Value.Color ?? Color.White * .25f;
                 button.Add(ProgressBarFactories.BareProgressBar(progressBar.Value.Progress, color));
             }
+            if (isActive != null)
+            {
+                var bg = new BackgroundBox();
+                button.Add(bg);
+                isActive.SourceUpdated += updateColor;
+                isActive.ControlUpdated += updateColor;
+                updateColor(isActive.Value);
+
+                void updateColor(bool active) => bg.Color = active ? ActiveColor : Color.Transparent;
+            }
             button.Add(new ButtonBackgroundEffect(() =>
-                button.IsEnabled && (progressBar?.Progress.Value ?? 0) == 0));
+                button.IsEnabled && (progressBar?.Progress.Value ?? 0) == 0 && (!isActive?.Value ?? true)));
 
             if (isEnabled != null)
             {
