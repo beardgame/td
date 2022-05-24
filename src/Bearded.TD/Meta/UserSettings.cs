@@ -25,32 +25,49 @@ sealed partial class UserSettings
     [UsedImplicitly]
     public UserSettings Dump;
 
-    public MiscSettings Misc = new();
+    [DiscoverableSettingGroup]
     public UISettings UI = new();
+
+    [DiscoverableSettingGroup]
     public GraphicsSettings Graphics = new();
+
+    [DiscoverableSettingGroup(DisplayName = "Miscellaneous")]
+    public MiscSettings Misc = new();
+
     public DebugSettings Debug = new();
+
     public GameSettings.Builder LastGameSettings = new();
 
     public sealed class MiscSettings
     {
+        [DiscoverableTextSetting]
         public string Username = "";
-        public string SavedNetworkAddress = "";
+
+        [DiscoverableTextSetting(DisplayName = "Master server address")]
+        // ReSharper disable once StringLiteralTypo
         public string MasterServerAddress = "tomrijnbeek.me";
 
+        public string SavedNetworkAddress = "";
         public string? ScreenshotPath = null;
     }
 
     public sealed class UISettings
     {
+        [DiscoverableSelectSetting(DisplayName = "UI scale", Options = new object[] { 0.75f, 1f, 1.25f, 1.5f, 2f })]
         public float UIScale = 1f;
     }
 
     public sealed class GraphicsSettings
     {
+        [DiscoverableSelectSetting(DisplayName = "Super sampling", Options = new object[] { 1f, 2f, 4f, 8f })]
         public float SuperSample = 1f;
 
+        [DiscoverableSelectSetting(DisplayName = "Heightmap resolution", Options = new object[] { 10f, 20f, 40f })]
         public float TerrainHeightmapResolution = 10;
+
+        [DiscoverableSelectSetting(DisplayName = "Terrain resolution", Options = new object[] { 5f, 10f, 20f })]
         public float TerrainMeshResolution = 5;
+
         public float FOV = 25;
     }
 
