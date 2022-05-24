@@ -30,7 +30,7 @@ sealed partial class UserSettings
     public DebugSettings Debug = new();
     public GameSettings.Builder LastGameSettings = new();
 
-    public class MiscSettings
+    public sealed class MiscSettings
     {
         public string Username = "";
         public string SavedNetworkAddress = "";
@@ -41,12 +41,12 @@ sealed partial class UserSettings
         public string? ScreenshotPath = null;
     }
 
-    public class UISettings
+    public sealed class UISettings
     {
         public float UIScale = 1f;
     }
 
-    public class GraphicsSettings
+    public sealed class GraphicsSettings
     {
         public float SuperSample = 1f;
 
@@ -55,7 +55,7 @@ sealed partial class UserSettings
         public float FOV = 25;
     }
 
-    public class DebugSettings
+    public sealed class DebugSettings
     {
         public bool GameDebugScreen = false;
 
