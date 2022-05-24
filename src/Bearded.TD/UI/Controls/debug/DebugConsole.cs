@@ -111,7 +111,7 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
 
     private void fireLoggerEntryEvent(Logger.Entry loggerEntry)
     {
-        if (loggerEntry.Severity == Logger.Severity.Trace && !UserSettings.Instance.Misc.ShowTraceMessages)
+        if (loggerEntry.Severity == Logger.Severity.Trace && !UserSettings.Instance.Debug.ShowTraceMessages)
         {
             return;
         }

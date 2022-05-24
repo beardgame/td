@@ -35,8 +35,6 @@ sealed partial class UserSettings
     {
         public string Username = "";
         public string SavedNetworkAddress = "";
-
-        public bool ShowTraceMessages = true;
         public string MasterServerAddress = "tomrijnbeek.me";
 
         public string? ScreenshotPath = null;
@@ -81,6 +79,8 @@ sealed partial class UserSettings
         public bool Passability = false;
         [SettingOptions(0, 1, 2)]
         public int DebugPathfinder = 0;
+
+        public bool ShowTraceMessages = false;
 
         // simple debug rendering
         public bool Deferred = false;
