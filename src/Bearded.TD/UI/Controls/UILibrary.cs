@@ -20,6 +20,7 @@ static class UILibrary
             .Add<LobbyList, Void>(m => new LobbyListControl(m))
             .Add<MainMenu, Void>(m => new MainMenuControl(m))
             .Add<PerformanceOverlay, Void>(m => new PerformanceOverlayControl(m))
+            .Add<SettingsEditor, Void>(m => new SettingsEditorControl(m))
             .Add<UIDebugOverlay, Void>(m => new UIDebugOverlayControl(m))
             .Add<VersionOverlay, Void>(m => new VersionOverlayControl(m))
             .ToDictionaries();

@@ -14,7 +14,7 @@ sealed class MainMenuControl : CompositeControl
             .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
             .AddMenuAction("Host game", model.OnHostGameButtonClicked)
             .AddMenuAction("Join game", model.OnJoinGameButtonClicked)
-            .AddMenuAction("Options", () => { }, new Binding<bool>(false))
+            .AddMenuAction("Options", model.OnOptionsButtonClicked)
             .WithCloseAction("Exit", model.OnQuitGameButtonClicked));
     }
 }

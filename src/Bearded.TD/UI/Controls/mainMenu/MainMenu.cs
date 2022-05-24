@@ -39,10 +39,12 @@ sealed class MainMenu : NavigationNode<Void>
         var network = new ServerNetworkInterface();
         network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
         var lobbyManager = lobbyManagerFactory(network, logger, graphicsLoader, renderContext);
-        Navigation.Replace<Lobby, LobbyManager>(lobbyManager, this);
+        Navigation!.Replace<Lobby, LobbyManager>(lobbyManager, this);
     }
 
-    public void OnJoinGameButtonClicked() => Navigation.Replace<LobbyList>(this);
+    public void OnJoinGameButtonClicked() => Navigation!.Replace<LobbyList>(this);
 
-    public void OnQuitGameButtonClicked() => Navigation.Exit();
+    public void OnOptionsButtonClicked() => Navigation!.Replace<SettingsEditor>(this);
+
+    public void OnQuitGameButtonClicked() => Navigation!.Exit();
 }
