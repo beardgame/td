@@ -34,9 +34,9 @@ sealed partial class UserSettings
     {
         public string Username = "";
         public string SavedNetworkAddress = "";
-        public string MasterServerAddress = "localhost";
 
         public bool ShowTraceMessages = true;
+        public string MasterServerAddress = "tomrijnbeek.me";
 
         public string? ScreenshotPath = null;
     }
