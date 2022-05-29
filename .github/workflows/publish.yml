@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,7 @@ jobs:
         run: dotnet test -c Release --no-build
 
   publish:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
