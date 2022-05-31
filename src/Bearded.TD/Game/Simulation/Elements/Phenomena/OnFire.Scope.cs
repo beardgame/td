@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.Utilities;
+using static Bearded.TD.Constants.Game.Elements;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
@@ -21,14 +23,17 @@ static partial class OnFire
                 return false;
             }
 
-            effect = ActiveEffects.MaxBy(e => e.DamagePerSecond);
+            effect = ActiveEffects.MaxBy(e => e.DamagePerSecond.NumericValue);
             return true;
         }
 
         protected override void ApplyEffectTick(IComponentOwner target, Effect effect)
         {
+            var damage = StaticRandom.Discretise(
+                    (float)(effect.DamagePerSecond.NumericValue * TickDuration.NumericValue))
+                .HitPoints();
             DamageExecutor.FromDamageSource(effect.DamageSource)
-                .TryDoDamage(target, new DamageInfo(effect.DamagePerSecond, DamageType.Fire));
+                .TryDoDamage(target, new DamageInfo(damage, DamageType.Fire));
         }
 
         protected override void StartEffect(IComponentOwner target)
