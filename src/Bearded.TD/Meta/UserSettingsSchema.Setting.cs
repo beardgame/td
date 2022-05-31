@@ -30,6 +30,7 @@ sealed partial class UserSettingsSchema
                 var settingsInstance = UserSettings.Instance;
                 var groupInstance = group.GetValue(settingsInstance);
                 setting.SetValue(groupInstance, value);
+                UserSettings.RaiseSettingsChanged();
             }
         }
 
