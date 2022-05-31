@@ -1,7 +1,7 @@
 {
-  "id" : "beamTurret",
+  "id" : "kinetic0-cannon",
   "components" : [
-    { "id" : "name", "parameters" : { "name" : "Beam Turret" } },
+    { "id" : "name", "parameters" : { "name" : "Cannon" } },
     { "id" : "cost", "parameters" : { "resources" : 50 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
@@ -14,7 +14,7 @@
       "id" : "turret",
       "onGhost": true,
       "parameters" : {
-        "weapon" : "beamWeapon",
+        "weapon" : "kinetic0-cannon-weapon",
         "height" : 0.2
       }
     }

@@ -1,0 +1,22 @@
+{
+  "id" : "beamTurret",
+  "components" : [
+    { "id" : "name", "parameters" : { "name" : "Beam Turret" } },
+    { "id" : "cost", "parameters" : { "resources" : 50 } },
+    { "id" : "footprint", "parameters" : { "group" : "default.single" } },
+    { "id" : "foundation", "parameters" : { "sprites" : "default.foundations" } },
+    { "id" : "defaultTileOccupancy" },
+    { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
+    { "id" : "autoRepair", "parameters" : { } },
+    { "id" : "gainXpOnDamage" },
+    { "id" : "veterancy" },
+    {
+      "id" : "turret",
+      "onGhost": true,
+      "parameters" : {
+        "weapon" : "beamWeapon",
+        "height" : 0.2
+      }
+    }
+  ]
+}

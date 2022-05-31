@@ -49,7 +49,7 @@
                 "faction" : "players",
                 "unlocks" : [
                     { "type" : "building", "blueprint" : "wall" },
-                    { "type" : "building", "blueprint" : "beamTurret" }
+                    { "type" : "building", "blueprint" : "kinetic0-cannon" }
                 ]
             }
         },

@@ -1,0 +1,52 @@
+{
+    "id": "kinetic0-cannon-weapon",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 5,
+                "coneOfFire" : 5
+            }
+        },
+        {
+            "id" : "pidAim",
+            "parameters" : {
+                "proportionalCorrection" : 50,
+                "derivativeCorrection" : 8
+            }
+        },
+        {
+            "id" : "recoil",
+            "parameters" : {
+                "impulse" : 100
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "kinetic0-cannon-shell",
+                "muzzleSpeed" : 20,
+                "fireRate" : 0.75,
+                "muzzleOffset" : 0.3
+            }
+        },
+        {
+            "id" : "muzzleFlash",
+            "parameters" : {
+                "sprite" : "default.particle.muzzleflash",
+                "color" : "00EED7D0",
+                "size" : 1.5,
+                "offset" : 0.5
+            }
+        },
+        {
+            "id": "sprite",
+            "parameters": {
+                "sprite": "default.buildings.gun-turret",
+                "colorMode" : "faction",
+                "shader" : "default.building",
+                "drawGroup" : "building"
+            }
+        }
+    ]
+}
