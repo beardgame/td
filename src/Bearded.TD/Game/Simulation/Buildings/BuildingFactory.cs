@@ -40,6 +40,7 @@ sealed class BuildingFactory
         building.AddComponent(new AllowManualControl());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new BuildingUpgradeManager());
+        building.AddComponent(new DamageAttributor());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());
         building.AddComponent(new FactionProvider(faction));
@@ -48,6 +49,7 @@ sealed class BuildingFactory
         building.AddComponent(new HealthEventReceiver());
         building.AddComponent(new IdProvider(id));
         building.AddComponent(new IncompleteBuilding());
+        building.AddComponent(new Killable());
         building.AddComponent(new ReportSubject());
         building.AddComponent(new Selectable());
         building.AddComponent(new StaticTileOccupation(footprint));

@@ -8,5 +8,5 @@ sealed class DivineIntervention : IDamageSource
     private DivineIntervention() {}
 
     public void AttributeDamage(DamageResult result) {}
-    public void AttributeKill(IDamageTarget target) {}
+    public void AttributeKill() {}
 }

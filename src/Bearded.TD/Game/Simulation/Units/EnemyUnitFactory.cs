@@ -26,11 +26,13 @@ static class EnemyUnitFactory
             ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         unit.AddComponent(new CircleCollider(radius));
 
-        unit.AddComponent(new EnemyLifeCycle());
+        unit.AddComponent(new DamageAttributor());
+        unit.AddComponent(new DamageSource());
+        unit.AddComponent(new EnemyLife());
         unit.AddComponent(new HealthBar());
         unit.AddComponent(new HealthEventReceiver());
-        unit.AddComponent(new DamageSource());
         unit.AddComponent(new IdProvider(id));
+        unit.AddComponent(new Killable());
         unit.AddComponent(new Syncer());
         unit.AddComponent(new TileBasedVisibility());
         return unit;

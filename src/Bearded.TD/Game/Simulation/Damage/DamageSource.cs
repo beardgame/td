@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Damage;
 interface IDamageSource
 {
     void AttributeDamage(DamageResult result);
-    void AttributeKill(IDamageTarget target);
+    void AttributeKill();
 }
 
 sealed class DamageSource : Component, IDamageSource
@@ -25,9 +25,9 @@ sealed class DamageSource : Component, IDamageSource
         Events.Send(new CausedDamage(damageResult));
     }
 
-    public void AttributeKill(IDamageTarget target)
+    public void AttributeKill()
     {
-        Events.Send(new CausedKill(target));
+        Events.Send(new CausedKill());
     }
 
     public override void Update(TimeSpan elapsedTime) { }

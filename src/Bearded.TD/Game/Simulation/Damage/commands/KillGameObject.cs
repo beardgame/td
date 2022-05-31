@@ -1,59 +1,57 @@
 ﻿using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Gameplay;
+namespace Bearded.TD.Game.Simulation.Damage;
 
-static class KillUnit
+static class KillGameObject
 {
-    public static ISerializableCommand<GameInstance> Command(GameObject unit, IDamageSource? damageSource) =>
-        new Implementation(unit, damageSource);
+    public static ISerializableCommand<GameInstance> Command(GameObject obj, IDamageSource? damageSource) =>
+        new Implementation(obj, damageSource);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
-        private readonly GameObject unit;
+        private readonly GameObject obj;
         private readonly IDamageSource? damageSource;
 
-        public Implementation(GameObject unit, IDamageSource? damageSource)
+        public Implementation(GameObject obj, IDamageSource? damageSource)
         {
-            this.unit = unit;
+            this.obj = obj;
             this.damageSource = damageSource;
         }
 
-        public void Execute() => unit.GetComponents<IEnemyLife>().Single().Kill(damageSource);
+        public void Execute() => obj.GetComponents<IKillable>().Single().Kill(damageSource);
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
-            new Serializer(unit, damageSource);
+            new Serializer(obj, damageSource);
     }
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<GameObject> unit;
+        private Id<GameObject> obj;
         private readonly DamageSourceSerializer damageSourceSerializer = new();
 
         [UsedImplicitly] public Serializer() { }
 
-        public Serializer(GameObject unit, IDamageSource? damageSource)
+        public Serializer(GameObject obj, IDamageSource? damageSource)
         {
-            this.unit = unit.FindId();
+            this.obj = obj.FindId();
             damageSourceSerializer.Populate(damageSource);
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
         {
             return new Implementation(
-                game.State.Find(unit),
+                game.State.Find(obj),
                 damageSourceSerializer.ToDamageSource(game));
         }
 
         public void Serialize(INetBufferStream stream)
         {
-            stream.Serialize(ref unit);
+            stream.Serialize(ref obj);
             damageSourceSerializer.Serialize(stream);
         }
     }

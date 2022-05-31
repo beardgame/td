@@ -17,7 +17,7 @@ sealed class BuildingStateManager : Component,
         IBuildingStateProvider,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
-        IListener<EnactDeath>,
+        IListener<ObjectKilled>,
         IListener<ObjectRepaired>,
         IListener<ObjectRuined>,
         IListener<PreventPlayerHealthChanges>
@@ -41,7 +41,7 @@ sealed class BuildingStateManager : Component,
             .Subscribe(Events);
         Events.Subscribe<ConstructionFinished>(this);
         Events.Subscribe<ConstructionStarted>(this);
-        Events.Subscribe<EnactDeath>(this);
+        Events.Subscribe<ObjectKilled>(this);
         Events.Subscribe<ObjectRepaired>(this);
         Events.Subscribe<ObjectRuined>(this);
         Events.Subscribe<PreventPlayerHealthChanges>(this);
@@ -70,7 +70,7 @@ sealed class BuildingStateManager : Component,
         materialize();
     }
 
-    public void HandleEvent(EnactDeath @event)
+    public void HandleEvent(ObjectKilled @event)
     {
         state.IsDead = true;
     }
@@ -104,11 +104,6 @@ sealed class BuildingStateManager : Component,
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
             Owner.Sync(RuinBuilding.Command);
-        }
-
-        if (state.IsDead)
-        {
-            Owner.Sync(DeleteGameObject.Command);
         }
     }
 

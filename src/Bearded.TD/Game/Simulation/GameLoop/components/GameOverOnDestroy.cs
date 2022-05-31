@@ -1,22 +1,24 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
 [Component("gameOverOnDestroy")]
-sealed class GameOverOnDestroy : Component
+sealed class GameOverOnDestroy : Component, IListener<ObjectKilled>
 {
     private bool eventSent;
 
     protected override void OnAdded()
     {
-        Owner.Deleting += onDeleting;
+        Events.Subscribe(this);
     }
 
-    private void onDeleting()
+    public void HandleEvent(ObjectKilled @event)
     {
         Owner.Sync(LoseGame.Command);
     }

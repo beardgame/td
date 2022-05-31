@@ -20,7 +20,6 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
         {
             var result = new DamageResult(modifiedDamageInfo);
             Events.Send(new TakeDamage(result, source));
-            source?.AttributeDamage(result);
         }
     }
 
