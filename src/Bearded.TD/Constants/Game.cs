@@ -3,7 +3,6 @@ using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD;
@@ -89,19 +88,7 @@ static partial class Constants
 
         public static class Elements
         {
-            public static readonly EnergyConsumptionRate DefaultBurnSpeed = new EnergyConsumptionRate(1);
-            public static readonly double DefaultDamagePerFuelBurned = 1;
-            public static readonly Energy EnergyPerEnergyDamage = new Energy(0.2);
-            public static readonly Energy EnergyPerFireDamage = new Energy(50);
-            public static readonly EnergyConsumptionRate EnergyPerSecondInWater = new EnergyConsumptionRate(15);
-
-            public const double MinWetness = 0;
-            public static readonly TimeSpan WaterEvaporationHalfTime = .5.S();
-            public static readonly Energy EnergyPerUnitWaterEvaporated = new Energy(0.05);
-
-            public static readonly Energy MinHeat = new Energy(0);
-            public static readonly Energy AmbientHeat = new Energy(100);
-            public static readonly TimeSpan AmbientHeatApproachHalfTime = 1.S();
+            public static readonly TimeSpan TickDuration = 0.1.S();
         }
 
         public static class Physics
