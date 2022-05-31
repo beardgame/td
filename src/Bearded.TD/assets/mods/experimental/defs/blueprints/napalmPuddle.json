@@ -17,17 +17,6 @@
       }
     },
     {
-      "id" : "burnable",
-      "parameters" : {
-        "fuelAmount" : 2,
-        "flashPointThreshold" : 0,
-        "startsOnFire" : true
-      }
-    },
-    {
-      "id" : "deleteOnExtinguish"
-    },
-    {
       "id" : "damageOverTimeArea",
       "parameters" : {
         "damagePerSecond" : 5,

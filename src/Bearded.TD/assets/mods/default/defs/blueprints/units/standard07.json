@@ -12,7 +12,6 @@
         },
         { "id" : "health", "parameters" : { "maxHealth" : 15360 } },
         { "id" : "threat", "parameters" :  { "threat" : 15360 } },
-        { "id" : "burnable", "parameters" : { "fuelAmount" : 100, "flashPointThreshold" : 50 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 384, "attackRate" : 0.5 } },
         { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1 } }
     ]
