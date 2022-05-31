@@ -42,7 +42,7 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
         Unit CoreWidth { get; }
     }
 
-    private readonly record struct BeamSegment(Position2 Start, Position2 End, float DamageFactor);
+    private readonly record struct BeamSegment(Position3 Start, Position3 End, float DamageFactor);
 
     private static readonly TimeSpan damageTimeSpan = 0.1.S();
     private const double minDamagePerSecond = .05;
@@ -50,6 +50,7 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
     private Instant? lastDamageTime;
     private bool drawBeam;
     private readonly List<BeamSegment> beamSegments = new();
+    private ITargeter<IPositionable>? targeter;
 
     public BeamEmitter(IParameters parameters)
         : base(parameters)
@@ -60,6 +61,8 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
     {
         base.OnAdded();
         Events.Subscribe(this);
+
+        ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
     }
 
     public override void OnRemoved()
@@ -84,9 +87,9 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
 
     private void emitBeam()
     {
-        var ray = new Ray(
-            Weapon.Position.XY(),
-            Weapon.Direction * Parameters.Range
+        var ray = new Ray3(
+            Weapon.Position,
+            getBeamDirection()
         );
 
         var results = Parameters.PiercingFactor > minDamagePerSecond
@@ -96,14 +99,14 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
                 ray, Game.UnitLayer, Game.PassabilityManager.GetLayer(Passability.Projectile)).Yield();
 
         beamSegments.Clear();
-        var lastEnd = Weapon.Position.XY();
+        var lastEnd = Weapon.Position;
         var damageFactor = 1.0f;
 
         var timeSinceLastDamage = Game.Time - lastDamageTime;
         var canDamageThisFrame = timeSinceLastDamage > damageTimeSpan;
         var damagedThisFrame = false;
 
-        foreach (var (type, _, point, enemy, _) in results)
+        foreach (var (type, _, point, enemy, _, _) in results)
         {
             beamSegments.Add(new BeamSegment(lastEnd, point, damageFactor));
 
@@ -125,6 +128,13 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
             // accounting for periods where we don't hit anything correctly
             lastDamageTime = Game.Time;
         }
+    }
+
+    private Difference3 getBeamDirection()
+    {
+        return targeter?.Target is { } target
+            ? (target.Position - Weapon.Position).NumericValue.NormalizedSafe() * Parameters.Range
+            : (Weapon.Direction * Parameters.Range).WithZ();
     }
 
     private bool tryDamage(IComponentOwner enemy, float damageFactor)
@@ -152,14 +162,14 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
         foreach (var (start, end, factor) in beamSegments)
         {
             shapeDrawer.DrawLine(
-                start.WithZ(Weapon.Position.Z).NumericValue,
-                end.WithZ(Weapon.Position.Z).NumericValue,
+                start.NumericValue,
+                end.NumericValue,
                 Parameters.Width.NumericValue * PixelSize * 0.5f,
                 Parameters.Color.WithAlpha() * baseAlpha * factor);
 
             shapeDrawer.DrawLine(
-                start.WithZ(Weapon.Position.Z).NumericValue,
-                end.WithZ(Weapon.Position.Z).NumericValue,
+                start.NumericValue,
+                end.NumericValue,
                 Parameters.CoreWidth.NumericValue * PixelSize * 0.5f,
                 Color.White.WithAlpha() * baseAlpha * factor);
         }

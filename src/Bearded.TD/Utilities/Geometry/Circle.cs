@@ -3,7 +3,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Utilities.Geometry;
 
-struct Circle
+readonly struct Circle
 {
     public Position2 Center { get; }
     public Unit Radius { get; }

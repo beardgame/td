@@ -36,9 +36,9 @@ sealed class ParabolicMovement : Component, IDirected3
         velocity += forces * elapsedTime;
 
         var step = velocity * elapsedTime;
-        var ray = new Ray(position.XY(), step.XY());
+        var ray = new Ray3(position, step);
 
-        var (result, rayFactor, _, enemy, lastStep) = Owner.Game.Level.CastRayAgainstEnemies(
+        var (result, rayFactor, _, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstEnemies(
             ray, Owner.Game.UnitLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
 
         position += step * rayFactor;
@@ -58,16 +58,15 @@ sealed class ParabolicMovement : Component, IDirected3
                 break;
             case RayCastResultType.HitEnemy:
                 _ = enemy ?? throw new InvalidOperationException();
-                hitEnemy(position, enemy);
+                hitEnemy(position, enemy, normal.Value);
                 break;
             default:
                 throw new IndexOutOfRangeException();
         }
     }
 
-    private void hitEnemy(Position3 position, GameObject enemy)
+    private void hitEnemy(Position3 position, GameObject enemy, Difference3 normal)
     {
-        var normal = new Difference3((position - enemy.Position).NumericValue.NormalizedSafe());
         var info = new HitInfo(position, normal, velocityVector());
         Events.Send(new HitEnemy(enemy, info));
         Owner.Delete();
