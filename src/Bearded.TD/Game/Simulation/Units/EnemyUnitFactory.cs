@@ -1,5 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Synchronization;
@@ -28,6 +29,7 @@ static class EnemyUnitFactory
 
         unit.AddComponent(new DamageAttributor());
         unit.AddComponent(new DamageSource());
+        unit.AddComponent(new ElementSystemEntity());
         unit.AddComponent(new EnemyLife());
         unit.AddComponent(new HealthBar());
         unit.AddComponent(new HealthEventReceiver());
