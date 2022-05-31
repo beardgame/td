@@ -16,7 +16,6 @@ namespace Bearded.TD.Game.Simulation.Physics;
 sealed class ParabolicMovement : Component, IDirected3
 {
     private Velocity3 velocity;
-    private Tile tile;
 
     public Difference3 Direction => velocity * 1.S();
 
@@ -27,7 +26,6 @@ sealed class ParabolicMovement : Component, IDirected3
 
     protected override void OnAdded()
     {
-        tile = Level.GetTile(Owner.Position.XY());
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -47,7 +45,7 @@ sealed class ParabolicMovement : Component, IDirected3
 
         Owner.Position = position;
 
-        tile = Level.GetTile(position.XY());
+        var tile = Level.GetTile(position.XY());
 
         switch (result)
         {
