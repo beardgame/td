@@ -122,9 +122,9 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
     private Speed verticalSpeedCompensationToTarget(IPositionable target)
     {
         var difference = target.Position - Weapon.Position;
-        var distance = difference.Length;
+        var horizontalDistance = difference.XY().Length;
         // TODO: the division below should work in spacetime
-        var expectedTimeToTarget = new TimeSpan(distance.NumericValue / Parameters.MuzzleSpeed.NumericValue);
+        var expectedTimeToTarget = new TimeSpan(horizontalDistance.NumericValue / Parameters.MuzzleSpeed.NumericValue);
         // TODO: TimeSpan.Squared would be nice to have
         var expectedDrop = Constants.Game.Physics.Gravity * expectedTimeToTarget * expectedTimeToTarget * 0.5f;
         var heightDifference = difference.Z;
