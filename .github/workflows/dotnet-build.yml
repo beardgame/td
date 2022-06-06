@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --no-restore --logger "trx;LogFileName=test-results-$ {{ matrix.dotnet_version }}.trx"
+        run: dotnet test --no-restore --logger "trx;LogFileName=test-results-${{ matrix.dotnet_version }}.trx"
       - name: Upload Verify test results
         if: failure()
         uses: actions/upload-artifact@v3
