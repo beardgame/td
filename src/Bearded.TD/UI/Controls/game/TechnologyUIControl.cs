@@ -6,7 +6,9 @@ using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
+using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
@@ -45,7 +47,7 @@ sealed class TechnologyUIControl : CompositeControl
     private void updateTechnologiesList()
     {
         technologyList.ItemSource = new TechnologyListItemSource(
-            model.Model, tech => technologyDetails.SetTechnologyToDisplay(Maybe.Just(tech)));
+            model.Model, tech => technologyDetails.SetTechnologyToDisplay(Maybe.Just(tech)), model.TooltipFactory);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
@@ -54,14 +56,17 @@ sealed class TechnologyUIControl : CompositeControl
     {
         private readonly TechnologyUIModel model;
         private readonly Action<ITechnologyBlueprint> buttonClickCallback;
+        private readonly TooltipFactory tooltipFactory;
         private readonly ImmutableArray<ITechnologyBlueprint> sortedTechnologies;
 
         public int ItemCount { get; }
 
-        public TechnologyListItemSource(TechnologyUIModel model, Action<ITechnologyBlueprint> buttonClickCallback)
+        public TechnologyListItemSource(
+            TechnologyUIModel model, Action<ITechnologyBlueprint> buttonClickCallback, TooltipFactory tooltipFactory)
         {
             this.model = model;
             this.buttonClickCallback = buttonClickCallback;
+            this.tooltipFactory = tooltipFactory;
 
             sortedTechnologies = model.Technologies.Sort((left, right) =>
             {
@@ -85,7 +90,9 @@ sealed class TechnologyUIControl : CompositeControl
             var technology = sortedTechnologies[index];
             var button = new TechnologyButton(
                 technology,
-                () => model.StatusFor(technology));
+                () => model.StatusFor(technology),
+                tooltipFactory,
+                technology.Unlocks);
             button.Clicked += _ => buttonClickCallback(technology);
             return button;
         }
@@ -98,12 +105,20 @@ sealed class TechnologyUIControl : CompositeControl
     private sealed class TechnologyButton : Button
     {
         private readonly Func<TechnologyUIModel.TechnologyStatus> statusGetter;
+        private readonly TooltipFactory tooltipFactory;
+        private readonly IEnumerable<ITechnologyUnlock> unlocks;
         private readonly BackgroundBox backgroundBox;
+        private Tooltip? tooltip;
 
-        public TechnologyButton(ITechnologyBlueprint technology,
-            Func<TechnologyUIModel.TechnologyStatus> statusGetter)
+        public TechnologyButton(
+            ITechnologyBlueprint technology,
+            Func<TechnologyUIModel.TechnologyStatus> statusGetter,
+            TooltipFactory tooltipFactory,
+            IEnumerable<ITechnologyUnlock> unlocks)
         {
             this.statusGetter = statusGetter;
+            this.tooltipFactory = tooltipFactory;
+            this.unlocks = unlocks;
 
             this.WithDefaultStyle(technology.Name, fontSize: 20);
             backgroundBox = new BackgroundBox();
@@ -114,6 +129,20 @@ sealed class TechnologyUIControl : CompositeControl
         {
             backgroundBox.Color = .25f * colorForStatus(statusGetter());
             base.Render(r);
+        }
+
+        public override void MouseEntered(MouseEventArgs eventArgs)
+        {
+            base.MouseEntered(eventArgs);
+            tooltip = tooltipFactory.ShowSimpleTooltip(
+                unlocks.Select(u => $"- {u.Description}").ToImmutableArray(), TooltipAnchor.RightOf(this));
+        }
+
+        public override void MouseExited(MouseEventArgs eventArgs)
+        {
+            base.MouseExited(eventArgs);
+            tooltip?.Destroy();
+            tooltip = null;
         }
     }
 

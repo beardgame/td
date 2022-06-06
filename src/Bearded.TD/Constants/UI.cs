@@ -78,5 +78,11 @@ static partial class Constants
             public static readonly Color TextColor = Color.White;
             public static readonly Color DisabledTextColor = TextColor * 0.7f;
         }
+
+        public static class Tooltip
+        {
+            public const double DefaultWidth = 300;
+            public const double Margin = 4;
+        }
     }
 }

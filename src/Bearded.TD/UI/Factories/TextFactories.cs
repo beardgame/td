@@ -49,9 +49,9 @@ static class TextFactories
     };
 
     public static Layouts.IColumnLayout AddLabel(
-        this Layouts.IColumnLayout columnLayout, string text, Color? color = null)
+        this Layouts.IColumnLayout columnLayout, string text, Vector2d? textAnchor = null, Color? color = null)
     {
-        return columnLayout.Add(Label(text, color: color), LineHeight);
+        return columnLayout.Add(Label(text, textAnchor, color), LineHeight);
     }
 
     public static Control ValueLabel(

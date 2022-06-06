@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
@@ -70,12 +71,13 @@ sealed class GameUI :
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
         mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
+        var tooltipFactory = dependencies.Resolve<TooltipFactory>();
 
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
-        TechnologyUI.Initialize(Game);
+        TechnologyUI.Initialize(Game, tooltipFactory);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;
