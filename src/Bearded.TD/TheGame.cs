@@ -13,6 +13,7 @@ using Bearded.TD.Rendering.UI;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.TD.Utilities.Console;
@@ -137,15 +138,26 @@ sealed class TheGame : Window, IMouseScaleProvider
         var shortcuts = new ShortcutManager();
         dependencyResolver.Add(shortcuts);
 
+        var navigationRoot = new CompositeControl();
+        var uiOverlay = CompositeControl.CreateClickThrough();
+
+        rootControl.Add(navigationRoot);
+        rootControl.Add(uiOverlay);
+
         eventManager = new EventManager(rootControl, inputManager, shortcuts);
         var (models, views) = UILibrary.CreateFactories(renderContext);
         navigationController =
-            new NavigationController(rootControl, dependencyResolver, models, views);
+            new NavigationController(navigationRoot, dependencyResolver, models, views);
         navigationController.Push<MainMenu>();
         var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
         navigationController.Push<VersionOverlay>(a =>
             a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));
         navigationController.Exited += Close;
+
+        var overlayLayer = new OverlayLayer(uiOverlay);
+        dependencyResolver.Add(overlayLayer);
+        var tooltipFactory = new TooltipFactory(overlayLayer);
+        dependencyResolver.Add(tooltipFactory);
 
         shortcuts.RegisterShortcut(Keys.GraveAccent, debugConsole.Toggle);
         shortcuts.RegisterShortcut(Keys.F3, () => togglePerformanceOverlay(logger, null));
