@@ -45,7 +45,7 @@ sealed class GameUIControl : CompositeControl
             .Anchor(a => a.MarginAllSides(80))
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
-        var overlayControl = new Overlay();
+        var overlayControl = CreateClickThrough();
         Add(overlayControl);
         gameUI.SetOverlayControl(overlayControl);
 
