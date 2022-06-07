@@ -15,7 +15,7 @@ using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class UIDebugOverlayControl : DefaultRenderLayerControl
+sealed class UIDebugOverlayControl : OnTopCompositeControl
 {
     public sealed class Highlight : Control
     {
@@ -73,16 +73,6 @@ sealed class UIDebugOverlayControl : DefaultRenderLayerControl
         controlBox.MouseMove += args => args.Handled = true;
 
         Add(controlBox.Anchor(a => a.Bottom(margin, controlBoxHeight).Left(margin, controlBoxWidth)));
-    }
-
-    protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
-    {
-        SkipNextRender();
-    }
-
-    protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
-    {
-        RenderAsLayer(router);
     }
 
     public override void PreviewMouseMoved(MouseEventArgs eventArgs)

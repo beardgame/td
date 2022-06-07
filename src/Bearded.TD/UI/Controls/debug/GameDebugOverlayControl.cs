@@ -5,14 +5,13 @@ using Bearded.Graphics;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
-using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
 using static Bearded.TD.UI.Factories.ButtonFactories;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class GameDebugOverlayControl : DefaultRenderLayerControl
+sealed class GameDebugOverlayControl : OnTopCompositeControl
 {
     private bool minimized;
 
@@ -52,16 +51,6 @@ sealed class GameDebugOverlayControl : DefaultRenderLayerControl
         this.Anchor(a => a
             .Bottom(margin: 30 + expandedHeight - height, height: height)
             .Right(width: 200));
-    }
-
-    protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
-    {
-        SkipNextRender();
-    }
-
-    protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
-    {
-        RenderAsLayer(router);
     }
 
     private sealed class ActionListItemSource : IListItemSource

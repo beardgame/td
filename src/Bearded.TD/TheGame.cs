@@ -129,7 +129,7 @@ sealed class TheGame : Window, IMouseScaleProvider
         inputManager = new InputManager(NativeWindow);
         dependencyResolver.Add(inputManager);
 
-        rootControl = new RootControl(new DefaultRenderLayerControl());
+        rootControl = new RootControl();
         dependencyResolver.Add(rootControl.FocusManager);
 
         uiUpdater = new UIUpdater();
@@ -138,8 +138,8 @@ sealed class TheGame : Window, IMouseScaleProvider
         var shortcuts = new ShortcutManager();
         dependencyResolver.Add(shortcuts);
 
-        var navigationRoot = new CompositeControl();
-        var uiOverlay = CompositeControl.CreateClickThrough();
+        var navigationRoot = new DefaultRenderLayerControl();
+        var uiOverlay = new DefaultRenderLayerControl();
 
         rootControl.Add(navigationRoot);
         rootControl.Add(uiOverlay);

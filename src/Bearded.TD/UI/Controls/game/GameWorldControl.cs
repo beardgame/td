@@ -31,6 +31,7 @@ class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLay
         this.game = game;
         renderer = new GameRenderer(game, renderContext, time);
         UserSettings.SettingsChanged += userSettingsChanged;
+        IsClickThrough = false;
     }
 
     private void userSettingsChanged()

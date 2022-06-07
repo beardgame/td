@@ -11,6 +11,11 @@ abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
     private IRendererRouter renderRouter = null!;
     private bool skipNextRender;
 
+    protected RenderLayerCompositeControl()
+    {
+        IsClickThrough = true;
+    }
+
     public override void Render(IRendererRouter router)
     {
         if (skipNextRender)

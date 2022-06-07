@@ -15,7 +15,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class TechnologyUIControl : CompositeControl
+sealed class TechnologyUIControl : OnTopCompositeControl
 {
     private readonly TechnologyUI model;
 
@@ -49,8 +49,6 @@ sealed class TechnologyUIControl : CompositeControl
         technologyList.ItemSource = new TechnologyListItemSource(
             model.Model, tech => technologyDetails.SetTechnologyToDisplay(Maybe.Just(tech)), model.TooltipFactory);
     }
-
-    protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
     private sealed class TechnologyListItemSource : IListItemSource
     {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using Bearded.TD.Meta;
-using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Layers;
 
-class ViewportClippingLayerControl : DefaultRenderLayerControl
+class ViewportClippingLayerControl : OnTopCompositeControl
 {
     public override RenderOptions RenderOptions => new RenderOptions(getViewportFromFrame());
 
@@ -27,15 +26,5 @@ class ViewportClippingLayerControl : DefaultRenderLayerControl
         var openGly = ViewportSize.Height - (y + h);
 
         return new Rectangle(x, openGly, w, h);
-    }
-
-    protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
-    {
-        SkipNextRender();
-    }
-
-    protected override void RenderAsLayerAfterAncestorLayer(IRendererRouter router)
-    {
-        RenderAsLayer(router);
     }
 }
