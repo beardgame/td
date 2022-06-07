@@ -49,8 +49,7 @@
                 "faction" : "players",
                 "unlocks" : [
                     { "type" : "building", "blueprint" : "wall" },
-                    { "type" : "building", "blueprint" : "kinetic0-cannon" },
-                    { "type" : "building", "blueprint" : "kinetic1-stomp" }
+                    { "type" : "building", "blueprint" : "kinetic0-cannon" }
                 ]
             }
         },

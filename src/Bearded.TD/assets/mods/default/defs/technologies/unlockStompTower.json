@@ -1,0 +1,7 @@
+{
+    "id" : "unlockStompTower",
+    "name" : "Stomp!",
+    "unlocks": [
+        { "type" : "building", "blueprint" : "kinetic1-stomp" }
+    ]
+}
