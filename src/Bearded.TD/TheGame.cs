@@ -138,8 +138,8 @@ sealed class TheGame : Window, IMouseScaleProvider
         var shortcuts = new ShortcutManager();
         dependencyResolver.Add(shortcuts);
 
-        var navigationRoot = new DefaultRenderLayerControl();
-        var uiOverlay = new DefaultRenderLayerControl();
+        var navigationRoot = new OnTopCompositeControl();
+        var uiOverlay = new OnTopCompositeControl();
 
         rootControl.Add(navigationRoot);
         rootControl.Add(uiOverlay);

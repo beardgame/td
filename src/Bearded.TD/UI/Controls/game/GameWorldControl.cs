@@ -8,7 +8,7 @@ using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls;
 
-class GameWorldControl : DefaultProjectionRenderLayerControl, IDeferredRenderLayer
+sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLayer
 {
     private readonly GameRenderer renderer;
 
