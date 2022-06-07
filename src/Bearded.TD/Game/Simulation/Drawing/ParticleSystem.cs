@@ -33,11 +33,14 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         Color Color { get; }
         Shader? Shader { get; }
         float Size { get; }
+        float? FinalSize { get; }
         float LineWidth { get; }
         TimeSpan LifeTime { get; }
         Speed RandomVelocity { get; }
         Speed VectorVelocity { get; }
         Speed ReflectionVelocity { get; }
+        [Modifiable(1)]
+        float GravityFactor { get; }
         DrawMode DrawMode { get; }
     }
 
@@ -132,7 +135,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         if (!initialized)
             initializeParticles();
 
-        var gravity = Constants.Game.Physics.Gravity3;
+        var gravity = Constants.Game.Physics.Gravity3 * Parameters.GravityFactor;
         for (var i = 0; i < particles.Length; i++)
         {
             var particle = particles[i];
@@ -148,6 +151,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     public void HandleEvent(DrawComponents e)
     {
         var now = Owner.Game.Time;
+
         foreach (var p in particles)
         {
             var a = (float)((p.TimeOfDeath - now) / (Parameters.LifeTime * 0.5));
@@ -155,6 +159,9 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
                 continue;
             a = Math.Min(a, 1);
             var argb = Parameters.Color.WithAlpha(0) * a;
+            var size = Parameters.FinalSize.HasValue
+                ? Interpolate.Lerp(Parameters.FinalSize.Value, Parameters.Size, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
+                : Parameters.Size;
 
             switch (Parameters.DrawMode)
             {
@@ -162,13 +169,13 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
                     e.Drawer.DrawSprite(
                         sprite,
                         p.Position.NumericValue,
-                        Parameters.Size,
+                        size,
                         p.Velocity.XY().Direction.Radians,
                         argb);
                     break;
                 case DrawMode.Line:
 
-                    var v = p.Velocity.NumericValue * Parameters.Size * 0.5f;
+                    var v = p.Velocity.NumericValue * size * 0.5f;
                     var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth * 0.5f;
                     var c = p.Position.NumericValue;
 

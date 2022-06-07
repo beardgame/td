@@ -20,6 +20,20 @@
                 "damage" : 20
             }
         },
+        {
+            "id": "spawnObjectOnHit",
+            "parameters": {
+                "object": "dustExplosion",
+                "onHitLevel": true,
+                "onHitEnemy": false
+            }
+        },
+        {
+            "id": "spawnObjectOnHit",
+            "parameters": {
+                "object": "kinetic1-stomp-shockwave",
+                "onHitLevel": true,
+                "onHitEnemy": false
             }
         },
         {

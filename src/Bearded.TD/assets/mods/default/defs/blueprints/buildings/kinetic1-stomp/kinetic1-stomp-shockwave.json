@@ -1,0 +1,24 @@
+{
+  "id" : "kinetic1-stomp-shockwave",
+  "components" : [
+    {
+      "id" : "particleSystem",
+      "parameters" : {
+        "count" : 1,
+        "sprite" : "default.particle.halo",
+        "color" : "FF666666",
+        "size" : 0.4,
+        "finalSize" : 2,
+        "lifetime" : 0.5,
+        "gravityFactor" : 0,
+        "drawMode" : "sprite"
+      }
+    },
+    {
+      "id" : "deleteAfter",
+      "parameters" : {
+        "timeSpan" : 0.5
+      }
+    }
+  ]
+}
