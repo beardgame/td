@@ -1,0 +1,28 @@
+{
+    "id": "kinetic1-stomp-weapon",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 1.5
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "kinetic0-cannon-shell",
+                "muzzleSpeed" : 20,
+                "fireRate" : 0.75,
+                "muzzleOffset" : 0.3
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "default.particle.halo",
+                "colorMode" : "faction",
+                "size" : 0.3
+            }
+        }
+    ]
+}
