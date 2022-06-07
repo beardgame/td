@@ -21,10 +21,6 @@ class HitLevelAtTower : WeaponCycleHandler<HitLevelAtTower.IParameters>
     {
     }
 
-    protected override void OnAdded()
-    {
-    }
-
     protected override void UpdateIdle(TimeSpan elapsedTime)
     {
         firstShotInBurst = true;
