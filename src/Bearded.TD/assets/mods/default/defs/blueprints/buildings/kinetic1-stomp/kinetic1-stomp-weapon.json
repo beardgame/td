@@ -8,12 +8,18 @@
             }
         },
         {
-            "id" : "projectileEmitter",
+            "id" : "hitLevelAtTower",
             "parameters" : {
-                "projectile" : "kinetic0-cannon-shell",
-                "muzzleSpeed" : 20,
-                "fireRate" : 0.75,
-                "muzzleOffset" : 0.3
+                "fireRate" : 1
+            }
+        },
+        {
+            "id" : "splashDamageOnHit",
+            "parameters" : {
+                "range" : 1.5,
+                "damage" : 20
+            }
+        },
             }
         },
         {

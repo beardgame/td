@@ -40,17 +40,16 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
     public void HandleEvent(HitLevel @event)
     {
-        onHit();
+        onHit(@event.Info.Point);
     }
 
     public void HandleEvent(HitEnemy @event)
     {
-        onHit();
+        onHit(@event.Info.Point);
     }
 
-    private void onHit()
+    private void onHit(Position3 center)
     {
-        var center = Owner.Position;
         var distanceSquared = Parameters.Range.Squared;
 
         var enemies = Owner.Game.UnitLayer;
