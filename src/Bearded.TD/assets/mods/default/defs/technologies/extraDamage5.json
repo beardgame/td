@@ -1,6 +1,7 @@
 {
     "id" : "extraDamage5",
     "name" : "Monster Kill",
+    "branch" : "dynamics",
     "requiredTechs" : [ "extraDamage4" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage5" }

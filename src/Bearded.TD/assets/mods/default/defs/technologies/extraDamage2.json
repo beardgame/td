@@ -1,6 +1,7 @@
 {
     "id" : "extraDamage2",
     "name" : "Multi Kill",
+    "branch" : "dynamics",
     "requiredTechs" : [ "extraDamage1" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage2" }

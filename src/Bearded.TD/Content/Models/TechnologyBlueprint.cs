@@ -9,20 +9,20 @@ sealed class TechnologyBlueprint : ITechnologyBlueprint
 {
     public ModAwareId Id { get; }
     public string Name { get; }
-    public int Cost { get; }
+    public TechnologyBranch Branch { get; }
     public IEnumerable<ITechnologyUnlock> Unlocks { get; }
     public IEnumerable<ITechnologyBlueprint> RequiredTechs { get; }
 
     public TechnologyBlueprint(
         ModAwareId id,
         string name,
-        int cost,
-        IEnumerable<ITechnologyUnlock> unlocks,
-        IEnumerable<ITechnologyBlueprint> requiredTechs)
+        TechnologyBranch branch,
+        IEnumerable<ITechnologyUnlock>? unlocks,
+        IEnumerable<ITechnologyBlueprint>? requiredTechs)
     {
         Id = id;
         Name = name;
-        Cost = cost;
+        Branch = branch;
         Unlocks = unlocks?.ToImmutableArray() ?? ImmutableArray<ITechnologyUnlock>.Empty;
         RequiredTechs = requiredTechs?.ToImmutableArray() ?? ImmutableArray<ITechnologyBlueprint>.Empty;
     }
