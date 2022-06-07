@@ -68,7 +68,7 @@ sealed class FactionTechnology : FactionBehavior
         }
     }
 
-    public void consumeTechnologyToken()
+    private void consumeTechnologyToken()
     {
         State.Satisfies(HasTechnologyToken);
         HasTechnologyToken = false;
