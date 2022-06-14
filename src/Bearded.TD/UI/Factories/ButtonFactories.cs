@@ -55,7 +55,7 @@ static class ButtonFactories
         private Func<string>? labelProvider;
         private (int CostAmount, Color Color)? cost;
         private (Binding<double> Progress, Color? Color)? progressBar;
-        private VoidEventHandler? onClick;
+        private GenericEventHandler<Button.ClickEventArgs>? onClick;
         private Binding<bool>? isEnabled;
         private Binding<bool>? isActive;
         private bool isDisabled;
@@ -91,6 +91,12 @@ static class ButtonFactories
         }
 
         public Builder WithOnClick(VoidEventHandler onClick)
+        {
+            this.onClick = _ => onClick();
+            return this;
+        }
+
+        public Builder WithOnClick(GenericEventHandler<Button.ClickEventArgs> onClick)
         {
             this.onClick = onClick;
             return this;
@@ -162,7 +168,7 @@ static class ButtonFactories
 
             if (onClick != null)
             {
-                button.Clicked += _ => onClick();
+                button.Clicked += args => onClick(args);
             }
             return button;
 
