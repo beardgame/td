@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -36,6 +37,12 @@ sealed class TechnologyWindow
     public void RequestTechnologyUnlock(ITechnologyBlueprint technology)
     {
         game.Request(UnlockTechnology.Request(game.Me.Faction, technology));
+    }
+
+    [Conditional("DEBUG")]
+    public void ForceTechnologyUnlock(ITechnologyBlueprint technology)
+    {
+        game.Request(ForceUnlockTechnology.Request(game.Me.Faction, technology));
     }
 
     public void CloseWindow()

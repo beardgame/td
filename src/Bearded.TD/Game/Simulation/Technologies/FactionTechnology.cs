@@ -40,6 +40,20 @@ sealed class FactionTechnology : FactionBehavior
     {
         Argument.Satisfies(() => CanUnlockTechnology(technology));
         consumeTechnologyToken();
+        doTechnologyUnlock(technology);
+    }
+
+    public void ForceUnlockTechnology(ITechnologyBlueprint technology)
+    {
+        if (HasTechnologyToken)
+        {
+            consumeTechnologyToken();
+        }
+        doTechnologyUnlock(technology);
+    }
+
+    private void doTechnologyUnlock(ITechnologyBlueprint technology)
+    {
         unlockedTechnologies.Add(technology);
         technology.Unlocks.ForEach(unlock => unlock.Apply(this));
         Events.Send(new TechnologyUnlocked(this, technology));

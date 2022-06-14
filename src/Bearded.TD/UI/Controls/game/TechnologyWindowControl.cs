@@ -89,7 +89,17 @@ sealed class TechnologyWindowControl : CompositeControl
                 buttonColumn.AddCenteredButton(b => b
                     .WithLabel(tech.Blueprint.Name)
                     .WithEnabled(tech.IsUnlockedBinding.Negate())
-                    .WithOnClick(() => model.RequestTechnologyUnlock(tech.Blueprint)));
+                    .WithOnClick(args =>
+                    {
+                        if (Constants.Input.DebugForceModifier(args.ModifierKeys))
+                        {
+                            model.ForceTechnologyUnlock(tech.Blueprint);
+                        }
+                        else
+                        {
+                            model.RequestTechnologyUnlock(tech.Blueprint);
+                        }
+                    }));
             }
 
             var tierControl = new CompositeControl
