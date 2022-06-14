@@ -32,7 +32,7 @@ sealed class TechnologyBlueprintLoader
         this.upgrades = upgrades;
     }
 
-    protected override List<ITechnologyBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
+    protected override List<ITechnologyBlueprint> LoadBlueprintsFromFiles(IEnumerable<FileInfo> files)
     {
         var jsonModels = loadJsonModels(files);
         var sortedJsonModels = topologicalSort(jsonModels);

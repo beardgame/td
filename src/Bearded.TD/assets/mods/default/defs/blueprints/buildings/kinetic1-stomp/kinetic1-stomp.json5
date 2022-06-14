@@ -1,0 +1,22 @@
+{
+  id : "kinetic1-stomp",
+  "components" : [
+    { id : "name", parameters : { name : "Stomp" } },
+    { id : "cost", parameters : { resources : 50 } },
+    { id : "footprint", parameters : { group : "single" } },
+    { id : "foundation", parameters : { sprites : "foundations" } },
+    { id : "defaultTileOccupancy" },
+    { id : "health", parameters : { initialHealth : 1, maxHealth : 100 } },
+    { id : "autoRepair", parameters : { } },
+    { id : "gainXpOnDamage" },
+    { id : "veterancy" },
+    {
+      id : "turret",
+      onGhost: true,
+      parameters : {
+        weapon : "kinetic1-stomp-weapon",
+        height : 0.2
+      },
+    },
+  ]
+}

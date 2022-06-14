@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
@@ -52,22 +53,29 @@ abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
             Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m)));
     }
 
-    protected virtual FileInfo[] GetJsonFiles()
+    private static ImmutableHashSet<string> supportedExtensions = ImmutableHashSet.Create(".json", ".json5");
+
+    protected virtual IEnumerable<FileInfo> GetJsonFiles()
     {
         var totalPath = Path.Combine(Context.Meta.Directory.FullName, RelativePath);
 
         if (!Directory.Exists(totalPath))
-            return Array.Empty<FileInfo>();
+            return Enumerable.Empty<FileInfo>();
 
-        return Context.Meta
-                .Directory
-                .GetDirectories(RelativePath, SearchOption.TopDirectoryOnly)
-                .SingleOrDefault()
-                ?.GetFiles("*.json", SearchOption.AllDirectories)
-            ?? Array.Empty<FileInfo>();
+        var directory = Context.Meta
+            .Directory
+            .GetDirectories(RelativePath, SearchOption.TopDirectoryOnly)
+            .SingleOrDefault();
+
+        if (directory == null)
+            return Enumerable.Empty<FileInfo>();
+
+        return directory
+            .GetFiles("*", SearchOption.AllDirectories)
+            .Where(f => supportedExtensions.Contains(f.Extension));
     }
 
-    protected virtual List<TBlueprint> LoadBlueprintsFromFiles(FileInfo[] files)
+    protected virtual List<TBlueprint> LoadBlueprintsFromFiles(IEnumerable<FileInfo> files)
     {
         var blueprints = new List<TBlueprint>();
 
