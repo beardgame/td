@@ -96,5 +96,10 @@ static partial class Constants
             public static readonly Acceleration Gravity = new Acceleration(-20f);
             public static readonly Acceleration3 Gravity3 = Acceleration2.Zero.WithZ(Gravity);
         }
+
+        public static class Technology
+        {
+            public static readonly int[] TierCompletionThresholds = { 0, 2, 2, 2 };
+        }
     }
 }
