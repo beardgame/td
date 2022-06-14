@@ -1,7 +1,0 @@
-{
-    "id" : "unlockSlowEmitter",
-    "name" : "Slow motion",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "slowEmitter" }
-    ]
-}

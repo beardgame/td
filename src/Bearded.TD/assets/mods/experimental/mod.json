@@ -1,5 +1,0 @@
-﻿{
-	"name" : "Experimental",
-	"id" :  "experimental",
-	"dependencies" : [{"id": "default"}]
-}

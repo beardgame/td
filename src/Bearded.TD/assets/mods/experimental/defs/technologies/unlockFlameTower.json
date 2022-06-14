@@ -1,7 +1,0 @@
-{
-    "id" : "unlockFlameTower",
-    "name" : "Flame On",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "flameTower" }
-    ]
-}

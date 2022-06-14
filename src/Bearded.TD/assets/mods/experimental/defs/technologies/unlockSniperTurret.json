@@ -1,7 +1,0 @@
-{
-    "id" : "unlockSniperTurret",
-    "name" : "In scope",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "sniperTurret" }
-    ]
-}
