@@ -30,6 +30,12 @@ static class ButtonFactories
         return columnLayout.Add(Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
     }
 
+    public static Layouts.IRowLayout AddButton(
+        this Layouts.IRowLayout rowLayout, BuilderFunc<Builder> builderFunc)
+    {
+        return rowLayout.Add(Button(builderFunc).WrapHorizontallyCentered(Width), Width + 2 * Margin);
+    }
+
     public sealed class Builder
     {
         private Func<string>? labelProvider;

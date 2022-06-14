@@ -41,6 +41,18 @@ static class TextFactories
         return columnLayout.Add(Header(text, color), HeaderLineHeight);
     }
 
+    public static Layouts.IRowLayout AddColumnHeader(
+        this Layouts.IRowLayout rowLayout, string text, double columnWidth, Color? color = null)
+    {
+        return rowLayout.Add(Header(text, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
+    }
+
+    public static Layouts.IRowLayout AddColumnHeader(
+        this Layouts.IRowLayout rowLayout, Binding<string> text, double columnWidth, Binding<Color>? color = null)
+    {
+        return rowLayout.Add(Header(text, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
+    }
+
     public static Label Label(string text, Vector2d? textAnchor = null, Color? color = null) => new(text)
     {
         Color = color ?? TextColor,
