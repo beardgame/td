@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.UI.Controls;
 using Bearded.UI;
 using Bearded.UI.Controls;
@@ -27,19 +26,16 @@ static class Layouts
     public static PristineLayout BuildLayout(this IControlParent parent) =>
         new PristineLayout(parent);
 
-    public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new FixedColumnLayout(parent);
+    public static FixedColumnLayout BuildFixedColumn(this IControlParent parent) => new(parent);
 
     public static IColumnLayout BuildScrollableColumn(this IControlParent parent) =>
         new ScrollableColumnLayout(parent);
 
-    public static FixedRowLayout BuildFixedRowLeftToRight(this IControlParent parent) =>
-        FixedRowLayout.LeftToRight(parent);
-    public static FixedRowLayout BuildFixedRowRightToLeft(this IControlParent parent) =>
-        FixedRowLayout.RightToLeft(parent);
+    public static FixedRowLayout BuildFixedRow(this IControlParent parent) => new(parent);
 
     public sealed class PristineLayout : Layout
     {
-        public PristineLayout(IControlParent parent) : base(parent) {}
+        public PristineLayout(IControlParent parent) : base(parent) { }
 
         public PristineLayout ForFullScreen()
         {
@@ -58,8 +54,8 @@ static class Layouts
 
     public class Layout
     {
-        protected HorizontalAnchors Horizontal { get; set; } = new HorizontalAnchors(Anchors.Default);
-        protected VerticalAnchors Vertical { get; set; } = new VerticalAnchors(Anchors.Default);
+        protected HorizontalAnchors Horizontal { get; set; } = new(Anchors.Default);
+        protected VerticalAnchors Vertical { get; set; } = new(Anchors.Default);
 
         protected IControlParent Parent { get; }
 
@@ -238,32 +234,36 @@ static class Layouts
 
     public interface IRowLayout
     {
-        IRowLayout Add(Control control, double width);
+        IRowLayout AddLeft(Control control, double width);
+        IRowLayout AddRight(Control control, double width);
     }
 
     public sealed class FixedRowLayout : IRowLayout
     {
         private readonly IControlParent parent;
-        private readonly Func<AnchorTemplate, double, double, AnchorTemplate> append;
 
-        public double Width { get; private set; }
+        private double leftOffset;
+        private double rightOffset;
 
-        private FixedRowLayout(IControlParent parent, Func<AnchorTemplate, double, double, AnchorTemplate> append)
+        public double Width => leftOffset + rightOffset;
+
+        public FixedRowLayout(IControlParent parent)
         {
             this.parent = parent;
-            this.append = append;
         }
 
-        public IRowLayout Add(Control control, double width)
+        public IRowLayout AddLeft(Control control, double width)
         {
-            parent.Add(control.Anchor(a => append(a, Width, width)));
-            Width += width;
+            parent.Add(control.Anchor(a => a.Left(margin: leftOffset, width: width)));
+            leftOffset += width;
             return this;
         }
 
-        public static FixedRowLayout LeftToRight(IControlParent parent) =>
-            new(parent, (a, offset, w) => a.Left(offset, w));
-        public static FixedRowLayout RightToLeft(IControlParent parent) =>
-            new(parent, (a, offset, w) => a.Right(offset, w));
+        public IRowLayout AddRight(Control control, double width)
+        {
+            parent.Add(control.Anchor(a => a.Right(margin: rightOffset, width: width)));
+            rightOffset += width;
+            return this;
+        }
     }
 }

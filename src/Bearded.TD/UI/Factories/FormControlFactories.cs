@@ -40,14 +40,14 @@ static class FormControlFactories
         IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding, out double width)
     {
         var control = new CompositeControl();
-        var row = control.BuildFixedRowLeftToRight();
+        var row = control.BuildFixedRow();
         foreach (var o in options)
         {
             var button = ButtonFactories.Button(b => b
                 .WithLabel(renderer(o))
                 .WithActive(valueBinding.Transform(v => Equals(v, o)))
                 .WithOnClick(() => valueBinding.SetFromControl(o)));
-            row.Add(button, Constants.UI.Form.InputWidth);
+            row.AddLeft(button, Constants.UI.Form.InputWidth);
         }
         width = row.Width;
         return control;

@@ -22,8 +22,8 @@ static class WindowFactories
         var actualWidth = contentWidth;
         var actualHeight = contentHeight + TitlebarHeight;
         control.Anchor(a => a
-            .Left(relativePercentage: 0.5, margin: -0.5 * actualWidth)
-            .Top(relativePercentage: 0.5, margin: -0.5 * actualHeight));
+            .Left(relativePercentage: 0.5, margin: -0.5 * actualWidth, width: actualWidth)
+            .Top(relativePercentage: 0.5, margin: -0.5 * actualHeight, height: actualHeight));
         return control;
     }
 
@@ -50,8 +50,9 @@ static class WindowFactories
 
             var titleBar = new CompositeControl();
             titleBar
-                .BuildFixedRowRightToLeft()
-                .AddButton(b => b.WithLabel("close").WithOnClick(onClose!));
+                .BuildFixedRow()
+                .AddHeaderLeft("Research", 100)
+                .AddButtonLeft(b => b.WithLabel("close").WithOnClick(onClose!));
 
             var control = new OnTopCompositeControl { new BackgroundBox() };
             control.BuildLayout()

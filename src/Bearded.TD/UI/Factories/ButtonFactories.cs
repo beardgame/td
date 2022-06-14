@@ -30,10 +30,16 @@ static class ButtonFactories
         return columnLayout.Add(Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
     }
 
-    public static Layouts.IRowLayout AddButton(
+    public static Layouts.IRowLayout AddButtonLeft(
         this Layouts.IRowLayout rowLayout, BuilderFunc<Builder> builderFunc)
     {
-        return rowLayout.Add(Button(builderFunc).WrapHorizontallyCentered(Width), Width + 2 * Margin);
+        return rowLayout.AddLeft(Button(builderFunc).WrapHorizontallyCentered(Width), Width + 2 * Margin);
+    }
+
+    public static Layouts.IRowLayout AddButtonRight(
+        this Layouts.IRowLayout rowLayout, BuilderFunc<Builder> builderFunc)
+    {
+        return rowLayout.AddRight(Button(builderFunc).WrapHorizontallyCentered(Width), Width + 2 * Margin);
     }
 
     public sealed class Builder
