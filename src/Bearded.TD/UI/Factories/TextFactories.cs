@@ -9,10 +9,10 @@ namespace Bearded.TD.UI.Factories;
 
 static class TextFactories
 {
-    public static Label Header(string text, Color? color = null, Vector2d? textAnchor = null) =>
-        Header(Binding.Create(text), color == null ? null : Binding.Create(color.Value), textAnchor);
+    public static Label Header(string text, Vector2d? textAnchor = null, Color? color = null) =>
+        Header(Binding.Create(text), textAnchor, color == null ? null : Binding.Create(color.Value));
 
-    public static Label Header(Binding<string> text, Binding<Color>? color = null, Vector2d? textAnchor = null)
+    public static Label Header(Binding<string> text, Vector2d? textAnchor = null, Binding<Color>? color = null)
     {
         var label = new Label(text.Value)
         {
@@ -32,34 +32,34 @@ static class TextFactories
     public static Layouts.IColumnLayout AddHeader(
         this Layouts.IColumnLayout columnLayout, string text, Color? color = null)
     {
-        return columnLayout.Add(Header(text, color, Controls.Label.TextAnchorLeft), HeaderLineHeight);
+        return columnLayout.Add(Header(text, Controls.Label.TextAnchorLeft, color), HeaderLineHeight);
     }
 
     public static Layouts.IColumnLayout AddHeader(
         this Layouts.IColumnLayout columnLayout, Binding<string> text, Binding<Color>? color = null)
     {
-        return columnLayout.Add(Header(text, color, Controls.Label.TextAnchorLeft), HeaderLineHeight);
+        return columnLayout.Add(Header(text, Controls.Label.TextAnchorLeft, color), HeaderLineHeight);
     }
 
     public static Layouts.IRowLayout AddHeaderLeft(
         this Layouts.IRowLayout rowLayout, string text, double width, Color? color = null)
     {
         return rowLayout.AddLeft(
-            Header(text, color, Controls.Label.TextAnchorLeft).WrapVerticallyCentered(HeaderLineHeight), width);
+            Header(text, Controls.Label.TextAnchorLeft, color).WrapVerticallyCentered(HeaderLineHeight), width);
     }
 
     public static Layouts.IRowLayout AddColumnHeader(
         this Layouts.IRowLayout rowLayout, string text, double columnWidth, Color? color = null)
     {
         return rowLayout.AddLeft(
-            Header(text, color, Controls.Label.TextAnchorCenter).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
+            Header(text, Controls.Label.TextAnchorCenter, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
     }
 
     public static Layouts.IRowLayout AddColumnHeader(
         this Layouts.IRowLayout rowLayout, Binding<string> text, double columnWidth, Binding<Color>? color = null)
     {
         return rowLayout.AddLeft(
-            Header(text, color, Controls.Label.TextAnchorCenter).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
+            Header(text, Controls.Label.TextAnchorCenter, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
     }
 
     public static Label Label(string text, Vector2d? textAnchor = null, Color? color = null) => new(text)
@@ -73,6 +73,12 @@ static class TextFactories
         this Layouts.IColumnLayout columnLayout, string text, Vector2d? textAnchor = null, Color? color = null)
     {
         return columnLayout.Add(Label(text, textAnchor, color), LineHeight);
+    }
+
+    public static Layouts.IRowLayout AddLabelLeft(
+        this Layouts.IRowLayout rowLayout, string text, double width, Vector2d? textAnchor = null, Color? color = null)
+    {
+        return rowLayout.AddLeft(Label(text, textAnchor, color).WrapVerticallyCentered(LineHeight), width);
     }
 
     public static Control ValueLabel(

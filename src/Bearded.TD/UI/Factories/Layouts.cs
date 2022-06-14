@@ -9,18 +9,32 @@ static class Layouts
 {
     public static Control WrapHorizontallyCentered(this Control control, double width)
     {
-        return new CompositeControl
-        {
-            control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5))
-        };
+        var wrapper = CompositeControl.CreateClickThrough();
+        wrapper.Add(control.Anchor(a => a.Left(margin: -.5 * width, width: width, relativePercentage: .5)));
+        return wrapper;
     }
 
     public static Control WrapVerticallyCentered(this Control control, double height)
     {
-        return new CompositeControl
-        {
-            control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5))
-        };
+        var wrapper = CompositeControl.CreateClickThrough();
+        wrapper.Add(control.Anchor(a => a.Top(margin: -.5 * height, height: height, relativePercentage: .5)));
+        return wrapper;
+    }
+
+    public static Control WrapCentered(this Control control, double width, double height)
+    {
+        var wrapper = CompositeControl.CreateClickThrough();
+        wrapper.Add(control.Anchor(a => a
+            .Left(margin: -.5 * width, width: width, relativePercentage: .5)
+            .Top(margin: -.5 * height, height: height, relativePercentage: .5)));
+        return wrapper;
+    }
+
+    public static Control SurroundWithMargins(this Control control, double margin)
+    {
+        var wrapper = CompositeControl.CreateClickThrough();
+        wrapper.Add(control.Anchor(a => a.MarginAllSides(margin)));
+        return wrapper;
     }
 
     public static PristineLayout BuildLayout(this IControlParent parent) =>

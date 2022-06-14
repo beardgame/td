@@ -52,7 +52,7 @@ static class WindowFactories
             titleBar
                 .BuildFixedRow()
                 .AddHeaderLeft("Research", 100)
-                .AddButtonLeft(b => b.WithLabel("close").WithOnClick(onClose!));
+                .AddButtonRight(b => b.WithLabel("close").WithOnClick(onClose!));
 
             var control = new OnTopCompositeControl { new BackgroundBox() };
             control.BuildLayout()
