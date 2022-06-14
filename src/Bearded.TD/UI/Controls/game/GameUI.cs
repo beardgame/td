@@ -14,7 +14,6 @@ using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
-using OpenTK.Windowing.Desktop;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -38,7 +37,7 @@ sealed class GameUI :
     public ActionBar ActionBar { get; }
     public GameStatusUI GameStatusUI { get; }
     public PlayerStatusUI PlayerStatusUI { get; }
-    public TechnologyUI TechnologyUI { get; }
+    public TechnologyWindow TechnologyUI { get; }
 
     public event VoidEventHandler? FocusReset;
     public event VoidEventHandler? GameVictoryTriggered;
@@ -57,7 +56,7 @@ sealed class GameUI :
         ActionBar = new ActionBar();
         GameStatusUI = new GameStatusUI();
         PlayerStatusUI = new PlayerStatusUI();
-        TechnologyUI = new TechnologyUI();
+        TechnologyUI = new TechnologyWindow();
     }
 
     protected override void Initialize(DependencyResolver dependencies, Parameters parameters)
@@ -77,7 +76,7 @@ sealed class GameUI :
         ActionBar.Initialize(Game);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
-        TechnologyUI.Initialize(Game, tooltipFactory);
+        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, tooltipFactory);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;
@@ -112,7 +111,6 @@ sealed class GameUI :
         NotificationsUI.Update();
         GameStatusUI.Update();
         PlayerStatusUI.Update();
-        TechnologyUI.Update();
 
         updateGameDebugOverlayState();
     }

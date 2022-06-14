@@ -41,8 +41,7 @@ sealed class GameUIControl : CompositeControl
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
 
-        Add(new TechnologyUIControl(gameUI.GameUIController, gameUI.TechnologyUI)
-            .Anchor(a => a.MarginAllSides(80))
+        Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
         var overlayControl = CreateClickThrough();

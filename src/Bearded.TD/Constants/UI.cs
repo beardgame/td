@@ -8,6 +8,7 @@ static partial class Constants
 {
     public static class UI
     {
+        public const double LayoutMarginSmall = 4;
         public const double LayoutMargin = 8;
 
         public static class Button
