@@ -1,6 +1,8 @@
 {
     "id" : "unlockStompTower",
     "name" : "Stomp!",
+    "branch" : "dynamics",
+    "tier" : "low",
     "unlocks": [
         { "type" : "building", "blueprint" : "kinetic1-stomp" }
     ]

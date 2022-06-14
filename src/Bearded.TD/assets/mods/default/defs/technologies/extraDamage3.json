@@ -2,6 +2,7 @@
     "id" : "extraDamage3",
     "name" : "Mega Kill",
     "branch" : "dynamics",
+    "tier" : "medium",
     "requiredTechs" : [ "extraDamage2" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage3" }

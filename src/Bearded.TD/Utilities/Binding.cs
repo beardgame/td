@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Utilities;
@@ -65,5 +68,21 @@ static class Binding
         left.SourceUpdated += v => combined.SetFromSource(combine(v, right.Value));
         right.SourceUpdated += v => combined.SetFromSource(combine(left.Value, v));
         return combined;
+    }
+
+    public static Binding<TOut> Aggregate<TIn, TOut>(
+        IEnumerable<Binding<TIn>> bindings, Func<IEnumerable<TIn>, TOut> aggregator)
+    {
+        var bindingsArray = bindings.ToImmutableArray();
+        var aggregated = new Binding<TOut>(aggregatedValue());
+        foreach (var binding in bindingsArray)
+        {
+            binding.ControlUpdated += _ => aggregated.SetFromControl(aggregatedValue());
+            binding.SourceUpdated += _ => aggregated.SetFromSource(aggregatedValue());
+        }
+
+        return aggregated;
+
+        TOut aggregatedValue() => aggregator(bindingsArray.Select(b => b.Value));
     }
 }

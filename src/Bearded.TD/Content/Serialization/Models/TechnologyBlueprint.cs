@@ -17,6 +17,7 @@ sealed class TechnologyBlueprint
     public string? Id { get; set; }
     public string? Name { get; set; }
     public TechnologyBranch? Branch { get; set; }
+    public TechnologyTier? Tier { get; set; }
     public List<TechnologyUnlock>? Unlocks { get; set; }
     public List<string>? RequiredTechs { get; set; }
 
@@ -24,11 +25,13 @@ sealed class TechnologyBlueprint
     {
         _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
         _ = Name ?? throw new InvalidDataException($"{nameof(Name)} must be non-null");
+        _ = Tier ?? throw new InvalidDataException($"{nameof(Tier)} must be non-null");
 
         return new Content.Models.TechnologyBlueprint(
             ModAwareId.FromNameInMod(Id, modMetadata),
             Name,
             Branch ?? TechnologyBranch.Dynamics,
+            Tier.Value,
             Unlocks?
                 .Select(u => u.ToGameModel(resolvers.ComponentOwnerResolver, resolvers.UpgradeResolver))
                 .ToImmutableArray(),
