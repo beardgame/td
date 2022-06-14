@@ -104,7 +104,8 @@ sealed class TechnologyWindowControl : CompositeControl
 
             var tierControl = new CompositeControl
             {
-                new BackgroundBox(branch.GetColor() * 0.15f),
+                new BackgroundBox(branch.GetColor() * 0.1f),
+                ProgressBarFactories.BareProgressBar(tierModel.CompletionPercentageBinding, branch.GetColor() * 0.15f),
                 buttons.SurroundWithMargins(LayoutMargin)
             };
 

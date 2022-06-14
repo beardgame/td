@@ -80,17 +80,24 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
     {
         public ImmutableArray<Technology> Technologies { get; }
         public int TechsRequiredForCompletionCount { get; }
-        public int TechsUnlockedCount { get; }
         public Binding<int> TechsUnlockedCountBinding { get; }
+        public Binding<double> CompletionPercentageBinding { get; }
 
         public Tier(ImmutableArray<Technology> technologies, int techsRequiredForCompletionCount)
         {
             Technologies = technologies;
             TechsRequiredForCompletionCount = techsRequiredForCompletionCount;
-            TechsUnlockedCount = technologies.Count(t => t.IsUnlocked);
             TechsUnlockedCountBinding = Binding.Aggregate(
                 Technologies.Select(t => t.IsUnlockedBinding),
                 flags => flags.Count(b => b));
+            CompletionPercentageBinding = TechsUnlockedCountBinding.Transform(percentageUnlocked);
+        }
+
+        private double percentageUnlocked(int techsUnlocked)
+        {
+            if (TechsRequiredForCompletionCount == 0) return 0;
+            if (techsUnlocked >= TechsRequiredForCompletionCount) return 1;
+            return (double)techsUnlocked / TechsRequiredForCompletionCount;
         }
     }
 
