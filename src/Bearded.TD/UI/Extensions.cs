@@ -32,6 +32,7 @@ static class Extensions
     {
         control.IsVisible = isVisible.Value;
         isVisible.SourceUpdated += visible => control.IsVisible = visible;
+        isVisible.ControlUpdated += visible => control.IsVisible = visible;
         return control;
     }
 }
