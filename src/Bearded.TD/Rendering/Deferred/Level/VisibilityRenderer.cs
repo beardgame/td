@@ -162,7 +162,7 @@ sealed class VisibilityRenderer : IDisposable
 
             var t = (float)((now - start) / (stop - start)).Clamped(0, 1);
 
-            splat.Draw(p, Constants.Game.World.HexagonSide * 0.75f, angle, (0, t));
+            splat.Draw(p, Constants.Game.World.HexagonSide * 4f, angle, (0, t));
         }
 
         splatRenderer.Render();

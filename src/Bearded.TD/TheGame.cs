@@ -175,11 +175,14 @@ sealed class TheGame : Window, IMouseScaleProvider
 
         var dpSize = NativeWindow.Size;
         var pxSize = NativeWindow.ClientSize;
-        MouseScale = pxSize.X / (float)dpSize.X;
 
-        viewportSize = new ViewportSize(pxSize.X, pxSize.Y, UserSettings.Instance.UI.UIScale);
-        renderContext.OnResize(viewportSize);
-        rootControl.SetViewport(dpSize.X, dpSize.Y, UserSettings.Instance.UI.UIScale / MouseScale);
+        glActionQueue.Queue(() =>
+        {
+            MouseScale = pxSize.X / (float)dpSize.X;
+            viewportSize = new ViewportSize(pxSize.X, pxSize.Y, UserSettings.Instance.UI.UIScale);
+            renderContext.OnResize(viewportSize);
+            rootControl.SetViewport(dpSize.X, dpSize.Y, UserSettings.Instance.UI.UIScale / MouseScale);
+        });
     }
 
     protected override void OnUpdateUIThread()

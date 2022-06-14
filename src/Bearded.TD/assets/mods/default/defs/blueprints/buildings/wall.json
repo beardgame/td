@@ -4,7 +4,6 @@
     { "id" : "name", "parameters" : { "name" : "Wall" } },
     { "id" : "cost", "parameters" : { "resources" : 10 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
-    { "id" : "foundation", "parameters" : { "sprites" : "foundations" } },
     { "id" : "defaultTileOccupancy" },
     { "id" : "canBeBuiltOn" },
     {
@@ -12,6 +11,16 @@
       "parameters": {
         "initialHealth": 1,
         "maxHealth": 50
+      }
+    },
+    {
+      "id": "sprite",
+      "parameters": {
+        "sprite": "buildings2.base-plain",
+        "colorMode" : "faction",
+        "shader" : "building-no-normal",
+        "drawGroup" : "building",
+        "heightOffset" : 0.1
       }
     }
   ]

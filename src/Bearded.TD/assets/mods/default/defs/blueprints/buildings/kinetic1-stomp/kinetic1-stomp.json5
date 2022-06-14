@@ -4,7 +4,6 @@
     { id : "name", parameters : { name : "Stomp" } },
     { id : "cost", parameters : { resources : 50 } },
     { id : "footprint", parameters : { group : "single" } },
-    { id : "foundation", parameters : { sprites : "foundations" } },
     { id : "defaultTileOccupancy" },
     { id : "health", parameters : { initialHealth : 1, maxHealth : 100 } },
     { id : "autoRepair", parameters : { } },
@@ -18,5 +17,15 @@
         height : 0.2
       },
     },
+    {
+      id : "sprite",
+      parameters : {
+        sprite : "buildings2.base-detailed",
+        colorMode : "faction",
+        shader : "building-no-normal",
+        drawGroup : "building",
+        heightOffset : 0.1
+      }
+    }
   ]
 }
