@@ -118,7 +118,7 @@ class PackedSpriteSetBuilder
     {
         var uv = toUvRectangle(rectangle);
 
-        return new SpriteParameters(uv, new Vector2(rectangle.Width, rectangle.Height) * Constants.Rendering.PixelSize);
+        return new SpriteParameters(uv, new Vector2(1, rectangle.Height / (float)rectangle.Width));
     }
 
     private UVRectangle toUvRectangle(Rectangle rect)

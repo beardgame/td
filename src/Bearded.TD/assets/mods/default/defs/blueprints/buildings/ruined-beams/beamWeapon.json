@@ -27,7 +27,8 @@
                 "sprite": "buildings.laser-turret",
                 "colorMode" : "faction",
                 "shader" : "building",
-                "drawGroup" : "building"
+                "drawGroup" : "building",
+                "size" : 0.5
             }
         }
     ]

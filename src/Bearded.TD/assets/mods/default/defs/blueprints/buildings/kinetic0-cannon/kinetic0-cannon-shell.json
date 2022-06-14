@@ -12,7 +12,7 @@
             "parameters" : {
                 "sprite" : "default.particle.tracer2",
                 "color" : "Silver",
-                "size" : 0.7
+                "size" : 0.15
             }
         },
         {
