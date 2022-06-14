@@ -84,5 +84,10 @@ static partial class Constants
             public const double DefaultWidth = 300;
             public const double Margin = 4;
         }
+
+        public static class Window
+        {
+            public const double TitlebarHeight = NavBar.Height;
+        }
     }
 }
