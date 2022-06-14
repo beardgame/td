@@ -2,6 +2,7 @@
     "id" : "extraDamage1",
     "name" : "Double Kill",
     "branch" : "dynamics",
+    "tier" : "low",
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage1" }
     ]

@@ -2,6 +2,7 @@
     "id" : "extraDamage4",
     "name" : "Ultra Kill",
     "branch" : "dynamics",
+    "tier" : "medium",
     "requiredTechs" : [ "extraDamage3" ],
     "unlocks": [
         { "type" : "upgrade", "blueprint" : "extraDamage4" }

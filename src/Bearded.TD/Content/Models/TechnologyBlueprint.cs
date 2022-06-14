@@ -10,6 +10,7 @@ sealed class TechnologyBlueprint : ITechnologyBlueprint
     public ModAwareId Id { get; }
     public string Name { get; }
     public TechnologyBranch Branch { get; }
+    public TechnologyTier Tier { get; }
     public IEnumerable<ITechnologyUnlock> Unlocks { get; }
     public IEnumerable<ITechnologyBlueprint> RequiredTechs { get; }
 
@@ -17,12 +18,14 @@ sealed class TechnologyBlueprint : ITechnologyBlueprint
         ModAwareId id,
         string name,
         TechnologyBranch branch,
+        TechnologyTier tier,
         IEnumerable<ITechnologyUnlock>? unlocks,
         IEnumerable<ITechnologyBlueprint>? requiredTechs)
     {
         Id = id;
         Name = name;
         Branch = branch;
+        Tier = tier;
         Unlocks = unlocks?.ToImmutableArray() ?? ImmutableArray<ITechnologyUnlock>.Empty;
         RequiredTechs = requiredTechs?.ToImmutableArray() ?? ImmutableArray<ITechnologyBlueprint>.Empty;
     }
