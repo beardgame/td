@@ -3,19 +3,22 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.UI.Tooltips;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class TechnologyWindow
 {
     private GameInstance game = null!;
+    private Binding<bool> windowVisibility = null!;
 
     public TooltipFactory TooltipFactory { get; private set; } = null!;
     public TechTree TechTree { get; private set; } = null!;
 
-    public void Initialize(GameInstance game, TooltipFactory tooltipFactory)
+    public void Initialize(GameInstance game, Binding<bool> windowVisibility, TooltipFactory tooltipFactory)
     {
         this.game = game;
+        this.windowVisibility = windowVisibility;
         TooltipFactory = tooltipFactory;
 
         if (!this.game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var factionTechnology))
@@ -33,5 +36,10 @@ sealed class TechnologyWindow
     public void RequestTechnologyUnlock(ITechnologyBlueprint technology)
     {
         game.Request(UnlockTechnology.Request(game.Me.Faction, technology));
+    }
+
+    public void CloseWindow()
+    {
+        windowVisibility.SetFromControl(false);
     }
 }
