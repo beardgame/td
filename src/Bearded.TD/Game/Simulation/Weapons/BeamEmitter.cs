@@ -25,7 +25,7 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(10, Type = AttributeType.DamageOverTime)]
-        int DamagePerSecond { get; }
+        UntypedDamagePerSecond DamagePerSecond { get; }
 
         [Modifiable(Type = AttributeType.Range)]
         Unit Range { get; }
@@ -139,14 +139,15 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
 
     private bool tryDamage(IComponentOwner enemy, float damageFactor)
     {
-        var adjustedDamagePerSecond = damageFactor * Parameters.DamagePerSecond;
+        // TODO: unpacking this is not elegant
+        var adjustedDamagePerSecond = damageFactor * Parameters.DamagePerSecond.Amount.NumericValue;
 
         if (adjustedDamagePerSecond < minDamagePerSecond)
             return false;
 
-        var damage = new TypedDamage(
-            StaticRandom.Discretise((float)(adjustedDamagePerSecond * damageTimeSpan.NumericValue)).HitPoints(),
-            DamageType.Energy);
+        var damage = new UntypedDamage(
+                StaticRandom.Discretise((float) (adjustedDamagePerSecond * damageTimeSpan.NumericValue)).HitPoints())
+            .Typed(DamageType.Energy);
 
         return DamageExecutor.FromObject(Owner).TryDoDamage(enemy, damage);
     }
