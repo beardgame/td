@@ -16,7 +16,12 @@
         {
             "id" : "splashDamageOnHit",
             "parameters" : {
-                "range" : 1.5,
+                "range" : 1.5
+            }
+        },
+        {
+            "id" : "damagePotential",
+            "parameters" : {
                 "damage" : 20
             }
         },

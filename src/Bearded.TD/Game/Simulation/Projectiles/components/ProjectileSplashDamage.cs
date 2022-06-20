@@ -1,5 +1,4 @@
 using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
@@ -17,9 +16,6 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(Type = AttributeType.Damage)]
-        HitPoints Damage { get; }
-
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }
     }
@@ -50,6 +46,12 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
     private void onHit(Position3 center)
     {
+        if (!Owner.TryGetProperty<DamageInfo>(out var damage))
+        {
+            DebugAssert.State.IsInvalid();
+            return;
+        }
+
         var distanceSquared = Parameters.Range.Squared;
 
         var enemies = Owner.Game.UnitLayer;
@@ -59,7 +61,6 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
         var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
         var damageExecutor = DamageExecutor.FromObject(Owner);
-        var damage = new DamageInfo(Parameters.Damage, DamageType.Kinetic);
 
         foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
         {
