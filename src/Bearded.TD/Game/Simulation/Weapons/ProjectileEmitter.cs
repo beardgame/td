@@ -85,7 +85,13 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
         var position = Weapon.Position + (Weapon.Direction * Parameters.MuzzleOffset).WithZ();
 
         ProjectileFactory.Create(
-            Game, Parameters.Projectile, Owner, position, direction, muzzleVelocity, UntypedDamage.Zero);
+            Game,
+            Parameters.Projectile,
+            Owner,
+            position,
+            direction,
+            muzzleVelocity,
+            Parameters.DamagePerSecond / Parameters.FireRate);
 
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }
