@@ -24,8 +24,7 @@ static class ProjectileFactory
             game, blueprint, parent, position, direction);
 
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
-        // TODO: uncomment
-        //obj.AddComponent(new Property<UntypedDamage>(damage));
+        obj.AddComponent(new Property<UntypedDamage>(damage));
 
         applyCurrentUpgradesTo(parent, obj);
 

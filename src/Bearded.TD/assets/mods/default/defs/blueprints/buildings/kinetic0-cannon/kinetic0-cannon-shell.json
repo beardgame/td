@@ -6,12 +6,6 @@
             "parameters" : {}
         },
         {
-            "id" : "damagePotential",
-            "parameters" : {
-                "damage" : 45
-            }
-        },
-        {
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "default.particle.tracer2",

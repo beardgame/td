@@ -17,6 +17,9 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
     {
         IComponentOwnerBlueprint Projectile { get; }
 
+        [Modifiable(Type = AttributeType.Damage)]
+        UntypedDamagePerSecond DamagePerSecond { get; }
+
         [Modifiable(1, Type = AttributeType.FireRate)]
         Frequency FireRate { get; }
 
