@@ -5,6 +5,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -18,6 +19,9 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
     {
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }
+
+        [Modifiable(3)]
+        int DamageDivisionFactor { get; }
 
         DamageType? DamageType { get; }
     }
@@ -48,11 +52,15 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
     private void onHit(Position3 center)
     {
-        if (!Owner.TryGetProperty<UntypedDamage>(out var damage))
+        if (!Owner.TryGetProperty<UntypedDamage>(out var unadjustedDamage))
         {
             DebugAssert.State.IsInvalid();
             return;
         }
+
+        var damage = new UntypedDamage(
+            StaticRandom.Discretise(
+                (float) unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
 
         var distanceSquared = Parameters.Range.Squared;
 
