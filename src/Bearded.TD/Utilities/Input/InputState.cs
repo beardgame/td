@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Bearded.UI.EventArgs;
 using Bearded.Utilities.Input;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -6,7 +7,7 @@ using InputAction = Bearded.Utilities.Input.InputAction;
 
 namespace Bearded.TD.Utilities.Input;
 
-class InputState
+sealed class InputState
 {
     public MouseInputState Mouse { get; }
     public KeyboardInputState Keyboard { get; }
@@ -27,7 +28,7 @@ class InputState
         return Keyboard.GetAnyKeyState(keys);
     }
 
-    public class MouseInputState
+    public sealed class MouseInputState
     {
         private readonly IAction click;
         private readonly IAction cancel;
@@ -39,6 +40,7 @@ class InputState
 
         public Vector2 Position { get; }
         public float DeltaScroll { get; }
+        public ModifierKeys ModifierKeys { get; }
 
         public MouseInputState(InputManager inputManager, float scale)
         {
@@ -48,10 +50,11 @@ class InputState
 
             Position = inputManager.MousePosition * scale;
             DeltaScroll = inputManager.DeltaScrollF;
+            ModifierKeys = ModifierKeys.FromInputManager(inputManager);
         }
     }
 
-    public class KeyboardInputState
+    public sealed class KeyboardInputState
     {
         private readonly InputManager inputManager;
 
