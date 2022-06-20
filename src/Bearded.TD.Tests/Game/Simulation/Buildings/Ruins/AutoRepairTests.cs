@@ -120,6 +120,6 @@ public sealed class AutoRepairTests
 
     private static void doDamage(IHealthEventReceiver healthEventReceiver)
     {
-        healthEventReceiver.Damage(new DamageInfo(1.HitPoints(), DamageType.Kinetic), DivineIntervention.DamageSource);
+        healthEventReceiver.Damage(new TypedDamage(1.HitPoints(), DamageType.Kinetic), DivineIntervention.DamageSource);
     }
 }

@@ -61,7 +61,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
                 return;
             }
 
-            var damage = new DamageInfo(Parameters.Damage, DamageType.Kinetic);
+            var damage = new TypedDamage(Parameters.Damage, DamageType.Kinetic);
             if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage))
             {
                 nextAttack += 1 / Parameters.AttackRate;

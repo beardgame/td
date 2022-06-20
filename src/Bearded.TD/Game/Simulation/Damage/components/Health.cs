@@ -77,7 +77,7 @@ sealed class Health :
 
     public void HandleEvent(TakeDamage @event)
     {
-        onDamaged(@event.Damage.Damage);
+        onDamaged(@event.Damage.TypedDamage);
     }
 
     private void onHealed(HealInfo heal)
@@ -85,9 +85,9 @@ sealed class Health :
         changeHealth(heal.Amount);
     }
 
-    private void onDamaged(DamageInfo damage)
+    private void onDamaged(TypedDamage typedDamage)
     {
-        changeHealth(-damage.Amount);
+        changeHealth(-typedDamage.Amount);
     }
 
     private void changeHealth(HitPoints healthChange)

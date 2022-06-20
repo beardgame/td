@@ -33,7 +33,7 @@ static partial class OnFire
                     (float)(effect.DamagePerSecond.NumericValue * TickDuration.NumericValue))
                 .HitPoints();
             DamageExecutor.FromDamageSource(effect.DamageSource)
-                .TryDoDamage(target, new DamageInfo(damage, DamageType.Fire));
+                .TryDoDamage(target, new TypedDamage(damage, DamageType.Fire));
         }
 
         protected override void StartEffect(IComponentOwner target)

@@ -144,7 +144,7 @@ sealed class BeamEmitter : WeaponCycleHandler<BeamEmitter.IParameters>, IListene
         if (adjustedDamagePerSecond < minDamagePerSecond)
             return false;
 
-        var damage = new DamageInfo(
+        var damage = new TypedDamage(
             StaticRandom.Discretise((float)(adjustedDamagePerSecond * damageTimeSpan.NumericValue)).HitPoints(),
             DamageType.Energy);
 

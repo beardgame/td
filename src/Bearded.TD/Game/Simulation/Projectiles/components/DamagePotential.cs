@@ -6,19 +6,18 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damagePotential")]
-sealed class DamagePotential : Component<DamagePotential.IParameters>, IProperty<DamageInfo>
+sealed class DamagePotential : Component<DamagePotential.IParameters>, IProperty<UntypedDamage>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         HitPoints Damage { get; }
-        DamageType? Type { get; }
     }
 
-    public DamageInfo Value { get; }
+    public UntypedDamage Value { get; }
 
     public DamagePotential(IParameters parameters) : base(parameters)
     {
-        Value = new DamageInfo(parameters.Damage, parameters.Type ?? DamageType.Kinetic);
+        Value = new UntypedDamage(parameters.Damage);
     }
 
     protected override void OnAdded() {}

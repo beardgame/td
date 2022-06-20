@@ -11,14 +11,14 @@ readonly struct DamageExecutor
         this.damageSource = damageSource;
     }
 
-    public bool TryDoDamage(IComponentOwner target, DamageInfo damage)
+    public bool TryDoDamage(IComponentOwner target, TypedDamage typedDamage)
     {
         if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
         {
             return false;
         }
 
-        receiver.Damage(damage, damageSource);
+        receiver.Damage(typedDamage, damageSource);
         return true;
     }
 

@@ -5,23 +5,23 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 readonly struct PreviewTakeDamage : IComponentPreviewEvent
 {
-    public DamageInfo DamageInfo { get; }
+    public TypedDamage TypedDamage { get; }
     public HitPoints? DamageCap { get; }
 
-    public PreviewTakeDamage(DamageInfo damageInfo) : this(damageInfo, null) {}
+    public PreviewTakeDamage(TypedDamage typedDamage) : this(typedDamage, null) {}
 
-    private PreviewTakeDamage(DamageInfo damageInfo, HitPoints? damageCap)
+    private PreviewTakeDamage(TypedDamage typedDamage, HitPoints? damageCap)
     {
         Argument.Satisfies(damageCap == null || damageCap >= HitPoints.Zero);
 
-        DamageInfo = damageInfo;
+        TypedDamage = typedDamage;
         DamageCap = damageCap;
     }
 
     public PreviewTakeDamage CappedAt(HitPoints damageCap)
     {
         return new PreviewTakeDamage(
-            DamageInfo,
+            TypedDamage,
             DamageCap is { } existingDamageCap && damageCap > existingDamageCap
                 ? existingDamageCap
                 : damageCap);

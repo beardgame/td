@@ -18,6 +18,8 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
     {
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }
+
+        DamageType? DamageType { get; }
     }
 
     public ProjectileSplashDamage(IParameters parameters) : base(parameters) {}
@@ -46,7 +48,7 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
     private void onHit(Position3 center)
     {
-        if (!Owner.TryGetProperty<DamageInfo>(out var damage))
+        if (!Owner.TryGetProperty<UntypedDamage>(out var damage))
         {
             DebugAssert.State.IsInvalid();
             return;
@@ -66,7 +68,7 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
         {
             if ((enemy.Position - center).LengthSquared <= distanceSquared)
             {
-                damageExecutor.TryDoDamage(enemy, damage);
+                damageExecutor.TryDoDamage(enemy, damage.Typed(Parameters.DamageType ?? DamageType.Kinetic));
             }
         }
     }

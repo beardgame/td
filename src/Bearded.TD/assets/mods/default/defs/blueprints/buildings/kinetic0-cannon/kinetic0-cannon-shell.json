@@ -2,7 +2,8 @@
     "id" : "kinetic0-cannon-shell",
     "components" : [
         {
-            "id" : "damageOnHit"
+            "id" : "damageOnHit",
+            "parameters" : {}
         },
         {
             "id" : "damagePotential",
