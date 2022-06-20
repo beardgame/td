@@ -8,7 +8,7 @@ readonly struct UntypedDamage
 
     public UntypedDamage(HitPoints amount)
     {
-        Argument.Satisfies(amount > HitPoints.Zero);
+        Argument.Satisfies(amount >= HitPoints.Zero);
         Amount = amount;
     }
 
