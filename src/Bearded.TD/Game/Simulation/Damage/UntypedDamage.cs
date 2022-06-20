@@ -6,6 +6,8 @@ readonly struct UntypedDamage
 {
     public HitPoints Amount { get; }
 
+    public static UntypedDamage Zero => new(HitPoints.Zero);
+
     public UntypedDamage(HitPoints amount)
     {
         Argument.Satisfies(amount >= HitPoints.Zero);

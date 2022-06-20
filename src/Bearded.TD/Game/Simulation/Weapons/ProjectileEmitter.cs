@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using Bearded.TD.Game.Simulation.Buildings;
+﻿using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Physics;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
@@ -82,28 +81,10 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
 
         var position = Weapon.Position + (Weapon.Direction * Parameters.MuzzleOffset).WithZ();
 
-        var projectile = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
-            Game, Parameters.Projectile, Owner, position, direction);
-
-        projectile.AddComponent(new ParabolicMovement(muzzleVelocity));
-
-        applyCurrentUpgradesTo(projectile);
+        ProjectileFactory.Create(
+            Game, Parameters.Projectile, Owner, position, direction, muzzleVelocity, UntypedDamage.Zero);
 
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
-    }
-
-    private void applyCurrentUpgradesTo(GameObject projectile)
-    {
-        var upgrades = Owner.Parent
-            ?.GetComponents<IBuildingUpgradeManager>().SingleOrDefault()
-            ?.AppliedUpgrades
-            .Where(u => u.CanApplyTo(projectile))
-            ?? Enumerable.Empty<IUpgradeBlueprint>();
-
-        foreach (var upgrade in upgrades)
-        {
-            upgrade.ApplyTo(projectile);
-        }
     }
 
     private (Direction2, Velocity3) getMuzzleVelocity()
