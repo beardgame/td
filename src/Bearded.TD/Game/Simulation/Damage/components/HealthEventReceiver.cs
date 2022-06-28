@@ -5,15 +5,15 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class HealthEventReceiver : Component, IHealthEventReceiver
 {
-    public void Damage(DamageInfo damageInfo, IDamageSource? source)
+    public void Damage(TypedDamage typedDamage, IDamageSource? source)
     {
-        var previewDamage = new PreviewTakeDamage(damageInfo);
+        var previewDamage = new PreviewTakeDamage(typedDamage);
         Events.Preview(ref previewDamage);
 
-        var modifiedDamageInfo = damageInfo;
+        var modifiedDamageInfo = typedDamage;
         if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamageInfo.Amount)
         {
-            modifiedDamageInfo = damageInfo.WithAdjustedAmount(damageCap);
+            modifiedDamageInfo = typedDamage.WithAdjustedAmount(damageCap);
         }
 
         if (modifiedDamageInfo.Amount > HitPoints.Zero)
@@ -48,6 +48,6 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
 
 interface IHealthEventReceiver
 {
-    void Damage(DamageInfo damageInfo, IDamageSource? source);
+    void Damage(TypedDamage typedDamage, IDamageSource? source);
     void Heal(HealInfo healInfo);
 }

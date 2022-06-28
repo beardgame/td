@@ -23,6 +23,14 @@ static class SpaceTimeTypes
         new(d => AngularVelocity.FromDegrees((float) d), a => a.AngleValue.Degrees);
 
     [ConvertsAttribute]
+    public static AttributeConverter<UntypedDamage> UntypedDamageConverter =
+        new(d => new UntypedDamage(new HitPoints((int) d)), d => d.Amount.NumericValue);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<UntypedDamagePerSecond> UntypedDpsConverter =
+        new(d => new UntypedDamagePerSecond(new HitPoints((int) d)), dps => dps.Amount.NumericValue);
+
+    [ConvertsAttribute]
     public static AttributeConverter<Energy> EnergyConverter =
         new(d => new Energy(d), e => e.NumericValue);
 

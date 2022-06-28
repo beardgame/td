@@ -1,11 +1,11 @@
 using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -17,11 +17,13 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(Type = AttributeType.Damage)]
-        HitPoints Damage { get; }
-
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }
+
+        [Modifiable(3)]
+        int DamageDivisionFactor { get; }
+
+        DamageType? DamageType { get; }
     }
 
     public ProjectileSplashDamage(IParameters parameters) : base(parameters) {}
@@ -50,6 +52,16 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
     private void onHit(Position3 center)
     {
+        if (!Owner.TryGetProperty<UntypedDamage>(out var unadjustedDamage))
+        {
+            DebugAssert.State.IsInvalid();
+            return;
+        }
+
+        var damage = new UntypedDamage(
+            StaticRandom.Discretise(
+                (float) unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
+
         var distanceSquared = Parameters.Range.Squared;
 
         var enemies = Owner.Game.UnitLayer;
@@ -59,13 +71,12 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
         var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
 
         var damageExecutor = DamageExecutor.FromObject(Owner);
-        var damage = new DamageInfo(Parameters.Damage, DamageType.Kinetic);
 
         foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
         {
             if ((enemy.Position - center).LengthSquared <= distanceSquared)
             {
-                damageExecutor.TryDoDamage(enemy, damage);
+                damageExecutor.TryDoDamage(enemy, damage.Typed(Parameters.DamageType ?? DamageType.Kinetic));
             }
         }
     }

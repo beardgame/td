@@ -12,13 +12,10 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(Type = AttributeType.Damage)]
-        HitPoints Damage { get; }
-
-        DamageType? Type { get; }
+        DamageType? DamageType { get; }
     }
 
-    public DamageOnHit(IParameters parameters) : base(parameters) {}
+    public DamageOnHit(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -32,8 +29,9 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
 
     public void HandleEvent(HitEnemy @event)
     {
-        var damage = new DamageInfo(Parameters.Damage, Parameters.Type ?? DamageType.Kinetic);
-        var damageDone = DamageExecutor.FromObject(Owner).TryDoDamage(@event.Enemy, damage);
+        var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
+            && DamageExecutor.FromObject(Owner)
+                .TryDoDamage(@event.Enemy, damage.Typed(Parameters.DamageType ?? DamageType.Kinetic));
         DebugAssert.State.Satisfies(damageDone);
     }
 

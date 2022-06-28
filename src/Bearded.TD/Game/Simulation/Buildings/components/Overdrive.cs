@@ -68,7 +68,7 @@ sealed class Overdrive : Component
                 ? MoreMath.CeilToInt(health.MaxHealth.NumericValue * damagePercentile)
                 : 10);
 
-        var overdriveDamage = new DamageInfo(damage, DamageType.DivineIntervention);
+        var overdriveDamage = new TypedDamage(damage, DamageType.DivineIntervention);
 
         DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage);
 

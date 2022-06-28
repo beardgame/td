@@ -10,14 +10,14 @@
         {
             "id" : "hitLevelAtTower",
             "parameters" : {
+                "damagePerSecond" : 60,
                 "fireRate" : 1
             }
         },
         {
             "id" : "splashDamageOnHit",
             "parameters" : {
-                "range" : 1.5,
-                "damage" : 20
+                "range" : 1.5
             }
         },
         {

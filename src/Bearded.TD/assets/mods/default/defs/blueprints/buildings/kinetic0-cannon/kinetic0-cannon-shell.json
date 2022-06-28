@@ -3,9 +3,7 @@
     "components" : [
         {
             "id" : "damageOnHit",
-            "parameters" : {
-                "damage" : 45
-            }
+            "parameters" : {}
         },
         {
             "id" : "sprite",
@@ -23,11 +21,17 @@
             }
         },
         {
-            "id": "spawnObjectOnHit",
-            "parameters": {
-                "object": "sparkExplosion",
-                "onHitLevel": true,
-                "onHitEnemy": false
+            "id" : "spawnObjectOnHit",
+            "parameters" : {
+                "object" : "sparkExplosion",
+                "onHitLevel" : true,
+                "onHitEnemy" : false
+            }
+        },
+        {
+            "id" : "tags",
+            "parameters" : {
+                "tags" : [ "projectile" ]
             }
         }
     ]

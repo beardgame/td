@@ -13,8 +13,6 @@ sealed class ComponentModifiable : UpgradeEffectBase
         this.component = component;
     }
 
-    public override bool CanApplyToComponentCollectionForType() => tryCreateComponentFactory() != null;
-
     public override void ApplyTo(GameObject subject)
     {
         var factory = tryCreateComponentFactory();

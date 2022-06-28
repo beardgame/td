@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Utilities.Input;
+using Bearded.UI.EventArgs;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input;
@@ -15,6 +16,7 @@ sealed class MouseCursorHandler : ICursorHandler
     public ActionState Click { get; private set; }
     public ActionState Cancel { get; private set; }
     public Position2 CursorPosition { get; private set; }
+    public ModifierKeys ModifierKeys { get; private set; }
 
     public PositionedFootprint CurrentFootprint { get; private set; }
 
@@ -30,6 +32,7 @@ sealed class MouseCursorHandler : ICursorHandler
     {
         currentCameraController.HandleInput(input);
         CursorPosition = camera.TransformScreenToWorldPos(input.Mouse.Position);
+        ModifierKeys = input.Mouse.ModifierKeys;
         Click = input.Mouse.Click;
         Cancel = input.Mouse.Cancel;
         updateFootprint();

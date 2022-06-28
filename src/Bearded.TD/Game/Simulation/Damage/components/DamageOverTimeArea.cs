@@ -52,7 +52,7 @@ sealed class DamageOverTimeArea : Component<DamageOverTimeArea.IParameters>
 
         var centerPosition = Owner.Position;
         var rangeSquared = Parameters.Range.Squared;
-        var damageInfo = new DamageInfo(damage, Parameters.Type);
+        var damageInfo = new TypedDamage(damage, Parameters.Type);
         var executor = DamageExecutor.FromDamageSource(damageSource);
 
         foreach (var tile in Tilemap.GetSpiralCenteredAt(centerTile, tileRadius))
