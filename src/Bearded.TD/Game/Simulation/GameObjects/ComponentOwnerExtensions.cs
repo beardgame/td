@@ -30,4 +30,9 @@ static class ComponentOwnerExtensions
         property = default;
         return false;
     }
+
+    public static bool HasTag(this IComponentOwner componentOwner, string tag)
+    {
+        return componentOwner.TryGetSingleComponent<GameObjectTags>(out var tags) && tags.HasTag(tag);
+    }
 }
