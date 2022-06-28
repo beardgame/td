@@ -50,9 +50,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
     }
 
     public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-        => base.CanApplyUpgradeEffect(effect)
-            || Parameters.Projectile.CanApplyUpgradeEffect(effect)
-            || effect.CanApplyToComponentCollectionForType();
+        => base.CanApplyUpgradeEffect(effect) || Parameters.Projectile.CanApplyUpgradeEffect(effect);
 
     protected override void UpdateIdle(TimeSpan elapsedTime)
     {

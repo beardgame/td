@@ -8,12 +8,9 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 abstract class UpgradeEffectBase : IUpgradeEffect
 {
     public bool CanApplyTo(GameObject subject)
-        => CanApplyToComponentCollectionForType()
-            || subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
+        => subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
 
     public virtual bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;
-
-    public virtual bool CanApplyToComponentCollectionForType() => false;
 
     public virtual void ApplyTo(GameObject subject)
         => subject.GetComponents<IComponent>().ForEach(c => c.ApplyUpgradeEffect(this));
