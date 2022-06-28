@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 static partial class OnFire
 {
     public readonly record struct Effect(
-        HitPoints DamagePerSecond, IDamageSource? DamageSource, TimeSpan Duration) : IElementalEffect
+        UntypedDamagePerSecond DamagePerSecond, IDamageSource? DamageSource, TimeSpan Duration) : IElementalEffect
     {
         IElementalPhenomenon IElementalEffect.Phenomenon => phenomenon;
     }

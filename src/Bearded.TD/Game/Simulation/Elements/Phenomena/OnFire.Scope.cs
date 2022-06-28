@@ -23,14 +23,14 @@ static partial class OnFire
                 return false;
             }
 
-            effect = ActiveEffects.MaxBy(e => e.DamagePerSecond.NumericValue);
+            effect = ActiveEffects.MaxBy(e => e.DamagePerSecond.Amount.NumericValue);
             return true;
         }
 
         protected override void ApplyEffectTick(IComponentOwner target, Effect effect)
         {
             var damage = StaticRandom.Discretise(
-                    (float)(effect.DamagePerSecond.NumericValue * TickDuration.NumericValue))
+                    (float)(effect.DamagePerSecond.Amount.NumericValue * TickDuration.NumericValue))
                 .HitPoints();
             DamageExecutor.FromDamageSource(effect.DamageSource)
                 .TryDoDamage(target, new TypedDamage(damage, DamageType.Fire));
