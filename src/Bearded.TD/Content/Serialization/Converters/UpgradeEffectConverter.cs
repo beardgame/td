@@ -3,6 +3,7 @@ using System.IO;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -24,18 +25,32 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         var type = json
             .GetValue("type", StringComparison.OrdinalIgnoreCase)
             ?.ToObject<UpgradeEffectType>(serializer) ?? UpgradeEffectType.Unknown;
+        var prerequisites = json
+            .GetValue("prerequisites", StringComparison.OrdinalIgnoreCase)
+            ?.ToObject<UpgradePrerequisites>(serializer);
+
+        var def = json.GetValue("parameters");
+        if (def == null)
+        {
+            throw new InvalidDataException("Missing upgrade effect definition.");
+        }
 
         switch (type)
         {
             case UpgradeEffectType.Modification:
                 var parameters = new ModificationParameters();
-                serializer.Populate(json.GetValue("parameters").CreateReader(), parameters);
-                return new ParameterModifiable(parameters.AttributeType, getModification(parameters));
+                serializer.Populate(def.CreateReader(), parameters);
+                return new ParameterModifiable(parameters.AttributeType, getModification(parameters), prerequisites);
             case UpgradeEffectType.Component:
-                var component = serializer.Deserialize<IComponent>(json.GetValue("parameters").CreateReader());
-                return new ComponentModifiable(component);
+                var component = serializer.Deserialize<IComponent>(def.CreateReader());
+                if (component == null)
+                {
+                    throw new InvalidDataException("Missing component definition");
+                }
+                return new ComponentModifiable(component, prerequisites);
+            case UpgradeEffectType.Unknown:
             default:
-                throw new InvalidDataException("Upgrade effect must have a valid type.");
+                throw new InvalidDataException($"Unsupported upgrade effect type: {type}");
         }
     }
 
@@ -54,7 +69,8 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         }
     }
 
-    private class ModificationParameters
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    private sealed class ModificationParameters
     {
         public enum ModificationMode
         {
@@ -64,10 +80,8 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             Multiply = 3,
         }
 
-#pragma warning disable 649
         public AttributeType AttributeType;
         public ModificationMode Mode = ModificationMode.Unknown;
         public double Value;
-#pragma warning restore 649
     }
 }

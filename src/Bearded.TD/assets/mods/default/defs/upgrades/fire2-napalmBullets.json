@@ -1,0 +1,18 @@
+{
+    "id" : "fire2-napalmBullets",
+    "name" : "Napalm bullets",
+    "cost" : 50,
+    "effects": [
+        {
+            "type" : "component",
+            "parameters" : {
+                "id" : "applyOnFireOnImpact",
+                "parameters" : {
+                    "probability" : 0.25,
+                    "fractionOfBaseDamageApplied" : 2,
+                    "effectDuration" : 3
+                }
+            }
+        }
+    ]
+}

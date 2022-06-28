@@ -7,7 +7,9 @@ sealed class ParameterModifiableWithId : UpgradeEffectBase
     private readonly AttributeType attributeType;
     private readonly ModificationWithId modification;
 
-    public ParameterModifiableWithId(AttributeType attributeType, ModificationWithId modification)
+    public ParameterModifiableWithId(
+        AttributeType attributeType, ModificationWithId modification, UpgradePrerequisites? prerequisites)
+        : base(prerequisites)
     {
         this.attributeType = attributeType;
         this.modification = modification;
