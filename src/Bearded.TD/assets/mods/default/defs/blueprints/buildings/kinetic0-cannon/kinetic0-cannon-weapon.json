@@ -26,7 +26,7 @@
             "parameters" : {
                 "projectile" : "kinetic0-cannon-shell",
                 "muzzleSpeed" : 20,
-                "damagePerSecond" : 60,
+                "damagePerSecond" : 30,
                 "fireRate" : 0.75,
                 "muzzleOffset" : 0.3
             }

@@ -10,7 +10,7 @@
         {
             "id" : "hitLevelAtTower",
             "parameters" : {
-                "damagePerSecond" : 60,
+                "damagePerSecond" : 20,
                 "fireRate" : 1
             }
         },
