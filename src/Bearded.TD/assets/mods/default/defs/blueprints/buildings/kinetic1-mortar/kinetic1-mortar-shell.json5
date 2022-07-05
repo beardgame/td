@@ -1,0 +1,58 @@
+{
+    "id" : "kinetic1-mortar-shell",
+    "components" : [
+        {
+            "id" : "splashDamageOnHit",
+            "parameters" : {
+                "range" : 1.5
+            }
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "default.particle.orb-soft",
+                "color" : "FFBB8888",
+                "size" : 0.2
+            }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "FF221111",
+                "radius" : 3
+            }
+        },
+        {
+            id : "trail",
+            parameters : {
+                color : "88BB8888",
+                sprite : "default.particle.circle-soft",
+                timeout : 0.25,
+                width : 0.1,
+                surviveObjectDeletion : true
+            }
+        },
+        {
+            "id" : "spawnObjectOnHit",
+            "parameters" : {
+                "object" : "dustExplosion",
+                "onHitLevel" : true,
+                "onHitEnemy" : true
+            }
+        },
+        {
+            "id": "spawnObjectOnHit",
+            "parameters": {
+                "object": "medium-shockwave",
+                "onHitLevel": true,
+                "onHitEnemy": true
+            }
+        },
+        {
+            "id" : "tags",
+            "parameters" : {
+                "tags" : [ "projectile" ]
+            }
+        }
+    ]
+}

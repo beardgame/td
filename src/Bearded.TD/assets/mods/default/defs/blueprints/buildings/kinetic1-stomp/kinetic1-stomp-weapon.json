@@ -31,7 +31,7 @@
         {
             "id": "spawnObjectOnHit",
             "parameters": {
-                "object": "kinetic1-stomp-shockwave",
+                "object": "medium-shockwave",
                 "onHitLevel": true,
                 "onHitEnemy": false
             }

@@ -32,9 +32,9 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         ISpriteBlueprint Sprite { get; }
         Color Color { get; }
         Shader? Shader { get; }
-        float Size { get; }
-        float? FinalSize { get; }
-        float LineWidth { get; }
+        Unit Size { get; }
+        Unit? FinalSize { get; }
+        Unit LineWidth { get; }
         TimeSpan LifeTime { get; }
         Speed RandomVelocity { get; }
         Speed VectorVelocity { get; }
@@ -42,6 +42,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         [Modifiable(1)]
         float GravityFactor { get; }
         DrawMode DrawMode { get; }
+        Difference3 Offset { get; }
     }
 
     private bool initialized;
@@ -106,7 +107,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
         var baseVelocity = reflectionVelocity + vectorVelocity;
 
-        var position = Owner.Position;
+        var position = Owner.Position + Parameters.Offset;
         var now = Owner.Game.Time;
         for (var i = 0; i < particles.Length; i++)
         {
@@ -160,8 +161,8 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             a = Math.Min(a, 1);
             var argb = Parameters.Color.WithAlpha(0) * a;
             var size = Parameters.FinalSize.HasValue
-                ? Interpolate.Lerp(Parameters.FinalSize.Value, Parameters.Size, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
-                : Parameters.Size;
+                ? Interpolate.Lerp(Parameters.FinalSize.Value.NumericValue, Parameters.Size.NumericValue, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
+                : Parameters.Size.NumericValue;
 
             switch (Parameters.DrawMode)
             {
@@ -176,7 +177,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
                 case DrawMode.Line:
 
                     var v = p.Velocity.NumericValue * size * 0.5f;
-                    var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth * 0.5f;
+                    var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth.NumericValue * 0.5f;
                     var c = p.Position.NumericValue;
 
                     var p0 = c - v + w;

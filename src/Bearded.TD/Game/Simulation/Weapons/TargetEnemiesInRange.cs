@@ -31,6 +31,7 @@ sealed class TargetEnemiesInRange
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(Type = AttributeType.Range)] Unit Range { get; }
+        Unit MinimumRange { get; }
         [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
         [Modifiable(1)] TimeSpan ReCalculateTilesInRangeInterval { get; }
 
@@ -156,6 +157,7 @@ sealed class TargetEnemiesInRange
         currentMaxTurningAngle = weapon.MaximumTurningAngle;
         currentRange = Parameters.Range;
         var rangeSquared = currentRange.Squared;
+        var minRangeSquared = Parameters.MinimumRange.Squared;
 
         var level = game.Level;
         var navigator = game.Navigator;
@@ -170,7 +172,8 @@ sealed class TargetEnemiesInRange
                 currentRange,
                 t => !level.IsValid(t) || !passabilityLayer[t].IsPassable)
             .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                (Level.GetPosition(t.tile) - position.XY()).LengthSquared < rangeSquared)
+                (Level.GetPosition(t.tile) - position.XY()).LengthSquared is var dSquared &&
+                dSquared >= minRangeSquared && dSquared <= rangeSquared)
             .Select(t => t.tile)
             .OrderBy(navigator.GetDistanceToClosestSink)
             .ToImmutableArray();

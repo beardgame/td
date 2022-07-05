@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
-class SpaceTime2Converter<T> : JsonConverterBase<T>
+class SpaceTime3Converter<T> : JsonConverterBase<T>
 {
-    private readonly Func<float, float, T> convert;
+    private readonly Func<float, float, float, T> convert;
 
-    public SpaceTime2Converter(Func<float, float, T> constructor)
+    public SpaceTime3Converter(Func<float, float, float, T> constructor)
     {
         convert = constructor;
     }
@@ -19,10 +19,11 @@ class SpaceTime2Converter<T> : JsonConverterBase<T>
 
         var x = readNumber(reader);
         var y = readNumber(reader);
+        var z = readNumber(reader);
 
         confirmArrayToken(reader, JsonToken.EndArray);
 
-        return convert(x, y);
+        return convert(x, y, z);
     }
 
     private static void readArrayToken(JsonReader reader, JsonToken arrayToken)
@@ -35,7 +36,7 @@ class SpaceTime2Converter<T> : JsonConverterBase<T>
     {
         if (reader.TokenType != arrayToken)
             throw new InvalidDataException(
-                $"Expected two component array, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
+                $"Expected three component array, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
     }
 
     private static float readNumber(JsonReader reader)

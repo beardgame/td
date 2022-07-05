@@ -1,0 +1,9 @@
+{
+    "id" : "unlockMortarTower",
+    "name" : "Lob!",
+    "branch" : "dynamics",
+    "tier" : "low",
+    "unlocks": [
+        { "type" : "building", "blueprint" : "kinetic1-mortar" }
+    ]
+}
