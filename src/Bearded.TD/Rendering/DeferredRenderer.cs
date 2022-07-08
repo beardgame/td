@@ -97,10 +97,10 @@ class DeferredRenderer
                     ClearColor(),
                     ClearDepth(),
                     Do(s => s.Content.LevelRenderer.Render()),
-                    Do(s => solidLevelDrawGroups.ForEach(s.Content.RenderDrawGroup)),
+                    renderDrawGroups(solidLevelDrawGroups),
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
-                        Do(s => worldDrawGroups.ForEach(s.Content.RenderDrawGroup)))
+                        renderDrawGroups(worldDrawGroups))
                 ))
         ));
 
@@ -138,12 +138,12 @@ class DeferredRenderer
                             .SetBlendMode(Premultiplied),
                         InOrder(
                             Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
-                            Do(s => postLightGroups.ForEach(s.Content.RenderDrawGroup))
+                            renderDrawGroups(postLightGroups)
                         )),
                     WithContext(
                         c => c.SetDebugName("Render depth ignoring groups")
                             .SetBlendMode(Premultiplied),
-                        Do(s => ignoreDepthGroup.ForEach(s.Content.RenderDrawGroup))
+                        renderDrawGroups(ignoreDepthGroup)
                         )
                 ))
         ));
@@ -166,13 +166,15 @@ class DeferredRenderer
         pipeline = WithContext(
             c => c.SetDebugName("Render game state"),
             fullRender);
+    }
 
-        // TODO: it would be neat to have some steps have a more semantic associated output
-        // for example, WithContext(c => c.BindRenderTarget(target)) could be replaced
-        // by a call that takes texture definitions, and returns a pipeline step that also
-        // exposes the PipeLineTexture objects which can then be used as input for future steps
-        // and that would possibly allow us to write things more like a tree of actual dependencies
-        // instead of of a linear chain of commands
+    private static IPipeline<RenderState> renderDrawGroups(SpriteDrawGroup[] drawGroups)
+    {
+        return Do(s =>
+        {
+            foreach (var spriteDrawGroup in drawGroups)
+                s.Content.RenderDrawGroup(spriteDrawGroup);
+        });
     }
 
     private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
