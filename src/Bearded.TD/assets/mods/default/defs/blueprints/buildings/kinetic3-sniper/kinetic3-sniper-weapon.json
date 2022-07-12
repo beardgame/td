@@ -1,0 +1,53 @@
+{
+    "id": "kinetic3-sniper-weapon",
+    "components" : [
+        {
+            "id" : "targetEnemiesInRange",
+            "parameters" : {
+                "range" : 12,
+                "coneOfFire" : 1
+            }
+        },
+        {
+            "id" : "pidAim",
+            "parameters" : {
+                "proportionalCorrection" : 50,
+                "derivativeCorrection" : 8
+            }
+        },
+        {
+            "id" : "recoil",
+            "parameters" : {
+                "impulse" : 200
+            }
+        },
+        {
+            "id" : "projectileEmitter",
+            "parameters" : {
+                "projectile" : "kinetic3-sniper-shell",
+                "muzzleSpeed" : 50,
+                "damagePerSecond" : 45,
+                "fireRate" : 0.3,
+                "muzzleOffset" : 0.3
+            }
+        },
+        {
+            "id" : "muzzleFlash",
+            "parameters" : {
+                "sprite" : "particle.muzzleflash",
+                "color" : "00EED7D0",
+                "size" : 1.5,
+                "offset" : 0.5
+            }
+        },
+        {
+            "id": "sprite",
+            "parameters": {
+                "sprite": "buildings2.cannon-turret",
+                "colorMode" : "faction",
+                "shader" : "building-no-normal",
+                "drawGroup" : "building"
+            }
+        }
+    ]
+}

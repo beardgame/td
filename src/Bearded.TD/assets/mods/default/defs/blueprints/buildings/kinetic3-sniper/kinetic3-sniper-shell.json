@@ -1,0 +1,38 @@
+{
+    "id" : "kinetic3-sniper-shell",
+    "components" : [
+        {
+            "id" : "damageOnHit",
+            "parameters" : {}
+        },
+        {
+            "id" : "sprite",
+            "parameters" : {
+                "sprite" : "default.particle.tracer2",
+                "color" : "Silver",
+                "size" : 0.3
+            }
+        },
+        {
+            "id" : "pointlight",
+            "parameters" : {
+                "color" : "FF333344",
+                "radius" : 3
+            }
+        },
+        {
+            "id" : "spawnObjectOnHit",
+            "parameters" : {
+                "object" : "sparkExplosion",
+                "onHitLevel" : true,
+                "onHitEnemy" : false
+            }
+        },
+        {
+            "id" : "tags",
+            "parameters" : {
+                "tags" : [ "projectile" ]
+            }
+        }
+    ]
+}
