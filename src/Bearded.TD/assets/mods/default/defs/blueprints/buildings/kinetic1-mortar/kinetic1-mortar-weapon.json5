@@ -23,12 +23,17 @@
             }
         },
         {
+            id : "automaticFireCycle",
+            parameters : {
+                damagePerSecond : 20,
+                fireRate : 0.5
+            }
+        },
+        {
             id : "projectileEmitter",
             parameters : {
                 projectile : "kinetic1-mortar-shell",
                 muzzleSpeed : 5,
-                damagePerSecond : 20,
-                fireRate : 0.5,
                 muzzleOffset : 0.3,
             }
         },

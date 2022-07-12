@@ -8,11 +8,14 @@
             }
         },
         {
-            "id" : "hitLevelAtTower",
+            "id" : "automaticFireCycle",
             "parameters" : {
                 "damagePerSecond" : 20,
                 "fireRate" : 1
             }
+        },
+        {
+            "id" : "hitLevelAtTower"
         },
         {
             "id" : "splashDamageOnHit",

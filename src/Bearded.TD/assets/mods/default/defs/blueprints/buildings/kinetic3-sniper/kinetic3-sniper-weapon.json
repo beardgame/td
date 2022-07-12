@@ -22,12 +22,17 @@
             }
         },
         {
+            "id" : "automaticFireCycle",
+            "parameters" : {
+                "damagePerSecond" : 45,
+                "fireRate" : 0.3
+            }
+        },
+        {
             "id" : "projectileEmitter",
             "parameters" : {
                 "projectile" : "kinetic3-sniper-shell",
                 "muzzleSpeed" : 50,
-                "damagePerSecond" : 45,
-                "fireRate" : 0.3,
                 "muzzleOffset" : 0.3
             }
         },
