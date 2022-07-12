@@ -38,14 +38,17 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
         {
             emitProjectile();
 
+            var previewDelayEvent = new PreviewDelayNextShot(1 / Parameters.FireRate);
+            Events.Preview(ref previewDelayEvent);
+
             if (firstShotInBurst)
             {
-                nextPossibleShootTime = currentTime + 1 / Parameters.FireRate;
+                nextPossibleShootTime = currentTime + previewDelayEvent.Delay;
                 firstShotInBurst = false;
             }
             else
             {
-                nextPossibleShootTime += 1 / Parameters.FireRate;
+                nextPossibleShootTime += previewDelayEvent.Delay;
             }
         }
     }
