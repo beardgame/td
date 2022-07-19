@@ -59,7 +59,7 @@ jobs:
         uses: thedoctor0/zip-release@0.6.2
         with:
           type: zip
-          filename: bearded.td-v${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
+          filename: bearded.td-${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
           path: ${{matrix.runtime}}
           directory: publish
       - name: Upload artifact
