@@ -8,9 +8,9 @@
         {
             "id" : "sprite",
             "parameters" : {
-                "sprite" : "default.particle.tracer2",
+                "sprite" : "default.particle.tracer",
                 "color" : "Silver",
-                "size" : 0.1
+                "size" : 0.75
             }
         },
         {

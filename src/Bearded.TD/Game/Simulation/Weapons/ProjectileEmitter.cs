@@ -24,7 +24,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
 
-        Unit MuzzleOffset { get; }
+        Difference2 MuzzleOffset { get; }
     }
 
     private IWeaponState weapon = null!;
@@ -58,7 +58,11 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     {
         var (direction, muzzleVelocity) = getMuzzleVelocity();
 
-        var position = weapon.Position + (weapon.Direction * Parameters.MuzzleOffset).WithZ();
+        var weaponDirection = weapon.Direction.Vector;
+        var position = weapon.Position +
+            (weaponDirection * Parameters.MuzzleOffset.X
+                + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
+            ).WithZ();
 
         ProjectileFactory.Create(
             Owner.Game,

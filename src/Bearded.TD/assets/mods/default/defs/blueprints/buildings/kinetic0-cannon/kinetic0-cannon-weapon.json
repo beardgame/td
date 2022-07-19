@@ -33,7 +33,7 @@
             "parameters" : {
                 "projectile" : "kinetic0-cannon-shell",
                 "muzzleSpeed" : 20,
-                "muzzleOffset" : 0.3
+                "muzzleOffset" : [0.3, 0]
             }
         },
         {
@@ -51,7 +51,8 @@
                 "sprite": "buildings2.cannon-turret",
                 "colorMode" : "faction",
                 "shader" : "building-no-normal",
-                "drawGroup" : "building"
+                "drawGroup" : "building",
+                "size" : 1.2
             }
         }
     ]

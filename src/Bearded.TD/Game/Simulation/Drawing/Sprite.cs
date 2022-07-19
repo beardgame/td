@@ -80,9 +80,6 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
             p.Xy += o.NumericValue;
         }
 
-        // sprites are normalised to point 'up', this turns them to point 'right'
-        var angle = (Owner.Direction - 90.Degrees()).Radians;
-
-        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, angle, color);
+        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, Owner.Direction.Radians, color);
     }
 }

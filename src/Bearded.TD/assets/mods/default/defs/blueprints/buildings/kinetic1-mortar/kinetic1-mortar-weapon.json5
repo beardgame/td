@@ -34,7 +34,7 @@
             parameters : {
                 projectile : "kinetic1-mortar-shell",
                 muzzleSpeed : 5,
-                muzzleOffset : 0.3,
+                muzzleOffset :  [0.3, 0],
             }
         },
         {
@@ -49,11 +49,11 @@
         {
             id : "sprite",
             parameters : {
-                sprite : "buildings2.cannon-detailed",
+                sprite : "buildings2.mortar-turret",
                 colorMode : "faction",
                 shader : "building-no-normal",
                 drawGroup : "building",
-                size : 0.5,
+                "size" : 1.2
             }
         },
     ]
