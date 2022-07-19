@@ -49,7 +49,7 @@ static class EntryPoint
         logger.Info?.Log("Safely exited game");
 #if !DEBUG
         }
-        catch (Exception e)
+        catch (System.Exception e)
         {
             writer.WriteLine("Bearded.TD ended abruptly");
             writer.WriteLine(e);
