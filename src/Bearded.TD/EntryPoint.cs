@@ -23,8 +23,8 @@ static class EntryPoint
         using var writer = new StreamWriter(stream);
 
 #if !DEBUG
-            try
-            {
+        try
+        {
 #endif
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -53,13 +53,13 @@ static class EntryPoint
 
         logger.Info?.Log("Safely exited game");
 #if !DEBUG
-            }
-            catch (Exception e)
-            {
-                writer.WriteLine("Bearded.TD ended abruptly");
-                writer.WriteLine(e);
-                throw;
-            }
+        }
+        catch (Exception e)
+        {
+            writer.WriteLine("Bearded.TD ended abruptly");
+            writer.WriteLine(e);
+            throw;
+        }
 #endif
     }
 }
