@@ -1,22 +1,19 @@
-﻿namespace Bearded.TD.Shared.TechEffects
-{
-    public enum AttributeType : byte
-    {
-        None = 0,
+﻿namespace Bearded.TD.Shared.TechEffects;
 
-        Cooldown,
-        Damage,
-        DamageOverTime,
-        DroneCount,
-        EffectStrength,
-        FireRate,
-        Health,
-        MovementSpeed,
-        PiercingFactor,
-        ResourceIncome,
-        Range,
-        SplashRange,
-        SpreadAngle,
-        TurnSpeed,
-    }
+public enum AttributeType : byte
+{
+    None = 0,
+
+    Damage,
+    DamageOverTime,
+    DroneCount,
+    EffectStrength,
+    FireRate,
+    Health,
+    MovementSpeed,
+    PiercingFactor,
+    Range,
+    SplashRange,
+    SpreadAngle,
+    TurnSpeed,
 }
