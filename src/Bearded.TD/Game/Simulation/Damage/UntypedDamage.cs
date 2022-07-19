@@ -15,4 +15,10 @@ readonly struct UntypedDamage
     }
 
     public TypedDamage Typed(DamageType type) => new(Amount, type);
+
+    public static UntypedDamage operator *(int scalar, UntypedDamage amount) =>
+        new(scalar * amount.Amount);
+
+    public static UntypedDamage operator *(UntypedDamage amount, int scalar) =>
+        new(scalar * amount.Amount);
 }

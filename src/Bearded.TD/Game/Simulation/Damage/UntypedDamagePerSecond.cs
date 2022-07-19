@@ -1,4 +1,3 @@
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 
@@ -16,9 +15,11 @@ readonly struct UntypedDamagePerSecond
         Amount = amount;
     }
 
-    public static UntypedDamage operator /(UntypedDamagePerSecond dps, Frequency fireRate)
-    {
-        return new UntypedDamage(
-            StaticRandom.Discretise(dps.Amount.NumericValue / (float) fireRate.NumericValue).HitPoints());
-    }
+    public static UntypedDamage operator *(TimeSpan timeSpan, UntypedDamagePerSecond dps) => dps * timeSpan;
+
+    public static UntypedDamage operator *(UntypedDamagePerSecond dps, TimeSpan timeSpan) =>
+        new(((int) (dps.Amount.NumericValue * timeSpan.NumericValue)).HitPoints());
+
+    public static UntypedDamage operator /(UntypedDamagePerSecond dps, Frequency fireRate) =>
+        new(((int) (dps.Amount.NumericValue / fireRate.NumericValue)).HitPoints());
 }
