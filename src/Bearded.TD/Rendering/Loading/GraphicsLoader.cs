@@ -33,7 +33,7 @@ class GraphicsLoader : IGraphicsLoader
         if (spriteRectangles.Count == 0)
         {
             logger.Warning?.Log($"Sprite set '{id}' contains no sprites.");
-            return new PackedSpriteSetBuilder(new List<string>(), 0, 0).Build(glActions, pixelate);
+            return new PackedSpriteSetBuilder(new(), 0, 0).Build(glActions, pixelate, new());
         }
 
         var packedSprites = BinPacking.Pack(spriteRectangles);
@@ -56,8 +56,20 @@ class GraphicsLoader : IGraphicsLoader
             }
         }
 
-        return builder.Build(glActions, pixelate);
+        return builder.Build(glActions, pixelate, transformationsBySampler(samplers));
 
+        static Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler(
+            IEnumerable<Sampler> samplers)
+        {
+            return samplers.ToDictionary(s => s.Name, s => s.Transformations.Select(
+                t => t switch
+                {
+                    "normalFromHeight" => DoNothing,
+                    "test" => Test,
+                    var other => throw new InvalidDataException($"Sprite sampler has unknown transformation '{other}'")
+                }
+            ));
+        }
 
         static BinPacking.Rectangle<(string Name, Dictionary<string, Bitmap> BitmapsBySampler)>
             rectangleWithBitmaps(SpriteBitmaps bitmaps)

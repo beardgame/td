@@ -61,14 +61,22 @@ class PackedSpriteSetBuilder
     private int flatCoordinate(int x, int y)
         => 4 * (y * width + x);
 
-    public PackedSpriteSet Build(IActionQueue glActions, bool pixelate)
+    public PackedSpriteSet Build(
+        IActionQueue glActions,
+        bool pixelate,
+        Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler)
     {
         var premultiply = TextureTransformation.Premultiply;
 
-        samplerData.Values.ForEach(bytes =>
+        samplerData.ForEach(kvp =>
         {
+            var (sampler, bytes) = kvp;
             var (w, h) = (width, height);
             premultiply.Transform(ref bytes, ref w, ref h);
+            foreach (var transform in transformationsBySampler[sampler])
+            {
+                transform.Transform(ref bytes, ref w, ref h);
+            }
         });
 
         var textureUniforms = glActions.Run(() => createGlEntities(pixelate)).Result;
