@@ -43,6 +43,7 @@ static class GameObjectFactory
         GameState game, IComponentOwner? parent, Position3 position, Direction2? direction = null)
     {
         var obj = new GameObject(parent, position, direction ?? Direction2.Zero);
+        obj.AddComponent(new GameObjectTags());
         game.Add(obj);
         return obj;
     }
