@@ -8,7 +8,7 @@ readonly struct BuildingUpgradeQueued : IGlobalEvent
     public string BuildingName { get; }
     public IGameObject GameObject { get; }
     public IIncompleteUpgrade IncompleteUpgrade { get; }
-    public IUpgradeBlueprint Upgrade => IncompleteUpgrade.Upgrade;
+    public IPermanentUpgrade PermanentUpgrade => IncompleteUpgrade.PermanentUpgrade;
 
     public BuildingUpgradeQueued(string buildingName, IGameObject gameObject, IIncompleteUpgrade incompleteUpgrade)
     {

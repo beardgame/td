@@ -1,6 +1,7 @@
 {
     "id" : "kinetic3-sniper-shell",
     "components" : [
+        { "id" : "tags", "parameters" : { "tags" : [ "projectile" ] } },
         {
             "id" : "damageOnHit",
             "parameters" : {}

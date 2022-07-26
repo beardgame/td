@@ -10,7 +10,5 @@ interface IComponent
     void Update(TimeSpan elapsedTime);
     void OnRemoved();
 
-    bool CanApplyUpgradeEffect(IUpgradeEffect effect);
-    void ApplyUpgradeEffect(IUpgradeEffect effect);
-    bool RemoveUpgradeEffect(IUpgradeEffect effect);
+    void PreviewUpgrade(IUpgradePreview upgradePreview);
 }

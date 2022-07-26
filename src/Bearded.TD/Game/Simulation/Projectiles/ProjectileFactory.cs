@@ -36,10 +36,10 @@ static class ProjectileFactory
             return;
         }
 
-        var upgrades = upgradeManager.AppliedUpgrades.Where(u => u.CanApplyTo(projectile));
+        var upgrades = upgradeManager.AppliedUpgrades.Where(projectile.CanApplyUpgrade);
         foreach (var upgrade in upgrades)
         {
-            upgrade.ApplyTo(projectile);
+            projectile.ApplyUpgrade(upgrade);
         }
     }
 }

@@ -13,7 +13,7 @@ sealed class FactionTechnology : FactionBehavior
 {
     private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new();
     private readonly HashSet<IComponentOwnerBlueprint> unlockedBuildings = new();
-    private readonly HashSet<IUpgradeBlueprint> unlockedUpgrades = new();
+    private readonly HashSet<IPermanentUpgrade> unlockedUpgrades = new();
 
     public bool HasTechnologyToken { get; private set; }
 
@@ -69,12 +69,12 @@ sealed class FactionTechnology : FactionBehavior
         }
     }
 
-    public bool IsUpgradeUnlocked(IUpgradeBlueprint blueprint) => unlockedUpgrades.Contains(blueprint);
+    public bool IsUpgradeUnlocked(IPermanentUpgrade blueprint) => unlockedUpgrades.Contains(blueprint);
 
-    public IEnumerable<IUpgradeBlueprint> GetApplicableUpgradesFor(IUpgradable obj) =>
+    public IEnumerable<IPermanentUpgrade> GetApplicableUpgradesFor(IUpgradable obj) =>
         unlockedUpgrades.Where(obj.CanApplyUpgrade);
 
-    public void UnlockUpgrade(IUpgradeBlueprint blueprint)
+    public void UnlockUpgrade(IPermanentUpgrade blueprint)
     {
         if (unlockedUpgrades.Add(blueprint))
         {

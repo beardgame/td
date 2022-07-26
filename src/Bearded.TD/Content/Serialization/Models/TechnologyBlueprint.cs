@@ -41,11 +41,11 @@ sealed class TechnologyBlueprint
     public sealed class DependencyResolvers
     {
         public IDependencyResolver<IComponentOwnerBlueprint> ComponentOwnerResolver { get; }
-        public IDependencyResolver<IUpgradeBlueprint> UpgradeResolver { get; }
+        public IDependencyResolver<IPermanentUpgrade> UpgradeResolver { get; }
         public IDependencyResolver<ITechnologyBlueprint> TechnologyResolver { get; }
 
         public DependencyResolvers(IDependencyResolver<IComponentOwnerBlueprint> componentOwnerResolver,
-            IDependencyResolver<IUpgradeBlueprint> upgradeResolver,
+            IDependencyResolver<IPermanentUpgrade> upgradeResolver,
             IDependencyResolver<ITechnologyBlueprint> technologyResolver)
         {
             ComponentOwnerResolver = componentOwnerResolver;
@@ -70,7 +70,7 @@ sealed class TechnologyBlueprint
 
         public ITechnologyUnlock ToGameModel(
             IDependencyResolver<IComponentOwnerBlueprint> buildingResolver,
-            IDependencyResolver<IUpgradeBlueprint> upgradeResolver)
+            IDependencyResolver<IPermanentUpgrade> upgradeResolver)
         {
             _ = Blueprint ?? throw new InvalidDataException($"{nameof(Blueprint)} must be non-null");
 

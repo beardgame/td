@@ -41,7 +41,7 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
         Unit Range { get; }
     }
 
-    private readonly HashSet<GameObject> affectedObjects = new();
+    private readonly Dictionary<GameObject, IUpgradeReceipt> affectedUnits = new();
 
     private IBuildingState? buildingState;
     private TileRangeDrawer? tileRangeDrawer;
@@ -103,14 +103,12 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
 
     private void removeModificationsFromAllUnits()
     {
-        if (affectedObjects.Count == 0)
+        if (affectedUnits.Count == 0)
             return;
 
-        var upgradeEffect = createUpgradeEffect();
-
-        foreach (var unit in affectedObjects)
+        foreach (var (_, upgradeReceipt) in affectedUnits)
         {
-            unit.RemoveUpgradeEffect(upgradeEffect);
+            upgradeReceipt.Rollback();
         }
     }
 
@@ -123,16 +121,31 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
 
     private void removeModificationsFromUnitsOutOfRange()
     {
-        var unitsOutOfRange =
-            affectedObjects.Where(unit =>
-                !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(unit)));
-        var upgradeEffect = createUpgradeEffect();
+        var effectsOutOfRange =
+            affectedUnits.Where(kvp =>
+                !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(kvp.Key)));
 
-        foreach (var unit in unitsOutOfRange)
+        foreach (var (unit, upgradeReceipt) in effectsOutOfRange)
         {
-            unit.RemoveUpgradeEffect(upgradeEffect);
+            affectedUnits.Remove(unit);
+            upgradeReceipt.Rollback();
         }
     }
+
+    private void addModificationsToNewUnitsInRange()
+    {
+        foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
+        {
+            if (affectedUnits.ContainsKey(unit)) continue;
+
+            var upgrade = createUpgrade();
+            if (!unit.CanApplyUpgrade(upgrade)) continue;
+
+            affectedUnits.Add(unit, unit.ApplyUpgrade(upgrade));
+        }
+    }
+
+    private IUpgrade createUpgrade() => Upgrade.FromEffects(createUpgradeEffect());
 
     private ParameterModifiableWithId createUpgradeEffect()
     {
@@ -142,20 +155,6 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
             Parameters.AttributeAffected,
             new ModificationWithId(modificationId, Modification.MultiplyWith(modificationFactor)),
             UpgradePrerequisites.Empty);
-    }
-
-    private void addModificationsToNewUnitsInRange()
-    {
-        foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
-        {
-            if (affectedObjects.Contains(unit)) continue;
-
-            var upgradeEffect = createUpgradeEffect();
-            if (!unit.CanApplyUpgradeEffect(upgradeEffect)) continue;
-
-            unit.ApplyUpgradeEffect(upgradeEffect);
-            affectedObjects.Add(unit);
-        }
     }
 
     public void HandleEvent(DrawComponents e)

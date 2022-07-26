@@ -71,7 +71,7 @@ sealed class BuildingUpgradeWork : Component
         if (resourceConsumer == null)
         {
             var resourceReservation =
-                resources.ReserveResources(new FactionResources.ResourceRequest(incompleteUpgrade.Upgrade.Cost));
+                resources.ReserveResources(new FactionResources.ResourceRequest(incompleteUpgrade.PermanentUpgrade.Cost));
             resourceConsumer =
                 new ResourceConsumer(Owner.Game, resourceReservation, Constants.Game.Worker.UpgradeSpeed);
         }

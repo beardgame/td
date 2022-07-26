@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
@@ -8,11 +9,11 @@ sealed class GameObjectTags : Component
 {
     private readonly HashSet<string> tags = new();
 
+    public ImmutableHashSet<string> Tags => tags.ToImmutableHashSet();
+
     protected override void OnAdded() { }
 
     public override void Update(TimeSpan elapsedTime) { }
-
-    public bool HasTag(string tag) => tags.Contains(tag);
 
     public void AddRange(IEnumerable<string> tagsToAdd)
     {

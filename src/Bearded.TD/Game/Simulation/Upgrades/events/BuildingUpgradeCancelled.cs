@@ -6,12 +6,12 @@ readonly struct BuildingUpgradeCancelled : IGlobalEvent
 {
     public string BuildingName { get; }
     public IGameObject GameObject { get; }
-    public IUpgradeBlueprint Upgrade { get; }
+    public IPermanentUpgrade PermanentUpgrade { get; }
 
-    public BuildingUpgradeCancelled(string buildingName, IGameObject gameObject, IUpgradeBlueprint upgrade)
+    public BuildingUpgradeCancelled(string buildingName, IGameObject gameObject, IPermanentUpgrade upgrade)
     {
         BuildingName = buildingName;
         GameObject = gameObject;
-        Upgrade = upgrade;
+        PermanentUpgrade = upgrade;
     }
 }

@@ -5,8 +5,8 @@ using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Content.Models;
 
-sealed record UpgradeBlueprint(
+sealed record PermanentUpgrade(
     ModAwareId Id,
     string Name,
     ResourceAmount Cost,
-    ImmutableArray<IUpgradeEffect> Effects) : IUpgradeBlueprint;
+    ImmutableArray<IUpgradeEffect> Effects) : IPermanentUpgrade;

@@ -18,11 +18,11 @@ sealed class ParameterModifiableWithId : UpgradeEffectBase
         this.modification = modification;
     }
 
-    public override bool CanApplyTo<T>(IParametersTemplate<T> subject) => subject.HasAttributeOfType(attributeType);
+    public override bool CanApplyTo(IParametersTemplate subject) => subject.HasAttributeOfType(attributeType);
 
-    public override void ApplyTo<T>(IParametersTemplate<T> subject)
+    public override void ApplyTo(IParametersTemplate subject)
         => subject.AddModificationWithId(attributeType, modification);
 
-    public override bool RemoveFrom<T>(IParametersTemplate<T> subject)
+    public override bool RemoveFrom(IParametersTemplate subject)
         => subject.RemoveModification(attributeType, modification.Id);
 }

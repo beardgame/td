@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Damage;
+﻿using System;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -8,6 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -46,8 +48,14 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     {
     }
 
-    public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-        => base.CanApplyUpgradeEffect(effect) || Parameters.Projectile.CanApplyUpgradeEffect(effect);
+    public override void PreviewUpgrade(IUpgradePreview upgradePreview)
+    {
+        // TODO: the upgrade preview is built around the concept that it can only be done right now, for projectiles we
+        //       need to change it so that the effect of the upgrade is instead some kind of object that can apply the
+        //       effect when we actually need it.
+        throw new NotImplementedException();
+        base.PreviewUpgrade(upgradePreview);
+    }
 
     public void HandleEvent(ShootProjectile @event)
     {

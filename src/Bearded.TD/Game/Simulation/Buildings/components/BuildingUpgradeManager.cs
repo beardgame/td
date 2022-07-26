@@ -25,8 +25,8 @@ sealed partial class BuildingUpgradeManager
 {
     private INameProvider? nameProvider;
     private IFactionProvider? factionProvider;
-    private readonly List<IUpgradeBlueprint> appliedUpgrades = new();
-    public IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
+    private readonly List<IPermanentUpgrade> appliedUpgrades = new();
+    public IReadOnlyCollection<IPermanentUpgrade> AppliedUpgrades { get; }
     private readonly Dictionary<ModAwareId, IncompleteUpgrade> upgradesInProgress = new();
     public IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress =>
         upgradesInProgress.Values.ToImmutableArray();
@@ -34,22 +34,22 @@ sealed partial class BuildingUpgradeManager
     public int UpgradeSlotsUnlocked { get; private set; }
     public int UpgradeSlotsOccupied => appliedUpgrades.Count + upgradesInProgress.Count;
 
-    public IEnumerable<IUpgradeBlueprint> ApplicableUpgrades
+    public IEnumerable<IPermanentUpgrade> ApplicableUpgrades
     {
         get
         {
             if (factionProvider == null)
             {
-                return Enumerable.Empty<IUpgradeBlueprint>();
+                return Enumerable.Empty<IPermanentUpgrade>();
             }
             return factionProvider.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
                 ? technology.GetApplicableUpgradesFor(this)
-                : Enumerable.Empty<IUpgradeBlueprint>();
+                : Enumerable.Empty<IPermanentUpgrade>();
         }
     }
 
     public event GenericEventHandler<IIncompleteUpgrade>? UpgradeQueued;
-    public event GenericEventHandler<IUpgradeBlueprint>? UpgradeCompleted;
+    public event GenericEventHandler<IPermanentUpgrade>? UpgradeCompleted;
 
     public BuildingUpgradeManager()
     {
@@ -69,12 +69,12 @@ sealed partial class BuildingUpgradeManager
     public bool CanBeUpgradedBy(Faction faction) =>
         factionProvider?.Faction.OwnedBuildingsCanBeUpgradedBy(faction) ?? false;
 
-    public bool CanApplyUpgrade(IUpgradeBlueprint upgrade)
+    public bool CanApplyUpgrade(IPermanentUpgrade upgrade)
     {
-        return !appliedUpgrades.Contains(upgrade) && upgrade.CanApplyTo(Owner);
+        return !appliedUpgrades.Contains(upgrade) && Owner.CanApplyUpgrade(upgrade);
     }
 
-    public IIncompleteUpgrade QueueUpgrade(IUpgradeBlueprint upgrade)
+    public IIncompleteUpgrade QueueUpgrade(IPermanentUpgrade upgrade)
     {
         var incompleteUpgrade = new IncompleteUpgrade(this, upgrade);
         upgradesInProgress.Add(upgrade.Id, incompleteUpgrade);
@@ -88,31 +88,31 @@ sealed partial class BuildingUpgradeManager
 
     private void onUpgradeCompleted(IIncompleteUpgrade incompleteUpgrade)
     {
-        if (!upgradesInProgress.Remove(incompleteUpgrade.Upgrade.Id))
+        if (!upgradesInProgress.Remove(incompleteUpgrade.PermanentUpgrade.Id))
         {
             State.IsInvalid();
             return;
         }
 
-        incompleteUpgrade.Upgrade.ApplyTo(Owner);
+        Owner.ApplyUpgrade(incompleteUpgrade.PermanentUpgrade);
 
-        appliedUpgrades.Add(incompleteUpgrade.Upgrade);
+        appliedUpgrades.Add(incompleteUpgrade.PermanentUpgrade);
 
-        UpgradeCompleted?.Invoke(incompleteUpgrade.Upgrade);
+        UpgradeCompleted?.Invoke(incompleteUpgrade.PermanentUpgrade);
         Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
+            new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.PermanentUpgrade));
     }
 
     private void onUpgradeCancelled(IIncompleteUpgrade incompleteUpgrade)
     {
-        if (!upgradesInProgress.Remove(incompleteUpgrade.Upgrade.Id))
+        if (!upgradesInProgress.Remove(incompleteUpgrade.PermanentUpgrade.Id))
         {
             State.IsInvalid();
             return;
         }
 
         Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeCancelled(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
+            new BuildingUpgradeCancelled(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.PermanentUpgrade));
     }
 
     public void SyncStartUpgrade(ModAwareId upgradeId)
@@ -137,12 +137,12 @@ sealed partial class BuildingUpgradeManager
 
     private void sendSyncUpgradeStart(IIncompleteUpgrade incompleteUpgrade)
     {
-        Owner.Sync(SyncUpgradeStart.Command, Owner, incompleteUpgrade.Upgrade.Id);
+        Owner.Sync(SyncUpgradeStart.Command, Owner, incompleteUpgrade.PermanentUpgrade.Id);
     }
 
     private void sendSyncUpgradeCompletion(IIncompleteUpgrade incompleteUpgrade)
     {
-        Owner.Sync(SyncUpgradeCompletion.Command, Owner, incompleteUpgrade.Upgrade.Id);
+        Owner.Sync(SyncUpgradeCompletion.Command, Owner, incompleteUpgrade.PermanentUpgrade.Id);
     }
 
     public override void Update(TimeSpan elapsedTime) {}
@@ -152,19 +152,19 @@ sealed partial class BuildingUpgradeManager
 
 interface IBuildingUpgradeManager
 {
-    IReadOnlyCollection<IUpgradeBlueprint> AppliedUpgrades { get; }
+    IReadOnlyCollection<IPermanentUpgrade> AppliedUpgrades { get; }
     IReadOnlyCollection<IIncompleteUpgrade> UpgradesInProgress { get; }
-    IEnumerable<IUpgradeBlueprint> ApplicableUpgrades { get; }
+    IEnumerable<IPermanentUpgrade> ApplicableUpgrades { get; }
     bool HasAvailableSlot { get; }
     int UpgradeSlotsUnlocked { get; }
     int UpgradeSlotsOccupied { get; }
 
     event GenericEventHandler<IIncompleteUpgrade> UpgradeQueued;
-    event GenericEventHandler<IUpgradeBlueprint> UpgradeCompleted;
+    event GenericEventHandler<IPermanentUpgrade> UpgradeCompleted;
 
-    bool CanApplyUpgrade(IUpgradeBlueprint upgrade);
+    bool CanApplyUpgrade(IPermanentUpgrade upgrade);
     bool CanBeUpgradedBy(Faction faction);
-    IIncompleteUpgrade QueueUpgrade(IUpgradeBlueprint upgrade);
+    IIncompleteUpgrade QueueUpgrade(IPermanentUpgrade upgrade);
 }
 
 interface IBuildingUpgradeSyncer
