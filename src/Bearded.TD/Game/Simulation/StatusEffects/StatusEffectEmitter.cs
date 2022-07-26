@@ -129,7 +129,8 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
             Parameters.IsReduction ? 1 - Parameters.ModificationValue : Parameters.ModificationValue;
         return new ParameterModifiableWithId(
             Parameters.AttributeAffected,
-            new ModificationWithId(modificationId, Modification.MultiplyWith(modificationFactor)));
+            new ModificationWithId(modificationId, Modification.MultiplyWith(modificationFactor)),
+            UpgradePrerequisites.Empty);
     }
 
     private void addModificationsToNewUnitsInRange()

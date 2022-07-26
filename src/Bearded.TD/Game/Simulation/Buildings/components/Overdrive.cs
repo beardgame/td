@@ -26,8 +26,10 @@ sealed class Overdrive : Component
     {
         var ids = Owner.Game.GamePlayIds;
 
-        fireRate = new ParameterModifiableWithId(AttributeType.FireRate, damageModification(ids));
-        damageOverTime = new ParameterModifiableWithId(AttributeType.DamageOverTime, damageModification(ids));
+        fireRate = new ParameterModifiableWithId(
+            AttributeType.FireRate, damageModification(ids), UpgradePrerequisites.Empty);
+        damageOverTime = new ParameterModifiableWithId(
+            AttributeType.DamageOverTime, damageModification(ids), UpgradePrerequisites.Empty);
 
         fireRate.ApplyTo(Owner);
         damageOverTime.ApplyTo(Owner);

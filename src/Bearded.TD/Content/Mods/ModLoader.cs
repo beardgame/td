@@ -118,7 +118,8 @@ static class ModLoader
                 new FlattenedBlueprintConverter<IFactionBlueprint, FactionBlueprint>(meta),
                 new ExternalIdConverter<Faction>(),
                 new NodeTagConverter(),
-                new UpgradeEffectConverter()
+                new UpgradeEffectConverter(),
+                new UpgradePrerequisitesConverter()
             );
             foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
                 serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));

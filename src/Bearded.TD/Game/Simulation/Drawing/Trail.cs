@@ -56,7 +56,7 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
     private void persistTrail()
     {
-        var obj = ComponentGameObjectFactory.CreateWithDefaultRenderer(Owner.Game, null, Owner.Position);
+        var obj = GameObjectFactory.CreateWithDefaultRenderer(Owner.Game, null, Owner.Position);
         obj.AddComponent(new PersistentTrail(drawer, Parameters, tracer));
     }
 

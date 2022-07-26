@@ -20,7 +20,7 @@ static class ProjectileFactory
         Velocity3 muzzleVelocity,
         UntypedDamage damage)
     {
-        var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
+        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             game, blueprint, parent, position, direction);
 
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));

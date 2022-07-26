@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-static class ComponentGameObjectFactory
+static class GameObjectFactory
 {
     public static GameObject CreateFromBlueprintWithDefaultRenderer(
         GameState game,
@@ -43,6 +43,7 @@ static class ComponentGameObjectFactory
         GameState game, IComponentOwner? parent, Position3 position, Direction2? direction = null)
     {
         var obj = new GameObject(parent, position, direction ?? Direction2.Zero);
+        obj.AddComponent(new GameObjectTags());
         game.Add(obj);
         return obj;
     }
