@@ -7,7 +7,8 @@ sealed class TagsModifiable : UpgradeEffectBase
 {
     private readonly ImmutableArray<string> tagsToAdd;
 
-    public TagsModifiable(ImmutableArray<string> tagsToAdd, UpgradePrerequisites prerequisites) : base(prerequisites)
+    public TagsModifiable(ImmutableArray<string> tagsToAdd, UpgradePrerequisites prerequisites, bool isSideEffect)
+        : base(prerequisites, isSideEffect)
     {
         this.tagsToAdd = tagsToAdd;
     }

@@ -8,7 +8,8 @@ sealed class ComponentModifiable : UpgradeEffectBase
 {
     private readonly IComponent component;
 
-    public ComponentModifiable(IComponent component, UpgradePrerequisites prerequisites) : base(prerequisites)
+    public ComponentModifiable(IComponent component, UpgradePrerequisites prerequisites, bool isSideEffect)
+        : base(prerequisites, isSideEffect)
     {
         this.component = component;
     }

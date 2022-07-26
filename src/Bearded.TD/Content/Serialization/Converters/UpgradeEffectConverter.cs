@@ -30,6 +30,9 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         var prerequisites = json
             .GetValue("prerequisites", StringComparison.OrdinalIgnoreCase)
             ?.ToObject<UpgradePrerequisites>(serializer) ?? UpgradePrerequisites.Empty;
+        var isSideEffect = json
+            .GetValue("isSideEffect", StringComparison.OrdinalIgnoreCase)
+            ?.Value<bool>() ?? false;
 
         var def = json.GetValue("parameters");
         if (def == null)
@@ -42,14 +45,15 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             case UpgradeEffectType.Modification:
                 var parameters = new ModificationParameters();
                 serializer.Populate(def.CreateReader(), parameters);
-                return new ParameterModifiable(parameters.AttributeType, getModification(parameters), prerequisites);
+                return new ParameterModifiable(
+                    parameters.AttributeType, getModification(parameters), prerequisites, isSideEffect);
             case UpgradeEffectType.Component:
                 var component = serializer.Deserialize<IComponent>(def.CreateReader());
                 if (component == null)
                 {
                     throw new InvalidDataException("Missing component definition");
                 }
-                return new ComponentModifiable(component, prerequisites);
+                return new ComponentModifiable(component, prerequisites, isSideEffect);
             case UpgradeEffectType.AddTags:
                 var tags = serializer.Deserialize<ImmutableArray<string>>(def.CreateReader());
                 if (tags == null || tags.IsEmpty)
@@ -57,7 +61,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                     throw new InvalidDataException("Missing tags");
                 }
 
-                return new TagsModifiable(tags, prerequisites);
+                return new TagsModifiable(tags, prerequisites, isSideEffect);
             case UpgradeEffectType.Unknown:
             default:
                 throw new InvalidDataException("Upgrade effect must have a valid type.");
