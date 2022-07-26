@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Immutable;
 using System.IO;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -58,7 +58,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 }
 
                 return new TagsModifiable(tags, prerequisites);
-;           case UpgradeEffectType.Unknown:
+            case UpgradeEffectType.Unknown:
             default:
                 throw new InvalidDataException("Upgrade effect must have a valid type.");
         }
@@ -66,20 +66,17 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
 
     private static Modification getModification(ModificationParameters parameters)
     {
-        switch (parameters.Mode)
+        return parameters.Mode switch
         {
-            case ModificationParameters.ModificationMode.Constant:
-                return Modification.AddConstant(parameters.Value);
-            case ModificationParameters.ModificationMode.FractionOfBase:
-                return Modification.AddFractionOfBase(parameters.Value);
-            case ModificationParameters.ModificationMode.Multiply:
-                return Modification.MultiplyWith(parameters.Value);
-            default:
-                throw new InvalidDataException("Modification must have a valid type.");
-        }
+            ModificationParameters.ModificationMode.Constant => Modification.AddConstant(parameters.Value),
+            ModificationParameters.ModificationMode.FractionOfBase => Modification.AddFractionOfBase(parameters.Value),
+            ModificationParameters.ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
+            _ => throw new InvalidDataException("Modification must have a valid type.")
+        };
     }
 
-    private class ModificationParameters
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    private sealed class ModificationParameters
     {
         public enum ModificationMode
         {
@@ -89,10 +86,8 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             Multiply = 3,
         }
 
-#pragma warning disable 649
         public AttributeType AttributeType;
         public ModificationMode Mode = ModificationMode.Unknown;
         public double Value;
-#pragma warning restore 649
     }
 }
