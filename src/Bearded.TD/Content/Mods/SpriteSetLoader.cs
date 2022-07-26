@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Content.Mods;
 
@@ -35,29 +37,29 @@ sealed class SpriteSetLoader
     {
         _ = jsonModel.Id ?? throw new InvalidDataException($"{nameof(jsonModel.Id)} must be non-null");
 
-        var samplers = getSamplers(jsonModel);
+        var samplers = getSamplersWithPreAndSuffixes(jsonModel);
         var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
         return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-            samplers.Select(s => s.name), sprites, jsonModel.Pixelate, jsonModel.Id);
+            samplers.Select(s => s.Sampler), sprites, jsonModel.Pixelate, jsonModel.Id);
     }
 
-    private static IEnumerable<(string, Dictionary<string, Lazy<Bitmap>>)>
+    private static IEnumerable<SpriteBitmaps>
         sortFilesBySpriteAndSampler(
             DirectoryInfo directory,
-            List<(string name, string prefix, string suffix)> samplers
+            List<(Sampler sampler, string prefix, string suffix)> samplers
         )
     {
         var sprites = new Dictionary<string, Dictionary<string, Lazy<Bitmap>>>();
 
         addPngFilesRecursively(directory, samplers, sprites, "");
 
-        return sprites.Select(kvp => (kvp.Key, kvp.Value));
+        return sprites.Select(kvp => new SpriteBitmaps(kvp.Key, kvp.Value));
     }
 
     private static void addPngFilesRecursively(
         DirectoryInfo directory,
-        List<(string name, string prefix, string suffix)> samplers,
+        List<(Sampler sampler, string prefix, string suffix)> samplers,
         Dictionary<string, Dictionary<string, Lazy<Bitmap>>> sprites,
         string spriteNamePrefix
     )
@@ -66,7 +68,7 @@ sealed class SpriteSetLoader
         {
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
 
-            var (samplerName, prefix, suffix) = samplers
+            var (sampler, prefix, suffix) = samplers
                 .First(s => fileNameWithoutExtension.StartsWith(s.prefix) &&
                     fileNameWithoutExtension.EndsWith(s.suffix));
 
@@ -79,7 +81,7 @@ sealed class SpriteSetLoader
             if (!sprites.ContainsKey(spriteName))
                 sprites[spriteName] = new Dictionary<string, Lazy<Bitmap>>();
 
-            sprites[spriteName][samplerName] = lazyReadBitmap(file);
+            sprites[spriteName][sampler.Name] = lazyReadBitmap(file);
         }
 
         foreach (var dir in directory.GetDirectories("*", SearchOption.TopDirectoryOnly))
@@ -101,29 +103,23 @@ sealed class SpriteSetLoader
         });
     }
 
-    private static List<(string name, string prefix, string suffix)> getSamplers(Serialization.Models.SpriteSet jsonModel)
+    private static List<(Sampler Sampler, string Prefix, string Suffix)> getSamplersWithPreAndSuffixes(
+        Serialization.Models.SpriteSet jsonModel)
     {
-        var foundDefaultSampler = false;
+        var samplers = new List<(Sampler Sampler, string Prefix, string Suffix)>();
 
-        var samplers = new List<(string, string, string)>();
+        if ((jsonModel.TextureSamplers?.Count ?? 0) == 0)
+            throw new InvalidDataException("Sprites need to define at least one sampler in 'textureSamplers' array");
 
-        if (jsonModel.TextureSamplers != null)
+        foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers))
         {
-            foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers))
-            {
-                if (string.IsNullOrWhiteSpace(sampler.Sampler))
-                    throw new InvalidDataException("Texture sampler needs non empty 'sampler' property");
+            if (string.IsNullOrWhiteSpace(sampler.Sampler))
+                throw new InvalidDataException("Texture sampler needs non empty 'sampler' property");
 
-                if (string.IsNullOrEmpty(sampler.Prefix) && string.IsNullOrEmpty(sampler.Suffix))
-                    foundDefaultSampler = true;
-
-                samplers.Add((sampler.Sampler, sampler.Prefix ?? "", sampler.Suffix ?? ""));
-            }
-        }
-
-        if (!foundDefaultSampler && !string.IsNullOrWhiteSpace(jsonModel.DefaultTextureSampler))
-        {
-            samplers.Add((jsonModel.DefaultTextureSampler, "", ""));
+            samplers.Add(
+                (new Sampler(sampler.Sampler, sampler.Transformations?.ToImmutableArray() ?? ImmutableArray<string>.Empty),
+                    sampler.Prefix ?? "",
+                    sampler.Suffix ?? ""));
         }
 
         return samplers;

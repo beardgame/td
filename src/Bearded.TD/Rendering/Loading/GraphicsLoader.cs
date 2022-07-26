@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -8,11 +7,9 @@ using Bearded.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
-using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -28,9 +25,9 @@ class GraphicsLoader : IGraphicsLoader
         glActions = glActionQueue;
         this.logger = logger;
     }
-
-    public ISpriteSetImplementation CreateSpriteSet(IEnumerable<string> samplers,
-        IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites, bool pixelate, string id)
+    
+    public ISpriteSetImplementation CreateSpriteSet(IEnumerable<Sampler> samplers,
+        IEnumerable<SpriteBitmaps> sprites, bool pixelate, string id)
     {
         var spriteRectangles = sprites.Select(rectangleWithBitmaps).ToList();
         if (spriteRectangles.Count == 0)
@@ -42,12 +39,10 @@ class GraphicsLoader : IGraphicsLoader
         var packedSprites = BinPacking.Pack(spriteRectangles);
 
         var usedSamplers = packedSprites.Rectangles.SelectMany(r => r.Value.BitmapsBySampler.Keys).Distinct().ToList();
-        var unusedSamplers = samplers.Except(usedSamplers).ToList();
+        var unusedSamplersCount = samplers.Select(s => s.Name).Except(usedSamplers).Count();
 
-        if (unusedSamplers.Count > 0)
-            // TODO: make this log line context aware
-            // TODO: consider adding unused samplers as tiny/empty textures to prevent contamination
-            logger.Warning?.Log($"Sprite set specifies {unusedSamplers.Count} samplers it does not use");
+        if (unusedSamplersCount > 0)
+            logger.Warning?.Log($"Sprite set specifies {unusedSamplersCount} samplers it does not use");
 
         var builder = new PackedSpriteSetBuilder(usedSamplers, packedSprites.Width, packedSprites.Height);
 
@@ -65,31 +60,29 @@ class GraphicsLoader : IGraphicsLoader
 
 
         static BinPacking.Rectangle<(string Name, Dictionary<string, Bitmap> BitmapsBySampler)>
-            rectangleWithBitmaps((string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler) sprite)
+            rectangleWithBitmaps(SpriteBitmaps bitmaps)
         {
-            var bitmapsBySampler = sprite.BitmapsBySampler.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
+            var bitmapsBySampler = bitmaps.BitmapsBySampler.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
 
-            return allImagesHaveSameSize(bitmapsBySampler.Values).Match(
-                size => rectangleForSpriteWithSize(sprite, bitmapsBySampler, size),
-                () => throw new InvalidDataException($"Sprite '{sprite.Sprite}' has component images of different sizes")
-            );
+            return allImagesHaveSameSize(bitmapsBySampler.Values, out var size)
+                ? rectangleForSpriteWithSize(bitmaps.SpriteId, bitmapsBySampler, size)
+                : throw new InvalidDataException($"Sprite '{bitmaps.SpriteId}' has component images of different sizes");
         }
 
         static BinPacking.Rectangle<(string, Dictionary<string, Bitmap>)> rectangleForSpriteWithSize(
-            (string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler) sprite,
+            string spriteId,
             Dictionary<string, Bitmap> bitmapsBySampler, (int width, int height) size)
         {
-            return new ((sprite.Sprite, bitmapsBySampler), size.width, size.height);
+            return new ((spriteId, bitmapsBySampler), size.width, size.height);
         }
 
-        static Maybe<(int width, int height)> allImagesHaveSameSize(ICollection<Bitmap> bitmaps)
+        static bool allImagesHaveSameSize(ICollection<Bitmap> bitmaps, out (int width, int height) size)
         {
             var first = bitmaps.First();
             var (width, height) = (first.Width, first.Height);
+            size = (width, height);
 
-            return bitmaps.Skip(1).All(b => b.Width == width && b.Height == height)
-                ? Maybe.Just((width, height))
-                : Maybe.Nothing;
+            return bitmaps.All(b => b.Width == width && b.Height == height);
         }
     }
 

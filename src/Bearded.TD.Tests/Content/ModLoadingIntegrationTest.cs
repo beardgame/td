@@ -56,8 +56,8 @@ namespace Bearded.TD.Tests.Content
         private sealed class MockGraphicsLoader : IGraphicsLoader
         {
             public ISpriteSetImplementation CreateSpriteSet(
-                IEnumerable<string> samplers,
-                IEnumerable<(string Sprite, Dictionary<string, Lazy<Bitmap>> BitmapsBySampler)> sprites,
+                IEnumerable<Sampler> samplers,
+                IEnumerable<SpriteBitmaps> sprites,
                 bool pixelate,
                 string id) => new MockSpriteSetImplementation();
 

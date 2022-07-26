@@ -15,6 +15,7 @@ sealed class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, Sprite
         public string? Sampler { get; set; }
         public string? Prefix { get; set; }
         public string? Suffix { get; set; }
+        public List<string>? Transformations { get; set; }
     }
 
     public string? Id { get; set; }

@@ -1,4 +1,9 @@
 ﻿{
     "id" : "particle",
-    "defaultTextureSampler" : "diffuse"
+    "textureSamplers" :
+    [
+        {
+            "sampler" : "diffuse"
+        }
+    ]
 }

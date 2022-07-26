@@ -1,4 +1,9 @@
 ﻿{
     "id" : "terrain-splats",
-    "defaultTextureSampler" : "splat"
+    "textureSamplers" :
+    [
+        {
+            "sampler" : "diffuse"
+        }
+    ]
 }
