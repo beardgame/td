@@ -15,7 +15,7 @@ static class ExplorationBeaconFactory
     public static GameObject CreateExplorationBeacon(
         GameState game, ComponentOwnerBlueprint blueprint, Tile tile, Zone zone)
     {
-        var obj = ComponentGameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
+        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             game, blueprint, null, Level.GetPosition(tile).WithZ(0));
 
         obj.AddComponent(new AlwaysVisibleVisibility());

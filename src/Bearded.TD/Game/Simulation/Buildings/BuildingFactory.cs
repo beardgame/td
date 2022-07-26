@@ -29,7 +29,7 @@ sealed class BuildingFactory
         Id<GameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
         PositionedFootprint footprint)
     {
-        var building = ComponentGameObjectFactory.CreateFromBlueprintWithoutRenderer(
+        var building = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
             gameState, blueprint, null, Position3.Zero, Direction2.Zero);
         if (!building.GetComponents<IEnemySink>().Any())
         {
@@ -65,7 +65,7 @@ sealed class BuildingFactory
         IComponentOwnerBlueprint blueprint, Faction faction,
         out MovableTileOccupation tileOccupation)
     {
-        var ghost = ComponentGameObjectFactory.CreateFromBlueprintWithoutRenderer(
+        var ghost = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
             gameState, blueprint, null, Position3.Zero, Direction2.Zero);
         ghost.AddComponent(new GhostBuildingRenderer());
         ghost.AddComponent(new BuildingGhostDrawing());
