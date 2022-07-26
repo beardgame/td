@@ -10,6 +10,7 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
+using static Bearded.TD.Rendering.Loading.SpriteTextureTransformations;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -25,7 +26,7 @@ class GraphicsLoader : IGraphicsLoader
         glActions = glActionQueue;
         this.logger = logger;
     }
-    
+
     public ISpriteSetImplementation CreateSpriteSet(IEnumerable<Sampler> samplers,
         IEnumerable<SpriteBitmaps> sprites, bool pixelate, string id)
     {
@@ -78,14 +79,15 @@ class GraphicsLoader : IGraphicsLoader
 
             return allImagesHaveSameSize(bitmapsBySampler.Values, out var size)
                 ? rectangleForSpriteWithSize(bitmaps.SpriteId, bitmapsBySampler, size)
-                : throw new InvalidDataException($"Sprite '{bitmaps.SpriteId}' has component images of different sizes");
+                : throw new InvalidDataException(
+                    $"Sprite '{bitmaps.SpriteId}' has component images of different sizes");
         }
 
         static BinPacking.Rectangle<(string, Dictionary<string, Bitmap>)> rectangleForSpriteWithSize(
             string spriteId,
             Dictionary<string, Bitmap> bitmapsBySampler, (int width, int height) size)
         {
-            return new ((spriteId, bitmapsBySampler), size.width, size.height);
+            return new((spriteId, bitmapsBySampler), size.width, size.height);
         }
 
         static bool allImagesHaveSameSize(ICollection<Bitmap> bitmaps, out (int width, int height) size)
@@ -138,5 +140,4 @@ class GraphicsLoader : IGraphicsLoader
     {
         return glActions.Run(() => ArrayTextureData.From(layers).ToTexture(t => t.GenerateMipmap())).Result;
     }
-
 }
