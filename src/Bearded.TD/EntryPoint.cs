@@ -1,7 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
@@ -15,16 +13,13 @@ static class EntryPoint
 {
     public static void Main(string[] args)
     {
-        var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Directory.SetCurrentDirectory(exeDir ?? throw new InvalidOperationException());
-
         using var stream = new FileStream(
             Constants.Paths.LogFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
         using var writer = new StreamWriter(stream);
 
 #if !DEBUG
-            try
-            {
+        try
+        {
 #endif
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -53,13 +48,13 @@ static class EntryPoint
 
         logger.Info?.Log("Safely exited game");
 #if !DEBUG
-            }
-            catch (Exception e)
-            {
-                writer.WriteLine("Bearded.TD ended abruptly");
-                writer.WriteLine(e);
-                throw;
-            }
+        }
+        catch (System.Exception e)
+        {
+            writer.WriteLine("Bearded.TD ended abruptly");
+            writer.WriteLine(e);
+            throw;
+        }
 #endif
     }
 }

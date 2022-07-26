@@ -1,0 +1,60 @@
+{
+    id: "kinetic1-mortar-weapon",
+    components : [
+        {
+            id : "targetEnemiesInRange",
+            parameters : {
+                range : 6,
+                minimumRange : 2.5,
+                coneOfFire : 5,
+            }
+        },
+        {
+            id : "pidAim",
+            parameters : {
+                proportionalCorrection : 50,
+                derivativeCorrection : 8,
+            }
+        },
+        {
+            id : "recoil",
+            parameters : {
+                impulse : 100,
+            }
+        },
+        {
+            id : "automaticFireCycle",
+            parameters : {
+                damagePerSecond : 20,
+                fireRate : 0.5
+            }
+        },
+        {
+            id : "projectileEmitter",
+            parameters : {
+                projectile : "kinetic1-mortar-shell",
+                muzzleSpeed : 5,
+                muzzleOffset :  [0.3, 0],
+            }
+        },
+        {
+            id : "muzzleFlash",
+            parameters : {
+                sprite : "particle.muzzleflash",
+                color : "00EED7D0",
+                size : 1,
+                offset : 0.5,
+            }
+        },
+        {
+            id : "sprite",
+            parameters : {
+                sprite : "buildings2.mortar-turret",
+                colorMode : "faction",
+                shader : "building-no-normal",
+                drawGroup : "building",
+                "size" : 1.2
+            }
+        },
+    ]
+}

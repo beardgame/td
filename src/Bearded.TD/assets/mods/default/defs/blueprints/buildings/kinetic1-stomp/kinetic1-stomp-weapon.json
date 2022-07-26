@@ -8,11 +8,14 @@
             }
         },
         {
-            "id" : "hitLevelAtTower",
+            "id" : "automaticFireCycle",
             "parameters" : {
-                "damagePerSecond" : 60,
+                "damagePerSecond" : 20,
                 "fireRate" : 1
             }
+        },
+        {
+            "id" : "hitLevelAtTower"
         },
         {
             "id" : "splashDamageOnHit",
@@ -31,7 +34,7 @@
         {
             "id": "spawnObjectOnHit",
             "parameters": {
-                "object": "kinetic1-stomp-shockwave",
+                "object": "medium-shockwave",
                 "onHitLevel": true,
                 "onHitEnemy": false
             }

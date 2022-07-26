@@ -1,5 +1,5 @@
 {
-    "id" : "kinetic0-cannon-shell",
+    "id" : "kinetic2-gatling-shell",
     "components" : [
         {
             "id" : "damageOnHit",
@@ -10,20 +10,20 @@
             "parameters" : {
                 "sprite" : "default.particle.tracer",
                 "color" : "Silver",
-                "size" : 1.5
+                "size" : 0.75
             }
         },
         {
             "id" : "pointlight",
             "parameters" : {
                 "color" : "FF333344",
-                "radius" : 2
+                "radius" : 1
             }
         },
         {
             "id" : "spawnObjectOnHit",
             "parameters" : {
-                "object" : "sparkExplosion",
+                "object" : "sparkExplosion-small",
                 "onHitLevel" : true,
                 "onHitEnemy" : false
             }

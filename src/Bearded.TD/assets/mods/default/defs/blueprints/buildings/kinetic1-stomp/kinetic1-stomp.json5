@@ -24,7 +24,8 @@
         colorMode : "faction",
         shader : "building-no-normal",
         drawGroup : "building",
-        heightOffset : 0.1
+        heightOffset : 0.1,
+        "size" : 1.2
       }
     }
   ]

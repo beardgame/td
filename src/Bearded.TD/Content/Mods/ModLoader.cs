@@ -106,6 +106,7 @@ static class ModLoader
                 new SpaceTime1Converter<ResourceAmount>(d => ((int) d).Resources()),
                 new SpaceTime1Converter<ResourceRate>(d => ((int) d).ResourcesPerSecond()),
                 new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
+                new SpaceTime3Converter<Difference3>((x, y, z) => new Difference3(x, y, z)),
                 new SpaceTime1Converter<UntypedDamage>(d => new UntypedDamage(((int) d).HitPoints())),
                 new SpaceTime1Converter<UntypedDamagePerSecond>(d => new UntypedDamagePerSecond(((int) d).HitPoints())),
                 new ColorConverter(),

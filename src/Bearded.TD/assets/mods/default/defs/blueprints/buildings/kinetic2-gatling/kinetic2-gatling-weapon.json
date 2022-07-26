@@ -1,11 +1,11 @@
 {
-    "id": "kinetic0-cannon-weapon",
+    "id": "kinetic2-gatling-weapon",
     "components" : [
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
-                "range" : 5,
-                "coneOfFire" : 5
+                "range" : 3,
+                "coneOfFire" : 10
             }
         },
         {
@@ -22,18 +22,27 @@
             }
         },
         {
+            "id" : "spinUp",
+            "parameters" : {
+                "minimumSpeedFactor" : 0.25,
+                "speedUpTime" : 3,
+                "slowDownTime" : 1
+            }
+        },
+        {
             "id" : "automaticFireCycle",
             "parameters" : {
-                "damagePerSecond" : 30,
-                "fireRate" : 0.75
+                "damagePerSecond" : 36,
+                "fireRate" : 8
             }
         },
         {
             "id" : "projectileEmitter",
             "parameters" : {
-                "projectile" : "kinetic0-cannon-shell",
-                "muzzleSpeed" : 20,
-                "muzzleOffset" : [0.3, 0]
+                "projectile" : "kinetic2-gatling-shell",
+                "muzzleSpeed" : 15,
+                "muzzleOffset" : [0.7, 0.1],
+                "spread" : 3
             }
         },
         {
@@ -41,14 +50,14 @@
             "parameters" : {
                 "sprite" : "particle.muzzleflash",
                 "color" : "00EED7D0",
-                "size" : 1,
-                "offset" : 0.5
+                "size" : 0.5,
+                "offset" : 0
             }
         },
         {
             "id": "sprite",
             "parameters": {
-                "sprite": "buildings2.cannon-turret",
+                "sprite": "buildings2.gatling-turret",
                 "colorMode" : "faction",
                 "shader" : "building-no-normal",
                 "drawGroup" : "building",

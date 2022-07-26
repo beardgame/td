@@ -1,11 +1,11 @@
 {
-    "id": "kinetic0-cannon-weapon",
+    "id": "kinetic3-sniper-weapon",
     "components" : [
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
-                "range" : 5,
-                "coneOfFire" : 5
+                "range" : 12,
+                "coneOfFire" : 1
             }
         },
         {
@@ -18,21 +18,21 @@
         {
             "id" : "recoil",
             "parameters" : {
-                "impulse" : 100
+                "impulse" : 200
             }
         },
         {
             "id" : "automaticFireCycle",
             "parameters" : {
-                "damagePerSecond" : 30,
-                "fireRate" : 0.75
+                "damagePerSecond" : 45,
+                "fireRate" : 0.3
             }
         },
         {
             "id" : "projectileEmitter",
             "parameters" : {
-                "projectile" : "kinetic0-cannon-shell",
-                "muzzleSpeed" : 20,
+                "projectile" : "kinetic3-sniper-shell",
+                "muzzleSpeed" : 50,
                 "muzzleOffset" : [0.3, 0]
             }
         },
@@ -41,7 +41,7 @@
             "parameters" : {
                 "sprite" : "particle.muzzleflash",
                 "color" : "00EED7D0",
-                "size" : 1,
+                "size" : 1.5,
                 "offset" : 0.5
             }
         },

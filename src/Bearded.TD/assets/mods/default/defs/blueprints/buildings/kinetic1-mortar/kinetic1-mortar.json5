@@ -1,7 +1,7 @@
 {
-  "id" : "kinetic0-cannon",
+  "id" : "kinetic1-mortar",
   "components" : [
-    { "id" : "name", "parameters" : { "name" : "Cannon" } },
+    { "id" : "name", "parameters" : { "name" : "Mortar" } },
     { "id" : "cost", "parameters" : { "resources" : 50 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "defaultTileOccupancy" },
@@ -13,7 +13,7 @@
       "id" : "turret",
       "onGhost": true,
       "parameters" : {
-        "weapon" : "kinetic0-cannon-weapon",
+        "weapon" : "kinetic1-mortar-weapon",
         "height" : 0.3
       }
     },

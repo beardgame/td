@@ -1,7 +1,7 @@
 {
-  "id" : "kinetic0-cannon",
+  "id" : "kinetic2-gatling",
   "components" : [
-    { "id" : "name", "parameters" : { "name" : "Cannon" } },
+    { "id" : "name", "parameters" : { "name" : "Gatling" } },
     { "id" : "cost", "parameters" : { "resources" : 50 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "defaultTileOccupancy" },
@@ -13,7 +13,7 @@
       "id" : "turret",
       "onGhost": true,
       "parameters" : {
-        "weapon" : "kinetic0-cannon-weapon",
+        "weapon" : "kinetic2-gatling-weapon",
         "height" : 0.3
       }
     },

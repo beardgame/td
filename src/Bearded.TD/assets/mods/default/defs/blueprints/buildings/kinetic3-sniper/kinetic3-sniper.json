@@ -1,8 +1,8 @@
 {
-  "id" : "kinetic0-cannon",
+  "id" : "kinetic3-sniper",
   "components" : [
-    { "id" : "name", "parameters" : { "name" : "Cannon" } },
-    { "id" : "cost", "parameters" : { "resources" : 50 } },
+    { "id" : "name", "parameters" : { "name" : "Sniper" } },
+    { "id" : "cost", "parameters" : { "resources" : 75 } },
     { "id" : "footprint", "parameters" : { "group" : "single" } },
     { "id" : "defaultTileOccupancy" },
     { "id" : "health", "parameters" : { "initialHealth" : 1, "maxHealth" : 100 } },
@@ -13,7 +13,7 @@
       "id" : "turret",
       "onGhost": true,
       "parameters" : {
-        "weapon" : "kinetic0-cannon-weapon",
+        "weapon" : "kinetic3-sniper-weapon",
         "height" : 0.3
       }
     },

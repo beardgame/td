@@ -1,0 +1,9 @@
+{
+    "id" : "unlockGatlingTower",
+    "name" : "Gatling",
+    "branch" : "dynamics",
+    "tier" : "medium",
+    "unlocks": [
+        { "type" : "building", "blueprint" : "kinetic2-gatling" }
+    ]
+}

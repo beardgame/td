@@ -1,6 +1,7 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -8,30 +9,15 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("hitLevelAtTower")]
-sealed class HitLevelAtTower : WeaponCycleHandler<HitLevelAtTower.IParameters>
+sealed class HitLevelAtTower : Component, IListener<ShootProjectile>
 {
-    private Instant nextPossibleShootTime;
-    private bool firstShotInBurst = true;
     private DynamicDamage? damageProvider;
-
-    internal interface IParameters : IParametersTemplate<IParameters>
-    {
-        [Modifiable(Type = AttributeType.Damage)]
-        UntypedDamagePerSecond DamagePerSecond { get; }
-
-        [Modifiable(1, Type = AttributeType.FireRate)]
-        Frequency FireRate { get; }
-    }
-
-    public HitLevelAtTower(IParameters parameters) : base(parameters)
-    {
-    }
 
     protected override void OnAdded()
     {
-        base.OnAdded();
         damageProvider = new DynamicDamage();
         Owner.AddComponent(damageProvider);
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
@@ -44,34 +30,21 @@ sealed class HitLevelAtTower : WeaponCycleHandler<HitLevelAtTower.IParameters>
         base.OnRemoved();
     }
 
-    protected override void UpdateIdle(TimeSpan elapsedTime)
+    public override void Update(TimeSpan elapsedTime)
     {
-        firstShotInBurst = true;
+        
     }
 
-    protected override void UpdateShooting(TimeSpan elapsedTime)
+    public void HandleEvent(ShootProjectile @event)
     {
-        var currentTime = Game.Time;
-        while (nextPossibleShootTime < currentTime)
-        {
-            hitLevel();
-
-            if (firstShotInBurst)
-            {
-                nextPossibleShootTime = currentTime + 1 / Parameters.FireRate;
-                firstShotInBurst = false;
-            }
-            else
-            {
-                nextPossibleShootTime += 1 / Parameters.FireRate;
-            }
-        }
+        hitLevel(@event.Damage);
     }
 
-    private void hitLevel()
+
+    private void hitLevel(UntypedDamage damage)
     {
         DebugAssert.State.Satisfies(damageProvider != null);
-        damageProvider?.Inject(Parameters.DamagePerSecond / Parameters.FireRate);
+        damageProvider?.Inject(damage);
         var point = Owner.Parent is GameObject { Position: var p }
             ? p
             : Owner.Position;

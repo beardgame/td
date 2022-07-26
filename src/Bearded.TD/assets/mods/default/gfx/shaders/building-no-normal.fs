@@ -14,10 +14,10 @@ void main()
 {
 	vec4 rgba = texture(diffuse, fragmentUV);
 
-	if (rgba.a < 0.01)
+	if (rgba.a < 0.9)
 		discard;
 
-    outRGBA = rgba;
-    outNormal = vec4(0.5, 0.5, 1, 1) * rgba.a;
-    outDepth = vec4(fragmentDepth, 0, 0, 1) *  rgba.a;
+    outRGBA = vec4(rgba.rgb * rgba.a, 1);
+    outNormal = vec4(0.5, 0.5, 1, 1);
+    outDepth = vec4(fragmentDepth, 0, 0, 1);
 }

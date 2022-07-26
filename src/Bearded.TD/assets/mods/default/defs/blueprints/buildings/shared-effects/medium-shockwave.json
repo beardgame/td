@@ -1,18 +1,17 @@
 {
-  "id" : "dustExplosion",
+  "id" : "medium-shockwave",
   "components" : [
     {
       "id" : "particleSystem",
       "parameters" : {
-        "count" : 12,
-        "sprite" : "default.particle.mote",
-        "color" : "FF333333",
+        "count" : 1,
+        "sprite" : "default.particle.halo",
+        "color" : "FF666666",
         "size" : 0.4,
-        "finalSize" : 1,
+        "finalSize" : 2,
         "lifetime" : 0.5,
-        "randomVelocity" : 3,
-        "reflectionVelocity" : 3,
-        "gravityFactor" : 0.25,
+        "gravityFactor" : 0,
+        "offset" : [0, 0, 0.1],
         "drawMode" : "sprite"
       }
     },

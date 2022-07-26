@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -11,17 +12,11 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("projectileEmitter")]
-sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameters>
+sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<ShootProjectile>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         IComponentOwnerBlueprint Projectile { get; }
-
-        [Modifiable(Type = AttributeType.Damage)]
-        UntypedDamagePerSecond DamagePerSecond { get; }
-
-        [Modifiable(1, Type = AttributeType.FireRate)]
-        Frequency FireRate { get; }
 
         [Modifiable(10.0)]
         Speed MuzzleSpeed { get; }
@@ -29,12 +24,10 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
 
-        Unit MuzzleOffset { get; }
+        Difference2 MuzzleOffset { get; }
     }
 
-    private Instant nextPossibleShootTime;
-    private bool firstShotInBurst = true;
-
+    private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
 
     public ProjectileEmitter(IParameters parameters)
@@ -44,59 +37,48 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
 
     protected override void OnAdded()
     {
-        base.OnAdded();
-
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
         ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
+        Events.Subscribe(this);
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
     }
 
     public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
         => base.CanApplyUpgradeEffect(effect) || Parameters.Projectile.CanApplyUpgradeEffect(effect);
 
-    protected override void UpdateIdle(TimeSpan elapsedTime)
+    public void HandleEvent(ShootProjectile @event)
     {
-        firstShotInBurst = true;
+        emitProjectile(@event.Damage);
     }
 
-    protected override void UpdateShooting(TimeSpan elapsedTime)
-    {
-        var currentTime = Game.Time;
-        while (nextPossibleShootTime < currentTime)
-        {
-            emitProjectile();
-
-            if (firstShotInBurst)
-            {
-                nextPossibleShootTime = currentTime + 1 / Parameters.FireRate;
-                firstShotInBurst = false;
-            }
-            else
-            {
-                nextPossibleShootTime += 1 / Parameters.FireRate;
-            }
-        }
-    }
-
-    private void emitProjectile()
+    private void emitProjectile(UntypedDamage damage)
     {
         var (direction, muzzleVelocity) = getMuzzleVelocity();
 
-        var position = Weapon.Position + (Weapon.Direction * Parameters.MuzzleOffset).WithZ();
+        var weaponDirection = weapon.Direction.Vector;
+        var position = weapon.Position +
+            (weaponDirection * Parameters.MuzzleOffset.X
+                + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
+            ).WithZ();
 
         ProjectileFactory.Create(
-            Game,
+            Owner.Game,
             Parameters.Projectile,
             Owner,
             position,
             direction,
             muzzleVelocity,
-            Parameters.DamagePerSecond / Parameters.FireRate);
+            damage);
 
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }
 
     private (Direction2, Velocity3) getMuzzleVelocity()
     {
-        var direction = Weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
+        var direction = weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;
 
         var velocityZ = targeter?.Target is { } target
@@ -108,7 +90,7 @@ sealed class ProjectileEmitter : WeaponCycleHandler<ProjectileEmitter.IParameter
 
     private Speed verticalSpeedCompensationToTarget(IPositionable target)
     {
-        var difference = target.Position - Weapon.Position;
+        var difference = target.Position - weapon.Position;
         var horizontalDistance = difference.XY().Length;
         // TODO: the division below should work in spacetime
         var expectedTimeToTarget = new TimeSpan(horizontalDistance.NumericValue / Parameters.MuzzleSpeed.NumericValue);

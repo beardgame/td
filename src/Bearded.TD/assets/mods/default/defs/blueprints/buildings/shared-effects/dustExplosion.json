@@ -1,16 +1,17 @@
 {
-  "id" : "kinetic1-stomp-shockwave",
+  "id" : "dustExplosion",
   "components" : [
     {
       "id" : "particleSystem",
       "parameters" : {
-        "count" : 1,
-        "sprite" : "default.particle.halo",
-        "color" : "FF666666",
+        "count" : 12,
+        "sprite" : "default.particle.mote",
+        "color" : "FF333333",
         "size" : 0.4,
-        "finalSize" : 2,
+        "finalSize" : 1,
         "lifetime" : 0.5,
-        "gravityFactor" : 0,
+        "randomVelocity" : 3,
+        "gravityFactor" : 0.25,
         "drawMode" : "sprite"
       }
     },
