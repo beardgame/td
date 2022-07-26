@@ -9,7 +9,7 @@ sealed class ContributeTags : Component<ContributeTags.IParameters>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        ImmutableHashSet<string> Tags { get; }
+        ImmutableArray<string> Tags { get; }
     }
 
     public ContributeTags(IParameters parameters) : base(parameters) { }
@@ -23,4 +23,9 @@ sealed class ContributeTags : Component<ContributeTags.IParameters>
     }
 
     public override void Update(TimeSpan elapsedTime) {}
+
+    public static ContributeTags FromStringList(ImmutableArray<string> tagsToAdd)
+    {
+        return new ContributeTags(new ContributeTagsParametersTemplate(tagsToAdd));
+    }
 }

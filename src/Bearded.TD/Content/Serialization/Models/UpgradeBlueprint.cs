@@ -23,7 +23,7 @@ sealed class UpgradeBlueprint
         _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
         _ = Name ?? throw new InvalidDataException($"{nameof(Name)} must be non-null");
 
-        return new(
+        return new Content.Models.UpgradeBlueprint(
             ModAwareId.FromNameInMod(Id, modMetadata),
             Name,
             Cost,

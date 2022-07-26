@@ -7,6 +7,13 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 abstract class UpgradeEffectBase : IUpgradeEffect
 {
+    private readonly UpgradePrerequisites prerequisites;
+
+    protected UpgradeEffectBase(UpgradePrerequisites prerequisites)
+    {
+        this.prerequisites = prerequisites;
+    }
+
     public bool CanApplyTo(GameObject subject)
         => subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
 
