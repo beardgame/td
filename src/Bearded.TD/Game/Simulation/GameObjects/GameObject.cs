@@ -67,10 +67,6 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
     public void AddComponent(IComponent component)
     {
         components.Add(component);
-        if (game != null && !Deleted)
-        {
-            component.Activate();
-        }
     }
 
     public void RemoveComponent(IComponent component) => components.Remove(component);

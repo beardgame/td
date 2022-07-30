@@ -11,6 +11,7 @@ sealed class ComponentCollection
     private readonly ComponentEvents events;
     private readonly List<IComponent> components = new();
 
+    private bool isActivated;
     private bool deferComponentCollectionMutations;
     private readonly Queue<CollectionMutation> queuedMutations = new();
 
@@ -18,14 +19,6 @@ sealed class ComponentCollection
     {
         this.owner = owner;
         this.events = events;
-    }
-
-    public void AddRange(IEnumerable<IComponent> newComponents)
-    {
-        foreach (var component in newComponents)
-        {
-            Add(component);
-        }
     }
 
     public void Add(IComponent component)
@@ -38,14 +31,22 @@ sealed class ComponentCollection
         components.Add(component);
         component.OnAdded(owner, events);
         events.Send(new ComponentAdded(component));
+        if (isActivated)
+        {
+            component.Activate();
+        }
     }
 
     public void Activate()
     {
+        deferComponentCollectionMutations = true;
         foreach (var component in components)
         {
             component.Activate();
         }
+        deferComponentCollectionMutations = false;
+        isActivated = true;
+        applyDeferredMutations();
     }
 
     public void Remove(IComponent component)
