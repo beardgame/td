@@ -48,6 +48,7 @@
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
     <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" />
+    <ProjectReference Include="..\Bearded.TD.Analyzers\Bearded.TD.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Bearded.TD.Generators\Bearded.TD.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>
