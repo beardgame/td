@@ -26,7 +26,7 @@ sealed class NoGameInComponentOnAdded : DiagnosticAnalyzer
         messageFormat:
         "Access to 'Owner.Game' is banned in the 'OnAdded' method of components, but was accessed in {0}",
         category: "Usage",
-        defaultSeverity: DiagnosticSeverity.Warning, // TODO: make error
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description:
         "Access to 'Owner.Game' has been banned in the 'OnAdded' method of components. Use 'Activate' instead."
