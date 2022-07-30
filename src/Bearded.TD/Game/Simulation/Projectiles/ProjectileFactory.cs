@@ -1,5 +1,3 @@
-using System.Linq;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
@@ -11,9 +9,12 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 static class ProjectileFactory
 {
+    public static GameObject CreateTemplate(IComponentOwnerBlueprint blueprint, IComponentOwner)
+
     public static GameObject Create(
         IComponentOwnerBlueprint blueprint,
         IComponentOwner parent,
+        GameObjectUpgradeSidecar upgradeSidecar,
         Position3 position,
         Direction2 direction,
         Velocity3 muzzleVelocity,
@@ -24,22 +25,8 @@ static class ProjectileFactory
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
         obj.AddComponent(new Property<UntypedDamage>(damage));
 
-        applyCurrentUpgradesTo(parent, obj);
+        upgradeSidecar.ApplyUpgrades(obj);
 
         return obj;
-    }
-
-    private static void applyCurrentUpgradesTo(IComponentOwner parent, GameObject projectile)
-    {
-        if (!parent.TryGetSingleComponentInOwnerTree<IBuildingUpgradeManager>(out var upgradeManager))
-        {
-            return;
-        }
-
-        var upgrades = upgradeManager.AppliedUpgrades.Where(projectile.CanApplyUpgrade);
-        foreach (var upgrade in upgrades)
-        {
-            projectile.ApplyUpgrade(upgrade);
-        }
     }
 }

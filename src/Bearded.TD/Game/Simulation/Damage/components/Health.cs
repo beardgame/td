@@ -1,7 +1,5 @@
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Shared.Events;
@@ -97,19 +95,13 @@ sealed class Health :
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (CurrentHealth <= HitPoints.Zero)
-        {
-            Events.Send(new EnactDeath());
-        }
-    }
-
-    public override void ApplyUpgradeEffect(IUpgradeEffect effect)
-    {
-        base.ApplyUpgradeEffect(effect);
-
         if (Parameters.MaxHealth != MaxHealth)
         {
             applyNewMaxHealth();
+        }
+        if (CurrentHealth <= HitPoints.Zero)
+        {
+            Events.Send(new EnactDeath());
         }
     }
 

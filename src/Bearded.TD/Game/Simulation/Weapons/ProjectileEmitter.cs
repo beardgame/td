@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.Game.Simulation.Damage;
+﻿using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -31,16 +30,16 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
+    private GameObjectUpgradeSidecar upgradeSidecar = null!;
 
     public ProjectileEmitter(IParameters parameters)
-        : base(parameters)
-    {
-    }
+        : base(parameters) {}
 
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
         ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
+        upgradeSidecar = GameObjectUpgradeSidecar.ForTemplateObject(Parameters.Projectile);
         Events.Subscribe(this);
     }
 
@@ -50,11 +49,8 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     public override void PreviewUpgrade(IUpgradePreview upgradePreview)
     {
-        // TODO: the upgrade preview is built around the concept that it can only be done right now, for projectiles we
-        //       need to change it so that the effect of the upgrade is instead some kind of object that can apply the
-        //       effect when we actually need it.
-        throw new NotImplementedException();
         base.PreviewUpgrade(upgradePreview);
+        upgradePreview.RegisterGameObjectUpgradeSidecar(upgradeSidecar);
     }
 
     public void HandleEvent(ShootProjectile @event)
@@ -76,6 +72,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
             ProjectileFactory.Create(
                 Parameters.Projectile,
                 Owner,
+                upgradeSidecar,
                 position,
                 direction,
                 muzzleVelocity,

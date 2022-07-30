@@ -14,7 +14,7 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
     private GameState? game;
     // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
     // Separate nullable field for lazy initialisation in Add.
-    public GameState Game => game!;
+    public object Game => game!;
 
     public IComponentOwner? Parent { get; }
     public Position3 Position { get; set; }

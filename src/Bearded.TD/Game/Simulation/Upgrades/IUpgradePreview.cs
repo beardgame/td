@@ -5,8 +5,7 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 interface IUpgradePreview
 {
-    IUpgrade Upgrade { get; }
-
     void RegisterGameObject(GameObject gameObject);
     void RegisterParameters(GameObject gameObject, IParametersTemplate parameters);
+    void RegisterGameObjectUpgradeSidecar(GameObjectUpgradeSidecar gameObjectUpgradeSidecar);
 }
