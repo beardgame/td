@@ -35,8 +35,12 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
         startTile = currentTile;
     }
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
+        base.Activate();
+
         tileWalker = new TileWalker(this, Owner.Game.Level, startTile);
         passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
 

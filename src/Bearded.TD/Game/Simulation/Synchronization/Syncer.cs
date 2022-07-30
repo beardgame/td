@@ -17,6 +17,11 @@ sealed class Syncer : Component, ISyncer
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IIdProvider>(Owner, Events, provider => idProvider = provider);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
         Owner.Game.Meta.Synchronizer.RegisterSyncable(Owner);
     }
 

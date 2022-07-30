@@ -86,8 +86,13 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
         protected override void OnAdded()
         {
-            deleteAt = Owner.Game.Time + parameters.Timeout;
             Events.Subscribe(this);
+        }
+
+        public override void Activate()
+        {
+            base.Activate();
+            deleteAt = Owner.Game.Time + parameters.Timeout;
         }
 
         public override void Update(TimeSpan elapsedTime)

@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Shared.Events;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
@@ -19,6 +20,7 @@ sealed class StatisticCollector : Component, ISyncable
 
     private long previousWaveDamage;
     private long previousWaveKills;
+    private IListener<WaveStarted>? waveListener;
 
     protected override void OnAdded()
     {
@@ -32,12 +34,34 @@ sealed class StatisticCollector : Component, ISyncable
             totalKills++;
             currentWaveKills++;
         }));
-        Owner.Game.Meta.Events.Subscribe(Listener.ForEvent<WaveStarted>(_ =>
+        Events.Subscribe(Listener.ForEvent<ObjectDeleting>(_ => unsubscribe()));
+        ReportAggregator.Register(Events, new StatisticsReport(this));
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        waveListener = Listener.ForEvent<WaveStarted>(_ =>
         {
             (previousWaveDamage, currentWaveDamage) = (currentWaveDamage, 0);
             (previousWaveKills, currentWaveKills) = (currentWaveKills, 0);
-        }));
-        ReportAggregator.Register(Events, new StatisticsReport(this));
+        });
+        Owner.Game.Meta.Events.Subscribe(waveListener);
+    }
+
+    public override void OnRemoved()
+    {
+        unsubscribe();
+        base.OnRemoved();
+    }
+
+    private void unsubscribe()
+    {
+        if (waveListener != null)
+        {
+            Owner.Game.Meta.Events.Unsubscribe(waveListener);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime) {}

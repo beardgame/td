@@ -32,12 +32,15 @@ sealed partial class AllowManualControl
         protected override void OnAdded()
         {
             faction = Owner.GetComponents<IFactionProvider>().FirstOrDefault();
+        }
 
+        public override void Activate()
+        {
+            base.Activate();
             var spriteBlueprint = Owner.Game.Meta.Blueprints
                 .Sprites[ModAwareId.ForDefaultMod("particle")]
                 .GetSprite("plus");
             sprite = SpriteDrawInfo.ForUVColor(Owner.Game, spriteBlueprint);
-
             Events.Subscribe(this);
         }
 

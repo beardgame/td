@@ -21,6 +21,11 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v);
 
         Events.Subscribe(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
         Owner.Game.ListAs<IRenderable>(this);
     }
 

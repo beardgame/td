@@ -24,11 +24,6 @@ sealed class DrawZoneOnSelect : Component, IListener<DrawComponents>
     protected override void OnAdded()
     {
         occupiedTilesTracker.Initialize(Owner, Events);
-        tileRangeDrawer = new TileRangeDrawer(
-            Owner.Game,
-            () => TileRangeDrawStyle.FromSelectionState(selectionState),
-            () => areaBorder,
-            new Color(50, 168, 82));
         SelectionListener.Create(
                 onFocus: () => selectionState = SelectionState.Focused,
                 onFocusReset: () => selectionState = SelectionState.Default,
@@ -41,6 +36,16 @@ sealed class DrawZoneOnSelect : Component, IListener<DrawComponents>
         updateTiles();
 
         Events.Subscribe(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        tileRangeDrawer = new TileRangeDrawer(
+            Owner.Game,
+            () => TileRangeDrawStyle.FromSelectionState(selectionState),
+            () => areaBorder,
+            new Color(50, 168, 82));
     }
 
     private void updateTiles()

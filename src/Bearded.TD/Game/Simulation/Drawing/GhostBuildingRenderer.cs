@@ -15,9 +15,13 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
     protected override void OnAdded()
     {
         base.OnAdded();
-
-        shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("building-ghost")];
         Events.Subscribe<ConstructionStarted>(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("building-ghost")];
     }
 
     public override void OnRemoved()

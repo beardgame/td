@@ -32,14 +32,20 @@ sealed class Selectable :
 
     protected override void OnAdded()
     {
-        selectionLayer = Owner.Game.SelectionLayer;
         occupiedTilesTracker.Initialize(Owner, Events);
-        occupiedTilesTracker.OccupiedTiles.ForEach(registerTile);
-        occupiedTilesTracker.TileAdded += registerTile;
-        occupiedTilesTracker.TileRemoved += unregisterTile;
         Events.Subscribe(this);
 
         disposer.AddDisposable(ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v));
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        selectionLayer = Owner.Game.SelectionLayer;
+        occupiedTilesTracker.OccupiedTiles.ForEach(registerTile);
+        occupiedTilesTracker.TileAdded += registerTile;
+        occupiedTilesTracker.TileRemoved += unregisterTile;
     }
 
     public override void OnRemoved()

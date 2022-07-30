@@ -18,6 +18,11 @@ sealed class ZoneRevealer : Component
     protected override void OnAdded()
     {
         ReportAggregator.Register(Events, new ZoneRevealReport(this));
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
         Owner.Game.ListAs<IZoneRevealer>(new ZoneRevealerProxy(Owner));
     }
 

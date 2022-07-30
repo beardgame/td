@@ -12,8 +12,11 @@ sealed class IdProvider : Component, IIdProvider
         Id = id;
     }
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
+        base.Activate();
         Owner.Game.IdAs(Id, Owner);
     }
 

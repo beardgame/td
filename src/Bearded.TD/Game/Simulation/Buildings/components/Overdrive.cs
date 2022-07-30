@@ -22,8 +22,12 @@ sealed class Overdrive : Component
     private bool wasTriggerPulledLastFrame;
     private Instant nextDamageTime;
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
+        base.Activate();
+
         var ids = Owner.Game.GamePlayIds;
 
         fireRate = new ParameterModifiableWithId(

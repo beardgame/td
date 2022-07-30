@@ -36,25 +36,35 @@ sealed class BuildingConstructionWork : Component
 
             factionProvider = provider;
             faction = provider.Faction;
-
-            if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
-            {
-                throw new NotSupportedException("Cannot build building without resources.");
-            }
-            if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
-            {
-                throw new NotSupportedException("Cannot build building without workers.");
-            }
-
-            var cost = Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
-            workerTask = new BuildingWorkerTask(
-                taskId,
-                Owner.Game,
-                Owner.GetComponents<IIncompleteBuilding>().Single(),
-                OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner),
-                resources.ReserveResources(new FactionResources.ResourceRequest(cost)));
-            workers.RegisterTask(workerTask);
         });
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        if (faction == null)
+        {
+            throw new InvalidOperationException("Faction must be resolved before activating this component.");
+        }
+
+        if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+        {
+            throw new NotSupportedException("Cannot build building without resources.");
+        }
+        if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
+        {
+            throw new NotSupportedException("Cannot build building without workers.");
+        }
+
+        var cost = Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
+        workerTask = new BuildingWorkerTask(
+            taskId,
+            Owner.Game,
+            Owner.GetComponents<IIncompleteBuilding>().Single(),
+            OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner),
+            resources.ReserveResources(new FactionResources.ResourceRequest(cost)));
+        workers.RegisterTask(workerTask);
     }
 
     public override void Update(TimeSpan elapsedTime)
