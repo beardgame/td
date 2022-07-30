@@ -42,6 +42,7 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
         }
 
         game = gameState;
+        components.Activate();
     }
 
     public void Update(TimeSpan elapsedTime)
@@ -63,7 +64,14 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
     public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(this);
 
 
-    public void AddComponent(IComponent component) => components.Add(component);
+    public void AddComponent(IComponent component)
+    {
+        components.Add(component);
+        if (game != null && !Deleted)
+        {
+            component.Activate();
+        }
+    }
 
     public void RemoveComponent(IComponent component) => components.Remove(component);
 

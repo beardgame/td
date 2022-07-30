@@ -6,8 +6,9 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 interface IComponent
 {
     void OnAdded(GameObject owner, ComponentEvents events);
-    void OnRemoved();
+    void Activate();
     void Update(TimeSpan elapsedTime);
+    void OnRemoved();
 
     bool CanApplyUpgradeEffect(IUpgradeEffect effect);
     void ApplyUpgradeEffect(IUpgradeEffect effect);

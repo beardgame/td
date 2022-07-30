@@ -20,7 +20,7 @@ sealed class ComponentCollection
         this.events = events;
     }
 
-    public void Add(IEnumerable<IComponent> newComponents)
+    public void AddRange(IEnumerable<IComponent> newComponents)
     {
         foreach (var component in newComponents)
         {
@@ -38,6 +38,14 @@ sealed class ComponentCollection
         components.Add(component);
         component.OnAdded(owner, events);
         events.Send(new ComponentAdded(component));
+    }
+
+    public void Activate()
+    {
+        foreach (var component in components)
+        {
+            component.Activate();
+        }
     }
 
     public void Remove(IComponent component)

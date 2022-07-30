@@ -10,14 +10,14 @@ abstract class Component<TParameters> : IComponent
 {
     protected TParameters Parameters { get; }
 
+    protected GameObject Owner { get; private set; } = null!;
+
+    protected ComponentEvents Events { get; private set; } = null!;
+
     protected Component(TParameters parameters)
     {
         Parameters = parameters.CreateModifiableInstance();
     }
-
-    protected GameObject Owner { get; private set; }
-
-    protected ComponentEvents Events { get; private set; }
 
     public void OnAdded(GameObject owner, ComponentEvents events)
     {
@@ -27,6 +27,8 @@ abstract class Component<TParameters> : IComponent
     }
 
     protected abstract void OnAdded();
+
+    public virtual void Activate() {}
 
     public virtual void OnRemoved() {}
 
@@ -41,7 +43,7 @@ abstract class Component<TParameters> : IComponent
 
 abstract class Component : IComponent
 {
-    protected GameObject Owner { get; private set; }
+    protected GameObject Owner { get; private set; } = null!;
 
     protected ComponentEvents Events { get; private set; } = null!;
 
@@ -53,6 +55,8 @@ abstract class Component : IComponent
     }
 
     protected abstract void OnAdded();
+
+    public virtual void Activate() {}
 
     public virtual void OnRemoved() {}
 
@@ -67,7 +71,7 @@ abstract class Component : IComponent
 
 sealed class VoidParameters : IParametersTemplate<VoidParameters>
 {
-    public static VoidParameters Instance => new VoidParameters();
+    public static VoidParameters Instance => new();
 
     private VoidParameters() { }
 
