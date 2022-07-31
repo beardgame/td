@@ -42,10 +42,10 @@ sealed partial class BuildingUpgradeManager
             private readonly Faction playerFaction;
 
             private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
-            private readonly List<IUpgradeBlueprint> buildingAvailableUpgrades = new();
+            private readonly List<IPermanentUpgrade> buildingAvailableUpgrades = new();
 
             public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
-            public IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
+            public IReadOnlyCollection<IPermanentUpgrade> AvailableUpgrades { get; }
             public int OccupiedUpgradeSlots => upgradeManager.UpgradeSlotsOccupied;
             public int UnlockedUpgradeSlots => upgradeManager.UpgradeSlotsUnlocked;
 
@@ -94,7 +94,7 @@ sealed partial class BuildingUpgradeManager
                 events.Unsubscribe(this);
             }
 
-            private void onUpgradeCompleted(IUpgradeBlueprint upgrade)
+            private void onUpgradeCompleted(IPermanentUpgrade upgrade)
             {
                 var i = buildingUpgrades.FindIndex(model => model.Blueprint == upgrade);
                 if (i == -1)
@@ -135,7 +135,7 @@ sealed partial class BuildingUpgradeManager
                     .AddRange(upgradeManager.ApplicableUpgrades.WhereNot(upgradesInProgress.Contains));
             }
 
-            public void QueueUpgrade(IUpgradeBlueprint upgrade)
+            public void QueueUpgrade(IPermanentUpgrade upgrade)
             {
                 game.Request(UpgradeBuilding.Request, subject, upgrade);
             }
@@ -145,13 +145,13 @@ sealed partial class BuildingUpgradeManager
         {
             private IIncompleteUpgrade? incompleteUpgrade;
 
-            public IUpgradeBlueprint Blueprint { get; }
+            public IPermanentUpgrade Blueprint { get; }
 
             public double Progress => incompleteUpgrade?.PercentageComplete ?? 1;
 
             public bool IsFinished => Progress >= 1;
 
-            public BuildingUpgradeModel(IUpgradeBlueprint blueprint, IIncompleteUpgrade? incompleteUpgrade)
+            public BuildingUpgradeModel(IPermanentUpgrade blueprint, IIncompleteUpgrade? incompleteUpgrade)
             {
                 Blueprint = blueprint;
                 this.incompleteUpgrade = incompleteUpgrade;

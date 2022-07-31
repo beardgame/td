@@ -10,11 +10,11 @@ sealed partial class BuildingUpgradeManager
         private readonly BuildingUpgradeManager manager;
         private readonly ProgressTracker progressTracker;
 
-        public IUpgradeBlueprint Upgrade { get; }
+        public IPermanentUpgrade Upgrade { get; }
         public double PercentageComplete { get; private set; }
         public ResourceAmount ResourcesInvestedSoFar { get; private set; }
 
-        public IncompleteUpgrade(BuildingUpgradeManager manager, IUpgradeBlueprint upgrade)
+        public IncompleteUpgrade(BuildingUpgradeManager manager, IPermanentUpgrade upgrade)
         {
             this.manager = manager;
             progressTracker = new ProgressTracker(this);

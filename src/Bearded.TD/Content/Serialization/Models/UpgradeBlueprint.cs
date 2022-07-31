@@ -11,19 +11,19 @@ namespace Bearded.TD.Content.Serialization.Models;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 sealed class UpgradeBlueprint
-    : IConvertsTo<Content.Models.UpgradeBlueprint, Void>
+    : IConvertsTo<Content.Models.PermanentUpgrade, Void>
 {
     public string? Id { get; set; }
     public string? Name { get; set; }
     public ResourceAmount Cost { get; set; }
     public List<IUpgradeEffect>? Effects { get; set; }
 
-    public Content.Models.UpgradeBlueprint ToGameModel(ModMetadata modMetadata, Void resolvers)
+    public Content.Models.PermanentUpgrade ToGameModel(ModMetadata modMetadata, Void resolvers)
     {
         _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
         _ = Name ?? throw new InvalidDataException($"{nameof(Name)} must be non-null");
 
-        return new Content.Models.UpgradeBlueprint(
+        return new Content.Models.PermanentUpgrade(
             ModAwareId.FromNameInMod(Id, modMetadata),
             Name,
             Cost,

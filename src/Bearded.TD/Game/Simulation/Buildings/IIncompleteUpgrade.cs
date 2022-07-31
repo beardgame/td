@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 interface IIncompleteUpgrade
 {
-    IUpgradeBlueprint Upgrade { get; }
+    IPermanentUpgrade Upgrade { get; }
     bool IsCompleted { get; }
     bool IsCancelled { get; }
     double PercentageComplete { get; }

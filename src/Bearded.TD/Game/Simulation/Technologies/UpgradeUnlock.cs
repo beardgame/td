@@ -4,17 +4,17 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 
 sealed class UpgradeUnlock : ITechnologyUnlock
 {
-    private readonly IUpgradeBlueprint upgradeBlueprint;
+    private readonly IPermanentUpgrade upgrade;
 
-    public string Description => $"Unlock upgrade: {upgradeBlueprint.Name}";
+    public string Description => $"Unlock upgrade: {upgrade.Name}";
 
-    public UpgradeUnlock(IUpgradeBlueprint upgradeBlueprint)
+    public UpgradeUnlock(IPermanentUpgrade upgrade)
     {
-        this.upgradeBlueprint = upgradeBlueprint;
+        this.upgrade = upgrade;
     }
 
     public void Apply(FactionTechnology factionTechnology)
     {
-        factionTechnology.UnlockUpgrade(upgradeBlueprint);
+        factionTechnology.UnlockUpgrade(upgrade);
     }
 }

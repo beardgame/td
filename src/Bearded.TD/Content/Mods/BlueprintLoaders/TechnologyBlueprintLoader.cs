@@ -18,7 +18,7 @@ sealed class TechnologyBlueprintLoader
         ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>
 {
     private readonly ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners;
-    private readonly ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades;
+    private readonly ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades;
 
     protected override DependencySelector SelectDependency { get; } = m => m.Blueprints.Technologies;
 
@@ -26,7 +26,7 @@ sealed class TechnologyBlueprintLoader
 
     public TechnologyBlueprintLoader(BlueprintLoadingContext context,
         ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
-        ReadonlyBlueprintCollection<IUpgradeBlueprint> upgrades) : base(context)
+        ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades) : base(context)
     {
         this.componentOwners = componentOwners;
         this.upgrades = upgrades;
@@ -67,7 +67,7 @@ sealed class TechnologyBlueprintLoader
 
         var componentOwnerResolver = new BlueprintDependencyResolver<IComponentOwnerBlueprint>(
             Context.Meta, componentOwners, Context.LoadedDependencies, m => m.Blueprints.ComponentOwners);
-        var upgradeResolver = new BlueprintDependencyResolver<IUpgradeBlueprint>(
+        var upgradeResolver = new BlueprintDependencyResolver<IPermanentUpgrade>(
             Context.Meta, upgrades, Context.LoadedDependencies, m => m.Blueprints.Upgrades);
         var technologyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
             Context.Meta, accumulatingBlueprintCollection, Context.LoadedDependencies, m => m.Blueprints.Technologies);

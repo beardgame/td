@@ -8,18 +8,18 @@ interface IUpgradeReportInstance : IDisposable
 {
     bool CanPlayerUpgradeBuilding { get; }
     IReadOnlyCollection<IUpgradeModel> Upgrades { get; }
-    IReadOnlyCollection<IUpgradeBlueprint> AvailableUpgrades { get; }
+    IReadOnlyCollection<IPermanentUpgrade> AvailableUpgrades { get; }
     int OccupiedUpgradeSlots { get; }
     int UnlockedUpgradeSlots { get; }
 
     event VoidEventHandler? UpgradesUpdated;
     event VoidEventHandler? AvailableUpgradesUpdated;
 
-    void QueueUpgrade(IUpgradeBlueprint upgrade);
+    void QueueUpgrade(IPermanentUpgrade upgrade);
 
     interface IUpgradeModel
     {
-        IUpgradeBlueprint Blueprint { get; }
+        IPermanentUpgrade Blueprint { get; }
         double Progress { get; }
         bool IsFinished { get; }
     }
