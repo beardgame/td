@@ -15,8 +15,8 @@ sealed class ParameterModifiable : UpgradeEffectBase
         this.modification = modification;
     }
 
-    public override bool CanApplyTo<T>(IParametersTemplate<T> subject) => subject.HasAttributeOfType(attributeType);
+    public override bool CanApplyTo(IParametersTemplate subject) => subject.HasAttributeOfType(attributeType);
 
-    public override void ApplyTo<T>(IParametersTemplate<T> subject)
+    public override void ApplyTo(IParametersTemplate subject)
         => subject.AddModification(attributeType, modification);
 }
