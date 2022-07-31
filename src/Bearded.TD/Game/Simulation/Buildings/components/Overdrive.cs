@@ -14,15 +14,19 @@ sealed class Overdrive : Component
     private static readonly TimeSpan damageInterval = 0.5.S();
     private static float damagePercentile = 0.025f;
 
-    private IUpgradeEffect fireRate = null!;
-    private IUpgradeEffect damageOverTime = null!;
+    private IUpgradeEffect? fireRate;
+    private IUpgradeEffect? damageOverTime;
     private ComponentDependencies.IDependencyRef weaponTriggerDependency = null!;
 
     private IWeaponTrigger? trigger;
     private bool wasTriggerPulledLastFrame;
     private Instant nextDamageTime;
 
-    protected override void OnAdded() {}
+    protected override void OnAdded()
+    {
+        weaponTriggerDependency = ComponentDependencies
+            .DependDynamic<IWeaponTrigger>(Owner, Events, t => trigger = t);
+    }
 
     public override void Activate()
     {
@@ -37,9 +41,6 @@ sealed class Overdrive : Component
 
         fireRate.ApplyTo(Owner);
         damageOverTime.ApplyTo(Owner);
-
-        weaponTriggerDependency = ComponentDependencies
-            .DependDynamic<IWeaponTrigger>(Owner, Events, t => trigger = t);
     }
 
     private static ModificationWithId damageModification(IdManager ids)
@@ -47,8 +48,8 @@ sealed class Overdrive : Component
 
     public override void OnRemoved()
     {
-        fireRate.RemoveFrom(Owner);
-        damageOverTime.RemoveFrom(Owner);
+        fireRate?.RemoveFrom(Owner);
+        damageOverTime?.RemoveFrom(Owner);
         weaponTriggerDependency.Dispose();
     }
 

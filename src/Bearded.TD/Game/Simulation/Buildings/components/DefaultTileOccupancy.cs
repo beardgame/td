@@ -55,7 +55,7 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
 
     private bool isGhost()
     {
-        return Owner.GetComponents<IBuildingStateProvider>().Single().State.IsGhost;
+        return Owner.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State.IsGhost ?? false;
     }
 
     public override void Update(TimeSpan elapsedTime)
