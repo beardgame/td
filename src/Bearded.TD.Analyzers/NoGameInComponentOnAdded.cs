@@ -77,16 +77,17 @@ sealed class NoGameInComponentOnAdded : DiagnosticAnalyzer
     private static bool isBannedScope(ImmutableArray<ISymbol> scopes, ISymbol symbol)
     {
         return symbol is IMethodSymbol method
-            && scopes.Any(scope => SymbolEqualityComparer.Default.Equals(toRootOverriddenMethod(method), scope));
+            && scopes.Any(scope => SymbolEqualityComparer.Default.Equals(toCanonicalBaseMethod(method), scope));
     }
 
-    private static IMethodSymbol toRootOverriddenMethod(IMethodSymbol methodSymbol)
+    private static IMethodSymbol toCanonicalBaseMethod(IMethodSymbol methodSymbol)
     {
         while (methodSymbol.OverriddenMethod != null)
         {
             methodSymbol = methodSymbol.OverriddenMethod;
         }
-        return methodSymbol;
+        // Strip type substitution
+        return methodSymbol.OriginalDefinition;
     }
 
     private static ISymbol getBannedSymbol(Compilation compilation)
