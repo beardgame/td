@@ -15,7 +15,7 @@ public sealed class RuinedTest
 
     public RuinedTest()
     {
-        testBed = ComponentTestBed.Activated();
+        testBed = ComponentTestBed.CreateInGame();
         var stateManager = new BuildingStateManager();
         testBed.AddComponent(stateManager);
         testBed.SendEvent(new ConstructionFinished());

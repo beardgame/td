@@ -14,7 +14,7 @@ public sealed class GainXpOnDamageTests
 
     public GainXpOnDamageTests()
     {
-        componentTestBed = ComponentTestBed.Activated();
+        componentTestBed = ComponentTestBed.CreateInGame();
         componentTestBed.AddComponent(new GainXpOnDamage());
     }
 

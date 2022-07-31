@@ -13,7 +13,7 @@ public sealed class VeterancyTests
 
     public VeterancyTests()
     {
-        componentTestBed = ComponentTestBed.Activated();
+        componentTestBed = ComponentTestBed.CreateInGame();
     }
 
     [Theory]

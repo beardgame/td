@@ -20,19 +20,19 @@ sealed class ComponentTestBed
         obj.AddComponent(internals);
     }
 
-    public static ComponentTestBed Activated(GameTestBed? gameTestBed = null)
+    public static ComponentTestBed CreateInGame(GameTestBed? gameTestBed = null)
     {
-        var testBed = Detached(gameTestBed);
-        testBed.Activate();
+        var testBed = CreateOrphaned(gameTestBed);
+        testBed.AddToGameState();
         return testBed;
     }
 
-    public static ComponentTestBed Detached(GameTestBed? gameTestBed = null)
+    public static ComponentTestBed CreateOrphaned(GameTestBed? gameTestBed = null)
     {
         return new ComponentTestBed(gameTestBed);
     }
 
-    public void Activate()
+    public void AddToGameState()
     {
         gameTestBed.State.Add(obj);
     }
