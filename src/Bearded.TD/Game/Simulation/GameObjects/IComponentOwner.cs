@@ -4,7 +4,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 interface IComponentOwner
 {
-    IComponentOwner? Parent { get; }
+    GameObject? Parent { get; }
 
     void AddComponent(IComponent component);
     void RemoveComponent(IComponent component);

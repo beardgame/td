@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 interface ITurret : IPositionable
 {
     GameObject Weapon { get; }
-    IGameObject Owner { get; }
+    GameObject Owner { get; }
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
     Angle? MaximumTurningAngle { get; }
@@ -125,7 +125,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
         targetOverride = null;
     }
 
-    IGameObject ITurret.Owner => Owner;
+    GameObject ITurret.Owner => Owner;
 
     public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
     {

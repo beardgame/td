@@ -16,7 +16,7 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
     // Separate nullable field for lazy initialisation in Add.
     public GameState Game => game!;
 
-    public IComponentOwner? Parent { get; }
+    public GameObject? Parent { get; }
     public Position3 Position { get; set; }
     public Direction2 Direction { get; set; }
 
@@ -26,7 +26,7 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
     public bool Deleted { get; private set; }
     public event VoidEventHandler? Deleting;
 
-    public GameObject(IComponentOwner? parent, Position3 position, Direction2 direction)
+    public GameObject(GameObject? parent, Position3 position, Direction2 direction)
     {
         Direction = direction;
         Parent = parent;

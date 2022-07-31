@@ -13,7 +13,7 @@ static class ProjectileFactory
 {
     public static GameObject Create(
         IComponentOwnerBlueprint blueprint,
-        IComponentOwner parent,
+        GameObject parent,
         Position3 position,
         Direction2 direction,
         Velocity3 muzzleVelocity,

@@ -9,7 +9,7 @@ static class GameObjectFactory
 {
     public static GameObject CreateFromBlueprintWithDefaultRenderer(
         IComponentOwnerBlueprint blueprint,
-        IComponentOwner? parent,
+        GameObject? parent,
         Position3 position,
         Direction2? direction = null)
     {
@@ -20,7 +20,7 @@ static class GameObjectFactory
 
     public static GameObject CreateFromBlueprintWithoutRenderer(
         IComponentOwnerBlueprint blueprint,
-        IComponentOwner? parent,
+        GameObject? parent,
         Position3 position,
         Direction2? direction = null)
     {
@@ -30,7 +30,7 @@ static class GameObjectFactory
     }
 
     public static GameObject CreateWithDefaultRenderer(
-        IComponentOwner? parent, Position3 position, Direction2? direction = null)
+        GameObject? parent, Position3 position, Direction2? direction = null)
     {
         var obj = CreateWithoutRenderer(parent, position, direction);
         addDefaultRenderer(obj);
@@ -38,7 +38,7 @@ static class GameObjectFactory
     }
 
     public static GameObject CreateWithoutRenderer(
-        IComponentOwner? parent, Position3 position, Direction2? direction = null)
+        GameObject? parent, Position3 position, Direction2? direction = null)
     {
         var obj = new GameObject(parent, position, direction ?? Direction2.Zero);
         obj.AddComponent(new GameObjectTags());

@@ -8,7 +8,7 @@ static class WeaponFactory
 {
     public static GameObject Create(ITurret turret, IComponentOwnerBlueprint blueprint)
     {
-        var obj = new GameObject((IComponentOwner)turret.Owner, new Position3(), new Direction2());
+        var obj = new GameObject(turret.Owner, new Position3(), new Direction2());
         obj.AddComponent(new WeaponState(turret));
         foreach (var component in blueprint.GetComponents())
         {
