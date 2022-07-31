@@ -16,21 +16,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed class BuildingFactory
+static class BuildingFactory
 {
-    private readonly GameState gameState;
-
-    public BuildingFactory(GameState gameState)
-    {
-        this.gameState = gameState;
-    }
-
-    public GameObject Create(
+    public static GameObject Create(
         Id<GameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
         PositionedFootprint footprint)
     {
         var building = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
-            gameState, blueprint, null, Position3.Zero, Direction2.Zero);
+            blueprint, null, Position3.Zero, Direction2.Zero);
         if (!building.GetComponents<IEnemySink>().Any())
         {
             building.AddComponent(new BackupSink());
@@ -61,12 +54,12 @@ sealed class BuildingFactory
         return building;
     }
 
-    public GameObject CreateGhost(
+    public static GameObject CreateGhost(
         IComponentOwnerBlueprint blueprint, Faction faction,
         out MovableTileOccupation tileOccupation)
     {
         var ghost = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
-            gameState, blueprint, null, Position3.Zero, Direction2.Zero);
+            blueprint, null, Position3.Zero, Direction2.Zero);
         ghost.AddComponent(new GhostBuildingRenderer());
         ghost.AddComponent(new BuildingGhostDrawing());
         ghost.AddComponent(new GhostBuildingStateProvider());

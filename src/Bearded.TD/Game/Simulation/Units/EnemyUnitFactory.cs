@@ -13,11 +13,10 @@ namespace Bearded.TD.Game.Simulation.Units;
 
 static class EnemyUnitFactory
 {
-    public static GameObject Create(
-        GameState game, Id<GameObject> id, IComponentOwnerBlueprint blueprint, Tile tile)
+    public static GameObject Create(Id<GameObject> id, IComponentOwnerBlueprint blueprint, Tile tile)
     {
         var unit = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
-            game, blueprint, null, Level.GetPosition(tile).WithZ(0));
+            blueprint, null, Level.GetPosition(tile).WithZ(0));
 
         if (!unit.TryGetSingleComponent<IHealth>(out var health))
         {

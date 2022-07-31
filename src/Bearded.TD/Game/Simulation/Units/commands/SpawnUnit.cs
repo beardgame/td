@@ -1,15 +1,13 @@
 ﻿using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Game.Commands.Gameplay;
+namespace Bearded.TD.Game.Simulation.Units;
 
 static class SpawnUnit
 {
@@ -33,7 +31,7 @@ static class SpawnUnit
             this.unitId = unitId;
         }
 
-        public void Execute() => EnemyUnitFactory.Create(game, unitId, blueprint, tile);
+        public void Execute() => game.Add(EnemyUnitFactory.Create(unitId, blueprint, tile));
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
             new Serializer(blueprint, tile, unitId);

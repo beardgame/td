@@ -82,8 +82,9 @@ static class BuildBuilding
 
         public override void Execute()
         {
-            var building = new BuildingFactory(game.State).Create(id, blueprint, faction, footprint);
+            var building = BuildingFactory.Create(id, blueprint, faction, footprint);
             building.AddComponent(new BuildingConstructionWork(taskId));
+            game.State.Add(building);
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() =>

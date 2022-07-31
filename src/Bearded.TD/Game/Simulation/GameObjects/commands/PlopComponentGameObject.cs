@@ -30,7 +30,8 @@ static class PlopComponentGameObject
 
         public void Execute()
         {
-            GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(game.State, blueprint, null, position, direction);
+            game.State.Add(
+                GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, null, position, direction));
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(blueprint, position, direction);

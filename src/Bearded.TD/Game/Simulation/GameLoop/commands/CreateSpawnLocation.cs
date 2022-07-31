@@ -28,7 +28,7 @@ static class CreateSpawnLocation
 
         public void Execute()
         {
-            GameLoopObjectFactory.CreateSpawnLocation(game.State, id, tile);
+            game.State.Add(GameLoopObjectFactory.CreateSpawnLocation(id, tile));
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(id, tile);

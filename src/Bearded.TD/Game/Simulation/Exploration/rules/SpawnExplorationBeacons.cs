@@ -51,7 +51,8 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
             foreach (var z in zonesAdded)
             {
                 var beacon =
-                    ExplorationBeaconFactory.CreateExplorationBeacon(gameState, blueprint, determineCenter(z), z);
+                    ExplorationBeaconFactory.CreateExplorationBeacon(blueprint, determineCenter(z), z);
+                gameState.Add(beacon);
                 beaconsByZone.Add(z, beacon);
             }
 

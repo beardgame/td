@@ -64,14 +64,14 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
                 + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
             ).WithZ();
 
-        ProjectileFactory.Create(
-            Owner.Game,
-            Parameters.Projectile,
-            Owner,
-            position,
-            direction,
-            muzzleVelocity,
-            damage);
+        Owner.Game.Add(
+            ProjectileFactory.Create(
+                Parameters.Projectile,
+                Owner,
+                position,
+                direction,
+                muzzleVelocity,
+                damage));
 
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }

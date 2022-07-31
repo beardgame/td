@@ -46,7 +46,8 @@ static class PlopBuilding
 
         public void Execute()
         {
-            var building = new BuildingFactory(gameState).Create(id, blueprint, faction, footprint);
+            var building = BuildingFactory.Create(id, blueprint, faction, footprint);
+            gameState.Add(building);
             var constructionSyncer = building.GetComponents<IBuildingConstructionSyncer>().Single();
             constructionSyncer.SyncStartBuild();
             constructionSyncer.SyncCompleteBuild();

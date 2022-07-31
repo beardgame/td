@@ -133,8 +133,9 @@ sealed class PlayerCursors
             switch (cursor.AttachedGhost, cursor.InstantiatedGhost)
             {
                 case ({ } notYetInstantiatedGhost, null):
-                    var ghost = new BuildingFactory(game.State)
+                    var ghost = BuildingFactory
                         .CreateGhost(notYetInstantiatedGhost, player.Faction, out var tileOccupation);
+                    game.State.Add(ghost);
                     cursor = cursor with
                     {
                         InstantiatedGhost = new InstantiatedGhost(

@@ -65,7 +65,8 @@ static class ForceBuildBuilding
 
         public override void Execute()
         {
-            var building = new BuildingFactory(game.State).Create(id, blueprint, faction, footprint);
+            var building = BuildingFactory.Create(id, blueprint, faction, footprint);
+            game.State.Add(building);
             var constructionSyncer = building.GetComponents<IBuildingConstructionSyncer>().Single();
             constructionSyncer.SyncStartBuild();
             constructionSyncer.SyncCompleteBuild();

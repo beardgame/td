@@ -57,8 +57,9 @@ sealed class WorkerHub : Component<WorkerHub.IParameters>
     {
         State.Satisfies(faction != null);
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
-            Owner.Game, Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
+            Parameters.Drone, Owner, Owner.Position, Direction2.Zero);
         obj.AddComponent(new FactionProvider(faction!));
+        Owner.Game.Add(obj);
 
         numWorkersActive++;
     }

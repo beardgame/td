@@ -12,7 +12,6 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 static class ProjectileFactory
 {
     public static GameObject Create(
-        GameState game,
         IComponentOwnerBlueprint blueprint,
         IComponentOwner parent,
         Position3 position,
@@ -20,8 +19,7 @@ static class ProjectileFactory
         Velocity3 muzzleVelocity,
         UntypedDamage damage)
     {
-        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
-            game, blueprint, parent, position, direction);
+        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, parent, position, direction);
 
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
         obj.AddComponent(new Property<UntypedDamage>(damage));

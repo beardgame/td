@@ -6,10 +6,9 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 static class WeaponFactory
 {
-    public static GameObject Create(GameState game, ITurret turret, IComponentOwnerBlueprint blueprint)
+    public static GameObject Create(ITurret turret, IComponentOwnerBlueprint blueprint)
     {
         var obj = new GameObject((IComponentOwner)turret.Owner, new Position3(), new Direction2());
-        game.Add(obj);
         obj.AddComponent(new WeaponState(turret));
         foreach (var component in blueprint.GetComponents())
         {

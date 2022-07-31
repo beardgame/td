@@ -62,7 +62,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
 
         if (Owner.Game.Time >= nextIndicatorSpawn)
         {
-            GameLoopObjectFactory.CreateEnemyPathIndicator(Owner.Game, Tile);
+            Owner.Game.Add(GameLoopObjectFactory.CreateEnemyPathIndicator(Tile));
             nextIndicatorSpawn = Owner.Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
         }
     }
