@@ -1,6 +1,7 @@
 {
     "id" : "kinetic0-cannon-shell",
     "components" : [
+        { "id" : "tags", "parameters" : { "tags" : [ "projectile" ] } },
         {
             "id" : "damageOnHit",
             "parameters" : {}

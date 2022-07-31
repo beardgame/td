@@ -1,6 +1,7 @@
 {
     "id" : "kinetic2-gatling-shell",
     "components" : [
+        { "id" : "tags", "parameters" : { "tags" : [ "projectile" ] } },
         {
             "id" : "damageOnHit",
             "parameters" : {}
