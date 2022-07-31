@@ -12,7 +12,7 @@ sealed class EnemyMovementSynchronizedState : ISynchronizedState<IEnemyMovement>
     private int goalTileX;
     private int goalTileY;
 
-    public EnemyMovementSynchronizedState(IEnemyMovement enemyMovement)
+    public EnemyMovementSynchronizedState(IEnemyMovement.IPhysicalPresence enemyMovement)
     {
         positionX = enemyMovement.Position.X.NumericValue;
         positionY = enemyMovement.Position.Y.NumericValue;

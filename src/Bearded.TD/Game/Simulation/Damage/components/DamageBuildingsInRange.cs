@@ -29,6 +29,11 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
     {
         ComponentDependencies.Depend<IEnemyMovement>(Owner, Events, m => movement = m);
         occupiedTilesTracker.Initialize(Owner, Events);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
         resetAttackTime();
     }
 

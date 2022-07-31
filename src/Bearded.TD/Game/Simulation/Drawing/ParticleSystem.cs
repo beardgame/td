@@ -77,8 +77,11 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         }
     }
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
+        base.Activate();
         initializeSprite();
         Events.Subscribe(this);
     }
@@ -159,7 +162,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             if (a <= 0)
                 continue;
             a = Math.Min(a, 1);
-            var argb = Parameters.Color.WithAlpha(0) * a;
+            var argb = Parameters.Color.WithAlpha() * a;
             var size = Parameters.FinalSize.HasValue
                 ? Interpolate.Lerp(Parameters.FinalSize.Value.NumericValue, Parameters.Size.NumericValue, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
                 : Parameters.Size.NumericValue;

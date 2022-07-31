@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -56,7 +55,6 @@ sealed class TargetEnemiesInRange
 
     private bool dontDrawThisFrame;
 
-    private GameState game => Owner.Game;
     private Position3 position => Owner.Position;
 
     public bool TriggerPulled { get; private set; }
@@ -71,9 +69,15 @@ sealed class TargetEnemiesInRange
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
-        passabilityLayer = game.PassabilityManager.GetLayer(Passability.Projectile);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
-            game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
+            Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
 
         Events.Subscribe(this);
     }
@@ -96,7 +100,7 @@ sealed class TargetEnemiesInRange
             return;
         }
 
-        if (endOfIdleTime > game.Time)
+        if (endOfIdleTime > Owner.Game.Time)
             return;
 
         ensureTilesInRangeList();
@@ -134,7 +138,7 @@ sealed class TargetEnemiesInRange
             AimDirection = weapon.NeutralDirection;
         TriggerPulled = false;
 
-        endOfIdleTime = game.Time + Parameters.NoTargetIdleInterval;
+        endOfIdleTime = Owner.Game.Time + Parameters.NoTargetIdleInterval;
     }
 
     private void turnOff()
@@ -146,7 +150,7 @@ sealed class TargetEnemiesInRange
     {
         if (currentRange == Parameters.Range
             && currentMaxTurningAngle.Equals(weapon.MaximumTurningAngle)
-            && nextTileInRangeRecalculationTime > game.Time)
+            && nextTileInRangeRecalculationTime > Owner.Game.Time)
             return;
 
         recalculateTilesInRange();
@@ -159,8 +163,8 @@ sealed class TargetEnemiesInRange
         var rangeSquared = currentRange.Squared;
         var minRangeSquared = Parameters.MinimumRange.Squared;
 
-        var level = game.Level;
-        var navigator = game.Navigator;
+        var level = Owner.Game.Level;
+        var navigator = Owner.Game.Navigator;
 
         var visibilityChecker = currentMaxTurningAngle is { } maxAngle
             ? new LevelVisibilityChecker().InDirection(weapon.NeutralDirection, maxAngle)
@@ -178,7 +182,7 @@ sealed class TargetEnemiesInRange
             .OrderBy(navigator.GetDistanceToClosestSink)
             .ToImmutableArray();
 
-        nextTileInRangeRecalculationTime = game.Time + Parameters.ReCalculateTilesInRangeInterval;
+        nextTileInRangeRecalculationTime = Owner.Game.Time + Parameters.ReCalculateTilesInRangeInterval;
     }
 
     private void ensureTargetingState()
@@ -199,7 +203,7 @@ sealed class TargetEnemiesInRange
     private void tryFindTarget()
     {
         target = tilesInRange
-            .SelectMany(game.UnitLayer.GetUnitsOnTile)
+            .SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile)
             .FirstOrDefault();
     }
 

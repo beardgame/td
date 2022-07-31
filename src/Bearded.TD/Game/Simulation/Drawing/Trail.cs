@@ -39,9 +39,14 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
             Owner.Deleting += persistTrail;
         }
 
-        drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
-
         Events.Subscribe(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
     }
 
     public override void OnRemoved()
@@ -56,8 +61,9 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
     private void persistTrail()
     {
-        var obj = GameObjectFactory.CreateWithDefaultRenderer(Owner.Game, null, Owner.Position);
+        var obj = GameObjectFactory.CreateWithDefaultRenderer(null, Owner.Position);
         obj.AddComponent(new PersistentTrail(drawer, Parameters, tracer));
+        Owner.Game.Add(obj);
     }
 
     public override void Update(TimeSpan elapsedTime)

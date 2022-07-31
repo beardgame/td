@@ -56,7 +56,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 
     protected override void OnAdded()
     {
-        Weapon = WeaponFactory.Create(Owner.Game, this, Parameters.Weapon);
+        Weapon = WeaponFactory.Create(this, Parameters.Weapon);
         weaponState = Weapon.GetComponents<IWeaponState>().Single();
         transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         ComponentDependencies.Depend<IBuildingStateProvider>(
@@ -64,6 +64,12 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 
         Events.Subscribe<DrawComponents>(this);
         Events.Subscribe<ObjectDeleting>(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        Owner.Game.Add(Weapon);
     }
 
     public override void OnRemoved()

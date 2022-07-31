@@ -60,6 +60,15 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         BaseHeight = Owner.Position.Z;
         TopHeight = BaseHeight + Parameters.Height;
 
+        occupiedTilesTracker.Initialize(Owner, Events);
+
+        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
         // TODO: don't hardcode this, specify in parameters
         var shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-sprite-3d")];
 
@@ -68,13 +77,9 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         spriteSide = sprite("side");
         spriteTop = sprite("top");
 
-        occupiedTilesTracker.Initialize(Owner, Events);
-
         Sprite sprite(string name) => SpriteDrawInfo
             .From(Parameters.Sprites.GetSprite(name),
                 DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.SolidLevelDetails);
-
-        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
 
         Events.Subscribe(this);
     }

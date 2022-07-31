@@ -15,6 +15,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.World;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.StatusEffects;
 
@@ -55,20 +56,30 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
 
     protected override void OnAdded()
     {
+
+        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p =>
+        {
+            buildingState = p.State;
+        });
+
+        Events.Subscribe(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
         modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
         unitLayer = Owner.Game.UnitLayer;
         ownerTile = Level.GetTile(Owner.Position.XY());
         range = Parameters.Range;
         recalculateTilesInRange();
 
-        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p =>
-        {
-            buildingState = p.State;
-            tileRangeDrawer = new TileRangeDrawer(
-                Owner.Game, () => buildingState.RangeDrawing, () => tilesInRange, Color.Green);
-        });
-
-        Events.Subscribe(this);
+        tileRangeDrawer = new TileRangeDrawer(
+            Owner.Game,
+            () => buildingState?.RangeDrawing ?? TileRangeDrawer.RangeDrawStyle.DoNotDraw,
+            () => tilesInRange,
+            Color.Green);
     }
 
     public override void OnRemoved()

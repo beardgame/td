@@ -56,10 +56,15 @@ sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
 
     protected override void OnAdded()
     {
-        sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
-
-        Events.Subscribe<DrawComponents>(this);
         Events.Subscribe<ShotProjectile>(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
+        Events.Subscribe<DrawComponents>(this);
     }
 
     public override void OnRemoved()

@@ -51,15 +51,20 @@ sealed class WorkerComponent : Component<WorkerComponent.IParameters>, ITileWalk
         {
             factionProvider = provider;
             Faction = provider.Faction;
-            // Needs to be sent after tile walker is initialized to ensure CurrentTile is not null.
-            Owner.Game.Meta.Events.Send(new WorkerAdded(this));
         });
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
         tileWalker = new TileWalker(this, Owner.Game.Level, Level.GetTile(Owner.Position));
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game,
             Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("halo"));
-
         Events.Subscribe(this);
+
+        Owner.Game.Meta.Events.Send(new WorkerAdded(this));
     }
 
     public override void OnRemoved()

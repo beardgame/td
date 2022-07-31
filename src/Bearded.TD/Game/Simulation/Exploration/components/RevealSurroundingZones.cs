@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
@@ -18,9 +19,24 @@ sealed class RevealSurroundingZones : Component<RevealSurroundingZones.IParamete
 
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
-    public RevealSurroundingZones(IParameters parameters) : base(parameters)
+    public RevealSurroundingZones(IParameters parameters) : base(parameters) {}
+
+    protected override void OnAdded()
     {
+        occupiedTilesTracker.Initialize(Owner, Events);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        occupiedTilesTracker.OccupiedTiles.ForEach(onTileAdded);
         occupiedTilesTracker.TileAdded += onTileAdded;
+    }
+
+    public override void OnRemoved()
+    {
+        occupiedTilesTracker.Dispose(Events);
+        base.OnRemoved();
     }
 
     private void onTileAdded(Tile t)
@@ -44,17 +60,5 @@ sealed class RevealSurroundingZones : Component<RevealSurroundingZones.IParamete
         }
     }
 
-    protected override void OnAdded()
-    {
-        occupiedTilesTracker.Initialize(Owner, Events);
-    }
-
-    public override void OnRemoved()
-    {
-        occupiedTilesTracker.Dispose(Events);
-        base.OnRemoved();
-    }
-
     public override void Update(TimeSpan elapsedTime) {}
 }
-

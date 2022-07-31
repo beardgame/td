@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
@@ -15,10 +13,12 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 [Component("defaultTileOccupancy")]
 class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
 {
-    protected override void OnAdded()
+    protected override void OnAdded() { }
+
+    public override void Activate()
     {
-        ComponentDependencies.Depend<IBuildingStateProvider, ITileOccupation>(Owner, Events,
-            (_, _) => addToBuildingLayerIfNotGhost());
+        base.Activate();
+        addToBuildingLayerIfNotGhost();
         Owner.Deleting += deleteFromBuildingLayerIfNotGhost;
     }
 

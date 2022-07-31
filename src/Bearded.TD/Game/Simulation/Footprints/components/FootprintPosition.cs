@@ -7,14 +7,31 @@ namespace Bearded.TD.Game.Simulation.Footprints;
 
 sealed class FootprintPosition : Component, IListener<FootprintChanged>
 {
+    private bool isActive;
+    private PositionedFootprint? lastKnownFootprint;
+
     protected override void OnAdded()
     {
         Events.Subscribe(this);
     }
 
+    public override void Activate()
+    {
+        base.Activate();
+        isActive = true;
+        if (lastKnownFootprint != null)
+        {
+            calculatePosition(lastKnownFootprint.Value);
+        }
+    }
+
     public void HandleEvent(FootprintChanged @event)
     {
-        calculatePosition(@event.NewFootprint);
+        lastKnownFootprint = @event.NewFootprint;
+        if (isActive)
+        {
+            calculatePosition(@event.NewFootprint);
+        }
     }
 
     private void calculatePosition(PositionedFootprint footprint)

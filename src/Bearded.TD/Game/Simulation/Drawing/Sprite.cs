@@ -41,7 +41,9 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     {
     }
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
