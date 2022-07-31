@@ -10,6 +10,8 @@ sealed class ComponentFactory<TComponentParameters> : IComponentFactory
     private readonly TComponentParameters parameters;
     private readonly Func<TComponentParameters, IComponent> factory;
 
+    public IParametersTemplate ParametersTemplate => parameters;
+
     public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent> factory)
     {
         this.parameters = parameters;
@@ -17,12 +19,11 @@ sealed class ComponentFactory<TComponentParameters> : IComponentFactory
     }
 
     public IComponent Create() => factory(parameters);
-
-    public bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(parameters);
 }
 
 interface IComponentFactory
 {
+    public IParametersTemplate ParametersTemplate { get; }
+
     IComponent Create();
-    bool CanApplyUpgradeEffect(IUpgradeEffect effect);
 }

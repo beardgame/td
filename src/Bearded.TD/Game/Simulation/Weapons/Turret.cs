@@ -127,23 +127,10 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 
     GameObject ITurret.Owner => Owner;
 
-    public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
+    public override void PreviewUpgrade(IUpgradePreview upgradePreview)
     {
-        return base.CanApplyUpgradeEffect(effect) || Weapon.CanApplyUpgradeEffect(effect);
-    }
-
-    public override void ApplyUpgradeEffect(IUpgradeEffect effect)
-    {
-        base.ApplyUpgradeEffect(effect);
-        Weapon.ApplyUpgradeEffect(effect);
-    }
-
-    public override bool RemoveUpgradeEffect(IUpgradeEffect effect)
-    {
-        var removed = false;
-        removed |= base.RemoveUpgradeEffect(effect);
-        removed |= Weapon.RemoveUpgradeEffect(effect);
-        return removed;
+        base.PreviewUpgrade(upgradePreview);
+        Weapon.PreviewUpgrade(upgradePreview);
     }
 
     private sealed class TargetOverride : Component,

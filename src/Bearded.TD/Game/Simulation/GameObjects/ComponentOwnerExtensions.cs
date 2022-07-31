@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -31,8 +32,10 @@ static class ComponentOwnerExtensions
         return false;
     }
 
-    public static bool HasTag(this IComponentOwner componentOwner, string tag)
+    public static ImmutableHashSet<string> Tags(this IComponentOwner componentOwner)
     {
-        return componentOwner.TryGetSingleComponent<GameObjectTags>(out var tags) && tags.HasTag(tag);
+        return componentOwner.TryGetSingleComponent<GameObjectTags>(out var tags)
+            ? tags.Tags
+            : ImmutableHashSet<string>.Empty;
     }
 }

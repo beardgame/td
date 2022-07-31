@@ -57,12 +57,14 @@ sealed class GameObject : IComponentOwner, IDeletable, IGameObject, IPositionabl
         Deleted = true;
     }
 
-    public bool CanApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.CanApplyTo(this);
-
-    public void ApplyUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.ApplyTo(this);
-
-    public bool RemoveUpgradeEffect(IUpgradeEffect upgradeEffect) => upgradeEffect.RemoveFrom(this);
-
+    public void PreviewUpgrade(IUpgradePreview upgradePreview)
+    {
+        upgradePreview.RegisterGameObject(this);
+        foreach (var component in components.Get<IComponent>())
+        {
+            component.PreviewUpgrade(upgradePreview);
+        }
+    }
 
     public void AddComponent(IComponent component)
     {

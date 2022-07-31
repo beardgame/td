@@ -1,9 +1,6 @@
-using System.Linq;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -24,22 +21,6 @@ static class ProjectileFactory
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
         obj.AddComponent(new Property<UntypedDamage>(damage));
 
-        applyCurrentUpgradesTo(parent, obj);
-
         return obj;
-    }
-
-    private static void applyCurrentUpgradesTo(IComponentOwner parent, GameObject projectile)
-    {
-        if (!parent.TryGetSingleComponentInOwnerTree<IBuildingUpgradeManager>(out var upgradeManager))
-        {
-            return;
-        }
-
-        var upgrades = upgradeManager.AppliedUpgrades.Where(u => u.CanApplyTo(projectile));
-        foreach (var upgrade in upgrades)
-        {
-            upgrade.ApplyTo(projectile);
-        }
     }
 }

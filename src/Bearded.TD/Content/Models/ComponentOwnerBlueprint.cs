@@ -33,7 +33,7 @@ sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
     }
 
     IEnumerable<IComponent> IComponentOwnerBlueprint.GetComponents() => blueprint!.GetComponents();
-    bool IComponentOwnerBlueprint.CanApplyUpgradeEffect(IUpgradeEffect effect) => blueprint!.CanApplyUpgradeEffect(effect);
+    IEnumerable<IComponentFactory> IComponentOwnerBlueprint.GetFactories() => blueprint!.GetFactories();
 }
 
 sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
@@ -45,10 +45,10 @@ sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
 
     public IEnumerable<IComponent> GetComponents()
     {
-        return getFactories().Select(f => f.Create());
+        return GetFactories().Select(f => f.Create());
     }
 
-    private IEnumerable<IComponentFactory> getFactories()
+    public IEnumerable<IComponentFactory> GetFactories()
     {
         return factories ??= createFactories();
     }
@@ -65,10 +65,5 @@ sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
     {
         Id = id;
         componentParameters = components.ToImmutableArray();
-    }
-
-    public bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-    {
-        return getFactories().Any(f => f.CanApplyUpgradeEffect(effect));
     }
 }

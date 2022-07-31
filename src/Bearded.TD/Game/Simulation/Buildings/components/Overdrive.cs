@@ -14,8 +14,7 @@ sealed class Overdrive : Component
     private static readonly TimeSpan damageInterval = 0.5.S();
     private static float damagePercentile = 0.025f;
 
-    private IUpgradeEffect? fireRate;
-    private IUpgradeEffect? damageOverTime;
+    private IUpgradeReceipt? upgradeReceipt;
     private ComponentDependencies.IDependencyRef weaponTriggerDependency = null!;
 
     private IWeaponTrigger? trigger;
@@ -34,13 +33,13 @@ sealed class Overdrive : Component
 
         var ids = Owner.Game.GamePlayIds;
 
-        fireRate = new ParameterModifiableWithId(
+        var fireRate = new ParameterModifiableWithId(
             AttributeType.FireRate, damageModification(ids), UpgradePrerequisites.Empty);
-        damageOverTime = new ParameterModifiableWithId(
+        var damageOverTime = new ParameterModifiableWithId(
             AttributeType.DamageOverTime, damageModification(ids), UpgradePrerequisites.Empty);
+        var upgrade = Upgrade.FromEffects(fireRate, damageOverTime);
 
-        fireRate.ApplyTo(Owner);
-        damageOverTime.ApplyTo(Owner);
+        upgradeReceipt = Owner.ApplyUpgrade(upgrade);
     }
 
     private static ModificationWithId damageModification(IdManager ids)
@@ -48,8 +47,7 @@ sealed class Overdrive : Component
 
     public override void OnRemoved()
     {
-        fireRate?.RemoveFrom(Owner);
-        damageOverTime?.RemoveFrom(Owner);
+        upgradeReceipt?.Rollback();
         weaponTriggerDependency.Dispose();
     }
 

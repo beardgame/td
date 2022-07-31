@@ -13,9 +13,7 @@ sealed class TagsModifiable : UpgradeEffectBase
         this.tagsToAdd = tagsToAdd;
     }
 
-    public override void ApplyTo(GameObject subject)
-    {
-        subject.AddComponent(ContributeTags.FromStringList(tagsToAdd));
-        base.ApplyTo(subject);
-    }
+    public override bool ContributesComponent => true;
+
+    public override IComponent CreateComponent() => ContributeTags.FromStringList(tagsToAdd);
 }

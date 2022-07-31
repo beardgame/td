@@ -1,33 +1,27 @@
-﻿using System.Linq;
+﻿using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
 abstract class UpgradeEffectBase : IUpgradeEffect
 {
-    private readonly UpgradePrerequisites prerequisites;
-    private readonly bool isSideEffect;
+    public UpgradePrerequisites Prerequisites { get; }
+    public bool IsSideEffect { get; }
 
     protected UpgradeEffectBase(UpgradePrerequisites prerequisites, bool isSideEffect)
     {
-        this.prerequisites = prerequisites;
-        this.isSideEffect = isSideEffect;
+        Prerequisites = prerequisites;
+        IsSideEffect = isSideEffect;
     }
 
-    public bool CanApplyTo(GameObject subject)
-        => subject.GetComponents<IComponent>().Any(c => c.CanApplyUpgradeEffect(this));
+    public virtual bool ContributesComponent => false;
 
-    public virtual bool CanApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;
+    public virtual IComponent CreateComponent() => throw new InvalidOperationException();
 
-    public virtual void ApplyTo(GameObject subject)
-        => subject.GetComponents<IComponent>().ForEach(c => c.ApplyUpgradeEffect(this));
+    public virtual bool CanApplyTo(IParametersTemplate subject) => false;
 
-    public virtual void ApplyTo<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> {}
+    public virtual void ApplyTo(IParametersTemplate subject) {}
 
-    public virtual bool RemoveFrom(GameObject subject)
-        => subject.GetComponents<IComponent>().Aggregate(false, (b, c) => c.RemoveUpgradeEffect(this) || b);
-
-    public virtual bool RemoveFrom<T>(IParametersTemplate<T> subject) where T : IParametersTemplate<T> => false;
+    public virtual bool RemoveFrom(IParametersTemplate subject) => false;
 }

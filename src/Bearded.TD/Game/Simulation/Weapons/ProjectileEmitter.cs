@@ -8,6 +8,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -29,25 +30,26 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
+    private UpgradableProjectileFactory factory = null!;
 
     public ProjectileEmitter(IParameters parameters)
-        : base(parameters)
-    {
-    }
+        : base(parameters) {}
 
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
         ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
+        factory = new UpgradableProjectileFactory(Parameters.Projectile, Owner);
         Events.Subscribe(this);
     }
 
-    public override void Update(TimeSpan elapsedTime)
-    {
-    }
+    public override void Update(TimeSpan elapsedTime) {}
 
-    public override bool CanApplyUpgradeEffect(IUpgradeEffect effect)
-        => base.CanApplyUpgradeEffect(effect) || Parameters.Projectile.CanApplyUpgradeEffect(effect);
+    public override void PreviewUpgrade(IUpgradePreview upgradePreview)
+    {
+        base.PreviewUpgrade(upgradePreview);
+        factory.PreviewUpgrade(upgradePreview);
+    }
 
     public void HandleEvent(ShootProjectile @event)
     {
@@ -64,14 +66,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
                 + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
             ).WithZ();
 
-        Owner.Game.Add(
-            ProjectileFactory.Create(
-                Parameters.Projectile,
-                Owner,
-                position,
-                direction,
-                muzzleVelocity,
-                damage));
+        Owner.Game.Add(factory.Create(position, direction, muzzleVelocity, damage));
 
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }

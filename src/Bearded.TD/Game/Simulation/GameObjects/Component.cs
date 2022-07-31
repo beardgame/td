@@ -34,11 +34,10 @@ abstract class Component<TParameters> : IComponent
 
     public abstract void Update(TimeSpan elapsedTime);
 
-    public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => effect.CanApplyTo(Parameters);
-
-    public virtual void ApplyUpgradeEffect(IUpgradeEffect effect) => effect.ApplyTo(Parameters);
-
-    public virtual bool RemoveUpgradeEffect(IUpgradeEffect effect) => effect.RemoveFrom(Parameters);
+    public virtual void PreviewUpgrade(IUpgradePreview upgradePreview)
+    {
+        upgradePreview.RegisterParameters(Owner, Parameters);
+    }
 }
 
 abstract class Component : IComponent
@@ -61,6 +60,8 @@ abstract class Component : IComponent
     public virtual void OnRemoved() {}
 
     public abstract void Update(TimeSpan elapsedTime);
+
+    public virtual void PreviewUpgrade(IUpgradePreview upgradePreview) {}
 
     public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
 
