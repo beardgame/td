@@ -14,11 +14,27 @@ sealed class ComponentTestBed
     private readonly ComponentInternals internals = new();
     private readonly GameObject obj = new(null, Position3.Zero, Direction2.Zero);
 
-    public ComponentTestBed(GameTestBed? gameTestBed = null)
+    private ComponentTestBed(GameTestBed? gameTestBed = null)
     {
         this.gameTestBed = gameTestBed ?? GameTestBed.Create();
         obj.AddComponent(internals);
-        this.gameTestBed.State.Add(obj);
+    }
+
+    public static ComponentTestBed Activated(GameTestBed? gameTestBed = null)
+    {
+        var testBed = Detached(gameTestBed);
+        testBed.Activate();
+        return testBed;
+    }
+
+    public static ComponentTestBed Detached(GameTestBed? gameTestBed = null)
+    {
+        return new ComponentTestBed(gameTestBed);
+    }
+
+    public void Activate()
+    {
+        gameTestBed.State.Add(obj);
     }
 
     public void AddComponent(IComponent component) => obj.AddComponent(component);

@@ -22,7 +22,7 @@ public sealed class AutoRepairTests
     public AutoRepairTests()
     {
         gameTestBed = GameTestBed.Create();
-        componentTestBed = new ComponentTestBed(gameTestBed);
+        componentTestBed = ComponentTestBed.Activated(gameTestBed);
         healthEventReceiver = new HealthEventReceiver();
         componentTestBed.AddComponent(healthEventReceiver);
         componentTestBed.AddComponent(new FactionProvider(FactionTestFactory.CreateFaction()));
