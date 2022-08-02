@@ -1,6 +1,7 @@
 {
     id: "kinetic1-mortar-weapon",
     components : [
+        { "id" : "tags", "parameters" : { "tags" : [ "gun" ] } },
         {
             id : "targetEnemiesInRange",
             parameters : {

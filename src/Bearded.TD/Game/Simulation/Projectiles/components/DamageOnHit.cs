@@ -13,6 +13,9 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         DamageType? DamageType { get; }
+
+        [Modifiable(defaultValue: 1.0)]
+        double FractionOfBaseDamage { get; }
     }
 
     public DamageOnHit(IParameters parameters) : base(parameters) { }
@@ -30,8 +33,9 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
     public void HandleEvent(HitEnemy @event)
     {
         var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
-            && DamageExecutor.FromObject(Owner)
-                .TryDoDamage(@event.Enemy, damage.Typed(Parameters.DamageType ?? DamageType.Kinetic));
+            && DamageExecutor.FromObject(Owner).TryDoDamage(
+                @event.Enemy,
+                (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic));
         DebugAssert.State.Satisfies(damageDone);
     }
 
