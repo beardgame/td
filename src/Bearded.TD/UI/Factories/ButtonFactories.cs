@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI.Button;
 using static Bearded.TD.Constants.UI.Text;
+using static Bearded.TD.UI.Factories.TooltipFactories;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Factories;
@@ -55,6 +58,7 @@ static class ButtonFactories
         private Func<string>? labelProvider;
         private (int CostAmount, Color Color)? cost;
         private (Binding<double> Progress, Color? Color)? progressBar;
+        private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
         private Binding<bool>? isEnabled;
         private Binding<bool>? isActive;
@@ -87,6 +91,17 @@ static class ButtonFactories
         public Builder WithProgressBar(Binding<double> progress, Color? color = null)
         {
             progressBar = (progress, color);
+            return this;
+        }
+
+        public Builder WithTooltip(TooltipFactory factory, string text) => WithTooltip(factory, SimpleTooltip(text));
+
+        public Builder WithTooltip(TooltipFactory factory, ICollection<string> text) =>
+            WithTooltip(factory, SimpleTooltip(text));
+
+        public Builder WithTooltip(TooltipFactory factory, TooltipDefinition definition)
+        {
+            tooltip = (factory, definition);
             return this;
         }
 
@@ -146,6 +161,12 @@ static class ButtonFactories
             {
                 var color = progressBar.Value.Color ?? Color.White * .25f;
                 button.Add(ProgressBarFactories.BareProgressBar(progressBar.Value.Progress, color));
+            }
+
+            if (tooltip.HasValue)
+            {
+                button.Add(
+                    new TooltipTarget(tooltip.Value.Factory, tooltip.Value.Definition, TooltipAnchor.Direction.Right));
             }
             if (isActive != null)
             {

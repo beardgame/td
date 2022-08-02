@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.UI.Factories;
@@ -90,6 +91,8 @@ sealed class TechnologyWindowControl : CompositeControl
                     .WithLabel(tech.Blueprint.Name)
                     .WithEnabled(tech.IsUnlockedBinding.Or(model.CanUnlockTechnologyNowBinding))
                     .WithActive(tech.IsUnlockedBinding)
+                    .WithTooltip(
+                        model.TooltipFactory, tech.Blueprint.Unlocks.Select(u => u.Description).ToImmutableArray())
                     .WithOnClick(args =>
                     {
                         if (Constants.Input.DebugForceModifier(args.ModifierKeys))

@@ -13,15 +13,24 @@ static class TooltipFactories
     public static Tooltip ShowSimpleTooltip(
         this TooltipFactory factory, string text, TooltipAnchor anchor, double? width = null)
     {
-        Control contentFactory() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
-        return factory.ShowTooltip(
-            contentFactory, anchor, width ?? DefaultWidth, Constants.UI.Text.LineHeight + 2 * Margin);
+        return factory.ShowTooltip(SimpleTooltip(text, width), anchor);
     }
 
     public static Tooltip ShowSimpleTooltip(
         this TooltipFactory factory, ICollection<string> text, TooltipAnchor anchor, double? width = null)
     {
-        Control contentFactory() => tooltip(l =>
+        return factory.ShowTooltip(SimpleTooltip(text, width), anchor);
+    }
+
+    public static TooltipDefinition SimpleTooltip(string text, double? width = null)
+    {
+        Control createControl() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
+        return new TooltipDefinition(createControl, width ?? DefaultWidth, Constants.UI.Text.LineHeight + 2 * Margin);
+    }
+
+    public static TooltipDefinition SimpleTooltip(ICollection<string> text, double? width = null)
+    {
+        Control createControl() => tooltip(l =>
         {
             foreach (var line in text)
             {
@@ -29,8 +38,8 @@ static class TooltipFactories
             }
         });
 
-        return factory.ShowTooltip(
-            contentFactory, anchor, width ?? DefaultWidth, text.Count * Constants.UI.Text.LineHeight + 2 * Margin);
+        return new TooltipDefinition(
+            createControl, width ?? DefaultWidth, text.Count * Constants.UI.Text.LineHeight + 2 * Margin);
     }
 
     private static Control tooltip(Action<Layouts.FixedColumnLayout> layoutBuilder)

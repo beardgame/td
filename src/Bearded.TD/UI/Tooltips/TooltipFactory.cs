@@ -1,4 +1,3 @@
-using System;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Tooltips;
@@ -12,10 +11,11 @@ sealed class TooltipFactory
         this.overlay = overlay;
     }
 
-    public Tooltip ShowTooltip(Func<Control> content, TooltipAnchor anchor, double width, double height)
+    public Tooltip ShowTooltip(TooltipDefinition definition, TooltipAnchor anchor)
     {
-        var elementInOverlay = new CompositeControl().Anchor(_ => anchor.ToAnchorTemplate(width, height));
-        elementInOverlay.Add(content());
+        var elementInOverlay =
+            new CompositeControl().Anchor(_ => anchor.ToAnchorTemplate(definition.Width, definition.Height));
+        elementInOverlay.Add(definition.CreateControl());
         overlay.Add(elementInOverlay);
 
         return new Tooltip(elementInOverlay);
