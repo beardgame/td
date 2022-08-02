@@ -1,0 +1,9 @@
+{
+    "id" : "fire2-burstUpgrade",
+    "name" : "When it rains, it pours",
+    "branch" : "dynamics",
+    "tier" : "medium",
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "kinetic2-burst" }
+    ]
+}
