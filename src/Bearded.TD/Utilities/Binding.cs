@@ -49,6 +49,9 @@ static class Binding
     public static Binding<bool> And(this Binding<bool> left, Binding<bool> right) =>
         Combine(left, right, (l, r) => l && r);
 
+    public static Binding<bool> Or(this Binding<bool> left, Binding<bool> right) =>
+        Combine(left, right, (l, r) => l || r);
+
     public static Binding<bool> Negate(this Binding<bool> binding) => binding.Transform(b => !b);
 
     public static Binding<TOut> Transform<TIn, TOut>(this Binding<TIn> binding, Func<TIn, TOut> func)

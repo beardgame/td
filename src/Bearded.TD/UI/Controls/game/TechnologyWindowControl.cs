@@ -88,7 +88,8 @@ sealed class TechnologyWindowControl : CompositeControl
             {
                 buttonColumn.AddCenteredButton(b => b
                     .WithLabel(tech.Blueprint.Name)
-                    .WithEnabled(tech.IsUnlockedBinding.Negate().And(model.CanUnlockTechnologyNowBinding))
+                    .WithEnabled(tech.IsUnlockedBinding.Or(model.CanUnlockTechnologyNowBinding))
+                    .WithActive(tech.IsUnlockedBinding)
                     .WithOnClick(args =>
                     {
                         if (Constants.Input.DebugForceModifier(args.ModifierKeys))
