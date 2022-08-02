@@ -9,7 +9,7 @@
                 "id" : "burst",
                 "parameters" : {
                     "burstSize" : 6,
-                    "fireRateFactor" : 4,
+                    "fireRateFactor" : 5,
                     "overallDamageFactor" : 2
                 }
             },

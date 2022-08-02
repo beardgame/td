@@ -38,8 +38,6 @@ sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectile>, IP
         if (shotsFiredInBurst > 0 && Owner.Game.Time - lastShotFired >= delayBetweenBursts)
         {
             shotsFiredInBurst = 0;
-            Owner.Game.Meta.Logger.Debug?.Log(correctionFactor);
-            Owner.Game.Meta.Logger.Debug?.Log($"Resetting burst because of time passed. Last shot: {lastShotFired}, now: {Owner.Game.Time}, delay: ${delayBetweenBursts}");
         }
     }
 
@@ -67,6 +65,5 @@ sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectile>, IP
 
         @event = new PreviewDelayNextShot(delayBetweenBursts);
         shotsFiredInBurst = 0;
-        Owner.Game.Meta.Logger.Debug?.Log("Resetting burst because of numbers of shots fired");
     }
 }
