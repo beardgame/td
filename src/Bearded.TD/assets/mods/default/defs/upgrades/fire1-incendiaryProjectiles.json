@@ -1,14 +1,27 @@
 {
-    "id" : "fire2-napalmBullets",
-    "name" : "Napalm bullets",
+    "id" : "fire1-incendiaryProjectiles",
+    "name" : "Incendiary projectiles",
     "cost" : 50,
     "effects": [
         {
             "type" : "component",
             "parameters" : {
+                "id" : "damageOnHit",
+                "parameters" : {
+                    "damageType" : "fire",
+                    "fractionOfBaseDamage" : 0.9
+                }
+            },
+            "prerequisites" : {
+                "requiredTags" : [ "projectile" ]
+            }
+        },
+        {
+            "type" : "component",
+            "parameters" : {
                 "id" : "applyOnFireOnImpact",
                 "parameters" : {
-                    "probability" : 0.25,
+                    "probability" : 0.05,
                     "fractionOfBaseDamageApplied" : 2,
                     "effectDuration" : 3
                 }

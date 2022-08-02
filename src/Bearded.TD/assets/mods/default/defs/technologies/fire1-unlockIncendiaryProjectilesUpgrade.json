@@ -1,0 +1,9 @@
+{
+    "id" : "fire1-unlockIncendiaryProjectilesUpgrade",
+    "name" : "Incendiary projectiles",
+    "branch" : "combustion",
+    "tier" : "low",
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "fire1-incendiaryProjectiles" }
+    ]
+}

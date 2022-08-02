@@ -1,9 +1,0 @@
-{
-    "id" : "fire2-unlockNapalmBulletsUpgrade",
-    "name" : "Napalm",
-    "branch" : "combustion",
-    "tier" : "medium",
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "fire2-napalmBullets" }
-    ]
-}
