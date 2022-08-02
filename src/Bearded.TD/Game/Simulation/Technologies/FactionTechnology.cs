@@ -86,12 +86,12 @@ sealed class FactionTechnology : FactionBehavior
     {
         State.Satisfies(HasTechnologyToken);
         HasTechnologyToken = false;
-        Events.Send(new TechnologyTokenConsumed());
+        Events.Send(new TechnologyTokenConsumed(this));
     }
 
     public void AwardTechnologyToken()
     {
         HasTechnologyToken = true;
-        Events.Send(new TechnologyTokenAwarded());
+        Events.Send(new TechnologyTokenAwarded(this));
     }
 }

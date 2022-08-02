@@ -46,7 +46,7 @@ static class Binding
         return binding;
     }
 
-    public static Binding<bool> And(Binding<bool> left, Binding<bool> right) =>
+    public static Binding<bool> And(this Binding<bool> left, Binding<bool> right) =>
         Combine(left, right, (l, r) => l && r);
 
     public static Binding<bool> Negate(this Binding<bool> binding) => binding.Transform(b => !b);
