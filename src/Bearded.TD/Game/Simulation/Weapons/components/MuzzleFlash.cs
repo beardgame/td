@@ -12,8 +12,6 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-
-
 [Component("muzzleFlash")]
 sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
     IListener<DrawComponents>, IListener<ShotProjectile>

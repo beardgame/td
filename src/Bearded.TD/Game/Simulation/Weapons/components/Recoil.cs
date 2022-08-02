@@ -6,7 +6,6 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-
 [Component("recoil")]
 sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
 {

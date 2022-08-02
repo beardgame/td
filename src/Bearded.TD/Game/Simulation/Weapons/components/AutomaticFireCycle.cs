@@ -15,7 +15,6 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
 
         [Modifiable(1, Type = AttributeType.FireRate)]
         Frequency FireRate { get; }
-
     }
 
     private Instant nextPossibleShootTime;
