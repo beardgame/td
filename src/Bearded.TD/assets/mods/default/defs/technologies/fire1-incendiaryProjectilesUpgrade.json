@@ -1,5 +1,5 @@
 {
-    "id" : "fire1-unlockIncendiaryProjectilesUpgrade",
+    "id" : "fire1-incendiaryProjectilesUpgrade",
     "name" : "Incendiary projectiles",
     "branch" : "combustion",
     "tier" : "low",
