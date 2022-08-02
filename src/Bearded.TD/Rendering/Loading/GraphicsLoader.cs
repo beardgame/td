@@ -65,9 +65,9 @@ class GraphicsLoader : IGraphicsLoader
             return samplers.ToDictionary(s => s.Name, s => s.Transformations.Select(
                 t => t switch
                 {
-                    "normalFromHeight" => DoNothing,
+                    "normalFromHeight" => NormalFromHeight,
                     "test" => Test,
-                    var other => throw new InvalidDataException($"Sprite sampler has unknown transformation '{other}'")
+                    _ => throw new InvalidDataException($"Sprite sampler has unknown transformation '{t}'"),
                 }
             ));
         }

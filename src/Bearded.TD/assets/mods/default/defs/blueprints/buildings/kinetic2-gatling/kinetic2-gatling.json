@@ -20,9 +20,9 @@
     {
       "id": "sprite",
       "parameters": {
-        "sprite": "buildings2.cannon-base",
+        "sprite": "buildings3.cannon-base",
         "colorMode" : "faction",
-        "shader" : "building-no-normal",
+        "shader" : "building",
         "drawGroup" : "building",
         "heightOffset" : 0.1,
         "size" : 1.2
