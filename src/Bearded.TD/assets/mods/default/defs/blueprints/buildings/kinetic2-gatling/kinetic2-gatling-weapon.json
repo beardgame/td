@@ -1,6 +1,7 @@
 {
     "id": "kinetic2-gatling-weapon",
     "components" : [
+        { "id" : "tags", "parameters" : { "tags" : [ "gun", "dynamicFireRate" ] } },
         {
             "id" : "targetEnemiesInRange",
             "parameters" : {
