@@ -16,6 +16,11 @@ readonly struct UntypedDamage
 
     public TypedDamage Typed(DamageType type) => new(Amount, type);
 
+    public override string ToString()
+    {
+        return $"{Amount.NumericValue} Damage";
+    }
+
     public static UntypedDamage operator *(int scalar, UntypedDamage amount) =>
         new(scalar * amount.Amount);
 
@@ -27,4 +32,10 @@ readonly struct UntypedDamage
 
     public static UntypedDamage operator *(UntypedDamage amount, double scalar) =>
         new(((int) (scalar * amount.Amount.NumericValue)).HitPoints());
+    
+    public static UntypedDamage operator /(UntypedDamage amount, int scalar) =>
+        new((amount.Amount.NumericValue / scalar).HitPoints());
+
+    public static UntypedDamage operator /(UntypedDamage amount, double scalar) =>
+        new(((int) (amount.Amount.NumericValue / scalar)).HitPoints());
 }

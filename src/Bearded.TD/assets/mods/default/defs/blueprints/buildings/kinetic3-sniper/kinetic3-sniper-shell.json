@@ -29,11 +29,5 @@
                 "onHitEnemy" : false
             }
         },
-        {
-            "id" : "tags",
-            "parameters" : {
-                "tags" : [ "projectile" ]
-            }
-        }
     ]
 }

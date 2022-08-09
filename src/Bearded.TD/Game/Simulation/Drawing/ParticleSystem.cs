@@ -10,7 +10,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using static System.MathF;
+using static Bearded.TD.Utilities.Vectors;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
@@ -114,7 +114,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         var now = Owner.Game.Time;
         for (var i = 0; i < particles.Length; i++)
         {
-            var velocity = baseVelocity + getRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
+            var velocity = baseVelocity + GetRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
             var timeOfDeath = now + Parameters.LifeTime * StaticRandom.Float(0.5f, 1f);
             particles[i] = new Particle(position, velocity, timeOfDeath);
         }
@@ -122,17 +122,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         initialized = true;
     }
 
-    private static Vector3 getRandomUnitVector3()
-    {
-        var theta = Tau * StaticRandom.Float();
-        var phi = Acos(1 - 2 * StaticRandom.Float());
-        var sinPhi = Sin(phi);
-        return new Vector3(
-            sinPhi * Cos(theta),
-            sinPhi * Sin(theta),
-            Cos(phi)
-        );
-    }
+
 
     public override void Update(TimeSpan elapsedTime)
     {
