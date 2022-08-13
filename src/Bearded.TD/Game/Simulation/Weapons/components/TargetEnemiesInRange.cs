@@ -6,11 +6,13 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -36,11 +38,11 @@ sealed class TargetEnemiesInRange
 
         Angle? ConeOfFire { get; }
     }
-
-
+    
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
     private IWeaponState weapon = null!;
+    private IProjectileEmitter? emitter;
 
     // mutable state
     private Instant endOfIdleTime;
@@ -50,12 +52,11 @@ sealed class TargetEnemiesInRange
     private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
+    private readonly Positionable targetPosition = new();
     private GameObject? target;
-    public IPositionable? Target => target;
+    public IPositionable? Target => target == null ? null : targetPosition;
 
     private bool dontDrawThisFrame;
-
-    private Position3 position => Owner.Position;
 
     public bool TriggerPulled { get; private set; }
     public Direction2 AimDirection { get; private set; }
@@ -69,6 +70,7 @@ sealed class TargetEnemiesInRange
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
+        ComponentDependencies.Depend<IProjectileEmitter>(Owner, Events, e => emitter = e);
     }
 
     public override void Activate()
@@ -112,12 +114,29 @@ sealed class TargetEnemiesInRange
             return;
         }
 
-        shootAt(target.Position);
+        updateTargetPosition(target);
+        shootAt(targetPosition.Position);
+    }
+
+    private void updateTargetPosition(GameObject target)
+    {
+        if (emitter == null ||
+            target.GetComponents<IMoving>().FirstOrDefault() is not { } moving)
+        {
+            targetPosition.Position = target.Position;
+            return;
+        }
+
+        var distanceToTarget = (target.Position - Owner.Position).Length;
+        var projectileFlightTime = new TimeSpan(distanceToTarget.NumericValue / emitter.MuzzleSpeed.NumericValue);
+        var compensationOffset = moving.Velocity * projectileFlightTime;
+
+        targetPosition.Position = target.Position + compensationOffset;
     }
 
     private void shootAt(Position3 targetPosition)
     {
-        AimDirection = (targetPosition - position).XY().Direction;
+        AimDirection = (targetPosition - Owner.Position).XY().Direction;
 
         if (Parameters.ConeOfFire == null)
         {
@@ -172,11 +191,11 @@ sealed class TargetEnemiesInRange
 
         tilesInRange = visibilityChecker.EnumerateVisibleTiles(
                 level,
-                position.XY(),
+                Owner.Position.XY(),
                 currentRange,
                 t => !level.IsValid(t) || !passabilityLayer[t].IsPassable)
             .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2 &&
-                (Level.GetPosition(t.tile) - position.XY()).LengthSquared is var dSquared &&
+                (Level.GetPosition(t.tile) - Owner.Position.XY()).LengthSquared is var dSquared &&
                 dSquared >= minRangeSquared && dSquared <= rangeSquared)
             .Select(t => t.tile)
             .OrderBy(navigator.GetDistanceToClosestSink)

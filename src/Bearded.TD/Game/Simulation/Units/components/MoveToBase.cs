@@ -22,7 +22,8 @@ sealed class MoveToBase
     : Component<MoveToBase.IParameters>,
         IEnemyMovement,
         IListener<ObjectDeleting>,
-        ISyncable
+        ISyncable,
+        IMoving
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -35,6 +36,8 @@ sealed class MoveToBase
     public bool IsMoving => presence?.IsMoving ?? false;
     public IEnumerable<Tile> OccupiedTiles =>
         presence == null ? Enumerable.Empty<Tile>() : presence.CurrentTile.Yield();
+
+    public Velocity3 Velocity { get; private set; }
 
     public MoveToBase(IParameters parameters) : base(parameters) { }
 
@@ -55,8 +58,10 @@ sealed class MoveToBase
 
     public override void Update(TimeSpan elapsedTime)
     {
-        presence!.Update(elapsedTime, Parameters.MovementSpeed);
+        var oldPosition = presence!.OwnerPosition;
+        presence.Update(elapsedTime, Parameters.MovementSpeed);
         Owner.Position = presence.OwnerPosition;
+        Velocity = (presence.OwnerPosition - oldPosition) / elapsedTime;
     }
 
     public void Teleport(Position2 pos, Tile tile)

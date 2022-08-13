@@ -12,8 +12,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
+interface IProjectileEmitter
+{
+    Speed MuzzleSpeed { get; }
+}
+
 [Component("projectileEmitter")]
-sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<ShootProjectile>
+sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<ShootProjectile>, IProjectileEmitter
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -31,6 +36,8 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
     private UpgradableProjectileFactory factory = null!;
+
+    public Speed MuzzleSpeed => Parameters.MuzzleSpeed;
 
     public ProjectileEmitter(IParameters parameters)
         : base(parameters) {}
@@ -99,3 +106,4 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         return verticalVelocityToCompensate;
     }
 }
+
