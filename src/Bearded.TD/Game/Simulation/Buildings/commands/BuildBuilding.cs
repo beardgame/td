@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
@@ -23,8 +22,7 @@ static class BuildBuilding
         Faction faction,
         IComponentOwnerBlueprint blueprint,
         PositionedFootprint footprint) =>
-        new Implementation(
-            game, faction, Id<GameObject>.Invalid, blueprint, footprint, Id<IWorkerTask>.Invalid);
+        new Implementation(game, faction, Id<GameObject>.Invalid, blueprint, footprint);
 
     private sealed class Implementation : UnifiedRequestCommand
     {
@@ -33,22 +31,19 @@ static class BuildBuilding
         private readonly Id<GameObject> id;
         private readonly IComponentOwnerBlueprint blueprint;
         private readonly PositionedFootprint footprint;
-        private readonly Id<IWorkerTask> taskId;
 
         public Implementation(
             GameInstance game,
             Faction faction,
             Id<GameObject> id,
             IComponentOwnerBlueprint blueprint,
-            PositionedFootprint footprint,
-            Id<IWorkerTask> taskId)
+            PositionedFootprint footprint)
         {
             this.game = game;
             this.faction = faction;
             this.id = id;
             this.blueprint = blueprint;
             this.footprint = footprint;
-            this.taskId = taskId;
         }
 
         public override bool CheckPreconditions(Player actor)
@@ -77,18 +72,17 @@ static class BuildBuilding
             faction,
             game.Meta.Ids.GetNext<GameObject>(),
             blueprint,
-            footprint,
-            game.Meta.Ids.GetNext<IWorkerTask>());
+            footprint);
 
         public override void Execute()
         {
             var building = BuildingFactory.Create(id, blueprint, faction, footprint);
-            building.AddComponent(new BuildingConstructionWork(taskId));
+            building.AddComponent(new BuildingConstructionWork(building.GetComponents<IncompleteBuilding>().Single()));
             game.State.Add(building);
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() =>
-            new Serializer(faction, id, blueprint, footprint, taskId);
+            new Serializer(faction, id, blueprint, footprint);
     }
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
@@ -100,7 +94,6 @@ static class BuildBuilding
         private Id<GameObject> id;
         private int footprintX;
         private int footprintY;
-        private Id<IWorkerTask> taskId;
 
         [UsedImplicitly]
         public Serializer() {}
@@ -109,17 +102,15 @@ static class BuildBuilding
             Faction faction,
             Id<GameObject> id,
             IBlueprint blueprint,
-            PositionedFootprint footprint,
-            Id<IWorkerTask> taskId)
+            PositionedFootprint footprint)
         {
             this.id = id;
             this.faction = faction.Id;
             this.blueprint = blueprint.Id;
-            this.footprint = footprint.Footprint.Id;
+            this.footprint = footprint.Footprint!.Id;
             footprintIndex = footprint.FootprintIndex;
             footprintX = footprint.RootTile.X;
             footprintY = footprint.RootTile.Y;
-            this.taskId = taskId;
         }
 
         protected override UnifiedRequestCommand GetSerialized(GameInstance game)
@@ -131,8 +122,7 @@ static class BuildBuilding
                 game.Blueprints.ComponentOwners[blueprint],
                 new PositionedFootprint(
                     game.Blueprints.Footprints[footprint], footprintIndex,
-                    new Tile(footprintX, footprintY)),
-                taskId);
+                    new Tile(footprintX, footprintY)));
         }
 
         public override void Serialize(INetBufferStream stream)
@@ -144,7 +134,6 @@ static class BuildBuilding
             stream.Serialize(ref footprintIndex);
             stream.Serialize(ref footprintX);
             stream.Serialize(ref footprintY);
-            stream.Serialize(ref taskId);
         }
     }
 }

@@ -29,19 +29,43 @@ sealed class BuildingUpgradeWork : Component
         ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, p => state = p.State);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider =>
         {
+            State.Satisfies(
+                factionProvider == null && faction == null,
+                "Should not initialize faction provider more than once.");
+
             factionProvider = provider;
             faction = provider.Faction;
-            if (!faction.TryGetBehaviorIncludingAncestors(out resources))
-            {
-                throw new NotSupportedException("Cannot upgrade building without resources.");
-            }
         });
         Owner.Deleting += () => resourceConsumer?.Abort();
     }
 
+    public override void Activate()
+    {
+        base.Activate();
+
+        if (faction == null)
+        {
+            throw new InvalidOperationException("Faction must be resolved before activating this component.");
+        }
+        if (!faction.TryGetBehaviorIncludingAncestors(out resources))
+        {
+            throw new NotSupportedException("Cannot build building without resources.");
+        }
+
+        var resourceReservation =
+            resources.ReserveResources(new FactionResources.ResourceRequest(incompleteUpgrade.Upgrade.Cost));
+        resourceConsumer =
+            new ResourceConsumer(Owner.Game, resourceReservation, Constants.Game.Worker.UpgradeSpeed);
+    }
+
     public override void Update(TimeSpan elapsedTime)
     {
-        if (resources == null || finished || !(state?.CanApplyUpgrades ?? false))
+        if (resources == null || resourceConsumer == null)
+        {
+            throw new InvalidOperationException("Component must be activated before being updated.");
+        }
+
+        if (finished || !(state?.CanApplyUpgrades ?? false))
         {
             return;
         }
@@ -66,14 +90,6 @@ sealed class BuildingUpgradeWork : Component
         {
             State.IsInvalid(
                 "Did not expect the faction provider to ever provide a different faction during the upgrade work.");
-        }
-
-        if (resourceConsumer == null)
-        {
-            var resourceReservation =
-                resources.ReserveResources(new FactionResources.ResourceRequest(incompleteUpgrade.Upgrade.Cost));
-            resourceConsumer =
-                new ResourceConsumer(Owner.Game, resourceReservation, Constants.Game.Worker.UpgradeSpeed);
         }
 
         resourceConsumer.PrepareIfNeeded();

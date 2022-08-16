@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Workers;
-using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -13,17 +10,21 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingConstructionWork : Component
 {
-    private readonly Id<IWorkerTask> taskId;
+    private readonly IIncompleteBuilding incompleteBuilding;
 
     private IFactionProvider? factionProvider;
     private Faction? faction;
-    private BuildingWorkerTask? workerTask;
+    private FactionResources? resources;
+    private ResourceConsumer? resourceConsumer;
 
-    public ResourceAmount? ResourcesInvestedSoFar => workerTask?.ResourcesConsumed;
+    private bool started;
+    private bool finished;
 
-    public BuildingConstructionWork(Id<IWorkerTask> taskId)
+    public ResourceAmount? ResourcesInvestedSoFar => resourceConsumer?.ResourcesClaimed;
+
+    public BuildingConstructionWork(IIncompleteBuilding incompleteBuilding)
     {
-        this.taskId = taskId;
+        this.incompleteBuilding = incompleteBuilding;
     }
 
     protected override void OnAdded()
@@ -48,32 +49,71 @@ sealed class BuildingConstructionWork : Component
             throw new InvalidOperationException("Faction must be resolved before activating this component.");
         }
 
-        if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+        if (!faction.TryGetBehaviorIncludingAncestors(out resources))
         {
             throw new NotSupportedException("Cannot build building without resources.");
         }
-        if (!faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out var workers))
-        {
-            throw new NotSupportedException("Cannot build building without workers.");
-        }
 
         var cost = Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
-        workerTask = new BuildingWorkerTask(
-            taskId,
-            Owner.Game,
-            Owner.GetComponents<IIncompleteBuilding>().Single(),
-            OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner),
-            resources.ReserveResources(new FactionResources.ResourceRequest(cost)));
-        workers.RegisterTask(workerTask);
+        var resourceReservation =
+            resources.ReserveResources(new FactionResources.ResourceRequest(cost));
+        resourceConsumer =
+            new ResourceConsumer(Owner.Game, resourceReservation, Constants.Game.Worker.UpgradeSpeed);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (resources == null || resourceConsumer == null)
+        {
+            throw new InvalidOperationException("Component must be activated before being updated.");
+        }
+
+        if (finished)
+        {
+            return;
+        }
+
+        if (incompleteBuilding.IsCompleted)
+        {
+            resourceConsumer?.CompleteIfNeeded();
+            finished = true;
+            Owner.RemoveComponent(this);
+            return;
+        }
+
+        if (incompleteBuilding.IsCancelled)
+        {
+            resourceConsumer?.Abort();
+            finished = true;
+            Owner.RemoveComponent(this);
+            return;
+        }
+
         if (factionProvider?.Faction != faction)
         {
             State.IsInvalid(
                 "Did not expect the faction provider to ever provide a different faction during the construction " +
                 "work.");
+        }
+
+        resourceConsumer.PrepareIfNeeded();
+        if (!resourceConsumer.CanConsume)
+        {
+            return;
+        }
+
+        if (!started)
+        {
+            started = true;
+            incompleteBuilding.StartBuild();
+        }
+
+        resourceConsumer.Update();
+        incompleteBuilding.SetBuildProgress(resourceConsumer.PercentageDone);
+
+        if (resourceConsumer.IsDone)
+        {
+            incompleteBuilding.CompleteBuild();
         }
     }
 }
