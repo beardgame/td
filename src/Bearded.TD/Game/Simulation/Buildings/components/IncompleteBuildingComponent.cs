@@ -29,13 +29,6 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
         Events.Subscribe(work);
     }
 
-    public override void Activate()
-    {
-        base.Activate();
-
-        State.Satisfies(receiver != null);
-    }
-
     private void addHealth(HitPoints hitPoints)
     {
         receiver!.Heal(new HealInfo(hitPoints));
