@@ -27,7 +27,6 @@ sealed class AutoRepair
         bool ResetTimerOnDamage { get; }
     }
 
-
     private IFactionProvider? factionProvider;
 
     private IRuined? ruined;
@@ -158,4 +157,3 @@ sealed class AutoRepair
         }
     }
 }
-
