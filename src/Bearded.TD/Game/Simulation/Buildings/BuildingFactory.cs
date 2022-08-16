@@ -41,7 +41,7 @@ static class BuildingFactory
         building.AddComponent(new HealthBar());
         building.AddComponent(new HealthEventReceiver());
         building.AddComponent(new IdProvider(id));
-        building.AddComponent(new IncompleteBuilding());
+        building.AddComponent(new IncompleteBuildingComponent());
         building.AddComponent(new Killable());
         building.AddComponent(new ReportSubject());
         building.AddComponent(new Selectable());

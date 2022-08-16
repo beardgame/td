@@ -1,66 +1,50 @@
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed partial class BuildingUpgradeManager
 {
-    private sealed class IncompleteUpgrade : IIncompleteUpgrade, ProgressTracker.IProgressSubject
+    private sealed class IncompleteUpgrade : IncompleteWork, IIncompleteUpgrade
     {
         private readonly BuildingUpgradeManager manager;
-        private readonly ProgressTracker progressTracker;
 
         public IPermanentUpgrade Upgrade { get; }
         public double PercentageComplete { get; private set; }
-        public ResourceAmount ResourcesInvestedSoFar { get; private set; }
 
         public IncompleteUpgrade(BuildingUpgradeManager manager, IPermanentUpgrade upgrade)
         {
             this.manager = manager;
-            progressTracker = new ProgressTracker(this);
             Upgrade = upgrade;
         }
 
-        public void SendSyncStart()
+        public override void SendSyncStart()
         {
             manager.sendSyncUpgradeStart(this);
         }
 
-        public void SendSyncComplete()
+        public override void SendSyncComplete()
         {
             manager.sendSyncUpgradeCompletion(this);
         }
 
-        public void OnStart() { }
+        public override void OnStart() { }
 
-        public void OnProgressSet(double percentage)
+        public override void OnProgressSet(double percentage)
         {
             PercentageComplete = percentage;
         }
 
-        public void OnComplete()
+        public override void OnComplete()
         {
             manager.onUpgradeCompleted(this);
         }
 
-        public void OnCancel()
+        public override void OnCancel()
         {
             manager.onUpgradeCancelled(this);
         }
 
-        public bool IsCompleted => progressTracker.IsCompleted;
-        public bool IsCancelled => progressTracker.IsCancelled;
-        public void StartUpgrade() => progressTracker.Start();
-        public void SetUpgradeProgress(double percentage, ResourceAmount totalResourcesInvested)
-        {
-            progressTracker.SetProgress(percentage);
-            ResourcesInvestedSoFar = totalResourcesInvested;
-        }
-
-        public void CompleteUpgrade() => progressTracker.Complete();
-        public void CancelUpgrade() => progressTracker.Cancel();
-
-        public void SyncStartUpgrade() => progressTracker.SyncStart();
-        public void SyncCompleteUpgrade() => progressTracker.SyncComplete();
+        public void SyncStartUpgrade() => SyncStart();
+        public void SyncCompleteUpgrade() => SyncComplete();
     }
 }

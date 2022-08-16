@@ -77,7 +77,8 @@ static class BuildBuilding
         public override void Execute()
         {
             var building = BuildingFactory.Create(id, blueprint, faction, footprint);
-            building.AddComponent(new BuildingConstructionWork(building.GetComponents<IncompleteBuilding>().Single()));
+            building.AddComponent(
+                new BuildingConstructionWork(building.GetComponents<IncompleteBuildingComponent>().Single().Work));
             game.State.Add(building);
         }
 
