@@ -43,10 +43,6 @@ static class SetGameSettings
             {
                 logSettingChange($"Level generation changed: {gameSettings.LevelGenerationMethod}");
             }
-            if (game.GameSettings.WorkerDistributionMethod != gameSettings.WorkerDistributionMethod)
-            {
-                logSettingChange($"Worker distribution changed: {gameSettings.WorkerDistributionMethod}");
-            }
 
             logModChanges();
         }

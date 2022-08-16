@@ -68,8 +68,9 @@ static partial class Constants
                 ImmutableArray.Create(1200.Xp(), 4800.Xp(), 15000.Xp(), 34000.Xp(), 60000.Xp(), 80000.Xp());
         }
 
-        public static class Worker
+        public static class Resources
         {
+            public static readonly ResourceRate ConstructionSpeed = 15.ResourcesPerSecond();
             public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
         }
 

@@ -115,7 +115,7 @@ public sealed class AutoRepairTests
 
     private static void ruinObject(ComponentTestBed componentTestBed)
     {
-        componentTestBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+        componentTestBed.AddComponent(new Ruined());
     }
 
     private static void doDamage(IHealthEventReceiver healthEventReceiver)

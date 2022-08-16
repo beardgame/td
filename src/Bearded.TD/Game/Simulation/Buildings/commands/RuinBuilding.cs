@@ -24,7 +24,7 @@ static class RuinBuilding
 
         public void Execute()
         {
-            building.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+            building.AddComponent(new Ruined());
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(building);
@@ -51,4 +51,3 @@ static class RuinBuilding
         }
     }
 }
-

@@ -9,13 +9,6 @@
     { "id" : "sink" },
     { "id" : "defaultTileOccupancy" },
     { "id" : "gameOverOnDestroy" },
-    {
-      "id" : "workerHub",
-      "parameters" : {
-        "numWorkers" : 2,
-        "drone" : "worker"
-      }
-    },
     { "id" : "revealSurroundingZones", "parameters" : { "steps" : 1 } }
   ]
 }

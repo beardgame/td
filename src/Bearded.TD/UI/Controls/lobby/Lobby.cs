@@ -31,7 +31,6 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
 
     public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
     public int LevelSize => gameSettings.LevelSize;
-    public WorkerDistributionMethod WorkerDistributionMethod => gameSettings.WorkerDistributionMethod;
     public LevelGenerationMethod LevelGenerationMethod => gameSettings.LevelGenerationMethod;
 
     public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading && !enabledModsCache.IsEmpty;
@@ -145,12 +144,6 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     public void OnSetLevelSize(int size)
     {
         gameSettings.LevelSize = size;
-        lobbyManager.UpdateGameSettings(gameSettings.Build());
-    }
-
-    public void OnSetWorkerDistributionMethod(WorkerDistributionMethod method)
-    {
-        gameSettings.WorkerDistributionMethod = method;
         lobbyManager.UpdateGameSettings(gameSettings.Build());
     }
 

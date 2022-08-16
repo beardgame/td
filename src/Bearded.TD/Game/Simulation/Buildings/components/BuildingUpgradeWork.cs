@@ -7,6 +7,7 @@ sealed class BuildingUpgradeWork : BuildingWork
     private readonly IIncompleteUpgrade incompleteUpgrade;
 
     protected override ResourceAmount Cost => incompleteUpgrade.Upgrade.Cost;
+    protected override ResourceRate ConsumptionRate => Constants.Game.Resources.UpgradeSpeed;
 
     public BuildingUpgradeWork(IIncompleteUpgrade incompleteUpgrade) : base(incompleteUpgrade)
     {

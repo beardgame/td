@@ -20,6 +20,7 @@ abstract class BuildingWork : Component
     private bool finished;
 
     protected abstract ResourceAmount Cost { get; }
+    protected abstract ResourceRate ConsumptionRate { get; }
 
     protected ResourceAmount? ResourcesInvestedSoFar => resourceConsumer?.ResourcesClaimed;
 
@@ -58,7 +59,7 @@ abstract class BuildingWork : Component
         var resourceReservation =
             resources.ReserveResources(new FactionResources.ResourceRequest(Cost));
         resourceConsumer =
-            new ResourceConsumer(Owner.Game, resourceReservation, Constants.Game.Worker.UpgradeSpeed);
+            new ResourceConsumer(Owner.Game, resourceReservation, ConsumptionRate);
     }
 
     public override void Update(TimeSpan elapsedTime)

@@ -31,7 +31,7 @@ public sealed class RuinedTest
     [Fact]
     public void AddingRuinedComponentMakesBuildingNonFunctional()
     {
-        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined());
 
         buildingState.IsFunctional.Should().BeFalse();
     }
@@ -39,7 +39,7 @@ public sealed class RuinedTest
     [Fact]
     public void RemovingRuinedComponentMakesBuildingFunctional()
     {
-        var ruined = new Ruined(new RuinedParametersTemplate(null));
+        var ruined = new Ruined();
         testBed.AddComponent(ruined);
 
         testBed.RemoveComponent(ruined);
@@ -51,7 +51,7 @@ public sealed class RuinedTest
     public void RepairFinishedEventRestoresBuildingToFunctional()
     {
         var faction = FactionTestFactory.CreateFaction();
-        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined());
 
         testBed.SendEvent(new RepairFinished(faction));
         testBed.AdvanceSingleFrame();
@@ -65,7 +65,7 @@ public sealed class RuinedTest
         var originalFaction = FactionTestFactory.CreateFaction();
         var factionProvider = new FactionProvider(originalFaction);
         testBed.AddComponent(factionProvider);
-        testBed.AddComponent(new Ruined(new RuinedParametersTemplate(null)));
+        testBed.AddComponent(new Ruined());
         var repairingFaction = FactionTestFactory.CreateFaction();
 
         testBed.SendEvent(new RepairFinished(repairingFaction));

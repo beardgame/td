@@ -13,7 +13,6 @@ interface IGameSettings
     public IReadOnlyList<string> ActiveModIds { get; }
     ModAwareId? GameMode { get; }
     int LevelSize { get; }
-    WorkerDistributionMethod WorkerDistributionMethod { get; }
     LevelGenerationMethod LevelGenerationMethod { get; }
 }
 
@@ -23,7 +22,6 @@ sealed class GameSettings : IGameSettings
     public IReadOnlyList<string> ActiveModIds { get; }
     public ModAwareId? GameMode { get; }
     public int LevelSize { get; }
-    public WorkerDistributionMethod WorkerDistributionMethod { get; }
     public LevelGenerationMethod LevelGenerationMethod { get; }
 
     private GameSettings(IGameSettings builder)
@@ -32,7 +30,6 @@ sealed class GameSettings : IGameSettings
         ActiveModIds = builder.ActiveModIds.ToImmutableArray();
         GameMode = builder.GameMode;
         LevelSize = builder.LevelSize;
-        WorkerDistributionMethod = builder.WorkerDistributionMethod;
         LevelGenerationMethod = builder.LevelGenerationMethod;
     }
 
@@ -43,9 +40,6 @@ sealed class GameSettings : IGameSettings
         IReadOnlyList<string> IGameSettings.ActiveModIds => ActiveModIds;
         public ModAwareId? GameMode { get; set; }
         public int LevelSize { get; set; } = 32;
-
-        public WorkerDistributionMethod WorkerDistributionMethod { get; set; } =
-            WorkerDistributionMethod.RoundRobin;
 
         public LevelGenerationMethod LevelGenerationMethod { get; set; }
             = LevelGenerationMethod.Default;
@@ -59,7 +53,6 @@ sealed class GameSettings : IGameSettings
             ActiveModIds.AddRange(template.ActiveModIds);
             GameMode = template.GameMode;
             LevelSize = template.LevelSize;
-            WorkerDistributionMethod = template.WorkerDistributionMethod;
             LevelGenerationMethod = template.LevelGenerationMethod;
         }
 
@@ -72,7 +65,6 @@ sealed class GameSettings : IGameSettings
         private string[] activeModIds;
         private ModAwareId gameMode;
         private int levelSize;
-        private byte workerDistributionMethod;
         private byte levelGenerationMethod;
 
         public Serializer(IGameSettings gameSettings)
@@ -81,7 +73,6 @@ sealed class GameSettings : IGameSettings
             activeModIds = gameSettings.ActiveModIds.ToArray();
             gameMode = gameSettings.GameMode ?? ModAwareId.Invalid;
             levelSize = gameSettings.LevelSize;
-            workerDistributionMethod = (byte) gameSettings.WorkerDistributionMethod;
             levelGenerationMethod = (byte) gameSettings.LevelGenerationMethod;
         }
 
@@ -95,7 +86,6 @@ sealed class GameSettings : IGameSettings
             }
             stream.Serialize(ref gameMode);
             stream.Serialize(ref levelSize);
-            stream.Serialize(ref workerDistributionMethod);
             stream.Serialize(ref levelGenerationMethod);
         }
 
@@ -106,7 +96,6 @@ sealed class GameSettings : IGameSettings
                 Seed = seed,
                 GameMode = gameMode.IsValid ? gameMode : null,
                 LevelSize = levelSize,
-                WorkerDistributionMethod = (WorkerDistributionMethod)workerDistributionMethod,
                 LevelGenerationMethod = (LevelGenerationMethod)levelGenerationMethod,
             };
             b.ActiveModIds.AddRange(activeModIds);

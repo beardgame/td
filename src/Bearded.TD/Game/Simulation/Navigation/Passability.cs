@@ -6,7 +6,7 @@ enum Passability : byte
 {
     WalkingUnit = 1,
     FlyingUnit = 2,
-    Worker = 3,
+    Drone = 3,
     Projectile = 4
 }
 
@@ -18,7 +18,7 @@ enum Passabilities : byte
     // ReSharper disable once ShiftExpressionRealShiftCountIsZero
     WalkingUnit = 1 << (Passability.WalkingUnit - 1),
     FlyingUnit = 1 << (Passability.FlyingUnit - 1),
-    Worker = 1 << (Passability.Worker - 1),
+    Drone = 1 << (Passability.Drone - 1),
     Projectile = 1 << (Passability.Projectile - 1),
 
     All = 0xff

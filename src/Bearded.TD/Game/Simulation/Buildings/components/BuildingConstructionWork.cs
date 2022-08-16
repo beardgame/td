@@ -9,6 +9,7 @@ sealed class BuildingConstructionWork : BuildingWork
 
     protected override ResourceAmount Cost =>
         Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
+    protected override ResourceRate ConsumptionRate => Constants.Game.Resources.ConstructionSpeed;
 
     public BuildingConstructionWork(IIncompleteBuilding incompleteBuilding) : base(incompleteBuilding) { }
 }

@@ -1,16 +1,12 @@
 using System;
-using System.IO;
 using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Workers;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -18,18 +14,12 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("ruined")]
 sealed class Ruined
-    : Component<Ruined.IParameters>,
+    : Component,
         IRuined,
         IListener<RepairCancelled>,
         IListener<RepairFinished>,
         IPreviewListener<FindObjectRuinState>
 {
-    internal interface IParameters : IParametersTemplate<IParameters>
-    {
-        ResourceAmount? RepairCost { get; }
-    }
-
-
     private readonly Disposer disposer = new();
 
     private IBuildingStateProvider? buildingStateProvider;
@@ -37,12 +27,7 @@ sealed class Ruined
     private ReportAggregator.IReportHandle? reportHandle;
     private IncompleteRepair? incompleteRepair;
 
-    private bool hasRepairCost => Parameters.RepairCost.HasValue;
     private bool deleteNextFrame;
-
-    public ResourceAmount? RepairCost => Parameters.RepairCost;
-
-    public Ruined(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -54,10 +39,6 @@ sealed class Ruined
         Events.Subscribe<RepairCancelled>(this);
         Events.Subscribe<RepairFinished>(this);
         Events.Subscribe(this);
-        if (hasRepairCost)
-        {
-            reportHandle = ReportAggregator.Register(Events, new RuinedReport(this));
-        }
     }
 
     public override void OnRemoved()
@@ -97,7 +78,6 @@ sealed class Ruined
         return incompleteRepair == null &&
             (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
-            faction.TryGetBehaviorIncludingAncestors<WorkerTaskManager>(out _) &&
             occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsRevealed());
     }
 
@@ -129,42 +109,10 @@ sealed class Ruined
             Owner.RemoveComponent(this);
         }
     }
-
-    private sealed class RuinedReport : IRuinedReport
-    {
-        private readonly Ruined instance;
-
-        public ReportType Type => ReportType.EntityActions;
-
-        public RuinedReport(Ruined instance)
-        {
-            this.instance = instance;
-        }
-
-        public ResourceAmount RepairCost => instance.Parameters.RepairCost ??
-            throw new InvalidDataException(
-                "Ruined reports should not exist for ruined components without repair cost.");
-
-        public GameObject Building => instance.Owner;
-        public bool RepairInProgress => instance.incompleteRepair != null;
-        public double PercentageComplete => instance.incompleteRepair?.PercentageComplete ?? 0;
-        public bool CanBeRepairedBy(Faction faction) => instance.CanBeRepairedBy(faction);
-    }
 }
 
 interface IRuined
 {
-    ResourceAmount? RepairCost { get; }
     bool CanBeRepairedBy(Faction faction);
     IIncompleteRepair StartRepair(Faction repairingFaction);
-}
-
-interface IRuinedReport : IReport
-{
-    GameObject Building { get; }
-    ResourceAmount RepairCost { get; }
-    bool RepairInProgress { get; }
-    double PercentageComplete { get; }
-
-    bool CanBeRepairedBy(Faction faction);
 }
