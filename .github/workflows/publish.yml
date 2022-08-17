@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore -r ${{matrix.runtime}}
       - name: Build
-        run: dotnet build src/Bearded.TD -c Release -r ${{matrix.runtime}} --no-restore --self-contained
+        run: dotnet build src/Bearded.TD -c Release -r ${{matrix.runtime}} --no-restore --self-contained -p:PublishSingleFile=true
 
       # The version number can be extracted from the currently checked out tag,
       # which has the format 'refs/tags/v*'.
