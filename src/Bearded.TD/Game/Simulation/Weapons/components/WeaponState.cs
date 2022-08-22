@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Drawing;
+﻿using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -13,8 +14,7 @@ interface IWeaponState : IPositionable, IDirected
     Angle? MaximumTurningAngle { get; }
 
     void Turn(Angle angle);
-    void Enable();
-    void Disable();
+    void Disable(IWeaponDisabledReason reason);
     void InjectEvent<T>(T e)
         where T : struct, IComponentEvent;
 }
@@ -31,7 +31,8 @@ sealed class WeaponState : Component, IWeaponState
 
     public Position3 Position => turret.Position;
 
-    public bool IsEnabled { get; private set; }
+    private readonly List<IWeaponDisabledReason> disabledReasons = new();
+    public bool IsEnabled => disabledReasons.Count == 0;
 
     public TileRangeDrawer.RangeDrawStyle RangeDrawStyle =>
         turret.BuildingState?.RangeDrawing ?? TileRangeDrawer.RangeDrawStyle.DoNotDraw;
@@ -49,6 +50,7 @@ sealed class WeaponState : Component, IWeaponState
     {
         Owner.Direction = Direction;
         Owner.Position = Position;
+        disabledReasons.RemoveAll(r => r.IsResolved);
     }
 
     public void Turn(Angle angle)
@@ -61,14 +63,9 @@ sealed class WeaponState : Component, IWeaponState
             : newAngleOffset;
     }
 
-    public void Enable()
+    public void Disable(IWeaponDisabledReason reason)
     {
-        IsEnabled = true;
-    }
-
-    public void Disable()
-    {
-        IsEnabled = false;
+        disabledReasons.Add(reason);
     }
 
     public void InjectEvent<T>(T e) where T : struct, IComponentEvent

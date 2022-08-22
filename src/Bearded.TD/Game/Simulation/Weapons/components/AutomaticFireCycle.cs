@@ -25,12 +25,12 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
     {
     }
 
-    protected override void UpdateIdle(TimeSpan elapsedTime)
+    protected override void UpdateIdle()
     {
         firstShotInBurst = true;
     }
 
-    protected override void UpdateShooting(TimeSpan elapsedTime)
+    protected override void UpdateShooting()
     {
         var currentTime = Game.Time;
         while (nextPossibleShootTime < currentTime)

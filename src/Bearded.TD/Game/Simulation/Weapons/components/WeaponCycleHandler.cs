@@ -8,16 +8,12 @@ abstract class WeaponCycleHandler<TParameters> : Component<TParameters>
     where TParameters : IParametersTemplate<TParameters>
 {
     private IWeaponTrigger? trigger;
-    protected IWeaponState Weapon { get; private set; } = null!;
     protected GameState Game => Owner.Game;
 
-    protected WeaponCycleHandler(TParameters parameters) : base(parameters)
-    {
-    }
+    protected WeaponCycleHandler(TParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => Weapon = c);
         ComponentDependencies.DependDynamic<IWeaponTrigger>(Owner, Events, c => trigger = c);
     }
 
@@ -25,19 +21,15 @@ abstract class WeaponCycleHandler<TParameters> : Component<TParameters>
     {
         if (trigger?.TriggerPulled ?? false)
         {
-            UpdateShooting(elapsedTime);
+            UpdateShooting();
         }
         else
         {
-            UpdateIdle(elapsedTime);
+            UpdateIdle();
         }
     }
 
-    protected virtual void UpdateShooting(TimeSpan elapsedTime)
-    {
-    }
+    protected virtual void UpdateShooting() {}
 
-    protected virtual void UpdateIdle(TimeSpan elapsedTime)
-    {
-    }
+    protected virtual void UpdateIdle() {}
 }
