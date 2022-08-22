@@ -1,10 +1,12 @@
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Drones;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
@@ -21,6 +23,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     private ImmutableArray<KnownWeapon> knownWeapons;
     private int fuelUsed;
     private WeaponDisabledReason? disabledReason;
+    private DroneFulfillment? drone;
 
     public FuelTank(IParameters parameters) : base(parameters) { }
 
@@ -55,21 +58,44 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     public void HandleEvent(ShotProjectile @event)
     {
         fuelUsed++;
-        if (fuelUsed < Parameters.FuelCapacity || disabledReason != null)
+        if (fuelUsed >= Parameters.FuelCapacity && disabledReason == null)
         {
-            return;
-        }
-
-        disabledReason = new WeaponDisabledReason();
-        foreach (var knownWeapon in knownWeapons)
-        {
-            knownWeapon.State.Disable(disabledReason);
+            handleTankEmpty();
         }
     }
 
     public void HandleEvent(WaveEnded @event)
     {
-        fuelUsed = 0;
+        drone?.Cancel();
+        refillTank();
+    }
+
+    private void handleTankEmpty()
+    {
+        disabledReason = new WeaponDisabledReason();
+        foreach (var knownWeapon in knownWeapons)
+        {
+            knownWeapon.State.Disable(disabledReason);
+        }
+        requestRefuel();
+    }
+
+    private void requestRefuel()
+    {
+        var request = new DroneRequest(Level.GetTile(Owner.Position), refillTank);
+        var requestEvent = new RequestDrone(request, null);
+        Owner.Game.Meta.Events.Preview(ref requestEvent);
+        if (requestEvent.FulfillmentPreview is { } preview)
+        {
+            drone = preview.Spawner.Fulfill(request, preview);
+        }
+    }
+
+    private void refillTank()
+    {
+        disabledReason?.Resolve();
+        disabledReason = null;
+        drone = null;
     }
 
     private readonly record struct KnownWeapon(GameObject Weapon, IWeaponState State, ListenerComponent Spy);

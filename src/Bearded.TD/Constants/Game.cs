@@ -102,5 +102,10 @@ static partial class Constants
         {
             public static readonly int[] TierCompletionThresholds = { 0, 2, 2, 2 };
         }
+
+        public static class Drones
+        {
+            public static readonly Speed Speed = 2.UnitsPerSecond();
+        }
     }
 }
