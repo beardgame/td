@@ -1,0 +1,33 @@
+{
+    id : "fire1-flamethrower-flame",
+    components : [
+        { id : "tags", parameters : { tags : [ "projectile" ] } },
+        {
+            id : "damageOnHit",
+            parameters : { damageType : "fire" }
+        },
+        {
+            "id" : "applyOnFireOnImpact",
+            "parameters" : {
+                "probability" : 0.05,
+                "fractionOfBaseDamageApplied" : 10,
+                "effectDuration" : 3
+            }
+        },
+        {
+            id : "sprite",
+            parameters : {
+                sprite : "default.particle.mote",
+                color : "Orange",
+                size : 0.5,
+            }
+        },
+        {
+            id : "pointlight",
+            parameters : {
+                color : "Orange",
+                radius : 1,
+            }
+        },
+    ]
+}

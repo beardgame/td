@@ -1,0 +1,45 @@
+{
+    id : "fire1-flamethrower-weapon",
+    components : [
+        { id : "tags", parameters : { tags : [ "gun" ] } },
+        {
+            id : "targetEnemiesInRange",
+            parameters : {
+                range : 3,
+                coneOfFire : 10,
+            }
+        },
+        {
+            id : "pidAim",
+            parameters : {
+                proportionalCorrection : 50,
+                derivativeCorrection : 8,
+            }
+        },
+        {
+            id : "automaticFireCycle",
+            parameters : {
+                damagePerSecond : 30,
+                fireRate : 15,
+            }
+        },
+        {
+            id : "projectileEmitter",
+            parameters : {
+                projectile : "fire1-flamethrower-flame",
+                muzzleSpeed : 10,
+                spread : 3, 
+            }
+        },
+        {
+            id : "sprite",
+            parameters : {
+                sprite : "buildings3.cannon-turret",
+                colorMode : "faction",
+                shader : "building",
+                drawGroup : "building",
+                size : 1.2,
+            }
+        },
+    ]
+}
