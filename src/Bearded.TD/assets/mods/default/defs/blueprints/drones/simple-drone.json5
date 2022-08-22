@@ -1,0 +1,14 @@
+{
+    id : "simple-drone",
+    components : [
+        {
+            id : "sprite",
+            parameters : {
+                sprite : "default.particle.halo",
+                colorMode : "faction",
+                heightOffset : 0.2,
+                size : 0.3,
+            },
+        },
+    ],
+}
