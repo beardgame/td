@@ -6,12 +6,11 @@ public enum AttributeType : byte
 
     Damage,
     DamageOverTime,
-    DroneCount,
     EffectStrength,
     FireRate,
+    FuelCapacity,
     Health,
     MovementSpeed,
-    PiercingFactor,
     Range,
     SplashRange,
     SpreadAngle,

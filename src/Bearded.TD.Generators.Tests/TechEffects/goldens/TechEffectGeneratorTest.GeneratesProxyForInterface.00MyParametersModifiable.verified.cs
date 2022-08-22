@@ -60,7 +60,7 @@ namespace Bearded.TD.Generators.Tests.TechEffects
                     (AttributeType.None, instance => instance.rawTypeWithDefault),
                     (AttributeType.None, instance => instance.boolTypeWithDefault),
                     ((AttributeType) 1, instance => instance.modifiableRawType),
-                    ((AttributeType) 9, instance => instance.modifiableWrappedType)
+                    ((AttributeType) 8, instance => instance.modifiableWrappedType)
                 }.ToLookup(tuple => tuple.Type, tuple => tuple.Getter));
         }
 

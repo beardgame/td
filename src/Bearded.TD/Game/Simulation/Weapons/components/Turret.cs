@@ -37,12 +37,11 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
         Angle? MaximumTurningAngle { get; }
     }
 
-
     public GameObject Weapon { get; private set; } = null!;
     private IWeaponState weaponState = null!;
     private ITransformable transform = null!;
+    private WeaponDisabledReason? weaponDisabledReason;
     private TargetOverride? targetOverride;
-    private bool? previouslyFunctional;
 
     public IBuildingState? BuildingState { get; private set; }
     public Position3 Position =>
@@ -97,15 +96,17 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
     {
         var currentlyFunctional = BuildingState?.IsFunctional ?? true;
 
-        if (currentlyFunctional == previouslyFunctional)
-            return;
-
-        if (currentlyFunctional)
-            weaponState.Enable();
-        else
-            weaponState.Disable();
-
-        previouslyFunctional = currentlyFunctional;
+        switch (currentlyFunctional, weaponDisabledReason)
+        {
+            case (true, {} reason):
+                reason.Resolve();
+                break;
+            case (false, null):
+                weaponDisabledReason = new WeaponDisabledReason();
+                weaponState.Disable(weaponDisabledReason);
+                break;
+            // default case unnecessary because functional state and disabled reason value are in sync
+        }
     }
 
     public void OverrideTargeting(IManualTarget3 target)
