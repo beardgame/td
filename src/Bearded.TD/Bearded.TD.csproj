@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics.System.Drawing\Bearded.Graphics.System.Drawing.csproj" />
     <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj" />
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />

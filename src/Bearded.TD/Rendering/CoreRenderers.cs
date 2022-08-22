@@ -3,6 +3,7 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Text;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 using Font = Bearded.Graphics.Text.Font;
@@ -43,7 +44,7 @@ sealed class CoreRenderers
         var (consoleFontTextureData, consoleFont) = // used to be inconsolata
             FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), 2);
         // TODO: premultiply console font texture data!
-        var consoleFontTexture = consoleFontTextureData.ToTexture(t =>
+        var consoleFontTexture = Texture.From(consoleFontTextureData, t =>
         {
             t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
             t.GenerateMipmap();
@@ -58,7 +59,7 @@ sealed class CoreRenderers
         var (uiFontTextureData, uiFont) = // used to be helveticaneue
             FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), 2);
         // TODO: premultiply console font texture data!
-        var uiFontTexture = uiFontTextureData.ToTexture(t =>
+        var uiFontTexture = Texture.From(uiFontTextureData, t =>
         {
             t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
             t.GenerateMipmap();

@@ -94,7 +94,8 @@ class PackedSpriteSetBuilder
             (kvp, i) =>
             {
                 var (name, data) = kvp;
-                var texture = TextureData.From(data, width, height).ToTexture(t =>
+                var textureData = RawTextureData.From(data, width, height);
+                var texture = Texture.From(textureData, t =>
                 {
                     if (pixelate)
                     {

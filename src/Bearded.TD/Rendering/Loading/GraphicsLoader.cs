@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.Graphics.ShaderManagement;
+using Bearded.Graphics.System.Drawing;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
@@ -138,6 +139,12 @@ class GraphicsLoader : IGraphicsLoader
 
     public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
     {
-        return glActions.Run(() => ArrayTextureData.From(layers).ToTexture(t => t.GenerateMipmap())).Result;
+        return glActions.Run(() =>
+        {
+            var textureData = ArrayTextureData
+                .From(layers.Select(BitmapTextureData.From));
+            var texture = ArrayTexture.From(textureData, t => t.GenerateMipmap());
+            return texture;
+        }).Result;
     }
 }
