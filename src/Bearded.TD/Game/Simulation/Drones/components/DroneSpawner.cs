@@ -15,11 +15,29 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         public ComponentOwnerBlueprint Drone { get; }
     }
 
+    private bool activated;
+
     public Tile Location => Level.GetTile(Owner.Position);
 
     public DroneSpawner(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded() { }
+
+    public override void Activate()
+    {
+        base.Activate();
+        Owner.Game.Meta.Events.Subscribe(this);
+        activated = true;
+    }
+
+    public override void OnRemoved()
+    {
+        base.OnRemoved();
+        if (activated)
+        {
+            Owner.Game.Meta.Events.Unsubscribe(this);
+        }
+    }
 
     public override void Update(TimeSpan elapsedTime) { }
 
