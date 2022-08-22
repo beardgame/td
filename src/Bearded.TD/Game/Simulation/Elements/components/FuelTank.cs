@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Drones;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -21,13 +22,17 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     }
 
     private ImmutableArray<KnownWeapon> knownWeapons;
+    private IFactionProvider? factionProvider;
     private int fuelUsed;
     private WeaponDisabledReason? disabledReason;
     private DroneFulfillment? drone;
 
     public FuelTank(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
+    }
 
     public override void Activate()
     {
@@ -82,8 +87,14 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
 
     private void requestRefuel()
     {
+        if (factionProvider == null)
+        {
+            Owner.Game.Meta.Logger.Warning?.Log($"{Owner} attempted to request fuel but does not belong to faction.");
+            return;
+        }
+
         var request = new DroneRequest(Level.GetTile(Owner.Position), refillTank);
-        var requestEvent = new RequestDrone(request, null);
+        var requestEvent = new RequestDrone(factionProvider.Faction, request, null);
         Owner.Game.Meta.Events.Preview(ref requestEvent);
         if (requestEvent.FulfillmentPreview is { } preview)
         {

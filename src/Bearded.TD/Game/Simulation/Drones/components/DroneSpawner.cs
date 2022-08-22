@@ -1,9 +1,11 @@
+using System;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drones;
 
@@ -15,13 +17,17 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         public ComponentOwnerBlueprint Drone { get; }
     }
 
+    private IFactionProvider? factionProvider;
     private bool activated;
 
     public Tile Location => Level.GetTile(Owner.Position);
 
     public DroneSpawner(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
+    }
 
     public override void Activate()
     {
@@ -43,16 +49,19 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
 
     public DroneFulfillment Fulfill(DroneRequest request, DroneFulfillmentPreview preview)
     {
-        var drone = DroneFactory.CreateDrone(Parameters.Drone, Owner.Position);
-        var droneComp = new Drone(request, preview.Path.Path);
-        drone.AddComponent(droneComp);
+        var faction = factionProvider?.Faction ??
+            throw new InvalidOperationException("Cannot fulfill drone requests without faction");
+        var drone = DroneFactory.CreateDrone(
+            Parameters.Drone, Owner.Position, faction, request, preview.Path.Path, out var droneComp);
         Owner.Game.Add(drone);
         return new DroneFulfillment(droneComp);
     }
 
     public void PreviewEvent(ref RequestDrone @event)
     {
-        if (this.TryFulfillRequest(@event.Request, out var preview))
+        if (factionProvider?.Faction is { } faction &&
+            faction.SharesBehaviorWith<ShareDrones>(@event.Faction) &&
+            this.TryFulfillRequest(@event.Request, out var preview))
         {
             @event = @event.OfferAlternative(preview);
         }
