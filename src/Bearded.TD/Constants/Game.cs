@@ -106,6 +106,7 @@ static partial class Constants
         public static class Drones
         {
             public static readonly Speed Speed = 2.UnitsPerSecond();
+            public static readonly Unit FlyingHeight = 0.5.U();
         }
     }
 }

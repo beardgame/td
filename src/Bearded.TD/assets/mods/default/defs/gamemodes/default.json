@@ -9,7 +9,8 @@
                     "id": "players",
                     "behaviors": [
                         { "id" : "resources" },
-                        { "id" : "technology" }
+                        { "id" : "technology" },
+                        { "id" : "shareDrones" }
                     ]
                 }
             }

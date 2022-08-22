@@ -21,6 +21,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
         public int FuelCapacity { get; }
     }
 
+    private bool activated;
     private ImmutableArray<KnownWeapon> knownWeapons;
     private IFactionProvider? factionProvider;
     private int fuelUsed;
@@ -37,6 +38,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     public override void Activate()
     {
         base.Activate();
+        Events.Subscribe<ShotProjectile>(this);
         Owner.Game.Meta.Events.Subscribe<WaveEnded>(this);
         knownWeapons = Owner.GetComponents<ITurret>()
             .Select(t =>
@@ -47,15 +49,25 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
                 return new KnownWeapon(weapon, weapon.GetComponents<IWeaponState>().Single(), spy);
             })
             .ToImmutableArray();
+        activated = true;
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
+
         foreach (var knownWeapon in knownWeapons)
         {
             knownWeapon.Weapon.RemoveComponent(knownWeapon.Spy);
         }
+
+        if (!activated)
+        {
+            return;
+        }
+
+        Events.Unsubscribe<ShotProjectile>(this);
+        Owner.Game.Meta.Events.Unsubscribe<WaveEnded>(this);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
@@ -107,6 +119,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
         disabledReason?.Resolve();
         disabledReason = null;
         drone = null;
+        fuelUsed = 0;
     }
 
     private readonly record struct KnownWeapon(GameObject Weapon, IWeaponState State, ListenerComponent Spy);

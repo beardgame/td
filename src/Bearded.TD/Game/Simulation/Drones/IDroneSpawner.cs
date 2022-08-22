@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Drones;
@@ -11,9 +12,10 @@ interface IDroneSpawner
 static class DroneSpawnerExtensions
 {
     public static bool TryFulfillRequest(
-        this IDroneSpawner spawner, DroneRequest request, out DroneFulfillmentPreview preview)
+        this IDroneSpawner spawner, PassabilityLayer passability, DroneRequest request, out DroneFulfillmentPreview preview)
     {
-        var path = Pathfinder.Default.FindPath(spawner.Location, request.Location);
+        var pathFinder = Pathfinder.WithTileCosts(t => passability[t].IsPassable ? 1 : null, 1);
+        var path = pathFinder.FindPath(spawner.Location, request.Location);
         if (path == null)
         {
             preview = default;

@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -9,11 +8,10 @@ namespace Bearded.TD.Game.Simulation.Drones;
 sealed class Drone : Component, ITileWalkerOwner
 {
     private readonly DroneRequest request;
-    private readonly ImmutableArray<Direction> path;
+    private readonly PrecalculatedPath path;
     private TileWalker? walker;
-    private int pathIndex;
 
-    public Drone(DroneRequest request, ImmutableArray<Direction> path)
+    public Drone(DroneRequest request, PrecalculatedPath path)
     {
         this.request = request;
         this.path = path;
@@ -29,7 +27,9 @@ sealed class Drone : Component, ITileWalkerOwner
 
     public override void Update(TimeSpan elapsedTime)
     {
-        walker?.Update(elapsedTime, Constants.Game.Drones.Speed);
+        if (walker == null) return;
+        walker.Update(elapsedTime, Constants.Game.Drones.Speed);
+        Owner.Position = walker.Position.WithZ(Constants.Game.Drones.FlyingHeight);
     }
 
     public void Cancel()
@@ -50,6 +50,6 @@ sealed class Drone : Component, ITileWalkerOwner
 
     public Direction GetNextDirection()
     {
-        return pathIndex < path.Length ? path[pathIndex++] : Direction.Unknown;
+        return path.NextDirectionFromTile(walker!.CurrentTile);
     }
 }

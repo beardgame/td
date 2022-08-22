@@ -1,10 +1,11 @@
 using System;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drones;
@@ -14,7 +15,7 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        public ComponentOwnerBlueprint Drone { get; }
+        public IComponentOwnerBlueprint Drone { get; }
     }
 
     private IFactionProvider? factionProvider;
@@ -52,7 +53,12 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         var faction = factionProvider?.Faction ??
             throw new InvalidOperationException("Cannot fulfill drone requests without faction");
         var drone = DroneFactory.CreateDrone(
-            Parameters.Drone, Owner.Position, faction, request, preview.Path.Path, out var droneComp);
+            Parameters.Drone,
+            Owner.Position + new Difference3(0, 0, 0.5f),
+            faction,
+            request,
+            PrecalculatedPath.FromPathfindingResult(Location, preview.Path),
+            out var droneComp);
         Owner.Game.Add(drone);
         return new DroneFulfillment(droneComp);
     }
@@ -61,7 +67,8 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
     {
         if (factionProvider?.Faction is { } faction &&
             faction.SharesBehaviorWith<ShareDrones>(@event.Faction) &&
-            this.TryFulfillRequest(@event.Request, out var preview))
+            this.TryFulfillRequest(
+                Owner.Game.PassabilityManager.GetLayer(Passability.Drone), @event.Request, out var preview))
         {
             @event = @event.OfferAlternative(preview);
         }

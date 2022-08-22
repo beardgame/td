@@ -17,6 +17,7 @@
         height : 0.3,
       }
     },
+    { id : "fuelTank", parameters : { fuelCapacity: 150 } },
     {
       id : "sprite",
       parameters : {
