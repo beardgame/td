@@ -55,6 +55,10 @@
                 "drawGroup" : "building",
                 "size" : 1.2
             }
+        },
+        {
+            "id": "playSoundOnShoot",
+            "parameters": { "sound": "gunshot-punchy" }
         }
     ]
 }

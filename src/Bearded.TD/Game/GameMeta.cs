@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Audio;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -20,6 +21,7 @@ sealed class GameMeta
     public bool GameOver { get; private set; }
     public GlobalGameEvents Events { get; } = new();
     public Blueprints Blueprints => blueprints!;
+    public SoundScape SoundScape { get; }
 
     public ISpriteRenderers SpriteRenderers { get; }
 
@@ -35,6 +37,7 @@ sealed class GameMeta
         Dispatcher = dispatcher;
         Ids = ids;
         SpriteRenderers = spriteRenderers;
+        SoundScape = SoundScape.WithChannelCount(Constants.Audio.SoundEffectChannelCount);
     }
 
     public void SetBlueprints(Blueprints blueprints)

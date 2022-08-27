@@ -1,10 +1,9 @@
 using Bearded.TD.Audio;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation;
 
 namespace Bearded.TD.Content.Models;
 
-sealed class SoundEffect : IBlueprint
+sealed class SoundEffect : ISoundEffect
 {
     public ModAwareId Id { get; }
     public ISound Sound { get; }

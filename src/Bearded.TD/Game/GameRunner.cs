@@ -39,6 +39,7 @@ sealed class GameRunner
 
         game.CameraController.Update(args);
         game.PlayerCursors.Update(args);
+        game.State.Meta.SoundScape.Update();
 
         var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
 

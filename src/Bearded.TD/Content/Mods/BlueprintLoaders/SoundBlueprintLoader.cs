@@ -1,10 +1,10 @@
 using System.IO;
-using SoundEffect = Bearded.TD.Content.Models.SoundEffect;
+using Bearded.TD.Audio;
 using SoundEffectJson = Bearded.TD.Content.Serialization.Models.SoundEffect;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class SoundBlueprintLoader : BaseBlueprintLoader<SoundEffect, SoundEffectJson, (FileInfo, SoundLoader)>
+sealed class SoundBlueprintLoader : BaseBlueprintLoader<ISoundEffect, SoundEffectJson, (FileInfo, SoundLoader)>
 {
     private readonly SoundLoader loader;
 

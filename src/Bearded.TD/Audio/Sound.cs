@@ -11,6 +11,11 @@ sealed class Sound : ISound
         this.bufferData = bufferData;
     }
 
+    public SoundBuffer ToBuffer()
+    {
+        return new SoundBuffer(bufferData);
+    }
+
     public static Sound FromWav(string file)
     {
         return new Sound(SoundBufferData.FromWav(file));
