@@ -17,6 +17,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<Shader> Shaders { get; }
     public ReadonlyBlueprintCollection<Material> Materials { get; }
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
+    public ReadonlyBlueprintCollection<SoundEffect> SoundEffects { get; }
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
     public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
@@ -27,6 +28,7 @@ sealed class Blueprints
     public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
+        ReadonlyBlueprintCollection<SoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
         ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
@@ -37,6 +39,7 @@ sealed class Blueprints
         Shaders = shaders;
         Materials = materials;
         Sprites = sprites;
+        SoundEffects = soundEffects;
         Footprints = footprints;
         ComponentOwners = componentOwners;
         Upgrades = upgrades;
@@ -52,6 +55,7 @@ sealed class Blueprints
             flatten(list, b => b.Shaders),
             flatten(list, b => b.Materials),
             flatten(list, b => b.Sprites),
+            flatten(list, b => b.SoundEffects),
             flatten(list, b => b.Footprints),
             flatten(list, b => b.ComponentOwners),
             flatten(list, b => b.Upgrades),

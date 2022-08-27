@@ -57,6 +57,7 @@ static class ModLoader
             var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
+            var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
             var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
@@ -74,6 +75,7 @@ static class ModLoader
                 shaders,
                 materials,
                 sprites,
+                soundEffects,
                 footprints,
                 componentOwners,
                 upgrades,
