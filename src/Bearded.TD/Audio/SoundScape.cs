@@ -26,6 +26,11 @@ sealed class SoundScape
         }
     }
 
+    public void SetListenerPosition(Position3 position)
+    {
+        ALListener.Position = position.NumericValue;
+    }
+
     public void PlaySoundAt(Position3 position, ISound sound)
     {
         if (!sourcePool.TryGetSource(out var source))
@@ -33,8 +38,7 @@ sealed class SoundScape
             return;
         }
 
-        // TODO: use the actual position
-        source.Position = 0f * position.NumericValue;
+        source.Position = position.NumericValue;
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
         source.Play();
