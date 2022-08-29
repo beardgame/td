@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using Bearded.Graphics.Rendering;
@@ -15,6 +14,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.IO;
+using SixLabors.ImageSharp;
 using Xunit;
 
 namespace Bearded.TD.Tests.Content
@@ -58,14 +58,13 @@ namespace Bearded.TD.Tests.Content
             public ISpriteSetImplementation CreateSpriteSet(
                 IEnumerable<Sampler> samplers,
                 IEnumerable<SpriteBitmaps> sprites,
-                bool pixelate,
                 string id) => new MockSpriteSetImplementation();
 
             public IRendererShader CreateRendererShader(
                 IList<ModShaderFile> shaders,
                 string shaderProgramName) => new MockRendererShader();
 
-            public ArrayTexture CreateArrayTexture(List<Bitmap> layers) => default!;
+            public ArrayTexture CreateArrayTexture(List<Image> layers) => default!;
         }
 
         private sealed class MockSpriteSetImplementation : ISpriteSetImplementation

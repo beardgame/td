@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.ShaderManagement;
-using Bearded.Graphics.System.Drawing;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
@@ -11,7 +10,10 @@ using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Algorithms;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static Bearded.TD.Rendering.Loading.SpriteTextureTransformations;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -29,13 +31,13 @@ class GraphicsLoader : IGraphicsLoader
     }
 
     public ISpriteSetImplementation CreateSpriteSet(IEnumerable<Sampler> samplers,
-        IEnumerable<SpriteBitmaps> sprites, bool pixelate, string id)
+        IEnumerable<SpriteBitmaps> sprites, string id)
     {
         var spriteRectangles = sprites.Select(rectangleWithBitmaps).ToList();
         if (spriteRectangles.Count == 0)
         {
             logger.Warning?.Log($"Sprite set '{id}' contains no sprites.");
-            return new PackedSpriteSetBuilder(new(), 0, 0).Build(glActions, pixelate, new());
+            return new PackedSpriteSetBuilder(new(), 0, 0).Build(glActions, new());
         }
 
         var packedSprites = BinPacking.Pack(spriteRectangles);
@@ -58,7 +60,7 @@ class GraphicsLoader : IGraphicsLoader
             }
         }
 
-        return builder.Build(glActions, pixelate, transformationsBySampler(samplers));
+        return builder.Build(glActions, transformationsBySampler(samplers));
 
         static Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler(
             IEnumerable<Sampler> samplers)
@@ -73,7 +75,7 @@ class GraphicsLoader : IGraphicsLoader
             ));
         }
 
-        static BinPacking.Rectangle<(string Name, Dictionary<string, Bitmap> BitmapsBySampler)>
+        static BinPacking.Rectangle<(string Name, Dictionary<string, Image<Bgra32>> BitmapsBySampler)>
             rectangleWithBitmaps(SpriteBitmaps bitmaps)
         {
             var bitmapsBySampler = bitmaps.BitmapsBySampler.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
@@ -84,14 +86,14 @@ class GraphicsLoader : IGraphicsLoader
                     $"Sprite '{bitmaps.SpriteId}' has component images of different sizes");
         }
 
-        static BinPacking.Rectangle<(string, Dictionary<string, Bitmap>)> rectangleForSpriteWithSize(
+        static BinPacking.Rectangle<(string, Dictionary<string, Image<Bgra32>>)> rectangleForSpriteWithSize(
             string spriteId,
-            Dictionary<string, Bitmap> bitmapsBySampler, (int width, int height) size)
+            Dictionary<string, Image<Bgra32>> bitmapsBySampler, (int width, int height) size)
         {
             return new((spriteId, bitmapsBySampler), size.width, size.height);
         }
 
-        static bool allImagesHaveSameSize(ICollection<Bitmap> bitmaps, out (int width, int height) size)
+        static bool allImagesHaveSameSize(ICollection<Image<Bgra32>> bitmaps, out (int width, int height) size)
         {
             var first = bitmaps.First();
             var (width, height) = (first.Width, first.Height);
@@ -137,12 +139,12 @@ class GraphicsLoader : IGraphicsLoader
         }
     }
 
-    public ArrayTexture CreateArrayTexture(List<Bitmap> layers)
+    public ArrayTexture CreateArrayTexture(List<Image> layers)
     {
         return glActions.Run(() =>
         {
             var textureData = ArrayTextureData
-                .From(layers.Select(BitmapTextureData.From));
+                .From(layers.Select(ImageTextureData.From));
             var texture = ArrayTexture.From(textureData, t => t.GenerateMipmap());
             return texture;
         }).Result;

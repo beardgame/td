@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Utilities.Collections;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Bearded.TD.Content.Mods;
 
@@ -41,7 +41,7 @@ sealed class SpriteSetLoader
         var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
         return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-            samplers.Select(s => s.Sampler), sprites, jsonModel.Pixelate, jsonModel.Id);
+            samplers.Select(s => s.Sampler), sprites, jsonModel.Id);
     }
 
     private static IEnumerable<SpriteBitmaps>
@@ -50,7 +50,7 @@ sealed class SpriteSetLoader
             List<(Sampler sampler, string prefix, string suffix)> samplers
         )
     {
-        var sprites = new Dictionary<string, Dictionary<string, Lazy<Bitmap>>>();
+        var sprites = new Dictionary<string, Dictionary<string, Lazy<Image<Bgra32>>>>();
 
         addPngFilesRecursively(directory, samplers, sprites, "");
 
@@ -60,7 +60,7 @@ sealed class SpriteSetLoader
     private static void addPngFilesRecursively(
         DirectoryInfo directory,
         List<(Sampler sampler, string prefix, string suffix)> samplers,
-        Dictionary<string, Dictionary<string, Lazy<Bitmap>>> sprites,
+        Dictionary<string, Dictionary<string, Lazy<Image<Bgra32>>>> sprites,
         string spriteNamePrefix
     )
     {
@@ -79,7 +79,7 @@ sealed class SpriteSetLoader
             var spriteName = spriteNamePrefix + localSpriteName;
 
             if (!sprites.ContainsKey(spriteName))
-                sprites[spriteName] = new Dictionary<string, Lazy<Bitmap>>();
+                sprites[spriteName] = new Dictionary<string, Lazy<Image<Bgra32>>>();
 
             sprites[spriteName][sampler.Name] = lazyReadBitmap(file);
         }
@@ -92,14 +92,14 @@ sealed class SpriteSetLoader
         }
     }
 
-    private static Lazy<Bitmap> lazyReadBitmap(FileInfo file)
+    private static Lazy<Image<Bgra32>> lazyReadBitmap(FileInfo file)
     {
-        return new Lazy<Bitmap>(() =>
+        return new Lazy<Image<Bgra32>>(() =>
         {
             var fileStream = file.OpenRead();
-            var bitmap = new Bitmap(fileStream);
+            var image = Image.Load<Bgra32>(fileStream);
             fileStream.Close();
-            return bitmap;
+            return image;
         });
     }
 

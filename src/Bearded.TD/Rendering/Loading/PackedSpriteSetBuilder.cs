@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.InteropServices;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -18,7 +18,7 @@ class PackedSpriteSetBuilder
 {
     private readonly int width;
     private readonly int height;
-    private readonly Dictionary<string, byte[]> samplerData = new();
+    private readonly Dictionary<string, Image<Bgra32>> samplerData = new();
     private readonly Dictionary<string, Rectangle> nameToRectangle = new();
 
     public PackedSpriteSetBuilder(List<string> samplers, int width, int height)
@@ -27,59 +27,36 @@ class PackedSpriteSetBuilder
         this.height = height;
         foreach (var sampler in samplers)
         {
-            samplerData[sampler] = new byte[width * height * 4];
+            samplerData[sampler] = new Image<Bgra32>(width, height);
         }
     }
 
-    public void CopyBitmap(string sprite, string sampler, Bitmap bitmap, int x, int y)
+    public void CopyBitmap(string sprite, string sampler, Image<Bgra32> image, int x, int y)
     {
-        nameToRectangle[sprite] = new Rectangle(x, y, bitmap.Width, bitmap.Height);
+        nameToRectangle[sprite] = new Rectangle(x, y, image.Width, image.Height);
 
         var data = samplerData[sampler];
 
-        var bitmapData = bitmap.LockBits(
-            new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-            ImageLockMode.ReadOnly,
-            PixelFormat.Format32bppArgb);
-
-        var scan0 = bitmapData.Scan0;
-        var stride = bitmapData.Stride;
-
-        for (var i = 0; i < bitmap.Height; i++)
-        {
-            var start = scan0 + stride * i;
-            Marshal.Copy(
-                start,
-                data,
-                flatCoordinate(x, y + i),
-                stride);
-        }
-
-        bitmap.UnlockBits(bitmapData);
+        data.Mutate(c => c.DrawImage(image, new Point(x, y), 1));
     }
-
-    private int flatCoordinate(int x, int y)
-        => 4 * (y * width + x);
 
     public PackedSpriteSet Build(
         IActionQueue glActions,
-        bool pixelate,
         Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler)
     {
         var premultiply = TextureTransformation.Premultiply;
 
-        samplerData.ForEach(kvp =>
-        {
-            var (sampler, bytes) = kvp;
-            var (w, h) = (width, height);
-            premultiply.Transform(ref bytes, ref w, ref h);
-            foreach (var transform in transformationsBySampler[sampler])
+        var transformedSamplerImages = samplerData.Select(
+            kvp =>
             {
-                transform.Transform(ref bytes, ref w, ref h);
-            }
-        });
+                var (sampler, image) = kvp;
 
-        var textureUniforms = glActions.Run(() => createGlEntities(pixelate)).Result;
+                var transformations = transformationsBySampler[sampler].Prepend(premultiply);
+
+                return (sampler, ImageTextureData.From(image, transformations));
+            }).ToList();
+
+        var textureUniforms = glActions.Run(() => createGlEntities(transformedSamplerImages)).Result;
         var sprites = createSprites();
 
         return new PackedSpriteSet(
@@ -88,29 +65,17 @@ class PackedSpriteSetBuilder
         );
     }
 
-    private List<TextureUniform> createGlEntities(bool pixelate)
+    private List<TextureUniform> createGlEntities(List<(string Name, ITextureData Data)> samplers)
     {
-        var textureUniforms = samplerData.Select(
-            (kvp, i) =>
+        var textureUniforms = samplers.Select((sampler, i) =>
+        {
+            var texture = Texture.From(sampler.Data, t =>
             {
-                var (name, data) = kvp;
-                var textureData = RawTextureData.From(data, width, height);
-                var texture = Texture.From(textureData, t =>
-                {
-                    if (pixelate)
-                    {
-                        t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest);
-                        t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
-                    }
-                    else
-                    {
-                        t.GenerateMipmap();
-                    }
-                });
+                t.GenerateMipmap();
+            });
 
-                return new TextureUniform(name, TextureUnit.Texture0 + i, texture);
-            }
-        ).ToList();
+            return new TextureUniform(sampler.Name, TextureUnit.Texture0 + i, texture);
+        }).ToList();
 
         return textureUniforms;
     }
