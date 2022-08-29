@@ -30,18 +30,19 @@ static partial class Shocked
         protected override void ApplyEffectTick(GameObject target, Effect effect)
         {
             receipt?.Rollback();
-            var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
+            var upgrade = Upgrade.FromEffects(createUpgradeEffect(target.Game, effect));
             if (!target.CanApplyUpgrade(upgrade)) return;
             receipt = target.ApplyUpgrade(upgrade);
         }
 
-        private IUpgradeEffect createUpgradeEffect(Effect effect)
+        private static IUpgradeEffect createUpgradeEffect(GameState gameState, Effect effect)
         {
-            return new ParameterModifiable(
+            return new ParameterModifiableWithId(
                 AttributeType.MovementSpeed,
-                Modification.MultiplyWith(1 - effect.MovementPenalty),
-                UpgradePrerequisites.Empty,
-                false);
+                new ModificationWithId(
+                    gameState.GamePlayIds.GetNext<Modification>(),
+                    Modification.MultiplyWith(1 - effect.MovementPenalty)),
+                UpgradePrerequisites.Empty);
         }
 
         protected override void StartEffect(GameObject target)
