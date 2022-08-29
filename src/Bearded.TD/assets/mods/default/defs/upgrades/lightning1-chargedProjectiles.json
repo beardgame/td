@@ -1,0 +1,39 @@
+{
+    "id" : "lightning1-chargedProjectiles",
+    "name" : "Charged projectiles",
+    "cost" : 50,
+    "effects": [
+        {
+            "type" : "component",
+            "parameters" : {
+                "id" : "damageOnHit",
+                "parameters" : {
+                    "damageType" : "electric",
+                    "fractionOfBaseDamage" : 0.5
+                }
+            },
+            "prerequisites" : {
+                "requiredTags" : [ "projectile" ]
+            }
+        },
+        {
+            "type" : "component",
+            "parameters" : {
+                "id" : "applyShockedOnImpact",
+                "parameters" : {
+                    "probability" : 0.5,
+                    "fractionOfBaseDamageConvertedToPenalty" : 1,
+                    "effectDuration" : 1
+                }
+            },
+            "prerequisites" : {
+                "requiredTags" : [ "projectile" ]
+            }
+        },
+        {
+            "type" : "addTags",
+            "parameters" : [ "lightning" ],
+            "isSideEffect" : true
+        }
+    ]
+}
