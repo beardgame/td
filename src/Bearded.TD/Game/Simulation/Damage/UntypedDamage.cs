@@ -32,7 +32,7 @@ readonly struct UntypedDamage
 
     public static UntypedDamage operator *(UntypedDamage amount, double scalar) =>
         new(((int) (scalar * amount.Amount.NumericValue)).HitPoints());
-    
+
     public static UntypedDamage operator /(UntypedDamage amount, int scalar) =>
         new((amount.Amount.NumericValue / scalar).HitPoints());
 

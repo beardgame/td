@@ -21,9 +21,7 @@
             "parameters" : {
                 "id" : "applyShockedOnImpact",
                 "parameters" : {
-                    "probability" : 0.5,
-                    "fractionOfBaseDamageConvertedToPenalty" : 1,
-                    "effectDuration" : 1
+                    "probability" : 0.5
                 }
             },
             "prerequisites" : {
