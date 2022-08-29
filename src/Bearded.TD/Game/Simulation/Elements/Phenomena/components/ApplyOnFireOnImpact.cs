@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 [Component("applyOnFireOnImpact")]
-sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IParameters>
+sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IParameters, OnFire.Effect>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -19,7 +19,7 @@ sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IPara
 
     public ApplyOnFireOnImpact(IParameters parameters) : base(parameters) { }
 
-    protected override IElementalEffect CreateEffect(UntypedDamage damage)
+    protected override OnFire.Effect CreateEffect(UntypedDamage damage)
     {
         var damagePerSecond =
             new UntypedDamagePerSecond(

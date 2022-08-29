@@ -8,8 +8,9 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-abstract class ApplyEffectOnImpact<TParameters> : Component<TParameters>, IListener<HitEnemy>
+abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<HitEnemy>
     where TParameters : IParametersTemplate<TParameters>
+    where TEffect : IElementalEffect
 {
     protected abstract double Probability { get; }
 
@@ -32,5 +33,5 @@ abstract class ApplyEffectOnImpact<TParameters> : Component<TParameters>, IListe
         elementSystemEntity.ApplyEffect(effect);
     }
 
-    protected abstract IElementalEffect CreateEffect(UntypedDamage damage);
+    protected abstract TEffect CreateEffect(UntypedDamage damage);
 }

@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 [Component("applyShockedOnImpact")]
-sealed class ApplyShockedOnImpact : ApplyEffectOnImpact<ApplyShockedOnImpact.IParameters>
+sealed class ApplyShockedOnImpact : ApplyEffectOnImpact<ApplyShockedOnImpact.IParameters, Shocked.Effect>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -19,7 +19,7 @@ sealed class ApplyShockedOnImpact : ApplyEffectOnImpact<ApplyShockedOnImpact.IPa
 
     public ApplyShockedOnImpact(IParameters parameters) : base(parameters) { }
 
-    protected override IElementalEffect CreateEffect(UntypedDamage damage)
+    protected override Shocked.Effect CreateEffect(UntypedDamage damage)
     {
         var damagePerSecond =
             new UntypedDamagePerSecond(
