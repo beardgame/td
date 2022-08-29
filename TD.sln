@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.System.Dra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\awgraphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,14 @@ Global
 		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|x86.ActiveCfg = Release|Any CPU
 		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|x86.Build.0 = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|x86.Build.0 = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.ActiveCfg = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
