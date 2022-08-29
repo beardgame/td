@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Drones;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -77,7 +78,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
         fuelUsed++;
         if (fuelUsed >= Parameters.FuelCapacity && disabledReason == null)
         {
-            handleTankEmpty();
+            Owner.Sync(HandleEmptyFuelTank.Command);
         }
     }
 
@@ -87,7 +88,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
         refillTank();
     }
 
-    private void handleTankEmpty()
+    public void HandleTankEmpty()
     {
         disabledReason = new WeaponDisabledReason();
         foreach (var knownWeapon in knownWeapons)
