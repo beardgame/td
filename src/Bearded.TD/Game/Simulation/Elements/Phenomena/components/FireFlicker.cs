@@ -6,7 +6,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Elements;
+namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 sealed class FireFlicker : Component, IListener<DrawComponents>
 {

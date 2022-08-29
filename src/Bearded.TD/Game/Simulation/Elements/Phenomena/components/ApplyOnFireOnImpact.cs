@@ -6,7 +6,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Elements.Phenomena.components;
+namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 [Component("applyOnFireOnImpact")]
 sealed class ApplyOnFireOnImpact : Component<ApplyOnFireOnImpact.IParameters>, IListener<HitEnemy>

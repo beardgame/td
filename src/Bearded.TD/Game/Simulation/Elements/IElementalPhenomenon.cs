@@ -11,7 +11,7 @@ interface IElementalPhenomenon
 
     interface IScope
     {
-        void ApplyTick(IComponentOwner target, Instant now);
+        void ApplyTick(GameObject target, Instant now);
     }
 
     interface IScope<in T> : IScope where T : IElementalEffect

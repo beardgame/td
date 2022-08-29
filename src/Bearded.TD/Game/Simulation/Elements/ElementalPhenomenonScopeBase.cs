@@ -17,7 +17,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         activeEffects.Add(new EffectWithExpiry(effect, now + effect.Duration));
     }
 
-    public void ApplyTick(IComponentOwner target, Instant now)
+    public void ApplyTick(GameObject target, Instant now)
     {
         activeEffects.RemoveAll(e => e.Expiry <= now);
         if (TryChooseEffect(out var effect))
@@ -31,7 +31,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         }
     }
 
-    private void startEffectIfPreviouslyInactive(IComponentOwner target)
+    private void startEffectIfPreviouslyInactive(GameObject target)
     {
         if (hadEffectActive) return;
 
@@ -39,7 +39,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         hadEffectActive = true;
     }
 
-    private void endEffectIfPreviouslyActive(IComponentOwner target)
+    private void endEffectIfPreviouslyActive(GameObject target)
     {
         if (!hadEffectActive) return;
 
@@ -48,9 +48,9 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     }
 
     protected abstract bool TryChooseEffect(out TEffect effect);
-    protected abstract void ApplyEffectTick(IComponentOwner target, TEffect effect);
-    protected abstract void StartEffect(IComponentOwner target);
-    protected abstract void EndEffect(IComponentOwner target);
+    protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
+    protected abstract void StartEffect(GameObject target);
+    protected abstract void EndEffect(GameObject target);
 
     private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
 }
