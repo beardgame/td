@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.ShaderManagement;
+using Bearded.Graphics.SkiaSharp;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
@@ -12,6 +13,7 @@ using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 using static Bearded.TD.Rendering.Loading.SpriteTextureTransformations;
 using Image = SixLabors.ImageSharp.Image;
 
@@ -139,12 +141,12 @@ class GraphicsLoader : IGraphicsLoader
         }
     }
 
-    public ArrayTexture CreateArrayTexture(List<Image> layers)
+    public ArrayTexture CreateArrayTexture(List<SKBitmap> layers)
     {
         return glActions.Run(() =>
         {
             var textureData = ArrayTextureData
-                .From(layers.Select(ImageTextureData.From));
+                .From(layers.Select(SKBitmapTextureData.From));
             var texture = ArrayTexture.From(textureData, t => t.GenerateMipmap());
             return texture;
         }).Result;

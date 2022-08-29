@@ -15,6 +15,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.IO;
 using SixLabors.ImageSharp;
+using SkiaSharp;
 using Xunit;
 
 namespace Bearded.TD.Tests.Content
@@ -64,7 +65,7 @@ namespace Bearded.TD.Tests.Content
                 IList<ModShaderFile> shaders,
                 string shaderProgramName) => new MockRendererShader();
 
-            public ArrayTexture CreateArrayTexture(List<Image> layers) => default!;
+            public ArrayTexture CreateArrayTexture(List<SKBitmap> layers) => default!;
         }
 
         private sealed class MockSpriteSetImplementation : ISpriteSetImplementation

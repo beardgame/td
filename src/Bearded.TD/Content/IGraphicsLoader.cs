@@ -7,6 +7,7 @@ using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp;
 
 namespace Bearded.TD.Content;
 
@@ -24,5 +25,5 @@ interface IGraphicsLoader
 
     IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
 
-    ArrayTexture CreateArrayTexture(List<Image> layers);
+    ArrayTexture CreateArrayTexture(List<SKBitmap> layers);
 }

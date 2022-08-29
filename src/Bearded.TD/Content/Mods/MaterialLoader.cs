@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Bearded.Graphics.Textures;
 using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Content.Mods;
@@ -27,21 +28,26 @@ class MaterialLoader
             .Select(f => f.File)
             .ToList();
 
-        var images = textureFiles.Select(f => Image.Load(f.FullName)).ToList();
+        var images = textureFiles.Select(f => SKBitmap.Decode(f.FullName)).ToList();
 
-        unifySize(images);
+        var resizedImages = unifySize(images);
 
-        return context.GraphicsLoader.CreateArrayTexture(images);
+        return context.GraphicsLoader.CreateArrayTexture(resizedImages);
     }
 
-    private static void unifySize(List<Image> images)
+    private static List<SKBitmap> unifySize(List<SKBitmap> images)
     {
         var width = images.Max(i => i.Width);
         var height = images.Max(i => i.Height);
-        foreach (var image in images.Where(i => i.Width != width || i.Height != height))
+        return images.Select(image =>
         {
-            image.Mutate(i => i.Resize(width, height));
-        }
+            if (image.Width == width && image.Height == height)
+            {
+                return image;
+            }
+
+            return image.Resize(new SKSizeI(width, height), SKFilterQuality.High);
+        }).ToList();
     }
 
 }
