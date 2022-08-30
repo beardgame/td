@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Analyzers", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.System.Drawing", "libs\awgraphics\Bearded.Graphics.System.Drawing\Bearded.Graphics.System.Drawing.csproj", "{6DDB36AB-74B3-45E3-A6C6-A289A82DF105}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\awgraphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio", "libs\audio\src\Bearded.Audio\Bearded.Audio.csproj", "{C331356F-583A-4840-B7DC-7B3C52676BEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio.Tests", "libs\audio\src\Bearded.Audio.Tests\Bearded.Audio.Tests.csproj", "{26D22F25-DAAE-40E1-B5A4-D93012A1914F}"
@@ -151,6 +155,22 @@ Global
 		{6DDB36AB-74B3-45E3-A6C6-A289A82DF105}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6DDB36AB-74B3-45E3-A6C6-A289A82DF105}.Release|x86.ActiveCfg = Release|Any CPU
 		{6DDB36AB-74B3-45E3-A6C6-A289A82DF105}.Release|x86.Build.0 = Release|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Debug|x86.Build.0 = Debug|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|x86.ActiveCfg = Release|Any CPU
+		{6410676D-404A-49BE-AB42-16667DCFD504}.Release|x86.Build.0 = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Debug|x86.Build.0 = Debug|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.ActiveCfg = Release|Any CPU
+		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.Build.0 = Release|Any CPU
 		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|x86.ActiveCfg = Debug|Any CPU

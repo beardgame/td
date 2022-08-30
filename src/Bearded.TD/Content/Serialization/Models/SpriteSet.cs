@@ -25,8 +25,6 @@ sealed class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, Sprite
     public string? DefaultTextureSampler { get; set; }
     public List<TextureSampler>? TextureSamplers { get; set; }
 
-    public bool Pixelate { get; set; }
-
     public Content.Models.SpriteSet ToGameModel(ModMetadata contextMeta, (FileInfo, SpriteSetLoader) resolvers)
     {
         var (file, loader) = resolvers;

@@ -18,28 +18,28 @@ static partial class OnFire
             var effects = ActiveEffects.ToImmutableArray();
             if (effects.IsEmpty)
             {
-                effect = new Effect();
+                effect = default;
                 return false;
             }
 
-            effect = ActiveEffects.MaxBy(e => e.DamagePerSecond.Amount.NumericValue);
+            effect = effects.MaxBy(e => e.DamagePerSecond.Amount.NumericValue);
             return true;
         }
 
-        protected override void ApplyEffectTick(IComponentOwner target, Effect effect)
+        protected override void ApplyEffectTick(GameObject target, Effect effect)
         {
             var damage = effect.DamagePerSecond * TickDuration;
             DamageExecutor.FromDamageSource(effect.DamageSource)
                 .TryDoDamage(target, damage.Typed(DamageType.Fire));
         }
 
-        protected override void StartEffect(IComponentOwner target)
+        protected override void StartEffect(GameObject target)
         {
             fireFlicker = new FireFlicker();
             target.AddComponent(fireFlicker);
         }
 
-        protected override void EndEffect(IComponentOwner target)
+        protected override void EndEffect(GameObject target)
         {
             if (fireFlicker == null)
             {

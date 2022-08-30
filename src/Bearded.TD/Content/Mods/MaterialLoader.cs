@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using Bearded.Graphics.Textures;
+using SixLabors.ImageSharp.Processing;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Content.Mods;
 
@@ -26,17 +27,21 @@ class MaterialLoader
             .Select(f => f.File)
             .ToList();
 
-        var textureBitmaps = textureFiles.Select(f => new Bitmap(f.FullName)).ToList();
+        var images = textureFiles.Select(f => Image.Load(f.FullName)).ToList();
 
-        var resizedBitmaps = unifySize(textureBitmaps);
+        unifySize(images);
 
-        return context.GraphicsLoader.CreateArrayTexture(resizedBitmaps);
+        return context.GraphicsLoader.CreateArrayTexture(images);
     }
 
-    private static List<Bitmap> unifySize(List<Bitmap> bitmaps)
+    private static void unifySize(List<Image> images)
     {
-        var size = new Size(bitmaps.Max(b => b.Width), bitmaps.Max(b => b.Height));
-
-        return bitmaps.Select(b => b.Size == size ? b : new Bitmap(b, size)).ToList();
+        var width = images.Max(i => i.Width);
+        var height = images.Max(i => i.Height);
+        foreach (var image in images.Where(i => i.Width != width || i.Height != height))
+        {
+            image.Mutate(i => i.Resize(width, height));
+        }
     }
+
 }

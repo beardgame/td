@@ -6,9 +6,9 @@ public enum DamageType
 
     Kinetic,
     Fire,
+    Electric,
 
     Energy,
     Frost,
     Alchemy,
-    Electricity,
 }
