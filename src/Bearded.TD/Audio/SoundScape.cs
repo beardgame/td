@@ -40,6 +40,7 @@ sealed class SoundScape : IDisposable
         }
 
         source.Position = position.NumericValue;
+        source.PositionIsRelative = false;
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
         source.Play();
