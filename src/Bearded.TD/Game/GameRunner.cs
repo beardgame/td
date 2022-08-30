@@ -59,6 +59,7 @@ sealed class GameRunner
     public void Shutdown()
     {
         networkInterface.Shutdown();
+        game.State.Meta.SoundScape.Dispose();
         DebugGameManager.Instance.UnregisterGame();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Audio;
 
-sealed class SoundScape
+sealed class SoundScape : IDisposable
 {
     private readonly SourcePool sourcePool;
     private readonly List<Source> sourcesInUse = new();
@@ -49,5 +50,10 @@ sealed class SoundScape
     {
         var sourcePool = SourcePool.CreateInstanceAndAllocateSources(numChannels);
         return new SoundScape(sourcePool);
+    }
+
+    public void Dispose()
+    {
+        sourcePool.Dispose();
     }
 }
