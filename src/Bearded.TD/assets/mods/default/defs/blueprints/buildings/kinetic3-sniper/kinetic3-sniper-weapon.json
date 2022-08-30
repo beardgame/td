@@ -47,6 +47,10 @@
             }
         },
         {
+            "id": "playSoundOnShoot",
+            "parameters": { "sound": "gunshot-punchy" }
+        },
+        {
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings3.cannon-turret",

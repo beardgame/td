@@ -48,6 +48,10 @@
             }
         },
         {
+            "id": "playSoundOnShoot",
+            "parameters": { "sound": "gunshot-punchy" }
+        },
+        {
             id : "sprite",
             parameters : {
                 sprite : "buildings2.mortar-turret",

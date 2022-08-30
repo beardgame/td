@@ -56,6 +56,10 @@
             }
         },
         {
+            "id": "playSoundOnShoot",
+            "parameters": { "sound": "gunshot-fast" }
+        },
+        {
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings2.gatling-turret",

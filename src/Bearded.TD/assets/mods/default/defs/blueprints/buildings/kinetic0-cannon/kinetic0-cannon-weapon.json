@@ -47,6 +47,10 @@
             }
         },
         {
+            "id": "playSoundOnShoot",
+            "parameters": { "sound": "gunshot-punchy" }
+        },
+        {
             "id": "sprite",
             "parameters": {
                 "sprite": "buildings3.cannon-turret",
@@ -55,10 +59,6 @@
                 "drawGroup" : "building",
                 "size" : 1.2
             }
-        },
-        {
-            "id": "playSoundOnShoot",
-            "parameters": { "sound": "gunshot-punchy" }
         }
     ]
 }

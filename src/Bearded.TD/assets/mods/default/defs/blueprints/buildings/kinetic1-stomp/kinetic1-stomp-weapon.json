@@ -40,6 +40,10 @@
             }
         },
         {
+            "id": "playSoundOnLevelHit",
+            "parameters": { "sound": "bang-deep" }
+        },
+        {
             "id" : "sprite",
             "parameters" : {
                 "sprite" : "default.particle.halo",
