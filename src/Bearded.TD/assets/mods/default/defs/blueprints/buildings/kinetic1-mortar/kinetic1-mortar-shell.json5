@@ -8,6 +8,7 @@
                 "range" : 1.5
             }
         },
+        { "id" : "deleteOnHit" },
         {
             "id" : "sprite",
             "parameters" : {

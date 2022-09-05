@@ -1,7 +1,6 @@
 {
     id : "fire1-flamethrower-weapon",
     components : [
-        { id : "tags", parameters : { tags : [ "gun" ] } },
         {
             id : "targetEnemiesInRange",
             parameters : {
@@ -27,7 +26,7 @@
             id : "projectileEmitter",
             parameters : {
                 projectile : "fire1-flamethrower-flame",
-                muzzleSpeed : 10,
+                muzzleSpeed : 8,
                 spread : 3, 
             }
         },
