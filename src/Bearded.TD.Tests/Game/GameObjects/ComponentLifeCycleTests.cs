@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Testing.Components;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +16,8 @@ public sealed class ComponentLifeCycleTests
 {
     // Components that won't work in the limited test bed we have.
     private static readonly ImmutableHashSet<Type> nonFunctionalComponents = ImmutableHashSet.Create(
-        typeof(GhostBuildingRenderer) // Requests hardcoded access to a blueprint.
+        typeof(GhostBuildingRenderer), // Requests hardcoded access to a blueprint.
+        typeof(HitTargetOnActivate) // Expects a target property to always be present.
     );
 
     // Components that can never be removed from their owner.
