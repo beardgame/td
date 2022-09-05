@@ -1,10 +1,15 @@
 {
     id : "fire1-flamethrower-flame",
     components : [
-        { id : "tags", parameters : { tags : [ "projectile" ] } },
         {
             id : "damageOnHit",
             parameters : { damageType : "fire" }
+        },
+        {
+            "id" :  "deleteAfter",
+            "parameters" :  {
+                "timeSpan" :  0.38
+            }
         },
         {
             "id" : "applyOnFireOnImpact",

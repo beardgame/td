@@ -7,6 +7,8 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
+readonly record struct PreviewDamageEnemy(GameObject Enemy, bool Cancel = false) : IComponentPreviewEvent;
+
 [Component("damageOnHit")]
 sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnemy>
 {

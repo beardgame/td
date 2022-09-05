@@ -6,6 +6,7 @@
             "id" : "damageOnHit",
             "parameters" : {}
         },
+        { "id" : "deleteOnHit" },
         {
             "id" : "sprite",
             "parameters" : {
