@@ -31,7 +31,10 @@ sealed class MarkEnemiesInRange
 
     public MarkEnemiesInRange(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded() {}
+    protected override void OnAdded()
+    {
+        Events.Subscribe(this);
+    }
 
     public override void Activate()
     {

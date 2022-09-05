@@ -12,17 +12,21 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<EnemyMark
     public interface IParameters : IParametersTemplate<IParameters>
     {
         IComponentOwnerBlueprint Arc { get; }
+        TimeSpan LifeTime { get; }
     }
 
     public ArcEmitter(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        Events.Subscribe(this);
+    }
 
     public override void Update(TimeSpan elapsedTime) { }
 
     public void HandleEvent(EnemyMarked @event)
     {
-        var arc = ArcFactory.CreateArc(Parameters.Arc, Owner, @event.GameObject, @event.Damage);
+        var arc = ArcFactory.CreateArc(Parameters.Arc, Owner, @event.GameObject, @event.Damage, Parameters.LifeTime);
         Owner.Game.Add(arc);
     }
 }
