@@ -1,0 +1,32 @@
+{
+    id : "lightning1-teslaCoil-arc",
+    components: [
+        {
+            id : "damageOnHit",
+            parameters : {
+                damageType : "electric",
+                fractionOfBaseDamage : 0.5,
+            }
+        },
+        {
+            id : "applyShockedOnImpact",
+            parameters : {
+                probability : 0.5,
+                damageToDurationFactor : 0.04,
+            }
+        },
+        {
+            id : "arc",
+            parameters : {
+                sprite : "default.particle.tracer"
+            }
+        },
+        {
+            id : "pointlight",
+            parameters : {
+                color : "LightCyan",
+                radius : 1,
+            }
+        }
+    ]
+}

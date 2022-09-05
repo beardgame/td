@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Units;
@@ -25,11 +26,17 @@ static class RayCastingHelpers
     public static IEnumerable<RayCastResult> CastPiercingRayAgainstEnemies(
         this Level level, Ray3 ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
     {
+        return CastPiercingRayAgainstEnemies(level, ray, unitLayer, t => passabilityLayer[t].IsPassable);
+    }
+
+    public static IEnumerable<RayCastResult> CastPiercingRayAgainstEnemies(
+        this Level level, Ray3 ray, UnitLayer unitLayer, Predicate<Tile> isPassableCheck)
+    {
         level.Cast(ray.XY, out var rayCaster);
 
         while (rayCaster.MoveNext(out var tile))
         {
-            if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
+            if (!level.IsValid(tile) || !isPassableCheck(tile))
             {
                 var factor = rayCaster.CurrentRayFactor;
                 yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null);
@@ -61,11 +68,17 @@ static class RayCastingHelpers
     public static RayCastResult CastRayAgainstEnemies(
         this Level level, Ray3 ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
     {
+        return CastRayAgainstEnemies(level, ray, unitLayer, t => passabilityLayer[t].IsPassable);
+    }
+
+    public static RayCastResult CastRayAgainstEnemies(
+        this Level level, Ray3 ray, UnitLayer unitLayer, Predicate<Tile> isPassableCheck)
+    {
         level.Cast(ray.XY, out var rayCaster);
 
         while (rayCaster.MoveNext(out var tile))
         {
-            if (!level.IsValid(tile) || !passabilityLayer[tile].IsPassable)
+            if (!level.IsValid(tile) || !isPassableCheck(tile))
             {
                 var factor = rayCaster.CurrentRayFactor;
                 return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null);
