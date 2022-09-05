@@ -2,14 +2,13 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("hitLevelAtTower")]
-sealed class HitLevelAtTower : Component, IListener<ShootProjectile>
+sealed class HitLevelAtTower : Component, IListener<FireWeapon>
 {
     private DynamicDamage? damageProvider;
 
@@ -32,10 +31,10 @@ sealed class HitLevelAtTower : Component, IListener<ShootProjectile>
 
     public override void Update(TimeSpan elapsedTime)
     {
-        
+
     }
 
-    public void HandleEvent(ShootProjectile @event)
+    public void HandleEvent(FireWeapon @event)
     {
         hitLevel(@event.Damage);
     }

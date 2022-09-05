@@ -3,4 +3,4 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-readonly record struct ShootProjectile(UntypedDamage Damage) : IComponentEvent;
+readonly record struct FireWeapon(UntypedDamage Damage) : IComponentEvent;

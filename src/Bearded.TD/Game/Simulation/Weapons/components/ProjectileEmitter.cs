@@ -18,7 +18,7 @@ interface IProjectileEmitter
 }
 
 [Component("projectileEmitter")]
-sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<ShootProjectile>, IProjectileEmitter
+sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<FireWeapon>, IProjectileEmitter
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -58,7 +58,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         factory.PreviewUpgrade(upgradePreview);
     }
 
-    public void HandleEvent(ShootProjectile @event)
+    public void HandleEvent(FireWeapon @event)
     {
         emitProjectile(@event.Damage);
     }
@@ -106,4 +106,3 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         return verticalVelocityToCompensate;
     }
 }
-
