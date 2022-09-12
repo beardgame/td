@@ -1,6 +1,7 @@
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 
@@ -18,8 +19,10 @@ sealed class AvoidTagAdjacency : NodeBehavior<AvoidTagAdjacency.BehaviorParamete
             .Select(nodeTile.Neighbor)
             .Select(t => context[t]);
 
-        return connectedNodes.Count(n => n.Blueprint!.AllTags.Contains(Parameters.TagToAvoid)) * 100;
+        return connectedNodes.Count(
+            n => n.Blueprint!.AllTags.Contains(Parameters.TagToAvoid)) * Parameters.PenaltyFactor;
     }
 
-    public sealed record BehaviorParameters(NodeTag TagToAvoid);
+    [UsedImplicitly]
+    public sealed record BehaviorParameters(NodeTag TagToAvoid, int PenaltyFactor = 100);
 }
