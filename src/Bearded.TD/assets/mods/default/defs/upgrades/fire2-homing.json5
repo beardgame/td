@@ -20,7 +20,7 @@
         {
             type : "component",
             parameters : {
-                id : "multipleSpeedOnActivate",
+                id : "multiplySpeedOnActivate",
                 parameters : {
                     factor : 0.5,
                 },

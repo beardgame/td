@@ -5,15 +5,15 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
-[Component("multipleSpeedOnActivate")]
-sealed class MultipleSpeedOnActivate : Component<MultipleSpeedOnActivate.IParameters>
+[Component("multiplySpeedOnActivate")]
+sealed class MultiplySpeedOnActivate : Component<MultiplySpeedOnActivate.IParameters>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
         float Factor { get; }
     }
 
-    public MultipleSpeedOnActivate(IParameters parameters) : base(parameters)
+    public MultiplySpeedOnActivate(IParameters parameters) : base(parameters)
     {
     }
 
