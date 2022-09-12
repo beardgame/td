@@ -84,6 +84,6 @@ sealed class NodeGroupConverter : JsonConverterBase<NodeGroup>
         public int? MinNumber { get; set; }
         public int? MaxNumber { get; set; }
 
-        public int? Weight { get; set; }
+        public double? Weight { get; set; }
     }
 }

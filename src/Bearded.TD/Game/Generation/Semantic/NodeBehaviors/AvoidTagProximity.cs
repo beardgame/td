@@ -19,5 +19,5 @@ sealed class AvoidTagProximity : NodeBehavior<AvoidTagProximity.BehaviorParamete
     }
 
     [UsedImplicitly]
-    public sealed record BehaviorParameters(NodeTag TagToAvoid, int Steps, int PenaltyFactor = 100);
+    public sealed record BehaviorParameters(NodeTag TagToAvoid, int Steps, double PenaltyFactor = 100);
 }

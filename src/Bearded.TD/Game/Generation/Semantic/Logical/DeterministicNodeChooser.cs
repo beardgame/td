@@ -147,6 +147,6 @@ sealed class DeterministicNodeChooser
             Count = count;
         }
 
-        private double calculateQuotient() => (double) number.Weight / (Count + 1);
+        private double calculateQuotient() => number.Weight / (Count + 1);
     }
 }

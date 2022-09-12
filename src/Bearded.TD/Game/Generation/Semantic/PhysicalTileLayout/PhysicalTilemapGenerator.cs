@@ -16,18 +16,18 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 sealed class PhysicalTilemapGenerator
 {
     private readonly LevelDebugMetadata metadata;
-    private readonly Unit nodeRadius;
+    private readonly Unit defaultNodeRadius;
 
-    public PhysicalTilemapGenerator(LevelDebugMetadata metadata, Unit nodeRadius)
+    public PhysicalTilemapGenerator(LevelDebugMetadata metadata, Unit defaultNodeRadius)
     {
         this.metadata = metadata;
-        this.nodeRadius = nodeRadius;
+        this.defaultNodeRadius = defaultNodeRadius;
     }
 
     public IEnumerable<CommandFactory> Generate(
         LogicalTilemap logicalTilemap, Random random, int radius)
     {
-        var featuresWithAreas = new PhysicalFeatureGenerator(nodeRadius)
+        var featuresWithAreas = new PhysicalFeatureGenerator(defaultNodeRadius)
             .GenerateFeaturesWithAreasInInitialLocation(logicalTilemap, random);
 
         var arrangedFeaturesWithAreas = new FeatureArranger(radius).ArrangeFeatures(featuresWithAreas);
