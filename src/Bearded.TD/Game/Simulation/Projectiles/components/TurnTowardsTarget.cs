@@ -38,20 +38,29 @@ sealed class TurnTowardsTarget : Component<TurnTowardsTarget.IParameters>
         if (target == null)
             return;
 
-        var velocity = physics.Velocity;
-        var direction = velocity.NumericValue.NormalizedSafe();
-        var towardsTarget = (target.Position - Owner.Position).NumericValue.NormalizedSafe();
+        var currentVelocity = physics.Velocity;
+
+        var rotation = getRotationTowards(target.Position, elapsedTime);
+
+        var newVelocity = applyRotation(currentVelocity, rotation);
+
+        var velocityImpulse = newVelocity - currentVelocity;
+
+        physics.ApplyVelocityImpulse(velocityImpulse);
+    }
+
+    private Quaternion getRotationTowards(Position3 targetPosition, TimeSpan elapsedTime)
+    {
+        var direction = physics.Velocity.NumericValue.NormalizedSafe();
+        var towardsTarget = (targetPosition - Owner.Position).NumericValue.NormalizedSafe();
 
         var rotationAxis = Vector3.Cross(direction, towardsTarget);
         var rotationAngle = Parameters.TurnSpeed * elapsedTime;
 
-        var rotation = Quaternion.FromAxisAngle(rotationAxis, rotationAngle.Radians);
-
-        var newVelocity = new Velocity3(Vector3.Transform(velocity.NumericValue, rotation));
-
-        var impulseVelocity = newVelocity - velocity;
-
-        physics.ApplyVelocityImpulse(impulseVelocity);
+        return Quaternion.FromAxisAngle(rotationAxis, rotationAngle.Radians);
     }
+
+    private static Velocity3 applyRotation(Velocity3 currentVelocity, Quaternion rotation)
+        => new (Vector3.Transform(currentVelocity.NumericValue, rotation));
 }
 
