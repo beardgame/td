@@ -24,7 +24,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DoesNotModifyEmptySelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             behaviorWithDefaultParameters().Generate(test.Context);
@@ -35,7 +35,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesAllTilesFromLineSelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(0, 0));
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
@@ -49,7 +49,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesOuterRingFromFullSelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
 
             behaviorWithDefaultParameters().Generate(test.Context);
 
@@ -65,7 +65,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesOuterRingFromHexagonalSelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
             {
@@ -85,7 +85,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void ThinsVeryThickSelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 4))
             {
@@ -110,7 +110,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void ExpandsHolesInSelection()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.Remove(new Tile(1, 1));
 
             behaviorWithDefaultParameters().Generate(test.Context);
@@ -129,7 +129,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void DoesNotChangeSelectionWithStrengthZero(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in test.Context.Tiles.All)
@@ -153,7 +153,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesOnlySingleTilesWithStrengthOne()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(0, 0));
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
@@ -176,7 +176,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesEndTilesFromLineSelectionWithStrengthTwo()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(3);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(3);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(0, 0));
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
@@ -198,7 +198,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DoesNotModifyHexagonSelectionWithStrengthTwo()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
             {
@@ -218,7 +218,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesAllTilesFromLineSelectionWithStrengthThree()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(3);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(3);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(0, 0));
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
@@ -233,7 +233,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DoesNotModifyHexagonSelectionWithStrengthThree()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
             {
@@ -253,7 +253,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void RemovesCornersFromHexagonSelectionWithStrengthFour()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             test.Context.Tiles.Selection.RemoveAll();
             foreach (var tile in Tilemap.GetSpiralCenteredAt(Tile.Origin, 3))
             {

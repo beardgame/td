@@ -12,7 +12,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsNothingIfThereAreNoConnections()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2, connectionCount: 0);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2, connectionCount: 0);
             test.Context.Tiles.Selection.RemoveAll();
 
             new SelectConnections().Generate(test.Context);
@@ -24,7 +24,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         public void SelectsConnectionTilesOnly(int seed)
         {
             var random = new Random(seed);
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2, seed, 3);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2, seed, 3);
             foreach (var tile in test.Context.Tiles.All)
             {
                 if (random.NextBool())

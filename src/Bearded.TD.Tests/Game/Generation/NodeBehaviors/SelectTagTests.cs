@@ -18,7 +18,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void ClearsSelectionWithZeroThreshold()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviourWithParameters().Generate(test.Context);
 
@@ -28,7 +28,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsEverythingWithNegativeThreshold()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             behaviourWithParameters(-1).Generate(test.Context);
@@ -39,7 +39,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SelectsTilesWithPositiveDefaultTagValueWithNullTagParameter(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -58,7 +58,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SelectsTilesWithPositiveValueForGivenTag(int seed, NonNull<string> tag)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -79,7 +79,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
             int seed, NonNull<string> behaviourTag, NonNull<string> otherTag)
         {
             var differentTag = behaviourTag.Get != otherTag.Get ? otherTag.Get : otherTag.Get + ".";
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -128,7 +128,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         private void testWithCompareMode(int seed, NonNull<string> tag, NormalFloat threshold,
             SelectTag.CompareMode mode, Func<double, double, bool> expectedComparison)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(5);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(5);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {

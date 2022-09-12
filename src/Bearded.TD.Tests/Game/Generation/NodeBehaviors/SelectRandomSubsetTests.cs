@@ -15,7 +15,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void UnselectsEverythingWithNumTilesZero()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviorWithParameters(0).Generate(test.Context);
 
@@ -25,7 +25,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsEverythingWithNumTilesLargerThanArea()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviorWithParameters(Tilemap.TileCountForRadius(2) + 1).Generate(test.Context);
 
@@ -35,7 +35,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsTilesWithinExistingSelectionOnly()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(3);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(3);
             erodeSelection(test.Context);
             var originalSelection = test.Context.Tiles.Selection.ToImmutableHashSet();
 
@@ -48,7 +48,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsExactlyNumTiles()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviorWithParameters(2).Generate(test.Context);
 

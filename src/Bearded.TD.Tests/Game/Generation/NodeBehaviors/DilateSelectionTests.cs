@@ -10,7 +10,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DilatingFullSelectionDoesNothing()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             new DilateSelection().Generate(test.Context);
 
@@ -20,7 +20,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DilatingEmptySelectionDoesNothing()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             new DilateSelection().Generate(test.Context);
@@ -31,7 +31,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DilatingSingleTileSelectsSurroundingHexagon()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(1, 1));
 
@@ -50,7 +50,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DilatingLineSelectsThickerLine()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
             test.Context.Tiles.Selection.Add(new Tile(0, 0));
             test.Context.Tiles.Selection.Add(new Tile(1, 0));
