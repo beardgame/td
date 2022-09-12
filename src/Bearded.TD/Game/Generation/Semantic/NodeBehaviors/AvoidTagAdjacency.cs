@@ -19,5 +19,5 @@ sealed class AvoidTagAdjacency : NodeBehavior<AvoidTagAdjacency.BehaviorParamete
     }
 
     [UsedImplicitly]
-    public sealed record BehaviorParameters(NodeTag TagToAvoid, int PenaltyFactor = 100);
+    public sealed record BehaviorParameters(NodeTag TagToAvoid, double PenaltyFactor = 100);
 }
