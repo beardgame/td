@@ -1,0 +1,9 @@
+{
+    "id" : "fire2-homing",
+    "name" : "Homing projectiles",
+    "branch" : "combustion",
+    "tier" : "medium",
+    "unlocks": [
+        { "type" : "upgrade", "blueprint" : "fire2-homing" }
+    ]
+}
