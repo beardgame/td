@@ -86,6 +86,10 @@ sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
     {
     }
 
+    public override void Activate()
+    {
+    }
+
     protected override void OnAdded()
     {
     }
@@ -125,6 +129,10 @@ namespace $NAMESPACE$;
 [Component("$STRINGID$")]
 sealed class $CLASS$ : Component
 {
+    public override void Activate()
+    {
+    }
+    
     protected override void OnAdded()
     {
     }
