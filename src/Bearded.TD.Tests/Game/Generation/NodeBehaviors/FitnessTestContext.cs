@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
 
@@ -74,7 +73,7 @@ sealed class FitnessTestContext : INodeFitnessContext
         connections.GetValueOrDefault(tile),
         ImmutableDictionary<Direction, MacroFeature>.Empty);
 
-    private static Node emptyNode() => new(ModAwareId.Invalid, ImmutableArray<INodeBehavior>.Empty);
+    private static Node emptyNode() => Node.FromBlueprint(new TestNodeBlueprint());
 
     private sealed class TagNodeBehaviour: NodeBehavior
     {
