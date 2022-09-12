@@ -12,15 +12,10 @@ sealed class AvoidTagAdjacency : NodeBehavior<AvoidTagAdjacency.BehaviorParamete
 
     public override double GetFitnessPenalty(INodeFitnessContext context, Tile nodeTile)
     {
-        var node = context[nodeTile];
-
-        var connectedNodes = Extensions.Directions
-            .Where(d => node!.ConnectedTo.Includes(d))
-            .Select(nodeTile.Neighbor)
-            .Select(t => context[t]);
-
-        return connectedNodes.Count(
-            n => n.Blueprint!.AllTags.Contains(Parameters.TagToAvoid)) * Parameters.PenaltyFactor;
+        return context
+            .ConnectedNodes(nodeTile)
+            .Count(
+                n => n.Blueprint!.AllTags.Contains(Parameters.TagToAvoid)) * Parameters.PenaltyFactor;
     }
 
     [UsedImplicitly]
