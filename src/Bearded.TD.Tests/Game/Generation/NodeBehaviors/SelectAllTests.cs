@@ -11,7 +11,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SelectsAll(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {

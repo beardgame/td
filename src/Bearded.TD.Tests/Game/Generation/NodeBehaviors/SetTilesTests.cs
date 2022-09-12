@@ -17,7 +17,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void MakesNoChangesWithEmptyNode(TileType type)
         {
-            var test = TestContext.CreateEmpty();
+            var test = GenerationTestContext.CreateEmpty();
 
             behaviourWithParameters(type)
                 .Generate(test.Context);
@@ -28,7 +28,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void SetsAllTilesInNodeToGivenType(TileType type)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             foreach (var tile in test.Context.Tiles.All)
             {
                 test.ExpectedTilemap[tile] = new TileGeometry(type, 0, 0.U());
@@ -43,7 +43,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property(Arbitrary = new[] { typeof(TilemapGenerators) })]
         public void SetsNoTilesForEmptySelection(TileType type)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             behaviourWithParameters(type)
@@ -56,7 +56,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         public void SetsExactlyThoseTilesInSelection(TileType type, int seed)
         {
             var random = new Random(seed);
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             foreach (var tile in test.Context.Tiles.All)
             {
                 if (random.NextBool())

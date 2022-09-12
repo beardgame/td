@@ -10,11 +10,11 @@ using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 {
-    sealed record TestContext(Tilemap<TileGeometry> SubjectTilemap,
+    sealed record GenerationTestContext(Tilemap<TileGeometry> SubjectTilemap,
         Tilemap<TileGeometry> ExpectedTilemap, NodeGenerationContext Context)
     {
-        public static TestContext CreateEmpty() => CreateForHexagonalNodeWithRadius(-1);
-        public static TestContext CreateForHexagonalNodeWithRadius(int radius, int randomSeed = 0, int connectionCount = 0)
+        public static GenerationTestContext CreateEmpty() => CreateForHexagonalNodeWithRadius(-1);
+        public static GenerationTestContext CreateForHexagonalNodeWithRadius(int radius, int randomSeed = 0, int connectionCount = 0)
         {
             var random = new Random(randomSeed);
 
@@ -40,7 +40,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
                 new LevelGenerationCommandAccumulator(), random
             );
 
-            return new TestContext(subjectTilemap, expectedTilemap, context);
+            return new GenerationTestContext(subjectTilemap, expectedTilemap, context);
         }
 
         public void AssertSubjectTilemapEqualsExpectedTilemap()
