@@ -1,6 +1,8 @@
 {
     "id" : "spawner",
     "behaviors" : [
+        { "id" : "forceDeadEnd", "parameters" : { "penaltyFactor" : 200 } },
+
         { "id" : "spawner" },
         { "id" : "setTiles", "parameters" : { "type" : "floor" } },
         {
