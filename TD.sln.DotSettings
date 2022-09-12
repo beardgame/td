@@ -90,6 +90,10 @@ sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
     {
     }
 
+    public override void Activate()
+    {
+    }
+
     public override void Update(TimeSpan elapsedTime)
     {
     }
@@ -126,6 +130,10 @@ namespace $NAMESPACE$;
 sealed class $CLASS$ : Component
 {
     protected override void OnAdded()
+    {
+    }
+
+    public override void Activate()
     {
     }
 

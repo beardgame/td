@@ -8,7 +8,7 @@ using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Game.Simulation.Weapons;
+namespace Bearded.TD.Game.Simulation.Elements;
 
 sealed class HitTargetOnActivate : Component
 {

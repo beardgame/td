@@ -18,7 +18,7 @@ sealed class UpgradableProjectileFactory
         this.parent = parent;
 
         var projectileTemplate = ProjectileFactory.Create(
-            this.blueprint, this.parent, Position3.Zero, Direction2.Zero, Velocity3.Zero, UntypedDamage.Zero);
+            this.blueprint, this.parent, Position3.Zero, Direction2.Zero, Velocity3.Zero, UntypedDamage.Zero, default);
         upgradeCopier = GameObjectUpgradeCopier.ForTemplateObject(projectileTemplate);
     }
 
@@ -31,9 +31,10 @@ sealed class UpgradableProjectileFactory
         Position3 position,
         Direction2 direction,
         Velocity3 muzzleVelocity,
-        UntypedDamage damage)
+        UntypedDamage damage,
+        OptionalProjectileProperties properties = default)
     {
-        var projectile = ProjectileFactory.Create(blueprint, parent, position, direction, muzzleVelocity, damage);
+        var projectile = ProjectileFactory.Create(blueprint, parent, position, direction, muzzleVelocity, damage, properties);
         upgradeCopier.CopyUpgradesTo(projectile);
         return projectile;
     }
