@@ -136,7 +136,7 @@ static class LogicalTilemapFitness
                 componentCount++;
             }
 
-            return componentCount * 100;
+            return componentCount * 500;
 
             void fillFrom(Tile tile)
             {
