@@ -1,7 +1,9 @@
 {
     "id" : "spawner",
+    "radius" : 2,
     "behaviors" : [
         { "id" : "forceDeadEnd", "parameters" : { "penaltyFactor" : 200 } },
+        { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "spawner", "penaltyFactor" : 50 } },
 
         { "id" : "spawner" },
         { "id" : "setTiles", "parameters" : { "type" : "floor" } },
