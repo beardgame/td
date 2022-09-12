@@ -8,7 +8,35 @@
             parameters : {
                 id : "turnTowardsTarget",
                 parameters : {
-                    turnSpeed : 200,
+                    turnSpeed : 100,
+                },
+            },
+            prerequisites : {
+                requiredTags : [
+                    "projectile",
+                ],
+            },
+        },
+        {
+            type : "component",
+            parameters : {
+                id : "multipleSpeedOnActivate",
+                parameters : {
+                    factor : 0.5,
+                },
+            },
+            prerequisites : {
+                requiredTags : [
+                    "projectile",
+                ],
+            },
+        },
+        {
+            type : "component",
+            parameters : {
+                id : "accelerateForwards",
+                parameters : {
+                    acceleration : 20,
                 },
             },
             prerequisites : {
