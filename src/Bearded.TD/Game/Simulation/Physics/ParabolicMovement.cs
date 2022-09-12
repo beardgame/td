@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -9,13 +10,11 @@ sealed class ParabolicMovement : Component, IDirected3, IPhysics
 {
     public Velocity3 Velocity { get; private set; }
 
-    private IPhysics physicsImplementation;
-
     public Difference3 Direction => Velocity * 1.S();
 
     public ParabolicMovement(Velocity3 velocity)
     {
-        this.Velocity = velocity;
+        Velocity = velocity;
     }
 
     protected override void OnAdded()
@@ -33,6 +32,7 @@ sealed class ParabolicMovement : Component, IDirected3, IPhysics
         Events.Preview(ref movement);
 
         Owner.Position = movement.Start + movement.Step;
+        Owner.Direction = Direction2.Of(Velocity.NumericValue.Xy);
     }
 
     public void ApplyVelocityImpulse(Velocity3 impulse)
