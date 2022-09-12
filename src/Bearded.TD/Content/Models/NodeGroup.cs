@@ -21,5 +21,5 @@ abstract record NodeGroup
 
     public sealed record FixedNumber(int Number) : NumberRestriction;
 
-    public sealed record RandomizedNumber(int Weight, int? MinNumber, int? MaxNumber) : NumberRestriction;
+    public sealed record RandomizedNumber(double Weight, int? MinNumber, int? MaxNumber) : NumberRestriction;
 }
