@@ -37,7 +37,7 @@ static class NodeFitnessContextExtensions
             {
                 seen.Add(neighbor);
                 yield return context[neighbor];
-                if (stepsLeft > 0)
+                if (stepsLeft > 1)
                 {
                     q.Enqueue((neighbor, stepsLeft - 1));
                 }
