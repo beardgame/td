@@ -50,4 +50,23 @@ sealed class ZoneLayer
     public ImmutableArray<Zone> ZonesForVisibilityForTile(Tile tile) => zonesForVisibilityByTile[tile];
 
     public IEnumerable<Zone> AdjacentZones(Zone zone) => adjacentZones[zone];
+
+    // Used only by debug commands to reset the map so it can be regenerated.
+    public void ResetZones()
+    {
+        var ids = zonesById.Keys.ToImmutableArray();
+
+        foreach (var id in ids)
+        {
+            zonesById.Remove(id);
+        }
+
+        foreach (var t in Tilemap.EnumerateTilemapWith(zonesByTile.Radius))
+        {
+            zonesByTile[t] = null;
+            zonesForVisibilityByTile[t] = ImmutableArray<Zone>.Empty;
+        }
+
+        adjacentZones.Clear();
+    }
 }

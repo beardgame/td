@@ -57,6 +57,7 @@ static class GameDebugCommands
         logger.Debug?.Log($"Generating new tilemap with method {method} and seed {seed}.");
 
         gameInstance.LevelDebugMetadata.Clear();
+        gameInstance.State.ZoneLayer.ResetZones();
 
         // TODO: this is a bit of a hacky solution. The better way would be to regenerate the entire game state.
         //       However, that would benefit from having game state/game instance refactored, so that this leads to

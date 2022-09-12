@@ -63,6 +63,11 @@ sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ILis
         return ContainsKey(key) ? inner[key] : empty;
     }
 
+    public void Clear()
+    {
+        inner.Clear();
+    }
+
     public IEnumerable<TValue> this[TKey key] => Get(key);
 
     public IEnumerator<KeyValuePair<TKey, IList<TValue>>> GetEnumerator() => inner.GetEnumerator();
