@@ -30,10 +30,8 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "buildings2.tesla-coil",
-                colorMode : "faction",
-                shader : "building-no-normal",
-                drawGroup : "building",
+                sprite: "particle.tesla-coil",
+                color : "White",
                 size : 1.2,
             }
         },

@@ -33,9 +33,9 @@
         {
             id : "sprite",
             parameters : {
-                sprite : "buildings3.cannon-turret",
+                sprite : "buildings2.flamethrower-turret",
                 colorMode : "faction",
-                shader : "building",
+                shader : "building-no-normal",
                 drawGroup : "building",
                 size : 1.2,
             }
