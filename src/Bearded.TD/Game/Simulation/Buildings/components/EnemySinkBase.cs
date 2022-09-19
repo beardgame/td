@@ -6,18 +6,25 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>
+abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, IListener<ObjectDeleting>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
 
     protected override void OnAdded()
     {
-        Events.Subscribe(this);
+        Events.Subscribe<Materialized>(this);
+        Events.Subscribe<ObjectDeleting>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe(this);
+        Events.Unsubscribe<Materialized>(this);
+        Events.Unsubscribe<ObjectDeleting>(this);
+
+        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        {
+            RemoveSink(tile);
+        }
         occupiedTilesTracker.Dispose(Events);
     }
 
@@ -35,6 +42,14 @@ abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>
 
         occupiedTilesTracker.TileAdded += AddSink;
         occupiedTilesTracker.TileRemoved += RemoveSink;
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        {
+            RemoveSink(tile);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime) { }
