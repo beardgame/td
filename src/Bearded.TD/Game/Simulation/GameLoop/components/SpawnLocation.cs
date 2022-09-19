@@ -11,6 +11,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop;
 
 sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEnded>, IDeletable
 {
+    private readonly Tile tile;
     private readonly HashSet<Id<WaveScript>> assignedWaves = new();
     private GameObject? placeholder;
 
@@ -23,7 +24,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     public SpawnLocation(Id<SpawnLocation> id, Tile tile)
     {
         Id = id;
-        Tile = tile;
+        this.tile = tile;
         SpawnTile = tile;
     }
 
@@ -46,6 +47,13 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     public void WakeUp()
     {
         IsAwake = true;
+    }
+
+    public void UpdateSpawnTile()
+    {
+        State.Satisfies(assignedWaves.Count == 0, "Cannot update the tile to spawn on while waves are assigned.");
+
+        // TODO: implement
     }
 
     public void AssignWave(Id<WaveScript> wave)

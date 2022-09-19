@@ -89,6 +89,7 @@ sealed class WaveDirector
             phase = Phase.Downtime;
             foreach (var location in script.SpawnLocations)
             {
+                location.UpdateSpawnTile();
                 location.AssignWave(script.Id);
             }
         }
