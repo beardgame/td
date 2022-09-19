@@ -7,12 +7,25 @@
             "parameters" : {
                 "sprite" : "particle.orb-soft",
                 "color" : "ff504f",
-                "size" : 0.65
+                "size" : 0.65,
+                "heightOffset" : 0.1
             }
         },
         { "id" : "health", "parameters" : { "maxHealth" : 7680 } },
         { "id" : "threat", "parameters" :  { "threat" : 7680 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 192, "attackRate" : 0.5 } },
-        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1 } }
+
+        { "id" : "groundLockedMovement" },
+        { "id" : "accelerateToBase", "parameters" : { "acceleration" : 5 } },
+        { "id" : "drag", "parameters" : { "amount" : 2 } },
+        {
+            "id" : "tileCollider",
+            "parameters" : {
+                "withWalls" : true,
+                "withCrevices" : true,
+                "withBuildings" : true
+            }
+        },
+        { "id" : "softMutualUnitCollider" }
     ]
 }

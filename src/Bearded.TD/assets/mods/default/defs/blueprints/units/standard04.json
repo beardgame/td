@@ -7,12 +7,15 @@
             "parameters" : {
                 "sprite" : "particle.orb-soft",
                 "color" : "e08e00",
-                "size" : 0.55
+                "size" : 0.55,
+                "heightOffset" : 0.1
             }
         },
         { "id" : "health", "parameters" : { "maxHealth" : 1920 } },
         { "id" : "threat", "parameters" :  { "threat" : 1920 } },
         { "id" : "damageBuildings", "parameters" : { "damage" : 48, "attackRate" : 0.5 } },
-        { "id" : "moveToBase", "parameters" : { "movementSpeed" : 1 } }
+
+        { "id" : "groundLockedMovement" },
+        { "id" : "accelerateToBase", "parameters" : { "acceleration" : 1 } }
     ]
 }

@@ -4,14 +4,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
-sealed class SphereCollider : Component, ICollider
+sealed class SphereCollider : Component, ICollider, IRadius
 {
-    private readonly Unit radius;
-    private Sphere collisionSphere => new(Owner.Position, radius);
+    public Unit Radius { get; }
+    private Sphere collisionSphere => new(Owner.Position, Radius);
 
     public SphereCollider(Unit radius)
     {
-        this.radius = radius;
+        Radius = radius;
     }
 
     protected override void OnAdded() {}
@@ -19,4 +19,10 @@ sealed class SphereCollider : Component, ICollider
 
     public bool TryHit(Ray3 ray, out float rayFactor, out Position3 point, out Difference3 normal) =>
         collisionSphere.TryHit(ray, out rayFactor, out point, out normal);
+
+}
+
+interface IRadius
+{
+    Unit Radius { get; }
 }

@@ -1,6 +1,6 @@
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Units;
+namespace Bearded.TD.Game.Simulation.Physics;
 
 interface IMoving
 {
