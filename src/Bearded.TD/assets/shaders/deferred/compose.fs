@@ -52,7 +52,7 @@ void main()
     float ambientFalloff = fragmentPosition.z > 0 ? 0 : 0.2;
     float floorAmbient = max(1 - abs(fragmentPosition.z) * ambientFalloff, 0);
 
-    vec3 light = lightTexture + vec3(0.18) * floorAmbient;
+    vec3 light = lightTexture + vec3(0.38) * floorAmbient;
 
     vec3 rgb = albedo.rgb * light;
 
