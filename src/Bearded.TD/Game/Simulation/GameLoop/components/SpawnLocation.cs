@@ -12,10 +12,10 @@ namespace Bearded.TD.Game.Simulation.GameLoop;
 sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEnded>, IDeletable
 {
     private readonly HashSet<Id<WaveScript>> assignedWaves = new();
-    private Instant nextIndicatorSpawn;
+    private GameObject? placeholder;
 
     public Id<SpawnLocation> Id { get; }
-    public Tile Tile { get; }
+    public Tile SpawnTile { get; private set; }
     public bool IsAwake { get; private set; }
 
     public bool Deleted => Owner.Deleted;
@@ -24,6 +24,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     {
         Id = id;
         Tile = tile;
+        SpawnTile = tile;
     }
 
     protected override void OnAdded() {}
@@ -51,24 +52,32 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     {
         State.Satisfies(IsAwake);
         assignedWaves.Add(wave);
+
+        if (placeholder == null)
+        {
+            createSpawnPlaceholder();
+        }
     }
 
-    public override void Update(TimeSpan elapsedTime)
+    private void createSpawnPlaceholder()
     {
-        if (assignedWaves.Count == 0)
-        {
-            return;
-        }
-
-        if (Owner.Game.Time >= nextIndicatorSpawn)
-        {
-            Owner.Game.Add(GameLoopObjectFactory.CreateEnemyPathIndicator(Tile));
-            nextIndicatorSpawn = Owner.Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
-        }
+        State.Satisfies(placeholder == null);
+        placeholder = GameLoopObjectFactory.CreateSpawnPlaceholder(Owner, SpawnTile);
+        Owner.Game.Add(placeholder);
     }
 
     public void HandleEvent(WaveEnded @event)
     {
         assignedWaves.Remove(@event.WaveId);
+
+        if (assignedWaves.Count > 0)
+        {
+            return;
+        }
+
+        placeholder?.Delete();
+        placeholder = null;
     }
+
+    public override void Update(TimeSpan elapsedTime) {}
 }
