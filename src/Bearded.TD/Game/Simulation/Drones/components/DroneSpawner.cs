@@ -15,7 +15,7 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        public IComponentOwnerBlueprint Drone { get; }
+        public IGameObjectBlueprint Drone { get; }
     }
 
     private IFactionProvider? factionProvider;

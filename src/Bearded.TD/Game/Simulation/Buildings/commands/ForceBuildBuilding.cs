@@ -19,7 +19,7 @@ static class ForceBuildBuilding
     public static IRequest<Player, GameInstance> Request(
         GameInstance game,
         Faction faction,
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         PositionedFootprint footprint) =>
         new Implementation(game, faction, Id<GameObject>.Invalid, blueprint, footprint);
 
@@ -28,14 +28,14 @@ static class ForceBuildBuilding
         private readonly GameInstance game;
         private readonly Faction faction;
         private readonly Id<GameObject> id;
-        private readonly IComponentOwnerBlueprint blueprint;
+        private readonly IGameObjectBlueprint blueprint;
         private readonly PositionedFootprint footprint;
 
         public Implementation(
             GameInstance game,
             Faction faction,
             Id<GameObject> id,
-            IComponentOwnerBlueprint blueprint,
+            IGameObjectBlueprint blueprint,
             PositionedFootprint footprint)
         {
             this.game = game;

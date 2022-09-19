@@ -240,7 +240,7 @@ sealed class TargetEnemiesInRange
 
         var allTiles = ImmutableHashSet.CreateRange(
             (Owner.Parent?.GetComponents<ITurret>() ?? Enumerable.Empty<ITurret>())
-            .Select(t => (IComponentOwner) t.Weapon)
+            .Select(t => t.Weapon)
             .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
             .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
         dontDrawThisFrame = false;

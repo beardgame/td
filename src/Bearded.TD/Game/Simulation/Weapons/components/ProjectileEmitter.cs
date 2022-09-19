@@ -22,7 +22,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Projectile { get; }
+        IGameObjectBlueprint Projectile { get; }
 
         [Modifiable(10.0)]
         Speed MuzzleSpeed { get; }

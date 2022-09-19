@@ -11,7 +11,7 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<EnemyMark
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Arc { get; }
+        IGameObjectBlueprint Arc { get; }
         TimeSpan LifeTime { get; }
     }
 

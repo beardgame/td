@@ -59,7 +59,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         ActionsChanged?.Invoke();
     }
 
-    private void addBuilding(IComponentOwnerBlueprint blueprint)
+    private void addBuilding(IGameObjectBlueprint blueprint)
     {
         if (lastFilledIndex == Constants.Game.GameUI.ActionBarSize - 2)
         {

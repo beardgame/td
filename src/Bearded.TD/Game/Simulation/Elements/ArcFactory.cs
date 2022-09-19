@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 static class ArcFactory
 {
     public static GameObject CreateArc(
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         GameObject parent,
         GameObject target,
         UntypedDamage damage,

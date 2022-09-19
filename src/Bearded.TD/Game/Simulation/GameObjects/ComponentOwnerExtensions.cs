@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentOwnerExtensions
 {
-    public static bool TryGetSingleComponentInOwnerTree<T>(this IComponentOwner componentOwner,
+    public static bool TryGetSingleComponentInOwnerTree<T>(this GameObject componentOwner,
         [NotNullWhen(true)] out T? component)
     {
         return componentOwner.TryGetSingleComponent(out component) ||
@@ -14,13 +14,13 @@ static class ComponentOwnerExtensions
     }
 
     public static bool TryGetSingleComponent<T>(
-        this IComponentOwner componentOwner, [NotNullWhen(true)] out T? component)
+        this GameObject componentOwner, [NotNullWhen(true)] out T? component)
     {
         component = componentOwner.GetComponents<T>().SingleOrDefault();
         return !Equals(component, default(T));
     }
 
-    public static bool TryGetProperty<T>(this IComponentOwner componentOwner, [NotNullWhen(true)] out T? property)
+    public static bool TryGetProperty<T>(this GameObject componentOwner, [NotNullWhen(true)] out T? property)
     {
         if (componentOwner.TryGetSingleComponent<IProperty<T>>(out var propertyComp))
         {
@@ -32,7 +32,7 @@ static class ComponentOwnerExtensions
         return false;
     }
 
-    public static ImmutableHashSet<string> Tags(this IComponentOwner componentOwner)
+    public static ImmutableHashSet<string> Tags(this GameObject componentOwner)
     {
         return componentOwner.TryGetSingleComponent<GameObjectTags>(out var tags)
             ? tags.Tags

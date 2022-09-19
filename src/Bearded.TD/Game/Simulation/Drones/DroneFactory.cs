@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Drones;
 static class DroneFactory
 {
     public static GameObject CreateDrone(
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         Position3 position,
         Faction faction,
         DroneRequest request,

@@ -25,11 +25,11 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
     private sealed class Listener : IListener<ExplorableZonesChanged>
     {
         private readonly GameState gameState;
-        private readonly ComponentOwnerBlueprint blueprint;
+        private readonly GameObjectBlueprint blueprint;
 
         private readonly Dictionary<Zone, GameObject> beaconsByZone = new();
 
-        public Listener(GameState gameState, ComponentOwnerBlueprint blueprint)
+        public Listener(GameState gameState, GameObjectBlueprint blueprint)
         {
             this.gameState = gameState;
             this.blueprint = blueprint;
@@ -77,5 +77,5 @@ sealed class SpawnExplorationBeacons : GameRule<SpawnExplorationBeacons.RulePara
         }
     }
 
-    public record RuleParameters(ComponentOwnerBlueprint Blueprint);
+    public record RuleParameters(GameObjectBlueprint Blueprint);
 }

@@ -10,11 +10,11 @@ namespace Bearded.TD.Content.Serialization.Converters;
 
 sealed class TechnologyUnlockConverter : JsonConverter
 {
-    private readonly IDependencyResolver<IComponentOwnerBlueprint> buildingResolver;
+    private readonly IDependencyResolver<IGameObjectBlueprint> buildingResolver;
     private readonly IDependencyResolver<IPermanentUpgrade> upgradeResolver;
 
     public TechnologyUnlockConverter(
-        IDependencyResolver<IComponentOwnerBlueprint> buildingResolver,
+        IDependencyResolver<IGameObjectBlueprint> buildingResolver,
         IDependencyResolver<IPermanentUpgrade> upgradeResolver)
     {
         this.buildingResolver = buildingResolver;

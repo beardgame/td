@@ -34,7 +34,7 @@ sealed class NodeContentGenerationContext
         commandAccumulator.PlaceSpawnLocation(tile);
     }
 
-    public void PlaceBuilding(IComponentOwnerBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
+    public void PlaceBuilding(IGameObjectBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
     {
         // TODO: we currently hardcode the 0 variant of the footprint group. Pending a footprint rework.
         var positionedFootprint = blueprint.GetFootprintGroup().Positioned(0, rootTile);
@@ -51,7 +51,7 @@ sealed class NodeContentGenerationContext
         commandAccumulator.PlaceBuilding(blueprint, positionedFootprint, faction);
     }
 
-    public void PlaceGameObject(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
+    public void PlaceGameObject(IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
     {
         var tile = Level.GetTile(position);
         if (!tiles.Contains(tile))

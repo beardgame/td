@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentDependencies
 {
-    public static IDependencyRef DependDynamic<T>(IComponentOwner owner, ComponentEvents events, Action<T?> consumer)
+    public static IDependencyRef DependDynamic<T>(GameObject owner, ComponentEvents events, Action<T?> consumer)
         where T : class
     {
         var currentDependency = owner.GetComponents<T>().LastOrDefault();
@@ -34,7 +34,7 @@ static class ComponentDependencies
         return new DynamicDependencyRef<T>(events, listener);
     }
 
-    public static IDependencyRef Depend<T>(IComponentOwner owner, ComponentEvents events, Action<T> consumer)
+    public static IDependencyRef Depend<T>(GameObject owner, ComponentEvents events, Action<T> consumer)
     {
         var found = owner.GetComponents<T>().FirstOrDefault();
         if (found != null)
@@ -77,7 +77,7 @@ static class ComponentDependencies
         }
     }
 
-    public static void Depend<T1, T2>(IComponentOwner owner, ComponentEvents events, Action<T1, T2> consumer)
+    public static void Depend<T1, T2>(GameObject owner, ComponentEvents events, Action<T1, T2> consumer)
     {
         var dep1Found = false;
         var dep2Found = false;
@@ -120,7 +120,7 @@ static class ComponentDependencies
         }
     }
 
-    private class DynamicDependencyRef<T> : IDependencyRef
+    private sealed class DynamicDependencyRef<T> : IDependencyRef
     {
         private readonly ComponentEvents events;
         private readonly DynamicDependencyListener<T> listener;

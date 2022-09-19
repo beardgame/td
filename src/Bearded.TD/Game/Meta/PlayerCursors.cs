@@ -34,7 +34,7 @@ sealed class PlayerCursors
 
     private readonly GameInstance game;
     private readonly Dictionary<Player, PlayerCursorData> cursors = new();
-    private IComponentOwnerBlueprint? attachedGhost;
+    private IGameObjectBlueprint? attachedGhost;
     private Instant currentTime = Instant.Zero;
     private Instant nextSync;
 
@@ -43,7 +43,7 @@ sealed class PlayerCursors
         this.game = game;
     }
 
-    public void AttachGhost(IComponentOwnerBlueprint blueprint)
+    public void AttachGhost(IGameObjectBlueprint blueprint)
     {
         attachedGhost = blueprint;
     }
@@ -53,7 +53,7 @@ sealed class PlayerCursors
         attachedGhost = null;
     }
 
-    public void SyncPlayerCursorPosition(Player p, Position2 pos, IComponentOwnerBlueprint? blueprint)
+    public void SyncPlayerCursorPosition(Player p, Position2 pos, IGameObjectBlueprint? blueprint)
     {
         if (!cursors.TryGetValue(p, out var currentData))
         {
@@ -204,7 +204,7 @@ sealed class PlayerCursors
         Position2 LocationAtLastSyncTime,
         float MomentumAtLastSyncTime,
         Velocity2 VelocityBeforeLastSyncTime,
-        IComponentOwnerBlueprint? AttachedGhost,
+        IGameObjectBlueprint? AttachedGhost,
         InstantiatedGhost? InstantiatedGhost = null)
     {
         public Position2 LocationAtTime(Instant time) =>

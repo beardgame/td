@@ -16,7 +16,7 @@ sealed class ProjectileExplosionOnHit
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Projectile { get; }
+        IGameObjectBlueprint Projectile { get; }
 
         bool OnHitLevel { get; }
 

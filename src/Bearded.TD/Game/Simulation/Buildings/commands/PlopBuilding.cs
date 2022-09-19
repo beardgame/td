@@ -18,7 +18,7 @@ static class PlopBuilding
         GameState gameState,
         Faction faction,
         Id<GameObject> id,
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         PositionedFootprint footprint)
         => new Implementation(gameState, faction, id, blueprint, footprint);
 
@@ -27,14 +27,14 @@ static class PlopBuilding
         private readonly GameState gameState;
         private readonly Faction faction;
         private readonly Id<GameObject> id;
-        private readonly IComponentOwnerBlueprint blueprint;
+        private readonly IGameObjectBlueprint blueprint;
         private readonly PositionedFootprint footprint;
 
         public Implementation(
             GameState gameState,
             Faction faction,
             Id<GameObject> id,
-            IComponentOwnerBlueprint blueprint,
+            IGameObjectBlueprint blueprint,
             PositionedFootprint footprint)
         {
             this.gameState = gameState;

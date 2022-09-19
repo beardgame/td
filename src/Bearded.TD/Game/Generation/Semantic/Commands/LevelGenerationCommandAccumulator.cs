@@ -23,7 +23,7 @@ sealed class LevelGenerationCommandAccumulator
     }
 
     public void PlaceBuilding(
-        IComponentOwnerBlueprint blueprint, PositionedFootprint footprint, ExternalId<Faction> externalId)
+        IGameObjectBlueprint blueprint, PositionedFootprint footprint, ExternalId<Faction> externalId)
     {
         commands.Add(gameInstance => PlopBuilding.Command(
             gameInstance.State,
@@ -33,7 +33,7 @@ sealed class LevelGenerationCommandAccumulator
             footprint));
     }
 
-    public void PlaceGameObject(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
+    public void PlaceGameObject(IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
     {
         commands.Add(gameInstance => PlopComponentGameObject.Command(gameInstance, blueprint, position, direction));
     }

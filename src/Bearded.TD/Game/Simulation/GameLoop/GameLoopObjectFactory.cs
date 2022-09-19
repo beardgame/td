@@ -14,6 +14,13 @@ static class GameLoopObjectFactory
         return obj;
     }
 
+    public static GameObject CreateSpawnPlaceholder(GameObject owner, Tile tile)
+    {
+        var obj = GameObjectFactory.CreateWithDefaultRenderer(owner, Level.GetPosition(tile).WithZ(0.U()));
+        obj.AddComponent(new SpawnInformation(tile));
+        return obj;
+    }
+
     public static GameObject CreateEnemyPathIndicator(Tile tile)
     {
         var obj = GameObjectFactory.CreateWithoutRenderer(null, Level.GetPosition(tile).WithZ(0.U()));

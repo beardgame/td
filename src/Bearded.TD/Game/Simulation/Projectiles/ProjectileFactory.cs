@@ -20,7 +20,7 @@ static class ProjectilePropertyExtensions
 static class ProjectileFactory
 {
     public static GameObject Create(
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         GameObject parent,
         Position3 position,
         Direction2 direction,

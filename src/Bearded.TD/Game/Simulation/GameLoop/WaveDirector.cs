@@ -89,6 +89,7 @@ sealed class WaveDirector
             phase = Phase.Downtime;
             foreach (var location in script.SpawnLocations)
             {
+                location.UpdateSpawnTile();
                 location.AssignWave(script.Id);
             }
         }
@@ -201,7 +202,8 @@ sealed class WaveDirector
             while (spawnQueue.TryPeek(out var spawn) && game.Time >= spawn.Time)
             {
                 spawnQueue.Dequeue();
-                var unit = EnemyUnitFactory.Create(spawn.UnitId, spawn.UnitBlueprint, spawn.SpawnLocation.Tile);
+                var unit =
+                    EnemyUnitFactory.Create(spawn.UnitId, spawn.UnitBlueprint, spawn.SpawnLocation.SpawnTile);
                 game.Add(unit);
                 spawnedUnits.Add(unit);
             }
@@ -242,7 +244,7 @@ sealed class WaveDirector
 
     private sealed record EnemySpawn(
         Id<GameObject> UnitId,
-        IComponentOwnerBlueprint UnitBlueprint,
+        IGameObjectBlueprint UnitBlueprint,
         SpawnLocation SpawnLocation,
         Instant Time);
 }
