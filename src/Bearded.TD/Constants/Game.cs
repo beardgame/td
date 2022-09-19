@@ -40,6 +40,8 @@ static partial class Constants
 
             public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
             public static readonly Color TechPointsColor = Color.Turquoise;
+
+            public static readonly Color EnemyIndicatorColor = Color.Orange;
         }
 
         public static class WaveGeneration

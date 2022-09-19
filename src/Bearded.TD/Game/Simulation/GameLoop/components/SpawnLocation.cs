@@ -157,7 +157,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     private void createSpawnPlaceholder()
     {
         State.Satisfies(placeholder == null);
-        placeholder = GameLoopObjectFactory.CreateSpawnPlaceholder(Owner, SpawnTile);
+        placeholder = GameLoopObjectFactory.CreateSpawnIndicator(Owner, SpawnTile);
         Owner.Game.Add(placeholder);
     }
 

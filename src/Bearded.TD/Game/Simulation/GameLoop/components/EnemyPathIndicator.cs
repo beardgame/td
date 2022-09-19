@@ -86,6 +86,7 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
 
     public void Render(CoreDrawers drawers)
     {
-        drawer.DrawTrail(trail, renderSize, Owner.Game.Time, trailTimeout, Color.Orange.WithAlpha());
+        drawer.DrawTrail(
+            trail, renderSize, Owner.Game.Time, trailTimeout, Constants.Game.GameUI.EnemyIndicatorColor.WithAlpha());
     }
 }
