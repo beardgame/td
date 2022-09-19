@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Footprints;
 
 static class OccupiedTileAccumulator
 {
-    public static ImmutableArray<Tile> AccumulateOccupiedTiles(IComponentOwner obj)
+    public static ImmutableArray<Tile> AccumulateOccupiedTiles(GameObject obj)
     {
         var hashSet = new HashSet<Tile>();
         obj.GetComponents<ITileOccupation>().Select(b => b.OccupiedTiles).ForEach(hashSet.UnionWith);

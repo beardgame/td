@@ -8,11 +8,11 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 sealed class UpgradableProjectileFactory
 {
-    private readonly IComponentOwnerBlueprint blueprint;
+    private readonly IGameObjectBlueprint blueprint;
     private readonly GameObject parent;
     private readonly GameObjectUpgradeCopier upgradeCopier;
 
-    public UpgradableProjectileFactory(IComponentOwnerBlueprint blueprint, GameObject parent)
+    public UpgradableProjectileFactory(IGameObjectBlueprint blueprint, GameObject parent)
     {
         this.blueprint = blueprint;
         this.parent = parent;

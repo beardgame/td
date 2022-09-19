@@ -85,7 +85,7 @@ sealed class BuildingLayer
 
     public GameObject? this[Tile tile] => GetBuildingFor(tile);
 
-    private static IBuildingState? getStateFor(IComponentOwner building)
+    private static IBuildingState? getStateFor(GameObject building)
     {
         return building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
     }

@@ -242,7 +242,7 @@ sealed class WaveDirector
 
     private sealed record EnemySpawn(
         Id<GameObject> UnitId,
-        IComponentOwnerBlueprint UnitBlueprint,
+        IGameObjectBlueprint UnitBlueprint,
         SpawnLocation SpawnLocation,
         Instant Time);
 }

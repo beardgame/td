@@ -5,9 +5,9 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 readonly struct BuildingDestroyed : IGlobalEvent
 {
-    public IComponentOwner Building { get; }
+    public GameObject Building { get; }
 
-    public BuildingDestroyed(IComponentOwner building)
+    public BuildingDestroyed(GameObject building)
     {
         Building = building;
     }

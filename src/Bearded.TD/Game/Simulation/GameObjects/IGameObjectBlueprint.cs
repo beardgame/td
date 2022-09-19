@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-interface IComponentOwnerBlueprint : IBlueprint
+interface IGameObjectBlueprint : IBlueprint
 {
     IEnumerable<IComponent> GetComponents();
     IEnumerable<IComponentFactory> GetFactories();

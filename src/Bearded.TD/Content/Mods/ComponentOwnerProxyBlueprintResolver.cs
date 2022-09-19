@@ -4,33 +4,33 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Content.Mods;
 
-class ComponentOwnerProxyBlueprintResolver : ModAwareDependencyResolver<IComponentOwnerBlueprint>
+class ComponentOwnerProxyBlueprintResolver : ModAwareDependencyResolver<IGameObjectBlueprint>
 {
-    private List<ComponentOwnerBlueprintProxy> currentProxies = new List<ComponentOwnerBlueprintProxy>();
+    private List<GameObjectBlueprintProxy> currentProxies = new List<GameObjectBlueprintProxy>();
 
     public ComponentOwnerProxyBlueprintResolver(ModMetadata thisMod, IEnumerable<Mod> otherMods)
         : base(thisMod, otherMods)
     {
     }
 
-    public List<ComponentOwnerBlueprintProxy> GetAndResetCurrentProxies()
+    public List<GameObjectBlueprintProxy> GetAndResetCurrentProxies()
     {
         var proxies = currentProxies;
-        currentProxies = new List<ComponentOwnerBlueprintProxy>();
+        currentProxies = new List<GameObjectBlueprintProxy>();
         return proxies;
     }
 
-    protected override IComponentOwnerBlueprint GetDependencyFromThisMod(ModAwareId id)
+    protected override IGameObjectBlueprint GetDependencyFromThisMod(ModAwareId id)
     {
         // could cache these by id, but they are small objects, and are unlikely to be reused much it at all
-        var proxy = new ComponentOwnerBlueprintProxy(id);
+        var proxy = new GameObjectBlueprintProxy(id);
 
         currentProxies.Add(proxy);
 
         return proxy;
     }
 
-    protected override IComponentOwnerBlueprint GetDependencyFromOtherMod(Mod mod, ModAwareId id)
+    protected override IGameObjectBlueprint GetDependencyFromOtherMod(Mod mod, ModAwareId id)
     {
         return mod.Blueprints.ComponentOwners[id];
     }

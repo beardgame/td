@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 static class GameObjectFactory
 {
     public static GameObject CreateFromBlueprintWithDefaultRenderer(
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         GameObject? parent,
         Position3 position,
         Direction2? direction = null)
@@ -19,7 +19,7 @@ static class GameObjectFactory
     }
 
     public static GameObject CreateFromBlueprintWithoutRenderer(
-        IComponentOwnerBlueprint blueprint,
+        IGameObjectBlueprint blueprint,
         GameObject? parent,
         Position3 position,
         Direction2? direction = null)

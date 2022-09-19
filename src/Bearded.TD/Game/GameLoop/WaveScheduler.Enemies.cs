@@ -39,7 +39,7 @@ sealed partial class WaveScheduler
         return eligibleEnemies;
     }
 
-    private IComponentOwnerBlueprint selectBlueprint(IReadOnlyList<EnemySpawnDefinition> enemies)
+    private IGameObjectBlueprint selectBlueprint(IReadOnlyList<EnemySpawnDefinition> enemies)
     {
         var probabilities = new double[enemies.Count + 1];
         foreach (var (enemy, i) in enemies.Indexed())
@@ -63,5 +63,5 @@ sealed partial class WaveScheduler
     }
 
     [UsedImplicitly] // type is deconstructed
-    private record struct EnemiesToSpawn(IComponentOwnerBlueprint Blueprint, float Threat, int SpawnCount);
+    private record struct EnemiesToSpawn(IGameObjectBlueprint Blueprint, float Threat, int SpawnCount);
 }

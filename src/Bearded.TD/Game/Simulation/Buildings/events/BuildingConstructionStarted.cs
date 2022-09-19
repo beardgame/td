@@ -5,9 +5,9 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 readonly struct BuildingConstructionStarted : IGlobalEvent
 {
-    public IComponentOwner Building { get; }
+    public GameObject Building { get; }
 
-    public BuildingConstructionStarted(IComponentOwner building)
+    public BuildingConstructionStarted(GameObject building)
     {
         Building = building;
     }

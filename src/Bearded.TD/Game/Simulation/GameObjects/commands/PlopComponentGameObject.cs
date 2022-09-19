@@ -10,17 +10,17 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class PlopComponentGameObject
 {
-    public static ISerializableCommand<GameInstance> Command(GameInstance game, IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
+    public static ISerializableCommand<GameInstance> Command(GameInstance game, IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
         => new Implementation(game, blueprint, position, direction);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
         private readonly GameInstance game;
-        private readonly IComponentOwnerBlueprint blueprint;
+        private readonly IGameObjectBlueprint blueprint;
         private readonly Position3 position;
         private readonly Direction2 direction;
 
-        public Implementation(GameInstance game, IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
+        public Implementation(GameInstance game, IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
         {
             this.game = game;
             this.blueprint = blueprint;
@@ -48,7 +48,7 @@ static class PlopComponentGameObject
         {
         }
 
-        public Serializer(IComponentOwnerBlueprint blueprint, Position3 position, Direction2 direction)
+        public Serializer(IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
         {
             this.blueprint = blueprint.Id;
             this.position = position;

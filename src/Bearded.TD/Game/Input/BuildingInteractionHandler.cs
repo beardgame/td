@@ -9,12 +9,12 @@ namespace Bearded.TD.Game.Input;
 sealed class BuildingInteractionHandler : InteractionHandler
 {
     private readonly Faction faction;
-    private readonly IComponentOwnerBlueprint blueprint;
+    private readonly IGameObjectBlueprint blueprint;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
     private MovableTileOccupation? ghostTileOccupation;
 
-    public BuildingInteractionHandler(GameInstance game, Faction faction, IComponentOwnerBlueprint blueprint) : base(game)
+    public BuildingInteractionHandler(GameInstance game, Faction faction, IGameObjectBlueprint blueprint) : base(game)
     {
         this.faction = faction;
         this.blueprint = blueprint;

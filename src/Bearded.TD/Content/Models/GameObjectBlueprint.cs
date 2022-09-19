@@ -12,17 +12,17 @@ using IComponentModel = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Content.Models;
 
-sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
+sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
 {
-    private ComponentOwnerBlueprint? blueprint;
+    private GameObjectBlueprint? blueprint;
     public ModAwareId Id { get; }
 
-    public ComponentOwnerBlueprintProxy(ModAwareId id)
+    public GameObjectBlueprintProxy(ModAwareId id)
     {
         Id = id;
     }
 
-    public void InjectActualBlueprint(ComponentOwnerBlueprint actualBlueprint)
+    public void InjectActualBlueprint(GameObjectBlueprint actualBlueprint)
     {
         if (blueprint != null)
             throw new InvalidOperationException("Cannot inject blueprint more than once.");
@@ -32,11 +32,11 @@ sealed class ComponentOwnerBlueprintProxy : IComponentOwnerBlueprint
         blueprint = actualBlueprint;
     }
 
-    IEnumerable<IComponent> IComponentOwnerBlueprint.GetComponents() => blueprint!.GetComponents();
-    IEnumerable<IComponentFactory> IComponentOwnerBlueprint.GetFactories() => blueprint!.GetFactories();
+    IEnumerable<IComponent> IGameObjectBlueprint.GetComponents() => blueprint!.GetComponents();
+    IEnumerable<IComponentFactory> IGameObjectBlueprint.GetFactories() => blueprint!.GetFactories();
 }
 
-sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
+sealed class GameObjectBlueprint : IGameObjectBlueprint
 {
     public ModAwareId Id { get; }
     private readonly ImmutableArray<IComponentModel> componentParameters;
@@ -61,7 +61,7 @@ sealed class ComponentOwnerBlueprint : IComponentOwnerBlueprint
         return factories;
     }
 
-    public ComponentOwnerBlueprint(ModAwareId id, IEnumerable<IComponentModel> components)
+    public GameObjectBlueprint(ModAwareId id, IEnumerable<IComponentModel> components)
     {
         Id = id;
         componentParameters = components.ToImmutableArray();

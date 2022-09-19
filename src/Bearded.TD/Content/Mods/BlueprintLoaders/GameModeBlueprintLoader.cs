@@ -22,7 +22,7 @@ sealed class GameModeBlueprintLoader
     {
         var nodeGroupConverter = new NodeGroupConverter(Context.FindDependencyResolver<INodeBlueprint>());
         var technologyUnlockConverter = new TechnologyUnlockConverter(
-            Context.FindDependencyResolver<IComponentOwnerBlueprint>(),
+            Context.FindDependencyResolver<IGameObjectBlueprint>(),
             Context.FindDependencyResolver<IPermanentUpgrade>());
 
         Context.Serializer.Converters.Add(nodeGroupConverter);

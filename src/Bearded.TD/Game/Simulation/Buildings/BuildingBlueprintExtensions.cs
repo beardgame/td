@@ -9,17 +9,17 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 static class BuildingBlueprintExtensions
 {
     // TODO: these are ugly and we should figure out the correct way of doing it
-    public static string GetName(this IComponentOwnerBlueprint blueprint) =>
+    public static string GetName(this IGameObjectBlueprint blueprint) =>
         blueprint.GetComponents().OfType<INameProvider>().SingleOrDefault().NameOrDefault();
 
-    public static World.FootprintGroup GetFootprintGroup(this IComponentOwnerBlueprint blueprint) =>
+    public static World.FootprintGroup GetFootprintGroup(this IGameObjectBlueprint blueprint) =>
         blueprint.GetComponents().OfType<IFootprintGroup>().SingleOrDefault()?.FootprintGroup ??
         World.FootprintGroup.Single;
 
-    public static ResourceAmount GetResourceCost(this IComponentOwnerBlueprint blueprint) =>
+    public static ResourceAmount GetResourceCost(this IGameObjectBlueprint blueprint) =>
         blueprint.GetComponents().OfType<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
 
     public static IEnumerable<IBuildBuildingPrecondition> GetBuildBuildingPreconditions(
-        this IComponentOwnerBlueprint blueprint) =>
+        this IGameObjectBlueprint blueprint) =>
         blueprint.GetComponents().OfType<IBuildBuildingPrecondition>();
 }

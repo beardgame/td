@@ -141,7 +141,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     }
 
     private record struct WaveParameters(
-        IComponentOwnerBlueprint UnitBlueprint,
+        IGameObjectBlueprint UnitBlueprint,
         int EnemiesPerSpawn,
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);

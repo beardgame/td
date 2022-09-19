@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Units;
 
 static class EnemyUnitFactory
 {
-    public static GameObject Create(Id<GameObject> id, IComponentOwnerBlueprint blueprint, Tile tile)
+    public static GameObject Create(Id<GameObject> id, IGameObjectBlueprint blueprint, Tile tile)
     {
         var unit = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             blueprint, null, Level.GetPosition(tile).WithZ(0));
