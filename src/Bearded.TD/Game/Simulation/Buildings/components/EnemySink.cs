@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Game.Simulation.GameObjects;
+﻿using System;
+using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Collections;
 
@@ -23,7 +25,7 @@ sealed class EnemySink : EnemySinkBase
     {
         base.Register();
         if (target != null) return;
-        target = new Target(Level.GetTile(Owner.Position));
+        target = new Target(Level.GetTile(Owner.Position), () => OccupiedTiles);
         Owner.Game.ListAs<ITarget>(target);
     }
 
@@ -36,17 +38,23 @@ sealed class EnemySink : EnemySinkBase
 
     public interface ITarget : IDeletable
     {
-        public Tile Tile { get; }
+        Tile Tile { get; }
+        IEnumerable<Tile> AllOccupiedTiles { get; }
     }
 
     private sealed class Target : ITarget
     {
+        private readonly Func<IEnumerable<Tile>> occupiedTilesGetter;
+
         public Tile Tile { get; }
         public bool Deleted { get; private set; }
 
-        public Target(Tile tile)
+        public IEnumerable<Tile> AllOccupiedTiles => occupiedTilesGetter();
+
+        public Target(Tile tile, Func<IEnumerable<Tile>> occupiedTilesGetter)
         {
             Tile = tile;
+            this.occupiedTilesGetter = occupiedTilesGetter;
         }
 
         public void Delete()

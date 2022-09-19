@@ -19,8 +19,6 @@ sealed class PassabilityLayer
         tilemap = new Tilemap<TilePassability>(level.Radius);
     }
 
-    // TODO: take buildings into account
-
     public bool HandleTilePassabilityChanged(Tile tile, bool isPassable)
     {
         var currentPassability = tilemap[tile];

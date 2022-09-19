@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Game.Simulation.Footprints;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -9,6 +11,8 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, IListener<ObjectDeleting>
 {
     private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+
+    protected ReadOnlyCollection<Tile> OccupiedTiles => occupiedTilesTracker.OccupiedTiles;
 
     protected override void OnAdded()
     {
