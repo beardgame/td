@@ -16,6 +16,16 @@
         { "id" : "damageBuildings", "parameters" : { "damage" : 48, "attackRate" : 0.5 } },
 
         { "id" : "groundLockedMovement" },
-        { "id" : "accelerateToBase", "parameters" : { "acceleration" : 1 } }
+        { "id" : "accelerateToBase", "parameters" : { "acceleration" : 5 } },
+        { "id" : "drag", "parameters" : { "amount" : 2 } },
+        {
+            "id" : "tileCollider",
+            "parameters" : {
+                "withWalls" : true,
+                "withCrevices" : true,
+                "withBuildings" : true
+            }
+        },
+        { "id" : "softMutualUnitCollider" }
     ]
 }
