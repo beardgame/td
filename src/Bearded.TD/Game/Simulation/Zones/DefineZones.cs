@@ -87,11 +87,13 @@ static class DefineZones
             var id = Id<Zone>.Invalid;
             var tiles = ImmutableArray<Tile>.Empty;
             var visibilityTiles = ImmutableArray<Tile>.Empty;
-            zone?.Deconstruct(out id, out tiles, out visibilityTiles);
+            var explorable = true;
+            zone?.Deconstruct(out id, out tiles, out visibilityTiles, out explorable);
             stream.Serialize(ref id);
             serializeTiles(stream, ref tiles);
             serializeTiles(stream, ref visibilityTiles);
-            zone = new Zone(id, tiles, visibilityTiles);
+            stream.Serialize(ref explorable);
+            zone = new Zone(id, tiles, visibilityTiles, explorable);
         }
 
         private void serializeTiles(INetBufferStream stream, ref ImmutableArray<Tile> tiles)

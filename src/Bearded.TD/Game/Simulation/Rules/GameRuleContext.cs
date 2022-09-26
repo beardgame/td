@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Events;
+using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;

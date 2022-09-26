@@ -10,5 +10,6 @@ namespace Bearded.TD.Tests.Game.Generation
         public ModAwareId Id => ModAwareId.Invalid;
         public ImmutableArray<INodeBehaviorFactory> Behaviors => ImmutableArray<INodeBehaviorFactory>.Empty;
         public Unit? Radius => null;
+        public bool Explorable => true;
     }
 }

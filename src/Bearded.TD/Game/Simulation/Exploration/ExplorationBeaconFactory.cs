@@ -17,7 +17,7 @@ static class ExplorationBeaconFactory
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             blueprint, null, Level.GetPosition(tile).WithZ(0));
 
-        obj.AddComponent(new AlwaysVisibleVisibility());
+        obj.AddComponent(new ConditionBasedVisibility(o => o.Game.ExplorationManager.HasExplorationToken));
         obj.AddComponent(new DrawZoneOnSelect());
         obj.AddComponent(new ReportSubject());
         obj.AddComponent(new Selectable());

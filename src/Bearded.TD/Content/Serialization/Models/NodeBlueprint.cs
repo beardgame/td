@@ -16,12 +16,14 @@ sealed class NodeBlueprint : IConvertsTo<INodeBlueprint, Void>
     public string? Id { get; set; }
     public List<INodeBehavior> Behaviors { get; set; } = new();
     public Unit? Radius { get; set; }
+    public bool Explorable { get; set; } = true;
 
     public INodeBlueprint ToGameModel(ModMetadata modMetadata, Void _)
     {
         return new Content.Models.NodeBlueprint(
             ModAwareId.FromNameInMod(Id ?? throw new InvalidDataException(), modMetadata),
             Behaviors.Select(NodeBehaviorFactories.CreateNodeBehaviorFactory).ToImmutableArray(),
-            Radius);
+            Radius,
+            Explorable);
     }
 }
