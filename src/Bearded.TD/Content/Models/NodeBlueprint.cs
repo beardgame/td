@@ -10,11 +10,13 @@ sealed class NodeBlueprint : INodeBlueprint
     public ModAwareId Id { get; }
     public ImmutableArray<INodeBehaviorFactory> Behaviors { get; }
     public Unit? Radius { get; }
+    public bool Explorable { get; }
 
-    public NodeBlueprint(ModAwareId id, ImmutableArray<INodeBehaviorFactory> behaviors, Unit? radius)
+    public NodeBlueprint(ModAwareId id, ImmutableArray<INodeBehaviorFactory> behaviors, Unit? radius, bool explorable)
     {
         Id = id;
         Behaviors = behaviors;
         Radius = radius;
+        Explorable = explorable;
     }
 }

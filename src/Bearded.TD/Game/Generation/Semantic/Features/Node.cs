@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.Features;
 
-sealed record Node(ModAwareId Id, ImmutableArray<INodeBehavior> Behaviors, Unit? Radius)
+sealed record Node(ModAwareId Id, ImmutableArray<INodeBehavior> Behaviors, Unit? Radius, bool Explorable)
 {
     private ImmutableHashSet<NodeTag>? memoizedTags;
 
@@ -13,5 +13,8 @@ sealed record Node(ModAwareId Id, ImmutableArray<INodeBehavior> Behaviors, Unit?
         memoizedTags ??= Behaviors.SelectMany(b => b.Tags).ToImmutableHashSet();
 
     public static Node FromBlueprint(INodeBlueprint blueprint) =>
-        new(blueprint.Id, blueprint.Behaviors.Select(factory => factory.Create()).ToImmutableArray(), blueprint.Radius);
+        new(blueprint.Id,
+            blueprint.Behaviors.Select(factory => factory.Create()).ToImmutableArray(),
+            blueprint.Radius,
+            blueprint.Explorable);
 }

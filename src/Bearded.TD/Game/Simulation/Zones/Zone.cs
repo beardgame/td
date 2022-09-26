@@ -7,7 +7,8 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Zones;
 
-sealed record Zone(Id<Zone> Id, ImmutableArray<Tile> CoreTiles, ImmutableArray<Tile> ExtendedVisibilityTiles)
+sealed record Zone(
+        Id<Zone> Id, ImmutableArray<Tile> CoreTiles, ImmutableArray<Tile> ExtendedVisibilityTiles, bool Explorable)
     : IIdable<Zone>
 {
     public IEnumerable<Tile> VisibilityTiles => CoreTiles.Concat(ExtendedVisibilityTiles);

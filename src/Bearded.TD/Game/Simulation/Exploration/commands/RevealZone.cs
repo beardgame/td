@@ -30,8 +30,9 @@ static class RevealZone
         }
 
         public override bool CheckPreconditions(Player actor) =>
-            (!consumeToken || game.ExplorationManager.HasExplorationToken)
-            && !game.VisibilityLayer[zone].IsRevealed();
+            zone.Explorable &&
+            (!consumeToken || game.ExplorationManager.HasExplorationToken) &&
+            !game.VisibilityLayer[zone].IsRevealed();
 
         public override void Execute()
         {

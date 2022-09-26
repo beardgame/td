@@ -8,4 +8,5 @@ interface INodeBlueprint : IBlueprint
 {
     ImmutableArray<INodeBehaviorFactory> Behaviors { get; }
     Unit? Radius { get; }
+    bool Explorable { get; }
 }

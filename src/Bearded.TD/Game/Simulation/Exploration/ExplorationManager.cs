@@ -32,6 +32,7 @@ sealed class ExplorationManager : IListener<ZoneRevealed>
     {
         ExplorableZones = zoneLayer.AllZones.Where(
                 zone =>
+                    zone.Explorable &&
                     !visibilityLayer[zone].IsRevealed() &&
                     zoneLayer.AdjacentZones(zone).Any(adjZone => visibilityLayer[adjZone].IsRevealed()))
             .ToImmutableArray();
