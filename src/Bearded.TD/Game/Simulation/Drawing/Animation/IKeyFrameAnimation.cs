@@ -12,9 +12,12 @@ interface IKeyFrameAnimation<T>
     ImmutableArray<T> KeyFrames { get; }
     TimeSpan TotalDuration { get; }
     RepeatMode RepeatMode { get; }
+    double TimeScale { get; }
 
     public T InterpolateFrameAt(TimeSpan time)
     {
+        time /= TimeScale;
+
         if (time >= TotalDuration)
         {
             switch (RepeatMode)

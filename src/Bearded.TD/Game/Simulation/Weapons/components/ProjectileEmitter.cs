@@ -27,6 +27,9 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         [Modifiable(10.0)]
         Speed MuzzleSpeed { get; }
 
+        [Modifiable(1)]
+        float BulletDropCompensation { get; }
+
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
 
@@ -65,13 +68,13 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     private void emitProjectile(UntypedDamage damage)
     {
-        var (direction, muzzleVelocity) = getMuzzleVelocity();
-
         var weaponDirection = weapon.Direction.Vector;
         var position = weapon.Position +
             (weaponDirection * Parameters.MuzzleOffset.X
                 + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
             ).WithZ();
+        
+        var (direction, muzzleVelocity) = getMuzzleVelocity(position);
 
         Owner.Game.Add(factory.Create(position, direction, muzzleVelocity, damage,
             new OptionalProjectileProperties
@@ -82,21 +85,24 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         Events.Send(new ShotProjectile(position, direction, muzzleVelocity));
     }
 
-    private (Direction2, Velocity3) getMuzzleVelocity()
+    private (Direction2, Velocity3) getMuzzleVelocity(Position3 emitLocation)
     {
         var direction = weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;
 
         var velocityZ = targeter?.Target is { } target
-            ? verticalSpeedCompensationToTarget(target)
+            ? verticalSpeedCompensationToTarget(emitLocation, target)
             : Speed.Zero;
 
         return (direction, velocityXY.WithZ(velocityZ));
     }
 
-    private Speed verticalSpeedCompensationToTarget(IPositionable target)
+    private Speed verticalSpeedCompensationToTarget(Position3 emitLocation, IPositionable target)
     {
-        var difference = target.Position - weapon.Position;
+        if (Parameters.BulletDropCompensation == 0)
+            return Speed.Zero;
+
+        var difference = target.Position - emitLocation;
         var horizontalDistance = difference.XY().Length;
         // TODO: the division below should work in spacetime
         var expectedTimeToTarget = new TimeSpan(horizontalDistance.NumericValue / Parameters.MuzzleSpeed.NumericValue);
@@ -107,6 +113,6 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         var heightToCompensate = heightDifference - expectedDrop;
         var verticalVelocityToCompensate = heightToCompensate / expectedTimeToTarget;
 
-        return verticalVelocityToCompensate;
+        return verticalVelocityToCompensate * Parameters.BulletDropCompensation;
     }
 }

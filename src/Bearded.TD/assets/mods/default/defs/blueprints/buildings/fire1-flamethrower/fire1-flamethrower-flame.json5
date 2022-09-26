@@ -1,6 +1,8 @@
 {
     id : "fire1-flamethrower-flame",
     components : [
+        { id : "drag", parameters : { amount : 0.2 } },
+        { id : "buoyancy", parameters : { amount : 1 } },
         {
             id : "damageOnHit",
             parameters : { damageType : "fire" }
@@ -8,7 +10,7 @@
         {
             "id" :  "deleteAfter",
             "parameters" :  {
-                "timeSpan" :  0.38
+                "timeSpan" :  1.2
             }
         },
         {
@@ -24,6 +26,7 @@
             parameters : {
                 sprite : "default.particle.mote",
                 animation : {
+                    timeScale: 3.2,
                     keyFrames: [
                         {
                             color: "00FFFF00",
@@ -57,19 +60,20 @@
             id : "animatedPointLight",
             parameters : {
                 animation : {
+                    timeScale: 3.2,
                     keyFrames: [
                         {
-                            color: "88FFFF00",
+                            color: "66FFFF00",
                             radius: 0.5
                         },
                         {
                             duration: 0.15,
-                            color: "88FF4500",
+                            color: "44FF4500",
                             radius: 1
                         },
                         {
                             duration: 0.08,
-                            color: "88FF0000",
+                            color: "22FF0000",
                             radius: 1.5
                         },
                         {
