@@ -18,6 +18,7 @@
       }
     },
     { id : "fuelTank", parameters : { fuelCapacity: 150 } },
+    { id : "fuelGauge" },
     {
       id : "sprite",
       parameters : {
