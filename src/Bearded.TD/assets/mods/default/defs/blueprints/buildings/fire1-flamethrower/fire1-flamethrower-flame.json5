@@ -53,5 +53,33 @@
                 }
             }
         },
+        {
+            id : "animatedPointLight",
+            parameters : {
+                animation : {
+                    keyFrames: [
+                        {
+                            color: "88FFFF00",
+                            radius: 0.5
+                        },
+                        {
+                            duration: 0.15,
+                            color: "88FF4500",
+                            radius: 1
+                        },
+                        {
+                            duration: 0.08,
+                            color: "88FF0000",
+                            radius: 1.5
+                        },
+                        {
+                            duration: 0.08,
+                            color: "transparent",
+                            radius: 1
+                        }
+                    ],
+                }
+            }
+        }
     ]
 }
