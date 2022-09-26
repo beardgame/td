@@ -8,12 +8,12 @@
 
         { "id" : "spawner" },
         { "id" : "setTiles", "parameters" : { "type" : "floor" } },
+        { "id" : "createSpawnLocation" },
         {
-            "id" : "spawnCrystals",
+            "id" : "spawnGameObject",
             "parameters" : {
-                "blueprints" : [ "crystal-cyan0", "crystal-cyan1", "crystal-cyan2", "crystal-cyan3" ]
+                "blueprint" : "spawnLocationIndicator"
             }
-        },
-        { "id" : "createSpawnLocation" }
+        }
     ]
 }

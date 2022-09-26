@@ -1,0 +1,17 @@
+{
+    id: "spawnLocationIndicator",
+    components: [
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "particle.epic-skull",
+                drawGroup: "IgnoreDepth",
+                color: "55FFA500",
+                size: 0.55,
+            },
+        },
+        {
+            id: "visibleWhenAdjacentZoneRevealed",
+        },
+    ]
+}
