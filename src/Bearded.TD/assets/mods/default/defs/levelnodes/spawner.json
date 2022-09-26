@@ -1,6 +1,7 @@
 {
     "id" : "spawner",
     "radius" : 2,
+    "explorable" : false,
     "behaviors" : [
         { "id" : "forceDeadEnd", "parameters" : { "penaltyFactor" : 200 } },
         { "id" : "avoidTagAdjacency", "parameters" : { "tagToAvoid" : "spawner", "penaltyFactor" : 50 } },
