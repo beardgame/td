@@ -31,6 +31,8 @@ sealed class VisibleWhenAdjacentZoneRevealed : Component, IVisibility, IListener
         {
             Visibility = ObjectVisibility.Visible;
         }
+
+        Owner.Game.Meta.Events.Subscribe(this);
     }
 
     public void HandleEvent(ZoneRevealed @event)
