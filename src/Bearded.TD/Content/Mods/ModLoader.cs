@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
-using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
@@ -12,6 +13,7 @@ using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
+using FactionBlueprint = Bearded.TD.Content.Serialization.Models.FactionBlueprint;
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
@@ -110,7 +112,6 @@ static class ModLoader
                 new SpaceTime1Converter<UntypedDamage>(d => new UntypedDamage(((int) d).HitPoints())),
                 new SpaceTime1Converter<UntypedDamagePerSecond>(d => new UntypedDamagePerSecond(((int) d).HitPoints())),
                 new ColorConverter(),
-                BehaviorConverterFactory.ForBuildingComponents(),
                 BehaviorConverterFactory.ForBaseComponents(),
                 BehaviorConverterFactory.ForFactionBehaviors(),
                 BehaviorConverterFactory.ForGameRules(),
@@ -119,10 +120,11 @@ static class ModLoader
                 new ExternalIdConverter<Faction>(),
                 new NodeTagConverter(),
                 new UpgradeEffectConverter(),
-                new UpgradePrerequisitesConverter()
+                new UpgradePrerequisitesConverter(),
+                GenericInterfaceConverter.From(typeof(IKeyFrameAnimation<>), typeof(KeyFrameAnimation<>))
             );
             foreach (var (key, value) in ParametersTemplateLibrary.TemplateTypeByInterface)
-                serializer.Converters.Add(new ComponentParameterTemplateConverter(key, value));
+                serializer.Converters.Add(new InterfaceConverter(key, value));
 
             return serializer;
         }

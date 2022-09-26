@@ -1,37 +1,30 @@
-using System.Collections.Immutable;
-using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("animatedSprite")]
 class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComponents>
 {
-    internal enum RepeatMode
-    {
-        Once = 0,
-        Loop,
-    }
-
     internal readonly record struct KeyFrame(
         TimeSpan Duration,
         Unit Size,
-        Color Color)
+        Color Color) : IKeyFrame<KeyFrame>
     {
         private static readonly IInterpolationMethod1d interpolation = Interpolation1d.Linear;
 
-        public static KeyFrame Interpolate(KeyFrame a, KeyFrame b, double t)
+        public KeyFrame InterpolateTowards(KeyFrame other, double t)
         {
-            var size = interpolation.Interpolate(a.Size.NumericValue, b.Size.NumericValue, t).U();
-            var color = Color.Lerp(a.Color, b.Color, (float)t);
+            var size = interpolation.Interpolate(Size.NumericValue, other.Size.NumericValue, t).U();
+            var color = Color.Lerp(Color, other.Color, (float)t);
 
             return new KeyFrame(default, size, color);
         }
@@ -45,14 +38,11 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         int DrawGroupOrderKey { get; }
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
-        RepeatMode RepeatMode { get; }
-        ImmutableArray<KeyFrame> KeyFrames { get; }
+        IKeyFrameAnimation<KeyFrame> Animation { get; }
     }
-
 
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
     private Instant startTime;
-    private TimeSpan totalDuration;
 
     public AnimatedSprite(IParameters parameters) : base(parameters)
     {
@@ -68,7 +58,6 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         Events.Subscribe(this);
 
         startTime = Owner.Game.Time;
-        totalDuration = Parameters.KeyFrames.Sum(f => f.Duration.NumericValue).S();
     }
 
     public override void OnRemoved()
@@ -82,7 +71,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
 
     public void HandleEvent(DrawComponents e)
     {
-        var keyframe = getKeyFrame();
+        var keyframe = Parameters.Animation.InterpolateFrameAt(Owner.Game.Time - startTime);
 
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
@@ -97,35 +86,5 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         }
 
         e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians, keyframe.Color);
-    }
-
-    private KeyFrame getKeyFrame()
-    {
-        var time = Owner.Game.Time - startTime;
-        if (time >= totalDuration)
-        {
-            if (Parameters.RepeatMode == RepeatMode.Once)
-                return Parameters.KeyFrames.Last();
-
-            if (Parameters.RepeatMode == RepeatMode.Loop)
-                time = (time.NumericValue % totalDuration.NumericValue).S();
-        }
-
-        var firstFrame = Parameters.KeyFrames.First();
-        if (time < firstFrame.Duration)
-            return firstFrame;
-
-        for (var i = 1; i < Parameters.KeyFrames.Length; i++)
-        {
-            time -= firstFrame.Duration;
-            var secondFrame = Parameters.KeyFrames[i];
-
-            if (time < secondFrame.Duration)
-                return KeyFrame.Interpolate(firstFrame, secondFrame, time / secondFrame.Duration);
-
-            firstFrame = secondFrame;
-        }
-
-        return firstFrame;
     }
 }
