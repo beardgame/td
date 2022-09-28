@@ -1,8 +1,8 @@
 {
-    "id" : "single",
-    "footprints" : [
+    id: "single",
+    footprints: [
         {
-            "tiles": [
+            tiles: [
                 "base"
             ]
         }

@@ -1,6 +1,6 @@
 {
-    "id" : "thin-path",
-    "behaviors" : [
-        { "id" : "setTiles", "parameters" : { "type" : "crevice" } }
+    id: "thin-path",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "crevice" } }
     ]
 }

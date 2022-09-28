@@ -1,8 +1,8 @@
 {
-    "id" : "seven",
-    "footprints" : [
+    id: "seven",
+    footprints: [
         {
-            "tiles" : [
+            tiles: [
                 "base",
                 "left",
                 "downleft",

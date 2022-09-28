@@ -1,5 +1,5 @@
 ﻿{
-	"name" : "Debugging",
-	"id" :  "debug",
-	"dependencies" : [{"id": "default"}]
+	name: "Debugging",
+	id:  "debug",
+	dependencies: [{id: "default"}]
 }

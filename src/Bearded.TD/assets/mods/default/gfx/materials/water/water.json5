@@ -1,10 +1,10 @@
 {
-  "id" : "water",
-  "shader" : "water",
-  "textureArrays" : [
+  id: "water",
+  shader: "water",
+  textureArrays: [
     {
-      "name" : "noiseTexture",
-      "files" : [
+      name: "noiseTexture",
+      files: [
         "noise.png"
       ]
     },

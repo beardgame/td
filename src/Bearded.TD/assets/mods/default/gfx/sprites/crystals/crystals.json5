@@ -1,16 +1,16 @@
 ﻿{
-  "id" : "crystals",
-  "textureSamplers" :
+  id: "crystals",
+  textureSamplers:
   [
     {
-      "sampler" : "diffuse",
-      "prefix" : "",
-      "suffix" : ""
+      sampler: "diffuse",
+      prefix: "",
+      suffix: ""
     },
     {
-      "sampler" : "normal",
-      "prefix" : "",
-      "suffix" : "-normal"
+      sampler: "normal",
+      prefix: "",
+      suffix: "-normal"
     }
   ]
 }

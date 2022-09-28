@@ -1,50 +1,50 @@
 {
-    "id": "kinetic1-stomp-weapon",
-    "components" : [
+    id: "kinetic1-stomp-weapon",
+    components: [
         {
-            "id" : "targetEnemiesInRange",
-            "parameters" : {
-                "range" : 1.5
+            id: "targetEnemiesInRange",
+            parameters: {
+                range: 1.5
             }
         },
         {
-            "id" : "automaticFireCycle",
-            "parameters" : {
-                "damagePerSecond" : 20,
-                "fireRate" : 1
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 20,
+                fireRate: 1
             }
         },
         {
-            "id" : "hitLevelAtTower"
+            id: "hitLevelAtTower"
         },
         {
-            "id" : "splashDamageOnHit",
-            "parameters" : {
-                "range" : 1.5
+            id: "splashDamageOnHit",
+            parameters: {
+                range: 1.5
             }
         },
         {
-            "id": "spawnObjectOnHit",
-            "parameters": {
-                "object": "dustExplosion",
-                "onHitLevel": true,
-                "onHitEnemy": false
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "dustExplosion",
+                onHitLevel: true,
+                onHitEnemy: false
             }
         },
         {
-            "id": "spawnObjectOnHit",
-            "parameters": {
-                "object": "medium-shockwave",
-                "onHitLevel": true,
-                "onHitEnemy": false
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "medium-shockwave",
+                onHitLevel: true,
+                onHitEnemy: false
             }
         },
         {
-            "id" : "sprite",
-            "parameters" : {
-                "sprite" : "default.particle.halo",
-                "colorMode" : "faction",
-                "size" : 0.3
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.halo",
+                colorMode: "faction",
+                size: 0.3
             }
         }
     ]

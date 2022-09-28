@@ -1,9 +1,9 @@
 ﻿{
-    "id" : "terrain-splats",
-    "textureSamplers" :
+    id: "terrain-splats",
+    textureSamplers:
     [
         {
-            "sampler" : "diffuse"
+            sampler: "diffuse"
         }
     ]
 }

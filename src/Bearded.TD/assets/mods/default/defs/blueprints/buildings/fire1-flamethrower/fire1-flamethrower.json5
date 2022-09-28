@@ -1,33 +1,33 @@
 {
-  id : "fire1-flamethrower",
-  components : [
-    { id : "name", parameters : { name : "Flamethrower" } },
-    { id : "cost", parameters : { resources : 50 } },
-    { id : "footprint", parameters : { group : "single" } },
-    { id : "defaultTileOccupancy" },
-    { id : "health", parameters : { initialHealth : 1, maxHealth : 100 } },
-    { id : "autoRepair", parameters : { } },
-    { id : "gainXpOnDamage" },
-    { id : "veterancy" },
+  id: "fire1-flamethrower",
+  components: [
+    { id: "name", parameters: { name: "Flamethrower" } },
+    { id: "cost", parameters: { resources: 50 } },
+    { id: "footprint", parameters: { group: "single" } },
+    { id: "defaultTileOccupancy" },
+    { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+    { id: "autoRepair", parameters: { } },
+    { id: "gainXpOnDamage" },
+    { id: "veterancy" },
     {
-      id : "turret",
-      onGhost : true,
-      parameters : {
-        weapon : "fire1-flamethrower-weapon",
-        height : 0.3,
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "fire1-flamethrower-weapon",
+        height: 0.3,
       }
     },
-    { id : "fuelTank", parameters : { fuelCapacity: 150 } },
-    { id : "fuelGauge" },
+    { id: "fuelTank", parameters: { fuelCapacity: 150 } },
+    { id: "fuelGauge" },
     {
-      id : "sprite",
-      parameters : {
-        sprite : "buildings3.cannon-base",
-        colorMode : "faction",
-        shader : "building",
-        drawGroup : "building",
-        heightOffset : 0.1,
-        size : 1.2,
+      id: "sprite",
+      parameters: {
+        sprite: "buildings3.cannon-base",
+        colorMode: "faction",
+        shader: "building",
+        drawGroup: "building",
+        heightOffset: 0.1,
+        size: 1.2,
       }
     }
   ]

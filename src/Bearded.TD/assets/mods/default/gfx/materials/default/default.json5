@@ -1,18 +1,18 @@
 {
-  "id" : "default",
-  "shader" : "gpu-terrain-tessellated",
-  "textureArrays" : [
+  id: "default",
+  shader: "gpu-terrain-tessellated",
+  textureArrays: [
     {
-      "name" : "diffuseTextures",
-      "files" : [
+      name: "diffuseTextures",
+      files: [
         "rock3.png",
         "rock4.png",
         "sand.png"
       ]
     },
     {
-      "name" : "normalTextures",
-      "files" : [
+      name: "normalTextures",
+      files: [
         "rock3-normal.png",
         "rock4-normal.png",
         "sand-normal.png"

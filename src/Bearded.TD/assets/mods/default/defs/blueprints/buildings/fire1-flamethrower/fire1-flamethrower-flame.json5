@@ -1,31 +1,31 @@
 {
-    id : "fire1-flamethrower-flame",
-    components : [
-        { id : "drag", parameters : { amount : 0.2 } },
-        { id : "buoyancy", parameters : { amount : 1 } },
+    id: "fire1-flamethrower-flame",
+    components: [
+        { id: "drag", parameters: { amount: 0.2 } },
+        { id: "buoyancy", parameters: { amount: 1 } },
         {
-            id : "damageOnHit",
-            parameters : { damageType : "fire" }
+            id: "damageOnHit",
+            parameters: { damageType: "fire" }
         },
         {
-            "id" :  "deleteAfter",
-            "parameters" :  {
-                "timeSpan" :  1.2
+            id:  "deleteAfter",
+            parameters:  {
+                timeSpan:  1.2
             }
         },
         {
-            "id" : "applyOnFireOnImpact",
-            "parameters" : {
-                "probability" : 0.05,
-                "fractionOfBaseDamageApplied" : 10,
-                "effectDuration" : 3
+            id: "applyOnFireOnImpact",
+            parameters: {
+                probability: 0.05,
+                fractionOfBaseDamageApplied: 10,
+                effectDuration: 3
             }
         },
         {
-            id : "animatedSprite",
-            parameters : {
-                sprite : "default.particle.mote",
-                animation : {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.mote",
+                animation: {
                     timeScale: 3.2,
                     keyFrames: [
                         {
@@ -57,9 +57,9 @@
             }
         },
         {
-            id : "animatedPointLight",
-            parameters : {
-                animation : {
+            id: "animatedPointLight",
+            parameters: {
+                animation: {
                     timeScale: 3.2,
                     keyFrames: [
                         {

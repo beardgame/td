@@ -1,21 +1,21 @@
 {
-    "id" : "crystal-cyan4",
-    "components" : [
+    id: "crystal-cyan4",
+    components: [
         {
-            "id" : "sprite",
-            "parameters" : {
-                "sprite" : "crystals.4",
-                "color" : "FF40E0D0",
-                "shader" : "building",
-                "drawGroup" : "leveldetail"
+            id: "sprite",
+            parameters: {
+                sprite: "crystals.4",
+                color: "FF40E0D0",
+                shader: "building",
+                drawGroup: "leveldetail"
             }
         },
         {
-            "id" : "pointlight",
-            "parameters" : {
-                "color" : "aa103935",
-                "radius" : 1.5,
-                "height" : 0.2
+            id: "pointlight",
+            parameters: {
+                color: "aa103935",
+                radius: 1.5,
+                height: 0.2
             }
         }
     ]

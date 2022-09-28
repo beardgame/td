@@ -1,31 +1,31 @@
 {
-    "id" : "standard02",
-    "components" : [
-        { "id" : "name", "parameters" : { "name" : "Standard enemy" } },
+    id: "standard02",
+    components: [
+        { id: "name", parameters: { name: "Standard enemy" } },
         {
-            "id" : "sprite",
-            "parameters" : {
-                "sprite" : "particle.orb-soft",
-                "color" : "8bbf00",
-                "size" : 0.45,
-                "heightOffset" : 0.1
+            id: "sprite",
+            parameters: {
+                sprite: "particle.orb-soft",
+                color: "8bbf00",
+                size: 0.45,
+                heightOffset: 0.1
             }
         },
-        { "id" : "health", "parameters" : { "maxHealth" : 480 } },
-        { "id" : "threat", "parameters" :  { "threat" : 480 } },
-        { "id" : "damageBuildings", "parameters" : { "damage" : 12, "attackRate" : 0.5 } },
+        { id: "health", parameters: { maxHealth: 480 } },
+        { id: "threat", parameters:  { threat: 480 } },
+        { id: "damageBuildings", parameters: { damage: 12, attackRate: 0.5 } },
 
-        { "id" : "groundLockedMovement" },
-        { "id" : "accelerateToBase", "parameters" : { "acceleration" : 5 } },
-        { "id" : "drag", "parameters" : { "amount" : 2 } },
+        { id: "groundLockedMovement" },
+        { id: "accelerateToBase", parameters: { acceleration: 5 } },
+        { id: "drag", parameters: { amount: 2 } },
         {
-            "id" : "tileCollider",
-            "parameters" : {
-                "withWalls" : true,
-                "withCrevices" : true,
-                "withBuildings" : true
+            id: "tileCollider",
+            parameters: {
+                withWalls: true,
+                withCrevices: true,
+                withBuildings: true
             }
         },
-        { "id" : "softMutualUnitCollider" }
+        { id: "softMutualUnitCollider" }
     ]
 }

@@ -1,10 +1,10 @@
 {
-    "id" : "pits-and-pillars",
-    "behaviors" : [
-        { "id" : "setTiles", "parameters" : { "type" : "floor" } },
-        { "id" : "selectRandom", "parameters" : { "percentage" : 0.3 } },
-        { "id" : "setTiles", "parameters" : { "type" : "crevice" } },
-        { "id" : "selectRandom", "parameters" : { "percentage" : 0.2 } },
-        { "id" : "setTiles", "parameters" : { "type" : "wall" } }
+    id: "pits-and-pillars",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "floor" } },
+        { id: "selectRandom", parameters: { percentage: 0.3 } },
+        { id: "setTiles", parameters: { type: "crevice" } },
+        { id: "selectRandom", parameters: { percentage: 0.2 } },
+        { id: "setTiles", parameters: { type: "wall" } }
     ]
 }

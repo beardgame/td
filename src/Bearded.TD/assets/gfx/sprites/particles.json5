@@ -1,32 +1,32 @@
 {
-	"textures" : [
-		{ "name" : "diffuseTexture", "filename" : "data/sprites/particles.png" }
+	textures: [
+		{ name: "diffuseTexture", filename: "data/sprites/particles.png" }
 	],
-	"uvSize" : [16, 10],
-	"sprites" : [
-		{ "name" : "spark",		"uv" : [ {"lt" : [0, 0], "size" : [4, 2]} ] },
-		{ "name" : "bloob",		"uv" : [ {"lt" : [4, 0], "size" : [2, 2]} ] },
-		{ "name" : "blink",		"uv" : [ {"lt" : [0, 2], "size" : [3, 3]} ] },
-		{ "name" : "splash-old",	"uv" : [ {"lt" : [3, 2], "size" : [3, 3]} ] },
-		{ "name" : "bullet",	"uv" : [ {"lt" : [0, 5], "size" : [4, 1]} ] },
-		{ "name" : "fadering",	"uv" : [ {"lt" : [6, 0], "size" : [4, 4]} ] },
-		{ "name" : "beamhard",	"uv" : [ {"lt" : [5, 0], "size" : [0, 2]} ] },
-		{ "name" : "beamsoft",	"uv" : [ {"lt" : [1.5, 2], "size" : [0, 3]} ] },
+	uvSize: [16, 10],
+	sprites: [
+		{ name: "spark",		uv: [ {lt: [0, 0], size: [4, 2]} ] },
+		{ name: "bloob",		uv: [ {lt: [4, 0], size: [2, 2]} ] },
+		{ name: "blink",		uv: [ {lt: [0, 2], size: [3, 3]} ] },
+		{ name: "splash-old",	uv: [ {lt: [3, 2], size: [3, 3]} ] },
+		{ name: "bullet",	uv: [ {lt: [0, 5], size: [4, 1]} ] },
+		{ name: "fadering",	uv: [ {lt: [6, 0], size: [4, 4]} ] },
+		{ name: "beamhard",	uv: [ {lt: [5, 0], size: [0, 2]} ] },
+		{ name: "beamsoft",	uv: [ {lt: [1.5, 2], size: [0, 3]} ] },
 
-		{ "name" : "beamsoftcenter",	"uv" : [ {"lt" : [1.5, 3.5], "size" : [0, 0]} ] },
+		{ name: "beamsoftcenter",	uv: [ {lt: [1.5, 3.5], size: [0, 0]} ] },
 
-		{ "name" : "sparkly",	"uv" : [ {"lt" : [6, 4], "size" : [4, 4]} ] },
-		{ "name" : "orb",	"uv" : [ {"lt" : [4, 5], "size" : [2, 2]} ] },
+		{ name: "sparkly",	uv: [ {lt: [6, 4], size: [4, 4]} ] },
+		{ name: "orb",	uv: [ {lt: [4, 5], size: [2, 2]} ] },
 
-		
-		{ "name" : "warpdust",	"uv" : [ {"lb" : [0, 6], "lt" : [4, 6], "rb" : [0, 5], "rt" : [4, 5]} ] },
 
-		{ "name" : "plus",	"uv" : [ {"lt" : [0, 6], "size" : [4, 4] } ], "size" : [1, 1] },
+		{ name: "warpdust",	uv: [ {lb: [0, 6], lt: [4, 6], rb: [0, 5], rt: [4, 5]} ] },
 
-		{ "name" : "boomerang",	"uv" : [ {"lt" : [4, 8], "size" : [5, 2] } ], "size" : [5, 2] },
+		{ name: "plus",	uv: [ {lt: [0, 6], size: [4, 4] } ], size: [1, 1] },
 
-		{ "name" : "splash",	"uv" : [ {"lt" : [10, 0], "size" : [6, 6]} ] },
+		{ name: "boomerang",	uv: [ {lt: [4, 8], size: [5, 2] } ], size: [5, 2] },
 
-		{ "name" : "shockwave",	"uv" : [ {"lt" : [11, 5], "size" : [4, 6], "rotation" : -1.57 } ], "size" : [1, 1] }
+		{ name: "splash",	uv: [ {lt: [10, 0], size: [6, 6]} ] },
+
+		{ name: "shockwave",	uv: [ {lt: [11, 5], size: [4, 6], rotation: -1.57 } ], size: [1, 1] }
 	]
 }

@@ -1,33 +1,33 @@
 {
-    "id" : "kinetic0-cannon-shell",
-    "components" : [
-        { "id" : "tags", "parameters" : { "tags" : [ "projectile" ] } },
+    id: "kinetic0-cannon-shell",
+    components: [
+        { id: "tags", parameters: { tags: [ "projectile" ] } },
         {
-            "id" : "damageOnHit",
-            "parameters" : {}
+            id: "damageOnHit",
+            parameters: {}
         },
-        { "id" : "deleteOnHit" },
+        { id: "deleteOnHit" },
         {
-            "id" : "sprite",
-            "parameters" : {
-                "sprite" : "default.particle.tracer",
-                "color" : "Silver",
-                "size" : 1.5
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.tracer",
+                color: "Silver",
+                size: 1.5
             }
         },
         {
-            "id" : "pointlight",
-            "parameters" : {
-                "color" : "FF333344",
-                "radius" : 2
+            id: "pointlight",
+            parameters: {
+                color: "FF333344",
+                radius: 2
             }
         },
         {
-            "id" : "spawnObjectOnHit",
-            "parameters" : {
-                "object" : "sparkExplosion",
-                "onHitLevel" : true,
-                "onHitEnemy" : false
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "sparkExplosion",
+                onHitLevel: true,
+                onHitEnemy: false
             }
         },
     ]

@@ -1,9 +1,9 @@
 ﻿{
-    "id" : "particle",
-    "textureSamplers" :
+    id: "particle",
+    textureSamplers:
     [
         {
-            "sampler" : "diffuse"
+            sampler: "diffuse"
         }
     ]
 }

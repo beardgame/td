@@ -1,20 +1,20 @@
 {
-    "id": "triangle",
-    "footprints": [
+    id: "triangle",
+    footprints: [
         {
-            "tiles": [
+            tiles: [
                 "base",
                 "right",
                 "upright"
             ]
         },
         {
-            "tiles": [
+            tiles: [
                 "base",
                 "right",
                 "downright"
             ],
-            "orientation" : 180
+            orientation: 180
         }
     ]
 }
