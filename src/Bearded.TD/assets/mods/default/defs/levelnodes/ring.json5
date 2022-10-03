@@ -1,0 +1,9 @@
+{
+    id: "ring",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "floor" } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "setTiles", parameters: { type: "wall" } }
+    ]
+}

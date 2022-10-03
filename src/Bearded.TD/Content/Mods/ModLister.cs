@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
@@ -21,10 +22,18 @@ sealed class ModLister
 
         return dir
             .EnumerateDirectories()
-            .Select(d => d.GetFiles("mod.json").SingleOrDefault())
+            .Select(findModJsonFile)
             .NotNull()
             .Select(load)
             .ToList();
+    }
+
+    private static FileInfo? findModJsonFile(DirectoryInfo dir)
+    {
+        var supportedExtensions = ImmutableHashSet.Create(".json", ".json5");
+        return dir.GetFiles()
+            .SingleOrDefault(f => supportedExtensions.Contains(f.Extension) &&
+                Path.GetFileNameWithoutExtension(f.Name) == "mod");
     }
 
     private ModMetadata load(FileInfo modFile)

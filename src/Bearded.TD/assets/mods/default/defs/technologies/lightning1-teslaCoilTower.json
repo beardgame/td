@@ -1,9 +1,0 @@
-{
-    "id" : "lightning1-teslaCoilTower",
-    "name" : "Tesla coil",
-    "branch" : "conductivity",
-    "tier" : "low",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "lightning1-teslaCoil" }
-    ]
-}

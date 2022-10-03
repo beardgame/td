@@ -2,6 +2,7 @@
 
 [assembly:InternalsVisibleTo("Bearded.TD.Testing")]
 [assembly:InternalsVisibleTo("Bearded.TD.Tests")]
+[assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace Bearded.TD;
 

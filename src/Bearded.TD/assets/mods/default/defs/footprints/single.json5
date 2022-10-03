@@ -1,0 +1,10 @@
+{
+    id: "single",
+    footprints: [
+        {
+            tiles: [
+                "base"
+            ]
+        }
+    ]
+}

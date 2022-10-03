@@ -1,0 +1,32 @@
+{
+  id: "kinetic2-gatling",
+  components: [
+    { id: "name", parameters: { name: "Gatling" } },
+    { id: "cost", parameters: { resources: 50 } },
+    { id: "footprint", parameters: { group: "single" } },
+    { id: "defaultTileOccupancy" },
+    { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+    { id: "autoRepair", parameters: { } },
+    { id: "gainXpOnDamage" },
+    { id: "veterancy" },
+    {
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "kinetic2-gatling-weapon",
+        height: 0.3
+      }
+    },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "buildings3.cannon-base",
+        colorMode: "faction",
+        shader: "building",
+        drawGroup: "building",
+        heightOffset: 0.1,
+        size: 1.2
+      }
+    }
+  ]
+}

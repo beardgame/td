@@ -1,0 +1,5 @@
+{
+  id: "heightmap-splatter",
+  vertexShader: "heightmap-splatter.vs",
+  fragmentShader: "heightmap-splatter.fs"
+}

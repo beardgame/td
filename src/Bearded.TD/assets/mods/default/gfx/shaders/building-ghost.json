@@ -1,5 +1,0 @@
-{
-  "id" : "building-ghost",
-  "vertexShader" : "building.vs",
-  "fragmentShader" : "building-ghost.fs"
-}

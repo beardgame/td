@@ -1,9 +1,0 @@
-﻿{
-    "id" : "terrain-splats",
-    "textureSamplers" :
-    [
-        {
-            "sampler" : "diffuse"
-        }
-    ]
-}

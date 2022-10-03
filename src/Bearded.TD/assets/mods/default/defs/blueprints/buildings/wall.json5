@@ -1,0 +1,27 @@
+{
+  id: "wall",
+  components: [
+    { id: "name", parameters: { name: "Wall" } },
+    { id: "cost", parameters: { resources: 10 } },
+    { id: "footprint", parameters: { group: "single" } },
+    { id: "defaultTileOccupancy" },
+    { id: "canBeBuiltOn" },
+    {
+      id: "health",
+      parameters: {
+        initialHealth: 1,
+        maxHealth: 50
+      }
+    },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "buildings3.cannon-base",
+        colorMode: "faction",
+        shader: "building",
+        drawGroup: "building",
+        heightOffset: 0.1
+      }
+    }
+  ]
+}

@@ -22,7 +22,7 @@ abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
 
     protected abstract string RelativePath { get; }
 
-    protected virtual DependencySelector? SelectDependency { get; } = null;
+    protected virtual DependencySelector? SelectDependency => null;
 
     protected BaseBlueprintLoader(BlueprintLoadingContext context)
     {
@@ -53,9 +53,10 @@ abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
             Context.Meta, blueprintCollection, Context.LoadedDependencies, m => selector(m)));
     }
 
-    private static ImmutableHashSet<string> supportedExtensions = ImmutableHashSet.Create(".json", ".json5");
+    // ReSharper disable once StaticMemberInGenericType
+    private static readonly ImmutableHashSet<string> supportedExtensions = ImmutableHashSet.Create(".json", ".json5");
 
-    protected virtual IEnumerable<FileInfo> GetJsonFiles()
+    protected IEnumerable<FileInfo> GetJsonFiles()
     {
         var totalPath = Path.Combine(Context.Meta.Directory.FullName, RelativePath);
 

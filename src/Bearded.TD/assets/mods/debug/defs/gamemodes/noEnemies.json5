@@ -1,0 +1,45 @@
+{
+    id: "noEnemies",
+    name: "No enemies, for all your level generation needs",
+    rules: [
+        {
+            id: "addFaction",
+            parameters: {
+                blueprint: {
+                    id: "players",
+                    behaviors: [
+                        { id: "resources" },
+                        { id: "technology" }
+                    ]
+                }
+            }
+        },
+        {
+            id: "addPlayerFactions",
+            parameters: {
+                parent: "players",
+                blueprint: {
+                    behaviors: []
+                }
+            }
+        },
+        { id: "revealFullMap" },
+        {
+            id: "contributeNodes",
+            parameters: {
+                nodes: [
+                    { nodes: [
+                        { id: "default.empty", weight: 2 },
+                        { id: "default.ring", weight: 1, minNumber: 1 },
+                        { id: "default.pillars", weight: 1, minNumber: 1 },
+                        { id: "default.pits", weight: 1, minNumber: 1 },
+                        { id: "default.pits-and-pillars", weight: 0.5, minNumber: 1 },
+                        { id: "default.thin-path", weight: 0.5, minNumber: 1 },
+                        { id: "default.maze", weight: 0.5, minNumber: 1 }
+                    ], weight: 1 },
+                    { id: "default.spawner", weight: 0.5 }
+                ]
+            }
+        }
+    ]
+}

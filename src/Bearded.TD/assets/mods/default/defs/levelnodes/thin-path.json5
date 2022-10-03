@@ -1,0 +1,6 @@
+{
+    id: "thin-path",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "crevice" } }
+    ]
+}

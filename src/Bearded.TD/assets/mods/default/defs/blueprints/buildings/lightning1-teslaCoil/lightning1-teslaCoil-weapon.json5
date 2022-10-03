@@ -1,38 +1,38 @@
 {
-    id : "lightning1-teslaCoil-weapon",
-    components : [
+    id: "lightning1-teslaCoil-weapon",
+    components: [
         {
-            id : "targetEnemiesInRange",
-            parameters : {
-                range : 3,
-            }
-        },
-        {
-            id : "automaticFireCycle",
-            parameters : {
-                damagePerSecond : 30,
-                fireRate : 3,
-            }
-        },
-        {
-            id : "markEnemiesInRange",
-            parameters : {
+            id: "targetEnemiesInRange",
+            parameters: {
                 range: 3,
             }
         },
         {
-            id : "arcEmitter",
-            parameters : {
-                arc : "lightning1-teslaCoil-arc",
-                lifeTime : 0.333,
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 30,
+                fireRate: 3,
+            }
+        },
+        {
+            id: "markEnemiesInRange",
+            parameters: {
+                range: 3,
+            }
+        },
+        {
+            id: "arcEmitter",
+            parameters: {
+                arc: "lightning1-teslaCoil-arc",
+                lifeTime: 0.333,
             }
         },
         {
             id: "sprite",
             parameters: {
                 sprite: "particle.tesla-coil",
-                color : "White",
-                size : 1.2,
+                color: "White",
+                size: 1.2,
             }
         },
     ]

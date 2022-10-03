@@ -1,0 +1,15 @@
+{
+  id: "explorationBeacon",
+  components: [
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "particle.plus",
+        color: "FF32A852",
+        size: 1,
+        drawGroup: "IgnoreDepth"
+      }
+    },
+    { id: "footprint", parameters: { group: "seven" } }
+  ]
+}
