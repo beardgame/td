@@ -28,7 +28,7 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     }
 
     private bool activated;
-    private ImmutableArray<KnownWeapon> knownWeapons;
+    private ImmutableArray<KnownWeapon> knownWeapons = ImmutableArray<KnownWeapon>.Empty;
     private IFactionProvider? factionProvider;
     private int fuelUsed;
     private WeaponDisabledReason? disabledReason;
