@@ -3,6 +3,7 @@
     components : [
         { id : "drag", parameters : { amount : 0.2 } },
         { id : "buoyancy", parameters : { amount : 1 } },
+        { id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
         {
             id : "damageOnHit",
             parameters : { damageType : "fire" }
