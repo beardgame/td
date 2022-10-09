@@ -17,10 +17,6 @@ namespace Bearded.TD.Content.Serialization.Converters;
 
 static class BehaviorConverterFactory
 {
-    public static BehaviorConverter<IBuildingComponent> ForBuildingComponents()
-        => new(ComponentFactories.ParameterTypesForComponentsById
-            .ToDictionary(t => t.Key, t => typeof(BuildingComponent<>).MakeGenericType(t.Value)));
-
     public static BehaviorConverter<IComponentModel> ForBaseComponents()
         => new(ComponentFactories.ParameterTypesForComponentsById
             .ToDictionary(t => t.Key, t => typeof(Component<>).MakeGenericType(t.Value)));

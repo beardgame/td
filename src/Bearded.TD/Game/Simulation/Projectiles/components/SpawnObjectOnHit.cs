@@ -12,7 +12,7 @@ sealed class SpawnObjectOnHit
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Object { get; }
+        IGameObjectBlueprint Object { get; }
 
         bool OnHitLevel { get; }
 

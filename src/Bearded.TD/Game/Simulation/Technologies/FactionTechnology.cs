@@ -12,12 +12,12 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 sealed class FactionTechnology : FactionBehavior
 {
     private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new();
-    private readonly HashSet<IComponentOwnerBlueprint> unlockedBuildings = new();
+    private readonly HashSet<IGameObjectBlueprint> unlockedBuildings = new();
     private readonly HashSet<IPermanentUpgrade> unlockedUpgrades = new();
 
     public bool HasTechnologyToken { get; private set; }
 
-    public IEnumerable<IComponentOwnerBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
+    public IEnumerable<IGameObjectBlueprint> UnlockedBuildings => unlockedBuildings.AsReadOnlyEnumerable();
 
     protected override void Execute() {}
 
@@ -59,9 +59,9 @@ sealed class FactionTechnology : FactionBehavior
         Events.Send(new TechnologyUnlocked(this, technology));
     }
 
-    public bool IsBuildingUnlocked(IComponentOwnerBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
+    public bool IsBuildingUnlocked(IGameObjectBlueprint blueprint) => unlockedBuildings.Contains(blueprint);
 
-    public void UnlockBuilding(IComponentOwnerBlueprint blueprint)
+    public void UnlockBuilding(IGameObjectBlueprint blueprint)
     {
         if (unlockedBuildings.Add(blueprint))
         {

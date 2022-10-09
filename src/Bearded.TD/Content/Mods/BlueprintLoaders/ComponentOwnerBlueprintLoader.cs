@@ -10,11 +10,11 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBlueprint, Serialization.Models.ComponentOwnerBlueprint, Void>
+class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IGameObjectBlueprint, Serialization.Models.ComponentOwnerBlueprint, Void>
 {
     private readonly ComponentOwnerProxyBlueprintResolver componentOwnerProxyBlueprintCollector;
-    private readonly DependencyConverter<IComponentOwnerBlueprint> dependencyConverter;
-    private readonly Dictionary<ModAwareId, (ComponentOwnerBlueprint Blueprint, FileInfo File, List<ComponentOwnerBlueprintProxy> Dependencies)>
+    private readonly DependencyConverter<IGameObjectBlueprint> dependencyConverter;
+    private readonly Dictionary<ModAwareId, (GameObjectBlueprint Blueprint, FileInfo File, List<GameObjectBlueprintProxy> Dependencies)>
         dependenciesByBlueprintId = new();
 
     protected override string RelativePath => "defs/blueprints";
@@ -24,10 +24,10 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
     public ComponentOwnerBlueprintLoader(BlueprintLoadingContext context) : base(context)
     {
         componentOwnerProxyBlueprintCollector = new ComponentOwnerProxyBlueprintResolver(Context.Meta, Context.LoadedDependencies);
-        dependencyConverter = new DependencyConverter<IComponentOwnerBlueprint>(componentOwnerProxyBlueprintCollector);
+        dependencyConverter = new DependencyConverter<IGameObjectBlueprint>(componentOwnerProxyBlueprintCollector);
     }
 
-    public override ReadonlyBlueprintCollection<IComponentOwnerBlueprint> LoadBlueprints()
+    public override ReadonlyBlueprintCollection<IGameObjectBlueprint> LoadBlueprints()
     {
         var blueprints = loadBlueprints();
 
@@ -35,14 +35,14 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
 
         validBlueprints.ForEach(injectDependencies);
 
-        var blueprintCollection = new ReadonlyBlueprintCollection<IComponentOwnerBlueprint>(validBlueprints);
+        var blueprintCollection = new ReadonlyBlueprintCollection<IGameObjectBlueprint>(validBlueprints);
 
         SetupDependencyResolver(blueprintCollection);
 
         return blueprintCollection;
     }
 
-    private List<IComponentOwnerBlueprint> loadBlueprints()
+    private List<IGameObjectBlueprint> loadBlueprints()
     {
         Context.Serializer.Converters.Add(dependencyConverter);
 
@@ -55,7 +55,7 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
         return blueprints;
     }
 
-    private List<IComponentOwnerBlueprint> removeMissingDependencies(List<IComponentOwnerBlueprint> blueprints)
+    private List<IGameObjectBlueprint> removeMissingDependencies(List<IGameObjectBlueprint> blueprints)
     {
         var blueprintCandidates = blueprints.ToList();
 
@@ -70,7 +70,7 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
 
         return blueprintCandidates;
 
-        bool allDependenciesAreValidCandidates(IComponentOwnerBlueprint candidate)
+        bool allDependenciesAreValidCandidates(IGameObjectBlueprint candidate)
         {
             var (_, file, proxies) = dependenciesByBlueprintId[candidate.Id];
 
@@ -90,7 +90,7 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
         }
     }
 
-    private void injectDependencies(IComponentOwnerBlueprint blueprint)
+    private void injectDependencies(IGameObjectBlueprint blueprint)
     {
         var (_, _, proxies) = dependenciesByBlueprintId[blueprint.Id];
 
@@ -105,13 +105,13 @@ class ComponentOwnerBlueprintLoader : BaseBlueprintLoader<IComponentOwnerBluepri
         }
     }
 
-    protected override IComponentOwnerBlueprint LoadBlueprint(FileInfo file)
+    protected override IGameObjectBlueprint LoadBlueprint(FileInfo file)
     {
         var blueprint = base.LoadBlueprint(file);
 
         var proxies = componentOwnerProxyBlueprintCollector.GetAndResetCurrentProxies();
 
-        dependenciesByBlueprintId[blueprint.Id] = ((ComponentOwnerBlueprint) blueprint, file, proxies);
+        dependenciesByBlueprintId[blueprint.Id] = ((GameObjectBlueprint) blueprint, file, proxies);
 
         return blueprint;
     }

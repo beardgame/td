@@ -16,7 +16,7 @@ sealed record WaveScript(
     ResourceAmount ResourcesAwardedBySpawnPhase,
     ImmutableArray<SpawnLocation> SpawnLocations,
     int UnitsPerSpawnLocation,
-    IComponentOwnerBlueprint UnitBlueprint,
+    IGameObjectBlueprint UnitBlueprint,
     ImmutableArray<Id<GameObject>> SpawnedUnitIds)
 {
     public Instant SpawnEnd => SpawnStart + SpawnDuration;

@@ -109,5 +109,5 @@ sealed class SpawnCrystals : NodeBehavior<SpawnCrystals.BehaviorParameters>
         }
     }
 
-    public sealed record BehaviorParameters(ImmutableArray<IComponentOwnerBlueprint> Blueprints);
+    public sealed record BehaviorParameters(ImmutableArray<IGameObjectBlueprint> Blueprints);
 }

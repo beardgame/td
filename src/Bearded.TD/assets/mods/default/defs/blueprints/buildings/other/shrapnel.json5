@@ -1,22 +1,22 @@
 {
-  id : "shrapnel",
-  components : [
-    { id : "tags", parameters : { tags : [ "projectile" ] } },
+  id: "shrapnel",
+  components: [
+    { id: "tags", parameters: { tags: [ "projectile" ] } },
     {
-      id : "damageOnHit",
-      parameters : {}
+      id: "damageOnHit",
+      parameters: {}
     },
     {
-      id : "sprite",
-      parameters : {
-        sprite : "default.particle.spark",
-        color : "Black",
-        size : 0.25,
+      id: "sprite",
+      parameters: {
+        sprite: "default.particle.spark",
+        color: "Black",
+        size: 0.25,
       }
     },
     {
-      id : "deleteAfter",
-      parameters : { timeSpan : 0.2 }
+      id: "deleteAfter",
+      parameters: { timeSpan: 0.2 }
     }
   ]
 }

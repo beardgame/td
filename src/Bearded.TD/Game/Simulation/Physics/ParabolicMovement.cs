@@ -1,27 +1,20 @@
-using System;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Projectiles;
-using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
-sealed class ParabolicMovement : Component, IDirected3
+sealed class ParabolicMovement : Component, IDirected3, IPhysics
 {
-    private Velocity3 velocity;
+    public Velocity3 Velocity { get; private set; }
 
-    public Difference3 Direction => velocity * 1.S();
+    public Difference3 Direction => Velocity * 1.S();
 
     public ParabolicMovement(Velocity3 velocity)
     {
-        this.velocity = velocity;
+        Velocity = velocity;
     }
 
     protected override void OnAdded()
@@ -32,53 +25,18 @@ sealed class ParabolicMovement : Component, IDirected3
     {
         var forces = Constants.Game.Physics.Gravity3;
 
-        var position = Owner.Position;
-        velocity += forces * elapsedTime;
+        Velocity += forces * elapsedTime;
+        var step = Velocity * elapsedTime;
 
-        var step = velocity * elapsedTime;
-        var ray = new Ray3(position, step);
+        var movement = new PreviewMove(Owner.Position, step);
+        Events.Preview(ref movement);
 
-        var (result, rayFactor, _, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstEnemies(
-            ray, Owner.Game.UnitLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
-
-        position += step * rayFactor;
-
-        Owner.Position = position;
-
-        var tile = Level.GetTile(position.XY());
-
-        switch (result)
-        {
-            case RayCastResultType.HitNothing:
-                if (position.Z < Owner.Game.GeometryLayer[tile].DrawInfo.Height)
-                    hitLevel(position, null);
-                break;
-            case RayCastResultType.HitLevel:
-                hitLevel(position, lastStep);
-                break;
-            case RayCastResultType.HitEnemy:
-                _ = enemy ?? throw new InvalidOperationException();
-                hitEnemy(position, enemy, normal.Value);
-                break;
-            default:
-                throw new IndexOutOfRangeException();
-        }
+        Owner.Position = movement.Start + movement.Step;
+        Owner.Direction = Direction2.Of(Velocity.NumericValue.Xy);
     }
 
-    private void hitEnemy(Position3 position, GameObject enemy, Difference3 normal)
+    public void ApplyVelocityImpulse(Velocity3 impulse)
     {
-        var info = new HitInfo(position, normal, velocityVector());
-        Events.Send(new HitEnemy(enemy, info));
-        Owner.Delete();
+        Velocity += impulse;
     }
-
-    private void hitLevel(Position3 point, Direction? withStep)
-    {
-        var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
-        var info = new HitInfo(point, normal, velocityVector());
-        Events.Send(new HitLevel(info));
-        Owner.Delete();
-    }
-
-    private Difference3 velocityVector() => new(velocity.NumericValue.NormalizedSafe());
 }

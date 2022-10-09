@@ -15,6 +15,8 @@ void main()
 {
 	vec2 uvX = dFdx(fragmentUV) * 1.5;
 	vec2 uvY = dFdy(fragmentUV) * 1.5;
+	
+	vec4 color = texture(diffuse, fragmentUV);
 
     float aX = texture(diffuse, fragmentUV + uvX).a - texture(diffuse, fragmentUV - uvX).a;
     float aY = texture(diffuse, fragmentUV + uvY).a - texture(diffuse, fragmentUV - uvY).a;
@@ -30,15 +32,14 @@ void main()
     float n = dot(nX, nX) + dot(nY, nY);
 
     bool isOutline = n > 0.01 || a > 0.01;
-
-    if (isOutline)
-    {
-        float flicker = 0.5 + 0.3 * sin(fragmentPosition.y * 3 + time * 5);
-
-        outRGBA = vec4(fragmentColor.rgb * max(a, n) * flicker, 0);
-    }
-    else
-    {
-        discard;
-    }
+    
+    float insideAlpha = 0.75;
+    vec4 edgeColor = mix(vec4(0.5), vec4(fragmentColor.rgb, 0), 0.25);
+    vec4 insideColor = mix(vec4(0.5, 0.5, 0.5, 1), color, 0.25);
+    
+    float outline = max(a, n);
+    float inside = color.a * insideAlpha;
+    float alpha = max(outline, inside);
+    
+    outRGBA = mix(insideColor, edgeColor, outline) * alpha;
 }

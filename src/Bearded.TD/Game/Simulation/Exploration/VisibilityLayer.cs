@@ -28,7 +28,7 @@ sealed class VisibilityLayer
 
     public bool RevealZone(Zone zone)
     {
-        if (!revealedZones.Add(zone))
+        if (!zone.Explorable || !revealedZones.Add(zone))
         {
             return false;
         }

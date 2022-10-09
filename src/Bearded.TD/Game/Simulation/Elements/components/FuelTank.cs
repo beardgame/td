@@ -13,8 +13,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
+interface IFuelTank
+{
+    float FilledPercentage { get; }
+}
+
 [Component("fuelTank")]
-sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectile>, IListener<WaveEnded>
+sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectile>, IListener<WaveEnded>, IFuelTank
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -23,11 +28,13 @@ sealed class FuelTank : Component<FuelTank.IParameters>, IListener<ShotProjectil
     }
 
     private bool activated;
-    private ImmutableArray<KnownWeapon> knownWeapons;
+    private ImmutableArray<KnownWeapon> knownWeapons = ImmutableArray<KnownWeapon>.Empty;
     private IFactionProvider? factionProvider;
     private int fuelUsed;
     private WeaponDisabledReason? disabledReason;
     private DroneFulfillment? drone;
+
+    public float FilledPercentage => 1 - fuelUsed / (float)Parameters.FuelCapacity;
 
     public FuelTank(IParameters parameters) : base(parameters) { }
 

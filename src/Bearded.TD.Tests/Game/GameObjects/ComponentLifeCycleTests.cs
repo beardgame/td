@@ -2,10 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Weapons;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Testing.Components;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,12 +22,27 @@ public sealed class ComponentLifeCycleTests
 {
     // Components that won't work in the limited test bed we have.
     private static readonly ImmutableHashSet<Type> nonFunctionalComponents = ImmutableHashSet.Create(
-        typeof(GhostBuildingRenderer) // Requests hardcoded access to a blueprint.
+        typeof(ArcRenderer), // Expects a target property to always be present.
+        typeof(Foundation), // Requests hardcoded access to a blueprint.
+        typeof(GhostBuildingRenderer), // Requests hardcoded access to a blueprint.
+        typeof(HitTargetOnActivate), // Expects a target property to always be present.
+        typeof(ProjectileEmitter), // Attempts to instantiate a blueprint on added.
+        typeof(Turret) // Attempts to instantiate a blueprint on added.
+    );
+
+    // Components that access sprites in OnActivate.
+    private static readonly ImmutableHashSet<Type> spriteAccessingBlueprints = ImmutableHashSet.Create(
+        typeof(AnimatedSprite), // Attempts to instantiate a sprite on activate.
+        typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.
+        typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
+        typeof(Sprite), // Attempts to instantiate a sprite on activate.
+        typeof(Trail) // Attempts to instantiate a sprite on activate.
     );
 
     // Components that can never be removed from their owner.
     private static readonly ImmutableHashSet<Type> permanentComponents = ImmutableHashSet.Create(
-        typeof(BuildingStateManager)
+        typeof(BuildingStateManager),
+        typeof(Health)
     );
 
     public static IEnumerable<object[]> GetAllComponents()
@@ -42,7 +64,9 @@ public sealed class ComponentLifeCycleTests
     [MemberData(nameof(GetAllComponents))]
     public void LifeCycleWithActivateThrowsNoErrors(Type type)
     {
-        if (nonFunctionalComponents.Contains(type) || makeInstance(type) is not { } component)
+        if (nonFunctionalComponents.Contains(type) ||
+            spriteAccessingBlueprints.Contains(type) ||
+            makeInstance(type) is not { } component)
         {
             return;
         }
@@ -94,7 +118,47 @@ public sealed class ComponentLifeCycleTests
             return null;
         }
 
-        output.WriteLine($"INFO: {type} has a constructor parameter, which cannot be tested at this time. Skipping.");
+        var parameter = parameters[0];
+        if (!parameter.ParameterType.IsAssignableTo(typeof(IParametersTemplate)))
+        {
+            output.WriteLine(
+                $"WARN: {type} has constructor with parameter that does not implement parameters template. Skipping.");
+            return null;
+        }
+
+        var parameterInstance = mockedParameters(parameter.ParameterType);
+
+        if (instantiatedComponentWithParameter(constructor, parameter.ParameterType, parameterInstance)
+            is IComponent component)
+        {
+            return component;
+        }
+
+        output.WriteLine($"WARN: could not instantiate {type}. Skipping.");
         return null;
+    }
+
+    private static object mockedParameters(Type type)
+    {
+        var methodCallEx = Expression.Call(typeof(ComponentLifeCycleTests), nameof(mockedParameters), new[] { type });
+        var lambdaEx = Expression.Lambda(methodCallEx);
+        return lambdaEx.Compile().DynamicInvoke()!;
+    }
+
+    private static object mockedParameters<T>() where T : class, IParametersTemplate<T>
+    {
+        var mock = new Mock<T>();
+        mock.Setup(m => m.CreateModifiableInstance()).Returns(mock.Object);
+        return mock.Object;
+    }
+
+    private static object? instantiatedComponentWithParameter(
+        ConstructorInfo constructor, Type parameterParameterType, object parameterInstance)
+    {
+        var parameterParameter = Expression.Parameter(parameterParameterType);
+        var newComponentExpression =
+            Expression.Lambda(Expression.New(constructor, parameterParameter), parameterParameter);
+        var componentInstance = newComponentExpression.Compile().DynamicInvoke(parameterInstance);
+        return componentInstance;
     }
 }

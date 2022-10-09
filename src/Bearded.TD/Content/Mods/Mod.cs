@@ -26,7 +26,7 @@ sealed class Mod
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
-        ReadonlyBlueprintCollection<IComponentOwnerBlueprint> weapons,
+        ReadonlyBlueprintCollection<IGameObjectBlueprint> weapons,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,

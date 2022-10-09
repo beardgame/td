@@ -36,7 +36,11 @@ sealed class ZoneGenerator
                 node =>
                 {
                     var tilesInNode = node.Tiles.ToImmutableArray();
-                    return new Zone(Id<Zone>.Invalid, tilesInNode, generateVisibilityTilesForZone(tilesInNode));
+                    return new Zone(
+                        Id<Zone>.Invalid,
+                        tilesInNode,
+                        generateVisibilityTilesForZone(tilesInNode),
+                        node.NodeFeature.Blueprint.Explorable);
                 });
 
         ImmutableArray<Tile> generateVisibilityTilesForZone(ImmutableArray<Tile> startingTiles)

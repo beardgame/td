@@ -12,12 +12,12 @@ namespace Bearded.TD.Game.Simulation.Exploration;
 
 static class ExplorationBeaconFactory
 {
-    public static GameObject CreateExplorationBeacon(ComponentOwnerBlueprint blueprint, Tile tile, Zone zone)
+    public static GameObject CreateExplorationBeacon(GameObjectBlueprint blueprint, Tile tile, Zone zone)
     {
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             blueprint, null, Level.GetPosition(tile).WithZ(0));
 
-        obj.AddComponent(new AlwaysVisibleVisibility());
+        obj.AddComponent(new ConditionBasedVisibility(o => o.Game.ExplorationManager.HasExplorationToken));
         obj.AddComponent(new DrawZoneOnSelect());
         obj.AddComponent(new ReportSubject());
         obj.AddComponent(new Selectable());

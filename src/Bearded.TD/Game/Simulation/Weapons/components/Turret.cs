@@ -27,7 +27,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Weapon { get; }
+        IGameObjectBlueprint Weapon { get; }
         Difference2 Offset { get; }
 
         [Modifiable(0.25)]

@@ -1,24 +1,24 @@
 {
-    id : "kinetic2-shrapnelExplosion",
-    name : "Shrapnel Projectiles",
-    cost : 50,
-    effects : [
+    id: "kinetic2-shrapnelExplosion",
+    name: "Shrapnel Projectiles",
+    cost: 50,
+    effects: [
         {
-            type : "component",
-            parameters : {
-                id : "projectileExplosionOnHit",
-                parameters : {
-                    projectile : "shrapnel",
-                    onHitLevel : true,
-                    onHitEnemy : true,
-                    minProjectileNumber : 10,
-                    maxProjectileNumber : 15,
-                    randomVelocity : 6,
-                    damageFactor : 1
+            type: "component",
+            parameters: {
+                id: "projectileExplosionOnHit",
+                parameters: {
+                    projectile: "shrapnel",
+                    onHitLevel: true,
+                    onHitEnemy: true,
+                    minProjectileNumber: 10,
+                    maxProjectileNumber: 15,
+                    randomVelocity: 6,
+                    damageFactor: 1
                 }
             },
-            prerequisites : {
-                requiredTags : [ "projectile" ]
+            prerequisites: {
+                requiredTags: [ "projectile" ]
             }
         }
     ]

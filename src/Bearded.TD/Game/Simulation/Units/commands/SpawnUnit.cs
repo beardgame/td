@@ -12,18 +12,18 @@ namespace Bearded.TD.Game.Simulation.Units;
 static class SpawnUnit
 {
     public static ISerializableCommand<GameInstance> Command(
-        GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<GameObject> unitId)
+        GameState game, Tile tile, IGameObjectBlueprint blueprint, Id<GameObject> unitId)
         => new Implementation(game, tile, blueprint, unitId);
 
     private sealed class Implementation : ISerializableCommand<GameInstance>
     {
         private readonly GameState game;
         private readonly Tile tile;
-        private readonly IComponentOwnerBlueprint blueprint;
+        private readonly IGameObjectBlueprint blueprint;
         private readonly Id<GameObject> unitId;
 
         public Implementation(
-            GameState game, Tile tile, IComponentOwnerBlueprint blueprint, Id<GameObject> unitId)
+            GameState game, Tile tile, IGameObjectBlueprint blueprint, Id<GameObject> unitId)
         {
             this.game = game;
             this.tile = tile;

@@ -15,7 +15,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void UnselectsEverythingWithPercentageZeroOrLess()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviourWithParameters(0).Generate(test.Context);
 
@@ -25,7 +25,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsAllWithPercentageOneOrGreater()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             behaviourWithParameters(1).Generate(test.Context);
@@ -38,7 +38,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         {
             var fraction = inverseFraction / (double)byte.MaxValue;
 
-            var test = TestContext.CreateForHexagonalNodeWithRadius(10, seed);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(10, seed);
 
             behaviourWithParameters(fraction).Generate(test.Context);
 

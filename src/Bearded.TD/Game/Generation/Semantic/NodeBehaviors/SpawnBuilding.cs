@@ -48,7 +48,7 @@ sealed class SpawnBuilding : NodeBehavior<SpawnBuilding.BehaviorParameters>
     }
 
     [UsedImplicitly]
-    public sealed record BehaviorParameters(IComponentOwnerBlueprint Building, ExternalId<Faction> Faction, PlacementBias Placement);
+    public sealed record BehaviorParameters(IGameObjectBlueprint Building, ExternalId<Faction> Faction, PlacementBias Placement);
 
     public enum PlacementBias
     {

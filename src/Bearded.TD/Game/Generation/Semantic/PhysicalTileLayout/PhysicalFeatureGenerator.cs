@@ -13,11 +13,11 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 
 sealed class PhysicalFeatureGenerator
 {
-    private readonly Unit nodeRadius;
+    private readonly Unit defaultNodeRadius;
 
-    public PhysicalFeatureGenerator(Unit nodeRadius)
+    public PhysicalFeatureGenerator(Unit defaultNodeRadius)
     {
-        this.nodeRadius = nodeRadius;
+        this.defaultNodeRadius = defaultNodeRadius;
     }
 
     public List<PhysicalFeature> GenerateFeaturesWithAreasInInitialLocation(
@@ -44,7 +44,7 @@ sealed class PhysicalFeatureGenerator
             if (node.Blueprint == null)
                 continue;
 
-            var center = Position2.Zero + Level.GetPosition(tile).NumericValue * nodeRadius * 2;
+            var center = Position2.Zero + Level.GetPosition(tile).NumericValue * defaultNodeRadius * 2;
 
             // TODO: once we use multiple circles, passed from script files, rotate the feature
             // so that connections will line up more easily (circles know if they can connect to or not)
@@ -52,7 +52,9 @@ sealed class PhysicalFeatureGenerator
             // so that they won't overlap and intersect funny with other nodes for relaxation
             // (we can probably just scale the node feature graph by its max radius
 
-            var circle = new Circle(center, nodeRadius * random.NextFloat(0.75f, 1.2f));
+            var nodeSizeRadius = node.Blueprint.Radius ?? defaultNodeRadius;
+
+            var circle = new Circle(center, nodeSizeRadius * random.NextFloat(0.75f, 1.2f));
 
             var n = new PhysicalFeature.Node(node.Blueprint, ImmutableArray.Create(circle));
 
@@ -116,8 +118,8 @@ sealed class PhysicalFeatureGenerator
                 const float toOuterRadius = 2 / 1.73205080757f;
                 var p1 = Position2.Zero +
                     (Level.GetPosition(tile).NumericValue * 2 + direction.CornerBefore() * toOuterRadius) *
-                    nodeRadius;
-                var p1To2 = (direction.CornerAfter() - direction.CornerBefore()) * toOuterRadius * nodeRadius;
+                    defaultNodeRadius;
+                var p1To2 = (direction.CornerAfter() - direction.CornerBefore()) * toOuterRadius * defaultNodeRadius;
 
                 // TODO: make this depend on length
                 const int count = 5;

@@ -1,3 +1,4 @@
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
@@ -11,6 +12,16 @@ static class GameLoopObjectFactory
     {
         var obj = GameObjectFactory.CreateWithoutRenderer(null, Level.GetPosition(tile).WithZ(0.U()));
         obj.AddComponent(new SpawnLocation(id, tile));
+        return obj;
+    }
+
+    public static GameObject CreateSpawnIndicator(GameObject owner, Tile tile)
+    {
+        var blueprint = owner.Game.Meta.Blueprints.ComponentOwners[ModAwareId.ForDefaultMod("spawnIndicator")];
+        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
+            blueprint, owner, Level.GetPosition(tile).WithZ(0.U()));
+
+        obj.AddComponent(new SpawnIndicator(tile));
         return obj;
     }
 

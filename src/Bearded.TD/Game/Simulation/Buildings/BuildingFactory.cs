@@ -19,7 +19,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 static class BuildingFactory
 {
     public static GameObject Create(
-        Id<GameObject> id, IComponentOwnerBlueprint blueprint, Faction faction,
+        Id<GameObject> id, IGameObjectBlueprint blueprint, Faction faction,
         PositionedFootprint footprint)
     {
         var building = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
@@ -55,7 +55,7 @@ static class BuildingFactory
     }
 
     public static GameObject CreateGhost(
-        IComponentOwnerBlueprint blueprint, Faction faction,
+        IGameObjectBlueprint blueprint, Faction faction,
         out MovableTileOccupation tileOccupation)
     {
         var ghost = GameObjectFactory.CreateFromBlueprintWithoutRenderer(

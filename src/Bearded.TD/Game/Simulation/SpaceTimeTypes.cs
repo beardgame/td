@@ -11,6 +11,10 @@ namespace Bearded.TD.Game.Simulation;
 static class SpaceTimeTypes
 {
     [ConvertsAttribute]
+    public static AttributeConverter<Acceleration> AccelerationConverter =
+        new(d => new Acceleration((float) d), a => a.NumericValue);
+    
+    [ConvertsAttribute]
     public static AttributeConverter<Angle> AngleConverter =
         new(d => Angle.FromDegrees((float) d), a => a.Degrees);
 

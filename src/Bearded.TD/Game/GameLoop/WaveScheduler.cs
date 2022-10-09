@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -9,10 +8,8 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
@@ -22,7 +19,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed class WaveScheduler : IListener<WaveEnded>
+sealed partial class WaveScheduler : IListener<WaveEnded>
 {
     private readonly Random random = new();
     private readonly GameState game;
@@ -95,51 +92,16 @@ sealed class WaveScheduler : IListener<WaveEnded>
         logger.Debug?.Log($"Wave parameters requested with threat {requirements.WaveValue}");
         var sw = Stopwatch.StartNew();
 
-        var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
-        var minWaveValue = requirements.WaveValue - allowedValueError;
-        var maxWaveValue = requirements.WaveValue + allowedValueError;
+        var (minWaveValue, maxWaveValue) = waveValueRange(requirements);
 
-        var eligibleEnemies = EnemySpawnDefinition.All.Where(def =>
-        {
-            var threat = game.Meta.Blueprints.ComponentOwners[def.BlueprintId].GetThreat();
-            return 6 * threat < maxWaveValue;
-        }).ToList();
-        if (eligibleEnemies.Count == 0)
-        {
-            throw new InvalidOperationException();
-        }
-        var blueprint = selectBlueprint(eligibleEnemies);
-        var blueprintThreat = blueprint.GetThreat();
+        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(maxWaveValue, minWaveValue);
 
-        var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
-        var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
-        var numEnemies = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
+        var spawnLocations = chooseSpawnLocations(enemyCount);
+        var spawnLocationCount = spawnLocations.Length;
 
-        var activeSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
-        State.Satisfies(activeSpawnLocations.Count > 0);
+        var enemiesPerSpawn = MoreMath.CeilToInt((double) enemyCount / spawnLocationCount);
 
-        var minSequentialSpawnTime = numEnemies * MinTimeBetweenSpawns;
-        var minSpawnPoints = MoreMath.CeilToInt(EnemyTrainLength / (minSequentialSpawnTime * numEnemies));
-        var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
-            ? minSpawnPoints
-            : random.Next(minSpawnPoints, activeSpawnLocations.Count);
-        if (numSpawnPoints >= numEnemies / 3)
-        {
-            numSpawnPoints = Math.Max(1, numEnemies / 3);
-        }
-        var spawnLocations = activeSpawnLocations.RandomSubset(numSpawnPoints, random).ToImmutableArray();
-
-        var enemiesPerSpawn = MoreMath.CeilToInt((double) numEnemies / numSpawnPoints);
-        var actualValue = enemiesPerSpawn * numSpawnPoints * blueprintThreat;
-        var actualError = Math.Abs(actualValue - requirements.WaveValue);
-
-        // Try spawning one less enemy per spawn. If that ends up being closer to our desired value, do that.
-        var candidateValue = (enemiesPerSpawn - 1) * numSpawnPoints * blueprintThreat;
-        var candidateError = Math.Abs(candidateValue - requirements.WaveValue);
-        if (candidateValue > 0 && candidateError < actualError)
-        {
-            enemiesPerSpawn--;
-        }
+        optimizeForWaveValue(requirements, spawnLocationCount, blueprintThreat, ref enemiesPerSpawn);
 
         var spawnDuration = TimeSpan.Max(
             TimeSpan.Min(
@@ -155,26 +117,34 @@ sealed class WaveScheduler : IListener<WaveEnded>
         return new WaveParameters(blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
     }
 
+    private static (double minWaveValue, double maxWaveValue) waveValueRange(WaveRequirements requirements)
+    {
+        var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
+        var minWaveValue = requirements.WaveValue - allowedValueError;
+        var maxWaveValue = requirements.WaveValue + allowedValueError;
+        return (minWaveValue, maxWaveValue);
+    }
+
+    private static void optimizeForWaveValue(
+        WaveRequirements requirements, int spawnLocationCount, float blueprintThreat, ref int enemiesPerSpawn)
+    {
+        var actualValue = enemiesPerSpawn * spawnLocationCount * blueprintThreat;
+        var actualError = Math.Abs(actualValue - requirements.WaveValue);
+
+        // Try spawning one less enemy per spawn. If that ends up being closer to our desired value, do that.
+        var candidateValue = (enemiesPerSpawn - 1) * spawnLocationCount * blueprintThreat;
+        var candidateError = Math.Abs(candidateValue - requirements.WaveValue);
+        if (candidateValue > 0 && candidateError < actualError)
+        {
+            enemiesPerSpawn--;
+        }
+    }
+
     private record struct WaveParameters(
-        IComponentOwnerBlueprint UnitBlueprint,
+        IGameObjectBlueprint UnitBlueprint,
         int EnemiesPerSpawn,
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);
-
-    private IComponentOwnerBlueprint selectBlueprint(IReadOnlyList<EnemySpawnDefinition> enemies)
-    {
-        var probabilities = new double[enemies.Count + 1];
-        foreach (var (enemy, i) in enemies.Indexed())
-        {
-            probabilities[i + 1] = enemy.Probability + probabilities[i];
-        }
-
-        var t = random.NextDouble(probabilities[^1]);
-        var result = Array.BinarySearch(probabilities, t);
-
-        var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-        return game.Meta.Blueprints.ComponentOwners[definition.BlueprintId];
-    }
 
     public sealed class WaveRequirements
     {

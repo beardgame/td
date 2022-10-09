@@ -1,0 +1,34 @@
+{
+    id: "kinetic2-gatling-shell",
+    components: [
+        { id: "tags", parameters: { tags: [ "projectile" ] } },
+        {
+            id: "damageOnHit",
+            parameters: {}
+        },
+        { id: "deleteOnHit" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.tracer",
+                color: "Silver",
+                size: 0.75
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "FF333344",
+                radius: 1
+            }
+        },
+        {
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "sparkExplosion-small",
+                onHitLevel: true,
+                onHitEnemy: false
+            }
+        },
+    ]
+}

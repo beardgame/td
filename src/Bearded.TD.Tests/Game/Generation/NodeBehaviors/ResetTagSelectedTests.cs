@@ -18,7 +18,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SetsDefaultTagValuesToZeroWithoutParameters(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -38,7 +38,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void OnlySetsTagValuesInSelection(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -68,7 +68,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SetsTagValuesInSelectionToGivenValue(int seed, NormalFloat value)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -98,7 +98,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SetsTagValuesForGivenTagName(int seed, NonEmptyString tag, NormalFloat value)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -128,7 +128,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void DoesNotChangeDefaultTagValuesWithOtherName(NonEmptyString tag, NormalFloat value)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var tagName = tag.Get == "default" ? "coincidence!" : tag.Get;
 
             behaviorWithParameters(tagName, value.Get).Generate(test.Context);

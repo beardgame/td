@@ -21,7 +21,7 @@ sealed class PassabilityManager
             { TileType.Unknown, Passabilities.All },
             { TileType.Floor, Passabilities.All },
             { TileType.Wall, Passabilities.None },
-            { TileType.Crevice, ~Passabilities.WalkingUnit }
+            { TileType.Crevice, ~Passabilities.WalkingUnit & ~Passabilities.Bulldozer }
         };
     private static readonly Passabilities passabilityInBuilding = ~Passabilities.WalkingUnit;
 

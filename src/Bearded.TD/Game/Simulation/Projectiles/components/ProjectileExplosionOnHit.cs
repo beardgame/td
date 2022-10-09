@@ -16,7 +16,7 @@ sealed class ProjectileExplosionOnHit
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        IComponentOwnerBlueprint Projectile { get; }
+        IGameObjectBlueprint Projectile { get; }
 
         bool OnHitLevel { get; }
 
@@ -96,7 +96,7 @@ sealed class ProjectileExplosionOnHit
             var direction = Direction2.Of(velocity.NumericValue.Xy);
 
             var projectile = ProjectileFactory
-                .Create(Parameters.Projectile, Owner, Owner.Position, direction, velocity, projectileDamage);
+                .Create(Parameters.Projectile, Owner, Owner.Position, direction, velocity, projectileDamage, default);
             projectile.AddComponent(new Property<HitInfo>(hit));
             Owner.Game.Add(projectile);
         }

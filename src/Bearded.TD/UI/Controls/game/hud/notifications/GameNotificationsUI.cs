@@ -76,7 +76,7 @@ sealed class GameNotificationsUI
 
     public void Update()
     {
-        if (notifications.RemoveAll(n => n.ExpirationTime.HasValue && n.ExpirationTime.Value <= game.State.Time) > 0)
+        if (notifications.RemoveAll(n => n.ExpirationTime.HasValue && n.ExpirationTime.Value <= timeSource.Time) > 0)
         {
             NotificationsChanged?.Invoke();
         }
@@ -122,7 +122,7 @@ sealed class GameNotificationsUI
         NotificationsChanged?.Invoke();
     }
 
-    private Instant expirationTimeForNotification() => game.State.Time + Constants.Game.GameUI.NotificationDuration;
+    private Instant expirationTimeForNotification() => timeSource.Time + Constants.Game.GameUI.NotificationDuration;
 
     private interface INotificationListener
     {

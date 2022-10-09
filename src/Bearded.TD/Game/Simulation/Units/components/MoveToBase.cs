@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Shared.Events;

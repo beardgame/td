@@ -1,0 +1,26 @@
+{
+  id: "sparkExplosion-small",
+  components: [
+    { id: "inheritDirection" },
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 6,
+        sprite: "default.particle.tracer",
+        color: "lightblue",
+        size: 0.05,
+        lineWidth: 0.05,
+        lifetime: 0.5,
+        randomVelocity: 2.5,
+        reflectionVelocity: 3,
+        drawMode: "line"
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 0.5
+      }
+    }
+  ]
+}

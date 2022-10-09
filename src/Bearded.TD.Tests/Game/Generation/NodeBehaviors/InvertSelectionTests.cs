@@ -12,7 +12,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void ClearsSelectionIfEverythingIsSelected()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             new InvertSelection().Generate(test.Context);
 
@@ -22,7 +22,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void SelectsEverythingIfNothingIsSelected()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             test.Context.Tiles.Selection.RemoveAll();
 
             new InvertSelection().Generate(test.Context);
@@ -33,7 +33,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void ExactlyInvertsEveryTilesSelection(int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {

@@ -19,7 +19,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void BehaviorDoesNotChangeTagsIfValueIsZero()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviorWithParameters().Generate(test.Context);
 
@@ -34,7 +34,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Fact]
         public void DefaultsToValueOneIfNoneIsGiven()
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             new TagSelected(new TagSelected.BehaviorParameters(null)).Generate(test.Context);
 
@@ -49,7 +49,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void SetsDefaultTagToNonZeroValue(NormalFloat value)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
             behaviorWithParameters(value.Get).Generate(test.Context);
 
@@ -64,7 +64,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void AddsParameterValueToExistingTagValue(NormalFloat value, int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -85,7 +85,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void AddsParameterValueToTagWithGivenName(NonEmptyString tag, NormalFloat value, int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {
@@ -106,7 +106,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void DoesNotChangeDefaultTagValuesWithOtherName(NonEmptyString tag, NormalFloat value)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var tagName = tag.Get == "default" ? "coincidence!" : tag.Get;
 
             behaviorWithParameters(value.Get, tagName).Generate(test.Context);
@@ -122,7 +122,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
         [Property]
         public void OnlyChangesTagValueInSelection(NonEmptyString tag, NormalFloat value, int seed)
         {
-            var test = TestContext.CreateForHexagonalNodeWithRadius(2);
+            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
             var random = new Random(seed);
             foreach (var tile in test.Context.Tiles.All)
             {

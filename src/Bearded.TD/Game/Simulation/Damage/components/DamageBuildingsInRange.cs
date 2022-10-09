@@ -39,7 +39,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (movement?.IsMoving ?? false)
+        if (movement?.IsMoving ?? true)
         {
             resetAttackTime();
         }

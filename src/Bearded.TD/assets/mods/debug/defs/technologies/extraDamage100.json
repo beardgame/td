@@ -1,9 +1,0 @@
-{
-    "id" : "extraDamage100",
-    "name" : "The infinite boom",
-    "requiredTechs" : [ "default.extraDamage3" ],
-    "tier" : "high",
-    "unlocks": [
-        { "type" : "upgrade", "blueprint" : "extraDamage100" }
-    ]
-}

@@ -11,7 +11,7 @@ readonly struct DamageExecutor
         this.damageSource = damageSource;
     }
 
-    public bool TryDoDamage(IComponentOwner target, TypedDamage typedDamage)
+    public bool TryDoDamage(GameObject target, TypedDamage typedDamage)
     {
         if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
         {
@@ -22,7 +22,7 @@ readonly struct DamageExecutor
         return true;
     }
 
-    public static DamageExecutor FromObject(IComponentOwner source)
+    public static DamageExecutor FromObject(GameObject source)
     {
         source.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
         return FromDamageSource(damageSource);

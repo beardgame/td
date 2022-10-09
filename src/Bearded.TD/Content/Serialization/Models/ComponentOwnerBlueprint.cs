@@ -10,12 +10,12 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Content.Serialization.Models;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-sealed class ComponentOwnerBlueprint : IConvertsTo<Content.Models.ComponentOwnerBlueprint, Void>
+sealed class ComponentOwnerBlueprint : IConvertsTo<Content.Models.GameObjectBlueprint, Void>
 {
     public string? Id { get; set; }
     public List<IComponent>? Components { get; set; }
 
-    public Content.Models.ComponentOwnerBlueprint ToGameModel(ModMetadata modMetadata, Void v)
+    public Content.Models.GameObjectBlueprint ToGameModel(ModMetadata modMetadata, Void v)
     {
         _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
 

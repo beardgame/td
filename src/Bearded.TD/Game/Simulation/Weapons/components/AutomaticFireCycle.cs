@@ -35,7 +35,7 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
         var currentTime = Game.Time;
         while (nextPossibleShootTime < currentTime)
         {
-            emitProjectile();
+            fireWeapon();
 
             var previewDelayEvent = new PreviewDelayNextShot(1 / Parameters.FireRate);
             Events.Preview(ref previewDelayEvent);
@@ -52,8 +52,8 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
         }
     }
 
-    private void emitProjectile()
+    private void fireWeapon()
     {
-        Events.Send(new ShootProjectile(Parameters.DamagePerSecond / Parameters.FireRate));
+        Events.Send(new FireWeapon(Parameters.DamagePerSecond / Parameters.FireRate));
     }
 }

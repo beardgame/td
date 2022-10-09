@@ -16,11 +16,11 @@ namespace Bearded.TD.Game.Meta;
 static class SyncCursors
 {
     public static IRequest<Player, GameInstance> Request(
-        GameInstance game, Player player, Position2 cursorPosition, IComponentOwnerBlueprint? attachedGhost) =>
+        GameInstance game, Player player, Position2 cursorPosition, IGameObjectBlueprint? attachedGhost) =>
         new RequestImplementation(game, player, cursorPosition, attachedGhost);
 
     public static ISerializableCommand<GameInstance> Command(
-        GameInstance game, IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates) =>
+        GameInstance game, IDictionary<Player, (Position2, IGameObjectBlueprint?)> cursorStates) =>
         new CommandImplementation(game, cursorStates);
 
     private sealed class RequestImplementation : IRequest<Player, GameInstance>
@@ -28,10 +28,10 @@ static class SyncCursors
         private readonly GameInstance game;
         private readonly Player player;
         private readonly Position2 cursorPosition;
-        private readonly IComponentOwnerBlueprint? attachedGhost;
+        private readonly IGameObjectBlueprint? attachedGhost;
 
         public RequestImplementation(
-            GameInstance game, Player player, Position2 cursorPosition, IComponentOwnerBlueprint? attachedGhost)
+            GameInstance game, Player player, Position2 cursorPosition, IGameObjectBlueprint? attachedGhost)
         {
             this.game = game;
             this.player = player;
@@ -53,7 +53,7 @@ static class SyncCursors
         }
 
         IRequestSerializer<Player, GameInstance> IRequest<Player, GameInstance>.Serializer =>
-            new Serializer(new Dictionary<Player, (Position2, IComponentOwnerBlueprint?)>
+            new Serializer(new Dictionary<Player, (Position2, IGameObjectBlueprint?)>
             {
                 { player, (cursorPosition, attachedGhost) }
             });
@@ -62,10 +62,10 @@ static class SyncCursors
     private sealed class CommandImplementation : ISerializableCommand<GameInstance>
     {
         private readonly GameInstance game;
-        private readonly IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates;
+        private readonly IDictionary<Player, (Position2, IGameObjectBlueprint?)> cursorStates;
 
         public CommandImplementation(
-            GameInstance game, IDictionary<Player, (Position2, IComponentOwnerBlueprint?)> cursorStates)
+            GameInstance game, IDictionary<Player, (Position2, IGameObjectBlueprint?)> cursorStates)
         {
             this.game = game;
             this.cursorStates = cursorStates;
@@ -91,7 +91,7 @@ static class SyncCursors
         public Serializer() {}
 
         public Serializer(
-            IDictionary<Player, (Position2 Position, IComponentOwnerBlueprint? AttachedGhost)> cursorStates)
+            IDictionary<Player, (Position2 Position, IGameObjectBlueprint? AttachedGhost)> cursorStates)
         {
             this.cursorStates = cursorStates.Select(pair => (
                 pair.Key.Id,

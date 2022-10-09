@@ -21,7 +21,7 @@ sealed class OccupiedTilesTracker : IListener<TileEntered>, IListener<TileLeft>
         OccupiedTiles = occupiedTiles.AsReadOnly();
     }
 
-    public void Initialize(IComponentOwner owner, ComponentEvents events)
+    public void Initialize(GameObject owner, ComponentEvents events)
     {
         State.Satisfies(occupiedTiles.Count == 0);
 

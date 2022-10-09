@@ -63,6 +63,7 @@
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Field/=NAMESPACE/Expression/@EntryValue">fileDefaultNamespace()</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Field/=NAMESPACE/Order/@EntryValue">1</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Field/=STRINGID/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Field/=STRINGID/Expression/@EntryValue">decapitalize(CLASS)</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Field/=STRINGID/Order/@EntryValue">3</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Reformat/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
@@ -89,6 +90,10 @@ sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
     {
     }
 
+    public override void Activate()
+    {
+    }
+
     public override void Update(TimeSpan elapsedTime)
     {
     }
@@ -109,6 +114,7 @@ sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Field/=NAMESPACE/Expression/@EntryValue">fileDefaultNamespace()</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Field/=NAMESPACE/Order/@EntryValue">1</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Field/=STRINGID/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Field/=STRINGID/Expression/@EntryValue">decapitalize(CLASS)</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Field/=STRINGID/Order/@EntryValue">3</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Reformat/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
@@ -124,6 +130,10 @@ namespace $NAMESPACE$;
 sealed class $CLASS$ : Component
 {
     protected override void OnAdded()
+    {
+    }
+
+    public override void Activate()
     {
     }
 

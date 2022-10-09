@@ -1,0 +1,20 @@
+{
+    id: "triangle",
+    footprints: [
+        {
+            tiles: [
+                "base",
+                "right",
+                "upright"
+            ]
+        },
+        {
+            tiles: [
+                "base",
+                "right",
+                "downright"
+            ],
+            orientation: 180
+        }
+    ]
+}

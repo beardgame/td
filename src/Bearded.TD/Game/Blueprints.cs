@@ -20,7 +20,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
     public ReadonlyBlueprintCollection<ISoundEffect> SoundEffects { get; }
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
-    public ReadonlyBlueprintCollection<IComponentOwnerBlueprint> ComponentOwners { get; }
+    public ReadonlyBlueprintCollection<IGameObjectBlueprint> ComponentOwners { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
     public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
     public ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes { get; }
@@ -31,7 +31,7 @@ sealed class Blueprints
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
-        ReadonlyBlueprintCollection<IComponentOwnerBlueprint> componentOwners,
+        ReadonlyBlueprintCollection<IGameObjectBlueprint> componentOwners,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,

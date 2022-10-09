@@ -1,0 +1,31 @@
+{
+    id: "spawnIndicator",
+    components: [
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "particle.skull",
+                drawGroup: "IgnoreDepth",
+                animation: {
+                    repeatMode: "loop",
+                    keyFrames: [
+                        {
+                            color: "33FFA500",
+                            size: 0.6,
+                        },
+                        {
+                            duration: 1.5,
+                            color: "CCFFA500",
+                            size: 0.65,
+                        },
+                        {
+                            duration: 1.5,
+                            color: "33FFA500",
+                            size: 0.6,
+                        }
+                    ],
+                }
+            },
+        },
+    ]
+}

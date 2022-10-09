@@ -1,6 +1,0 @@
-{
-    "id" : "empty",
-    "behaviors" : [
-        { "id" : "setTiles", "parameters" : { "type" : "floor" } }
-    ]
-}

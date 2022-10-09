@@ -1,33 +1,90 @@
 {
     id : "fire1-flamethrower-flame",
     components : [
-        { id : "tags", parameters : { tags : [ "projectile" ] } },
+        { id : "drag", parameters : { amount : 0.2 } },
+        { id : "buoyancy", parameters : { amount : 1 } },
+        { id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
         {
-            id : "damageOnHit",
-            parameters : { damageType : "fire" }
+            id: "damageOnHit",
+            parameters: { damageType: "fire" }
         },
         {
-            "id" : "applyOnFireOnImpact",
-            "parameters" : {
-                "probability" : 0.05,
-                "fractionOfBaseDamageApplied" : 10,
-                "effectDuration" : 3
+            id:  "deleteAfter",
+            parameters:  {
+                timeSpan:  1.2
             }
         },
         {
-            id : "sprite",
-            parameters : {
-                sprite : "default.particle.mote",
-                color : "Orange",
-                size : 0.5,
+            id: "applyOnFireOnImpact",
+            parameters: {
+                probability: 0.05,
+                fractionOfBaseDamageApplied: 10,
+                effectDuration: 3
             }
         },
         {
-            id : "pointlight",
-            parameters : {
-                color : "Orange",
-                radius : 1,
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.mote",
+                animation: {
+                    timeScale: 3.2,
+                    keyFrames: [
+                        {
+                            color: "00FFFF00",
+                            size: 0.2
+                        },
+                        {
+                            duration: 0.15,
+                            color: "00FF4500",
+                            size: 0.3
+                        },
+                        {
+                            duration: 0.08,
+                            color: "00FF0000",
+                            size: 0.7
+                        },
+                        {
+                            duration: 0.08,
+                            color: "black",
+                            size: 1
+                        },
+                        {
+                            duration: 0.06,
+                            color: "transparent",
+                            size: 0.8
+                        }
+                    ],
+                }
             }
         },
+        {
+            id: "animatedPointLight",
+            parameters: {
+                animation: {
+                    timeScale: 3.2,
+                    keyFrames: [
+                        {
+                            color: "66FFFF00",
+                            radius: 0.5
+                        },
+                        {
+                            duration: 0.15,
+                            color: "44FF4500",
+                            radius: 1
+                        },
+                        {
+                            duration: 0.08,
+                            color: "22FF0000",
+                            radius: 1.5
+                        },
+                        {
+                            duration: 0.08,
+                            color: "transparent",
+                            radius: 1
+                        }
+                    ],
+                }
+            }
+        }
     ]
 }

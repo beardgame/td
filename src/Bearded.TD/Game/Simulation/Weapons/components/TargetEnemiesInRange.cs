@@ -6,13 +6,13 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -38,7 +38,7 @@ sealed class TargetEnemiesInRange
 
         Angle? ConeOfFire { get; }
     }
-    
+
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
     private IWeaponState weapon = null!;
@@ -241,7 +241,7 @@ sealed class TargetEnemiesInRange
 
         var allTiles = ImmutableHashSet.CreateRange(
             (Owner.Parent?.GetComponents<ITurret>() ?? Enumerable.Empty<ITurret>())
-            .Select(t => (IComponentOwner) t.Weapon)
+            .Select(t => t.Weapon)
             .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
             .SelectMany(ranger => ranger.TakeOverDrawingThisFrame()));
         dontDrawThisFrame = false;

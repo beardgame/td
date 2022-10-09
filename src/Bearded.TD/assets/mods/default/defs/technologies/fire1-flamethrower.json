@@ -1,9 +1,0 @@
-{
-    "id" : "fire1-flamethrower",
-    "name" : "Flamethrower",
-    "branch" : "combustion",
-    "tier" : "low",
-    "unlocks": [
-        { "type" : "building", "blueprint" : "fire1-flamethrower" }
-    ]
-}

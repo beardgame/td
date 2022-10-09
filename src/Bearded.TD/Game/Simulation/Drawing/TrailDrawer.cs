@@ -28,6 +28,9 @@ sealed class TrailDrawer
         Instant currentTime, TimeSpan timeOut, Color color
     )
     {
+        if (trail.Count < 2)
+            return;
+
         var leftUV = new Vector2(0.5f, 0);
         var rightUV = new Vector2(0.5f, 1);
 
