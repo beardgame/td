@@ -40,6 +40,10 @@
             }
         },
         {
+            id: "playSoundOnShoot",
+            parameters: { sound: "bang-deep" },
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "default.particle.halo",
