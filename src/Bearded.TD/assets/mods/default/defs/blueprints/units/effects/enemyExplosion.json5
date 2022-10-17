@@ -4,7 +4,7 @@
     {
       id: "particleSystem",
       parameters: {
-        count: 8,
+        count: 12,
         sprite: "default.particle.circle-soft",
         color: "BBAA3333",
         drawGroupOrderKey: -10,
@@ -47,7 +47,7 @@
         size: 0.1,
         finalSize: 0.15,
         lifetime: 3,
-        randomVelocity: 5,
+        randomVelocity: 8,
         collideWithLevel: true,
         collisionNormalFactor: 0.5,
         collisionTangentFactor: 0.5,
