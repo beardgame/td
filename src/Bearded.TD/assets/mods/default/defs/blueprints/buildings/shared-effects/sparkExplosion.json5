@@ -11,9 +11,11 @@
         size: 0.1,
         lineWidth: 0.1,
         lifetime: 0.75,
-        randomVelocity: 3,
+        randomVelocity: 2,
         reflectionVelocity: 4,
         collideWithLevel: true,
+        collisionNormalFactor: 0.8,
+        collisionTangentFactor: 0.8,
         drawMode: "line"
       }
     },
