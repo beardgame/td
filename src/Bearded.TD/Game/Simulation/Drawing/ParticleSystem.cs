@@ -3,10 +3,13 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -32,6 +35,9 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         ISpriteBlueprint Sprite { get; }
         Color Color { get; }
         Shader? Shader { get; }
+        SpriteDrawGroup? DrawGroup { get; }
+        int DrawGroupOrderKey { get; }
+
         Unit Size { get; }
         Unit? FinalSize { get; }
         Unit LineWidth { get; }
@@ -43,6 +49,12 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         float GravityFactor { get; }
         DrawMode DrawMode { get; }
         Difference3 Offset { get; }
+
+        bool CollideWithLevel { get; }
+        [Modifiable(1)]
+        float CollisionNormalFactor { get; }
+        [Modifiable(1)]
+        float CollisionTangentFactor { get; }
     }
 
     private bool initialized;
@@ -93,7 +105,8 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
     private void initializeSprite()
     {
-        sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader);
+        sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
+            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
     }
 
     private void initializeParticles()
@@ -128,6 +141,8 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     {
         if (!initialized)
             initializeParticles();
+        
+        var geometry = Owner.Game.GeometryLayer;
 
         var gravity = Constants.Game.Physics.Gravity3 * Parameters.GravityFactor;
         for (var i = 0; i < particles.Length; i++)
@@ -135,11 +150,83 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             var particle = particles[i];
             var (p, v) = particle;
 
-            p += v * elapsedTime;
+            if (Parameters.CollideWithLevel)
+            {
+                collideWithLevel(geometry, ref p, ref v, elapsedTime);
+            }
+            else
+            {
+                p += v * elapsedTime;
+            }
+
             v += gravity * elapsedTime;
 
             particles[i] = particle.With(p, v);
         }
+    }
+
+    private void collideWithLevel(GeometryLayer geometry, ref Position3 p, ref Velocity3 v, TimeSpan elapsedTime)
+    {
+        var step = v * elapsedTime;
+
+        var rayCaster = new LevelRayCaster();
+        rayCaster.StartEnumeratingTiles(new Ray(p.XY(), step.XY()));
+
+        var previousRayFactor = 0f;
+        rayCaster.MoveNext(out var tile);
+
+        while (true)
+        {
+            var info = geometry[tile];
+            var tileType = info.Geometry.Type;
+
+            var tileHeight = tileType switch {
+                TileType.Floor => info.DrawInfo.Height,
+                TileType.Wall => float.PositiveInfinity.U(),
+                TileType.Crevice => float.NegativeInfinity.U(),
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+
+            var lastTile = !rayCaster.MoveNext(out tile);
+            var rayFactor = lastTile ? 1 : rayCaster.CurrentRayFactor;
+
+            var floorCollisionFactor = (tileHeight - p.Z) / step.Z;
+            if (floorCollisionFactor > previousRayFactor && floorCollisionFactor <= rayFactor)
+            {
+                reflect(ref p, ref v, p + step * floorCollisionFactor, Vector3.UnitZ);
+                return;
+            }
+
+            if (lastTile)
+                break;
+
+            var heightAtTileBorder = p.Z + step.Z * rayFactor;
+
+            if (heightAtTileBorder < tileHeight)
+            {
+                reflect(ref p, ref v, p + step * rayFactor, (-rayCaster.LastStep!.Value.Vector()).WithZ());
+                return;
+            }
+
+            previousRayFactor = rayFactor;
+        }
+
+        p += step;
+    }
+
+    private void reflect(ref Position3 p, ref Velocity3 v, Position3 pointOfReflection, Vector3 normal)
+    {
+        normal = normal.NormalizedSafe();
+
+        var dotWithVelocityOutMagnitude = Vector3.Dot(normal, -v.NumericValue);
+
+        var normalVelocityOut = new Velocity3(normal * dotWithVelocityOutMagnitude);
+        var tangentVelocity = v + normalVelocityOut;
+
+        var velocityOut = normalVelocityOut * Parameters.CollisionNormalFactor + tangentVelocity * Parameters.CollisionNormalFactor;
+
+        v = velocityOut;
+        p = pointOfReflection + normal * 0.01.U();
     }
 
     public void HandleEvent(DrawComponents e)
@@ -152,7 +239,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             if (a <= 0)
                 continue;
             a = Math.Min(a, 1);
-            var argb = Parameters.Color.WithAlpha() * a;
+            var argb = Parameters.Color * a;
             var size = Parameters.FinalSize.HasValue
                 ? Interpolate.Lerp(Parameters.FinalSize.Value.NumericValue, Parameters.Size.NumericValue, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
                 : Parameters.Size.NumericValue;

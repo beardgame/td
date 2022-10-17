@@ -26,6 +26,7 @@
                 withBuildings: true
             }
         },
-        { id: "softMutualUnitCollider" }
+        { id: "softMutualUnitCollider" },
+        { id: "spawnObjectOnKilled", parameters:  { object: "enemyExplosion" } }
     ]
 }

@@ -7,12 +7,13 @@
       parameters: {
         count: 6,
         sprite: "default.particle.tracer",
-        color: "lightblue",
+        color: "00ADD8E6",
         size: 0.05,
         lineWidth: 0.05,
         lifetime: 0.5,
         randomVelocity: 2.5,
         reflectionVelocity: 3,
+        collideWithLevel: true,
         drawMode: "line"
       }
     },

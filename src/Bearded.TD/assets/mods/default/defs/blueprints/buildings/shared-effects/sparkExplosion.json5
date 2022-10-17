@@ -7,19 +7,20 @@
       parameters: {
         count: 12,
         sprite: "default.particle.tracer",
-        color: "lightblue",
+        color: "00ADD8E6",
         size: 0.1,
         lineWidth: 0.1,
         lifetime: 0.75,
         randomVelocity: 3,
         reflectionVelocity: 4,
+        collideWithLevel: true,
         drawMode: "line"
       }
     },
     {
       id: "deleteAfter",
       parameters: {
-        timeSpan: 0.5
+        timeSpan: 0.75
       }
     }
   ]
