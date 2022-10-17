@@ -17,12 +17,6 @@
             }
         },
         {
-            id: "recoil",
-            parameters: {
-                impulse: 100
-            }
-        },
-        {
             id: "automaticFireCycle",
             parameters: {
                 damagePerSecond: 30,

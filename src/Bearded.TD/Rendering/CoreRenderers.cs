@@ -2,7 +2,7 @@ using System.Drawing;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
-using Bearded.Graphics.Text;
+using Bearded.Graphics.System.Drawing;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;

@@ -17,12 +17,6 @@
             }
         },
         {
-            id: "recoil",
-            parameters: {
-                impulse: 100
-            }
-        },
-        {
             id: "spinUp",
             parameters: {
                 minimumSpeedFactor: 0.25,
