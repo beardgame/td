@@ -31,7 +31,7 @@ sealed class SoundScape : ISoundScape
         ALListener.Position = position.NumericValue;
     }
 
-    public void PlaySoundAt(Position3 position, ISound sound)
+    public void PlaySoundAt(Position3 position, ISound sound, float? pitch)
     {
         if (!sourcePool.TryGetSource(out var source))
         {
@@ -40,6 +40,7 @@ sealed class SoundScape : ISoundScape
 
         source.Position = position.NumericValue;
         source.PositionIsRelative = false;
+        source.Pitch = pitch ?? 1;
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
         source.Play();

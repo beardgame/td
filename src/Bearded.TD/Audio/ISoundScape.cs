@@ -7,5 +7,5 @@ interface ISoundScape : IDisposable
 {
     void Update();
     void SetListenerPosition(Position3 position);
-    void PlaySoundAt(Position3 position, ISound sound);
+    void PlaySoundAt(Position3 position, ISound sound, float? pitch);
 }

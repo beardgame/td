@@ -22,6 +22,7 @@ sealed class SoundLoader
             throw new InvalidDataException("Could not find wav file with same name as json file");
         return new SoundEffect(
             ModAwareId.FromNameInMod(jsonModel.Id ?? throw new InvalidDataException("Missing ID"), meta),
-            Sound.FromWav(wavFile.FullName));
+            Sound.FromWav(wavFile.FullName),
+            jsonModel.PitchRange ?? PitchRange.One);
     }
 }

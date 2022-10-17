@@ -5,4 +5,5 @@ namespace Bearded.TD.Audio;
 interface ISoundEffect : IBlueprint
 {
     ISound Sound { get; }
+    PitchRange PitchRange { get; }
 }
