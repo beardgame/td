@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.9
+
+* New upgrades: homing
+* Rebuilt enemy movement to be more natural and physics based
+* Exploration is now automated
+* Enemies now always spawn at the edge of the visible area
+* Changed generation of enemy spawners: they now spawn on dead ends as small nodes
+* Added skull icons for revealed spawner locations and locations where enemies enter the visible area
+* Building ghosts now look more like architectural drawings
+* Made flames collide and deflect more realistically
+* Improved flame thrower visuals
+* Added fuel gauge indicator to flame throwers
+* Bug fix: notifications now disappear even if the game is paused
+
 ## v0.8
 
 * New towers: flamethrower, tesla coil
