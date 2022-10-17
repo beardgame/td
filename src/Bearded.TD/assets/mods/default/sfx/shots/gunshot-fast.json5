@@ -1,0 +1,4 @@
+{
+    id: "gunshot-fast",
+    pitchRange: [0.9, 1.1],
+}

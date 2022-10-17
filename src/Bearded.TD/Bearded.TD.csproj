@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\audio\src\Bearded.Audio\Bearded.Audio.csproj" />
     <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj" />
     <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics.System.Drawing\Bearded.Graphics.System.Drawing.csproj" />
     <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj" />

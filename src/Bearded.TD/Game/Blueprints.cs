@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation;
@@ -17,6 +18,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<Shader> Shaders { get; }
     public ReadonlyBlueprintCollection<Material> Materials { get; }
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
+    public ReadonlyBlueprintCollection<ISoundEffect> SoundEffects { get; }
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
     public ReadonlyBlueprintCollection<IGameObjectBlueprint> ComponentOwners { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
@@ -27,6 +29,7 @@ sealed class Blueprints
     public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
+        ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
         ReadonlyBlueprintCollection<IGameObjectBlueprint> componentOwners,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
@@ -37,6 +40,7 @@ sealed class Blueprints
         Shaders = shaders;
         Materials = materials;
         Sprites = sprites;
+        SoundEffects = soundEffects;
         Footprints = footprints;
         ComponentOwners = componentOwners;
         Upgrades = upgrades;
@@ -52,6 +56,7 @@ sealed class Blueprints
             flatten(list, b => b.Shaders),
             flatten(list, b => b.Materials),
             flatten(list, b => b.Sprites),
+            flatten(list, b => b.SoundEffects),
             flatten(list, b => b.Footprints),
             flatten(list, b => b.ComponentOwners),
             flatten(list, b => b.Upgrades),

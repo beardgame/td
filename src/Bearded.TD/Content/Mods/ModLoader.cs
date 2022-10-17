@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
@@ -59,6 +60,7 @@ static class ModLoader
             var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
+            var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
             var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
@@ -76,6 +78,7 @@ static class ModLoader
                 shaders,
                 materials,
                 sprites,
+                soundEffects,
                 footprints,
                 componentOwners,
                 upgrades,
@@ -111,6 +114,7 @@ static class ModLoader
                 new SpaceTime3Converter<Difference3>((x, y, z) => new Difference3(x, y, z)),
                 new SpaceTime1Converter<UntypedDamage>(d => new UntypedDamage(((int) d).HitPoints())),
                 new SpaceTime1Converter<UntypedDamagePerSecond>(d => new UntypedDamagePerSecond(((int) d).HitPoints())),
+                new SpaceTime2Converter<PitchRange>((from, to) => new PitchRange(from, to)),
                 new ColorConverter(),
                 BehaviorConverterFactory.ForBaseComponents(),
                 BehaviorConverterFactory.ForFactionBehaviors(),

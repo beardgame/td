@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Audio;
 using Bearded.TD.Commands;
 using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;
@@ -104,7 +105,8 @@ sealed class GameInstance
             context.GameSynchronizer,
             ids,
             // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
-            new SpriteRenderers(renderContext));
+            new SpriteRenderers(renderContext),
+            SoundScape.WithChannelCount(Constants.Audio.SoundEffectChannelCount));
     }
 
     public void SetGameSettings(GameSettings gameSettings)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using Bearded.Audio;
 using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game;
@@ -88,6 +89,7 @@ sealed class TheGame : Window, IMouseScaleProvider
 
     protected override void OnLoad()
     {
+        AudioContext.Initialize();
         Serializers<Player, GameInstance>.Initialize();
 
         ConsoleCommands.Initialize();

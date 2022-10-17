@@ -14,6 +14,7 @@
         { id: "health", parameters: { maxHealth: 7680 } },
         { id: "threat", parameters:  { threat: 7680 } },
         { id: "damageBuildings", parameters: { damage: 192, attackRate: 0.5 } },
+        { id: "playSoundOnDamage", parameters: { sound: "click" } },
 
         { id: "groundLockedMovement" },
         { id: "accelerateToBase", parameters: { acceleration: 5 } },

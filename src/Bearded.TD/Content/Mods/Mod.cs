@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Semantic.Features;
@@ -23,6 +24,7 @@ sealed class Mod
         ReadonlyBlueprintCollection<Shader> shaders,
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
+        ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
         ReadonlyBlueprintCollection<IGameObjectBlueprint> weapons,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
@@ -37,6 +39,7 @@ sealed class Mod
             shaders,
             materials,
             sprites,
+            soundEffects,
             footprints,
             weapons,
             upgrades,

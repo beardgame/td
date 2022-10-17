@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\awgraphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio", "libs\audio\src\Bearded.Audio\Bearded.Audio.csproj", "{C331356F-583A-4840-B7DC-7B3C52676BEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio.Tests", "libs\audio\src\Bearded.Audio.Tests\Bearded.Audio.Tests.csproj", "{26D22F25-DAAE-40E1-B5A4-D93012A1914F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +171,22 @@ Global
 		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.ActiveCfg = Release|Any CPU
 		{45392808-92B7-4650-944B-E4CC0DFFEF71}.Release|x86.Build.0 = Release|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{C331356F-583A-4840-B7DC-7B3C52676BEA}.Release|x86.Build.0 = Release|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Debug|x86.Build.0 = Debug|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|x86.ActiveCfg = Release|Any CPU
+		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
