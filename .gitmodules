@@ -1,9 +1,9 @@
-[submodule "libs/awgraphics"]
-	path = libs/awgraphics
-	url = https://github.com/beardgame/graphics.git
 [submodule "libs/audio"]
 	path = libs/audio
 	url = https://github.com/beardgame/audio.git
+[submodule "libs/awgraphics"]
+	path = libs/awgraphics
+	url = https://github.com/beardgame/graphics.git
 [submodule "libs/lidgren"]
 	path = libs/lidgren
 	url = https://github.com/amulware/lidgren-network-gen3.git
