@@ -21,7 +21,7 @@ sealed class GameMeta
     public bool GameOver { get; private set; }
     public GlobalGameEvents Events { get; } = new();
     public Blueprints Blueprints => blueprints!;
-    public SoundScape SoundScape { get; }
+    public ISoundScape SoundScape { get; }
 
     public ISpriteRenderers SpriteRenderers { get; }
 
@@ -30,14 +30,15 @@ sealed class GameMeta
         IDispatcher<GameInstance> dispatcher,
         IGameSynchronizer synchronizer,
         IdManager ids,
-        ISpriteRenderers spriteRenderers)
+        ISpriteRenderers spriteRenderers,
+        ISoundScape soundScape)
     {
         Logger = logger;
         Synchronizer = synchronizer;
         Dispatcher = dispatcher;
         Ids = ids;
         SpriteRenderers = spriteRenderers;
-        SoundScape = SoundScape.WithChannelCount(Constants.Audio.SoundEffectChannelCount);
+        SoundScape = soundScape;
     }
 
     public void SetBlueprints(Blueprints blueprints)

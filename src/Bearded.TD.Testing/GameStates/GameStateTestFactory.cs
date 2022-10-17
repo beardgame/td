@@ -1,5 +1,6 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Testing.Audio;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
@@ -15,7 +16,8 @@ static class GameStateTestFactory
             new LocalDispatcher(),
             new NoOpSynchronizer(),
             new IdManager(),
-            new NoOpSpriteRenderers());
+            new NoOpSpriteRenderers(),
+            new EmptySoundScape());
         var settings = new GameSettings.Builder().Build();
         var state = new GameState(meta, settings);
 
