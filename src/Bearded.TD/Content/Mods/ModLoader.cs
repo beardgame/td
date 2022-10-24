@@ -121,6 +121,7 @@ static class ModLoader
                 BehaviorConverterFactory.ForGameRules(),
                 BehaviorConverterFactory.ForNodeBehaviors(),
                 new FlattenedBlueprintConverter<IFactionBlueprint, FactionBlueprint>(meta),
+                ModAwareIdConverter.WithinMod(meta),
                 new ExternalIdConverter<Faction>(),
                 new NodeTagConverter(),
                 new UpgradeEffectConverter(),
