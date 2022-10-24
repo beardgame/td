@@ -34,6 +34,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         int Count { get; }
         ISpriteBlueprint Sprite { get; }
         Color Color { get; }
+        Sprite.ColorMode ColorMode { get; }
         Shader? Shader { get; }
         SpriteDrawGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
@@ -49,6 +50,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         float GravityFactor { get; }
         DrawMode DrawMode { get; }
         Difference3 Offset { get; }
+        bool DontRandomize { get; }
 
         bool CollideWithLevel { get; }
         [Modifiable(1)]
@@ -127,21 +129,25 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         var now = Owner.Game.Time;
         for (var i = 0; i < particles.Length; i++)
         {
-            var velocity = baseVelocity + GetRandomUnitVector3() * Parameters.RandomVelocity * StaticRandom.Float(0.5f, 1f);
-            var timeOfDeath = now + Parameters.LifeTime * StaticRandom.Float(0.5f, 1f);
+            var velocity = baseVelocity + GetRandomUnitVector3() * Parameters.RandomVelocity * randomFloat(0.5f, 1);
+            var timeOfDeath = now + Parameters.LifeTime * randomFloat(0.5f, 1);
             particles[i] = new Particle(position, velocity, timeOfDeath);
         }
 
         initialized = true;
     }
 
+    private float randomFloat(float min, float max)
+    {
+        return Parameters.DontRandomize ? 1 : StaticRandom.Float(min, max);
+    }
 
 
     public override void Update(TimeSpan elapsedTime)
     {
         if (!initialized)
             initializeParticles();
-        
+
         var geometry = Owner.Game.GeometryLayer;
 
         var gravity = Constants.Game.Physics.Gravity3 * Parameters.GravityFactor;
@@ -233,13 +239,15 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     {
         var now = Owner.Game.Time;
 
+        var color = Sprite.GetColor(Owner, Parameters.ColorMode, Parameters.Color);
+
         foreach (var p in particles)
         {
             var a = (float)((p.TimeOfDeath - now) / (Parameters.LifeTime * 0.5));
             if (a <= 0)
                 continue;
             a = Math.Min(a, 1);
-            var argb = Parameters.Color * a;
+            var argb = color * a;
             var size = Parameters.FinalSize.HasValue
                 ? Interpolate.Lerp(Parameters.FinalSize.Value.NumericValue, Parameters.Size.NumericValue, (float)((p.TimeOfDeath - now) / Parameters.LifeTime))
                 : Parameters.Size.NumericValue;
