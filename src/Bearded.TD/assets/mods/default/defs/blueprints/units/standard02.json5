@@ -11,8 +11,8 @@
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 480 } },
-        { id: "threat", parameters:  { threat: 480 } },
+        { id: "health", parameters: { maxHealth: 200 } },
+        { id: "threat", parameters:  { threat: 240 } },
         { id: "damageBuildings", parameters: { damage: 12, attackRate: 0.5 } },
 
         { id: "groundLockedMovement" },
