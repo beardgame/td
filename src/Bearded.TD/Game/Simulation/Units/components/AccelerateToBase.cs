@@ -46,9 +46,13 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
         var tile = Level.GetTile(Owner.Position);
         var nextTileDirection = getBestDirection(tile);
 
-        IsMoving = nextTileDirection != Direction.Unknown;
-        if (!IsMoving)
+        if (nextTileDirection == Direction.Unknown)
+        {
+            IsMoving = false;
             return;
+        }
+
+        IsMoving = passabilityLayer[tile.Neighbor(nextTileDirection)].IsPassable;
 
         var nextTile = tile.Neighbor(nextTileDirection);
         var nextTilePosition = Level.GetPosition(nextTile);
@@ -69,10 +73,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
             desiredDirection = tryToGetUnstuck(tile);
         }
 
-        var isPassable = passabilityLayer[tile.Neighbor(desiredDirection)].IsPassable;
-        return !isPassable
-            ? Direction.Unknown
-            : desiredDirection;
+        return desiredDirection;
     }
 
     private Direction tryToGetUnstuck(Tile tile)
