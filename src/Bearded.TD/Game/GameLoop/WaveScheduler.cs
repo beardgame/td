@@ -80,6 +80,8 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     {
         var (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration) = generateWaveParameters(requirements);
 
+        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration);
+
         return new WaveScript(
             game.Meta.Ids.GetNext<WaveScript>(),
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
@@ -88,7 +90,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
             spawnDuration,
             requirements.Resources,
             spawnLocations,
-            enemiesPerSpawn,
+            enemyScript,
             blueprint,
             game.Meta.Ids.GetBatch<GameObject>(spawnLocations.Length * enemiesPerSpawn));
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
@@ -9,6 +10,7 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using JetBrains.Annotations;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameLoop;
 
@@ -20,10 +22,10 @@ sealed class WaveScriptSerializer
     private double spawnStart;
     private double spawnDuration;
     private int resourcesAwardedBySpawnPhase;
-    private Id<SpawnLocation>[] spawnLocations = System.Array.Empty<Id<SpawnLocation>>();
-    private int unitsPerSpawnLocation;
+    private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
+    private readonly EnemySpawnScriptSerializer enemyScript = new();
     private ModAwareId unitBlueprint;
-    private Id<GameObject>[] spawnedUnitIds = System.Array.Empty<Id<GameObject>>();
+    private Id<GameObject>[] spawnedUnitIds = Array.Empty<Id<GameObject>>();
 
     [UsedImplicitly]
     public WaveScriptSerializer() {}
@@ -37,7 +39,7 @@ sealed class WaveScriptSerializer
         spawnDuration = waveScript.SpawnDuration.NumericValue;
         resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
-        unitsPerSpawnLocation = waveScript.UnitsPerSpawnLocation;
+        enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
         unitBlueprint = waveScript.UnitBlueprint.Id;
         spawnedUnitIds = waveScript.SpawnedUnitIds.ToArray();
     }
@@ -52,7 +54,7 @@ sealed class WaveScriptSerializer
             new TimeSpan(spawnDuration),
             new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
-            unitsPerSpawnLocation,
+            enemyScript.ToSpawnScript(),
             game.Blueprints.GameObjects[unitBlueprint],
             spawnedUnitIds.ToImmutableArray());
     }
@@ -70,12 +72,58 @@ sealed class WaveScriptSerializer
         {
             stream.Serialize(ref spawnLocations[i]);
         }
-        stream.Serialize(ref unitsPerSpawnLocation);
+        enemyScript.Serialize(stream);
         stream.Serialize(ref unitBlueprint);
         stream.SerializeArrayCount(ref spawnedUnitIds);
         for (var i = 0; i < spawnedUnitIds.Length; i++)
         {
             stream.Serialize(ref spawnedUnitIds[i]);
         }
+    }
+
+    private sealed class EnemySpawnScriptSerializer
+    {
+        private EnemySpawnEventSerializer?[] spawnEvents = Array.Empty<EnemySpawnEventSerializer>();
+
+        [UsedImplicitly]
+        public EnemySpawnScriptSerializer() {}
+
+        public EnemySpawnScriptSerializer(EnemySpawnScript script)
+        {
+            spawnEvents = script.SpawnEvents.Select(e => new EnemySpawnEventSerializer(e)).ToArray();
+        }
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.SerializeArrayCount(ref spawnEvents);
+            for (var i = 0; i < spawnEvents.Length; i++)
+            {
+                var serializer = spawnEvents[i] ?? new EnemySpawnEventSerializer();
+                serializer.Serialize(stream);
+                spawnEvents[i] = serializer;
+            }
+        }
+
+        public EnemySpawnScript ToSpawnScript() => new(spawnEvents.Select(e => e!.ToSpawnEvent()).ToImmutableArray());
+    }
+
+    private sealed class EnemySpawnEventSerializer
+    {
+        private TimeSpan time;
+
+        [UsedImplicitly]
+        public EnemySpawnEventSerializer() {}
+
+        public EnemySpawnEventSerializer(EnemySpawnScript.EnemySpawnEvent spawnEvent)
+        {
+            time = spawnEvent.TimeOffset;
+        }
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref time);
+        }
+
+        public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent() => new(time);
     }
 }

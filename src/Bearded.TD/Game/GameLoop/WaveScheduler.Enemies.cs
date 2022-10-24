@@ -12,6 +12,9 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed partial class WaveScheduler
 {
+    // The minimum number of enemies the wave should support to allow an enemy to be used for the current wave.
+    private const int minEnemiesCount = 12;
+
     private EnemiesToSpawn chooseEnemy(
         double maxWaveValue, double minWaveValue)
     {
@@ -29,7 +32,7 @@ sealed partial class WaveScheduler
         var eligibleEnemies = spawnableEnemies.Where(spawnableEnemy =>
         {
             var threat = spawnableEnemy.Blueprint.GetThreat();
-            return 6 * threat < maxWaveValue;
+            return minEnemiesCount * threat < maxWaveValue;
         }).ToImmutableArray();
         if (eligibleEnemies.Length == 0)
         {
