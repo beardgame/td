@@ -53,7 +53,7 @@ sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>, IListe
         {
             var isBadTile = result.BadTiles.Contains(tile);
 
-            var color = isBadTile ? Color.Red : Color.Green * 0.2f;
+            var color = (isBadTile ? Color.Red : Color.Green) * 0.2f;
             drawTile(e.Core, color, tile);
 
             if (isBadTile)
