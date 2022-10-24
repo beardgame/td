@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -8,7 +7,6 @@ using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -96,25 +94,17 @@ sealed class WaveDirector
 
         private void fillSpawnQueue()
         {
-            List<Instant> spawnTimes;
-            if (script.UnitsPerSpawnLocation == 1)
-            {
-                spawnTimes = new List<Instant>(script.SpawnStart.Yield());
-            }
-            else
-            {
-                var timeBetweenSpawns = script.SpawnDuration / (script.UnitsPerSpawnLocation - 1);
-                spawnTimes = Enumerable.Range(0, script.UnitsPerSpawnLocation)
-                    .Select(i => script.SpawnStart + i * timeBetweenSpawns)
-                    .ToList();
-            }
-
             var idIndex = 0;
-            foreach (var time in spawnTimes)
+            foreach (var spawnEvent in script.EnemyScript.SpawnEvents)
             {
                 foreach (var loc in script.SpawnLocations)
                 {
-                    spawnQueue.Enqueue(new EnemySpawn(script.SpawnedUnitIds[idIndex++], script.UnitBlueprint, loc, time));
+                    spawnQueue.Enqueue(
+                        new EnemySpawn(
+                            script.SpawnedUnitIds[idIndex++],
+                            script.UnitBlueprint,
+                            loc,
+                            script.SpawnStart + spawnEvent.TimeOffset));
                 }
             }
         }
