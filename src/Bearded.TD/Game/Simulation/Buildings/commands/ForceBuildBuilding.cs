@@ -110,7 +110,7 @@ static class ForceBuildBuilding
                 game,
                 game.State.Factions.Resolve(faction),
                 id,
-                game.Blueprints.ComponentOwners[blueprint],
+                game.Blueprints.GameObjects[blueprint],
                 new PositionedFootprint(
                     game.Blueprints.Footprints[footprint], footprintIndex,
                     new Tile(footprintX, footprintY)));

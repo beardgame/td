@@ -62,9 +62,9 @@ static class ModLoader
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
             var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
-            var componentOwners = new ComponentOwnerBlueprintLoader(loadingContext).LoadBlueprints();
+            var gameObjects = new GameObjectBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
-            var technologies = new TechnologyBlueprintLoader(loadingContext, componentOwners, upgrades).LoadBlueprints();
+            var technologies = new TechnologyBlueprintLoader(loadingContext, gameObjects, upgrades).LoadBlueprints();
             var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
             var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
@@ -80,7 +80,7 @@ static class ModLoader
                 sprites,
                 soundEffects,
                 footprints,
-                componentOwners,
+                gameObjects,
                 upgrades,
                 technologies,
                 levelNodes,

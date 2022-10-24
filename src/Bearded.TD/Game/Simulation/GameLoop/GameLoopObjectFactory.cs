@@ -17,7 +17,7 @@ static class GameLoopObjectFactory
 
     public static GameObject CreateSpawnIndicator(GameObject owner, Tile tile)
     {
-        var blueprint = owner.Game.Meta.Blueprints.ComponentOwners[ModAwareId.ForDefaultMod("spawnIndicator")];
+        var blueprint = owner.Game.Meta.Blueprints.GameObjects[ModAwareId.ForDefaultMod("spawnIndicator")];
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             blueprint, owner, Level.GetPosition(tile).WithZ(0.U()));
 

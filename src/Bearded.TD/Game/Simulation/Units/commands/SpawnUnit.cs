@@ -60,7 +60,7 @@ static class SpawnUnit
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game) => new Implementation(
             game.State,
             new Tile(x, y),
-            game.Blueprints.ComponentOwners[blueprint],
+            game.Blueprints.GameObjects[blueprint],
             unitId);
 
         public void Serialize(INetBufferStream stream)

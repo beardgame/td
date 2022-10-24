@@ -28,7 +28,7 @@ sealed partial class WaveScheduler
     {
         var eligibleEnemies = EnemySpawnDefinition.All.Where(def =>
         {
-            var threat = game.Meta.Blueprints.ComponentOwners[def.BlueprintId].GetThreat();
+            var threat = game.Meta.Blueprints.GameObjects[def.BlueprintId].GetThreat();
             return 6 * threat < maxWaveValue;
         }).ToImmutableArray();
         if (eligibleEnemies.Length == 0)
@@ -51,7 +51,7 @@ sealed partial class WaveScheduler
         var result = Array.BinarySearch(probabilities, t);
 
         var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-        return game.Meta.Blueprints.ComponentOwners[definition.BlueprintId];
+        return game.Meta.Blueprints.GameObjects[definition.BlueprintId];
     }
 
     private static (int minEnemies, int maxEnemies) enemyCountRange(

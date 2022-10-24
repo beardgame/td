@@ -53,7 +53,7 @@ sealed class WaveScriptSerializer
             new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
             unitsPerSpawnLocation,
-            game.Blueprints.ComponentOwners[unitBlueprint],
+            game.Blueprints.GameObjects[unitBlueprint],
             spawnedUnitIds.ToImmutableArray());
     }
 
