@@ -39,6 +39,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
         IKeyFrameAnimation<KeyFrame> Animation { get; }
+        Sprite.ColorMode ColorMode { get; }
     }
 
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
@@ -85,6 +86,8 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
             p.Xy += o.NumericValue;
         }
 
-        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians, keyframe.Color);
+        var color = Sprite.GetColor(Owner, Parameters.ColorMode, keyframe.Color);
+
+        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians, color);
     }
 }

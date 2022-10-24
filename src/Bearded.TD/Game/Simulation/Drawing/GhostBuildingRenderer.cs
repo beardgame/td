@@ -7,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
-sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<ConstructionStarted>
+sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<ConstructionFinished>, IListener<ConstructionStarted>
 {
     private Shader shader = null!;
     private bool switchToDefaultRenderer;
@@ -16,6 +16,7 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
     {
         base.OnAdded();
         Events.Subscribe<ConstructionStarted>(this);
+        Events.Subscribe<ConstructionFinished>(this);
     }
 
     public override void Activate()
@@ -29,6 +30,7 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
         base.OnRemoved();
 
         Events.Unsubscribe<ConstructionStarted>(this);
+        Events.Unsubscribe<ConstructionFinished>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -38,7 +40,6 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
         if (switchToDefaultRenderer)
         {
             Owner.RemoveComponent(this);
-            Owner.AddComponent(new DefaultComponentRenderer());
         }
     }
 
@@ -47,11 +48,16 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
     {
         return sprite.Sprite.MakeConcreteWith(
             Owner.Game.Meta.SpriteRenderers,
-            SpriteDrawGroup.Particle, 0,
+            SpriteDrawGroup.IgnoreDepth, 0,
             sprite.Create, shader);
     }
 
     public void HandleEvent(ConstructionStarted @event)
+    {
+        Owner.AddComponent(new DefaultComponentRenderer());
+    }
+
+    public void HandleEvent(ConstructionFinished @event)
     {
         switchToDefaultRenderer = true;
     }

@@ -28,6 +28,7 @@
         size: 1.2
       }
     },
-    { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} }
+    { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
+    { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} }
   ]
 }
