@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -59,6 +58,8 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
 
         var direction = (nextTilePosition - Owner.Position.XY()).NumericValue.NormalizedSafe();
         var acceleration = direction * Parameters.Acceleration;
+        
+        acceleration *= IsMoving ? 1 : 0.1f;
 
         physics.ApplyVelocityImpulse((acceleration * elapsedTime).WithZ());
     }

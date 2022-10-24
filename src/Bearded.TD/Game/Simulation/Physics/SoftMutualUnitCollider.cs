@@ -37,6 +37,8 @@ sealed class SoftMutualUnitCollider : Component
         {
             foreach (var unit in units.GetUnitsOnTile(tile))
             {
+                if (unit == Owner)
+                    continue;
                 if (unit.GetComponents<SoftMutualUnitCollider>().SingleOrDefault() is not { } other)
                     continue;
 
@@ -48,7 +50,7 @@ sealed class SoftMutualUnitCollider : Component
                     continue;
 
                 var distance = distanceSquared.Sqrt();
-                var strength = (r + otherRadius - distance) / 1.S() / 1.S() * 0.5f;
+                var strength = (r + otherRadius - distance) / 1.S() / 1.S() * 5f;
                 var direction = -difference.NumericValue.NormalizedSafe();
                 acceleration += direction * strength;
             }
