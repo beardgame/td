@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -19,15 +18,11 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     {
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
-            var (targetFaction, chaptersPerGame, wavesPerChapter, unparsedEnemies) = Parameters;
-            var parsedEnemies = unparsedEnemies
-                .Select(p => new SpawnableEnemy(p.Id, context.Blueprints.GameObjects[p.Id], p.Probability))
-                .Cast<ISpawnableEnemy>()
-                .ToImmutableArray();
+            var (targetFaction, chaptersPerGame, wavesPerChapter, enemies) = Parameters;
             var waveScheduler = new WaveScheduler(
                 context.GameState,
                 context.Factions.Find(targetFaction),
-                parsedEnemies,
+                enemies.CastArray<ISpawnableEnemy>(),
                 commandDispatcher,
                 context.Logger);
             var chapterScheduler = new ChapterScheduler(waveScheduler);
@@ -45,13 +40,10 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         ExternalId<Faction> TargetFaction,
         int ChaptersPerGame,
         int WavesPerChapter,
-        ImmutableArray<SpawnableEnemyParameters> Enemies);
+        ImmutableArray<SpawnableEnemy> Enemies);
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public sealed record SpawnableEnemyParameters(ModAwareId Id, double Probability);
-
-    private sealed record SpawnableEnemy(ModAwareId Id, IGameObjectBlueprint Blueprint, double Probability)
-        : ISpawnableEnemy;
+    public sealed record SpawnableEnemy(IGameObjectBlueprint Blueprint, double Probability) : ISpawnableEnemy;
 
     private sealed class Listener : IListener<GameStarted>
     {
