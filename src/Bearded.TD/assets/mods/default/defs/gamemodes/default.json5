@@ -59,7 +59,17 @@
             parameters: {
                 targetFaction: "players",
                 chaptersPerGame: 5,
-                wavesPerChapter: 5
+                wavesPerChapter: 5,
+                enemies: [
+                    { id: "standard01", probability: 1, },
+                    { id: "standard02", probability: 1, },
+                    { id: "standard03", probability: 1, },
+                    { id: "standard04", probability: 1, },
+                    { id: "standard05", probability: 1, },
+                    { id: "standard06", probability: 1, },
+                    { id: "standard07", probability: 1, },
+                    { id: "standard08", probability: 1, },
+                ],
             }
         },
         {
