@@ -17,7 +17,7 @@ namespace Bearded.FluentSourceGen.Tests
                 .AddConstructor(ctor => ctor.InjectFields(intFieldReference, stringFieldReference))
                 .ToSourceString();
 
-            return Verifier.Verify(source, DefaultVerifySettings).UseExtension("cs");
+            return Verifier.Verify(source, DefaultVerifySettings, extension: "cs");
         }
     }
 }
