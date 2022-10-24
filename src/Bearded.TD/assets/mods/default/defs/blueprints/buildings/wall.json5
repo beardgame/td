@@ -22,6 +22,8 @@
         drawGroup: "building",
         heightOffset: 0.1
       }
-    }
+    },
+    { id: "spawnObjectOnBuildingPlaced", parameters: { object: "wall-placed-effect"} },
+    { id: "spawnObjectOnMaterialized", parameters: { object: "wall-materialized-effect"} }
   ]
 }
