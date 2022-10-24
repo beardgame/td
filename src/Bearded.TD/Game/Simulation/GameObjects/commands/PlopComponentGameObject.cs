@@ -59,7 +59,7 @@ static class PlopComponentGameObject
         {
             return new Implementation(
                 game,
-                game.Blueprints.ComponentOwners[blueprint],
+                game.Blueprints.GameObjects[blueprint],
                 position,
                 direction
             );

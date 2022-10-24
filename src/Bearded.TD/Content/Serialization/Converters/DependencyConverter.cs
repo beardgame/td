@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
-class DependencyConverter<T> : JsonConverterBase<T>
+sealed class DependencyConverter<T> : JsonConverterBase<T>
 {
     private readonly IDependencyResolver<T> dependencyResolver;
 
@@ -22,6 +22,6 @@ class DependencyConverter<T> : JsonConverterBase<T>
                 $"Expected string value, encountered {reader.TokenType} when parsing {typeof(T).Name}.");
         }
 
-        return dependencyResolver.Resolve(Convert.ToString(reader.Value));
+        return dependencyResolver.Resolve(Convert.ToString(reader.Value) ?? throw new InvalidOperationException());
     }
 }

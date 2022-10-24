@@ -15,7 +15,7 @@ sealed partial class UserSettings
     private static JsonSerializer makeSerializer()
     {
         var s = new JsonSerializer();
-        s.Converters.Add(new ModAwareIdConverter());
+        s.Converters.Add(ModAwareIdConverter.Global());
         s.Converters.Add(new StringEnumConverter());
         s.ContractResolver = new CamelCasePropertyNamesContractResolver();
         s.Formatting = Formatting.Indented;

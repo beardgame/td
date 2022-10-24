@@ -24,12 +24,16 @@ sealed class GameModeBlueprintLoader
         var technologyUnlockConverter = new TechnologyUnlockConverter(
             Context.FindDependencyResolver<IGameObjectBlueprint>(),
             Context.FindDependencyResolver<IPermanentUpgrade>());
+        var gameObjectConverter =
+            new DependencyConverter<IGameObjectBlueprint>(Context.FindDependencyResolver<IGameObjectBlueprint>());
 
+        Context.Serializer.Converters.Add(gameObjectConverter);
         Context.Serializer.Converters.Add(nodeGroupConverter);
         Context.Serializer.Converters.Add(technologyUnlockConverter);
 
         var blueprints = base.LoadBlueprints();
 
+        Context.Serializer.Converters.Remove(gameObjectConverter);
         Context.Serializer.Converters.Remove(nodeGroupConverter);
         Context.Serializer.Converters.Remove(technologyUnlockConverter);
 

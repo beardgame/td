@@ -110,7 +110,7 @@ static class SyncCursors
                 game,
                 game.PlayerFor(player),
                 new Position2(x, y),
-                ghost.IsValid ? game.Blueprints.ComponentOwners[ghost] : null);
+                ghost.IsValid ? game.Blueprints.GameObjects[ghost] : null);
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
@@ -122,7 +122,7 @@ static class SyncCursors
                     tuple => (
                         new Position2(tuple.X, tuple.Y),
                         tuple.AttachedGhost.IsValid
-                            ? game.Blueprints.ComponentOwners[tuple.AttachedGhost]
+                            ? game.Blueprints.GameObjects[tuple.AttachedGhost]
                             : null)));
         }
 

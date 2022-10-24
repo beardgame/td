@@ -12,7 +12,6 @@ namespace Bearded.FluentSourceGen.Tests
         {
             DefaultVerifySettings = new VerifySettings();
             DefaultVerifySettings.UseDirectory("goldens");
-            DefaultVerifySettings.UseExtension("cs");
         }
 
         [ModuleInitializer]

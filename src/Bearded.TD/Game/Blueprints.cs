@@ -20,7 +20,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
     public ReadonlyBlueprintCollection<ISoundEffect> SoundEffects { get; }
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
-    public ReadonlyBlueprintCollection<IGameObjectBlueprint> ComponentOwners { get; }
+    public ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
     public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
     public ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes { get; }
@@ -31,7 +31,7 @@ sealed class Blueprints
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
-        ReadonlyBlueprintCollection<IGameObjectBlueprint> componentOwners,
+        ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
@@ -42,7 +42,7 @@ sealed class Blueprints
         Sprites = sprites;
         SoundEffects = soundEffects;
         Footprints = footprints;
-        ComponentOwners = componentOwners;
+        GameObjects = gameObjects;
         Upgrades = upgrades;
         Technologies = technologies;
         LevelNodes = levelNodes;
@@ -58,7 +58,7 @@ sealed class Blueprints
             flatten(list, b => b.Sprites),
             flatten(list, b => b.SoundEffects),
             flatten(list, b => b.Footprints),
-            flatten(list, b => b.ComponentOwners),
+            flatten(list, b => b.GameObjects),
             flatten(list, b => b.Upgrades),
             flatten(list, b => b.Technologies),
             flatten(list, b => b.LevelNodes),

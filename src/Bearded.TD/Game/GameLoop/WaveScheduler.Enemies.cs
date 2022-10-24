@@ -24,11 +24,11 @@ sealed partial class WaveScheduler
         return new EnemiesToSpawn(blueprint, blueprintThreat, enemyCount);
     }
 
-    private ImmutableArray<EnemySpawnDefinition> filteredEligibleEnemies(double maxWaveValue)
+    private ImmutableArray<ISpawnableEnemy> filteredEligibleEnemies(double maxWaveValue)
     {
-        var eligibleEnemies = EnemySpawnDefinition.All.Where(def =>
+        var eligibleEnemies = spawnableEnemies.Where(spawnableEnemy =>
         {
-            var threat = game.Meta.Blueprints.ComponentOwners[def.BlueprintId].GetThreat();
+            var threat = spawnableEnemy.Blueprint.GetThreat();
             return 6 * threat < maxWaveValue;
         }).ToImmutableArray();
         if (eligibleEnemies.Length == 0)
@@ -39,7 +39,7 @@ sealed partial class WaveScheduler
         return eligibleEnemies;
     }
 
-    private IGameObjectBlueprint selectBlueprint(IReadOnlyList<EnemySpawnDefinition> enemies)
+    private IGameObjectBlueprint selectBlueprint(IReadOnlyList<ISpawnableEnemy> enemies)
     {
         var probabilities = new double[enemies.Count + 1];
         foreach (var (enemy, i) in enemies.Indexed())
@@ -50,8 +50,8 @@ sealed partial class WaveScheduler
         var t = random.NextDouble(probabilities[^1]);
         var result = Array.BinarySearch(probabilities, t);
 
-        var definition = result >= 0 ? enemies[result] : enemies[~result - 1];
-        return game.Meta.Blueprints.ComponentOwners[definition.BlueprintId];
+        var selectedEnemy = result >= 0 ? enemies[result] : enemies[~result - 1];
+        return selectedEnemy.Blueprint;
     }
 
     private static (int minEnemies, int maxEnemies) enemyCountRange(

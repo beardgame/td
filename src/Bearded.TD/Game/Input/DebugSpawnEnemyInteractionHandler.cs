@@ -28,7 +28,7 @@ sealed class DebugSpawnEnemyInteractionHandler : InteractionHandler
                     SpawnUnit.Command,
                     Game.State,
                     tile,
-                    Game.Blueprints.ComponentOwners[enemyBlueprintName],
+                    Game.Blueprints.GameObjects[enemyBlueprintName],
                     Game.Ids.GetNext<GameObject>()));
         else if (cursor.Cancel.Hit)
             Game.PlayerInput.ResetInteractionHandler();

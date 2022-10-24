@@ -4,11 +4,11 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Content.Mods;
 
-class ComponentOwnerProxyBlueprintResolver : ModAwareDependencyResolver<IGameObjectBlueprint>
+class GameObjectProxyBlueprintResolver : ModAwareDependencyResolver<IGameObjectBlueprint>
 {
     private List<GameObjectBlueprintProxy> currentProxies = new List<GameObjectBlueprintProxy>();
 
-    public ComponentOwnerProxyBlueprintResolver(ModMetadata thisMod, IEnumerable<Mod> otherMods)
+    public GameObjectProxyBlueprintResolver(ModMetadata thisMod, IEnumerable<Mod> otherMods)
         : base(thisMod, otherMods)
     {
     }
@@ -32,6 +32,6 @@ class ComponentOwnerProxyBlueprintResolver : ModAwareDependencyResolver<IGameObj
 
     protected override IGameObjectBlueprint GetDependencyFromOtherMod(Mod mod, ModAwareId id)
     {
-        return mod.Blueprints.ComponentOwners[id];
+        return mod.Blueprints.GameObjects[id];
     }
 }

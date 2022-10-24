@@ -33,22 +33,22 @@ sealed class TechnologyBlueprint
             Branch ?? TechnologyBranch.Dynamics,
             Tier.Value,
             Unlocks?
-                .Select(u => u.ToGameModel(resolvers.ComponentOwnerResolver, resolvers.UpgradeResolver))
+                .Select(u => u.ToGameModel(resolvers.GameObjectResolver, resolvers.UpgradeResolver))
                 .ToImmutableArray(),
             RequiredTechs?.Select(resolvers.TechnologyResolver.Resolve));
     }
 
     public sealed class DependencyResolvers
     {
-        public IDependencyResolver<IGameObjectBlueprint> ComponentOwnerResolver { get; }
+        public IDependencyResolver<IGameObjectBlueprint> GameObjectResolver { get; }
         public IDependencyResolver<IPermanentUpgrade> UpgradeResolver { get; }
         public IDependencyResolver<ITechnologyBlueprint> TechnologyResolver { get; }
 
-        public DependencyResolvers(IDependencyResolver<IGameObjectBlueprint> componentOwnerResolver,
+        public DependencyResolvers(IDependencyResolver<IGameObjectBlueprint> gameObjectResolver,
             IDependencyResolver<IPermanentUpgrade> upgradeResolver,
             IDependencyResolver<ITechnologyBlueprint> technologyResolver)
         {
-            ComponentOwnerResolver = componentOwnerResolver;
+            GameObjectResolver = gameObjectResolver;
             UpgradeResolver = upgradeResolver;
             TechnologyResolver = technologyResolver;
         }

@@ -24,6 +24,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     private readonly Random random = new();
     private readonly GameState game;
     private readonly Faction targetFaction;
+    private readonly ImmutableArray<ISpawnableEnemy> spawnableEnemies;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private readonly Logger logger;
     public event VoidEventHandler? WaveEnded;
@@ -31,10 +32,15 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     private Id<WaveScript>? activeWave;
 
     public WaveScheduler(
-        GameState game, Faction targetFaction, ICommandDispatcher<GameInstance> commandDispatcher, Logger logger)
+        GameState game,
+        Faction targetFaction,
+        ImmutableArray<ISpawnableEnemy> spawnableEnemies,
+        ICommandDispatcher<GameInstance> commandDispatcher,
+        Logger logger)
     {
         this.game = game;
         this.targetFaction = targetFaction;
+        this.spawnableEnemies = spawnableEnemies;
         this.commandDispatcher = commandDispatcher;
         this.logger = logger;
     }

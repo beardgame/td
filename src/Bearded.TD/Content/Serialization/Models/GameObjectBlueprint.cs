@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Content.Serialization.Models;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-sealed class ComponentOwnerBlueprint : IConvertsTo<Content.Models.GameObjectBlueprint, Void>
+sealed class GameObjectBlueprint : IConvertsTo<Content.Models.GameObjectBlueprint, Void>
 {
     public string? Id { get; set; }
     public List<IComponent>? Components { get; set; }

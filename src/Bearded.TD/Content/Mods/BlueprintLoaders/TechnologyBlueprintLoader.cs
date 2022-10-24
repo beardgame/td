@@ -17,7 +17,7 @@ sealed class TechnologyBlueprintLoader
     : BaseBlueprintLoader<
         ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>
 {
-    private readonly ReadonlyBlueprintCollection<IGameObjectBlueprint> componentOwners;
+    private readonly ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects;
     private readonly ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades;
 
     protected override DependencySelector SelectDependency { get; } = m => m.Blueprints.Technologies;
@@ -25,10 +25,10 @@ sealed class TechnologyBlueprintLoader
     protected override string RelativePath => "defs/technologies";
 
     public TechnologyBlueprintLoader(BlueprintLoadingContext context,
-        ReadonlyBlueprintCollection<IGameObjectBlueprint> componentOwners,
+        ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades) : base(context)
     {
-        this.componentOwners = componentOwners;
+        this.gameObjects = gameObjects;
         this.upgrades = upgrades;
     }
 
@@ -65,16 +65,15 @@ sealed class TechnologyBlueprintLoader
         var blueprints = new List<ITechnologyBlueprint>();
         var accumulatingBlueprintCollection = new BlueprintCollection<ITechnologyBlueprint>();
 
-        var componentOwnerResolver = new BlueprintDependencyResolver<IGameObjectBlueprint>(
-            Context.Meta, componentOwners, Context.LoadedDependencies, m => m.Blueprints.ComponentOwners);
+        var gameObjectResolver = new BlueprintDependencyResolver<IGameObjectBlueprint>(
+            Context.Meta, gameObjects, Context.LoadedDependencies, m => m.Blueprints.GameObjects);
         var upgradeResolver = new BlueprintDependencyResolver<IPermanentUpgrade>(
             Context.Meta, upgrades, Context.LoadedDependencies, m => m.Blueprints.Upgrades);
         var technologyResolver = new AccumulatingBlueprintDependencyResolver<ITechnologyBlueprint>(
             Context.Meta, accumulatingBlueprintCollection, Context.LoadedDependencies, m => m.Blueprints.Technologies);
 
         var dependencyResolvers =
-            new TechnologyBlueprintJson.DependencyResolvers(
-                componentOwnerResolver, upgradeResolver, technologyResolver);
+            new TechnologyBlueprintJson.DependencyResolvers(gameObjectResolver, upgradeResolver, technologyResolver);
 
         foreach (var jsonModel in sortedJsonModels)
         {
