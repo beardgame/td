@@ -1,5 +1,6 @@
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
@@ -12,10 +13,12 @@ namespace Bearded.TD.Game.Simulation.Damage;
 sealed class HealthBar : Component, IListener<DrawComponents>
 {
     private IHealth health = null!;
+    private IBuildingStateProvider? building;
 
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, b => building = b);
         Events.Subscribe(this);
     }
 
@@ -30,6 +33,9 @@ sealed class HealthBar : Component, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
+        if (building?.State.IsCompleted == false)
+            return;
+
         var p = (float) health.HealthPercentage;
 
         // ReSharper disable once CompareOfFloatsByEqualityOperator

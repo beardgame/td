@@ -1,6 +1,7 @@
 using System;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
@@ -17,10 +18,14 @@ sealed class FuelGauge : Component, IListener<DrawComponents>
 {
     private IFuelTank? tank;
     private float displayLevel;
+    private IBuildingStateProvider? building;
+
+    private bool isVisible => building?.State.IsCompleted != false;
 
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IFuelTank>(Owner, Events, t => tank = t);
+        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, b => building = b);
 
         Events.Subscribe(this);
     }
@@ -31,6 +36,9 @@ sealed class FuelGauge : Component, IListener<DrawComponents>
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (!isVisible)
+            return;
+
         if (tank is not { FilledPercentage: var level })
             return;
 
@@ -49,6 +57,9 @@ sealed class FuelGauge : Component, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
+        if (!isVisible)
+            return;
+
         var drawer = e.Core.CustomPrimitives;
 
         var center = Owner.Position.NumericValue + new Vector3(-0.3f, 0.3f, 0.1f);

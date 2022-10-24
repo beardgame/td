@@ -9,6 +9,7 @@ interface IBuildingState
     public TileRangeDrawer.RangeDrawStyle RangeDrawing { get; }
     public bool IsGhost { get; }
     public bool IsMaterialized { get; }
+    public bool IsCompleted { get; }
     public bool IsFunctional { get; }
     public bool CanApplyUpgrades { get; }
     // Whether the player can impact the current health of this building using repairs or deleting the building.
