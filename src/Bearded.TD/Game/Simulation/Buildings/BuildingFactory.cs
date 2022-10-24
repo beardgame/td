@@ -23,7 +23,7 @@ static class BuildingFactory
         PositionedFootprint footprint)
     {
         var building = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
-            blueprint, null, Position3.Zero, Direction2.Zero);
+            blueprint, null, footprint.CenterPosition.WithZ(0), Direction2.Zero);
         if (!building.GetComponents<IEnemySink>().Any())
         {
             building.AddComponent(new BackupSink());

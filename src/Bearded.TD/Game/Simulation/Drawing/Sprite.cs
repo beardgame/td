@@ -17,7 +17,8 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     internal enum ColorMode
     {
         Default = 0,
-        Faction
+        Faction,
+        FactionMultiplied
     }
 
     internal interface IParameters : IParametersTemplate<IParameters>
@@ -62,13 +63,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
-        var color = Parameters.ColorMode switch
-        {
-            ColorMode.Faction when
-                Owner.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider)
-                => factionProvider.Faction.Color,
-            _ => Parameters.Color,
-        };
+        var color = GetColor(Owner, Parameters.ColorMode, Parameters.Color);
 
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
@@ -83,5 +78,37 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
         }
 
         e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, Owner.Direction.Radians, color);
+    }
+
+    public static Color GetColor(GameObject obj, ColorMode mode, Color defaultColor)
+    {
+        return mode switch
+        {
+            ColorMode.Faction when getFactionColor(obj, out var factionColor) => factionColor,
+            ColorMode.FactionMultiplied when getFactionColor(obj, out var factionColor) => multiply(factionColor, defaultColor),
+            _ => defaultColor,
+        };
+
+        static Color multiply(Color c1, Color c2)
+        {
+            return new Color(
+                (byte)(c1.R * c2.R / 255),
+                (byte)(c1.G * c2.G / 255),
+                (byte)(c1.B * c2.B / 255),
+                (byte)(c1.A * c2.A / 255)
+                );
+        }
+
+        static bool getFactionColor(GameObject obj, out Color color)
+        {
+            if (obj.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider))
+            {
+                color = factionProvider.Faction.Color;
+                return true;
+            }
+
+            color = default;
+            return false;
+        }
     }
 }
