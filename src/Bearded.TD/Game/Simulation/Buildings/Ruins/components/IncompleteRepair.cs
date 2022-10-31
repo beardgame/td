@@ -15,7 +15,6 @@ sealed class IncompleteRepair
 {
     private readonly Faction repairingFaction;
     private readonly ProgressTracker progressTracker;
-    private INameProvider? nameProvider;
     private IHealth? health;
     private IHealthEventReceiver? healthEventReceiver;
 
@@ -31,7 +30,6 @@ sealed class IncompleteRepair
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
         ComponentDependencies.Depend<IHealthEventReceiver>(
             Owner, Events, receiver => healthEventReceiver = receiver);
@@ -84,7 +82,7 @@ sealed class IncompleteRepair
         }
 
         Events.Send(new RepairFinished(repairingFaction));
-        Owner.Game.Meta.Events.Send(new BuildingRepairFinished(nameProvider.NameOrDefault(), Owner));
+        Owner.Game.Meta.Events.Send(new BuildingRepairFinished(Owner));
     }
 
     private void addHitPoints(HitPoints hitPoints)
@@ -103,7 +101,6 @@ sealed class IncompleteRepair
     public bool IsStarted => progressTracker.IsStarted;
     public bool IsCompleted => progressTracker.IsCompleted;
     public bool IsCancelled => progressTracker.IsCancelled;
-    public string StructureName => nameProvider.NameOrDefault();
     public void StartRepair() => progressTracker.Start();
     public void SetRepairProgress(double percentage) => progressTracker.SetProgress(percentage);
     public void CompleteRepair() => progressTracker.Complete();
@@ -118,7 +115,6 @@ interface IIncompleteRepair
     bool IsStarted { get; }
     bool IsCompleted { get; }
     bool IsCancelled { get; }
-    string StructureName { get; }
     double PercentageComplete { get; }
 
     public void StartRepair();
