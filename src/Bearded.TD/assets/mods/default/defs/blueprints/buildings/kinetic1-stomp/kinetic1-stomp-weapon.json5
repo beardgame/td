@@ -26,7 +26,7 @@
         {
             id: "spawnObjectOnHit",
             parameters: {
-                object: "dustExplosion",
+                object: "medium-shockwave",
                 onHitLevel: true,
                 onHitEnemy: false
             }
@@ -34,7 +34,7 @@
         {
             id: "spawnObjectOnHit",
             parameters: {
-                object: "medium-shockwave",
+                object: "ground-splash",
                 onHitLevel: true,
                 onHitEnemy: false
             }

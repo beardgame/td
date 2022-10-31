@@ -6,6 +6,7 @@ using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -38,12 +39,14 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         int DrawGroupOrderKey { get; }
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
+        bool RandomAngle { get; }
         IKeyFrameAnimation<KeyFrame> Animation { get; }
         Sprite.ColorMode ColorMode { get; }
     }
 
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
     private Instant startTime;
+    private Angle angle;
 
     public AnimatedSprite(IParameters parameters) : base(parameters)
     {
@@ -59,6 +62,9 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         Events.Subscribe(this);
 
         startTime = Owner.Game.Time;
+        
+        if (Parameters.RandomAngle)
+            angle = StaticRandom.Float(360).Degrees();
     }
 
     public override void OnRemoved()
@@ -88,6 +94,6 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
 
         var color = Sprite.GetColor(Owner, Parameters.ColorMode, keyframe.Color);
 
-        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians, color);
+        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians + angle.Radians, color);
     }
 }

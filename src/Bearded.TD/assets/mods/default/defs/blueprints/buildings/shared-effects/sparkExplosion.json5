@@ -20,6 +20,22 @@
       }
     },
     {
+      id: "particleSystem",
+      parameters: {
+        count: 4,
+        sprite: "default.particle.mote",
+        color: "FF888888",
+        size: 0.1,
+        finalSize: 0.5,
+        lifetime: 0.5,
+        reflectionVelocity: 0.3,
+        randomVelocity: 0.2,
+        gravityFactor: 0.1,
+        offset: [0, 0, 0.05],
+        drawMode: "sprite"
+      }
+    },
+    {
       id: "deleteAfter",
       parameters: {
         timeSpan: 0.75

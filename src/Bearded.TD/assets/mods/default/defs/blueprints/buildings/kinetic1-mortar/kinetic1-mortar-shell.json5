@@ -50,5 +50,13 @@
                 onHitEnemy: true
             }
         },
+        {
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "crater",
+                onHitLevel: true,
+                onHitEnemy: true
+            }
+        }
     ]
 }

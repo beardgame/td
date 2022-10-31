@@ -6,7 +6,7 @@
       parameters: {
         count: 1,
         sprite: "default.particle.halo",
-        color: "FF666666",
+        color: "FF888888",
         size: 0.4,
         finalSize: 2,
         lifetime: 0.5,
