@@ -10,6 +10,10 @@
     { id: "gainXpOnDamage" },
     { id: "veterancy" },
     {
+      id: "spawnObjectOnLevelGain",
+      parameters: { object: "building-gained-level-effect" },
+    },
+    {
       id: "playSoundOnLevelGain",
       parameters: { sound: "veterancy" },
     },
