@@ -10,6 +10,10 @@
         { id: "gainXpOnDamage" },
         { id: "veterancy" },
         {
+            id: "playSoundOnLevelGain",
+            parameters: { sound: "veterancy" },
+        },
+        {
             id: "turret",
             onGhost: true,
             parameters: {

@@ -1,12 +1,12 @@
 using Bearded.TD.Audio;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Sounds;
 
-[Component("playSoundOnLevelHit")]
-sealed class PlaySoundOnLevelHit : PlaySoundOn<PlaySoundOnLevelHit.IParameters, HitLevel>
+[Component("playSoundOnLevelGain")]
+sealed class PlaySoundOnLevelGain : PlaySoundOn<PlaySoundOnLevelGain.IParameters, GainLevel>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -15,5 +15,5 @@ sealed class PlaySoundOnLevelHit : PlaySoundOn<PlaySoundOnLevelHit.IParameters, 
 
     protected override ISoundEffect SoundEffect => Parameters.Sound;
 
-    public PlaySoundOnLevelHit(IParameters parameters) : base(parameters) { }
+    public PlaySoundOnLevelGain(IParameters parameters) : base(parameters) { }
 }
