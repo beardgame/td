@@ -98,6 +98,12 @@ public sealed class ComponentLifeCycleTests
 
     private IComponent? makeInstance(Type type)
     {
+        if (type.ContainsGenericParameters)
+        {
+            output.WriteLine($"WARN: {type} is generic. Skipping.");
+            return null;
+        }
+
         var constructors = type.GetConstructors();
 
         if (constructors.Length != 1)
