@@ -63,6 +63,7 @@ sealed class Veterancy : Component, IListener<GainXp>
     {
         level++;
         Events.Send(new GainLevel());
+        Owner.Game.Meta.Events.Send(new BuildingGainedLevel(Owner));
     }
 
     public static Veterancy WithLevelThresholds(params Experience[] levelThresholds) =>

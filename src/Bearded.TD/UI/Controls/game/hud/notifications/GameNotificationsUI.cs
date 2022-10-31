@@ -47,6 +47,9 @@ sealed class GameNotificationsUI
             textAndGameObjectEventListener<BuildingRepairFinished>(
                 @event => $"Repaired {getObjectName(@event.GameObject)}",
                 @event => ScrollTo(game, @event.GameObject)),
+            textAndGameObjectEventListener<BuildingGainedLevel>(
+                @event => $"{getObjectName(@event.GameObject)} gained level",
+                @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingUpgradeFinished>(
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
                 @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
