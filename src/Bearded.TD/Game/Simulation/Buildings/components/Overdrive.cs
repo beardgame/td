@@ -75,7 +75,7 @@ sealed class Overdrive : Component
 
         var overdriveDamage = new TypedDamage(damage, DamageType.DivineIntervention);
 
-        DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage);
+        DamageExecutor.FromDamageSource(null).TryDoDamage(Owner, overdriveDamage, new HitContext(HitType.Self, null));
 
     }
 }

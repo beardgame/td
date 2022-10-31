@@ -46,6 +46,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         Velocity3 InherentVelocity { get; }
         Speed RandomVelocity { get; }
         Speed VectorVelocity { get; }
+        Speed IncidentVelocity { get; }
         Speed ReflectionVelocity { get; }
         [Modifiable(1)]
         float GravityFactor { get; }
@@ -61,12 +62,11 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     }
 
     private bool initialized;
-    private readonly Particle[] particles;
+    private Particle[] particles = null!;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
     public ParticleSystem(IParameters parameters) : base(parameters)
     {
-        particles = new Particle[parameters.Count];
     }
 
     private readonly struct Particle
@@ -115,19 +115,28 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     private void initializeParticles()
     {
         var hitInfo = Owner.TryGetSingleComponent<IProperty<HitInfo>>(out var h) ? h : null;
+        var scale = Owner.TryGetSingleComponent<IProperty<Scale>>(out var s) ? s : null;
 
         var reflectionVelocity = hitInfo != null
             ? hitInfo.Value.GetReflection().NumericValue * Parameters.ReflectionVelocity
+            : Velocity3.Zero;
+
+        var incidentVelocity = hitInfo != null
+            ? hitInfo.Value.IncidentDirection.NumericValue * Parameters.IncidentVelocity
             : Velocity3.Zero;
 
         var vectorVelocity = Owner.TryGetSingleComponent<IDirected3>(out var directed)
             ? directed.Direction.NumericValue.NormalizedSafe() * Parameters.VectorVelocity
             : Velocity3.Zero;
 
-        var baseVelocity = Parameters.InherentVelocity + reflectionVelocity + vectorVelocity;
+        var baseVelocity = Parameters.InherentVelocity + reflectionVelocity + incidentVelocity + vectorVelocity;
 
         var position = Owner.Position + Parameters.Offset;
         var now = Owner.Game.Time;
+
+        var count = scale == null ? Parameters.Count : (int) (Parameters.Count * scale.Value.Value);
+        particles = new Particle[count];
+
         for (var i = 0; i < particles.Length; i++)
         {
             var velocity = baseVelocity + GetRandomUnitVector3() * Parameters.RandomVelocity * randomFloat(0.5f, 1);
@@ -233,7 +242,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         var velocityOut = normalVelocityOut * Parameters.CollisionNormalFactor + tangentVelocity * Parameters.CollisionNormalFactor;
 
         v = velocityOut;
-        p = pointOfReflection + normal * 0.01.U();
+        p = pointOfReflection + normal * 0.0001.U();
     }
 
     public void HandleEvent(DrawComponents e)

@@ -27,6 +27,7 @@
             }
         },
         { id: "softMutualUnitCollider" },
-        { id: "spawnObjectOnKilled", parameters:  { object: "enemyExplosion" } }
+        { id: "spawnObjectOnKilled", parameters:  { object: "enemyExplosion" } },
+        { id: "spawnObjectOnTakeHit", parameters: { object: "enemyHit", scaleFromDamage: 0.1 }}
     ]
 }
