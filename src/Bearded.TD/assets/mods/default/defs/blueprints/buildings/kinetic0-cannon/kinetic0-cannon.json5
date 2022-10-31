@@ -9,6 +9,7 @@
     { id: "autoRepair", parameters: { } },
     { id: "gainXpOnDamage" },
     { id: "veterancy" },
+    { id: "upgradePips" },
     {
       id: "spawnObjectOnLevelGain",
       parameters: { object: "building-gained-level-effect" },
