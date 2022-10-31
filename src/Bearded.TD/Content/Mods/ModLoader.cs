@@ -115,6 +115,7 @@ static class ModLoader
                 new SpaceTime1Converter<UntypedDamage>(d => new UntypedDamage(((int) d).HitPoints())),
                 new SpaceTime1Converter<UntypedDamagePerSecond>(d => new UntypedDamagePerSecond(((int) d).HitPoints())),
                 new SpaceTime2Converter<PitchRange>((from, to) => new PitchRange(from, to)),
+                new SpaceTime3Converter<Velocity3>((x, y, z) => new Velocity3(x, y, z)),
                 new ColorConverter(),
                 BehaviorConverterFactory.ForBaseComponents(),
                 BehaviorConverterFactory.ForFactionBehaviors(),

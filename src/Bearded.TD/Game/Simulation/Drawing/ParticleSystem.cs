@@ -43,6 +43,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         Unit? FinalSize { get; }
         Unit LineWidth { get; }
         TimeSpan LifeTime { get; }
+        Velocity3 InherentVelocity { get; }
         Speed RandomVelocity { get; }
         Speed VectorVelocity { get; }
         Speed IncidentVelocity { get; }
@@ -128,7 +129,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             ? directed.Direction.NumericValue.NormalizedSafe() * Parameters.VectorVelocity
             : Velocity3.Zero;
 
-        var baseVelocity = reflectionVelocity + incidentVelocity + vectorVelocity;
+        var baseVelocity = Parameters.InherentVelocity + reflectionVelocity + incidentVelocity + vectorVelocity;
 
         var position = Owner.Position + Parameters.Offset;
         var now = Owner.Game.Time;

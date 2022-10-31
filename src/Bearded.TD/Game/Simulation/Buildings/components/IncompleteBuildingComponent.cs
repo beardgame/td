@@ -13,7 +13,6 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSyncer
 {
     private IncompleteBuildingWork? work;
-    private INameProvider? nameProvider;
     private IHealthEventReceiver? receiver;
 
     public IIncompleteBuilding Work =>
@@ -21,11 +20,10 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
         ComponentDependencies.Depend<IHealthEventReceiver>(Owner, Events, r => receiver = r);
 
         var maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
-        work = new IncompleteBuildingWork(Owner, Events, maxHealth, addHealth, () => nameProvider?.Name ?? "");
+        work = new IncompleteBuildingWork(Owner, Events, maxHealth, addHealth);
         Events.Subscribe(work);
     }
 
@@ -62,21 +60,18 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
         private readonly ComponentEvents events;
         private readonly HitPoints maxHealth;
         private readonly Action<HitPoints> addHealth;
-        private readonly Func<string> nameProvider;
         private HitPoints healthGiven;
 
         public IncompleteBuildingWork(
             GameObject owner,
             ComponentEvents events,
             HitPoints maxHealth,
-            Action<HitPoints> addHealth,
-            Func<string> nameProvider)
+            Action<HitPoints> addHealth)
         {
             this.owner = owner;
             this.events = events;
             this.maxHealth = maxHealth;
             this.addHealth = addHealth;
-            this.nameProvider = nameProvider;
             healthGiven = 1.HitPoints();
         }
 
@@ -116,7 +111,7 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
             addHealth(healthRemaining);
 
             events.Send(new ConstructionFinished());
-            owner.Game.Meta.Events.Send(new BuildingConstructionFinished(nameProvider(), owner));
+            owner.Game.Meta.Events.Send(new BuildingConstructionFinished(owner));
         }
 
         public override void OnCancel()

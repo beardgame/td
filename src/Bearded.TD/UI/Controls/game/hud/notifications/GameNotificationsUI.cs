@@ -5,9 +5,11 @@ using System.Collections.ObjectModel;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
@@ -40,11 +42,14 @@ sealed class GameNotificationsUI
     private ImmutableArray<INotificationListener> createNotificationListeners() =>
         ImmutableArray.Create<INotificationListener>(
             textAndGameObjectEventListener<BuildingConstructionFinished>(
-                @event => $"Constructed {@event.Name}",
-                @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
+                @event => $"Constructed {getObjectName(@event.GameObject)}",
+                @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingRepairFinished>(
-                @event => $"Repaired {@event.Name}",
-                @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
+                @event => $"Repaired {getObjectName(@event.GameObject)}",
+                @event => ScrollTo(game, @event.GameObject)),
+            textAndGameObjectEventListener<BuildingGainedLevel>(
+                @event => $"{getObjectName(@event.GameObject)} gained level",
+                @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingUpgradeFinished>(
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
                 @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
@@ -52,6 +57,13 @@ sealed class GameNotificationsUI
                 @event => $"Unlocked {@event.Technology.Name}"),
             new ExplorationTokenListener(this),
             new TechnologyTokenListener(this));
+
+    private static string getObjectName(GameObject gameObject)
+    {
+        return gameObject.TryGetSingleComponent<INameProvider>(out var nameProvider)
+            ? nameProvider.Name
+            : "<obj>";
+    }
 
     public void Initialize(GameInstance game, ITimeSource timeSource)
     {
