@@ -24,6 +24,7 @@
       }
     },
     { id: "spawnObjectOnBuildingPlaced", parameters: { object: "wall-placed-effect"} },
-    { id: "spawnObjectOnMaterialized", parameters: { object: "wall-materialized-effect"} }
+    { id: "spawnObjectOnMaterialized", parameters: { object: "wall-materialized-effect"} },
+    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }}
   ]
 }

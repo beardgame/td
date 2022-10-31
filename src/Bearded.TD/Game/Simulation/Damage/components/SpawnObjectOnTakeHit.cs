@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -34,10 +35,16 @@ sealed class SpawnObjectOnTakeHit
 
     public void HandleEvent(TakeHit @event)
     {
-        var obj = GameObjectFactory
-            .CreateFromBlueprintWithDefaultRenderer(Parameters.Object, Owner, Owner.Position, Direction2.Zero);
+        var hitInfo = @event.Context.Info;
 
-        if (@event.Context.Info is { } hit)
+        var obj = GameObjectFactory
+            .CreateFromBlueprintWithDefaultRenderer(
+                Parameters.Object,
+                Owner,
+                hitInfo is { } h ? h.Point : Owner.Position,
+                Direction2.Zero);
+
+        if (hitInfo is { } hit)
             obj.AddComponent(new Property<HitInfo>(hit));
 
         if (Parameters.ScaleFromDamage is { } scalar)
