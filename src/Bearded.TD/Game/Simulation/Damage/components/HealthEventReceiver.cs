@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class HealthEventReceiver : Component, IHealthEventReceiver
 {
-    public void Damage(TypedDamage typedDamage, IDamageSource? source)
+    public TypedDamage Damage(TypedDamage typedDamage, IDamageSource? source)
     {
         var previewDamage = new PreviewTakeDamage(typedDamage);
         Events.Preview(ref previewDamage);
@@ -21,6 +21,8 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
             var result = new DamageResult(modifiedDamageInfo);
             Events.Send(new TakeDamage(result, source));
         }
+
+        return modifiedDamageInfo;
     }
 
     public void Heal(HealInfo healInfo)
@@ -48,6 +50,6 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
 
 interface IHealthEventReceiver
 {
-    void Damage(TypedDamage typedDamage, IDamageSource? source);
+    TypedDamage Damage(TypedDamage typedDamage, IDamageSource? source);
     void Heal(HealInfo healInfo);
 }

@@ -12,7 +12,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("splashDamageOnHit")]
-sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParameters>,
+sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
     IListener<HitLevel>, IListener<HitEnemy>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
@@ -26,7 +26,7 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
         DamageType? DamageType { get; }
     }
 
-    public ProjectileSplashDamage(IParameters parameters) : base(parameters) {}
+    public SplashDamageOnHit(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {
@@ -74,10 +74,18 @@ sealed class ProjectileSplashDamage : Component<ProjectileSplashDamage.IParamete
 
         foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
         {
-            if ((enemy.Position - center).LengthSquared <= distanceSquared)
-            {
-                damageExecutor.TryDoDamage(enemy, damage.Typed(Parameters.DamageType ?? DamageType.Kinetic));
-            }
+            var difference = enemy.Position - center;
+
+            if (difference.LengthSquared > distanceSquared)
+                continue;
+
+            var incident = new Difference3(difference.NumericValue.NormalizedSafe());
+            var hitInfo = new HitInfo(enemy.Position, -incident, incident);
+
+            damageExecutor.TryDoDamage(
+                enemy,
+                damage.Typed(Parameters.DamageType ?? DamageType.Kinetic),
+                new HitContext(HitType.AreaOfEffect, hitInfo));
         }
     }
 

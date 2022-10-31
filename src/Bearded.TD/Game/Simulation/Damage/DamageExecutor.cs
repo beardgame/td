@@ -11,14 +11,21 @@ readonly struct DamageExecutor
         this.damageSource = damageSource;
     }
 
-    public bool TryDoDamage(GameObject target, TypedDamage typedDamage)
+    public bool TryDoDamage(GameObject target, TypedDamage typedDamage, HitContext? context = null)
     {
+        var hitReceiver = context != null && target.TryGetSingleComponent<IEventReceiver<TakeHit>>(out var r)
+            ? r
+            : null;
+
         if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
         {
+            hitReceiver?.InjectEvent(
+                new TakeHit(context.Value, typedDamage, new TypedDamage(HitPoints.Zero, typedDamage.Type)));
             return false;
         }
 
-        receiver.Damage(typedDamage, damageSource);
+        var damageTaken = receiver.Damage(typedDamage, damageSource);
+        hitReceiver?.InjectEvent(new TakeHit(context.Value, typedDamage, damageTaken));
         return true;
     }
 

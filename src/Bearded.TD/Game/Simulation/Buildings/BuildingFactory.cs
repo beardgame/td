@@ -48,6 +48,7 @@ static class BuildingFactory
         building.AddComponent(new StaticTileOccupation(footprint));
         building.AddComponent(new StatisticCollector());
         building.AddComponent(new TileBasedVisibility());
+        building.AddComponent(new EventReceiver<TakeHit>());
 #if DEBUG
         building.AddComponent(new DebugReporter());
 #endif

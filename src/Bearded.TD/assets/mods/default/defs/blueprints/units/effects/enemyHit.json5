@@ -1,0 +1,49 @@
+{
+  id: "enemyHit",
+  components: [
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 12,
+        sprite: "default.particle.circle-soft",
+        color: "BB992222",
+        drawGroupOrderKey: -10,
+        size: 0.1,
+        finalSize: 0.2,
+        lifetime: 4,
+        randomVelocity: 3,
+        incidentVelocity: 5,
+        collideWithLevel: true,
+        collisionNormalFactor: 0.3,
+        collisionTangentFactor: 0.3,
+        offset: [0, 0, 0.2],
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 4,
+        sprite: "default.particle.circle-soft",
+        color: "BB882222",
+        drawGroupOrderKey: -10,
+        size: 0.05,
+        finalSize: 0.1,
+        lifetime: 3,
+        randomVelocity: 5,
+        incidentVelocity: 8,
+        collideWithLevel: true,
+        collisionNormalFactor: 0.5,
+        collisionTangentFactor: 0.5,
+        offset: [0, 0, 0.2],
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 5
+      }
+    }
+  ]
+}

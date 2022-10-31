@@ -36,6 +36,7 @@ static class EnemyUnitFactory
         unit.AddComponent(new HealthEventReceiver());
         unit.AddComponent(new IdProvider(id));
         unit.AddComponent(new Killable());
+        unit.AddComponent(new EventReceiver<TakeHit>());
 
         unit.AddComponent(new Syncer());
         unit.AddComponent(new SyncPositionAndVelocity());
