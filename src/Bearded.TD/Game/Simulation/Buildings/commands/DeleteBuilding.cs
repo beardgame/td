@@ -32,7 +32,7 @@ static class DeleteBuilding
             building.Delete();
         }
 
-        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer();
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(building);
     }
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
