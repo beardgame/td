@@ -25,7 +25,7 @@ abstract class PlaySoundOn<TParameters, TEvent> : Component<TParameters>, IListe
     public void HandleEvent(TEvent @event)
     {
         Owner.Game.Meta.SoundScape.PlaySoundAt(
-            Owner.Position, SoundEffect.Sound, SoundEffect.PitchRange.ChooseRandomPitch());
+            SoundEffect.Sound, Owner.Position, SoundEffect.PitchRange.ChooseRandomPitch());
     }
 
     public override void Update(TimeSpan elapsedTime) { }

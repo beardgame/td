@@ -53,13 +53,15 @@ static partial class Shocked
 
         protected override void EndEffect(GameObject target)
         {
-            if (receipt == null || lightningShocks == null)
+            if (lightningShocks == null)
             {
                 throw new InvalidOperationException("Cannot end effect that was not started.");
             }
-            receipt.Rollback();
-            target.RemoveComponent(lightningShocks);
+
+            receipt?.Rollback();
             receipt = null;
+
+            target.RemoveComponent(lightningShocks);
             lightningShocks = null;
         }
     }

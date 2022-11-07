@@ -73,6 +73,14 @@
             }
         },
         {
+            id: "playSoundOnWaveStart",
+            parameters: { sound: "wave-start" },
+        },
+        {
+            id: "playSoundOnWaveComplete",
+            parameters: { sound: "wave-complete" },
+        },
+        {
             id: "contributeNodes",
             parameters: {
                 nodes: [

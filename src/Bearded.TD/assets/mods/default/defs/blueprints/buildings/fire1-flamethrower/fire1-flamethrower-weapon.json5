@@ -42,5 +42,9 @@
                 size: 1.2,
             }
         },
+        {
+            id: "loopSoundWhileShooting",
+            parameters: { sound: "flamethrower-loop" },
+        },
     ]
 }

@@ -31,7 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        runtime: [win-x64, osx-x64]
+        runtime: [win-x64, osx-x64, linux-x64]
+        binary: [Bearded.TD, Bearded.TD.MasterServer]
 
     steps:
       - uses: actions/checkout@v3
@@ -45,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore -r ${{matrix.runtime}}
       - name: Build
-        run: dotnet build src/Bearded.TD -c Release -r ${{matrix.runtime}} --no-restore --self-contained -p:PublishSingleFile=true
+        run: dotnet build src/${{matrix.binary}} -c Release -r ${{matrix.runtime}} --no-restore --self-contained -p:PublishSingleFile=true
 
       # The version number can be extracted from the currently checked out tag,
       # which has the format 'refs/tags/v*'.
@@ -53,13 +54,13 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Create self-contained package
-        run: dotnet publish src/Bearded.TD -c Release --no-build -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}} -p:PublishSingleFile=true
+        run: dotnet publish src/${{matrix.binary}} -c Release --no-build -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}} -p:PublishSingleFile=true
 
       - name: Create zip archive
         uses: thedoctor0/zip-release@0.6.2
         with:
           type: zip
-          filename: bearded.td-${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
+          filename: ${{matrix.binary}}-${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
           path: ${{matrix.runtime}}
           directory: publish
       - name: Upload artifact
@@ -95,4 +96,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: "publish/*.zip"
         env:
-          GITHUB_REPOSITORY: my_gh_org/my_gh_repo
+          GITHUB_REPOSITORY: beardgame/td
