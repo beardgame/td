@@ -105,6 +105,11 @@ sealed class SoundScape : ISoundScape
             this.sound = sound;
         }
 
+        public void MoveTo(Position3 position)
+        {
+            sound.Source.Position = position.NumericValue;
+        }
+
         public void Stop()
         {
             sound.Source.Stop();
