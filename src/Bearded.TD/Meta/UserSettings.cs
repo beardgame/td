@@ -69,6 +69,8 @@ sealed partial class UserSettings
         public float TerrainMeshResolution = 5;
 
         public float FOV = 25;
+
+        public float ScreenShake = 1;
     }
 
     public sealed class DebugSettings

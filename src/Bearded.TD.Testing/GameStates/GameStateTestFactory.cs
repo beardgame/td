@@ -1,5 +1,6 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Testing.Audio;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;

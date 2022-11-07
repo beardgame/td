@@ -54,6 +54,14 @@
             parameters: { sound: "gunshot-fast" },
         },
         {
+            id: "shakeScreenOnFireWeapon",
+            parameters: {
+                strength: 0.05,
+                duration: 0.2,
+                frequency: 20
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "buildings2.gatling-turret",

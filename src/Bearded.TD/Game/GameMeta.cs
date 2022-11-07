@@ -1,6 +1,8 @@
 ﻿using System;
 using Bearded.TD.Audio;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Synchronization;
@@ -13,6 +15,7 @@ namespace Bearded.TD.Game;
 sealed class GameMeta
 {
     private Blueprints? blueprints;
+    private readonly ScreenShaker screenShaker = new();
 
     public IDispatcher<GameInstance> Dispatcher { get; }
     public IGameSynchronizer Synchronizer { get; }
@@ -22,6 +25,7 @@ sealed class GameMeta
     public GlobalGameEvents Events { get; } = new();
     public Blueprints Blueprints => blueprints!;
     public ISoundScape SoundScape { get; }
+    public IScreenShaker ScreenShaker => screenShaker;
 
     public ISpriteRenderers SpriteRenderers { get; }
 
@@ -38,7 +42,7 @@ sealed class GameMeta
         Dispatcher = dispatcher;
         Ids = ids;
         SpriteRenderers = spriteRenderers;
-        SoundScape = soundScape;
+        SoundScape = soundScape;;
     }
 
     public void SetBlueprints(Blueprints blueprints)
@@ -71,5 +75,10 @@ sealed class GameMeta
         }
         GameOver = true;
         Events.Send(new GameVictoryTriggered());
+    }
+
+    public void SetState(GameState state)
+    {
+        screenShaker.SetTimeSource(state.GameTime);
     }
 }

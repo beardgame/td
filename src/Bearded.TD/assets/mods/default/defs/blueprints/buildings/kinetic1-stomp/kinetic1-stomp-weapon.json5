@@ -44,6 +44,15 @@
             parameters: { sound: "bang-deep" },
         },
         {
+            id: "shakeScreenOnFireWeapon",
+            parameters: {
+                strength: 0.3,
+                duration: 0.4,
+                frequency: 10,
+                randomDirection: true,
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "default.particle.halo",

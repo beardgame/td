@@ -11,8 +11,10 @@ using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Rendering;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Lidgren.Network;
@@ -81,8 +83,7 @@ sealed class GameInstance
 
     private readonly PlayerManager? playerManager;
 
-    public GameInstance(
-        IGameContext context,
+    public GameInstance(IGameContext context,
         ContentManager contentManager,
         Player me,
         IdManager ids,
@@ -183,6 +184,7 @@ sealed class GameInstance
             throw new InvalidOperationException("Cannot override the game state once set.");
 
         gatherBlueprints();
+        Meta.SetState(state);
 
         this.state = state;
     }

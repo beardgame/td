@@ -3,6 +3,7 @@ using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
@@ -10,11 +11,12 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLayer
 {
-    private readonly GameRenderer renderer;
-
     private readonly GameInstance game;
+    private readonly GameRenderer renderer;
+    private readonly ITimeSource renderTime;
 
-    public override Matrix4 ViewMatrix => game.Camera.ViewMatrix;
+    private Matrix4 viewMatrix;
+    public override Matrix4 ViewMatrix => viewMatrix;
     public override Matrix4 ProjectionMatrix => game.Camera.ProjectionMatrix;
     public override RenderOptions RenderOptions => RenderOptions.Default;
 
@@ -30,6 +32,7 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
     {
         this.game = game;
         renderer = new GameRenderer(game, renderContext, time);
+        renderTime = time;
         UserSettings.SettingsChanged += userSettingsChanged;
         IsClickThrough = false;
     }
@@ -41,7 +44,19 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
 
     public override void Draw()
     {
+        updateMatrices();
         renderer.Render();
+    }
+
+    private void updateMatrices()
+    {
+        viewMatrix = game.Camera.ViewMatrix;
+
+        var shake = game.Meta.ScreenShaker.GetDisplacementAt(game.Camera.Position.WithZ(game.Camera.VisibleRadius));
+
+        shake *= UserSettings.Instance.Graphics.ScreenShake;
+
+        viewMatrix *= Matrix4.CreateTranslation(shake.X, shake.Y, 0);
     }
 
     public override void UpdateViewport(ViewportSize viewport)

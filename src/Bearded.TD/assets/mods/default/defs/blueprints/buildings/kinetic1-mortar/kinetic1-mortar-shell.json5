@@ -35,6 +35,15 @@
             }
         },
         {
+            id: "shakeScreenOnHit",
+            parameters: {
+                strength: 0.3,
+                duration: 0.4,
+                frequency: 10,
+                randomDirection: true,
+            }
+        },
+        {
             id: "spawnObjectOnHit",
             parameters: {
                 object: "dustExplosion",

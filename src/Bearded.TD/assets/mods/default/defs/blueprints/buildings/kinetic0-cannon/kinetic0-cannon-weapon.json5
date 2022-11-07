@@ -45,6 +45,14 @@
             parameters: { sound: "gunshot-punchy" },
         },
         {
+            id: "shakeScreenOnFireWeapon",
+            parameters: {
+                strength: 0.1,
+                duration: 0.2,
+                frequency: 15
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "buildings3.cannon-turret",
