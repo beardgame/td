@@ -41,6 +41,16 @@ sealed class SoundScape : ISoundScape
         ALListener.Position = position.NumericValue;
     }
 
+    public void PlayGlobalSound(ISound sound)
+    {
+        if (!sourcePool.TryGetSource(out var source))
+        {
+            return;
+        }
+
+        playSound(source, sound, Position3.Zero, positionIsRelative: true);
+    }
+
     public void PlaySoundAt(ISound sound, Position3 position, float? pitch)
     {
         if (!sourcePool.TryGetSource(out var source))
@@ -62,9 +72,15 @@ sealed class SoundScape : ISoundScape
         return new SoundLoop(this, instance);
     }
 
-    private SoundInstance playSound(Source source, ISound sound, Position3 position, bool looping = false, float? pitch = null)
+    private SoundInstance playSound(
+        Source source,
+        ISound sound,
+        Position3 position,
+        bool looping = false,
+        float? pitch = null,
+        bool positionIsRelative = false)
     {
-        configureSource(source, position, looping, pitch);
+        configureSource(source, position, looping, pitch, positionIsRelative);
 
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
@@ -75,10 +91,11 @@ sealed class SoundScape : ISoundScape
         return instance;
     }
 
-    private static void configureSource(Source source, Position3 position, bool looping, float? pitch)
+    private static void configureSource(
+        Source source, Position3 position, bool looping, float? pitch, bool positionIsRelative)
     {
         source.Position = position.NumericValue;
-        source.PositionIsRelative = false;
+        source.PositionIsRelative = positionIsRelative;
         source.Looping = looping;
         source.Pitch = pitch ?? 1;
     }
