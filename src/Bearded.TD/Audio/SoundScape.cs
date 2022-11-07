@@ -9,7 +9,7 @@ namespace Bearded.TD.Audio;
 sealed class SoundScape : ISoundScape
 {
     private readonly SourcePool sourcePool;
-    private readonly List<Source> sourcesInUse = new();
+    private readonly List<SoundInstance> soundInstances = new();
 
     private SoundScape(SourcePool sourcePool)
     {
@@ -18,11 +18,12 @@ sealed class SoundScape : ISoundScape
 
     public void Update()
     {
-        var finishedSources = sourcesInUse.Where(s => s.FinishedPlaying).ToImmutableArray();
-        foreach (var source in finishedSources)
+        var finishedSounds = soundInstances.Where(s => s.Source.FinishedPlaying).ToImmutableArray();
+        foreach (var sound in finishedSounds)
         {
-            sourcePool.ReclaimSource(source);
-            sourcesInUse.Remove(source);
+            sourcePool.ReclaimSource(sound.Source);
+            sound.Buffer.Dispose();
+            soundInstances.Remove(sound);
         }
     }
 
@@ -44,7 +45,7 @@ sealed class SoundScape : ISoundScape
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
         source.Play();
-        sourcesInUse.Add(source);
+        soundInstances.Add(new SoundInstance(source, buffer));
     }
 
     public void Dispose()
@@ -57,4 +58,6 @@ sealed class SoundScape : ISoundScape
         var sourcePool = SourcePool.CreateInstanceAndAllocateSources(numChannels);
         return new SoundScape(sourcePool);
     }
+
+    private readonly record struct SoundInstance(Source Source, SoundBuffer Buffer);
 }
