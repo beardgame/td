@@ -28,9 +28,5 @@
                 radius: 1,
             }
         },
-        {
-            id: "loopSound",
-            parameters: { sound: "tesla-loop" },
-        },
     ]
 }
