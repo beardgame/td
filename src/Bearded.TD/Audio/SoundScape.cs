@@ -40,6 +40,8 @@ sealed class SoundScape : ISoundScape
         }
 
         playSound(source, sound, position, pitch: pitch);
+    }
+
     private SoundInstance playSound(Source source, ISound sound, Position3 position, bool looping = false, float? pitch = null)
     {
         configureSource(source, position, looping, pitch);
