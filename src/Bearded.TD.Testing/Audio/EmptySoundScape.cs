@@ -9,7 +9,7 @@ sealed class EmptySoundScape : ISoundScape
 
     public void SetListenerPosition(Position3 position) {}
 
-    public void PlaySoundAt(Position3 position, ISound sound, float? pitch) {}
+    public void PlaySoundAt(ISound sound, Position3 position, float? pitch) {}
 
     public void Dispose() {}
 }

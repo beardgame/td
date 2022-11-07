@@ -32,20 +32,33 @@ sealed class SoundScape : ISoundScape
         ALListener.Position = position.NumericValue;
     }
 
-    public void PlaySoundAt(Position3 position, ISound sound, float? pitch)
+    public void PlaySoundAt(ISound sound, Position3 position, float? pitch)
     {
         if (!sourcePool.TryGetSource(out var source))
         {
             return;
         }
 
-        source.Position = position.NumericValue;
-        source.PositionIsRelative = false;
-        source.Pitch = pitch ?? 1;
+        playSound(source, sound, position, pitch: pitch);
+    private SoundInstance playSound(Source source, ISound sound, Position3 position, bool looping = false, float? pitch = null)
+    {
+        configureSource(source, position, looping, pitch);
+
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
         source.Play();
-        soundInstances.Add(new SoundInstance(source, buffer));
+
+        var instance = new SoundInstance(source, buffer);
+        soundInstances.Add(instance);
+        return instance;
+    }
+
+    private static void configureSource(Source source, Position3 position, bool looping, float? pitch)
+    {
+        source.Position = position.NumericValue;
+        source.PositionIsRelative = false;
+        source.Looping = looping;
+        source.Pitch = pitch ?? 1;
     }
 
     public void Dispose()
