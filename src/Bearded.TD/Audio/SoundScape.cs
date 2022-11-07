@@ -21,10 +21,15 @@ sealed class SoundScape : ISoundScape
         var finishedSounds = soundInstances.Where(s => s.Source.FinishedPlaying).ToImmutableArray();
         foreach (var sound in finishedSounds)
         {
-            sourcePool.ReclaimSource(sound.Source);
-            sound.Buffer.Dispose();
-            soundInstances.Remove(sound);
+            disposeSound(sound);
         }
+    }
+
+    private void disposeSound(SoundInstance sound)
+    {
+        sourcePool.ReclaimSource(sound.Source);
+        sound.Buffer.Dispose();
+        soundInstances.Remove(sound);
     }
 
     public void SetListenerPosition(Position3 position)
@@ -40,6 +45,17 @@ sealed class SoundScape : ISoundScape
         }
 
         playSound(source, sound, position, pitch: pitch);
+    }
+
+    public ISoundLoop LoopSoundAt(ISound sound, Position3 position)
+    {
+        if (!sourcePool.TryGetSource(out var source))
+        {
+            return new NoOpSoundLoop();
+        }
+
+        var instance = playSound(source, sound, position, looping: true);
+        return new SoundLoop(this, instance);
     }
 
     private SoundInstance playSound(Source source, ISound sound, Position3 position, bool looping = false, float? pitch = null)
@@ -72,6 +88,24 @@ sealed class SoundScape : ISoundScape
     {
         var sourcePool = SourcePool.CreateInstanceAndAllocateSources(numChannels);
         return new SoundScape(sourcePool);
+    }
+
+    private sealed class SoundLoop : ISoundLoop
+    {
+        private readonly SoundScape soundScape;
+        private readonly SoundInstance sound;
+
+        public SoundLoop(SoundScape soundScape, SoundInstance sound)
+        {
+            this.soundScape = soundScape;
+            this.sound = sound;
+        }
+
+        public void Stop()
+        {
+            sound.Source.Stop();
+            soundScape.disposeSound(sound);
+        }
     }
 
     private readonly record struct SoundInstance(Source Source, SoundBuffer Buffer);
