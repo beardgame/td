@@ -11,5 +11,7 @@ sealed class EmptySoundScape : ISoundScape
 
     public void PlaySoundAt(ISound sound, Position3 position, float? pitch) {}
 
+    public ISoundLoop LoopSoundAt(ISound sound, Position3 position) => new NoOpSoundLoop();
+
     public void Dispose() {}
 }
