@@ -35,16 +35,17 @@ sealed class LoopSound : Component<LoopSound.IParameters>, IListener<ObjectDelet
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        endSound();
+        stopSound();
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
-        endSound();
+        stopSound();
+        Events.Unsubscribe(this);
     }
 
-    private void endSound()
+    private void stopSound()
     {
         soundLoop?.Stop();
         soundLoop = null;
