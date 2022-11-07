@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Sounds;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Testing.Components;
@@ -32,8 +33,9 @@ public sealed class ComponentLifeCycleTests
     );
 
     // Components that access sprites in OnActivate.
-    private static readonly ImmutableHashSet<Type> spriteAccessingBlueprints = ImmutableHashSet.Create(
+    private static readonly ImmutableHashSet<Type> assetAccessingBlueprints = ImmutableHashSet.Create(
         typeof(AnimatedSprite), // Attempts to instantiate a sprite on activate.
+        typeof(LoopSound), // Attempts to play a sound on activate.
         typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.
         typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
         typeof(Sprite), // Attempts to instantiate a sprite on activate.
@@ -66,7 +68,7 @@ public sealed class ComponentLifeCycleTests
     public void LifeCycleWithActivateThrowsNoErrors(Type type)
     {
         if (nonFunctionalComponents.Contains(type) ||
-            spriteAccessingBlueprints.Contains(type) ||
+            assetAccessingBlueprints.Contains(type) ||
             makeInstance(type) is not { } component)
         {
             return;
