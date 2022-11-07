@@ -27,6 +27,10 @@ sealed class SoundScape : ISoundScape
 
     private void disposeSound(SoundInstance sound)
     {
+        // Can only reclaim finished sources, so put the source in a finished state, even if it isn't finished.
+        sound.Source.DequeueBuffers();
+        sound.Source.Looping = false;
+
         sourcePool.ReclaimSource(sound.Source);
         sound.Buffer.Dispose();
         soundInstances.Remove(sound);
