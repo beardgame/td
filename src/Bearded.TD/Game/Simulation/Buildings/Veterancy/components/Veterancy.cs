@@ -1,13 +1,23 @@
 using System.Collections.Immutable;
+using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Synchronization;
+using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Veterancy;
 
+interface ILevelable
+{
+    // Expected to be called from synchronized code.
+    void LevelUp();
+}
+
 [Component("veterancy")]
-sealed class Veterancy : Component, IListener<GainXp>
+sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
 {
     private readonly ImmutableArray<Experience> levelThresholds;
 
@@ -37,14 +47,14 @@ sealed class Veterancy : Component, IListener<GainXp>
     public void AddXp(Experience amount)
     {
         experience += amount;
-        checkForLevel();
+        Owner.Sync(checkForLevel, this);
     }
 
-    private void checkForLevel()
+    private static void checkForLevel(Veterancy self, ICommandDispatcher<GameInstance> dispatcher)
     {
-        while (level < levelThresholds.Length && experience >= levelThresholds[level])
+        while (self.level < self.levelThresholds.Length && self.experience >= self.levelThresholds[self.level])
         {
-            levelUp();
+            dispatcher.Dispatch(LevelUpGameObject.Command(self.Owner));
         }
     }
 
@@ -56,10 +66,11 @@ sealed class Veterancy : Component, IListener<GainXp>
         }
 
         experience = levelThresholds[level];
-        levelUp();
+        Owner.Sync(LevelUpGameObject.Command);
     }
 
-    private void levelUp()
+    // Expected to be called from synchronized code.
+    void ILevelable.LevelUp()
     {
         level++;
         Events.Send(new GainLevel());
@@ -94,6 +105,30 @@ sealed class Veterancy : Component, IListener<GainXp>
         public VeterancyReport(Veterancy subject)
         {
             this.subject = subject;
+        }
+    }
+
+    public IStateToSync GetCurrentStateToSync() => new VeterancySynchronizedState(this);
+
+    private sealed class VeterancySynchronizedState : IStateToSync
+    {
+        private readonly Veterancy source;
+        private int currentExperience;
+
+        public VeterancySynchronizedState(Veterancy source)
+        {
+            this.source = source;
+            currentExperience = source.experience.NumericValue;
+        }
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref currentExperience);
+        }
+
+        public void Apply()
+        {
+            source.experience = new Experience(currentExperience);
         }
     }
 }
