@@ -1,11 +1,14 @@
-﻿using Bearded.TD.Utilities;
+﻿using Bearded.TD.Game.Meta;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.Utilities.SpaceTime;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.Game.Input;
 
 sealed class PlayerInput
 {
+    private readonly GameInstance game;
     private readonly InteractionHandler defaultInteractionHandler;
     private readonly ICursorHandler cursor;
 
@@ -16,6 +19,7 @@ sealed class PlayerInput
 
     public PlayerInput(GameInstance game)
     {
+        this.game = game;
         cursor = new MouseCursorHandler(game.Camera, game.CameraController);
         defaultInteractionHandler = new DefaultInteractionHandler(game);
         ResetInteractionHandler();
@@ -41,7 +45,18 @@ sealed class PlayerInput
         {
             cursor.HandleInput(input);
             interactionHandler!.Update(cursor);
+
+            if (input.ForKey(Keys.Tab).Hit)
+            {
+                sendPing();
+            }
         }
+    }
+
+    private void sendPing()
+    {
+        var request = Ping.Request(game, game.Me, cursor.CursorPosition);
+        game.RequestDispatcher.Dispatch(game.Me, request);
     }
 
     public void SetInteractionHandler(InteractionHandler interactionHandler)

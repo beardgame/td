@@ -1,0 +1,40 @@
+{
+  id: "player-ping",
+  components: [
+    {
+      id: "playSoundOnActivate",
+      parameters: {
+        sound: "player-ping"
+      }
+    },
+    {
+      id: "animatedSprite",
+      parameters: {
+        sprite: "default.particle.halo",
+        colorMode: "factionMultiplied",
+        drawGroup: "ignoreDepth",
+        heightOffset: 0.1,
+        animation : {
+          timeScale: 2,
+          keyFrames: [
+            {
+              color: "00aaaaaa",
+              size: 0,
+            },
+            {
+              color: "00000000",
+              size: 5,
+              duration: 1
+            },
+          ]
+        },
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 2
+      }
+    }
+  ]
+}
