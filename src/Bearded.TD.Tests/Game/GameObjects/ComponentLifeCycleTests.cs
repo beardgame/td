@@ -32,12 +32,13 @@ public sealed class ComponentLifeCycleTests
         typeof(Turret) // Attempts to instantiate a blueprint on added.
     );
 
-    // Components that access sprites in OnActivate.
+    // Components that access assets in OnActivate.
     private static readonly ImmutableHashSet<Type> assetAccessingBlueprints = ImmutableHashSet.Create(
         typeof(AnimatedSprite), // Attempts to instantiate a sprite on activate.
         typeof(LoopSound), // Attempts to play a sound on activate.
         typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.
         typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
+        typeof(PlaySoundOnActivate), // Attempts to play a sound on activate.
         typeof(Sprite), // Attempts to instantiate a sprite on activate.
         typeof(Trail) // Attempts to instantiate a sprite on activate.
     );
