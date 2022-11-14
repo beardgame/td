@@ -2,13 +2,16 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Bearded.Graphics;
 using Bearded.TD.Meta;
 using Bearded.TD.Utilities.Console;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using Newtonsoft.Json;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls;
@@ -17,7 +20,7 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
 {
     private static readonly char[] space = {' '};
 
-    private readonly List<string> commandHistory = new();
+    private List<string> commandHistory = new();
     private readonly ConcurrentQueue<Logger.Entry> loggerEntriesAdded = new();
     private int commandHistoryIndex = -1;
 
@@ -37,6 +40,8 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
         IsEnabled = false;
 
         logger.Logged += fireLoggerEntryEvent;
+
+        tryLoadCommandHistory();
     }
 
     public IEnumerable<Logger.Entry> GetLastLogEntries(int maxNumOfEntries)
@@ -144,6 +149,47 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
 
         if (commandHistory.Count >= 200)
             commandHistory.RemoveRange(0, 100);
+
+        trySaveCommandHistory();
+    }
+
+    private void trySaveCommandHistory()
+    {
+        var itemsInHistory = commandHistory.Count;
+        var itemsToSave = Math.Min(itemsInHistory, 100);
+        var defensiveCopy = commandHistory.GetRange(commandHistory.Count - itemsToSave, itemsToSave);
+        Task.Run(() =>
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(defensiveCopy);
+                File.WriteAllText(Constants.Paths.CommandHistoryFile, json);
+            }
+            catch (Exception e)
+            {
+                logger.Warning?.Log($"Failed to save command history: {e.Message}");
+            }
+        });
+    }
+
+    private void tryLoadCommandHistory()
+    {
+        Task.Run(() =>
+        {
+            try
+            {
+                if (!File.Exists(Constants.Paths.CommandHistoryFile))
+                    return;
+                var json = File.ReadAllText(Constants.Paths.CommandHistoryFile);
+                var history = JsonConvert.DeserializeObject<List<string>>(json);
+                if (history != null)
+                    commandHistory = history;
+            }
+            catch (Exception e)
+            {
+                logger.Warning?.Log($"Failed to load command history: {e.Message}");
+            }
+        });
     }
 
     public string GetPreviousCommandInHistory(string currentCommand)

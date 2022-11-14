@@ -20,6 +20,7 @@ static partial class Constants
         }
 
         public static readonly string UserSettingsFile = SettingsDirectory + "/usersettings.json";
+        public static readonly string CommandHistoryFile = SettingsDirectory + "/commandhistory.json";
         public static readonly string LogFile = SettingsDirectory + "/debug.log";
 
         // ReSharper disable once MemberHidesStaticFromOuterClass
