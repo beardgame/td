@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.10
+
+* Added sound effects to towers, wave start, and wave end
+* Added screenshake
+* Added particle effects to enemies getting hit and dying
+* Added particle effects for splash damage
+* Added particle effects to damage getting hit
+* Added effects for building placement, construction, and level-up
+* Added visual indication of building levels and upgrades
+* Added notification when building levels up
+* Enemies now have much less health, and more enemies spawn
+* Improved enemy collision and crowding; they just want a hug
+* Polished all existing particle effects
+* Removed weapon recoil
+* Hide building status indicators when building built
+* Moved EnemySpawnDefinition into mod file
+* Bug fix: building veterancy is synchronized across network
+* Bug fix: applying slowing to enemies works again
+* Linux binaries are now included in releases
+* Master server binaries are now included in releases
+
 ## v0.9
 
 * New upgrades: homing
