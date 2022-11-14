@@ -11,6 +11,8 @@ static partial class Constants
 {
     public static class Game
     {
+        public static readonly TimeSpan MaxFrameTime = 0.1.S();
+
         public static class World
         {
             private const float sqrtOfThree = 1.73205080757f;

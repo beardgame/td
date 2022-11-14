@@ -43,6 +43,8 @@ sealed class GameRunner
         game.State.Meta.SoundScape.SetListenerPosition(game.Camera.Position.WithZ(game.Camera.VisibleRadius));
 
         var elapsedTime = new TimeSpan(args.ElapsedTimeInS) * UserSettings.Instance.Debug.GameSpeed;
+        if (elapsedTime > Constants.Game.MaxFrameTime)
+            elapsedTime = Constants.Game.MaxFrameTime;
 
         networkInterface.ConsumeMessages();
         game.UpdatePlayers(args);
