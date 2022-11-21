@@ -5,5 +5,4 @@ namespace Bearded.TD.Game.Simulation.Physics;
 interface IPhysics : IMoving
 {
     void ApplyVelocityImpulse(Velocity3 impulse);
-    Velocity3 Velocity { get; }
 }
