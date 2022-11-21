@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 
@@ -14,4 +15,6 @@ static class TargetingMode
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates) => candidates.FirstOrDefault();
     }
+
+    public static readonly ImmutableArray<ITargetingMode> All = ImmutableArray.Create(Default);
 }

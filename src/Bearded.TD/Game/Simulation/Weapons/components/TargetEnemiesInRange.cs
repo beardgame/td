@@ -32,8 +32,6 @@ sealed partial class TargetEnemiesInRange
         Angle? ConeOfFire { get; }
         [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
         [Modifiable(1)] TimeSpan ReCalculateTilesInRangeInterval { get; }
-        ImmutableArray<ITargetingMode> AllowedTargetingModes { get; }
-        ITargetingMode? DefaultTargetingMode { get; }
     }
 
     private PassabilityLayer passabilityLayer = null!;
@@ -49,7 +47,6 @@ sealed partial class TargetEnemiesInRange
     private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
-    private ITargetingMode targetingMode = TargetingMode.Default;
     private readonly Positionable targetPosition = new();
     private GameObject? target;
     public IPositionable? Target => target == null ? null : targetPosition;
@@ -73,7 +70,6 @@ sealed partial class TargetEnemiesInRange
     {
         base.Activate();
 
-        targetingMode = Parameters.DefaultTargetingMode ?? TargetingMode.Default;
         passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
             Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);

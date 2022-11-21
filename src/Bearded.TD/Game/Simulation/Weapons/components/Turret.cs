@@ -18,6 +18,7 @@ interface ITurret : IPositionable
     IBuildingState? BuildingState { get; }
     Direction2 NeutralDirection { get; }
     Angle? MaximumTurningAngle { get; }
+    ITargetingMode TargetingMode { get; }
     void OverrideTargeting(IManualTarget3 target);
     void StopTargetOverride();
 }
@@ -50,6 +51,8 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
+    private IProperty<ITargetingMode>? targetingMode;
+    public ITargetingMode TargetingMode => targetingMode?.Value ?? Weapons.TargetingMode.Default;
 
     public Turret(IParameters parameters) : base(parameters) { }
 
@@ -60,6 +63,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
         transform = Owner.GetComponents<ITransformable>().FirstOrDefault() ?? Transformable.Identity;
         ComponentDependencies.Depend<IBuildingStateProvider>(
             Owner, Events, provider => BuildingState = provider.State);
+        ComponentDependencies.Depend<IProperty<ITargetingMode>>(Owner, Events, p => targetingMode = p);
 
         Events.Subscribe<DrawComponents>(this);
         Events.Subscribe<ObjectDeleting>(this);

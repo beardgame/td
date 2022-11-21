@@ -12,6 +12,7 @@ interface IWeaponState : IPositionable, IDirected
     TileRangeDrawer.RangeDrawStyle RangeDrawStyle { get; }
     Direction2 NeutralDirection { get; }
     Angle? MaximumTurningAngle { get; }
+    ITargetingMode TargetingMode { get; }
 
     void Turn(Angle angle);
     void Disable(IWeaponDisabledReason reason);
@@ -28,6 +29,7 @@ sealed class WeaponState : Component, IWeaponState
 
     public Direction2 NeutralDirection => turret.NeutralDirection;
     public Angle? MaximumTurningAngle => turret.MaximumTurningAngle;
+    public ITargetingMode TargetingMode => turret.TargetingMode;
 
     public Position3 Position => turret.Position;
 
