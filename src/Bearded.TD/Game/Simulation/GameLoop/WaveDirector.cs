@@ -57,7 +57,6 @@ sealed class WaveDirector
         private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
 
         private Phase phase;
-        private ResourceAmount resourcesGiven;
 
         private TimeSpan skippedTime = TimeSpan.Zero;
 
@@ -82,7 +81,7 @@ sealed class WaveDirector
                     script.Id,
                     script.DisplayName,
                     script.SpawnStart,
-                    script.ResourcesAwardedBySpawnPhase,
+                    script.ResourcesAwarded,
                     outstandingSpawnStartRequirements.Add));
             phase = Phase.Downtime;
             foreach (var location in script.SpawnLocations)
@@ -128,7 +127,6 @@ sealed class WaveDirector
                     }
                     break;
                 case Phase.Spawning:
-                    updateResources();
                     updateSpawnQueue();
                     if (spawnQueue.Count == 0)
                     {
@@ -139,10 +137,7 @@ sealed class WaveDirector
                 case Phase.FinishOff:
                     if (spawnedUnits.Count == 0)
                     {
-                        game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
-                        game.Meta.Events.Unsubscribe<EnemyKilled>(this);
-                        game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
-                        phase = Phase.Completed;
+                        finishWave();
                     }
                     break;
                 case Phase.Completed:
@@ -151,6 +146,18 @@ sealed class WaveDirector
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void finishWave()
+        {
+            game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
+            game.Meta.Events.Unsubscribe<EnemyKilled>(this);
+            game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
+            if (script.TargetFaction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+            {
+                resources.ProvideResources(script.ResourcesAwarded);
+            }
+            phase = Phase.Completed;
         }
 
         private void tryStartSpawningPhase()
@@ -170,21 +177,7 @@ sealed class WaveDirector
         {
             phase = Phase.Spawning;
             game.Meta.Events.Send(new WaveStarted(script.Id, script.DisplayName));
-            updateResources();
             updateSpawnQueue();
-        }
-
-        private void updateResources()
-        {
-            var spawnTimeElapsed = game.Time - actualSpawnStart;
-            var percentageTimeElapsed = Math.Clamp(spawnTimeElapsed / script.SpawnDuration, 0, 1);
-            var expectedResourcesGiven = script.ResourcesAwardedBySpawnPhase.Percentage(percentageTimeElapsed);
-            State.Satisfies(expectedResourcesGiven >= resourcesGiven);
-            if (script.TargetFaction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
-            {
-                resources.ProvideResources(expectedResourcesGiven - resourcesGiven);
-                resourcesGiven = expectedResourcesGiven;
-            }
         }
 
         private void updateSpawnQueue()

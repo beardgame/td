@@ -37,7 +37,7 @@ sealed class WaveScriptSerializer
         targetFaction = waveScript.TargetFaction.Id;
         spawnStart = waveScript.SpawnStart.NumericValue;
         spawnDuration = waveScript.SpawnDuration.NumericValue;
-        resourcesAwardedBySpawnPhase = waveScript.ResourcesAwardedBySpawnPhase.NumericValue;
+        resourcesAwardedBySpawnPhase = waveScript.ResourcesAwarded.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
         unitBlueprint = waveScript.UnitBlueprint.Id;

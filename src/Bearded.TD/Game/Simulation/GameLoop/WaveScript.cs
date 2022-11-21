@@ -13,7 +13,7 @@ sealed record WaveScript(
     Faction TargetFaction,
     Instant SpawnStart,
     TimeSpan SpawnDuration,
-    ResourceAmount ResourcesAwardedBySpawnPhase,
+    ResourceAmount ResourcesAwarded,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript,
     IGameObjectBlueprint UnitBlueprint,
