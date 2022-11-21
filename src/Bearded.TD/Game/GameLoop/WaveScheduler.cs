@@ -86,7 +86,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
             game.Meta.Ids.GetNext<WaveScript>(),
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
             targetFaction,
-            game.Time + requirements.DowntimeDuration,
+            requirements.DowntimeDuration == null ? null : game.Time + requirements.DowntimeDuration,
             spawnDuration,
             requirements.Resources,
             spawnLocations,
@@ -154,26 +154,6 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);
 
-    public sealed class WaveRequirements
-    {
-        public int ChapterNumber { get; }
-        public int WaveNumber { get; }
-        public double WaveValue { get; }
-        public ResourceAmount Resources { get; }
-        public TimeSpan DowntimeDuration { get; }
-
-        public WaveRequirements(
-            int chapterNumber,
-            int waveNumber,
-            double waveValue,
-            ResourceAmount resources,
-            TimeSpan downtimeDuration)
-        {
-            ChapterNumber = chapterNumber;
-            WaveNumber = waveNumber;
-            DowntimeDuration = downtimeDuration;
-            Resources = resources;
-            WaveValue = waveValue;
-        }
-    }
+    public sealed record WaveRequirements(
+        int ChapterNumber, int WaveNumber, double WaveValue, ResourceAmount Resources, TimeSpan? DowntimeDuration);
 }

@@ -35,7 +35,7 @@ sealed class WaveScriptSerializer
         id = waveScript.Id;
         displayName = waveScript.DisplayName;
         targetFaction = waveScript.TargetFaction.Id;
-        spawnStart = waveScript.SpawnStart.NumericValue;
+        spawnStart = waveScript.SpawnStart?.NumericValue ?? -1;
         spawnDuration = waveScript.SpawnDuration.NumericValue;
         resourcesAwardedBySpawnPhase = waveScript.ResourcesAwarded.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
@@ -46,11 +46,11 @@ sealed class WaveScriptSerializer
 
     public WaveScript ToWaveScript(GameInstance game)
     {
-        return new(
+        return new WaveScript(
             id,
             displayName,
             game.State.Factions.Resolve(targetFaction),
-            new Instant(spawnStart),
+            spawnStart < 0 ? null : new Instant(spawnStart),
             new TimeSpan(spawnDuration),
             new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),

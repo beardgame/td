@@ -11,14 +11,10 @@ sealed record WaveScript(
     Id<WaveScript> Id,
     string DisplayName,
     Faction TargetFaction,
-    Instant SpawnStart,
+    Instant? SpawnStart,
     TimeSpan SpawnDuration,
     ResourceAmount ResourcesAwarded,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript,
     IGameObjectBlueprint UnitBlueprint,
-    ImmutableArray<Id<GameObject>> SpawnedUnitIds)
-{
-    public Instant SpawnEnd => SpawnStart + SpawnDuration;
-
-}
+    ImmutableArray<Id<GameObject>> SpawnedUnitIds);

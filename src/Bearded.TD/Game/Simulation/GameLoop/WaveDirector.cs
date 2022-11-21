@@ -58,10 +58,10 @@ sealed class WaveDirector
 
         private Phase phase;
 
-        private TimeSpan skippedTime = TimeSpan.Zero;
+        private Instant? actualSpawnStart;
+        private Instant? actualSpawnEnd => actualSpawnStart + script.SpawnDuration;
 
-        private Instant actualSpawnStart => script.SpawnStart - skippedTime;
-        private Instant actualSpawnEnd => script.SpawnEnd - skippedTime;
+        private bool canSummonNow => phase == Phase.Downtime && outstandingSpawnStartRequirements.Count == 0;
 
         public bool Deleted => phase == Phase.Completed;
 
@@ -69,6 +69,7 @@ sealed class WaveDirector
         {
             this.game = game;
             this.script = script;
+            actualSpawnStart = script.SpawnStart;
         }
 
         public void Start()
@@ -82,7 +83,8 @@ sealed class WaveDirector
                     script.DisplayName,
                     script.SpawnStart,
                     script.ResourcesAwarded,
-                    outstandingSpawnStartRequirements.Add));
+                    outstandingSpawnStartRequirements.Add,
+                    () => canSummonNow));
             phase = Phase.Downtime;
             foreach (var location in script.SpawnLocations)
             {
@@ -103,7 +105,7 @@ sealed class WaveDirector
                             script.SpawnedUnitIds[idIndex++],
                             script.UnitBlueprint,
                             loc,
-                            script.SpawnStart + spawnEvent.TimeOffset));
+                            spawnEvent.TimeOffset));
                 }
             }
         }
@@ -115,7 +117,7 @@ sealed class WaveDirector
             switch (phase)
             {
                 case Phase.Downtime:
-                    if (game.Time >= actualSpawnStart)
+                    if (actualSpawnStart is not null && game.Time >= actualSpawnStart)
                     {
                         tryStartSpawningPhase();
                     }
@@ -182,7 +184,9 @@ sealed class WaveDirector
 
         private void updateSpawnQueue()
         {
-            while (spawnQueue.TryPeek(out var spawn) && game.Time >= spawn.Time)
+            State.Satisfies(actualSpawnStart is not null);
+            var timePassedSinceStart = game.Time - actualSpawnStart;
+            while (spawnQueue.TryPeek(out var spawn) && timePassedSinceStart >= spawn.TimeSinceStart)
             {
                 spawnQueue.Dequeue();
                 var unit =
@@ -202,26 +206,7 @@ sealed class WaveDirector
             if (phase != Phase.Downtime)
                 return;
 
-            skippedTime = script.SpawnStart - game.Time;
-
-            adjustSpawnQueueToStartNow();
-        }
-
-        private void adjustSpawnQueueToStartNow()
-        {
-            var queueLength = spawnQueue.Count;
-
-            if (queueLength == 0)
-                return;
-
-            var timeToSkip = spawnQueue.Peek().Time - game.Time;
-
-            for (var i = 0; i < queueLength; i++)
-            {
-                var oldSpawn = spawnQueue.Dequeue();
-                var newSpawn = oldSpawn with { Time = oldSpawn.Time - timeToSkip };
-                spawnQueue.Enqueue(newSpawn);
-            }
+            actualSpawnStart = game.Time;
         }
     }
 
@@ -229,5 +214,5 @@ sealed class WaveDirector
         Id<GameObject> UnitId,
         IGameObjectBlueprint UnitBlueprint,
         SpawnLocation SpawnLocation,
-        Instant Time);
+        TimeSpan TimeSinceStart);
 }

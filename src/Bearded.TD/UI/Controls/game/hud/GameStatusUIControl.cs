@@ -59,7 +59,7 @@ sealed class GameStatusUIControl : CompositeControl
             model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
         waveResources.SetFromSource(
             model.WaveResources == null ? "-" : $"{model.WaveResources.Value.NumericValue}");
-        canSkipWaveTimer.SetFromSource(model.TimeUntilWaveSpawn != null);
+        canSkipWaveTimer.SetFromSource(model.CanSummonNow);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

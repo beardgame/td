@@ -50,7 +50,7 @@ static partial class Constants
 
         public static class WaveGeneration
         {
-            public static readonly TimeSpan FirstDownTimeDuration = 40.S();
+            public static readonly TimeSpan? FirstDownTimeDuration = null;
             public static readonly TimeSpan DownTimeDuration = 30.S();
 
             public static readonly TimeSpan EnemyTrainLength = 20.S();

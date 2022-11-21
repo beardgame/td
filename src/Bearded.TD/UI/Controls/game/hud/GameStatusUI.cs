@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Factions;
@@ -7,6 +8,7 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -20,6 +22,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
 
     private Id<WaveScript> currentWave;
     private Instant? waveSpawnStart;
+    private Func<bool>? canSummonCurrentWaveNow;
 
     public string? WaveName { get; private set; }
     public ResourceAmount? WaveResources { get; private set; }
@@ -28,10 +31,8 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
     public Color FactionColor => faction.Color;
     public ResourceAmount FactionResources => resources?.CurrentResources ?? ResourceAmount.Zero;
     public ResourceAmount FactionResourcesAfterReservation => resources?.ResourcesAfterQueue ?? ResourceAmount.Zero;
-    public TimeSpan? TimeUntilWaveSpawn =>
-        waveSpawnStart == null
-            ? null
-            : waveSpawnStart - game.State.Time;
+    public TimeSpan? TimeUntilWaveSpawn => waveSpawnStart == null ? null : waveSpawnStart - game.State.Time;
+    public bool CanSummonNow => canSummonCurrentWaveNow?.Invoke() ?? false;
 
     public void Initialize(GameInstance game)
     {
@@ -56,6 +57,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
         WaveName = @event.WaveName;
         waveSpawnStart = @event.SpawnStart;
         WaveResources = @event.ResourceAmount;
+        canSummonCurrentWaveNow = @event.CanSummonNow;
     }
 
     public void HandleEvent(WaveStarted @event)
@@ -66,6 +68,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
         }
 
         waveSpawnStart = null;
+        canSummonCurrentWaveNow = null;
     }
 
     public void HandleEvent(WaveEnded @event)
@@ -79,6 +82,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
         WaveName = null;
         waveSpawnStart = null;
         WaveResources = null;
+        canSummonCurrentWaveNow = null;
     }
 
     public void SkipWaveTimer()
