@@ -27,6 +27,11 @@
       }
     },
     {
+      id: "targetingModes",
+      parameters: {
+      }
+    },
+    {
       id: "sprite",
       parameters: {
         sprite: "buildings2.sniper-base",

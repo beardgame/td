@@ -26,6 +26,11 @@
         height: 0.3,
       }
     },
+    {
+      id: "targetingModes",
+      parameters: {
+      }
+    },
     { id: "fuelTank", parameters: { fuelCapacity: 150 } },
     { id: "fuelGauge" },
     {
