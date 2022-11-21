@@ -29,6 +29,6 @@ sealed partial class TargetEnemiesInRange
     {
         target = weapon.TargetingMode.SelectTarget(
             tilesInRange.SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile),
-            new TargetingContext(Owner.Position, weapon.Direction));
+            new TargetingContext(Owner.Position, weapon.Direction, Owner.Game.Navigator));
     }
 }

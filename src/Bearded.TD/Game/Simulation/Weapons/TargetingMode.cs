@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using JetBrains.Annotations;
@@ -73,10 +74,28 @@ static class TargetingMode
         }
     }
 
+    [UsedImplicitly]
+    public static readonly ITargetingMode ClosestToBase = new ClosestToBaseTargetingMode();
+
+    private sealed class ClosestToBaseTargetingMode : ITargetingMode
+    {
+        public string Name => "Closest to base";
+
+        public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
+        {
+            return candidates.MinBy(c => distanceToBase(context, c));
+        }
+
+        private static int distanceToBase(TargetingContext context, GameObject c)
+        {
+            return context.Navigator.GetDistanceToClosestSink(Level.GetTile(c.Position));
+        }
+    }
+
     public static ITargetingMode Default => LeastRotation;
 
     public static readonly ImmutableArray<ITargetingMode> All =
-        ImmutableArray.Create(LeastRotation, HighestHealth, LowestHealth);
+        ImmutableArray.Create(LeastRotation, HighestHealth, LowestHealth, ClosestToBase);
 
     private static IComparer<T> nullsFirst<T>(IComparer<T>? original = null)
     {
